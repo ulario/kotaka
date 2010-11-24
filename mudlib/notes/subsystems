@@ -1,0 +1,18 @@
+I plan to allow different subsystems to register themselves.
+
+Each subsystem is in charge of its own stuff.
+
+Bootstrap
+
+	Each subsystem has a file
+
+InitD
+
+	Each subsystem's initd is responsible for responding to queries
+
+
+Authorization
+
+In some cases, subsystems may need authorization from System to request
+certain resources.  Limits on ticks spent during boot, or processing
+callouts are examples, as well as usage of access proxies.

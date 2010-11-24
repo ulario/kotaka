@@ -1,0 +1,308 @@
+#include <kernel/access.h>
+#include <kernel/kernel.h>
+#include <kernel/rsrc.h>
+#include <kernel/tls.h>
+#include <kernel/user.h>
+
+#include <kotaka/assert.h>
+#include <kotaka/privilege.h>
+#include <kotaka/paths.h>
+#include <kotaka/log.h>
+#include <kotaka/version.h>
+
+#include <status.h>
+#include <limits.h>
+#include <trace.h>
+#include <type.h>
+
+#define CONSOLE_LOGLEVEL 6
+
+inherit SECOND_AUTO;
+inherit LIB_INITD;
+inherit UTILITY_COMPILE;
+
+int bogus;
+
+string *subsystems;
+
+void console_post(string str, int level);
+void message(string str);
+private void set_status(string str);
+private void configure_klib();
+private void boot_subsystem(string subsystem);
+private void configure_logging();
+
+static void create()
+{
+	rlimits (500; -1) {
+		catch {
+		subsystems = ({ "System" });
+	
+		load_dir("lib/bigstruct", 1);
+		load_dir("lwo/bigstruct", 1);
+		load_dir("obj/bigstruct", 1);
+		
+		configure_logging();
+
+		LOGD->post_message("system", LOG_NOTICE,
+			"Kotaka mudlib v" + KOTAKA_VERSION + " booting...");
+
+		load_object(TESTD);
+		
+		TESTD->test();
+
+		load_object(KERNELD);
+		configure_klib();
+		KERNELD->set_global_access("Kotaka", 1);
+		KERNELD->set_global_access("System", 1);
+
+		load_object("lwo/program_info");
+		load_object(PROGRAMD);
+		load_object(OBJECTD);
+		OBJECTD->enable();
+		OBJECTD->scan_dirs("/");
+
+		LOGD->post_message("system", LOG_NOTICE, "Object tracking initialized");
+
+		load_dir("closed", 1);
+		load_dir("lib", 1);
+		load_dir("lwo", 1);
+		load_dir("obj", 1);
+		load_dir("sys", 1);
+		load_dir("~", 1);
+		
+		TRASHD->enable();
+		PORTD->enable();
+		ERRORD->enable();
+		STATUSD->enable();
+		
+		KERNELD->set_rsrc("ticks", -1, 0, 0);
+
+		/* Booted up */
+
+		boot_subsystem("Kotaka");
+		boot_subsystem("Game");
+
+		set_status("ok");
+		} : {
+			LOGD->flush();
+			error("System setup failed");
+			shutdown();
+		}
+	}
+}
+
+int booting()
+{
+	mixed *frame;
+	
+	frame = call_trace()[0];
+	
+	return frame[TRACE_PROGNAME] == DRIVER
+		&& frame[TRACE_FUNCTION] == "initialize";
+}
+
+int restoring()
+{
+	mixed *frame;
+	
+	frame = call_trace()[0];
+	
+	return frame[TRACE_PROGNAME] == DRIVER
+		&& frame[TRACE_FUNCTION] == "restored";
+}
+
+void prepare_reboot()
+{
+	int sz;
+	int index;
+	
+	ACCESS_CHECK(KERNEL());
+
+	ACCESSD->save();
+
+	set_status("rebooting");
+
+	sz = sizeof(subsystems);
+	
+	for (index = sz - 1; index >= 1; index--) {
+		catch {
+			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "prepare_reboot");
+		}
+	}
+
+	LOGD->post_message("system", LOG_NOTICE, "saving");
+}
+
+void clear_admin()
+{
+	string *resources;
+	int index;
+	
+	resources = KERNELD->query_resources();
+
+	for (index = 0; index < sizeof(resources); index++) {
+		KERNELD->rsrc_set_limit("admin", resources[index],
+			-1);
+	}
+}
+
+void reboot()
+{
+	int index;
+	int sz;
+
+	ACCESS_CHECK(KERNEL());
+	
+	LOGD->post_message("system", LOG_NOTICE, "rebooted successfully");
+	set_status("ok");
+
+	bogus = 0;
+	
+	clear_admin();
+
+	catch {
+		PORTD->reboot();
+	}
+	
+	WATCHDOGD->reboot();
+	
+	sz = sizeof(subsystems);
+
+	for (index = 1; index < sz; index++) {
+		catch {
+			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "reboot");
+		}
+	}
+}
+
+/** Handles a bogus reboot */
+void bogus_reboot()
+{
+	int sz;
+	int index;
+	
+	LOGD->post_message("system", LOG_NOTICE, "state dumped");
+	
+
+	set_status("ok");
+	
+	sz = sizeof(subsystems);
+	
+	for (index = 1; index < sz; index++) {
+		catch {
+			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "bogus_reboot");
+		}
+	}
+}
+
+/** Used to output messages to the console */
+
+/*********/
+/* Hooks */
+/*********/
+
+string query_constructor(string path)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+}
+
+string query_destructor(string path)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+}
+
+/********************/
+/* Helper functions */
+/********************/
+
+/* Miscellaneous */
+
+private void set_status(string str)
+{
+}
+
+void message(string str)
+{
+	catch {
+		error(previous_program() + " needs to use the log daemon");
+	}
+
+	LOGD->post_message("misc", LOG_NOTICE, str);
+}
+
+private void boot_subsystem(string subsystem)
+{
+	subsystems += ({ subsystem });
+	
+	KERNELD->add_user(subsystem);
+	KERNELD->add_owner(subsystem);
+
+	rlimits(100; -1) {
+		load_object(USR_DIR + "/" + subsystem + "/initd");
+	}
+}
+
+private void configure_klib()
+{
+	string *wizards;
+	int index;
+
+	KERNELD->add_owner("Secret");
+
+	KERNELD->set_rsrc("tick usage", -1, 5, 1);
+
+	wizards = KERNELD->query_users();
+
+	for (index = 0; index < sizeof(wizards); index++) {
+		KERNELD->add_owner(wizards[index]);
+	}
+}
+
+mapping read_init_file(string subsystem)
+{
+	string buf;
+	
+	if (!file_info(USR_DIR + "/" + subsystem + "/boot.ini")) {
+		return nil;
+	}
+}
+
+private void configure_logging()
+{
+	load_object(LOGD);
+
+	LOGD->set_target("*", 255, "null");
+	LOGD->set_target("*", 255, "driver");
+	LOGD->set_target("*", 255, "file:/log/general.log");
+
+	LOGD->set_target("*",
+		LOG_EMERG | LOG_CRIT | LOG_ALERT,
+		"kadmins"
+	);
+	LOGD->set_target("system",
+		LOG_EMERG | LOG_CRIT | LOG_ALERT | LOG_ERR | LOG_WARNING,
+		"kadmins"
+	);
+
+	LOGD->set_target("status", 255, "channel:status");
+	LOGD->set_target("compile", 255, "file:/log/error.log");
+	LOGD->set_target("error", 255, "file:/log/error.log");
+	LOGD->set_target("error", 255, "driver");
+	LOGD->set_target("trace", 255, "file:/log/error.log");
+}
+
+int forbid_inherit(string from, string path, int priv)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+	
+	if (sscanf(from, USR_DIR + "/System/%*s")) {
+		return 0;
+	}
+	
+	if (sscanf(path, USR_DIR + "/System/closed/%*s")) {
+		return 1;
+	}
+	
+	return 0;
+}

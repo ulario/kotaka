@@ -1,0 +1,17 @@
+#!/bin/bash
+
+COMMAND=$1
+shift
+
+case $COMMAND in
+shentino)
+	# shentino's special command
+	cd ~
+	rm -rf test
+	mkdir test
+	mkdir test/mud
+	cp -r -s sourceforge/kotaka/mudlib/mud/* test/mud
+	;;
+*)
+	echo "Usage: makemud <command>"
+esac

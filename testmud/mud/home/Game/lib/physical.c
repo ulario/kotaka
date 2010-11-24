@@ -1,0 +1,2 @@
+inherit "object";
+inherit "position";

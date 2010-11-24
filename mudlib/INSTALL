@@ -1,0 +1,43 @@
+Installing Kotaka:
+
+1.  Required Reading
+
+Read LICENSE, then WARRANTY.  The first contains your legal rights to
+use and/or modify Kotaka.  The second emphasizes that kotaka is a toy,
+not a tool.
+
+2.  Preparation of DGD
+
+Get DGD, latest version you can snag.
+
+	Sourceforge project: dgd-osr
+
+Compile it.
+
+	If you wish to use >2G swapfiles, -D_FILE_OFFSET_BITS=64
+
+	You may need to insert a "INET6=0" define into the makefile.
+	
+	If you wish to precompile the klib for performance reasons, do
+	so at this stage, but make sure you do the following:
+	
+		a. Use kotaka's mud/include/config.h, not the default
+		one included with the klib.
+
+3.  Preparation of Kotaka
+
+4.  Preparation of your mud
+
+If you wish to use the supplied "ulario" test mud, follow its directions.
+Otherwise, get busy writing your own mud, and put your files in ~Game.
+
+5.  Have fun!
+
+Once your mud is set up, with either the test module or your own thing
+running on top of kotaka, you're on your own.
+
+Notes:
+
+The install script works by creating a fresh, empty directory, then
+filling it with a skeleton of directories, and finally populating the
+skeleton with symlinks to both dgd and kotaka.

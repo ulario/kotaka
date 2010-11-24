@@ -1,0 +1,16 @@
+Channels
+--------
+
+Channels are broadcasting thingies whereby one message goes to many
+people at once.  
+
+Public channels:
+
+chat	General gossip
+
+Commands used with channels:
+
+chon	Start listening to a channel
+choff	Stop listening to a channel
+chpost	Post a message to a channel
+chlist	List available channels

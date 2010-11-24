@@ -1,0 +1,7 @@
+Bans
+----
+
+Bans come in two parts, triggers and actions.
+
+IP bans are stored as integers representing the bit pattern of the IP
+address in question, with the masked bits at zero.

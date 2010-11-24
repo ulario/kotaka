@@ -1,0 +1,6 @@
+HTTP/1.1 403 Banned
+Content-Type: text/plain
+Cache-Control: no-cache
+Connection: close
+
+You have been banned from this server.

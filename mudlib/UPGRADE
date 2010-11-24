@@ -1,0 +1,10 @@
+To upgrade kotaka:
+
+1.  Unpack the new version of kotaka in such a way that the new version
+of kotaka takes the place of the old one.  It should be wiped completely.
+
+2.  In the mud, recompile System, as well as everything that depends on it.
+
+*** IMPORTANT ***
+
+Do NOT re-run install.  Doing that will wipe your mud out.

@@ -1,0 +1,7 @@
+HTTP/1.1 500 Internal error
+Content-Type: text/plain
+Cache-Control: no-cache
+Connection: close
+
+Due to technical difficulties your request could not
+be processed.  Please alert an administrator.

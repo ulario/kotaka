@@ -1,0 +1,7 @@
+Quit
+----
+
+Usage: quit
+
+Terminates your current session, implicitly terminating a character play
+if one is in progress.

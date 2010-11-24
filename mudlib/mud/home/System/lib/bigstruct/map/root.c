@@ -1,0 +1,595 @@
+#include <kernel/access.h>
+
+#include <kotaka/assert.h>
+#include <kotaka/paths.h>
+#include <kotaka/privilege.h>
+#include <kotaka/log.h>
+#include <kotaka/bigstruct.h>
+
+#include <type.h>
+
+inherit SECOND_AUTO;
+inherit "../bintree/root";
+
+#define MIN_MASS 256
+#define MAX_MASS 768
+
+int type;
+
+atomic static void create()
+{
+	::create();
+	
+	top = insert_node(nil);
+}
+
+static void destruct()
+{
+	::destruct();
+}
+
+void clear()
+{
+	check_caller(WRITE_ACCESS);
+	
+	::clear();
+	
+	top = insert_node(nil);
+}
+
+void set_type(int new_type)
+{
+	check_caller(WRITE_ACCESS);
+	
+	ASSERT(type == 0);
+	
+	switch (new_type) {
+	case T_INT:
+	case T_FLOAT:
+	case T_STRING:
+		break;
+	default:
+		error("Invalid type for bigstruct map key");
+	}
+	
+	type = new_type;
+}
+
+private object find_node(mixed key)
+{
+	object node;
+	node = top;
+
+	while (node) {
+		mixed this_key;
+		
+		this_key = node->get_low_key();
+		
+		if (this_key == nil) {
+			/* empty node */
+			return node;
+		}
+		
+		if (key < this_key) {
+			object new_node;
+			
+			new_node = node->get_left();
+			
+			if (new_node) {
+				node = new_node;
+			} else {
+				/* reached end */
+				return node;
+			}
+		} else {
+			object next;
+			
+			next = next_node(node);
+			
+			if (!next) {
+				/* reached end */
+				return node;
+			}
+
+			if (key < next->get_low_key()) {
+				/* bracketed */
+				return node;
+			} else {
+				node = node->get_right();
+			}
+		}
+	}
+}
+
+private void merge_node_left(object node)
+{
+	object prev;
+	
+	prev = prev_node(node);
+	
+	node->set_map(node->get_map() + prev->get_map());
+	node->reset_low_key();
+	
+	prev->set_map( ([ ]) );
+	delete_node(prev);
+}
+
+private void merge_node_right(object node)
+{
+	object next;
+	
+	next = next_node(node);
+	
+	node->set_map(node->get_map() + next->get_map());
+	node->reset_low_key();
+	
+	next->set_map( ([ ]) );
+	delete_node(next);
+}
+
+private void split_node_right(object node)
+{
+	/* split */
+	object next;
+	mixed *keys;
+	int sz;
+	
+	mapping map;
+	mapping low_map;
+	mapping high_map;
+	
+	mixed low_key;
+	mixed high_key;
+	
+	next = insert_node(next_node(node));
+	
+	map = node->get_map();
+	keys = map_indices(map);
+	
+	sz = sizeof(keys);
+	
+	low_key = keys[sz / 2 - 1];
+	high_key = keys[sz / 2];
+	
+	low_map = map[.. low_key];
+	high_map = map[high_key ..];
+
+	node->set_map(low_map);
+	next->set_map(high_map);
+		
+	node->reset_low_key();
+	next->reset_low_key();
+}
+
+private int mass_check(object node);
+
+private void mop_node(object node, varargs int back)
+{
+	int check;
+	
+	while (check = mass_check(node)) {
+		if (check == -1) {
+			if (back) {
+				if (prev_node(node)) {
+					merge_node_left(node);
+				} else if (next_node(node)) {
+					merge_node_right(node);
+				} else {
+					return;
+				}
+			} else {
+				if (next_node(node)) {
+					merge_node_right(node);
+				} else if (prev_node(node)) {
+					merge_node_left(node);
+				} else {
+					return;
+				}
+			}
+		} else if (check == 1) {
+			split_node_right(node);
+			split_node_right(node);
+		}
+	}
+}
+
+private int mass_check(object node)
+{
+	int mass;
+	
+	if (node->get_mass() < MIN_MASS) {
+		return -1;
+	}
+	
+	if (node->get_mass() > MAX_MASS) {
+		return 1;
+	}
+}
+
+atomic void set_element(mixed key, mixed value)
+{
+	object node;
+	int bits;
+	mapping map;
+	int msz;
+	
+	check_caller(WRITE_ACCESS);
+	
+	if (typeof(key) != type) {
+		error("Type mismatch");
+	}
+	
+	node = find_node(key);
+	map = node->get_map();
+	
+	map[key] = value;
+	node->reset_low_key();
+	mop_node(node);
+}
+
+mixed get_element(mixed key)
+{
+	object node;
+	
+	check_caller(READ_ACCESS);
+	
+	if (typeof(key) != type) {
+		error("Type mismatch");
+	}
+	
+	node = find_node(key);
+	ASSERT(node);
+	
+	return node->get_map()[key];
+}
+
+atomic object begin()
+{
+	object iterator;
+
+	object node;
+	mapping map;
+	mixed index;
+	
+	check_caller(READ_ACCESS);
+	
+	iterator = new_object(BIGSTRUCT_MAP_ITERATOR);
+	
+	node = leftest(top);
+	mop_node(node);
+	
+	map = node->get_map();
+	
+	if (map_sizeof(map)) {
+		index = map_indices(map)[0];
+	} else {
+		error("Subscript out of range");
+	}
+	
+	ASSERT(index != nil);
+	iterator->set_index(index);
+	return iterator;
+}
+
+atomic object end()
+{
+	object iterator;
+
+	object node;
+	mapping map;
+	mixed index;
+	
+	check_caller(READ_ACCESS);
+	
+	return new_object(BIGSTRUCT_MAP_ITERATOR);
+}
+
+atomic void iterator_increment()
+{
+	object iterator;
+	mixed key;
+	object node;
+	mapping map;
+	mixed *keys;
+	int sz;
+	int i;
+	
+	check_caller(0);
+	
+	iterator = previous_object();
+	
+	key = iterator->get_index();
+
+	if (key == nil) {
+		error("Subscript out of range");
+	}
+	
+	node = find_node(key);
+	
+	while (node) {
+		/* keep going right until we find it */
+		mop_node(node);
+		
+		/* ignore everything lower */
+		map = node->get_map()[key ..];
+		keys = map_indices(map);
+		sz = sizeof(keys);
+		
+		if (!sz) {
+			/* everything was eliminated */
+			node = next_node(node);
+			continue;
+		}
+		
+		if (keys[0] == key) {
+			if (sz > 1) {
+				iterator->set_index(keys[1]);
+				return;
+			} else {
+				node = next_node(node);
+				continue;
+			}
+		} else {
+			/* found it */
+			iterator->set_index(keys[0]);
+			return;
+		}
+	}
+	/* nada */
+	iterator->set_index(nil); /* end() */
+}
+
+atomic void iterator_decrement()
+{
+	object iterator;
+	mixed key;
+	object node;
+	mapping map;
+	mixed *keys;
+	int sz;
+	int i;
+	
+	check_caller(0);
+	
+	iterator = previous_object();
+	
+	key = iterator->get_index();
+
+	if (key == nil) {
+		node = rightest(top);
+		mop_node(node, 1);
+		map = node->get_map();
+		keys = map_indices(map);
+		sz = sizeof(keys);
+		if (sz) {
+			key = keys[sz - 1];
+		}
+		iterator->set_index(key);
+		return;
+	}
+	
+	node = find_node(key);
+	
+	while (node) {
+		/* keep going left until we find it */
+		mop_node(node, 1);
+		
+		/* ignore everything higher */
+		map = node->get_map()[.. key];
+		keys = map_indices(map);
+		sz = sizeof(keys);
+		
+		if (!sz) {
+			/* everything was eliminated */
+			node = prev_node(node);
+			continue;
+		}
+		
+		if (keys[sz - 1] == key) {
+			if (sz > 1) {
+				iterator->set_index(keys[sz - 2]);
+				return;
+			} else {
+				node = prev_node(node);
+				continue;
+			}
+		} else {
+			/* found it */
+			iterator->set_index(keys[sz - 1]);
+			return;
+		}
+	}
+	/* nada */
+	error("Subscript out of range");
+}
+
+mixed iterator_get_value()
+{
+	object iterator;
+	mixed key;
+	object node;
+	mapping map;
+	
+	check_caller(0);
+	
+	iterator = previous_object();
+	
+	key = iterator->get_index();
+	node = find_node(key);
+	return node->get_map()[key];
+}
+
+atomic void iterator_set_value(mixed value)
+{
+	object iterator;
+	mixed key;
+	object node;
+	mapping map;
+	
+	check_caller(0);
+	
+	iterator = previous_object();
+	
+	key = iterator->get_index();
+	node = find_node(key);
+	node->get_map()[key] = value;
+	mop_node(node);
+}
+
+/* slicing */
+
+object slice(mixed first, mixed last)
+{
+	check_caller(READ_ACCESS);
+	
+	ASSERT(typeof(first) == type || first == nil);
+	ASSERT(typeof(last) == type || last == nil);
+	error("Function not implemented");
+}
+
+object get_indices()
+{
+	object array;
+	object node;
+	mixed *indices;
+	int index;
+	
+	check_caller(READ_ACCESS);
+	
+	array = new_object("~/lwo/bigstruct/array/root");
+	
+	node = leftest(top);
+	
+	while (node) {
+		mapping map;
+		int index2;
+		int sz;
+		
+		map = node->get_map();
+		indices = ::map_indices(map);
+		sz = sizeof(indices);
+		
+		array->set_size(index + sz);
+		
+		for (index2 = 0; index2 < sz; index2++) {
+			array->set_element(index + index2, indices[index2]);
+		}
+		
+		index += sz;
+		node = next_node(node);
+	}
+	
+	return array;
+}
+
+object get_values()
+{
+	object array;
+	object node;
+	mixed *values;
+	int index;
+	
+	check_caller(READ_ACCESS);
+	
+	array = new_object("~/lwo/bigstruct/array/root");
+	
+	node = leftest(top);
+	
+	while (node) {
+		mapping map;
+		int index2;
+		int sz;
+		
+		map = node->get_map();
+		values = ::map_values(map);
+		sz = sizeof(values);
+		
+		array->set_size(index + sz);
+		
+		for (index2 = 0; index2 < sz; index2++) {
+			array->set_element(index + index2, values[index2]);
+		}
+		
+		index += sz;
+		node = next_node(node);
+	}
+	
+	return array;
+}
+
+void rebalance()
+{
+	check_caller(READ_ACCESS);
+	
+	::rebalance();
+}
+
+atomic void reindex()
+{
+	object node;
+	object deque;
+	int quota;
+	int nodes;
+	mapping map;
+	
+	/* require write access because this is an intense operation */
+	check_caller(WRITE_ACCESS);
+	
+	deque = new_object(BIGSTRUCT_DEQUE_LWO);
+	
+	node = leftest(top);
+	
+	while (node != nil) {
+		mixed *indices, *values;
+		int sz, i;
+		
+		map = node->get_map();
+		node = next_node(node);
+		
+		sz = map_sizeof(map);
+		
+		indices = map_indices(map);
+		values = map_values(map);
+		
+		for (i = 0; i < sz; i++) {
+			deque->push_back(indices[i]);
+			deque->push_back(values[i]);
+		}
+	}
+	
+	nodes = 0;
+	
+	discard_node(top);
+	top = nil;
+	top = insert_node(nil);
+	node = top;
+	
+	quota = (MIN_MASS + MAX_MASS) / 2;
+	map = ([ ]);
+	node->set_map(map);
+	
+	while (!deque->empty()) {
+		mixed index;
+		mixed value;
+		
+		if (quota == 0) {
+			node->reset_low_key();
+			map = ([ ]);
+			node = insert_node(nil);
+			node->set_map(map);
+			quota = (MIN_MASS + MAX_MASS) / 2;
+		}
+		
+		index = deque->get_front();
+		deque->pop_front();
+		value = deque->get_front();
+		deque->pop_front();
+		
+		map[index] = value;
+		
+		quota--;
+	}
+
+	node->reset_low_key();
+	::rebalance();
+}

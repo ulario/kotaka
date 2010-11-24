@@ -1,0 +1,23 @@
+Basics
+------
+
+First, read "verbs" for a basic discourse on the difference between
+verbs and commands.
+
+Basic commands:
+
+end	Retire your character
+help	See help
+mail	Check your mail/send a new message
+play	Start playing a character
+quit	Stop playing and return to reality
+tell	Send a private message
+
+Basic verbs:
+
+go	Move through an exit
+look	View an object or the room you're in
+say	Say something
+
+See also:
+	channels, death, verbs

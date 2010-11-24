@@ -1,0 +1,27 @@
+A system to implement feudalism.
+
+Mimic EVE, just nested and 
+
+Fealty
+
+	The basic relationship between lord and vassal is tracked by
+	fealty links.
+
+Lord
+
+	A lord
+
+Fief
+
+	The land granted to a vassal
+
+Vassal
+
+Escheat
+
+	
+
+Death
+
+	Character death should probably have some effect.
+

@@ -1,0 +1,10 @@
+HTTP/1.1 503 Maintenance in progress
+Content-Type: text/plain
+Cache-Control: no-cache
+Retry-After: 20
+Connection: close
+
+The server is undergoing an atomic maintenance operation
+and cannot be disturbed at this time.
+
+Please check back in 20 seconds.

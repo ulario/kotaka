@@ -1,0 +1,14 @@
+I use "BMR" as a shorthand for all the stuff that isn't accounted for by
+express END usage.  800 Cal/day covers basic cell activity.  I boost it
+up to 1200 to account for digestion, breathing, circulation, and casual
+action that doesn't register as END usage.
+
+Casual humans, that don't get tired, limit their END usage to what they
+can recover.  This is 20 per minute, giving 28800 END per day used for
+this.  Setting this to 800 calories leaves 1200 calories for BMR, and
+this equals 43200 END per day on BMR, or 1 END per 2 seconds.  This
+equates to 36 END per calorie.
+
+Metabolic rate 2000 cal/day,
+
+BMR in cal/day == 100 * (REC + BODY)

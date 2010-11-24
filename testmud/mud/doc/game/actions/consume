@@ -1,0 +1,21 @@
+Used when one object wishes to ingest and assimilate another or part as
+food or drink in a biological sense.
+
+This is intended to trigger a number of subactions in a continuous
+process.
+
+This is a semantic action that remains in progress so long as the actor
+is consciously consuming something.  Once everything has been ingested,
+the consume action stops by itself.  The actual assimilation process
+falls under "digestion".  Thus, consume is a social and/or procedural
+construct.
+
+How exactly the object will be "consumed" depends on the creature doing
+the consuming, and the object in question.
+
+The consume action terminates with the "food" vanishing from view, most
+likely winding up inside the actor's stomach if not outright being
+destructed.
+
+Only normal food and drink can be consumed.  Anything else must be
+explicitly swallowed.

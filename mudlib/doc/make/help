@@ -1,0 +1,10 @@
+This Makefile is to assist in the setup and maintenance of a kotaka
+based mudlib.
+
+Supported targets:
+
+help
+	This is what you are reading right now
+
+upgrade (todo)
+	Use when you install a new version of kotaka

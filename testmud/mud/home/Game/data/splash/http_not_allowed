@@ -1,0 +1,7 @@
+HTTP/1.1 405 Method not allowed
+Content-Type: text/plain
+Cache-Control: no-cache
+Allow: GET
+Connection: close
+
+Specified method not allowed

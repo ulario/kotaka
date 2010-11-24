@@ -1,0 +1,116 @@
+Under consideration
+-------------------
+
+Garbage collect roots of obj-based structures
+
+	Someone allocating a huge bigstruct and then abandoning it could
+	cause a DoS problem.
+	
+	Should find a way to let abandoned bigstructs be garbage
+	collected if their owner poofs.
+	
+	At a minimum this will mean that bigstruct objects need tracking.
+	
+	Bigstruct is a good thing to add to resources.
+
+Planning to do
+--------------
+
+Bigstruct combo
+
+	Have an obj root host lwo nodes.
+
+Have a conveniently written Makefile to take care of installation
+
+	More in line with tradition, having the ubiquitous "make" do
+	everything will simplify things for the end user.
+	
+	Running the install script is nice though...
+
+Blocked
+-------
+
+Make all execution rounds atomic
+
+	How do I handle:
+	
+	* editors
+	* file operations
+
+Fix bigmaps
+
+	Learn RB-trees.
+
+Everything related to command parsing
+
+	Fix bigmaps
+
+Custom graphical client
+
+	Need to learn java
+
+Recognize IPv6 addresses
+
+	Need to find a good way to parse them.
+
+Better help system
+
+	Fix bigmaps
+
+In Progress
+-----------
+
+Implement STL-like container objects
+
+	Comfort food for the programmer.
+
+RB-trees
+
+	Writing
+
+Interface/Implementation separation
+
+	Get UlarioMUD specific stuff moved into ~Game.
+	
+	Game-specific stuff is being removed into the "client" package.
+
+Constructors and destructors
+
+	Use ProgramD to register constructors and destructors, and use
+	the inheritance trees to build linear lists.
+	
+Last resort verbs
+
+	Implement old style /bin verbs as a failsafe if stuff quits
+	working.
+
+Help files
+
+	All bins have helps
+	
+	cmdhelpcheck and kcmdhelpcheck useful here.
+
+Continuous improvements
+-----------------------
+
+Plaster entire mudlib with strict typechecking, including object types.
+
+	A "Good Thing"
+
+Use more APIs
+
+	Easier to force things to change when needed.
+
+Make sure all things inherit what they need to.
+
+	So I can enforce strict type checking
+
+Clarify coding standards
+
+	Consistency is a good policy
+
+Macroize access checking
+
+	Use ACCESS_CHECK(condition) instead of wrapper "if (condition) {
+	... } else error("Access denied");" type constructs to have cleaner
+	code.

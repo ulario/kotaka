@@ -1,0 +1,44 @@
+/** Class comment
+
+Describe the source file here, and don't forget the double asterisk.
+
+*/
+/* header files */
+#include <header>
+#include <header>
+/* leave a blank line */
+
+/* variable declarations */
+int var1;
+string var2;
+object "type" var3;	/* specify object types as narrowly as possible */
+/* leave a blank line */
+
+/* function declarations */
+/* in general, you should forward declare EVERYTHING */
+void frobnicate(object "type" arg1);	/* same goes for arguments */
+object "type" allonify();	/* and return types */
+/* leave a blank line */
+
+/* function definitions */
+static void create(int clone)
+{
+	/* follow K&R styling...using tabs for indents */
+	int var1, var2, *var3;
+	/* use whatever layout is neatest */
+	
+	/* leave a space, then start the code */
+	if (foo) {
+	/* pack opening braces as above, this saves scarce terminal lines */
+	}
+}
+/* leave 1 space between each function definition */
+
+static void another_function(int foo, int bar, int baz)
+{
+	ACCESS_CHECK(condition);
+	/* If you need to do access control, do so using that macro */
+
+	/* Doing an "if (access) { ... } else error(\"Access denied\")"
+	wastes indent space */
+}
