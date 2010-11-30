@@ -99,11 +99,11 @@ string sprintframe(mixed *frame, varargs int include_args)
 	} else {
 		line = flags + " " + lineno + " " + func + " " + prog;
 	}
-	
+
 	if (include_args) {
 		line += "\n" + STRINGD->mixed_sprint(frame[TRACE_FIRSTARG ..]);
 	}
-	
+
 	return line;
 }
 
@@ -130,7 +130,7 @@ void runtime_error(string error, int caught, mixed **trace)
 {
 	int atom;
 	int i;
-	
+
 	string *cerrstrs;
 
 	string compstr;
@@ -138,14 +138,14 @@ void runtime_error(string error, int caught, mixed **trace)
 	string tracestr;
 
 	ACCESS_CHECK(previous_program() == DRIVER);
-	
+
 	catch {
 		if (error[0] == '(') {
 			mapping thrown;
 			/* gift package thrown by atomic error */
-	
+
 			thrown = "~Kotaka/sys/parse/value"->parse(error);
-	
+
 			error = thrown["errstr"];
 			atom = thrown["atom"];
 			tracestr = thrown["tracestr"];
@@ -159,15 +159,15 @@ void runtime_error(string error, int caught, mixed **trace)
 			
 			for (i = 0; i < sizeof(comperr); i++) {
 				mixed *cframe;
-	
+
 				cframe = comperr[i];
-	
+
 				cerrstrs[i] =
 					cframe[0] + ", " +
 					cframe[1] + ": " + cframe[2];
 			}
 			comperr = nil;
-		
+
 			compstr = implode(cerrstrs, "\n");
 		}
 
@@ -184,7 +184,7 @@ void runtime_error(string error, int caught, mixed **trace)
 		if (!tracestr) {
 			tracestr = printstack(trace);
 		}
-	
+
 		if (compstr) {
 			LOGD->post_message("compile", LOG_INFO, compstr);
 		}
@@ -192,7 +192,7 @@ void runtime_error(string error, int caught, mixed **trace)
 		LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
 	} : {
 		disable();
-		
+
 		LOGD->post_message("system", LOG_CRIT, "Error in error manager, error manager disabled.");
 	}
 }
@@ -209,7 +209,7 @@ void atomic_error(string error, int atom, mixed **trace)
 {
 	string throwstr;
 	mapping throwme;
-	
+
 	ACCESS_CHECK(previous_program() == DRIVER);
 
 	throwme = ([ ]);
@@ -228,7 +228,7 @@ void atomic_error(string error, int atom, mixed **trace)
 void compile_error(string file, int line, string err)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
-	
+
 	if (!comperr) {
 		comperr = ({ });
 	}

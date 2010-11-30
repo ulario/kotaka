@@ -52,35 +52,35 @@ private void schedule()
 void set_target(string facility, int mask, string target_info)
 {
 	ACCESS_CHECK(SYSTEM() || KADMIN());
-	
+
 	CHECKARG(facility, 1, "set_target");
 	CHECKARG(facility != "", 1, "set_target");
 	CHECKARG(mask >= 0, 2, "set_target");
 	CHECKARG(mask <= 255, 2, "set_target");
 	CHECKARG(target_info, 3, "set_target");
 	CHECKARG(target_info != "", 3, "set_target");
-	
+
 	if (mask) {
 		mapping targets;
-		
+
 		targets = facilities[facility];
-		
+
 		if (!targets) {
 			facilities[facility] = targets = ([ ]);
 		}
-		
+
 		targets[target_info] = mask;
 	} else {
 		mapping targets;
-		
+
 		targets = facilities[facility];
-		
+
 		if (!targets) {
 			return;
 		}
-		
+
 		targets[target_info] = nil;
-		
+
 		if (!map_sizeof(targets)) {
 			facilities[facility] = nil;
 		}
@@ -91,13 +91,13 @@ private string timestamp()
 {
 	int sec;
 	int msec;
-	
+
 	string str_sec;
 	string str_msec;
 	string str_date;
 	mixed *mtime;
 	string timestamp;
-	
+
 	mtime = millitime();
 	sec = mtime[0];
 	msec = (int)(mtime[1] * 1000.0);
@@ -105,7 +105,7 @@ private string timestamp()
 	str_sec = str_sec[strlen(str_sec) - 10 ..];
 	str_msec = "00" + msec;
 	str_msec = str_msec[strlen(str_msec) - 3 ..];
-	
+
 	return "[" + str_sec + "." + str_msec + "]";
 }
 
@@ -115,26 +115,26 @@ private void write_logfile(string file, string message)
 	int sz;
 	string *lines;
 	object deque;
-	
+
 	lines = explode("\n" + message + "\n", "\n");
-	
+
 	sz = sizeof(lines);
-	
+
 	if (!filebufs) {
 		filebufs = ([ ]);
 	}
-	
+
 	deque = filebufs[file];
-	
+
 	if (!deque) {
 		deque = new_object(BIGSTRUCT_DEQUE_LWO);
 		filebufs[file] = deque;
 	}
-	
+
 	for (i = 0; i < sz; i++) {
 		deque->push_back(timestamp + " " + lines[i] + "\n");
 	}
-	
+
 	schedule();
 }
 
@@ -143,21 +143,21 @@ void flush()
 	string *files;
 	object *text_deques;
 	int i;
-	
+
 	callout = -1;
-	
+
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
-	
+
 	rlimits(0; -1) {
 		files = map_indices(filebufs);
 		text_deques = map_values(filebufs);
-	
+
 		for (i = sizeof(files) - 1; i >= 0; i--) {
 			catch {
 				object deque;
-			
+
 				deque = text_deques[i];
-			
+
 				while (!deque->empty()) {
 					string text;
 					text = deque->get_front();
@@ -169,7 +169,7 @@ void flush()
 			}
 		}
 	}
-	
+
 	filebufs = ([ ]);
 }
 
@@ -177,17 +177,17 @@ private void send_to_target(string target, string header, string message)
 {
 	string prefix, info;
 	string *lines;
-	
+
 	sscanf(target, "%s:%s", prefix, info);
-	
+
 	if (!prefix) {
 		ASSERT(!info);
 		prefix = target;
 	}
-	
+
 	lines = explode(message, "\n");
 	message = header + ": " + implode(lines, "\n" + header + ": ");
-	
+
 	switch(prefix) {
 	case "null":
 		break;
@@ -221,19 +221,19 @@ private void send_to_target(string target, string header, string message)
 			}
 		}
 		break;
-	
+
 	case "kwizards":
 		{
 			string *kwizards;
 			object *users;
 			int i;
 			int sz;
-			
+
 			kwizards = KERNELD->query_users();
 			users = users();
-			
+
 			sz = sizeof(users);
-			
+
 			for (i = 0; i < sz; i++) {
 				if (
 					sizeof(
@@ -290,7 +290,7 @@ void post_message(string facility, int priority, string message)
 {
 	string creator;
 	mapping hits;
-	
+
 	ACCESS_CHECK(PRIVILEGED());
 
 	CHECKARG(facility, 1, "post_message");

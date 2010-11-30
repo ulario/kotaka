@@ -14,29 +14,29 @@ void extinguish(string path)
 static void purge(string path, int quota)
 {
 	int max;
-	
+
 	max = (int)sqrt((float)quota);
-	
+
 	if (quota % max != 0) {
 		max = quota % max;
 	}
-	
+
 	if (max > quota) {
 		max = quota;
 	}
-	
+
 	for (; quota > 0 && max > 0; quota--, max--) {
 		object obj;
-		
+
 		obj = find_object(path + "#" + quota);
-		
+
 		if (obj) {
 			destruct_object(obj);
 		}
 	}
 
 	LOGD->post_message("test", LOG_INFO, quota + " objects to check.");
-	
+
 	if (quota > 0) {
 		call_out("purge", 0, path, quota);
 	}

@@ -9,7 +9,7 @@ TODO:  Track all bigstruct objects
 object new_bigstruct(string type)
 {
 	object bigstruct;
-	
+
 	switch (type) {
 	case "array":
 		bigstruct = clone_object(BIGSTRUCT_ARRAY_OBJ);
@@ -21,10 +21,10 @@ object new_bigstruct(string type)
 		bigstruct = clone_object(BIGSTRUCT_MAP_OBJ);
 		break;
 	}
-	
+
 	bigstruct->grant_access(previous_object(), FULL_ACCESS);
 	bigstruct->grant_access(this_object(), 0);
-	
+
 	return bigstruct;
 }
 
