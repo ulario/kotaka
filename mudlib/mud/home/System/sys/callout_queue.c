@@ -157,7 +157,7 @@ mixed *release()
 		begin &= 0x0FFFFFFF;
 		
 		if (!callout) {
-			continue;
+			return ({ nil, -1 });
 		}
 		
 		oindex = object_index(callout[0]);

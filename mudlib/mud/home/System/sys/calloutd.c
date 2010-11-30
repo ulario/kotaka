@@ -176,8 +176,10 @@ static void release()
 		obj = callout[CO_OBJ];
 		handle = callout[CO_HANDLE];
 
-		catch {
-			RSRCD->release_callout(obj, handle);
+		if (obj) {
+			catch {
+				RSRCD->release_callout(obj, handle);
+			}
 		}
 		statcheck();
 	} else {
