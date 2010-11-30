@@ -7,7 +7,7 @@
 object cmap;	/* ([ oindex : ([ handle : iterator ]) ]) */
 object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
 int begin, end;
-int callouts;
+int callouts, holes;
 
 static void create()
 {
@@ -17,8 +17,7 @@ static void create()
 	cmap->set_size(0x7FFFFFFF);
 	cqueue->set_size(0x10000000);
 	
-	begin = end = 0;
-	callouts = 0;
+	begin = end = callouts = holes = 0;
 }
 
 private int object_index(object obj)
@@ -44,6 +43,13 @@ int callouts()
 	ACCESS_CHECK(SYSTEM());
 	
 	return callouts;
+}
+
+int holes()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	return holes;
 }
 
 void suspend(object obj, int handle)
@@ -97,6 +103,7 @@ int remove_callout(object obj, int handle)
 	}
 	
 	callouts--;
+	holes++;
 	
 	return TRUE;
 }
@@ -132,6 +139,7 @@ int remove_callouts(object obj)
 	}
 	
 	callouts -= osz;
+	holes += osz;
 	
 	return osz;
 }
@@ -157,6 +165,7 @@ mixed *release()
 		begin &= 0x0FFFFFFF;
 		
 		if (!callout) {
+			holes--;
 			return ({ nil, -1 });
 		}
 		
