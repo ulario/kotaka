@@ -131,7 +131,7 @@ int remove_callouts(object obj)
 		cqueue->set_element(qindices[sz], nil);
 	}
 	
-	callouts -= sz;
+	callouts -= osz;
 	
 	return osz;
 }
