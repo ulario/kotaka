@@ -1,13 +1,8 @@
 #include <kernel/user.h>
-
 #include <kotaka/paths.h>
 
 inherit SECOND_AUTO;
 inherit LIB_USER;
-
-static void create()
-{
-}
 
 /* hook defaults for LIB_USER */
 int login(string str)

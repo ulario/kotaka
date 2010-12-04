@@ -3,17 +3,10 @@
 inherit SECOND_AUTO;
 inherit LIB_MANAGER;
 
-string default_message;
-
-static void create()
-{
-	default_message = "Internal error: no connection manager\n";
-}
-
 /* hook defaults for LIB_MANAGER */
 string query_banner(object dummy)
 {
-	return default_message;
+	return "Internal error: no connection manager\n";
 }
 
 int query_timeout(object dummy)
