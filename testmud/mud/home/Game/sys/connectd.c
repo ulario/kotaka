@@ -3,6 +3,7 @@
 #include <kotaka/assert.h>
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
+#include <kotaka/privilege.h>
 
 #include <status.h>
 
@@ -92,6 +93,7 @@ int query_timeout(object LIB_CONN connection)
 	}
 	
 	if (level == 0) {
+		connections[connection] = 1;
 		connection(connection);
 		::set_mode(MODE_RAW);
 		redirect(select(nil), nil);
@@ -104,6 +106,7 @@ object select(string str)
 {
 	int level;
 	object base_conn;
+	object user;
 	string basename;
 
 	base_conn = previous_object(2);
@@ -122,14 +125,35 @@ object select(string str)
 	switch(basename) {
 	case BINARY_CONN:
 		switch(level) {
-		case 0: return clone_object("~System/obj/filter/rlimits");
-		case 1: return clone_object("~Game/obj/filter/telnet");
-		case 2: return clone_object("~Game/obj/user");
+		case 0:
+			return clone_object("~System/obj/filter/rlimits");
+		case 1:
+			return clone_object("~Game/obj/filter/telnet");
+		case 2:
+			user = clone_object("~Game/obj/user");
+			users[user] = 1;
+			return user;
 		}
 	case TELNET_CONN:
 		switch(level) {
-		case 0: return clone_object("~System/obj/filter/rlimits");
-		case 1: return clone_object("~Game/obj/user");
+		case 0:
+			return clone_object("~System/obj/filter/rlimits");
+		case 1:
+			user = clone_object("~Game/obj/user");
+			users[user] = 1;
+			return user;
 		}
 	}
+}
+
+object *query_connections()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	return map_indices(connections);
+}
+
+object *query_users()
+{
+	return map_indices(users);
 }
