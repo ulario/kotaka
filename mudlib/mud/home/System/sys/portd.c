@@ -23,6 +23,10 @@ inherit user LIB_USER;
 /* Number of user slots to keep spare for the Klib emergency login port */
 #define SPARE_USERS		5
 
+#define CINFO_TYPE	0	/* binary, telnet */
+#define CINFO_LPORT	1	/* logical port */
+#define CINFO_PPORT	2	/* physical port */
+
 /*************/
 /* Variables */
 /*************/
@@ -30,6 +34,8 @@ inherit user LIB_USER;
 mapping telnet_managers;	/* managers assigned to logical telnet ports */
 mapping binary_managers;	/* managers assigned to logical binary ports */
 mapping fixed_managers;		/* managers assigned to physical ports */
+
+mapping connections;		/* ([ connection : ({ type, lport, pport }) ]) */
 
 int enabled;		/*< active or not */
 int binary_port_count;	/*< number of ports currently registered */
@@ -55,6 +61,7 @@ int free_users();
 void block_connections();
 void unblock_connections();
 int query_connection_count();
+private atomic object query_select(string str, object conn);
 private void register_with_klib_userd();
 private void unregister_with_klib_userd();
 
@@ -69,6 +76,8 @@ static void create()
 	telnet_managers = ([ ]);
 	fixed_managers = ([ ]);
 
+	connections = ([ ]);
+
 	reblocked = ([ ]);
 }
 
@@ -77,7 +86,7 @@ static void create()
 void enable()
 {
 	ACCESS_CHECK(SYSTEM() || KADMIN());
-	
+
 	register_with_klib_userd();
 	enabled = 1;
 }
@@ -85,7 +94,7 @@ void enable()
 void disable()
 {
 	ACCESS_CHECK(SYSTEM() || KADMIN());
-	
+
 	enabled = 0;
 	unregister_with_klib_userd();
 }
@@ -113,7 +122,7 @@ void block_connections()
 		object conn;
 
 		conn = conns[index];
-			
+
 		/* don't interfere with the failsafe */
 		if (conn->query_user() <- "/kernel/obj/user") {
 			continue;
@@ -133,7 +142,7 @@ void unblock_connections()
 	int index;
 
 	ACCESS_CHECK(SYSTEM() || KADMIN());
-	
+
 	if (blocked == 0) {
 		error("Connections not blocked");
 	}
@@ -215,49 +224,94 @@ void bogus_reboot()
 	register_with_klib_userd();
 }
 
-private object LIB_MANAGER manager_of(object LIB_CONN connection)
+private void analyze_connection(object LIB_CONN connection)
 {
-	object cinfo;
-	object manager;
+	string path;
+	mixed *cinfo;
 	int lport;
 	
-	mapping checkme;
+	if (connections[connection]) {
+		error("Duplicate analysis of connection");
+	}
 	
-	cinfo = new_object(LWO_CINFO);
-	cinfo->investigate(connection);
+	path = object_name(connection);
+	sscanf(path, "%s#%*d", path);
 	
-	switch(cinfo->query_conn_type()) {
-	case "binary":
-		checkme = binary_managers;
+	switch(path) {
+	case TELNET_CONN:
+		lport = connection->query_port();
+		cinfo = ({ "telnet", lport, status()[ST_TELNETPORTS][lport] });
 		break;
+
+	case BINARY_CONN:
+		lport = connection->query_port();
+		cinfo = ({ "binary", lport, status()[ST_BINARYPORTS][lport] });
+		break;
+
+	default:
+		error("Unrecognized connection type: " + path);
+	}
+
+	connections[connection] = cinfo;
+}
+
+private object LIB_MANAGER manager_of(object LIB_CONN connection)
+{
+	mixed *cinfo;
+	mapping checkme;
+	object manager;
+
+	cinfo = connections[connection];
+	switch(cinfo[CINFO_TYPE]) {
 	case "telnet":
 		checkme = telnet_managers;
 		break;
+
+	case "binary":
+		checkme = binary_managers;
+		break;
+
 	default:
-		error("Unexpected connection type: " + cinfo->query_conn_type());
+		error("Unexpected connection type");
 	}
-	
-	manager = checkme[cinfo->query_logical_port()];
-	
+
+	manager = checkme[cinfo[CINFO_LPORT]];
+
 	if (!manager) {
-		manager = fixed_managers[cinfo->query_physical_port()];
+		manager = fixed_managers[cinfo[CINFO_PPORT]];
 	}
-	
+
 	if (!manager) {
 		manager = find_object(DEFAULT_MANAGER);
 	}
-	
+
 	return manager;
 }
 
-string query_banner(object LIB_CONN connection)
+atomic string query_banner(object LIB_CONN connection)
 {
+	object base_conn;
+	int level;
 	object manager;
-	
+
 	ACCESS_CHECK(KERNEL());
-	
-	manager = manager_of(connection);
-	
+
+	base_conn = connection;
+
+	while (base_conn && base_conn <- LIB_USER) {
+		base_conn = base_conn->query_conn();
+		level++;
+
+		if (level > 10) {
+			error("Connection chain length overflow");
+		}
+	}
+
+	if (!connections[base_conn]) {
+		analyze_connection(base_conn);
+	}
+	manager = manager_of(base_conn);
+
 	catch {
 		if (free_users() < SPARE_USERS) {
 			return manager->query_overload_message(connection);
@@ -271,52 +325,82 @@ string query_banner(object LIB_CONN connection)
 	}
 }
 
-int query_timeout(object LIB_CONN connection)
+atomic int query_timeout(object LIB_CONN connection)
 {
+	object base_conn;
+	int level;
 	object manager;
-	
+
 	ACCESS_CHECK(KERNEL());
-	
+
 	if (free_users() < SPARE_USERS || blocked) {
 		return -1;
 	}
-	
-	manager = manager_of(connection);
+
+	base_conn = connection;
+
+	while (base_conn && base_conn <- LIB_USER) {
+		base_conn = base_conn->query_conn();
+		level++;
+
+		if (level > 10) {
+			error("Connection chain length overflow");
+		}
+	}
+
+	manager = manager_of(base_conn);
 
 	catch {
 		int timeout;
-		
+
 		timeout = manager->query_timeout(connection);
-		
+
 		if (timeout == 0) {
 			connection(connection);
-			redirect(manager->select(nil), nil);
+			redirect(query_select(nil, connection), nil);
 		}
 	} : {
 		return -1;
 	}
 }
 
-object select(string str)
+atomic object select(string str)
 {
-	object user;
-	
 	ACCESS_CHECK(KERNEL());
 	
-	catch {
-		user = manager_of(previous_object(1))->select(str);
-
-		if (user) {
-			return user;
-		}
-	}
-	
-	return find_object(SYSTEM_DEFAULT_USER);
+	return query_select(str, previous_object(1)->query_conn());
 }
 
 /********************/
 /* Helper Functions */
 /********************/
+
+private atomic object query_select(string str, object conn)
+{
+	object base_conn;
+	int level;
+	object manager;
+	object user;
+
+	base_conn = conn;
+
+	while (base_conn && base_conn <- LIB_USER) {
+		base_conn = base_conn->query_conn();
+		level++;
+
+		if (level > 10) {
+			error("Connection chain length overflow");
+		}
+	}
+
+	manager = manager_of(base_conn);
+
+	if (manager) {
+		user = manager->select(str);
+	}
+
+	return user ? user : find_object(SYSTEM_DEFAULT_USER);
+}
 
 private void register_with_klib_userd()
 {
@@ -357,7 +441,7 @@ private void unregister_with_klib_userd()
 	for (index = 0; index < binary_port_count; index++) {
 		USERD->set_binary_manager(index, nil);
 	}
-	
+
 	telnet_port_count = 0;
 	binary_port_count = 0;
 }
