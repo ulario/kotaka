@@ -61,7 +61,7 @@ int login(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	atomic_login(str, previous_object());
+	return atomic_login(str, previous_object());
 }
 
 void logout(int quit)
@@ -75,14 +75,14 @@ int receive_message(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	atomic_receive_message(str);
+	return atomic_receive_message(str);
 }
 
 int message_done()
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	atomic_message_done();
+	return atomic_message_done();
 }
 
 void open_datagram()
