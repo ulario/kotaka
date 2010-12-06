@@ -17,11 +17,18 @@
 inherit SECOND_AUTO;
 
 int suspend;			/* callouts suspended */
-int last_notify;		/* co count at which we last reported */
+
+int lrc;			/* last reported callout count */
+int lrh;			/* last reported hole count */
+
 object queue;
 
 int releases;			/* current number of release callouts */
 int max_releases;		/* maximum number of release callouts */
+
+private int bypass(object obj);
+
+/* private */
 
 static void create()
 {
@@ -31,52 +38,6 @@ static void create()
 	catch {
 		RSRCD->set_suspension_manager(this_object());
 	}
-}
-
-private void statcheck()
-{
-	int callouts;
-
-	callouts = queue->callouts();
-
-	if (callouts % 1000 == 0 && last_notify != callouts) {
-		last_notify = callouts;
-		LOGD->post_message("system", LOG_INFO, callouts / 1000 + "k callouts suspended");
-	}
-}
-
-static void resume()
-{
-	RSRCD->release_callouts();
-}
-
-atomic void hold_callouts(float delay)
-{
-	RSRCD->suspend_callouts();
-
-	call_out("resume", delay);
-}
-
-void suspend_callouts()
-{
-	if (previous_program() == RSRCD) {
-		LOGD->post_message("system", LOG_INFO, "Suspending callouts");
-
-		suspend = -1;
-	} else {
-		RSRCD->suspend_callouts();
-	}
-}
-
-void set_max_releases(int new_max)
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN());
-
-	if (new_max < 1) {
-		error("Invalid argument");
-	}
-
-	max_releases = new_max;
 }
 
 private void charge_release()
@@ -91,35 +52,57 @@ private void charge_release()
 	}
 }
 
-void release_callouts()
+/* public */
+
+private void statcheck()
 {
-	if (previous_program() == RSRCD) {
-		LOGD->post_message("system", LOG_INFO, "Releasing callouts");
+	int callouts;
+	int holes;
 
-		if (queue->empty()) {
-			suspend = 0;
-			LOGD->post_message("system", LOG_INFO, "Released callouts");
-		} else {
-			suspend = 1;
+	callouts = queue->callouts();
 
-			charge_release();
-		}
-	} else {
-		RSRCD->release_callouts();
+	if (callouts % 1000 == 0 && lrc != callouts) {
+		lrc = callouts;
+		LOGD->post_message("system", LOG_INFO, callouts / 1000 + "k callouts suspended");
+	}
+
+	holes = queue->holes();
+
+	if (holes % 1000 == 0 && lrh != holes) {
+		lrh = holes;
+		LOGD->post_message("system", LOG_INFO, holes / 1000 + "k holes in queue");
 	}
 }
 
-private int bypass(object obj)
+atomic void hold_callouts(mixed delay)
 {
-	if (obj == this_object()) {
-		return 1;
+	RSRCD->suspend_callouts();
+
+	call_out("release_callouts", delay);
+}
+
+void set_max_releases(int new_max)
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
+	if (new_max < 1) {
+		error("Invalid argument");
 	}
 
-	if (sscanf(object_name(obj), USR_DIR + "/Game/obj/ustate/status#%*d")) {
-		return 1;
-	}
+	max_releases = new_max;
+}
 
-	return DRIVER->creator(object_name(obj)) == "System";
+/* rsrcd hooks */
+
+void suspend_callouts()
+{
+	if (previous_program() == RSRCD) {
+		LOGD->post_message("system", LOG_INFO, "Suspending callouts");
+
+		suspend = -1;
+	} else {
+		RSRCD->suspend_callouts();
+	}
 }
 
 void suspend(object obj, int handle)
@@ -162,6 +145,25 @@ void remove_callouts(object obj)
 	statcheck();
 }
 
+void release_callouts()
+{
+	if (previous_program() == RSRCD) {
+		LOGD->post_message("system", LOG_INFO, "Releasing callouts");
+
+		if (queue->empty()) {
+			suspend = 0;
+			LOGD->post_message("system", LOG_INFO, "Released callouts");
+		} else {
+			suspend = 1;
+			charge_release();
+		}
+	} else {
+		RSRCD->release_callouts();
+	}
+}
+
+/* internal */
+
 static void release()
 {
 	mixed *callout;
@@ -202,4 +204,17 @@ static void release()
 		charge_release();
 		break;
 	}
+}
+
+private int bypass(object obj)
+{
+	if (obj == this_object()) {
+		return 1;
+	}
+
+	if (sscanf(object_name(obj), USR_DIR + "/Game/obj/ustate/status#%*d")) {
+		return 1;
+	}
+
+	return DRIVER->creator(object_name(obj)) == "System";
 }
