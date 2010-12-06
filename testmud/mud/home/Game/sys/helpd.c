@@ -4,26 +4,17 @@
 
 inherit "~Kotaka/lib/helpd";
 
-object queue;
-
 void load();
 
 static void create()
 {
 	::create();
 	
-	queue = new_object(BIGSTRUCT_DEQUE_LWO);
-	
 	load();
-	
-	LOGD->post_message("help", LOG_INFO,
-		STRINGD->tree_sprint(indexes_of("foo/bar/baz"))
-	);
 }
 
 static void destruct()
 {
-	destruct_object(queue);
 	::destruct();
 }
 
