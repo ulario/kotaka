@@ -63,14 +63,14 @@ private void statcheck()
 
 	if (callouts % 1000 == 0 && lrc != callouts) {
 		lrc = callouts;
-		LOGD->post_message("system", LOG_INFO, callouts / 1000 + "k callouts suspended");
+		LOGD->post_message("system", LOG_INFO, "callouts: " + callouts / 1000 + "k suspended");
 	}
 
 	holes = queue->holes();
 
 	if (holes % 1000 == 0 && lrh != holes) {
 		lrh = holes;
-		LOGD->post_message("system", LOG_INFO, holes / 1000 + "k holes in queue");
+		LOGD->post_message("system", LOG_INFO, "callouts: " + holes / 1000 + "k holes");
 	}
 }
 
@@ -170,6 +170,7 @@ static void release()
 	object obj;
 	int handle;
 	int callouts;
+	int holes;
 
 	releases--;
 	callout = queue->release();
@@ -197,6 +198,10 @@ static void release()
 
 		if (callouts = queue->callouts() != 0) {
 			error(callouts + " callouts unaccounted for");
+		}
+
+		if (holes = queue->holes() != 0) {
+			error(holes + " holes unaccounted for");
 		}
 
 		break;
