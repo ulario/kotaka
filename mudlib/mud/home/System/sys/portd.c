@@ -310,7 +310,7 @@ atomic string query_banner(object LIB_CONN connection)
 	manager = manager_of(base_conn);
 
 	if (!manager) {
-		return "Internal error:  No connection manager.\n"
+		return "Internal error:  No connection manager.\n";
 	}
 
 	catch {
