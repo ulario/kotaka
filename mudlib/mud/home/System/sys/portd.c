@@ -105,7 +105,7 @@ void block_connections()
 	int index;
 
 	ACCESS_CHECK(SYSTEM() || KADMIN());
-	
+
 	if (blocked) {
 		blocked++;
 		return;
@@ -213,7 +213,7 @@ void set_fixed_manager(int port, object LIB_MANAGER manager)
 void prepare_reboot()
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	unregister_with_klib_userd();
 }
 
@@ -229,14 +229,14 @@ private void analyze_connection(object LIB_CONN connection)
 	string path;
 	mixed *cinfo;
 	int lport;
-	
+
 	if (connections[connection]) {
 		error("Duplicate analysis of connection");
 	}
-	
+
 	path = object_name(connection);
 	sscanf(path, "%s#%*d", path);
-	
+
 	switch(path) {
 	case TELNET_CONN:
 		lport = connection->query_port();
@@ -281,10 +281,6 @@ private object LIB_MANAGER manager_of(object LIB_CONN connection)
 		manager = fixed_managers[cinfo[CINFO_PPORT]];
 	}
 
-	if (!manager) {
-		manager = find_object(DEFAULT_MANAGER);
-	}
-
 	return manager;
 }
 
@@ -310,7 +306,12 @@ atomic string query_banner(object LIB_CONN connection)
 	if (!connections[base_conn]) {
 		analyze_connection(base_conn);
 	}
+
 	manager = manager_of(base_conn);
+
+	if (!manager) {
+		return "Internal error:  No connection manager.\n"
+	}
 
 	catch {
 		if (free_users() < SPARE_USERS) {
@@ -350,6 +351,10 @@ atomic int query_timeout(object LIB_CONN connection)
 
 	manager = manager_of(base_conn);
 
+	if (!manager) {
+		return -1;
+	}
+
 	catch {
 		int timeout;
 
@@ -367,8 +372,14 @@ atomic int query_timeout(object LIB_CONN connection)
 atomic object select(string str)
 {
 	ACCESS_CHECK(KERNEL());
-	
-	return query_select(str, previous_object(1)->query_conn());
+
+	return query_select(str, previous_object(1));
+}
+
+int login(string str)
+{
+	previous_object()->message("Internal error: connection manager fault\n");
+	return MODE_DISCONNECT;
 }
 
 /********************/
@@ -399,7 +410,7 @@ private atomic object query_select(string str, object conn)
 		user = manager->select(str);
 	}
 
-	return user ? user : find_object(SYSTEM_DEFAULT_USER);
+	return user ? user : this_object();
 }
 
 private void register_with_klib_userd()
