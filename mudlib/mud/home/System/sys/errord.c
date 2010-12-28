@@ -188,6 +188,7 @@ void runtime_error(string error, int caught, mixed **trace)
 		if (compstr) {
 			LOGD->post_message("compile", LOG_INFO, compstr);
 		}
+
 		LOGD->post_message("error", caught ? LOG_NOTICE : LOG_ERR, errstr);
 		LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
 	} : {

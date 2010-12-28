@@ -280,6 +280,7 @@ private void configure_logging()
 		LOG_EMERG | LOG_CRIT | LOG_ALERT,
 		"kadmins"
 	);
+
 	LOGD->set_target("system",
 		LOG_EMERG | LOG_CRIT | LOG_ALERT | LOG_ERR | LOG_WARNING,
 		"kadmins"
