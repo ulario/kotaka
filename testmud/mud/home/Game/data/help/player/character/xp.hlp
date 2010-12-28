@@ -11,19 +11,19 @@ The experience points held by a character are divided into several pools:
 
 Invested
 
-	The investment pool contains all of the XP that was initially
-	invested in the character when it was created.
+	The Invested pool contains all of the XP that was initially
+	invested in the character when it was created.  This is 5 XP for
+	creating the character in addition to the character's XP value.
 
-	Be wary not to retire a character too soon, as any XP remaining
-	in this pool is forfeited upon retirement.
+	Invested XP is forfeited if your character is retired.
 
 Acquired
 
 	Acquired XP is XP your character gains from combat, as well as
 	any skills your character acquires in play.
-	
+
 	The amount of XP in the Acquired pool is capped at the level of
-	the Earned pool.  Any overflow XP is forfeited.
+	the Earned pool.  Any overflow XP is discarded.
 
 	If your character dies, it leaves its Acquired XP behind in its
 	body.  This XP is restored if the body is reunited with its
@@ -33,11 +33,11 @@ Acquired
 Earned
 
 	Earned XP contains all XP that your character has earned.
-	
-	Every 4 hours of gameplay with a given character earns 1 XP to
+
+	Every hour of gameplay with a given character earns 1 XP to
 	be absorbed from one of the other two pools.
-	
+
 	Invested XP is absorbed first, followed by Acquired XP.
-	
+
 	Only Earned XP is recovered when your character is retired.  Any
 	unearned XP remaining in either pool is forfeited.
