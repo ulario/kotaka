@@ -24,7 +24,7 @@ static void create()
 	user::create();
 
 	connections = ([ ]);
-	interval = 10.0;
+	interval = 0.0;
 	schedule();
 }
 
@@ -39,14 +39,14 @@ void disable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	PORTD->set_telnet_manager(1, nil);
+	PORTD->set_fixed_manager(6048, nil);
 }
 
 void enable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	PORTD->set_telnet_manager(1, this_object());
+	PORTD->set_fixed_manager(6048, this_object());
 }
 
 private float swap_used_ratio()
@@ -60,7 +60,11 @@ private void schedule()
 		remove_call_out(callout);
 	}
 	
-	callout = call_out("report", interval);
+	if (interval > 0.0) {
+		callout = call_out("report", interval);
+	} else {
+		callout = 0;
+	}
 }
 
 mixed message(string msg)
@@ -118,26 +122,32 @@ private void prompt(object conn)
 
 int login(string str)
 {
-	object conn;
+	object base_conn, conn;
+
 	int trusted;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
-	
+
 	ASSERT(str == nil);
-	
+
 	conn = previous_object();
-	
-	trusted = query_ip_number(conn) == "127.0.0.1";
-	
+	base_conn = conn;
+
+	while (base_conn && base_conn <- LIB_USER) {
+		base_conn = base_conn->query_conn();
+	}
+
+	trusted = query_ip_number(base_conn) == "127.0.0.1";
+
 	connections[conn] = ({
 		trusted ? 0.05 : 15.0,
 		trusted,
 		call_out("report", 0, conn)
 	});
-	
+
 	redraw(conn);
 	prompt(conn);
-	
+
 	return MODE_NOCHANGE;
 }
 
@@ -156,9 +166,14 @@ int receive_message(string str)
 	string *params;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
-	
+
+	if (!str) {
+		catch(error("suspicious"));
+		return MODE_NOCHANGE;
+	}
+
 	conn = previous_object();
-	
+
 	params = explode(str, " ") - ({ "" });
 	
 	if (sizeof(params)) switch(params[0]) {
@@ -182,9 +197,9 @@ int receive_message(string str)
 				conn->message("Intervals less than 15 seconds\nare only allowed for local connections.\n");
 				break;
 			}
-			
+
 			remove_call_out(connections[conn][2]);
-			
+
 			connections[conn][0] = interval;
 			connections[conn][2] = call_out("report", interval, conn);
 		}
