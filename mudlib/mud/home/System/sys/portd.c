@@ -61,7 +61,7 @@ int free_users();
 void block_connections();
 void unblock_connections();
 int query_connection_count();
-private atomic object query_select(string str, object conn);
+private object query_select(string str, object conn);
 private void register_with_klib_userd();
 private void unregister_with_klib_userd();
 
@@ -284,7 +284,7 @@ private object LIB_MANAGER manager_of(object LIB_CONN connection)
 	return manager;
 }
 
-atomic string query_banner(object LIB_CONN connection)
+string query_banner(object LIB_CONN connection)
 {
 	object base_conn;
 	int level;
@@ -326,7 +326,7 @@ atomic string query_banner(object LIB_CONN connection)
 	}
 }
 
-atomic int query_timeout(object LIB_CONN connection)
+int query_timeout(object LIB_CONN connection)
 {
 	object base_conn;
 	int level;
@@ -369,7 +369,7 @@ atomic int query_timeout(object LIB_CONN connection)
 	}
 }
 
-atomic object select(string str)
+object select(string str)
 {
 	ACCESS_CHECK(KERNEL());
 
@@ -386,7 +386,7 @@ int login(string str)
 /* Helper Functions */
 /********************/
 
-private atomic object query_select(string str, object conn)
+private object query_select(string str, object conn)
 {
 	object base_conn;
 	int level;
