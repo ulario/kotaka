@@ -181,7 +181,7 @@ static void validate_base_id(string new_base)
 	if (!STRINGD->is_valid_base_id(new_base)) {
 		error("Bad base ID");
 	}
-	
+
 	switch(new_base) {
 	case "ENV":
 	case "THIS":
@@ -194,14 +194,14 @@ static void validate_base_id(string new_base)
 nomask string _F_query_id()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	return ID(base, number);
 }
 
 nomask string _F_query_id_base()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	return base;
 }
 
@@ -218,16 +218,16 @@ nomask int _F_query_lowest_free(string trial, object exclude)
 	object *inv;
 	int i;
 	int sz;
-	
+
 	ACCESS_CHECK(KOTAKA());
 
 	taken = ([ ]);
-	
+
 	inv = _F_query_inventory() - ({ exclude });
-	
+
 	for (i = 0; i < sizeof(inv); i++) {
 		object check;
-		
+
 		check = inv[i];
 		
 		if (check->_F_query_id_base() != trial) {
@@ -236,13 +236,13 @@ nomask int _F_query_lowest_free(string trial, object exclude)
 		
 		taken[check->_F_query_id_number()] = 1;
 	}
-	
+
 	i = 1;
-	
+
 	while(taken[i]) {
 		i++;
 	}
-	
+
 	return i;
 }
 
@@ -252,86 +252,87 @@ nomask object _F_find_by_id(string id)
 	int number;
 	int index;
 	object *inv;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	if (!sscanf(id, "%s#%d", base, number)) {
 		base = id;
 		number = 1;
 	}
-	
+
 	ASSERT(number > 0);
-	
+
 	if (base == "ENV") {
 		object env;
-		
+
 		env = this_object();
-		
+
 		for (index = 0; index < number; index++) {
 			if (!env) {
 				return nil;
 			}
+
 			env = env->_F_query_environment();
 		}
-		
+
 		return env;
 	}
-	
+
 	if (base == "THIS") {
 		if (number != 1) {
 			error("Bad ID");
 		}
+
 		return this_object();
 	}
-	
+
 	inv = _F_query_inventory();
-	
+
 	for(index = 0; index < sizeof(inv); index++) {
 		if (inv[index]->_F_query_id() == id) {
 			return inv[index];
 		}
 	}
-	
+
 	return nil;
 }
 
 nomask string _F_query_path(object root)
 {
 	string *parts;
-	
 	object cc;
 	object cursor;
 	int absolute;
 	int upcount;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	parts = ({ });
-	
+
 	cc = SUBD->query_common_container(this_object(), root);
-	
+
 	if (!cc) {
 		return nil;
 	}
-	
+
 	if (cc == this_object()) {
 		return "THIS";
 	}
-	
+
 	cursor = this_object();
-	
+
 	while (cursor != cc) {
 		parts = ({ cursor->_F_query_id() }) + parts;
 		cursor = cursor->_F_query_environment();
 	}
-	
+
 	cursor = root;
-	
+
 	while (cursor != cc) {
 		upcount++;
 		cursor = cursor->_F_query_environment();
 	}
-	
+
 	if (upcount) {
 		if (upcount > 1) {
 			parts = ({ "ENV#" + upcount }) + parts;
@@ -339,7 +340,7 @@ nomask string _F_query_path(object root)
 			parts = ({ "ENV" }) + parts;
 		}
 	}
-	
+
 	return implode(parts, ":");
 }
 
@@ -348,25 +349,25 @@ nomask object _F_locate_object(string path)
 	string *parts;
 	object step;
 	int index;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	parts = explode(path, ":") - ({ "" });
-	
+
 	step = this_object();
 
 	for(index = 0; index < sizeof(parts); index++) {
 		string part;
-		
+
 		if (!step) {
 			return nil;
 		}
 
 		part = parts[index];
-		
+
 		step = step->_F_find_by_id(part);
 	}
-	
+
 	return step;
 }
 
@@ -376,30 +377,30 @@ nomask void _F_set_id(string new_id)
 	string new_base;
 	int new_number;
 	string old_id;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	if (!sscanf(new_id, "%s#%d", new_base, new_number)) {
 		new_base = new_id;
 		new_number = 1;
 	}
-	
+
 	validate_base_id(new_base);
-	
+
 	new_id = ID(new_base, new_number);
-	
+
 	if (env = _F_query_environment()) {
 		object test;
-		
+
 		test = env->_F_find_by_id(new_id);
 
 		if (test && test != this_object()) {
 			error("Duplicate ID");
 		}
 	}
-	
+
 	old_id = ID(base, number);
-	
+
 	base = new_base;
 	number = new_number;
 }
@@ -435,17 +436,17 @@ nomask void _F_set_id_number(int new_number)
 	object other;
 	
 	ACCESS_CHECK(KOTAKA());
-	
+
 	env = _F_query_environment();
-	
+
 	if (env) {
 		other = env->_F_find_by_id(ID(base, new_number));
-		
+
 		if (other && other != this_object()) {
 			error("Duplicate ID");
 		}
 	}
-	
+
 	number = new_number;
 }
 
@@ -548,28 +549,28 @@ void remove_notify(object obj)
 nomask object _F_query_environment()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	return environment;
 }
 
 nomask object *_F_query_inventory()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	return map_indices(inventory);
 }
 
 nomask void _F_add_inventory(object arriving)
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	inventory[arriving] = 1;
 }
 
 nomask void _F_del_inventory(object departing)
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	inventory[departing] = nil;
 }
 
@@ -577,12 +578,12 @@ nomask int _F_is_container_of(object test)
 {
 	object env;
 	object this;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	this = this_object();
 	env = test->_F_query_environment();
-	
+
 	while (env) {
 		if (env == this) {
 			return 1;
@@ -590,7 +591,7 @@ nomask int _F_is_container_of(object test)
 
 		env = env->_F_query_environment();
 	}
-	
+
 	return 0;
 }
 
@@ -599,11 +600,11 @@ atomic nomask void _F_move(object new_env)
 	object this;
 	string base;
 	int new_number;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	CHECKARG(!new_env || new_env <- LIB_OBJECT, 1, "move");
-	
+
 	this = this_object();
 	
 	if (new_env) {

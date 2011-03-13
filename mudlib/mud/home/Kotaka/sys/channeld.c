@@ -130,7 +130,7 @@ effects, it is the caller's responsibility to enforce them.
 void set_channel_config(string channel, string key, mixed value)
 {
 	mapping config;
-	
+
 	ACCESS_CHECK(PRIVILEGED());
 
 	CHECKARG(channel, 1, "set_channel_config");
@@ -173,11 +173,11 @@ void subscribe_channel(string channel, object subscriber)
 	if (!channels[channel]) {
 		error("No such channel");
 	}
-	
+
 	if (!subscribers[channel]) {
 		subscribers[channel] = ([ ]);
 	}
-	
+
 	subscribers[channel][subscriber] = 1;
 }
 
@@ -192,13 +192,13 @@ void unsubscribe_user(string channel, object subscriber)
 	if (!channels[channel]) {
 		error("No such channel");
 	}
-	
+
 	if (!subscribers[channel]) {
 		return;
 	}
-	
+
 	subscribers[channel][subscriber] = nil;
-	
+
 	if (!map_sizeof(subscribers[channel])) {
 		subscribers[channel] = nil;
 	}
@@ -216,11 +216,11 @@ int is_subscribed(string channel, object user)
 	if (!channels[channel]) {
 		error("No such channel");
 	}
-	
+
 	if (!subscribers[channel]) {
 		return 0;
 	}
-	
+
 	return !!subscribers[channel][user];
 }
 
@@ -251,7 +251,7 @@ string *query_subscriptions(object subscriber)
 /* message management */
 /**********************/
 
-private string setcolor(int color)
+string setcolor(int color)
 {
 	if (color == -1) {
 		return "\033[0m";
@@ -262,21 +262,21 @@ private string setcolor(int color)
 	}
 }
 
-/** sends a message to a channel, optionally from a user */
-void post_message(string channel, string message)
+/* sends a message to a channel, optionally from a user */
+void post_message(string channel, string sender, string message)
 {
 	object *send_list;
-	
+
 	send_list = subscribers[channel];
-	
+
 	if (send_list) {
 		int sz;
 		int index;
-		
+
 		sz = sizeof(send_list);
-		
+
 		for (index = 0; index < sz; index++) {
-			send_list[index]->channel_message(message);
+			send_list[index]->channel_message(sender, message);
 		}
 	}
 }

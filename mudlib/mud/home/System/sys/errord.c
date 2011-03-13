@@ -138,6 +138,10 @@ void runtime_error(string error, int caught, mixed **trace)
 	string tracestr;
 
 	ACCESS_CHECK(previous_program() == DRIVER);
+	
+	if (!caught) {
+		shutdown();
+	}
 
 	catch {
 		if (error[0] == '(') {

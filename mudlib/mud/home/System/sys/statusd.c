@@ -39,14 +39,14 @@ void disable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	PORTD->set_fixed_manager(6048, nil);
+	PORTD->set_binary_manager(2, nil);
 }
 
 void enable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	PORTD->set_fixed_manager(6048, this_object());
+	PORTD->set_binary_manager(2, this_object());
 }
 
 private float swap_used_ratio()
@@ -137,7 +137,12 @@ int login(string str)
 		base_conn = base_conn->query_conn();
 	}
 
-	trusted = query_ip_number(base_conn) == "127.0.0.1";
+	switch(query_ip_number(base_conn)) {
+	case "::1":
+	case "127.0.0.1":
+		trusted = 1;
+		break;
+	}
 
 	connections[conn] = ({
 		trusted ? 0.05 : 15.0,

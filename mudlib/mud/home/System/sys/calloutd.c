@@ -3,6 +3,7 @@
 #include <kernel/rsrc.h>
 
 #include <kotaka/assert.h>
+#include <kotaka/bigstruct.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
@@ -22,6 +23,7 @@ int lrc;			/* last reported callout count */
 int lrh;			/* last reported hole count */
 
 object queue;
+object releasers;
 
 int releases;			/* current number of release callouts */
 int max_releases;		/* maximum number of release callouts */
@@ -33,26 +35,86 @@ private int bypass(object obj);
 static void create()
 {
 	queue = load_object("callout_queue");
-	max_releases = 500;
+	releasers = new_object(BIGSTRUCT_DEQUE_LWO);
+
+	max_releases = 2000000;
 
 	catch {
 		RSRCD->set_suspension_manager(this_object());
 	}
 }
 
-private void charge_release()
+private void wipe_releasers()
 {
-	int callouts;
+	while (!releasers->empty()) {
+		object releaser;
+		
+		releaser = releasers->get_front();
+		releasers->pop_front();
+		
+		if (releaser) {
+			destruct_object(releaser);
+		}
+	}
 
-	callouts = queue->callouts();
+	releases = 0;
+}
 
-	while(releases < max_releases && releases < callouts) {
-		call_out("release", 0);
-		releases++;
+private void charge_releasers()
+{
+	int needed;
+
+	needed = queue->callouts() + queue->holes() + 1;
+
+	if (needed > max_releases) {
+		needed = max_releases;
+	}
+
+	needed -= releases;
+
+	if (needed <= 0) {
+		return;
+	}
+
+	if (needed < 100) {
+		needed = 100;
+	}
+
+	while (needed > 0) {
+		int charges;
+		object releaser;
+
+		charges = needed;
+
+		if (charges > 500) {
+			charges = 500;
+		}
+
+		releaser = clone_object("~/obj/co_releaser");
+		releasers->push_back(releaser);
+
+		releaser->charge(charges);
+		releases += charges;
+		needed -= charges;
 	}
 }
 
 /* public */
+
+private int changed_enough(int new, int old)
+{
+	if (new == old)
+		return 0;
+
+	if (old < new)
+		old = new;
+
+	if (new == 0)
+		return 1;
+
+	if (new % (int)sqrt((float)old) == 0)
+		return 1;
+}
 
 private void statcheck()
 {
@@ -61,16 +123,16 @@ private void statcheck()
 
 	callouts = queue->callouts();
 
-	if (callouts % 1000 == 0 && lrc != callouts) {
+	if (changed_enough(callouts, lrc)) {
 		lrc = callouts;
-		LOGD->post_message("system", LOG_INFO, "callouts: " + callouts / 1000 + "k suspended");
+		LOGD->post_message("system", LOG_INFO, "callouts: " + callouts + " suspended");
 	}
 
 	holes = queue->holes();
 
-	if (holes % 1000 == 0 && lrh != holes) {
+	if (changed_enough(holes, lrh)) {
 		lrh = holes;
-		LOGD->post_message("system", LOG_INFO, "callouts: " + holes / 1000 + "k holes");
+		LOGD->post_message("system", LOG_INFO, "callouts: " + holes + " holes");
 	}
 }
 
@@ -100,6 +162,7 @@ void suspend_callouts()
 		LOGD->post_message("system", LOG_INFO, "Suspending callouts");
 
 		suspend = -1;
+		wipe_releasers();
 	} else {
 		RSRCD->suspend_callouts();
 	}
@@ -117,6 +180,10 @@ void suspend(object obj, int handle)
 	}
 
 	queue->suspend(obj, handle);
+
+	if (suspend == 1) {
+		charge_releasers();
+	}
 
 	statcheck();
 }
@@ -155,7 +222,7 @@ void release_callouts()
 			LOGD->post_message("system", LOG_INFO, "Released callouts");
 		} else {
 			suspend = 1;
-			charge_release();
+			charge_releasers();
 		}
 	} else {
 		RSRCD->release_callouts();
@@ -164,7 +231,7 @@ void release_callouts()
 
 /* internal */
 
-static void release()
+void release()
 {
 	mixed *callout;
 	object obj;
@@ -172,41 +239,51 @@ static void release()
 	int callouts;
 	int holes;
 
+	ACCESS_CHECK(SYSTEM());
+
 	releases--;
-	callout = queue->release();
-
-	if (callout) {
-		obj = callout[CO_OBJ];
-		handle = callout[CO_HANDLE];
-
-		if (obj) {
-			catch {
-				RSRCD->release_callout(obj, handle);
-			}
-		}
-		statcheck();
-	} else {
-		suspend = 0;
-	}
 
 	switch(suspend) {
-	case -1:
-		break;
-	case 0:
-		RSRCD->release_callout(nil, 0);
-		LOGD->post_message("system", LOG_INFO, "Released callouts");
+	case -1: /* suspended! */
+		LOGD->post_message("system", LOG_INFO, "calloutd: Release while suspended");
+		wipe_releasers();
+		return;
 
-		if (callouts = queue->callouts() != 0) {
-			error(callouts + " callouts unaccounted for");
+	case 0: /* idle! */
+		LOGD->post_message("system", LOG_INFO, "calloutd: Release while idle");
+		wipe_releasers();
+		return;
+
+	case 1: /* draining */
+		callout = queue->release();
+
+		if (callout) {
+			obj = callout[CO_OBJ];
+			handle = callout[CO_HANDLE];
+
+			if (obj) {
+				catch {
+					RSRCD->release_callout(obj, handle);
+				}
+			}
+
+			statcheck();
+		} else {
+			RSRCD->release_callout(nil, 0);
+			LOGD->post_message("system", LOG_INFO, "Released callouts");
+
+			suspend = 0;
+			wipe_releasers();
+
+			if (callouts = queue->callouts() != 0) {
+				error(callouts + " callouts unaccounted for");
+			}
+
+			if (holes = queue->holes() != 0) {
+				error(holes + " holes unaccounted for");
+			}
 		}
 
-		if (holes = queue->holes() != 0) {
-			error(holes + " holes unaccounted for");
-		}
-
-		break;
-	case 1:
-		charge_release();
 		break;
 	}
 }

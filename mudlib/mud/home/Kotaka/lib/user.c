@@ -373,7 +373,6 @@ nomask void _F_swap_state(object old, object new)
 		root = new;
 	}
 	
-	
 	boot_ustate(new);
 }
 
