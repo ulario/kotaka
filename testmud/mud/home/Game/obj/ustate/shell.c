@@ -14,7 +14,7 @@ int superuser;
 void exec(object new_shell)
 {
 	ACCESS_CHECK(GAME());
-	
+
 	swap_state(new_shell);
 }
 
@@ -34,6 +34,7 @@ private void prompt()
 		send_out(read_file("~/data/doc/guest_welcome"));
 		introed = 1;
 	}
+
 	send_out("[\033[1;31mU\033[33ml\033[32ma\033[36mr\033[34mi\033[35mo\033[0m] ");
 }
 

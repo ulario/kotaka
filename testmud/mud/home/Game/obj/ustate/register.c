@@ -65,7 +65,7 @@ static void go()
 static void end()
 {
 	send_out("End.\n");
-	
+
 	destruct_object(this_object());
 }
 
@@ -103,9 +103,13 @@ static void receive_in(string input)
 	} else if (!pw_confirmed) {
 		send_out("\n");
 		query_user()->set_mode(MODE_ECHO);
+
 		if (input == password) {
 			send_out("Congratulations, you have successfully tested\nthe character registration shell.\n");
-			pop_state();
+			
+			query_user()->set_uid(1337);
+			pop_ustate();
+
 			return;
 		} else {
 			password = nil;
@@ -114,7 +118,7 @@ static void receive_in(string input)
 	}
 
 	reading = 0;
-	
+
 	if (!stopped) {
 		prompt();
 	}

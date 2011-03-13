@@ -1,0 +1,2 @@
+#define TEST_CO_INTERVAL (30)
+#define TEST_CO_QUANTITY 100000

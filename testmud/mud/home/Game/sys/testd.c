@@ -1,5 +1,6 @@
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
+#include "~/test.h"
 
 #include <status.h>
 
@@ -7,9 +8,20 @@ static void create()
 {
 }
 
-void ignite()
+static void ignite()
 {
-	call_out("bomb", 0, 1000000);
+	call_out("bomb", 0, TEST_CO_QUANTITY);
+}
+
+static void suspend()
+{
+	LOGD->post_message("test", LOG_INFO, "Suspending callouts for " + (TEST_CO_INTERVAL + 10) + " seconds");
+
+	CALLOUTD->hold_callouts((float)(TEST_CO_INTERVAL + 10));
+	
+	LOGD->post_message("test", LOG_INFO, "Self destructing");
+	destruct_object("~/obj/bomb");
+	destruct_object(this_object());
 }
 
 static void bomb(int quota)
@@ -34,5 +46,7 @@ static void bomb(int quota)
 	
 	if (quota > 0) {
 		call_out("bomb", 0, quota);
+	} else {
+		suspend();
 	}
 }

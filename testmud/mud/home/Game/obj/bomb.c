@@ -3,6 +3,8 @@
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
 
+#include "~/test.h"
+
 static void create(int clone)
 {
 	if (clone) {
@@ -18,8 +20,8 @@ static void check()
 		destruct_object(this_object());
 		return;
 	}
-	
-	call_out("check", SUBD->rnd() * (float)status(ST_NOBJECTS) / 1000.0);
+
+	call_out("check", SUBD->rnd() * (float)TEST_CO_INTERVAL);
 }
 
 static void self_destruct()

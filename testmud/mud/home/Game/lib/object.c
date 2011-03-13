@@ -6,6 +6,20 @@ inherit LIB_OBJECT;
 /* General stuff */
 /*****************/
 
+static void create()
+{
+	string name;
+	string *parts;
+
+	name = object_name(this_object());
+
+	sscanf(name, "%s#%*d", name);
+
+	parts = explode(name, "/");
+
+	set_id_base(parts[sizeof(parts) - 1]);
+}
+
 static void destruct()
 {
 	int sz;

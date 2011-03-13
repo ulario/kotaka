@@ -69,21 +69,13 @@ static void receive_in(string input)
 		object shell;
 		object parent;
 		
-		send_out("Logged\n");
+		send_out("Logged in\n");
 		query_user()->set_mode(MODE_ECHO);
 		
 		uid = "~/sys/accountd"->username_to_uid(username);
 		
-		shell = clone_object("shell");
-		parent = query_parent();
-		
-		if (parent) {
-			send_out("Invoking new shell session\n");
-			parent->exec(shell);
-		} else {
-			send_out("Starting initial shell\n");
-			swap_state(shell);
-		}
+		query_user()->set_uid(uid);
+		pop_state();
 		return;
 	} else {
 		if (username_valid(input)) {

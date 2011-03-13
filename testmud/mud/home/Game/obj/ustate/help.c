@@ -50,6 +50,8 @@ static void do_help(string topic)
 	string *filtered_topics;
 	string *raw_topics;
 	
+	topic = STRINGD->replace(topic, " ", "_");
+	
 	raw_topics = GAME_HELPD->fetch_topics(topic);
 	filtered_topics = GAME_HELPD->filter_topics(raw_topics);
 	

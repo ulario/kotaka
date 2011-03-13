@@ -48,9 +48,11 @@ static void go()
 
 static void end()
 {
-	send_out("End.\n");
-	
 	destruct_object(this_object());
+}
+
+void authenticated()
+{
 }
 
 private void do_help()
@@ -61,24 +63,29 @@ private void do_help()
 static void receive_in(string input)
 {
 	reading = 1;
-	
+
 	switch(input) {
 	case "1":
-		swap_state(clone_object("login"));
+		push_state(clone_object("login"));
 		return;
+
 	case "2":
-		swap_state(clone_object("register"));
+		push_state(clone_object("register"));
 		return;
+
 	case "3":
 		swap_state(clone_object("shell"));
 		return;
+
 	case "4":
 		do_help();
 		break;
+
 	case "5":
 		send_out("Thanks for visiting.\n");
 		query_user()->quit();
 		return;
+
 	default:
 		strikes++;
 		switch(strikes)
