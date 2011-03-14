@@ -83,11 +83,11 @@ void send_out(string str)
 private void boot_ustate(object "ustate" ustate)
 {
 	catch {
-		ustate->_F_begin();
+		ustate->begin();
 	}
 	catch {
 		if (ustate == root->query_top()) {
-			ustate->_F_go();
+			ustate->go();
 		}
 	}
 }
@@ -239,12 +239,12 @@ void message(string str)
 
 static void feed_in(string str)
 {
-	root->query_top()->_F_receive_in(str);
+	root->query_top()->receive_in(str);
 }
 
 static void feed_out(string str)
 {
-	root->_F_receive_out(str);
+	root->receive_out(str);
 }
 
 nomask void _F_pop_state(object state)
@@ -252,25 +252,25 @@ nomask void _F_pop_state(object state)
 	object old_active;
 	object parent;
 	object new_active;
-	
+
 	ACCESS_CHECK(KOTAKA());
 	ASSERT(state);
 
 	if (sizeof(state->query_children())) {
 		error("Cannot pop a full ustate");
 	}
-	
+
 	old_active = root->query_top();
 	parent = state->query_parent();
-	
+
 	if (!parent) {
 		error("Cannot pop bottom ustate");
 	}
-	
+
 	catch {
-		state->_F_end();
+		state->end();
 	}
-	
+
 	if (parent) {
 		if (state) {
 			parent->_F_del_child(state);
@@ -280,16 +280,16 @@ nomask void _F_pop_state(object state)
 			}
 		}
 	}
-	
+
 	if (state) {
 		state->_F_set_parent(nil);
 		state->_F_set_user(nil);
 	}
-	
+
 	new_active = root->query_top();
 
 	if (old_active != new_active) {
-		new_active->_F_go();
+		new_active->go();
 	}
 }
 
@@ -306,7 +306,7 @@ nomask void _F_push_state(object parent, object state)
 
 	if (root->query_top() == parent) {
 		catch {
-			root->query_top()->_F_stop();
+			root->query_top()->stop();
 		}
 	}
 
@@ -333,14 +333,14 @@ nomask void _F_switch_state(object parent, object new)
 		active_changed = 1;
 		
 		catch {
-			root->query_top()->_F_stop();
+			root->query_top()->stop();
 		}
 	}
 
 	parent->_F_set_current(new);
 	
 	if (active_changed) {
-		root->query_top()->_F_go();
+		root->query_top()->go();
 	}
 }
 
@@ -422,7 +422,7 @@ static void nuke_state_tree(varargs object "ustate" base)
 	catch {
 		LOGD->post_message("user", LOG_INFO,
 			"Ending ustate: " + object_name(base));
-		base->_F_end();
+		base->end();
 	} : {
 		CHANNELD->post_message("warning", "Common::user",
 			"Error nuking: "

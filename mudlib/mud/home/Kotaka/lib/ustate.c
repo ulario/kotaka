@@ -7,13 +7,6 @@ object "ustate" parent;
 object "ustate" current;
 object "ustate" *children;
 
-nomask void _F_receive_in(string str);
-nomask void _F_receive_out(string str);
-nomask void _F_begin();
-nomask void _F_go();
-nomask void _F_stop();
-nomask void _F_end();
-
 nomask void _F_set_current(object "ustate" state);
 nomask void _F_set_parent(object "ustate" state);
 nomask void _F_set_user(object "user" user);
@@ -75,48 +68,6 @@ nomask object "ustate" query_top()
 	}
 	
 	return top;
-}
-
-nomask void _F_receive_in(string str)
-{
-	ACCESS_CHECK(KOTAKA());
-
-	receive_in(str);
-}
-
-nomask void _F_receive_out(string str)
-{
-	ACCESS_CHECK(KOTAKA());
-
-	receive_out(str);
-}
-
-nomask void _F_begin()
-{
-	ACCESS_CHECK(KOTAKA());
-
-	begin();
-}
-
-nomask void _F_stop()
-{
-	ACCESS_CHECK(KOTAKA());
-
-	stop();
-}
-
-nomask void _F_go()
-{
-	ACCESS_CHECK(KOTAKA());
-
-	go();
-}
-
-nomask void _F_end()
-{
-	ACCESS_CHECK(KOTAKA());
-
-	end();
 }
 
 nomask void _F_set_user(object "user" new_user)
