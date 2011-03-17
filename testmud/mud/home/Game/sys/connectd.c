@@ -126,12 +126,10 @@ object select(string str)
 	case BINARY_CONN:
 		switch(level) {
 		case 0:
-			return clone_object("~System/obj/filter/atomic");
-		case 1:
 			return clone_object("~System/obj/filter/rlimits");
-		case 2:
+		case 1:
 			return clone_object("~Game/obj/filter/telnet");
-		case 3:
+		case 2:
 			user = clone_object("~Game/obj/user");
 			users[user] = 1;
 			return user;
@@ -139,10 +137,8 @@ object select(string str)
 	case TELNET_CONN:
 		switch(level) {
 		case 0:
-			return clone_object("~System/obj/filter/atomic");
-		case 1:
 			return clone_object("~System/obj/filter/rlimits");
-		case 2:
+		case 1:
 			user = clone_object("~Game/obj/user");
 			users[user] = 1;
 			return user;
