@@ -31,6 +31,13 @@ static void destruct(int clone)
 	}
 }
 
+void set_uid(int new_uid)
+{
+	ACCESS_CHECK(GAME());
+
+	LOGD->post_message("game", LOG_INFO, "User has new UID: " + new_uid);
+}
+
 void set_mobile(object new_mobile)
 {
 	ACCESS_CHECK(GAME());
@@ -50,38 +57,17 @@ void logout(int quit)
 	::logout(quit);
 }
 
-void push_state(object "~Kotaka/open/lib/ustate" state)
-{
-	ACCESS_CHECK(PRIVILEGED());
-
-	query_root()->push_state(state);
-}
-
-void set_root_state(object root)
-{
-	ACCESS_CHECK(PRIVILEGED());
-
-	::set_root_state(root);
-}
-
-void send_out(string str)
-{
-	ACCESS_CHECK(KOTAKA() || SYSTEM());
-	
-	::send_out(str);
-}
-
 int login(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 	ASSERT(str == nil);
-	
+
 	connection(previous_object());
-	
+
 	set_mode(MODE_ECHO);
-	
+
 	set_root_state(clone_object("~/obj/ustate/bootstrap"));
-	
+
 	return MODE_NOCHANGE;
 }
 
@@ -96,9 +82,9 @@ int receive_message(string str)
 	if (ret == MODE_DISCONNECT) {
 		INITD->message("User is dying...");
 	}
-	
+
 	set_mode(ret);
-	
+
 	return ret;
 }
 
@@ -228,7 +214,7 @@ void set_aliases(mapping new_aliases)
 void set_disabled_aliases(string *new_disabled)
 {
 	ACCESS_CHECK(previous_object() == query_root());
-	
+
 	disabled = new_disabled;
 }
 
@@ -249,7 +235,7 @@ void add_alias(string prefix, string output)
 	PERMISSION_CHECK(prefix != "aliases");
 	PERMISSION_CHECK(prefix != "alias");
 	PERMISSION_CHECK(prefix != "unalias");
-	
+
 	aliases[prefix] = output;
 }
 
