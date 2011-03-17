@@ -25,15 +25,15 @@ private object root;
 nomask void force_quit();
 void quit();
 
-nomask void _F_pop_state(object state);
-nomask void _F_push_state(object state, object parent);
-nomask void _F_switch_state(object old, object new);
-nomask void _F_swap_state(object old, object new);
+void pop_state(object state);
+void push_state(object state, object parent);
+void switch_state(object parent, object new);
+void swap_state(object old, object new);
 
 static void feed_in(string str);
 static void feed_out(string str);
 
-static void nuke_state_tree(varargs object "ustate" base);
+static void nuke_state_tree(varargs object base);
 
 /***************/
 /* Definitions */
@@ -49,7 +49,7 @@ int is_wizard()
 	if (query_name() == "admin") {
 		return 1;
 	}
-	
+
 	return !!sizeof(KERNELD->query_users() & ({ query_name() }) );
 }
 
@@ -58,7 +58,7 @@ int is_admin()
 	if (query_name() == "admin") {
 		return 1;
 	}
-	
+
 	return KERNELD->access(query_name(), "/", FULL_ACCESS);
 }
 
@@ -80,18 +80,6 @@ void send_out(string str)
 	::message(str);
 }
 
-private void boot_ustate(object "ustate" ustate)
-{
-	catch {
-		ustate->begin();
-	}
-	catch {
-		if (ustate == root->query_top()) {
-			ustate->go();
-		}
-	}
-}
-
 void send_in(string str)
 {
 	ACCESS_CHECK(PRIVILEGED() || LOCAL());
@@ -105,7 +93,7 @@ int login(string method)
 		|| LOCAL());
 
 	::connection(previous_object());
-		
+
 	return MODE_NOCHANGE;
 }
 
@@ -124,9 +112,9 @@ private void do_escape(string str)
 	string *words;
 	object *children;
 	object parent;
-	
+
 	words = explode(str, " ") - ({ "" });
-	
+
 	if (!sizeof(words)) {
 		return;
 	}
@@ -160,7 +148,7 @@ private void do_escape(string str)
 
 	case "bt":
 		parent = root->query_top();
-		
+
 		while(parent) {
 			::message(object_name(parent) + "\n");
 			parent = parent->query_parent();
@@ -219,9 +207,9 @@ int receive_message(string str)
 		do_escape(str[1 ..]);
 		return MODE_NOCHANGE;
 	}
-	
+
 	call_limited("feed_in", str);
-	
+
 	return MODE_NOCHANGE;
 }
 
@@ -247,34 +235,73 @@ static void feed_out(string str)
 	root->receive_out(str);
 }
 
-nomask void _F_pop_state(object state)
+/* push: new begin, parent push, new go */
+void push_state(object state, object parent)
 {
-	object old_active;
+	object oldtop;
+	object newtop;
+
+	ACCESS_CHECK(KOTAKA());
+	ASSERT(parent);
+
+	if (!root) {
+		error("Internal error: cannot stack ustates without a root");
+	}
+
+	oldtop = root->query_top();
+
+	state->_F_set_user(this_object());
+	state->pre_begin();
+
+	if (!state) {
+		return;
+	}
+
+	state->_F_set_parent(parent);
+	parent->_F_add_child(state);
+	parent->_F_set_current(state);
+
+	newtop = root->query_top();
+
+	if (oldtop != newtop) {
+		oldtop->stop();
+	}
+
+	if (state) {
+		state->begin();
+	}
+
+	if (parent) {
+		parent->push(state);
+	}
+}
+
+/* pop: state stop, parent pop, tree end */
+void pop_state(object state)
+{
+	object oldtop;
+	object newtop;
 	object parent;
-	object new_active;
 
 	ACCESS_CHECK(KOTAKA());
 	ASSERT(state);
+	parent = state->query_parent();
+	ASSERT(parent);
 
 	if (sizeof(state->query_children())) {
 		error("Cannot pop a full ustate");
 	}
 
-	old_active = root->query_top();
-	parent = state->query_parent();
+	oldtop = root->query_top();
 
-	if (!parent) {
-		error("Cannot pop bottom ustate");
-	}
-
-	catch {
-		state->end();
+	if (state) {
+		state->pre_end();
 	}
 
 	if (parent) {
 		if (state) {
 			parent->_F_del_child(state);
-			
+
 			if (state == parent->query_current()) {
 				parent->_F_set_current(nil);
 			}
@@ -283,103 +310,101 @@ nomask void _F_pop_state(object state)
 
 	if (state) {
 		state->_F_set_parent(nil);
-		state->_F_set_user(nil);
 	}
 
-	new_active = root->query_top();
+	newtop = root->query_top();
 
-	if (old_active != new_active) {
-		new_active->go();
-	}
-}
-
-nomask void _F_push_state(object parent, object state)
-{
-	int active_changed;
-	
-	ACCESS_CHECK(KOTAKA());
-	ASSERT(parent);
-
-	if (!root) {
-		error("Internal error: cannot stack ustates without a root");
+	if (parent) {
+		parent->pop(state);
 	}
 
-	if (root->query_top() == parent) {
-		catch {
-			root->query_top()->stop();
+	if (state) {
+		state->end();
+
+		if (state) {
+			state->_F_set_user(nil);
 		}
 	}
 
-	state->_F_set_user(this_object());
-	state->_F_set_parent(parent);
-			
-	parent->_F_add_child(state);
-	parent->_F_set_current(state);
-	
-	boot_ustate(state);
+	if (newtop && oldtop != newtop) {
+		newtop->go();
+	}
 }
 
-nomask void _F_switch_state(object parent, object new)
+/* switch: old stop, new go */
+void switch_state(object parent, object new)
 {
-	int active_changed;
+	object oldtop;
+	object newtop;
 
 	ACCESS_CHECK(KOTAKA());
-	
 	ASSERT(parent);
-	ASSERT(new);
-	ASSERT(new->query_parent() == parent);
 
-	if (parent->query_top() == root->query_top()) {
-		active_changed = 1;
-		
-		catch {
-			root->query_top()->stop();
-		}
+	if (parent->query_current() == new) {
+		return;
 	}
+
+	if (new) {
+		ASSERT(new->query_parent() == parent);
+	}
+
+	oldtop = root->query_top();
 
 	parent->_F_set_current(new);
 	
-	if (active_changed) {
-		root->query_top()->go();
+	newtop = root->query_top();
+	
+	if (oldtop != newtop) {
+		oldtop->stop();
+		
+		if (newtop) {
+			newtop->go();
+		}
 	}
 }
 
-nomask void _F_swap_state(object old, object new)
+/* swap: old stop, parent pop, old end, new begin, parent push, new go */
+void swap_state(object old, object new)
 {
 	/* the old ustate is being replaced */
 	object parent;
-	object pcurrent;
-	object pnewcurrent;
-	object pnewroot;
 
 	ACCESS_CHECK(KOTAKA());
-	
+
 	ASSERT(old);
 	ASSERT(new);
 	ASSERT(!new->query_user());
-	
+
 	parent = old->query_parent();
-	
-	nuke_state_tree(old);
-	
+
+	if (root == old) {
+		root = new;
+	}
+
 	new->_F_set_user(this_object());
 	new->_F_set_parent(parent);
-	
+	new->pre_begin();
+
 	if (parent) {
+		parent->_F_add_child(new);
 		parent->_F_set_current(new);
 	}
-	
+
 	if (old == root) {
 		root = new;
 	}
-	
-	boot_ustate(new);
+
+	nuke_state_tree(old);
+
+	if (new) {
+		new->begin();
+	}
 }
 
 object query_root_state()
 {
 	ACCESS_CHECK(PRIVILEGED() || LOCAL());
-	
+
 	return root;
 }
 
@@ -390,54 +415,59 @@ void set_root_state(object state)
 	if (root) {
 		error("User object already has a root ustate");
 	}
-		
+
 	root = state;
 
 	state->_F_set_user(this_object());
-	
-	boot_ustate(state);
+
+	state->begin();
+	state->go();
 }
 
-static void nuke_state_tree(varargs object "ustate" base)
+static void nuke_state_tree(varargs object base)
 {
 	int i;
 	object parent;
 	object *children;
-	
+
 	if (!base) {
-		base = root;
+		return;
 	}
 
 	if (base->query_user() != this_object()) {
 		error("Bad nuke");
 	}
-	
+
 	parent = base->query_parent();
 	children = base->query_children();
-	
+
+	if (base) {
+		base->pre_end();
+	}
+
 	for (i = 0; i < sizeof(children); i++) {
 		nuke_state_tree(children[i]);
 	}
-	
+
 	catch {
-		LOGD->post_message("user", LOG_INFO,
-			"Ending ustate: " + object_name(base));
+		if (base) {
+			base->_F_set_parent(nil);
+		}
+
+		if (parent) {
+			parent->_F_del_child(base);
+			parent->pop(base);
+		}
+
 		base->end();
+
+		if (base) {
+			base->_F_set_user(nil);
+		}
 	} : {
 		CHANNELD->post_message("warning", "Common::user",
 			"Error nuking: "
 			+ object_name(base) + "\n");
-	}
-	
-	if (base) {
-		base->_F_set_parent(nil);
-		base->_F_set_user(nil);
-		
-		if (parent) {
-			LOGD->post_message("user", LOG_INFO,
-				"Removing from parent: " + object_name(parent));
-			parent->_F_del_child(base);
-		}
 	}
 }
 
