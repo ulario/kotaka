@@ -1,10 +1,12 @@
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
 
 inherit LIB_USTATE;
 
 int stopped;
 int reading;
 int strikes;
+int dead;
 
 static void create(int clone)
 {
@@ -28,17 +30,39 @@ private void prompt()
 	send_out("> ");
 }
 
-static void begin()
+void begin()
 {
+	ACCESS_CHECK(previous_object() == query_user());
 }
 
-static void stop()
+void stop()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 1;
 }
 
-static void go()
+void pop(object state)
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
+	if (dead) {
+		send_out("Dead bootstrap, ignoring pop.\n");
+		return;
+	}
+
+	if (state <- "login" || state <- "register") {
+		dead = 1;
+		send_out("Bootstrap terminated, starting shell.\n");
+		swap_state(clone_object("shell"));
+		return;
+	}
+}
+
+void go()
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 0;
 
 	if (!reading) {
@@ -46,13 +70,11 @@ static void go()
 	}
 }
 
-static void end()
+void end()
 {
-	destruct_object(this_object());
-}
+	ACCESS_CHECK(previous_object() == query_user());
 
-void authenticated()
-{
+	destruct_object(this_object());
 }
 
 private void do_help()
@@ -60,16 +82,20 @@ private void do_help()
 	send_out(read_file("~/data/doc/guest_help"));
 }
 
-static void receive_in(string input)
+void receive_in(string input)
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	reading = 1;
 
 	switch(input) {
 	case "1":
+		send_out("Pushed login.\n");
 		push_state(clone_object("login"));
 		return;
 
 	case "2":
+		send_out("Pushed register.\n");
 		push_state(clone_object("register"));
 		return;
 
@@ -102,9 +128,4 @@ static void receive_in(string input)
 	if (!stopped) {
 		prompt();
 	}
-}
-
-static void receive_out(string output)
-{
-	send_out("[outgoing] " + output);
 }

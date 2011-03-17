@@ -43,18 +43,24 @@ void set_username(string new_username)
 	username = new_username;
 }
 
-static void begin()
+void begin()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	send_out("New account registration.\n\n");
 }
 
-static void stop()
+void stop()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 1;
 }
 
-static void go()
+void go()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 0;
 
 	if (!reading) {
@@ -62,9 +68,9 @@ static void go()
 	}
 }
 
-static void end()
+void end()
 {
-	send_out("End.\n");
+	ACCESS_CHECK(previous_object() == query_user());
 
 	destruct_object(this_object());
 }
@@ -80,8 +86,10 @@ private int username_available()
 	return random(2);
 }
 
-static void receive_in(string input)
+void receive_in(string input)
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	reading = 1;
 
 	if (!username || un_invalid) {
@@ -106,9 +114,10 @@ static void receive_in(string input)
 
 		if (input == password) {
 			send_out("Congratulations, you have successfully tested\nthe character registration shell.\n");
-			
+
 			query_user()->set_uid(1337);
-			pop_ustate();
+
+			pop_state();
 
 			return;
 		} else {
@@ -122,9 +131,4 @@ static void receive_in(string input)
 	if (!stopped) {
 		prompt();
 	}
-}
-
-static void receive_out(string output)
-{
-	send_out("[outgoing] " + output);
 }

@@ -11,13 +11,6 @@ int introed;
 
 int superuser;
 
-void exec(object new_shell)
-{
-	ACCESS_CHECK(GAME());
-
-	swap_state(new_shell);
-}
-
 static void create(int clone)
 {
 	::create();
@@ -38,28 +31,48 @@ private void prompt()
 	send_out("[\033[1;31mU\033[33ml\033[32ma\033[36mr\033[34mi\033[35mo\033[0m] ");
 }
 
-static void begin()
+void begin()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
+	send_out("Shell begin.\n");
+	prompt();
+	reading = 1;
 }
 
-static void stop()
+void stop()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
+	send_out("Shell stop.\n");
+
 	stopped = 1;
 }
 
-static void go()
+void go()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 0;
+
+	send_out("Shell go.\n");
 
 	if (!reading) {
 		prompt();
 	}
 }
 
-static void end()
+void pre_end()
 {
-	send_out("Goodbye.\n");
-	
+	ACCESS_CHECK(previous_object() == query_user());
+
+	send_out("Shell end.\n");
+}
+
+void end()
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
 	destruct_object(this_object());
 }
 
@@ -72,32 +85,35 @@ private void scan_world()
 {
 	object root;
 	object *kids;
-	
+
 	int i;
 	int sz;
-	
+
 	root = find_object(ROOT);
-	
+
 	kids = root->query_inventory();
 	sz = sizeof(kids);
-	
+
 	for (i = 0; i < sz; i++) {
 		object obj;
 		float x, y, z;
-		
+
 		obj = kids[i];
-		
+
 		x = obj->query_property("position:x");
 		y = obj->query_property("position:y");
 		z = obj->query_property("position:z");
+
 		send_out("Object " + object_name(obj) + " located at (" +
 			x + ", " + y + ", " + z + ")\n");
 	}
 }
 
-static void receive_in(string input)
+void receive_in(string input)
 {
 	string first;
+
+	ACCESS_CHECK(previous_object() == query_user());
 
 	reading = 1;
 
@@ -169,9 +185,4 @@ static void receive_in(string input)
 	if (!stopped) {
 		prompt();
 	}
-}
-
-static void receive_out(string output)
-{
-	send_out("[outgoing] " + output);
 }

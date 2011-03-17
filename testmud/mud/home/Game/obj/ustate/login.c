@@ -1,5 +1,6 @@
 #include <kotaka/paths.h>
 #include <kernel/user.h>
+#include <kotaka/privilege.h>
 
 inherit LIB_USTATE;
 
@@ -29,18 +30,24 @@ private void prompt()
 	}
 }
 
-static void begin()
+void begin()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	send_out("Login\n");
 }
 
-static void stop()
+void stop()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 1;
 }
 
-static void go()
+void go()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 0;
 
 	if (!reading) {
@@ -48,10 +55,10 @@ static void go()
 	}
 }
 
-static void end()
+void end()
 {
-	send_out("End.\n");
-	
+	ACCESS_CHECK(previous_object() == query_user());
+
 	destruct_object(this_object());
 }
 
@@ -60,22 +67,25 @@ private int username_valid(string username)
 	return STRINGD->regex_match(username, "[0-9a-zA-Z-_]+");
 }
 
-static void receive_in(string input)
+void receive_in(string input)
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	reading = 1;
-	
+
 	if (username) {
 		int uid;
 		object shell;
 		object parent;
 		
-		send_out("Logged in\n");
+		send_out("\nLogged in\n");
 		query_user()->set_mode(MODE_ECHO);
 		
 		uid = "~/sys/accountd"->username_to_uid(username);
 		
 		query_user()->set_uid(uid);
 		pop_state();
+
 		return;
 	} else {
 		if (username_valid(input)) {
@@ -91,9 +101,4 @@ static void receive_in(string input)
 	if (!stopped) {
 		prompt();
 	}
-}
-
-static void receive_out(string output)
-{
-	send_out("[outgoing] " + output);
 }

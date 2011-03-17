@@ -129,9 +129,11 @@ static void do_help(string topic)
 	swap_state(pager);
 }
 
-static void begin()
+void begin()
 {
 	string topic;
+
+	ACCESS_CHECK(previous_object() == query_user());
 
 	if (!args) {
 		args = ({ "index" });
@@ -142,20 +144,10 @@ static void begin()
 	do_help(topic);
 }
 
-static void stop()
+void end()
 {
-	stopped = 1;
-}
+	ACCESS_CHECK(previous_object() == query_user());
 
-static void go()
-{
-	stopped = 0;
-
-	pop_state();
-}
-
-static void end()
-{
 	destruct_object(this_object());
 }
 

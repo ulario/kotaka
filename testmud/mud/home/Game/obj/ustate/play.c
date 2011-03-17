@@ -37,14 +37,16 @@ private void prompt()
 	}
 }
 
-static void begin()
+void begin()
 {
 	float angle;
 	float radius;
 	object spirit;
-	
+
+	ACCESS_CHECK(previous_object() == query_user());
+
 	send_out("Linking...done\n");
-	
+
 	body = clone_object("~/obj/demo/monster/wolf");
 	body->set_id_base("wolf");
 	body->move(find_object(ROOT));
@@ -61,15 +63,22 @@ static void begin()
 
 	body->set_property("position:x", radius * sin(angle));
 	body->set_property("position:y", radius * cos(angle));
+	
+	prompt();
+	reading = 1;
 }
 
-static void stop()
+void stop()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 1;
 }
 
-static void go()
+void go()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	stopped = 0;
 
 	if (!reading) {
@@ -82,11 +91,14 @@ static void self_destruct()
 	destruct_object(this_object());
 }
 
-static void end()
+void pre_end()
 {
 	object spirit;
 	object *inv;
 	int i, sz;
+
+	ACCESS_CHECK(previous_object() == query_user());
+
 	send_out("Exiting biolink.\n");
 
 	inv = body->query_inventory();
@@ -147,9 +159,11 @@ private void do_look()
 	scan_world();
 }
 
-static void receive_in(string input)
+void receive_in(string input)
 {
 	string first;
+
+	ACCESS_CHECK(previous_object() == query_user());
 
 	reading = 1;
 
@@ -190,7 +204,7 @@ static void receive_in(string input)
 			if (!born) {
 				send_out("You float around in your office at The Great Hall.\n");
 			} else {
-				send_out("You attempt to move away from your body,\nbut the Grim Reaper gives your spirit\na threatening stare that stills you...\nThe Grim Reaper speaks:\"\033[31mLeave ye not...lest ye find no shelter.\033[0m\"");
+				send_out("You attempt to move away from your body,\nbut the Grim Reaper gives your spirit\na threatening stare that stills you...\nThe Grim Reaper speaks: \"\033[31mLeave ye not...lest ye find no shelter.\033[0m\"\n");
 			}
 		} else {
 			send_out("Not yet implemented.\n");
@@ -224,12 +238,15 @@ static void receive_in(string input)
 			}
 		}
 		break;
+
 	case "end":
 		pop_state();
 		return;
+
 	case "quit":
 		query_user()->quit();
 		return;
+
 	case "krecompile":
 		OBJECTD->klib_recompile();
 		break;
@@ -247,9 +264,4 @@ static void receive_in(string input)
 	if (!stopped) {
 		prompt();
 	}
-}
-
-static void receive_out(string output)
-{
-	send_out("[outgoing] " + output);
 }
