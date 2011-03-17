@@ -1,7 +1,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-inherit "object";
+inherit LIB_OBJECT;
 
 float xpos, ypos, zpos;
 

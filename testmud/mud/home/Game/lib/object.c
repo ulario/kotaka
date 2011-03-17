@@ -2,6 +2,8 @@
 
 inherit LIB_OBJECT;
 
+inherit "position";
+
 /*****************/
 /* General stuff */
 /*****************/
