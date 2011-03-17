@@ -73,7 +73,7 @@ static void create()
 		
 		TRASHD->enable();
 		PORTD->enable();
-		// ERRORD->enable();
+		ERRORD->enable();
 		STATUSD->enable();
 		
 		KERNELD->set_rsrc("ticks", -1, 0, 0);
