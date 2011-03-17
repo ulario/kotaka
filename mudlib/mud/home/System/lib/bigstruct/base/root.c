@@ -22,7 +22,7 @@ static void create()
 	
 	grants = ([ ]);
 	pobj = previous_object();
-	
+
 	if (pobj <- "root") {
 		grants = pobj->query_grants()[..];
 	} else {

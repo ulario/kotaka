@@ -1,6 +1,6 @@
 #include <kotaka/paths.h>
-#include <kotaka/log.h>
-#include <kotaka/assert.h>
+
+inherit SECOND_AUTO;
 
 static object new_node()
 {

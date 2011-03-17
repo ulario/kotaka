@@ -4,6 +4,7 @@
 #include <kotaka/log.h>
 #include <kotaka/privilege.h>
 
+inherit SECOND_AUTO;
 inherit LIB_FILTER;
 
 static void create(int clone)

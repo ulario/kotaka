@@ -1,6 +1,8 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
+inherit SECOND_AUTO;
+
 int charges;
 
 static void create(int clone)
