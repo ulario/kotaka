@@ -1,2 +1,0 @@
-inherit "object";
-inherit "position";
