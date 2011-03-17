@@ -1,4 +1,5 @@
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
 
 inherit LIB_USTATE;
 
@@ -42,17 +43,23 @@ void set_text(string text)
 	linebuf->load(text);
 }
 
-static void begin()
+void begin()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	pour();
 }
 
-static void end()
+void end()
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	destruct_object(this_object());
 }
 
-static void receive_in(string str)
+void receive_in(string str)
 {
+	ACCESS_CHECK(previous_object() == query_user());
+
 	pour();
 }
