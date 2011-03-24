@@ -459,7 +459,9 @@ static void nuke_state_tree(varargs object base)
 			parent->pop(base);
 		}
 
-		base->end();
+		if (base) {
+			base->end();
+		}
 
 		if (base) {
 			base->_F_set_user(nil);
