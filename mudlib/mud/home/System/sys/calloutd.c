@@ -25,8 +25,9 @@ int lrh;			/* last reported hole count */
 object queue;
 object releasers;
 
-int releases;			/* current number of release callouts */
-int max_releases;		/* maximum number of release callouts */
+int releases;		/* current number of release callouts */
+int max_releases;	/* maximum number of release callouts */
+int unordered;	/* allow current callouts to skip the suspension queue */
 
 private int bypass(object obj);
 
@@ -48,16 +49,39 @@ private void wipe_releasers()
 {
 	while (!releasers->empty()) {
 		object releaser;
-		
+
 		releaser = releasers->get_front();
 		releasers->pop_front();
-		
+
 		if (releaser) {
 			destruct_object(releaser);
 		}
 	}
 
 	releases = 0;
+}
+
+void set_unordered(int new_unordered)
+{
+	if (unordered == new_unordered) {
+		return;
+	}
+
+	unordered = new_unordered;
+/*
+	if (suspend == 1) {
+		if (unordered) {
+			RSRCD->release_callout(nil, 0);
+		} else {
+			RSRCD->suspend_callouts();
+		}
+	}
+*/
+}
+
+int query_unordered()
+{
+	return unordered;
 }
 
 private void charge_releasers()
@@ -269,7 +293,9 @@ void release()
 
 			statcheck();
 		} else {
-			RSRCD->release_callout(nil, 0);
+			if (!unordered) {
+				RSRCD->release_callout(nil, 0);
+			}
 			LOGD->post_message("system", LOG_INFO, "Released callouts");
 
 			suspend = 0;
@@ -294,7 +320,7 @@ private int bypass(object obj)
 		return 1;
 	}
 
-	if (sscanf(object_name(obj), USR_DIR + "/Game/obj/ustate/status#%*d")) {
+	if ((suspend == 1) && unordered) {
 		return 1;
 	}
 
