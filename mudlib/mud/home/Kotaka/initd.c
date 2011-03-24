@@ -147,21 +147,13 @@ static void create()
 	load_dir("obj", 1);
 	load_dir("open", 1);
 	load_dir("sys", 1);
-	
-	LOGD->post_message("kotaka", LOG_DEBUG,
-		"testing random number generator");
-		
-	for (i = 0; i < 8; i++) {
-		LOGD->post_message("kotaka", LOG_DEBUG,
-			"Random #" + i + ", " + SUBD->rnd());
-	}
 
 	setup_channels();
-	
+
 	TLSD->set_tls_access("Kotaka", "opwd", "Game", WRITE_ACCESS);
 	TLSD->set_tls_access("Kotaka", "opwd", "System", READ_ACCESS);
 	TLSD->set_tls_access("Kotaka", "env", "System", READ_ACCESS);
-	
+
 	"sys/testd"->test();
 }
 
