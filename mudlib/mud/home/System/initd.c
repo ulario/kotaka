@@ -59,10 +59,14 @@ static void create()
 		load_object("lwo/program_info");
 		load_object(PROGRAMD);
 		load_object(OBJECTD);
-		OBJECTD->enable();
-		OBJECTD->scan_dirs("/");
 
-		LOGD->post_message("system", LOG_NOTICE, "Object tracking initialized");
+		OBJECTD->enable();
+
+		LOGD->post_message("system", LOG_NOTICE,
+			"Object tracking activated");
+		OBJECTD->scan_dirs("/");
+		LOGD->post_message("system", LOG_NOTICE,
+			"Program database initialized");
 
 		load_dir("closed", 1);
 		load_dir("lib", 1);
@@ -70,12 +74,12 @@ static void create()
 		load_dir("obj", 1);
 		load_dir("sys", 1);
 		load_dir("~", 1);
-		
+
 		TRASHD->enable();
 		PORTD->enable();
 		ERRORD->enable();
 		STATUSD->enable();
-		
+
 		KERNELD->set_rsrc("ticks", -1, 0, 0);
 
 		/* Booted up */
@@ -86,8 +90,8 @@ static void create()
 		set_status("ok");
 		} : {
 			LOGD->flush();
-			error("System setup failed");
 			shutdown();
+			error("System setup failed");
 		}
 	}
 }

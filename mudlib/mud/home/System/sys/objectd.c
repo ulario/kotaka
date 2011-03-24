@@ -168,19 +168,22 @@ private void compiled_program(string path, string *inherited, string *includes, 
 		indices[index] = status(inherited[index])[O_INDEX];
 
 		if (!PROGRAMD->query_program_info(indices[index])) {
-			LOGD->post_message("program",
-				LOG_INFO,
-				"Discovered ghost program: "
-				+ inherited[index]
-			);
+			if (audit_programs) {
+				LOGD->post_message("program",
+					LOG_INFO,
+					"Discovered ghost program: "
+					+ inherited[index]
+				);
+			}
+
 			PROGRAMD->build_program_info(indices[index],
 				inherited[index], nil, nil, nil, nil);
 		}
 	}
-	
+
 	PROGRAMD->build_program_info(oindex,
 		path, indices, includes, ctor, dtor);
-	
+
 	if (audit_programs) {
 		LOGD->post_message("program", LOG_NOTICE, "Compiled " + path);
 	}
@@ -188,8 +191,10 @@ private void compiled_program(string path, string *inherited, string *includes, 
 
 private void destructed_program(string path)
 {
-	LOGD->post_message("program", LOG_INFO,
-		"Destructed " + path);
+	if (audit_programs) {
+		LOGD->post_message("program", LOG_INFO,
+			"Destructed " + path);
+	}
 }
 
 private mixed query_include_file(string compiled, string from, string path)
@@ -205,7 +210,7 @@ private mixed query_include_file(string compiled, string from, string path)
 atomic void global_recompile()
 {
 	ACCESS_CHECK(PRIVILEGED() || KADMIN());
-	
+
 	LOGD->post_message("system", LOG_NOTICE,
 		"Global recompile beginning...");
 
@@ -665,10 +670,6 @@ void compile_failed(string owner, string path)
 void clone(string owner, object obj)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
-	
-	if (audit_clones) {
-/*		INITD->message("ObjectD: cloned " + object_name(obj));*/
-	}
 }
 
 void destruct(string owner, object obj)
@@ -738,20 +739,21 @@ void remove_program(string owner, string path, int timestamp, int index)
 	ACCESS_CHECK(previous_program() == DRIVER);
 	pinfo = PROGRAMD->query_program_info(index);
 	
-	if (pinfo) {
-		if (pinfo->query_ghost()) {
-			LOGD->post_message("program", LOG_INFO,
-				"Removed " + pinfo->query_path() + " (ghost)");
+	if (audit_programs) {
+		if (pinfo) {
+			if (pinfo->query_ghost()) {
+				LOGD->post_message("program", LOG_INFO,
+					"Removed " + pinfo->query_path() + " (ghost)");
+			} else {
+				LOGD->post_message("program", LOG_INFO,
+					"Removed " + pinfo->query_path());
+			}
 		} else {
 			LOGD->post_message("program", LOG_INFO,
-				"Removed " + pinfo->query_path());
+				"Removal of unknown program, object index " + index);
 		}
-	} else {
-		LOGD->post_message("program", LOG_INFO,
-			"Removal of unknown program, object index " + index);
 	}
-	
-	
+
 	PROGRAMD->clear_program_info(index);
 }
 
