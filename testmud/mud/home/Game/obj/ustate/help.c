@@ -1,19 +1,19 @@
 #include <kotaka/paths.h>
-#include <kernel/user.h>
 #include <kotaka/privilege.h>
+
+#include <game/paths.h>
 
 inherit LIB_USTATE;
 
 int stopped;
 int reading;
+int introed;
 
-string username;
-object authd;
+string path;
 
 static void create(int clone)
 {
 	::create();
-	authd = find_object("~/sys/authd");
 }
 
 static void destruct(int clone)
@@ -23,18 +23,15 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	if (!username) {
-		send_out("Username: ");
-	} else {
-		send_out("Password: ");
-	}
+	send_out("[\033[1;35mHELP\033[0m] ");
 }
 
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
 
-	send_out("Login: ");
+	prompt();
+	reading = 1;
 }
 
 void stop()
@@ -62,38 +59,34 @@ void end()
 	destruct_object(this_object());
 }
 
-private int username_valid(string username)
-{
-	return STRINGD->regex_match(username, "[0-9a-zA-Z-_]+");
-}
-
 void receive_in(string input)
 {
+	string first;
+
 	ACCESS_CHECK(previous_object() == query_user());
 
 	reading = 1;
 
-	if (username) {
-		int uid;
-		object shell;
-		object parent;
-		
-		send_out("\nLogged in\n");
-		query_user()->set_mode(MODE_ECHO);
-		
-		uid = "~/sys/accountd"->username_to_uid(username);
-		
-		query_user()->set_uid(uid);
-		pop_state();
+	if (!sscanf(input, "%s %s", first, input)) {
+		first = input;
+		input = "";
+	}
 
+	switch(first) {
+	case "help":
 		return;
-	} else {
-		if (username_valid(input)) {
-			username = input;
-			query_user()->set_mode(MODE_NOECHO);
-		} else {
-			send_out("Invalid username.\n");
-		}
+	case "ls":
+	case "cd":
+		send_out("Not Yet Implemented.\n");
+		break;
+	case "quit":
+		pop_state();
+		return;
+	case "login":
+		push_state(clone_object("login"));
+		break;
+	default:
+		send_out(first + ": command not recognized.\n");
 	}
 
 	reading = 0;

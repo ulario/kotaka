@@ -7,9 +7,6 @@ inherit LIB_USTATE;
 
 int stopped;
 int reading;
-int introed;
-
-int superuser;
 
 static void create(int clone)
 {
@@ -23,11 +20,6 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	if (!introed) {
-		send_out(read_file("~/data/doc/guest_welcome"));
-		introed = 1;
-	}
-
 	send_out("[\033[1;31mU\033[33ml\033[32ma\033[36mr\033[34mi\033[35mo\033[0m] ");
 }
 
@@ -35,7 +27,8 @@ void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
 
-	send_out("Shell begin.\n");
+	send_out(read_file("~/data/doc/guest_welcome"));
+
 	prompt();
 	reading = 1;
 }
@@ -43,8 +36,6 @@ void begin()
 void stop()
 {
 	ACCESS_CHECK(previous_object() == query_user());
-
-	send_out("Shell stop.\n");
 
 	stopped = 1;
 }
@@ -54,8 +45,6 @@ void go()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	stopped = 0;
-
-	send_out("Shell go.\n");
 
 	if (!reading) {
 		prompt();
@@ -123,18 +112,6 @@ void receive_in(string input)
 	}
 
 	switch(first) {
-	case "help":
-		{
-			object help;
-			
-			help = clone_object("help");
-			if (input != "") {
-				help->set_args( ({ input }) );
-			}
-		
-			push_state(help);
-		}
-		break;
 	case "play":
 		push_state(clone_object("play"));
 		break;
@@ -162,24 +139,12 @@ void receive_in(string input)
 	case "register":
 		push_state(clone_object("register"));
 		break;
-	case "stop":
-		push_state(clone_object("stopper"));
-		break;
-	case "flash":
-		{
-			object stopper;
-		
-			stopper = clone_object("stopper");
-			push_state(stopper);
-			stopper->abort();
-		}
-		break;
 	case "":
 		break;
 	default:
-		send_out("Huh? \n");
+		send_out(first + ": command not recognized.\n");
 	}
-	
+
 	reading = 0;
 
 	if (!stopped) {

@@ -185,20 +185,6 @@ void receive_in(string input)
 		}
 		break;
 
-	case "help":
-		{
-			object help;
-			
-			help = clone_object("help");
-
-			if (input != "") {
-				help->set_args( ({ input }) );
-			}
-
-			push_state(help);
-		}
-		break;
-
 	case "move":
 		if (!alive) {
 			if (!born) {
@@ -237,24 +223,24 @@ void receive_in(string input)
 				send_out("With a great hazy whoosh over your spirit, your eyes seem to open again, and you find yourself on solid earth for the first time.\n");
 			}
 		}
+
 		break;
 
-	case "end":
-		pop_state();
-		return;
-
 	case "quit":
-		query_user()->quit();
+		pop_state();
 		return;
 
 	case "krecompile":
 		OBJECTD->klib_recompile();
 		break;
+
 	case "recompile":
 		OBJECTD->global_recompile();
 		break;
+
 	case "":
 		break;
+
 	default:
 		send_out(first + ": command not recognized.\n");
 	}

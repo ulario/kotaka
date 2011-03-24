@@ -70,6 +70,13 @@ void go()
 	}
 }
 
+void pre_end()
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
+	dead = 1;
+}
+
 void end()
 {
 	ACCESS_CHECK(previous_object() == query_user());
