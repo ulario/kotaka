@@ -6,11 +6,63 @@ shift
 case $COMMAND in
 shentino)
 	# shentino's special command
+	# purge
 	cd ~
-	rm -rf test
-	mkdir test
-	mkdir test/mud
-	cp -r -s sourceforge/kotaka/mudlib/mud/* test/mud
+	rm -rf dgd/mud
+	rm -rf dgd/tmp
+
+	# skeleton
+	mkdir -p dgd
+	mkdir -p dgd/mud
+	mkdir -p dgd/mud/doc
+	mkdir -p dgd/mud/doc/kernel
+	mkdir -p dgd/mud/home
+	mkdir -p dgd/mud/include
+	mkdir -p dgd/mud/kernel
+	mkdir -p dgd/mud/kernel/data
+	mkdir -p dgd/mud/log
+	mkdir -p dgd/tmp
+
+	# dgd
+	for d in kfun net editor parser
+	do
+		ln -s ../../../sourceforge/dgd-osr/shentino/doc/$d dgd/mud/doc
+	done
+
+	# kernel-lib
+	for d in efun hook lfun
+	do
+		ln -s ../../../../sourceforge/kernel-lib/kernel-lib/doc/kernel/$d dgd/mud/doc/kernel
+	done
+
+	for d in sourceforge/kernel-lib/kernel-lib/kernel/*
+	do
+		ln -s ../../../$d dgd/mud/kernel
+	done
+
+	ln -s ../../../sourceforge/kernel-lib/kernel-lib/include/kernel dgd/mud/include
+
+	# kotaka
+	for d in sourceforge/kotaka/kotaka/mudlib/mud/home/*
+	do
+		ln -s ../../../$d dgd/mud/home
+	done
+
+	for d in sourceforge/kotaka/kotaka/mudlib/mud/include/*
+	do
+		ln -s ../../../$d dgd/mud/include
+	done
+
+	# ulario
+	for d in sourceforge/kotaka/kotaka/testmud/mud/home/*
+	do
+		ln -s ../../../$d dgd/mud/home
+	done
+
+	for d in sourceforge/kotaka/kotaka/testmud/mud/include/*
+	do
+		ln -s ../../../$d dgd/mud/include
+	done
 	;;
 *)
 	echo "Usage: makemud <command>"
