@@ -6,6 +6,7 @@
 #include <kotaka/privilege.h>
 #include <kotaka/assert.h>
 #include <kotaka/paths.h>
+#include <kotaka/log.h>
 
 #include <game/paths.h>
 

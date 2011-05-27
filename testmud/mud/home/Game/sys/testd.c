@@ -6,11 +6,14 @@
 
 static void create()
 {
+	call_out("ignite", 5);
 }
 
 static void ignite()
 {
-	call_out("bomb", 0, TEST_CO_QUANTITY);
+	if (TEST_CO_QUANTITY > 0) {
+		call_out("bomb", 0, TEST_CO_QUANTITY);
+	}
 }
 
 static void suspend()
