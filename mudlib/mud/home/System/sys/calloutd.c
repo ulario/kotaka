@@ -68,15 +68,6 @@ void set_unordered(int new_unordered)
 	}
 
 	unordered = new_unordered;
-/*
-	if (suspend == 1) {
-		if (unordered) {
-			RSRCD->release_callout(nil, 0);
-		} else {
-			RSRCD->suspend_callouts();
-		}
-	}
-*/
 }
 
 int query_unordered()
