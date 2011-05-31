@@ -207,7 +207,7 @@ private mixed query_include_file(string compiled, string from, string path)
 	return path;
 }
 
-atomic void global_recompile()
+void global_recompile()
 {
 	ACCESS_CHECK(PRIVILEGED() || KADMIN());
 
@@ -245,16 +245,6 @@ atomic void global_recompile()
 					continue;
 				}
 
-				/* do not tamper with precompiled objects */
-				if (
-					sizeof(
-						status()[ST_PRECOMPILED]
-						& ({ path })
-					)
-				) {
-					continue;
-				}
-
 				if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
 					libs->push_back(path);
 				} else {
@@ -280,11 +270,16 @@ atomic void global_recompile()
 				objs->pop_front();
 
 				if (status(path)) {
-					compile_object(path);
+					catch {
+						compile_object(path);
+					}
 				}
 			}
 		}
 	}
+
+	LOGD->post_message("system", LOG_NOTICE,
+		"Global recompile completed.");
 }
 
 void force_destruct(mixed obj)
