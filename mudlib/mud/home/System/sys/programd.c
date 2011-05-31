@@ -445,9 +445,7 @@ object query_program_numbers()
 	indices->grant_global_access(0);
 	indices->grant_access(previous_object(), FULL_ACCESS);
 	indices->grant_access(this_object(), 0);
-	LOGD->post_message("debug", LOG_DEBUG,
-		"pnums: " + object_name(indices));
-	
+
 	return indices;
 }
 
