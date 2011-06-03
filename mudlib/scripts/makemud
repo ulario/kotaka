@@ -26,7 +26,7 @@ shentino)
 	# dgd
 	for d in kfun net editor parser
 	do
-		ln -s ../../../sourceforge/dgd-osr/shentino/doc/$d dgd/mud/doc
+		ln -s ../../../sourceforge/dgd-osr/dgd-osr/doc/$d dgd/mud/doc
 	done
 
 	# kernel-lib
