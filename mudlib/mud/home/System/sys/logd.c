@@ -198,7 +198,7 @@ private void send_to_target(string target, string header, string message)
 
 	case "channel":
 		ASSERT(info);
-		CHANNELD->post_message(info, message);
+		CHANNELD->post_message(info, "Logger", message);
 		break;
 
 	case "file":
