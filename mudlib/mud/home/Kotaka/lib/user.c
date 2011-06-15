@@ -274,6 +274,10 @@ void push_state(object state, object parent)
 	if (parent) {
 		parent->push(state);
 	}
+
+	if (state) {
+		state->go();
+	}
 }
 
 /* pop: state stop, parent pop, tree end */
@@ -398,6 +402,10 @@ void swap_state(object old, object new)
 
 	if (new) {
 		new->begin();
+	}
+
+	if (new) {
+		new->go();
 	}
 }
 
