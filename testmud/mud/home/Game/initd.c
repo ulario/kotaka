@@ -87,9 +87,9 @@ string bits(string input)
 {
 	string buf;
 	int a, b;
-	
+
 	buf = "";
-	
+
 	for (a = 0; a < strlen(input); a++) {
 		int byte;
 		

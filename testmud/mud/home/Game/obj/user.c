@@ -3,6 +3,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
 #include <kotaka/assert.h>
+#include <kernel/access.h>
 
 #include <game/paths.h>
 
@@ -10,6 +11,14 @@ inherit LIB_KOTAKA_USER;
 
 object mobile;
 int keepalive;
+
+string name;
+int class;
+
+/* 0 = guest (blue) */
+/* 1 = player (green) */
+/* 2 = wizard (yellow) */
+/* 3 = admin (red) */
 
 mapping aliases;
 string *disabled;
@@ -29,6 +38,43 @@ static void destruct(int clone)
 	if (clone) {
 		LOGD->post_message("game", LOG_INFO, "User destructing");
 	}
+}
+
+int query_class()
+{
+	return class;
+}
+
+void set_class(int new_class)
+{
+	ACCESS_CHECK(GAME());
+
+	class = new_class;
+}
+
+void reset_class()
+{
+	if (KERNELD->access(name, "/", FULL_ACCESS)) {
+		class = 3;
+	} else if (sizeof(KERNELD->query_users() & ({ name }) )) {
+		class = 2;
+	} else if (name) {
+		class = 1;
+	} else {
+		class = 0;
+	}
+}
+
+string query_name()
+{
+	return name;
+}
+
+void set_name(string new_name)
+{
+	ACCESS_CHECK(GAME());
+
+	name = new_name;
 }
 
 void set_uid(int new_uid)
@@ -74,11 +120,11 @@ int login(string str)
 int receive_message(string str)
 {
 	int ret;
-	
+
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	ret = ::receive_message(str);
-	
+
 	if (ret == MODE_DISCONNECT) {
 		INITD->message("User is dying...");
 	}
@@ -88,19 +134,12 @@ int receive_message(string str)
 	return ret;
 }
 
-void message(string str)
-{
-	PERMISSION_CHECK(!(previous_object() <- LIB_USTATE));
-
-	::message(str);
-}
-
 private string query_brief(object obj)
 {
 	string out;
-	
+
 	out = obj->query_property("bdesc");
-	
+
 	if (out) {
 		return out;
 	} else {
@@ -114,13 +153,13 @@ void show_room()
 	object env;
 	int index;
 	int sz;
-	
+
 	string bdesc;
 	string ldesc;
-	
+
 	mixed *sib;
 	mapping exits;
-	
+
 	/* todo: do an XYZ scan of the surrounding area */
 	/* Better yet, order the mobile to ask the body what it sees */
 

@@ -65,7 +65,7 @@ string query_banner(object LIB_CONN connection)
 				read_file("~/data/splash/telnet_banners/fgcolor/" + files[splash]),
 				read_file("~/data/splash/telnet_banners/bgcolor/" + files[splash])
 			);
-			
+
 			write_file("~/data/splash/telnet_banners/ansi/" + files[splash], ansi);
 		};
 		
