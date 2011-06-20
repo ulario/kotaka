@@ -26,40 +26,40 @@ shentino)
 	# dgd
 	for d in kfun net editor parser
 	do
-		ln -s ../../../sourceforge/dgd-osr/dgd-osr/doc/$d dgd/mud/doc
+		ln -s ../../../git/dgd-osr/doc/$d dgd/mud/doc
 	done
 
 	# kernel-lib
 	for d in efun hook lfun
 	do
-		ln -s ../../../../sourceforge/kernel-lib/kernel-lib/doc/kernel/$d dgd/mud/doc/kernel
+		ln -s ../../../../git/kernel-lib/doc/kernel/$d dgd/mud/doc/kernel
 	done
 
-	for d in sourceforge/kernel-lib/kernel-lib/kernel/*
+	for d in git/kernel-lib/kernel/*
 	do
 		ln -s ../../../$d dgd/mud/kernel
 	done
 
-	ln -s ../../../sourceforge/kernel-lib/kernel-lib/include/kernel dgd/mud/include
+	ln -s ../../../git/kernel-lib/include/kernel dgd/mud/include
 
 	# kotaka
-	for d in sourceforge/kotaka/kotaka/mudlib/mud/home/*
+	for d in git/kotaka/mudlib/mud/home/*
 	do
 		ln -s ../../../$d dgd/mud/home
 	done
 
-	for d in sourceforge/kotaka/kotaka/mudlib/mud/include/*
+	for d in git/kotaka/mudlib/mud/include/*
 	do
 		ln -s ../../../$d dgd/mud/include
 	done
 
 	# ulario
-	for d in sourceforge/kotaka/kotaka/testmud/mud/home/*
+	for d in git/kotaka/testmud/mud/home/*
 	do
 		ln -s ../../../$d dgd/mud/home
 	done
 
-	for d in sourceforge/kotaka/kotaka/testmud/mud/include/*
+	for d in git/kotaka/testmud/mud/include/*
 	do
 		ln -s ../../../$d dgd/mud/include
 	done

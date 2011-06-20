@@ -53,11 +53,8 @@
 
 /* daemons */
 
-#define ACCOUNTD	(USR_DIR + "/Kotaka/sys/accountd")
 #define CHANNELD	(USR_DIR + "/Kotaka/sys/channeld")
 #define SUBD		(USR_DIR + "/Kotaka/sys/subd")
-#define HELPD		(USR_DIR + "/Kotaka/sys/helpd")
-#define KOTAKA_USERD	(USR_DIR + "/Kotaka/sys/userd")
 #define DUMPD		(USR_DIR + "/Kotaka/sys/dumpd")
 #define PROPERTYD	(USR_DIR + "/Kotaka/sys/propertyd")
 #define STRINGD		(USR_DIR + "/Kotaka/sys/stringd")
