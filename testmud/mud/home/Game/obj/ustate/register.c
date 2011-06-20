@@ -2,6 +2,8 @@
 #include <kotaka/privilege.h>
 #include <kernel/user.h>
 
+#include <game/paths.h>
+
 inherit LIB_USTATE;
 
 int stopped;
@@ -20,6 +22,12 @@ static void create(int clone)
 
 static void destruct(int clone)
 {
+	if (username) {
+		if (ACCOUNTD->query_is_reserved(username)) {
+			ACCOUNTD->unreserve_account(username);
+		}
+	}
+
 	::destruct();
 }
 
@@ -39,7 +47,7 @@ private void prompt()
 void set_username(string new_username)
 {
 	ACCESS_CHECK(!query_user());
-	
+
 	username = new_username;
 }
 
@@ -82,8 +90,10 @@ private int username_valid()
 
 private int username_available()
 {
-	/* todo:  develop a user management system */
-	return random(2);
+	return !(
+		ACCOUNTD->query_is_reserved(username) ||
+		ACCOUNTD->query_is_registered(username)
+	);
 }
 
 void receive_in(string input)
@@ -103,6 +113,7 @@ void receive_in(string input)
 			un_invalid = 1;
 			send_out("Sorry, that username is already taken.\n");
 		} else {
+			ACCOUNTD->reserve_account(username);
 			query_user()->set_mode(MODE_NOECHO);
 		}
 	} else if (!password) {
@@ -113,9 +124,24 @@ void receive_in(string input)
 		query_user()->set_mode(MODE_ECHO);
 
 		if (input == password) {
-			send_out("Congratulations, you have successfully tested\nthe character registration shell.\n");
+			object user;
 
-			query_user()->set_uid(1337);
+			send_out("Account registered.  Welcome to Ulario.\n");
+
+			user = query_user();
+
+			user->set_name(username);
+			user->reset_class();
+
+			ACCOUNTD->register_account(
+				username, hash_string("crypt", password)
+			);
+
+			if (GAME_USERD->query_is_guest(user)) {
+				GAME_USERD->promote_guest(username, user);
+			} else {
+				GAME_USERD->add_user(username, user);
+			}
 
 			pop_state();
 

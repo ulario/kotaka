@@ -63,7 +63,7 @@ void begin()
 
 	body->set_property("position:x", radius * sin(angle));
 	body->set_property("position:y", radius * cos(angle));
-	
+
 	prompt();
 	reading = 1;
 }

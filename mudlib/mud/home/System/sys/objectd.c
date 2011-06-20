@@ -564,7 +564,7 @@ void compile(string owner, object obj, string *sources,
 	int index;
 	string path;
 	int upgraded;
-	
+
 	ACCESS_CHECK(previous_program() == DRIVER);
 
 	catch {

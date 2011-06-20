@@ -26,14 +26,6 @@ private void prompt()
 	send_out("[\033[1;35mHELP\033[0m] ");
 }
 
-void begin()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	prompt();
-	reading = 1;
-}
-
 void stop()
 {
 	ACCESS_CHECK(previous_object() == query_user());

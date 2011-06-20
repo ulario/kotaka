@@ -1,6 +1,8 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
+#include <game/paths.h>
+
 inherit LIB_USTATE;
 
 int stopped;
@@ -22,11 +24,11 @@ private void prompt()
 {
 	send_out("UlarioMUD connection menu\n");
 	send_out("-------------------------\n");
-	send_out("1. login an existing account\n");
-	send_out("2. register a new account\n");
-	send_out("3. connect as a guest\n");
-	send_out("4. help\n");
-	send_out("5. disconnect\n");
+	send_out("1. Login an existing account\n");
+	send_out("2. Register a new account\n");
+	send_out("3. Connect as a guest\n");
+	send_out("4. Help\n");
+	send_out("5. Disconnect\n");
 	send_out("> ");
 }
 
@@ -53,7 +55,8 @@ void pop(object state)
 
 	if (state <- "login" || state <- "register") {
 		dead = 1;
-		send_out("Bootstrap terminated, starting shell.\n");
+		GAME_USERD->add_guest(query_user());
+
 		swap_state(clone_object("shell"));
 		return;
 	}

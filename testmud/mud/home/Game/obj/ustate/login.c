@@ -2,6 +2,8 @@
 #include <kernel/user.h>
 #include <kotaka/privilege.h>
 
+#include <game/paths.h>
+
 inherit LIB_USTATE;
 
 int stopped;
@@ -24,17 +26,10 @@ static void destruct(int clone)
 private void prompt()
 {
 	if (!username) {
-		send_out("Username: ");
+		send_out("Login: ");
 	} else {
 		send_out("Password: ");
 	}
-}
-
-void begin()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	send_out("Login: ");
 }
 
 void stop()
@@ -77,13 +72,25 @@ void receive_in(string input)
 		int uid;
 		object shell;
 		object parent;
-		
+		object user;
+
+		if (!ACCOUNTD->query_is_registered(username)) {
+		}
+
 		send_out("\nLogged in\n");
-		query_user()->set_mode(MODE_ECHO);
-		
-		uid = "~/sys/accountd"->username_to_uid(username);
-		
-		query_user()->set_uid(uid);
+
+		user = query_user();
+		user->set_mode(MODE_ECHO);
+
+		user->set_name(username);
+		user->reset_class();
+
+		if (GAME_USERD->query_is_guest(user)) {
+			GAME_USERD->promote_guest(username, user);
+		} else {
+			GAME_USERD->add_user(username, user);
+		}
+
 		pop_state();
 
 		return;
