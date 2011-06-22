@@ -295,6 +295,8 @@ private void configure_logging()
 	LOGD->set_target("error", 255, "file:/log/error.log");
 	LOGD->set_target("error", 255, "driver");
 	LOGD->set_target("trace", 255, "file:/log/error.log");
+	LOGD->set_target("trace", 255, "null");
+	LOGD->set_target("trace", 0, "driver");
 }
 
 int forbid_inherit(string from, string path, int priv)
