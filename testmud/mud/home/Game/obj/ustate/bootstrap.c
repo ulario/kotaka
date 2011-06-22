@@ -100,12 +100,10 @@ void receive_in(string input)
 
 	switch(input) {
 	case "1":
-		send_out("Pushed login.\n");
 		push_state(clone_object("login"));
 		return;
 
 	case "2":
-		send_out("Pushed register.\n");
 		push_state(clone_object("register"));
 		return;
 
