@@ -3,7 +3,6 @@
 int max_uid;
 
 mapping passwords;
-static mapping reservations;
 
 private void save();
 private void restore();
@@ -13,7 +12,6 @@ static void create()
 	max_uid = 1;
 
 	passwords = ([ ]);
-	reservations = ([ ]);
 
 	restore();
 }
@@ -27,34 +25,7 @@ void register_account(string name, string password)
 	}
 
 	passwords[name] = password;
-	reservations[name] = nil;
 	save();
-}
-
-void reserve_account(string name)
-{
-	ACCESS_CHECK(GAME());
-
-	if (passwords[name]) {
-		error("Duplicate account");
-	}
-
-	if (reservations[name]) {
-		error("Duplicate reservation");
-	}
-
-	reservations[name] = 1;
-}
-
-void unreserve_account(string name)
-{
-	ACCESS_CHECK(GAME());
-
-	if (!reservations[name]) {
-		error("No such reservation");
-	}
-
-	reservations[name] = nil;
 }
 
 void unregister_account(string name)
@@ -72,11 +43,6 @@ void unregister_account(string name)
 int query_is_registered(string name)
 {
 	return !!passwords[name];
-}
-
-int query_is_reserved(string name)
-{
-	return !!reservations[name];
 }
 
 int authenticate(string name, string password)
