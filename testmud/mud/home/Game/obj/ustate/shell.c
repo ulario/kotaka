@@ -1,3 +1,5 @@
+#include <kernel/access.h>
+
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
@@ -25,18 +27,10 @@ private void prompt()
 	name = query_user()->query_name();
 
 	if (!name) {
-		send_out("[\033[1;30m(anonymous)\033[0m@ulario] ");
-		return;
+		name = "(anonymous)";
 	}
 
-	switch(query_user()->query_class()) {
-	case 0: send_out("[\033[1;34m"); break;
-	case 1: send_out("[\033[1;32m"); break;
-	case 2: send_out("[\033[1;33m"); break;
-	case 3: send_out("[\033[1;31m"); break;
-	}
-
-	send_out(query_user()->query_name() + "\033[0m@ulario] ");
+	send_out("[" + name + "@ulario] ");
 }
 
 void begin()
@@ -112,10 +106,10 @@ void do_who()
 	string **lists;
 	int sz, i;
 
-	lists = allocate(4);
+	lists = ({ ({ }), ({ }), ({ }) });
 
-	send_out("User list");
-	send_out("---------");
+	send_out("User list\n");
+	send_out("---------\n");
 
 	users = GAME_USERD->query_users();
 	sz = sizeof(users);
@@ -134,9 +128,9 @@ void do_who()
 			sz = sizeof(list);
 
 			switch(i) {
-			case 0: send_out("Players:\n");
-			case 1: send_out("Wizards:\n");
-			case 2: send_out("Administrators:\n");
+			case 0: send_out("Players:\n"); break;
+			case 1: send_out("Wizards:\n"); break;
+			case 2: send_out("Administrators:\n"); break;
 			}
 
 			for (j = 0; j < sz; j++) {
@@ -157,32 +151,39 @@ void do_help()
 	push_state(pager);
 }
 
-void do_say(string args)
+private void send_to_all(string phrase)
 {
-	object user;
-	string name;
-	object *users;
-	string phrase;
-	int class;
 	int sz;
+	object *users;
 
-	user = query_user();
-	name = user->query_name();
+	users = GAME_USERD->query_users();
 
-	if (class = user->query_class() == 0) {
+	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
+		users[sz]->message(phrase);
+	}
+}
+
+private void send_to_all_except(string phrase, object *exceptions)
+{
+	int sz;
+	object *users;
+
+	users = GAME_USERD->query_users() - exceptions;
+
+	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
+		users[sz]->message(phrase);
+	}
+}
+
+private string titled_name(string name, int class)
+{
+	if (name) {
+		STRINGD->to_title(name);
+	} else {
 		name = "(anonymous)";
 	}
 
-	args = STRINGD->trim_whitespace(args);
-
-	if (args == "") {
-		send_out("Cat got your tongue?\n");
-		return;
-	}
-
-	name = STRINGD->to_title(name);
-
-	switch(user->query_class()) {
+	switch(class) {
 	case 0:
 		name = "\033[1;34m" + name + "\033[0m";
 		break;
@@ -197,14 +198,149 @@ void do_say(string args)
 		break;
 	}
 
-	users = GAME_USERD->query_users() + GAME_USERD->query_guests();
-	users -= ({ user });
+	return name;
+}
 
-	user->message("You say: " + args + "\n");
+void do_say(string args)
+{
+	object user;
+	string name;
 
-	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
-		users[sz]->message(name + " says: " + args + "\n");
+	args = STRINGD->trim_whitespace(args);
+
+	if (args == "") {
+		send_out("Cat got your tongue?\n");
+		return;
 	}
+
+	user = query_user();
+	name = titled_name(user->query_name(), user->query_class());
+
+	send_out("You say: " + args + "\n");
+	send_to_all_except(name + " says: " + args + "\n", ({ user }) );
+}
+
+private void do_kick(string args)
+{
+	object user;
+	object turkey;
+	string kicker_name;
+
+	user = query_user();
+
+	if (user->query_class() < 2) {
+		send_out("You do not have sufficient access rights to kick someone from the mud.");
+		return;
+	}
+
+	if (args == "") {
+		send_out("Who do you wish to kick?\n");
+		return;
+	}
+
+	turkey = GAME_USERD->query_user(args);
+
+	if (!turkey) {
+		send_out("No such user is on the mud.\n");
+		return;
+	}
+
+	kicker_name = titled_name(user->query_name(), user->query_class());
+
+	user->message("You kick " + args + " from the mud.\n");
+	turkey->message(kicker_name + " kicks you from the mud!\n");
+	send_to_all_except(kicker_name + " kicks " + args + "from the mud!\n", ({ turkey, query_user() }) );
+
+	turkey->quit();
+}
+
+private void do_ban(string args)
+{
+	object turkey;
+	string kicker_name;
+
+	user = query_user();
+
+	if (user->query_class() < 3) {
+		send_out("You do not have sufficient access rights to ban someone from the mud.");
+		return;
+	}
+
+	if (args == "") {
+		send_out("Who do you wish to ban?\n");
+		return;
+	}
+
+	if (args == "admin") {
+		send_out("You cannot kick admin.\n");
+		return;
+	}
+
+	if (args == user->query_name()) {
+		send_out("You cannot kick yourself.\n");
+		return;
+	}
+
+	if (BAND->query_is_banned(args)) {
+		send_out("That user is already banned.\n");
+		return;
+	}
+
+	BAND->ban_username(args);
+
+	turkey = GAME_USERD->query_user(args);
+	kicker_name = titled_name(user->query_name(), user->query_class());
+
+	user->message("You ban " + args + " from the mud.\n");
+
+	send_to_all_except(args + " has been banned from the mud by " + kicker_name + ".\n", ({ turkey, query_user() }) );
+
+
+	if (turkey) {
+		turkey->message("You have been banned from the mud by " + kicker_name + "!\n");
+		turkey->quit();
+	}
+}
+
+private void do_unban(string args)
+{
+	string kicker_name;
+	object user;
+
+	user = query_user();
+
+	if (user->query_class() < 3) {
+		send_out("You do not have sufficient access rights to ban someone from the mud.");
+		return;
+	}
+
+	if (args == "") {
+		send_out("Who do you wish to ban?\n");
+		return;
+	}
+
+	if (args == "admin") {
+		send_out("You cannot ban admin.\n");
+		return;
+	}
+
+	if (args == user->query_name()) {
+		send_out("You cannot ban yourself.\n");
+		return;
+	}
+
+	if (!BAND->query_is_banned(args)) {
+		send_out("That user is not currently banned.\n");
+		return;
+	}
+
+	kicker_name = titled_name(user->query_name(), user->query_class());
+
+	user->message("You unban " + args + " from the mud.\n");
+
+	send_to_all_except(args + " has been unbanned from the mud by " + kicker_name + ".\n", ({ user }) );
+
+	BAND->unban_username(args);
 }
 
 void receive_in(string input)
@@ -244,6 +380,15 @@ void receive_in(string input)
 		return;
 	case "login":
 		push_state(clone_object("login"));
+		break;
+	case "unban":
+		do_unban(input);
+		break;
+	case "ban":
+		do_ban(input);
+		break;
+	case "kick":
+		do_kick(input);
 		break;
 	case "say":
 		do_say(input);

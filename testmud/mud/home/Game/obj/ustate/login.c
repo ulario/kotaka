@@ -75,31 +75,44 @@ void receive_in(string input)
 		object user;
 
 		if (!ACCOUNTD->query_is_registered(username)) {
-		}
-
-		send_out("\nLogged in\n");
-
-		user = query_user();
-		user->set_mode(MODE_ECHO);
-
-		user->set_name(username);
-		user->reset_class();
-
-		if (GAME_USERD->query_is_guest(user)) {
-			GAME_USERD->promote_guest(username, user);
+			username = nil;
+			send_out("Strange, that account has disappeared.\n");
+		} else if (BAND->query_is_banned(username)) {
+			send_out("Strange, that account has been banned.\n");
+			query_user()->quit();
+			return;
+		} else if (!ACCOUNTD->authenticate(username, input)) {
+			send_out("Wrong password.\n");
 		} else {
-			GAME_USERD->add_user(username, user);
+			send_out("\nLogged in\n");
+
+			user = query_user();
+			user->set_mode(MODE_ECHO);
+
+			user->set_name(username);
+
+			if (GAME_USERD->query_is_guest(user)) {
+				GAME_USERD->promote_guest(username, user);
+			} else {
+				GAME_USERD->add_user(username, user);
+			}
+
+			pop_state();
+
+			return;
 		}
-
-		pop_state();
-
-		return;
 	} else {
-		if (username_valid(input)) {
+		if (!username_valid(input)) {
+			send_out("Invalid username.\n");
+		} else if (!ACCOUNTD->query_is_registered(input)) {
+			send_out("No such account.\n");
+		} else if (BAND->query_is_banned(input)) {
+			send_out("That account is currently banned.");
+			query_user()->quit();
+			return;
+		} else {
 			username = input;
 			query_user()->set_mode(MODE_NOECHO);
-		} else {
-			send_out("Invalid username.\n");
 		}
 	}
 

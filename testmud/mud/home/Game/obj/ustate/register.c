@@ -22,12 +22,6 @@ static void create(int clone)
 
 static void destruct(int clone)
 {
-	if (username) {
-		if (ACCOUNTD->query_is_reserved(username)) {
-			ACCOUNTD->unreserve_account(username);
-		}
-	}
-
 	::destruct();
 }
 
@@ -88,14 +82,6 @@ private int username_valid()
 	return STRINGD->regex_match(username, "[0-9a-zA-Z-_]+");
 }
 
-private int username_available()
-{
-	return !(
-		ACCOUNTD->query_is_reserved(username) ||
-		ACCOUNTD->query_is_registered(username)
-	);
-}
-
 void receive_in(string input)
 {
 	ACCESS_CHECK(previous_object() == query_user());
@@ -109,11 +95,13 @@ void receive_in(string input)
 		if (!username_valid()) {
 			un_invalid = 1;
 			send_out("Sorry, that is not a valid username.\nValid usernames consist only of\nletters, numbers, hyphens, and underscores.\n");
-		} else if (!username_available()) {
+		} else if (BAND->query_is_banned(username)) {
+			un_invalid = 1;
+			send_out("Sorry, that username is currently banned.\n");
+		} else if (ACCOUNTD->query_is_registered(username)) {
 			un_invalid = 1;
 			send_out("Sorry, that username is already taken.\n");
 		} else {
-			ACCOUNTD->reserve_account(username);
 			query_user()->set_mode(MODE_NOECHO);
 		}
 	} else if (!password) {
@@ -124,28 +112,36 @@ void receive_in(string input)
 		query_user()->set_mode(MODE_ECHO);
 
 		if (input == password) {
-			object user;
-
-			send_out("Account registered.  Welcome to Ulario.\n");
-
-			user = query_user();
-
-			user->set_name(username);
-			user->reset_class();
-
-			ACCOUNTD->register_account(
-				username, hash_string("crypt", password)
-			);
-
-			if (GAME_USERD->query_is_guest(user)) {
-				GAME_USERD->promote_guest(username, user);
+			if (BAND->query_is_banned(username)) {
+				username = nil;
+				un_invalid = 1;
+				send_out("Looks like that username just got banned.\n");
+			} else if (ACCOUNTD->query_is_registered(username)) {
+				username = nil;
+				un_invalid = 1;
+				send_out("Looks like someone beat you to the punch.\n");
 			} else {
-				GAME_USERD->add_user(username, user);
+				object user;
+
+				send_out("Account registered.  Welcome to Ulario.\n");
+
+				ACCOUNTD->register_account(
+					username, password
+				);
+
+				user = query_user();
+				user->set_name(username);
+
+				if (GAME_USERD->query_is_guest(user)) {
+					GAME_USERD->promote_guest(username, user);
+				} else {
+					GAME_USERD->add_user(username, user);
+				}
+
+				pop_state();
+
+				return;
 			}
-
-			pop_state();
-
-			return;
 		} else {
 			password = nil;
 			send_out("Those passwords don't match.  Try again\n");
