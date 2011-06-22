@@ -5,6 +5,7 @@
 #define GAME_LIB_OBJECT		(USR_DIR + "/Game/lib/object")
 
 #define ALIASD			(USR_DIR + "/Game/sys/aliasd")
+#define BAND			(USR_DIR + "/Game/sys/band")
 #define ACCOUNTD		(USR_DIR + "/Game/sys/accountd")
 #define ROOT			(USR_DIR + "/Game/sys/root")
 #define SNOOPD			(USR_DIR + "/Game/sys/snoopd")
