@@ -13,12 +13,6 @@ object mobile;
 int keepalive;
 
 string name;
-int class;
-
-/* 0 = guest (blue) */
-/* 1 = player (green) */
-/* 2 = wizard (yellow) */
-/* 3 = admin (red) */
 
 mapping aliases;
 string *disabled;
@@ -40,34 +34,30 @@ static void destruct(int clone)
 	}
 }
 
-int query_class()
-{
-	return class;
-}
-
-void set_class(int new_class)
-{
-	ACCESS_CHECK(GAME());
-
-	class = new_class;
-}
-
-void reset_class()
-{
-	if (KERNELD->access(name, "/", FULL_ACCESS)) {
-		class = 3;
-	} else if (sizeof(KERNELD->query_users() & ({ name }) )) {
-		class = 2;
-	} else if (name) {
-		class = 1;
-	} else {
-		class = 0;
-	}
-}
-
 string query_name()
 {
 	return name;
+}
+
+int query_class()
+{
+	if (!name) {
+		return 0;
+	}
+
+	if (!ACCOUNTD->query_is_registered(name)) {
+		return 0;
+	}
+
+	if (KERNELD->access(name, "/", FULL_ACCESS)) {
+		return 3;
+	}
+
+	if (sizeof( KERNELD->query_users() & ({ name }) )) {
+		return 2;
+	}
+
+	return 1;
 }
 
 void set_name(string new_name)
