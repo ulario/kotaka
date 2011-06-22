@@ -322,8 +322,8 @@ void post_message(string facility, int priority, string message)
 			}
 		}
 	}
-	
-	if (facilities["*"]) {
+
+	if (!hits["null"] && facilities["*"]) {
 		mapping submap;
 		string *targets;
 		int *masks;
