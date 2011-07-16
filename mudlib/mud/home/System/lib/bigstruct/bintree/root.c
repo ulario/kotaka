@@ -98,23 +98,17 @@ static object sibling(object node)
 
 static atomic void rotate_left(object node)
 {
-	/*   P        P   */
-	/*                */
-	/*   N        R   */
-	/* a   R    N   c */
-	/*    b c  a b    */
-	
 	object parent;
 	object right;
 	object swivel;
-	
+
 	parent = node->get_parent();
 	right = node->get_right();
-	
+
 	ASSERT(right);
-	
+
 	swivel = right->get_left();
-	
+
 	if (parent) {
 		if (node == parent->get_left()) {
 			parent->set_left(right);
@@ -124,41 +118,31 @@ static atomic void rotate_left(object node)
 	} else {
 		top = right;
 	}
-	
+
 	if (swivel) {
 		swivel->set_parent(node);
 	}
-	
+
 	node->set_right(swivel);
 	node->set_parent(right);
-	
+
 	right->set_parent(parent);
 	right->set_left(node);
 }
 
-
-
-
-
 static atomic void rotate_right(object node)
 {
-	/*   P        P   */
-	/*                */
-	/*   L        N   */
-	/* a   N    L   c */
-	/*    b c  a b    */
-	
 	object parent;
 	object left;
 	object swivel;
-	
+
 	parent = node->get_parent();
 	left = node->get_left();
-	
+
 	ASSERT(left);
 
 	swivel = left->get_right();
-	
+
 	if (parent) {
 		if (node == parent->get_left()) {
 			parent->set_left(left);
@@ -168,14 +152,14 @@ static atomic void rotate_right(object node)
 	} else {
 		top = left;
 	}
-	
+
 	if (swivel) {
 		swivel->set_parent(node);
 	}
-	
+
 	node->set_left(swivel);
 	node->set_parent(left);
-	
+
 	left->set_parent(parent);
 	left->set_right(node);
 }
@@ -184,29 +168,29 @@ static atomic void swap_nodes(object a, object b)
 {
 	object al, ar, ap;
 	object bl, br, bp;
-	
+
 	al = a->get_left();
 	ar = a->get_right();
 	ap = a->get_parent();
-	
+
 	bl = b->get_left();
 	br = b->get_right();
 	bp = b->get_parent();
-	
+
 	if (bl) {
 		bl->set_parent(a);
 	}
 	if (br) {
 		br->set_parent(a);
 	}
-	
+
 	if (al) {
 		al->set_parent(b);
 	}
 	if (ar) {
 		ar->set_parent(b);
 	}
-	
+
 	if (ap) {
 		if (ap->get_left() == a) {
 			ap->set_left(b);
@@ -225,7 +209,7 @@ static atomic void swap_nodes(object a, object b)
 	} else {
 		top = a;
 	}
-	
+
 	if (al == b) {
 		al = a;
 	}
@@ -235,7 +219,7 @@ static atomic void swap_nodes(object a, object b)
 	if (ap == b) {
 		ap = a;
 	}
-	
+
 	if (bl == a) {
 		bl = b;
 	}
