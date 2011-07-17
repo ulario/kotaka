@@ -229,7 +229,7 @@ private void do_kick(string args)
 	user = query_user();
 
 	if (user->query_class() < 2) {
-		send_out("You do not have sufficient access rights to kick someone from the mud.");
+		send_out("You do not have sufficient access rights to kick someone from the mud.\n");
 		return;
 	}
 
@@ -262,7 +262,7 @@ private void do_ban(string args)
 	user = query_user();
 
 	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to ban someone from the mud.");
+		send_out("You do not have sufficient access rights to ban someone from the mud.\n");
 		return;
 	}
 
