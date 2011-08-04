@@ -210,18 +210,24 @@ atomic void set_element(mixed key, mixed value)
 	int bits;
 	mapping map;
 	int msz;
-	
+	mixed lkey;
+
 	check_caller(WRITE_ACCESS);
-	
+
 	if (typeof(key) != type) {
 		error("Type mismatch");
 	}
-	
+
 	node = find_node(key);
 	map = node->get_map();
-	
+
 	map[key] = value;
-	node->reset_low_key();
+	lkey = node->get_low_key();
+
+	if (lkey == nil || key < lkey) {
+		node->set_low_key(key);
+	}
+
 	mop_node(node);
 }
 

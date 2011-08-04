@@ -39,6 +39,13 @@ mixed get_low_key()
 	return low_key;
 }
 
+void set_low_key(mixed key)
+{
+	check_caller();
+
+	low_key = key;
+}
+
 void reset_low_key()
 {
 	mixed *keys;
