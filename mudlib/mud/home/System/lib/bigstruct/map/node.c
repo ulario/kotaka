@@ -64,20 +64,20 @@ mapping get_map()
 void set_map(mapping new_map)
 {
 	check_caller();
-	
+
 	map = new_map;
 }
 
 void insert_data(mapping data)
 {
 	check_caller();
-	
+
 	map += data;
 }
 
 void delete_data(mixed *keys)
 {
 	check_caller();
-	
+
 	map -= keys;
 }

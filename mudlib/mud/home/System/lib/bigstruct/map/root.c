@@ -156,7 +156,7 @@ private void split_node_right(object node)
 
 	node->set_map(low_map);
 	next->set_map(high_map);
-		
+
 	node->reset_low_key();
 	next->reset_low_key();
 }
@@ -195,12 +195,10 @@ private void mop_node(object node, varargs int back)
 
 private int mass_check(object node)
 {
-	int mass;
-	
 	if (node->get_mass() < MIN_MASS) {
 		return -1;
 	}
-	
+
 	if (node->get_mass() > MAX_MASS) {
 		return 1;
 	}

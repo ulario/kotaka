@@ -228,7 +228,7 @@ nomask void _F_sys_destruct()
 	} else {
 		destruct(clone);
 	}
-	
+
 	if (DRIVER->creator(base) != "System") {
 		_F_call_destructors();
 	}

@@ -15,9 +15,9 @@ static void create()
 static void check_caller(int access)
 {
 	object pobj;
-	
+
 	pobj = previous_object();
-	
+
 	if (!sscanf(object_name(pobj),
 		USR_DIR + "/System/%*s/bigstruct/%*s") == 2
 	) {
