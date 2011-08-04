@@ -42,12 +42,14 @@ int message_done()
 	return call_limited("limited_message_done");
 }
 
+#ifndef SYS_NETWORKING
 void open_datagram()
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	call_limited("limited_open_datagram");
 }
+#endif
 
 void receive_datagram(string packet)
 {
@@ -90,10 +92,12 @@ static int limited_message_done()
 	return ::message_done();
 }
 
+#ifndef SYS_NETWORKING
 static void limited_open_datagram()
 {
 	::open_datagram();
 }
+#endif
 
 static void limited_receive_datagram(string packet)
 {

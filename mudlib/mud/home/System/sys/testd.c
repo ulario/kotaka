@@ -267,6 +267,10 @@ void test()
 
 	LOGD->post_message("test", LOG_DEBUG, "TestD test battery beginning");
 
+#ifdef SYS_NETWORKING
+	LOGD->post_message("test", LOG_DEBUG, "There are " + sizeof(ports()) + " ports open.");
+#endif
+
 #if 0
 #	if 1
 	rlimits(200; 5000000) {

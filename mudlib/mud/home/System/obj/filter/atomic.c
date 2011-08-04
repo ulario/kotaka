@@ -48,10 +48,12 @@ atomic static int atomic_message_done()
 	return ::message_done();
 }
 
+# ifndef SYS_NETWORKING
 atomic static void atomic_open_datagram()
 {
 	::open_datagram();
 }
+# endif
 
 atomic static void atomic_receive_datagram(string packet)
 {
@@ -86,12 +88,14 @@ int message_done()
 	return atomic_message_done();
 }
 
+# ifndef SYS_NETWORKING
 void open_datagram()
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	atomic_open_datagram();
 }
+# endif
 
 void receive_datagram(string packet)
 {

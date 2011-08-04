@@ -117,6 +117,7 @@ int message_done()
 	return MODE_NOCHANGE;
 }
 
+# ifndef SYS_NETWORKING
 void open_datagram()
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN
@@ -124,6 +125,7 @@ void open_datagram()
 
 	conn::open_datagram(nil);
 }
+# endif
 
 void receive_datagram(string packet)
 {
