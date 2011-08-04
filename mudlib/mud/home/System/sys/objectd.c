@@ -135,7 +135,10 @@ void klib_recompile()
 
 		name = names[i];
 		name = name[0..strlen(name) - 3];
-		compile_object("/kernel/obj/" + name);
+
+		if (find_object("/kernel/obj/" + name)) {
+			compile_object("/kernel/obj/" + name);
+		}
 	}
 
 	dir = get_dir("/kernel/sys/*");
@@ -147,7 +150,9 @@ void klib_recompile()
 		name = names[i];
 		name = name[0..strlen(name) - 3];
 
-		compile_object("/kernel/sys/" + name);
+		if (find_object("/kernel/sys/" + name)) {
+			compile_object("/kernel/sys/" + name);
+		}
 	}
 }
 
