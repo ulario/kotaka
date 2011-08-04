@@ -7,7 +7,7 @@
 
 /* but if we have call_other, the other routines are mandatory */
 #if 1
-static mixed call_other(mixed obj, string function, varargs mixed args ...)
+static mixed call_other(mixed obj, string func, varargs mixed args ...)
 {
 	string path;
 	
@@ -33,11 +33,11 @@ static mixed call_other(mixed obj, string function, varargs mixed args ...)
 		error("Bad argument 1 for function call_other (target object " + path + " does not exist)");
 	}
 	
-	if (!function_object(function, obj)) {
-		error("Call to undefined function " + function + " in object " + path);
+	if (!function_object(func, obj)) {
+		error("Call to undefined function " + func + " in object " + path);
 	}
 	
-	return ::call_other(obj, function, args ...);
+	return ::call_other(obj, func, args ...);
 }
 #endif
 

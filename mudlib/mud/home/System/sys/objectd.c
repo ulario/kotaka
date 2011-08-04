@@ -763,7 +763,7 @@ mixed include_file(string compiled, string from, string path)
 	return path;
 }
 
-int touch(object obj, string function)
+int touch(object obj, string func)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
 	
@@ -771,21 +771,21 @@ int touch(object obj, string function)
 		if (obj <- SECOND_AUTO) {
 			string program;
 	
-			if (function == "_F_dummy") {
-				return obj->touch(function);
+			if (func == "_F_dummy") {
+				return obj->touch(func);
 			}
 
-			program = function_object(function, obj);
+			program = function_object(func, obj);
 
 			if (!program) {
-				return obj->touch(function);
+				return obj->touch(func);
 			}
 
 			if (sscanf(program, USR_DIR + "/System/%*s")) {
 				return 1;
 			}
 
-			return obj->touch(function);
+			return obj->touch(func);
 		} else {
 			return 0;
 		}
