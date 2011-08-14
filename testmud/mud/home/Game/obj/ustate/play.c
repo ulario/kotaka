@@ -11,9 +11,6 @@ int stopped;
 int reading;
 int introed;
 
-int born;
-int alive;
-
 object body;
 
 static void create(int clone)
@@ -99,8 +96,6 @@ void pre_end()
 
 	ACCESS_CHECK(previous_object() == query_user());
 
-	send_out("Exiting biolink.\n");
-
 	inv = body->query_inventory();
 
 	if (sz = sizeof(inv)) {
@@ -115,38 +110,9 @@ void pre_end()
 		send_out("No inventory.\n");
 	}
 
-	destruct_object(body->find_by_id("spirit"));
 	destruct_object(body);
 
 	call_out("self_destruct", 5);
-}
-
-private void scan_world()
-{
-	object root;
-	object *kids;
-	
-	int i;
-	int sz;
-	
-	root = find_object(ROOT);
-	
-	kids = root->query_inventory();
-	kids -= ({ body });
-	sz = sizeof(kids);
-	
-	for (i = 0; i < sz; i++) {
-		object obj;
-		float x, y, z;
-		
-		obj = kids[i];
-		
-		x = obj->query_property("position:x");
-		y = obj->query_property("position:y");
-		z = obj->query_property("position:z");
-		send_out("Object " + object_name(obj) + " located at (" +
-			x + ", " + y + ", " + z + ")\n");
-	}
 }
 
 private void do_help()

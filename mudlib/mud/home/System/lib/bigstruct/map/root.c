@@ -19,7 +19,7 @@ int type;
 atomic static void create()
 {
 	::create();
-	
+
 	top = insert_node(nil);
 }
 
@@ -31,18 +31,18 @@ static void destruct()
 void clear()
 {
 	check_caller(WRITE_ACCESS);
-	
+
 	::clear();
-	
+
 	top = insert_node(nil);
 }
 
 void set_type(int new_type)
 {
 	check_caller(WRITE_ACCESS);
-	
+
 	ASSERT(type == 0);
-	
+
 	switch (new_type) {
 	case T_INT:
 	case T_FLOAT:
@@ -62,19 +62,19 @@ private object find_node(mixed key)
 
 	while (node) {
 		mixed this_key;
-		
+
 		this_key = node->get_low_key();
-		
+
 		if (this_key == nil) {
 			/* empty node */
 			return node;
 		}
-		
+
 		if (key < this_key) {
 			object new_node;
-			
+
 			new_node = node->get_left();
-			
+
 			if (new_node) {
 				node = new_node;
 			} else {
@@ -83,9 +83,9 @@ private object find_node(mixed key)
 			}
 		} else {
 			object next;
-			
+
 			next = next_node(node);
-			
+
 			if (!next) {
 				/* reached end */
 				return node;
@@ -122,35 +122,34 @@ private void merge_node_right(object node)
 	
 	node->set_map(node->get_map() + next->get_map());
 	node->reset_low_key();
-	
+
 	next->set_map( ([ ]) );
 	delete_node(next);
 }
 
 private void split_node_right(object node)
 {
-	/* split */
 	object next;
 	mixed *keys;
 	int sz;
-	
+
 	mapping map;
 	mapping low_map;
 	mapping high_map;
-	
+
 	mixed low_key;
 	mixed high_key;
-	
+
 	next = insert_node(next_node(node));
-	
+
 	map = node->get_map();
 	keys = map_indices(map);
-	
+
 	sz = sizeof(keys);
-	
+
 	low_key = keys[sz / 2 - 1];
 	high_key = keys[sz / 2];
-	
+
 	low_map = map[.. low_key];
 	high_map = map[high_key ..];
 
@@ -166,7 +165,7 @@ private int mass_check(object node);
 private void mop_node(object node, varargs int back)
 {
 	int check;
-	
+
 	while (check = mass_check(node)) {
 		if (check == -1) {
 			if (back) {
@@ -248,7 +247,6 @@ mixed get_element(mixed key)
 }
 
 /* slicing */
-
 object slice(mixed first, mixed last)
 {
 	check_caller(READ_ACCESS);
@@ -264,32 +262,32 @@ object get_indices()
 	object node;
 	mixed *indices;
 	int index;
-	
+
 	check_caller(READ_ACCESS);
-	
+
 	array = new_object("~/lwo/bigstruct/array/root");
-	
+
 	node = leftest(top);
-	
+
 	while (node) {
 		mapping map;
 		int index2;
 		int sz;
-		
+
 		map = node->get_map();
 		indices = ::map_indices(map);
 		sz = sizeof(indices);
-		
+
 		array->set_size(index + sz);
-		
+
 		for (index2 = 0; index2 < sz; index2++) {
 			array->set_element(index + index2, indices[index2]);
 		}
-		
+
 		index += sz;
 		node = next_node(node);
 	}
-	
+
 	return array;
 }
 
@@ -342,47 +340,47 @@ atomic void reindex()
 	int quota;
 	int nodes;
 	mapping map;
-	
+
 	/* require write access because this is an intense operation */
 	check_caller(WRITE_ACCESS);
-	
+
 	deque = new_object(BIGSTRUCT_DEQUE_LWO);
-	
+
 	node = leftest(top);
-	
+
 	while (node != nil) {
 		mixed *indices, *values;
 		int sz, i;
-		
+
 		map = node->get_map();
 		node = next_node(node);
-		
+
 		sz = map_sizeof(map);
-		
+
 		indices = map_indices(map);
 		values = map_values(map);
-		
+
 		for (i = 0; i < sz; i++) {
 			deque->push_back(indices[i]);
 			deque->push_back(values[i]);
 		}
 	}
-	
+
 	nodes = 0;
-	
+
 	discard_node(top);
 	top = nil;
 	top = insert_node(nil);
 	node = top;
-	
+
 	quota = (MIN_MASS + MAX_MASS) / 2;
 	map = ([ ]);
 	node->set_map(map);
-	
+
 	while (!deque->empty()) {
 		mixed index;
 		mixed value;
-		
+
 		if (quota == 0) {
 			node->reset_low_key();
 			map = ([ ]);
@@ -390,14 +388,14 @@ atomic void reindex()
 			node->set_map(map);
 			quota = (MIN_MASS + MAX_MASS) / 2;
 		}
-		
+
 		index = deque->get_front();
 		deque->pop_front();
 		value = deque->get_front();
 		deque->pop_front();
-		
+
 		map[index] = value;
-		
+
 		quota--;
 	}
 

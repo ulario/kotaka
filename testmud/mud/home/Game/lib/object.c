@@ -28,11 +28,11 @@ static void destruct()
 	int index;
 	object env;
 	object *children;
-	
+
 	children = query_inventory();
 	env = query_environment();
 	sz = sizeof(children);
-	
+
 	for (index = 0; index < sz; index++) {
 		children[index]->move(env);
 	}

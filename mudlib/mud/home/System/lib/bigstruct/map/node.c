@@ -16,7 +16,7 @@ mixed low_key;
 static void create()
 {
 	::create();
-	
+
 	map = ([ ]);
 }
 
@@ -35,7 +35,7 @@ int get_mass()
 mixed get_low_key()
 {
 	check_caller();
-	
+
 	return low_key;
 }
 
@@ -49,11 +49,11 @@ void set_low_key(mixed key)
 void reset_low_key()
 {
 	mixed *keys;
-	
+
 	check_caller();
-	
+
 	keys = map_indices(map);
-	
+
 	if (sizeof(keys)) {
 		low_key = keys[0];
 	} else {
@@ -64,7 +64,7 @@ void reset_low_key()
 mapping get_map()
 {
 	check_caller();
-	
+
 	return map;
 }
 

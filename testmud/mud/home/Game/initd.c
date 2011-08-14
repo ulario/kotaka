@@ -34,8 +34,6 @@ int wsave_pending;
 
 string bits(string input);
 static void do_test();
-private mixed load_from_file(string filename);
-private void save_to_file(mixed value, string filename);
 
 /****************/
 /* Constructors */
