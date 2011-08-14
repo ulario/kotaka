@@ -157,7 +157,14 @@ private void truncate_to(object node, int new_size)
 int get_size()
 {
 	check_caller(READ_ACCESS);
-	
+
+	return size;
+}
+
+int query_size()
+{
+	check_caller(READ_ACCESS);
+
 	return size;
 }
 

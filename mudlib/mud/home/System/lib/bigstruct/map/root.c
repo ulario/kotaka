@@ -327,39 +327,39 @@ object get_values()
 	object node;
 	mixed *values;
 	int index;
-	
+
 	check_caller(READ_ACCESS);
-	
+
 	array = new_object("~/lwo/bigstruct/array/root");
-	
+
 	node = leftest(top);
-	
+
 	while (node) {
 		mapping map;
 		int index2;
 		int sz;
-		
+
 		map = node->get_map();
 		values = ::map_values(map);
 		sz = sizeof(values);
-		
+
 		array->set_size(index + sz);
-		
+
 		for (index2 = 0; index2 < sz; index2++) {
 			array->set_element(index + index2, values[index2]);
 		}
-		
+
 		index += sz;
 		node = next_node(node);
 	}
-	
+
 	return array;
 }
 
 void rebalance()
 {
-	check_caller(READ_ACCESS);
-	
+	check_caller(WRITE_ACCESS);
+
 	::rebalance();
 }
 
