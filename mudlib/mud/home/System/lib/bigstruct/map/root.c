@@ -104,10 +104,15 @@ private object find_node(mixed key)
 private void merge_node_left(object node)
 {
 	object prev;
-	
+	mapping map;
+
 	prev = prev_node(node);
-	
-	node->set_map(node->get_map() + prev->get_map());
+
+	map = node->get_map() + prev->get_map();
+
+	node->set_map(map);
+	node->set_size(map_sizeof(map));
+
 	node->reset_low_key();
 	
 	prev->set_map( ([ ]) );
@@ -117,10 +122,15 @@ private void merge_node_left(object node)
 private void merge_node_right(object node)
 {
 	object next;
-	
+	mapping map;
+
 	next = next_node(node);
-	
-	node->set_map(node->get_map() + next->get_map());
+
+	map = node->get_map() + next->get_map();
+
+	node->set_map(map);
+	node->set_size(map_sizeof(map));
+
 	node->reset_low_key();
 
 	next->set_map( ([ ]) );
@@ -154,15 +164,17 @@ private void split_node_right(object node)
 	high_map = map[high_key ..];
 
 	node->set_map(low_map);
+	node->set_size(sz / 2);
 	next->set_map(high_map);
+	next->set_size((sz + 1) / 2);
 
-	node->reset_low_key();
-	next->reset_low_key();
+	node->set_low_key(keys[0]);
+	next->set_low_key(high_key);
 }
 
 private int mass_check(object node);
 
-private void mop_node(object node, varargs int back)
+private void check_node(object node, varargs int back)
 {
 	int check;
 
@@ -187,18 +199,23 @@ private void mop_node(object node, varargs int back)
 			}
 		} else if (check == 1) {
 			split_node_right(node);
-			split_node_right(node);
 		}
 	}
 }
 
 private int mass_check(object node)
 {
-	if (node->get_mass() < MIN_MASS) {
+	int size;
+
+	size = map_sizeof(node->get_map());
+
+	node->set_size(size);
+
+	if (size < MIN_MASS) {
 		return -1;
 	}
 
-	if (node->get_mass() > MAX_MASS) {
+	if (size > MAX_MASS) {
 		return 1;
 	}
 }
@@ -206,10 +223,10 @@ private int mass_check(object node)
 atomic void set_element(mixed key, mixed value)
 {
 	object node;
-	int bits;
 	mapping map;
-	int msz;
 	mixed lkey;
+	int size;
+	int change;
 
 	check_caller(WRITE_ACCESS);
 
@@ -220,14 +237,27 @@ atomic void set_element(mixed key, mixed value)
 	node = find_node(key);
 	map = node->get_map();
 
-	map[key] = value;
-	lkey = node->get_low_key();
-
-	if (lkey == nil || key < lkey) {
-		node->set_low_key(key);
+	if (map[key] == nil) {
+		if (value == nil) {
+			return; /* do nothing */
+		} else {
+			size = node->get_size() + 1;
+			change = 1;
+		}
+	} else if (value == nil) {
+		size = node->get_size() - 1;
+		change = 1;
+	} else {
+		size = node->get_size();
 	}
 
-	mop_node(node);
+	map[key] = value;
+
+	if (size < MAX_MASS || size > MAX_MASS) {
+		check_node(node);
+	} else if (change) {
+		node->set_size(size);
+	}
 }
 
 mixed get_element(mixed key)

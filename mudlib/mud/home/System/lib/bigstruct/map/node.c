@@ -12,6 +12,7 @@ inherit "../bintree/node";
 
 mapping map;
 mixed low_key;
+int size;
 
 static void create()
 {
@@ -87,4 +88,18 @@ void delete_data(mixed *keys)
 	check_caller();
 
 	map -= keys;
+}
+
+int get_size()
+{
+	check_caller();
+
+	return size;
+}
+
+void set_size(int new_size)
+{
+	check_caller();
+
+	size = new_size;
 }
