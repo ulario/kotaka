@@ -22,8 +22,8 @@ static void create()
 void enable()
 {
 	ACCESS_CHECK(SYSTEM());
-	
-	garbage = new_object(BIGSTRUCT_DEQUE_LWO);
+
+	garbage = clone_object(BIGSTRUCT_DEQUE_OBJ);
 }
 
 int get_mass()

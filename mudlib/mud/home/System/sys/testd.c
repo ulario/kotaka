@@ -252,17 +252,17 @@ void test()
 
 #if 1
 #	if 1
-	rlimits(200; 5000000) {
+	rlimits(200; -1) {
 		test_bigstruct_array();
 	}
 #	endif
 #	if 1
-	rlimits(200; 50000000) {
+	rlimits(200; -1) {
 		test_bigstruct_deque();
 	}
 #	endif
 #	if 1
-	rlimits(200; 100000000) {
+	rlimits(200; -1) {
 		test_bigstruct_map();
 	}
 #	endif

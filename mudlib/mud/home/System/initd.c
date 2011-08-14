@@ -254,8 +254,6 @@ private void configure_klib()
 
 	KERNELD->add_owner("Secret");
 
-	KERNELD->set_rsrc("tick usage", -1, 5, 1);
-
 	wizards = KERNELD->query_users();
 
 	for (index = 0; index < sizeof(wizards); index++) {
@@ -295,7 +293,7 @@ private void configure_logging()
 	LOGD->set_target("error", 255, "file:/log/error.log");
 	LOGD->set_target("error", 255, "driver");
 	LOGD->set_target("trace", 255, "file:/log/error.log");
-	LOGD->set_target("trace", 255, "null");
+	LOGD->set_target("trace", 255, "driver");
 	LOGD->set_target("trace", 0, "driver");
 }
 

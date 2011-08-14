@@ -3,13 +3,13 @@ int callout;
 
 static void create()
 {
-	interval = 0.1;
+	interval = 1.0;
 	callout = call_out("spark", interval);
 }
 
 atomic void set_interval(float new_interval)
 {
-	if (new_interval <= 0.0) {
+	if (new_interval < 0.0) {
 		error("Bad interval");
 	}
 	
