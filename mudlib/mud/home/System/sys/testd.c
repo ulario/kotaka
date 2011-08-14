@@ -152,7 +152,6 @@ private void test_bigstruct_map()
 {
 	int i;
 	object map;
-	object iter;
 
 	map = new_object(BIGSTRUCT_MAP_LWO);
 	map->set_type(T_STRING);
@@ -180,27 +179,7 @@ private void test_bigstruct_map()
 		map->set_element(i, i);
 		ASSERT(map->get_element(i) == i);
 	}
-	
-	map->reindex();
 
-	iter = map->begin();
-	for (i = 0; i < 1000; i++) {
-		ASSERT(iter->get_value() == i);
-
-		if (i % 100 == 0) {
-			LOGD->post_message("test", LOG_DEBUG,
-				"Iterator test " + (i / 10)
-				+ " percent complete");
-		}
-		iter->increment();
-	}
-	ASSERT(iter->get_index() == nil);
-	for (i = 999; i >= 0; i--) {
-		iter->decrement();
-		ASSERT(iter->get_value() == i);
-	}
-	
-	ASSERT(iter->get_index() == 0);
 	map->clear();
 
 	LOGD->post_message("test", LOG_DEBUG,
@@ -271,7 +250,7 @@ void test()
 	LOGD->post_message("test", LOG_DEBUG, "There are " + sizeof(ports()) + " ports open.");
 #endif
 
-#if 0
+#if 1
 #	if 1
 	rlimits(200; 5000000) {
 		test_bigstruct_array();
