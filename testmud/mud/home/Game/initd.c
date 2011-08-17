@@ -105,32 +105,14 @@ string bits(string input)
 /* System hooks */
 /****************/
 
-int forbid_inherit(string from, string path, int priv)
+string query_destructor(string path)
 {
-}
-
-private mixed load_from_file(string filename)
-{
-	return "~Kotaka/sys/parse/value"->parse(read_file(filename));
-}
-
-private void save_to_file(mixed value, string filename)
-{
-	remove_file(filename);
-	write_file(filename,
-		STRINGD->tree_sprint(value) + "\n");
-}
-
-object make_lwo(string path)
-{
-	ACCESS_CHECK(previous_program() == PARSE_DUMP);
-	
-	return new_object(path);
-}
-
-object make_clone(string path)
-{
-	ACCESS_CHECK(previous_program() == DUMPD);
-	
-	return clone_object(path);
+	switch(path) {
+	case USR_DIR + "/Game/lib/time":
+		return "time_destruct";
+	case USR_DIR + "/Game/lib/object":
+		return "gobj_destruct";
+	default:
+		LOGD->post_message("game", LOG_INFO, "No destructor registered for " + path);
+	}
 }

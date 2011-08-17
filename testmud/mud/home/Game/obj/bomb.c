@@ -8,7 +8,7 @@
 static void create(int clone)
 {
 	if (clone) {
-		call_out("check", 0);
+		call_out("check", TEST_CO_INTERVAL);
 	}
 }
 

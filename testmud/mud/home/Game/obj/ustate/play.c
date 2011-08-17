@@ -25,41 +25,15 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	if (alive) {
-		send_out("(\033[32mbody\033[37m) > ");
-	} else if (born) {
-		send_out("(\033[31mspirit\033[37m) > ");
-	} else {
-		send_out("(\033[34mspirit\033[37m) > ");
-	}
+	send_out("(\033[32mprimitive human\033[37m) > ");
 }
 
 void begin()
 {
-	float angle;
-	float radius;
-	object spirit;
-
 	ACCESS_CHECK(previous_object() == query_user());
 
-	send_out("Linking...done\n");
-
-	body = clone_object("~/obj/demo/monster/wolf");
-	body->set_id_base("wolf");
-	body->move(find_object(ROOT));
-
-	spirit = clone_object("~/obj/demo/monster/spirit");
-	spirit->set_id_base("spirit");
-	spirit->move(body);
-
-	ASSERT(spirit->query_environment() == body);
-
-	body->set_property("angle", SUBD->rnd() * 360.0);
-	angle = SUBD->rnd() * PI * 2.0;
-	radius = sqrt(SUBD->rnd()) * 20.0;
-
-	body->set_property("position:x", radius * sin(angle));
-	body->set_property("position:y", radius * cos(angle));
+	body = GAME_TESTD->conjure_human();
+	body->set_user(query_user());
 
 	prompt();
 	reading = 1;

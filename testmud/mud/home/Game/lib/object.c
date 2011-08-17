@@ -22,7 +22,7 @@ static void create()
 	set_id_base(parts[sizeof(parts) - 1]);
 }
 
-static void destruct()
+static void gobj_destruct()
 {
 	int sz;
 	int index;
