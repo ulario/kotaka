@@ -163,25 +163,25 @@ void pop_back()
 	sub[--end] = nil;
 }
 
-mixed get_data(int index)
+mixed get_element(int index)
 {
 	check_caller();
-	
+
 	if (index < begin || index >= end) {
 		error("Subscript out of range");
 	}
-	
+
 	return sub[index];
 }
 
-void set_data(int index, mixed data)
+void set_element(int index, mixed data)
 {
 	check_caller();
-	
+
 	if (index < begin || index >= end) {
 		error("Subscript out of range");
 	}
-	
+
 	sub[index] = data;
 }
 

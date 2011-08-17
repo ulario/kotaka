@@ -148,7 +148,7 @@ atomic void clear()
 	}
 }
 
-int get_mass()
+int get_size()
 {
 	object node;
 	int mass;
@@ -165,6 +165,46 @@ int get_mass()
 	}
 
 	return mass;
+}
+
+mixed get_element(int index)
+{
+	object node;
+	int mass;
+
+	check_caller(READ_ACCESS);
+
+	node = first;
+
+	while (node && (mass = node->get_mass()) > index) {
+		index -= mass;
+	}
+
+	if (!node) {
+		error("Subscript out of range");
+	}
+
+	return node->get_element(index);
+}
+
+void set_element(int index, mixed value)
+{
+	object node;
+	int mass;
+
+	check_caller(WRITE_ACCESS);
+
+	node = first;
+
+	while (node && (mass = node->get_mass()) > index) {
+		index -= mass;
+	}
+
+	if (!node) {
+		error("Subscript out of range");
+	}
+
+	node->set_element(index, value);
 }
 
 void dump()
