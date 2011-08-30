@@ -1,5 +1,4 @@
 #include <kotaka/paths.h>
-#include <kernel/user.h>
 #include <kotaka/privilege.h>
 
 #include <game/paths.h>
@@ -8,14 +7,12 @@ inherit LIB_USTATE;
 
 int stopped;
 int reading;
-
-string username;
-object authd;
+int strikes;
+int dead;
 
 static void create(int clone)
 {
 	::create();
-	authd = find_object("~/sys/authd");
 }
 
 static void destruct(int clone)
@@ -25,11 +22,19 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	if (!username) {
-		send_out("Login: ");
-	} else {
-		send_out("Password: ");
-	}
+	send_out("UlarioMUD connection menu\n");
+	send_out("-------------------------\n");
+	send_out("1. Login an existing account\n");
+	send_out("2. Register a new account\n");
+	send_out("3. Connect as a guest\n");
+	send_out("4. Help\n");
+	send_out("5. Disconnect\n");
+	send_out("> ");
+}
+
+void begin()
+{
+	ACCESS_CHECK(previous_object() == query_user());
 }
 
 void stop()
@@ -37,6 +42,24 @@ void stop()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	stopped = 1;
+}
+
+void pop(object state)
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
+	if (dead) {
+		send_out("Dead bootstrap, ignoring pop.\n");
+		return;
+	}
+
+	if (state <- "login" || state <- "register") {
+		dead = 1;
+		GAME_USERD->add_guest(query_user());
+
+		swap_state(clone_object("shell"));
+		return;
+	}
 }
 
 void go()
@@ -50,6 +73,13 @@ void go()
 	}
 }
 
+void pre_end()
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
+	dead = 1;
+}
+
 void end()
 {
 	ACCESS_CHECK(previous_object() == query_user());
@@ -57,9 +87,9 @@ void end()
 	destruct_object(this_object());
 }
 
-private int username_valid(string username)
+private void do_help()
 {
-	return STRINGD->regex_match(username, "[0-9a-zA-Z-_]+");
+	send_out(read_file("~/data/doc/guest_help"));
 }
 
 void receive_in(string input)
@@ -68,51 +98,36 @@ void receive_in(string input)
 
 	reading = 1;
 
-	if (username) {
-		int uid;
-		object shell;
-		object parent;
-		object user;
+	switch(input) {
+	case "1":
+		push_state(clone_object("login"));
+		return;
 
-		if (!ACCOUNTD->query_is_registered(username)) {
-			username = nil;
-			send_out("Strange, that account has disappeared.\n");
-		} else if (BAND->query_is_banned(username)) {
-			send_out("Strange, that account has been banned.\n");
+	case "2":
+		push_state(clone_object("register"));
+		return;
+
+	case "3":
+		swap_state(clone_object("shell"));
+		return;
+
+	case "4":
+		do_help();
+		break;
+
+	case "5":
+		send_out("Thanks for visiting.\n");
+		query_user()->quit();
+		return;
+
+	default:
+		strikes++;
+		switch(strikes)
+		{
+		case 1: send_out("Please choose a number.\n"); break;
+		case 2: send_out("Come back when you make up your mind.\n");
 			query_user()->quit();
 			return;
-		} else if (!ACCOUNTD->authenticate(username, input)) {
-			send_out("Wrong password.\n");
-		} else {
-			send_out("\nLogged in\n");
-
-			user = query_user();
-			user->set_mode(MODE_ECHO);
-
-			user->set_name(username);
-
-			if (GAME_USERD->query_is_guest(user)) {
-				GAME_USERD->promote_guest(username, user);
-			} else {
-				GAME_USERD->add_user(username, user);
-			}
-
-			pop_state();
-
-			return;
-		}
-	} else {
-		if (!username_valid(input)) {
-			send_out("Invalid username.\n");
-		} else if (!ACCOUNTD->query_is_registered(input)) {
-			send_out("No such account.\n");
-		} else if (BAND->query_is_banned(input)) {
-			send_out("That account is currently banned.");
-			query_user()->quit();
-			return;
-		} else {
-			username = input;
-			query_user()->set_mode(MODE_NOECHO);
 		}
 	}
 
