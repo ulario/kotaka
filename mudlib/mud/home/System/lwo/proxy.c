@@ -205,7 +205,7 @@ int rename_file(string from, string to)
 	VERIFY();
 	from = normalize(from);
 	to = normalize(to);
-	
+
 	return ::rename_file(from, to);
 }
 

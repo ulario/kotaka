@@ -295,7 +295,6 @@ private void do_ban(string args)
 
 	send_to_all_except(args + " has been banned from the mud by " + kicker_name + ".\n", ({ turkey, query_user() }) );
 
-
 	if (turkey) {
 		turkey->message("You have been banned from the mud by " + kicker_name + "!\n");
 		turkey->quit();
@@ -335,11 +334,8 @@ private void do_unban(string args)
 	}
 
 	kicker_name = titled_name(user->query_name(), user->query_class());
-
 	user->message("You unban " + args + " from the mud.\n");
-
 	send_to_all_except(args + " has been unbanned from the mud by " + kicker_name + ".\n", ({ user }) );
-
 	BAND->unban_username(args);
 }
 

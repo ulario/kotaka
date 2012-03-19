@@ -120,7 +120,7 @@ void prepare_reboot()
 {
 	int sz;
 	int index;
-	
+
 	ACCESS_CHECK(KERNEL());
 
 	ACCESSD->save();
@@ -128,7 +128,7 @@ void prepare_reboot()
 	set_status("rebooting");
 
 	sz = sizeof(subsystems);
-	
+
 	for (index = sz - 1; index >= 1; index--) {
 		catch {
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "prepare_reboot");
@@ -142,7 +142,7 @@ void clear_admin()
 {
 	string *resources;
 	int index;
-	
+
 	resources = KERNELD->query_resources();
 
 	for (index = 0; index < sizeof(resources); index++) {
@@ -157,20 +157,20 @@ void reboot()
 	int sz;
 
 	ACCESS_CHECK(KERNEL());
-	
+
 	LOGD->post_message("system", LOG_NOTICE, "rebooted successfully");
 	set_status("ok");
 
 	bogus = 0;
-	
+
 	clear_admin();
 
 	catch {
 		PORTD->reboot();
 	}
-	
+
 	WATCHDOGD->reboot();
-	
+
 	sz = sizeof(subsystems);
 
 	for (index = 1; index < sz; index++) {
@@ -185,14 +185,13 @@ void bogus_reboot()
 {
 	int sz;
 	int index;
-	
+
 	LOGD->post_message("system", LOG_NOTICE, "state dumped");
-	
 
 	set_status("ok");
-	
+
 	sz = sizeof(subsystems);
-	
+
 	for (index = 1; index < sz; index++) {
 		catch {
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "bogus_reboot");
@@ -238,7 +237,7 @@ void message(string str)
 private void boot_subsystem(string subsystem)
 {
 	subsystems += ({ subsystem });
-	
+
 	KERNELD->add_user(subsystem);
 	KERNELD->add_owner(subsystem);
 
@@ -264,7 +263,7 @@ private void configure_klib()
 mapping read_init_file(string subsystem)
 {
 	string buf;
-	
+
 	if (!file_info(USR_DIR + "/" + subsystem + "/boot.ini")) {
 		return nil;
 	}
@@ -300,14 +299,14 @@ private void configure_logging()
 int forbid_inherit(string from, string path, int priv)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
-	
+
 	if (sscanf(from, USR_DIR + "/System/%*s")) {
 		return 0;
 	}
-	
+
 	if (sscanf(path, USR_DIR + "/System/closed/%*s")) {
 		return 1;
 	}
-	
+
 	return 0;
 }

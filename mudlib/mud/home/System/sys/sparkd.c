@@ -12,7 +12,7 @@ atomic void set_interval(float new_interval)
 	if (new_interval < 0.0) {
 		error("Bad interval");
 	}
-	
+
 	remove_call_out(callout);
 	interval = new_interval;
 }

@@ -30,17 +30,17 @@ static void suspend()
 static void bomb(int quota)
 {
 	int max;
-	
+
 	max = (int)sqrt((float)quota);
-	
+
 	if (quota % max != 0) {
 		max = quota % max;
 	}
-	
+
 	if (max > quota) {
 		max = quota;
 	}
-	
+
 	for (; quota > 0 && max > 0; quota--, max--) {
 		clone_object("~/obj/bomb");
 	}

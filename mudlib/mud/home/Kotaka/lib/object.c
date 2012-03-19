@@ -606,21 +606,21 @@ atomic nomask void _F_move(object new_env)
 	CHECKARG(!new_env || new_env <- LIB_OBJECT, 1, "move");
 
 	this = this_object();
-	
+
 	if (new_env) {
 		if (query_owner() != new_env->query_owner()) {
 			error("Owner mismatch");
 		}
-	
+
 		if (_F_is_container_of(new_env)) {
 			error("Cyclic containment attempted");
 		}
 	}
-	
+
 	if (new_env == environment) {
 		return;
 	}
-	
+
 	base = _F_query_id_base();
 
 	if (new_env) {
@@ -628,7 +628,7 @@ atomic nomask void _F_move(object new_env)
 	} else {
 		new_number = 1;
 	}
-	
+
 	if (environment) {
 		environment->_F_del_inventory(this_object());
 	}
@@ -645,17 +645,17 @@ void move(object new_env)
 {
 	object old_env;
 	object this;
-	
+
 	old_env = environment;
-	
+
 	this = this_object();
-	
+
 	PERMISSION_CHECK(!old_env || !old_env->forbid_remove(this));
 	PERMISSION_CHECK(!forbid_move(new_env));
 	PERMISSION_CHECK(!new_env || !new_env->forbid_insert(this));
-	
+
 	_F_move(new_env);
-	
+
 	if (old_env) {
 		old_env->remove_notify(this);
 	}
@@ -697,37 +697,37 @@ private string *removed_properties;
 nomask mapping _F_query_local_properties()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	return deep_copy(properties);
 }
 
 nomask void _F_set_local_properties(mapping prop)
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	properties = deep_copy(prop);
 }
 
 nomask void _F_clear_local_properties()
 {
 	mapping old_props;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	properties = ([ ]);
 }
 
 nomask void _F_set_removed_properties(string *remove)
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	removed_properties = remove - ({ nil });
 }
 
 nomask string *_F_query_removed_properties()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	return removed_properties[..];
 }
 
@@ -748,11 +748,11 @@ nomask void _F_set_property(string name, mixed value)
 	mixed *info;
 	mixed old;
 	string basename;
-	
+
 	ACCESS_CHECK(KOTAKA());
 
 	info = PROPERTYD->query_property(name);
-	
+
 	if (!info) {
 		if (value != nil) {
 			error("Undefined property \"" + name + "\"");
@@ -764,7 +764,7 @@ nomask void _F_set_property(string name, mixed value)
 				" versus " + info[0] + " on " + name);
 		}
 	}
-	
+
 	if (info) {
 		switch(info[1]) {
 		case PROP_SIMPLE:
@@ -774,7 +774,7 @@ nomask void _F_set_property(string name, mixed value)
 					value = nil;
 				}
 				break;
-			
+
 			case T_FLOAT:
 				if (value == 0.0) {
 					value = nil;
@@ -791,24 +791,24 @@ nomask void _F_set_property(string name, mixed value)
 				string func;
 				string lib;
 				string creator;
-			
+
 				func = info[2][1];	/* writer */
 				lib = function_object(func, this_object());
-				
+
 				if (!lib) {
 					error("No such function");
 				}
-				
+
 				creator = DRIVER->creator(lib);
-				
+
 				ACCESS_CHECK(creator == "Game");
-				
+
 				call_other(this_object(), func, value);
 			}
 			return;
 		}
 	}
-	
+
 	_F_set_local_property(name, value);
 }
 
@@ -817,17 +817,17 @@ nomask mixed _F_query_property(string name)
 	mixed *info;
 	object propkey;
 	string basename;
-	
+
 	int flags;
-	
+
 	ACCESS_CHECK(KOTAKA());
 
 	info = PROPERTYD->query_property(name);
-	
+
 	if (!info) {
 		error(name + ": Undefined property");
 	}
-	
+
 	switch (info[1]) {
 	case PROP_SIMPLE:
 		{
@@ -1037,7 +1037,7 @@ mapping query_local_properties()
 void set_local_properties(mapping prop)
 {
 	CHECKARG(prop, 1, "set_local_properties");
-	
+
 	_F_set_local_properties(prop);
 }
 
@@ -1049,7 +1049,7 @@ void clear_local_properties()
 void set_removed_properties(string *remove)
 {
 	CHECKARG(remove, 1, "set_removed_properties");
-	
+
 	_F_set_removed_properties(remove);
 }
 
@@ -1096,7 +1096,7 @@ static void create()
 nomask void kotaka_object_constructor()
 {
 	ACCESS_CHECK(previous_program() == SECOND_AUTO);
-	
+
 	initialize();
 }
 

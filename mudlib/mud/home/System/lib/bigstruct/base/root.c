@@ -33,13 +33,13 @@ static void create()
 int access_of(object obj)
 {
 	int highest;
-	
+
 	ACCESS_CHECK(SYSTEM());
-	
+
 	if (grants[obj]) {
 		highest = grants[obj];
 	}
-	
+
 	if (highest > global_access) {
 		return highest;
 	} else {
@@ -50,9 +50,9 @@ int access_of(object obj)
 static void check_caller(int access)
 {
 	object pobj;
-	
+
 	pobj = previous_object();
-	
+
 	if (!sscanf(object_name(pobj),
 		USR_DIR + "/System/%*s/bigstruct/"))
 	{
@@ -63,27 +63,27 @@ static void check_caller(int access)
 mapping query_grants()
 {
 	check_caller(READ_ACCESS);
-	
+
 	return grants[..];
 }
 
 int query_global_access()
 {
 	check_caller(READ_ACCESS);
-	
+
 	return global_access;
 }
 
 void grant_access(object obj, int access)
 {
 	check_caller(FULL_ACCESS);
-	
+
 	grants[obj] = access;
 }
 
 void grant_global_access(int access)
 {
 	check_caller(FULL_ACCESS);
-	
+
 	global_access = access;
 }

@@ -31,7 +31,7 @@ static void create()
 void set_interval(float new_interval)
 {
 	interval = new_interval;
-	
+
 	schedule();
 }
 

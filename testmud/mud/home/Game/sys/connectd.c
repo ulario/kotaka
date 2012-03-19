@@ -46,19 +46,19 @@ string query_banner(object LIB_CONN connection)
 	if (!base_conn) {
 		return "";
 	}
-	
+
 	if (level == 0) {
 		int rnd;
-		
+
 		files = get_dir("~/data/splash/telnet_banners/chars/*")[0];
 		sz = sizeof(files);
-		
+
 		if (splash >= sz) {
 			splash = 0;
 		}
-		
+
 		ansi = read_file("~/data/splash/telnet_banners/ansi/" + files[splash]);
-		
+
 		if (!ansi) {
 			ansi = STRINGD->simple_ansify(
 				read_file("~/data/splash/telnet_banners/chars/" + files[splash]),
@@ -119,9 +119,9 @@ object select(string str)
 	if (!base_conn) {
 		return nil;
 	}
-	
+
 	sscanf(object_name(base_conn), "%s#%*d", basename);
-	
+
 	switch(basename) {
 	case BINARY_CONN:
 		switch(level) {

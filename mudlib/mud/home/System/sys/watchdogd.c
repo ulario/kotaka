@@ -41,7 +41,7 @@ static void create()
 	max_obj_ratio = 0.75;
 	
 	max_lag = 0.0;
-	
+
 	obj_warn_ratio = 0.75;
 	swap_warn_ratio = 0.50;
 	
@@ -54,29 +54,29 @@ static void create()
 void enable()
 {
 	ACCESS_CHECK(SYSTEM() || KADMIN() || LOCAL());
-	
+
 	LOGD->post_message("system", LOG_NOTICE, "Watchdog enabled");
-	
+
 	schedule(0.0);
 }
 
 void disable()
 {
 	ACCESS_CHECK(SYSTEM() || KADMIN());
-	
+
 	if (callout) {
 		remove_call_out(callout);
 	}
-	
+
 	LOGD->post_message("system", LOG_NOTICE, "Watchdog disabled");
-	
+
 	callout = 0;
 }
 
 void reboot()
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	if (callout) {
 		disable();
 		call_out("enable", 0);
@@ -131,21 +131,21 @@ void set_config_item(string key, mixed value)
 		max_swap_ratio = value;
 		
 		break;
-	
+
 	case "swap_warn_ratio":
 		value = (float)value;
 		
 		if (value < 0.0 || value > 1.0) {
 			error("Invalid setting");
 		}
-		
+
 		swap_warn_ratio = value;
-		
+
 		break;
-		
+
 	case "obj_warn_ratio":
 		value = (float)value;
-		
+
 		if (value < 0.0 || value > 1.0) {
 			error("Invalid setting");
 		}
@@ -160,24 +160,24 @@ void set_config_item(string key, mixed value)
 		if (value < 0.0) {
 			error("Invalid setting");
 		}
-		
+
 		check_interval = value;
-		
+
 		schedule(0.0);
-	
+
 		break;
-	
+
 	case "max_lag":
 		value = (float)value;
-		
+
 		if (value < -1.0) {
 			error("Invalid setting");
 		}
-		
+
 		max_lag = value;
-		
+
 		break;
-	
+
 	default:
 		error("Invalid key");
 	}
@@ -253,21 +253,21 @@ private void schedule(float health)
 	catch {
 		float delay;
 		mixed *timestamp;
-	
+
 		if (callout != -1) {
 			remove_call_out(callout);
 		}
-		
+
 		if (check_interval <= 0.0) {
-			callout = -1;
+			callout = 0;
 			return;
 		}
-	
+
 		timestamp = millitime();
-	
+
 		delay = check_interval * health;
 		deadline = (float)timestamp[0] + timestamp[1] + delay;
-	
+
 		catch {
 			callout = call_out("check", delay);
 		} : {
@@ -276,7 +276,7 @@ private void schedule(float health)
 	} : {
 		dump_state(1);
 		shutdown();
-		
+
 		LOGD->post_message("system", LOG_CRIT, "Watchdog unable to schedule callout\nFreezing and shutting down.");
 	}
 }
@@ -294,9 +294,9 @@ static void check()
 	float worst;
 	float fraction;
 	float tardy;
-	
+
 	mixed *timestamp;
-	
+
 	int swap_warn_trigger;
 	int obj_warn_trigger;
 	
@@ -309,7 +309,7 @@ static void check()
 	if (swap_warn_ticks > 0) {
 		swap_warn_ticks--;
 	}
-	
+
 	if (obj_warn_ticks > 0) {
 		obj_warn_ticks--;
 	}
@@ -336,22 +336,22 @@ static void check()
 
 	fraction = swapused / swapsize;
 	worst = (1.0 - fraction);
-	
+
 	if (fraction >= swap_warn_ratio && swap_warn_ticks <= 0) {
 		swap_warn_ticks = 60;
 		swap_warn_trigger = 1;
 	}
-	
+
 	if (fraction >= max_swap_ratio) {
 		swap_trigger = 1;
 	}
-	
+
 	fraction = objused / objsize;
 
 	if (worst > 1.0 - fraction) {
 		worst = 1.0 - fraction;
 	}
-	
+
 	if (fraction >= obj_warn_ratio && obj_warn_ticks <= 0) {
 		obj_warn_ticks = 60;
 		obj_warn_trigger = 1;
@@ -370,7 +370,7 @@ static void check()
 	if (smemsize + dmemsize > max_mem_size) {
 		memory_trigger = 1;
 	}
-	
+
 	if (dmemsize - dmemused > min_dmem_slack) {
 		/* ignore fragmentation if there's not enough free dmem */
 		fraction = dmemused / dmemsize;
@@ -378,7 +378,7 @@ static void check()
 		if (worst > fraction) {
 			worst = fraction;
 		}
-		
+
 		if (fraction < min_dmem_ratio) {
 			frag_trigger = 1;
 		}
@@ -387,7 +387,7 @@ static void check()
 	if (swap_trigger) {
 		LOGD->post_message("system", LOG_ALERT, "Swap usage exceeded quota");
 	}
-	
+
 	if (obj_trigger) {
 		LOGD->post_message("system", LOG_ALERT, "Object usage exceeded quota");
 	}
@@ -395,11 +395,11 @@ static void check()
 	if (lag_trigger) {
 		LOGD->post_message("system", LOG_NOTICE, "System lag exceeded quota");
 	}
-	
+
 	if (memory_trigger) {
 		LOGD->post_message("system", LOG_NOTICE, "Memory usage exceeded quota");
 	}
-	
+
 	if (frag_trigger) {
 		LOGD->post_message("system", LOG_NOTICE, "Memory fragmentation exceeded quota");
 	}
@@ -413,24 +413,24 @@ static void check()
 			LOGD->post_message("system", LOG_NOTICE, "Suspending callouts for 10 seconds");
 			CALLOUTD->hold_callouts(10.0);
 		}
-		
+
 		if (memory_trigger || frag_trigger) {
 			LOGD->post_message("system", LOG_NOTICE, "Swapping out");
 			swapout();
 		}
-		
+
 		if (swap_warn_trigger) {
 			LOGD->post_message("system", LOG_INFO, "Swap usage at " + percentage(swapused, swapsize));
 		}
-		
+
 		if (obj_warn_trigger) {
 			LOGD->post_message("system", LOG_INFO, "Object usage at " + percentage(objused, objsize));
 		}
 	}
-	
+
 	if (worst < 0.0) {
 		worst = 0.0;
 	}
-	
+
 	schedule(worst);
 }

@@ -14,17 +14,17 @@ static mixed call_other(mixed obj, string func, varargs mixed args ...)
 	if (!this_object()) {
 		error("Cannot call_other from destructed object");
 	}
-	
+
 	switch(typeof(obj)) {
 	case T_STRING:
 		path = obj;
 		obj = find_object(path);
 		break;
-	
+
 	case T_OBJECT:
 		path = object_name(obj);
 		break;
-	
+
 	default:
 		error("Bad argument 1 for function call_other (type mismatch)");
 	}
