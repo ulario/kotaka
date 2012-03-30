@@ -22,21 +22,44 @@ int suspend;			/* callouts suspended */
 int lrc;			/* last reported callout count */
 int lrh;			/* last reported hole count */
 
-object queue;
 object releasers;
 
 int releases;		/* current number of release callouts */
 int max_releases;	/* maximum number of release callouts */
 int unordered;	/* allow current callouts to skip the suspension queue */
 
+object cmap;	/* ([ oindex : ([ handle : iterator ]) ]) */
+object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
+int begin, end;
+int callouts, holes;
+
 private int bypass(object obj);
+int empty();
+mixed *release();
 
 /* private */
 
+private int object_index(object obj)
+{
+	int oindex;
+
+	if (sscanf(object_name(obj), "%*s#%d", oindex)) {
+		return oindex;
+	}
+
+	return status(obj, O_INDEX);
+}
+
 static void create()
 {
-	queue = load_object("callout_queue");
-	releasers = new_object(BIGSTRUCT_DEQUE_LWO);
+	cmap = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	cqueue = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	releasers = clone_object(BIGSTRUCT_DEQUE_OBJ);
+
+	cmap->set_size(0x7FFFFFFF);
+	cqueue->set_size(0x10000000);
+
+	begin = end = callouts = holes = 0;
 
 	max_releases = 2000000;
 
@@ -79,7 +102,7 @@ private void charge_releasers()
 {
 	int needed;
 
-	needed = queue->callouts() + queue->holes() + 1;
+	needed = callouts + holes + 1;
 
 	if (needed > max_releases) {
 		needed = max_releases;
@@ -133,17 +156,10 @@ private int changed_enough(int new, int old)
 
 private void statcheck()
 {
-	int callouts;
-	int holes;
-
-	callouts = queue->callouts();
-
 	if (changed_enough(callouts, lrc)) {
 		lrc = callouts;
 		LOGD->post_message("system", LOG_INFO, "callouts: " + callouts + " suspended");
 	}
-
-	holes = queue->holes();
 
 	if (changed_enough(holes, lrh)) {
 		lrh = holes;
@@ -187,6 +203,9 @@ void suspend(object obj, int handle)
 {
 	mixed *callout;
 
+	mapping map;
+	int oindex;
+
 	ACCESS_CHECK(previous_program() == RSRCD);
 
 	if (bypass(obj)) {
@@ -194,7 +213,24 @@ void suspend(object obj, int handle)
 		return;
 	}
 
-	queue->suspend(obj, handle);
+	if ((end + 1) & 0x0FFFFFFF == begin) {
+		error("Suspension queue overflow");
+	}
+
+	oindex = object_index(obj);
+
+	map = cmap->get_element(oindex);
+
+	if (!map) {
+		map = ([ ]);
+		cmap->set_element(oindex, map);
+	}
+
+	map[handle] = end;
+
+	cqueue->set_element(end++, ({ obj, handle }) );
+	end &= 0x0FFFFFFF;
+	callouts++;
 
 	if (suspend == 1) {
 		charge_releasers();
@@ -205,24 +241,67 @@ void suspend(object obj, int handle)
 
 int remove_callout(object obj, int handle)
 {
-	int suspended;
-	mapping callouts;
-	mixed *callout;
+	mapping map;
+	int oindex;
+	int qindex;
 
 	ACCESS_CHECK(previous_program() == RSRCD);
 
-	suspended = queue->remove_callout(obj, handle);
+	oindex = object_index(obj);
+
+	map = cmap->get_element(oindex);
+
+	if (!map || map[handle]) {
+		return FALSE;
+	}
+
+	qindex = map[handle];
+	map[handle] = nil;
+
+	if (!map_sizeof(map)) {
+		cmap->set_element(oindex, nil);
+	}
+
+	callouts--;
+	holes++;
 
 	statcheck();
 
-	return suspended;
+	return TRUE;
 }
 
 void remove_callouts(object obj)
 {
+	mapping map;
+	int oindex;
+	int *handles;
+	int *qindices;
+	int sz;
+	int osz;
+
 	ACCESS_CHECK(previous_program() == RSRCD);
 
-	queue->remove_callouts(obj);
+	oindex = object_index(obj);
+
+	map = cmap->get_element(oindex);
+
+	if (!map) {
+		return;
+	}
+
+	cmap->set_element(oindex, nil);
+
+	handles = map_indices(map);
+	qindices = map_values(map);
+
+	osz = sizeof(handles);
+
+	for (sz = osz; --sz >= 0; ) {
+		cqueue->set_element(qindices[sz], nil);
+	}
+
+	callouts -= osz;
+	holes += osz;
 
 	statcheck();
 }
@@ -232,7 +311,7 @@ void release_callouts()
 	if (previous_program() == RSRCD) {
 		LOGD->post_message("system", LOG_INFO, "Releasing callouts");
 
-		if (queue->empty()) {
+		if (empty()) {
 			suspend = 0;
 			LOGD->post_message("system", LOG_INFO, "Released callouts");
 		} else {
@@ -246,7 +325,7 @@ void release_callouts()
 
 /* internal */
 
-void release()
+void do_release()
 {
 	mixed *callout;
 	object obj;
@@ -270,7 +349,7 @@ void release()
 		return;
 
 	case 1: /* draining */
-		callout = queue->release();
+		callout = release();
 
 		if (callout) {
 			obj = callout[CO_OBJ];
@@ -292,11 +371,11 @@ void release()
 			suspend = 0;
 			wipe_releasers();
 
-			if (callouts = queue->callouts() != 0) {
+			if (callouts != 0) {
 				error(callouts + " callouts unaccounted for");
 			}
 
-			if (holes = queue->holes() != 0) {
+			if (holes != 0) {
 				error(holes + " holes unaccounted for");
 			}
 		}
@@ -316,4 +395,58 @@ private int bypass(object obj)
 	}
 
 	return DRIVER->creator(object_name(obj)) == "System";
+}
+
+static void destruct()
+{
+	destruct_object(cmap);
+	destruct_object(cqueue);
+}
+
+int empty()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	return begin == end;
+}
+
+mixed *release()
+{
+	mixed *callout;
+	mixed map;
+	int oindex;
+
+	ACCESS_CHECK(SYSTEM());
+
+	if (begin == end) {
+		cqueue->clear();
+		begin = end = 0;
+		return nil;
+	}
+
+	callout = cqueue->get_element(begin);
+	cqueue->set_element(begin++, nil);
+
+	begin &= 0x0FFFFFFF;
+
+	if (!callout) {
+		holes--;
+		return ({ nil, -1 });
+	}
+
+	oindex = object_index(callout[0]);
+	map = cmap->get_element(oindex);
+
+	ASSERT(map);
+	ASSERT(map[callout[1]] != nil);
+
+	map[callout[1]] = nil;
+
+	if (!map_sizeof(map)) {
+		cmap->set_element(oindex, nil);
+	}
+
+	callouts--;
+
+	return callout;
 }
