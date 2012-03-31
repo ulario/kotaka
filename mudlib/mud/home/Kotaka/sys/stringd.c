@@ -906,11 +906,11 @@ string string_and(string a, string b)
 		a = b;
 		b = c;
 	}
-	
+
 	for (i = 0; i <= strlen(b); i++) {
 		b[i] &= a[i];
 	}
-	
+
 	return b;
 }
 

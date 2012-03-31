@@ -51,7 +51,7 @@ void set_type(int new_type)
 	default:
 		error("Invalid type for bigstruct map key");
 	}
-	
+
 	type = new_type;
 }
 
@@ -114,7 +114,7 @@ private void merge_node_left(object node)
 	node->set_size(map_sizeof(map));
 
 	node->reset_low_key();
-	
+
 	prev->set_map( ([ ]) );
 	delete_node(prev);
 }
@@ -287,7 +287,7 @@ mixed get_element(mixed key)
 object slice(mixed first, mixed last)
 {
 	check_caller(READ_ACCESS);
-	
+
 	ASSERT(typeof(first) == type || first == nil);
 	ASSERT(typeof(last) == type || last == nil);
 	error("Function not implemented");
