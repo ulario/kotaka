@@ -160,18 +160,18 @@ atomic void set_size(int new_size)
 
 	switch(size)
 	{
-	case 0x00000000 .. 0x000000FF: cur_level = 0; break;
-	case 0x00000100 .. 0x0000FFFF: cur_level = 1; break;
-	case 0x00010000 .. 0x00FFFFFF: cur_level = 2; break;
-	case 0x01000000 .. 0x7FFFFFFF: cur_level = 3; break;
+	case 0x00000000 .. 0x00000100: cur_level = 0; break;
+	case 0x00000101 .. 0x00010000: cur_level = 1; break;
+	case 0x00010001 .. 0x01000000: cur_level = 2; break;
+	case 0x01000001 .. 0x7FFFFFFF: cur_level = 3; break;
 	}
 
 	switch(new_size)
 	{
-	case 0x00000000 .. 0x000000FF: new_level = 0; break;
-	case 0x00000100 .. 0x0000FFFF: new_level = 1; break;
-	case 0x00010000 .. 0x00FFFFFF: new_level = 2; break;
-	case 0x01000000 .. 0x7FFFFFFF: new_level = 3; break;
+	case 0x00000000 .. 0x00000100: new_level = 0; break;
+	case 0x00000101 .. 0x00010000: new_level = 1; break;
+	case 0x00010001 .. 0x01000000: new_level = 2; break;
+	case 0x01000001 .. 0x7FFFFFFF: new_level = 3; break;
 	}
 
 	if (new_size > size) {
@@ -238,7 +238,7 @@ atomic void set_element(int index, mixed value)
 	case 0x00010000 .. 0x00FFFFFF: level = 2; break;
 	case 0x01000000 .. 0x7FFFFFFF: level = 3; break;
 	}
-	
+
 	sub_set_element(top[level], index, value);
 }
 
