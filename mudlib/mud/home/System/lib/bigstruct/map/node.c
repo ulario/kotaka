@@ -29,7 +29,7 @@ static void destruct()
 int get_mass()
 {
 	check_caller();
-	
+
 	return map_sizeof(map);
 }
 

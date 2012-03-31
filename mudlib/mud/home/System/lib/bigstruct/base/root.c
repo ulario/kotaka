@@ -7,8 +7,6 @@
 
 inherit SECOND_AUTO;
 
-private object struct_owner;
-
 private mapping grants;
 private int global_access;
 
@@ -18,8 +16,7 @@ static void discard_node(object node);
 static void create()
 {
 	object pobj;
-	object struct_owner;
-	
+
 	grants = ([ ]);
 	pobj = previous_object();
 
