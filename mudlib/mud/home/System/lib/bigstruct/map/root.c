@@ -241,6 +241,10 @@ atomic void set_element(mixed key, mixed value)
 		if (value == nil) {
 			return; /* do nothing */
 		} else {
+			if (key < node->get_low_key()) {
+				node->set_low_key(key);
+			}
+
 			size = node->get_size() + 1;
 			change = 1;
 		}
