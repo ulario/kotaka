@@ -5,7 +5,7 @@
 
 #include <game/paths.h>
 
-inherit LIB_USTATE;
+inherit GAME_LIB_USTATE;
 
 int stopped;
 int reading;
@@ -24,10 +24,10 @@ private void prompt()
 {
 	string name;
 
-	name = query_user()->query_name();
+	name = query_user()->query_username();
 
 	if (!name) {
-		name = "(anonymous)";
+		name = "guest";
 	}
 
 	send_out("[" + name + "@ulario] ");
@@ -60,9 +60,16 @@ void go()
 
 void pre_end()
 {
+	object user;
+	string name;
+
 	ACCESS_CHECK(previous_object() == query_user());
 
-	send_out("Shell end.\n");
+	user = query_user();
+	name = titled_name(user->query_username(), user->query_class());
+
+	send_out("Come back soon.\n");
+	send_to_all_except(name + " dies and sinks into the ground.\n", ({ user }) );
 }
 
 void end()
@@ -70,34 +77,6 @@ void end()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	destruct_object(this_object());
-}
-
-private void scan_world()
-{
-	object root;
-	object *kids;
-
-	int i;
-	int sz;
-
-	root = find_object(ROOT);
-
-	kids = root->query_inventory();
-	sz = sizeof(kids);
-
-	for (i = 0; i < sz; i++) {
-		object obj;
-		float x, y, z;
-
-		obj = kids[i];
-
-		x = obj->query_property("position:x");
-		y = obj->query_property("position:y");
-		z = obj->query_property("position:z");
-
-		send_out("Object " + object_name(obj) + " located at (" +
-			x + ", " + y + ", " + z + ")\n");
-	}
 }
 
 void do_who()
@@ -116,7 +95,7 @@ void do_who()
 
 	for (i = 0; i < sz; i++) {
 		lists[users[i]->query_class() - 1]
-			+= ({ users[i]->query_name() });
+			+= ({ users[i]->query_username() });
 	}
 
 	for (i = 0; i < 3; i++) {
@@ -151,54 +130,23 @@ void do_help()
 	push_state(pager);
 }
 
-private void send_to_all(string phrase)
+void do_emote(string args)
 {
-	int sz;
-	object *users;
+	object user;
+	string name;
 
-	users = GAME_USERD->query_users();
+	args = STRINGD->trim_whitespace(args);
 
-	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
-		users[sz]->message(phrase);
-	}
-}
-
-private void send_to_all_except(string phrase, object *exceptions)
-{
-	int sz;
-	object *users;
-
-	users = GAME_USERD->query_users() - exceptions;
-
-	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
-		users[sz]->message(phrase);
-	}
-}
-
-private string titled_name(string name, int class)
-{
-	if (name) {
-		STRINGD->to_title(name);
-	} else {
-		name = "(anonymous)";
+	if (args == "") {
+		send_out("Cat got your tongue?\n");
+		return;
 	}
 
-	switch(class) {
-	case 0:
-		name = "\033[1;34m" + name + "\033[0m";
-		break;
-	case 1:
-		name = "\033[1;32m" + name + "\033[0m";
-		break;
-	case 2:
-		name = "\033[1;33m" + name + "\033[0m";
-		break;
-	case 3:
-		name = "\033[1;31m" + name + "\033[0m";
-		break;
-	}
+	user = query_user();
+	name = titled_name(user->query_username(), user->query_class());
 
-	return name;
+	send_out("You " + args + "\n");
+	send_to_all_except(name + " " + args + "\n", ({ user }) );
 }
 
 void do_say(string args)
@@ -214,7 +162,7 @@ void do_say(string args)
 	}
 
 	user = query_user();
-	name = titled_name(user->query_name(), user->query_class());
+	name = titled_name(user->query_username(), user->query_class());
 
 	send_out("You say: " + args + "\n");
 	send_to_all_except(name + " says: " + args + "\n", ({ user }) );
@@ -245,13 +193,60 @@ private void do_kick(string args)
 		return;
 	}
 
-	kicker_name = titled_name(user->query_name(), user->query_class());
+	kicker_name = titled_name(user->query_username(), user->query_class());
 
 	user->message("You kick " + args + " from the mud.\n");
 	turkey->message(kicker_name + " kicks you from the mud!\n");
 	send_to_all_except(kicker_name + " kicks " + args + "from the mud!\n", ({ turkey, query_user() }) );
 
 	turkey->quit();
+}
+
+private void do_nuke(string args)
+{
+	object turkey;
+	string kicker_name;
+
+	user = query_user();
+
+	if (user->query_class() < 3) {
+		send_out("You do not have sufficient access rights to nuke someone from the mud.\n");
+		return;
+	}
+
+	if (args == "") {
+		send_out("Who do you wish to nuke?\n");
+		return;
+	}
+
+	if (args == user->query_username()) {
+		send_out("You cannot nuke yourself.\n");
+		return;
+	}
+
+	if (args == "admin") {
+		send_out("You cannot nuke admin.\n");
+		return;
+	}
+
+	if (!ACCOUNTD->query_is_registered(args)) {
+		send_out("There is no such user.\n");
+		return;
+	}
+
+	ACCOUNTD->unregister_account(args);
+
+	turkey = GAME_USERD->query_user(args);
+	kicker_name = titled_name(user->query_username(), user->query_class());
+
+	user->message("You nuked " + args + " from the mud.\n");
+
+	send_to_all_except(args + " has been nuked from the mud by " + kicker_name + ".\n", ({ turkey, query_user() }) );
+
+	if (turkey) {
+		turkey->message("You have been nuked from the mud by " + kicker_name + "!\n");
+		turkey->quit();
+	}
 }
 
 private void do_ban(string args)
@@ -271,13 +266,18 @@ private void do_ban(string args)
 		return;
 	}
 
-	if (args == "admin") {
-		send_out("You cannot kick admin.\n");
+	if (args == user->query_username()) {
+		send_out("You cannot kick yourself.\n");
 		return;
 	}
 
-	if (args == user->query_name()) {
-		send_out("You cannot kick yourself.\n");
+	if (args == "admin") {
+		send_out("You cannot ban admin.\n");
+		return;
+	}
+
+	if (args == user->query_username()) {
+		send_out("You cannot ban yourself.\n");
 		return;
 	}
 
@@ -289,7 +289,7 @@ private void do_ban(string args)
 	BAND->ban_username(args);
 
 	turkey = GAME_USERD->query_user(args);
-	kicker_name = titled_name(user->query_name(), user->query_class());
+	kicker_name = titled_name(user->query_username(), user->query_class());
 
 	user->message("You ban " + args + " from the mud.\n");
 
@@ -309,22 +309,12 @@ private void do_unban(string args)
 	user = query_user();
 
 	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to ban someone from the mud.");
+		send_out("You do not have sufficient access rights to unban someone from the mud.");
 		return;
 	}
 
 	if (args == "") {
-		send_out("Who do you wish to ban?\n");
-		return;
-	}
-
-	if (args == "admin") {
-		send_out("You cannot ban admin.\n");
-		return;
-	}
-
-	if (args == user->query_name()) {
-		send_out("You cannot ban yourself.\n");
+		send_out("Who do you wish to unban?\n");
 		return;
 	}
 
@@ -333,7 +323,7 @@ private void do_unban(string args)
 		return;
 	}
 
-	kicker_name = titled_name(user->query_name(), user->query_class());
+	kicker_name = titled_name(user->query_username(), user->query_class());
 	user->message("You unban " + args + " from the mud.\n");
 	send_to_all_except(args + " has been unbanned from the mud by " + kicker_name + ".\n", ({ user }) );
 	BAND->unban_username(args);
@@ -347,7 +337,20 @@ void receive_in(string input)
 
 	reading = 1;
 
-	if (!sscanf(input, "%s %s", first, input)) {
+	if (strlen(input) > 0) {
+		switch(input[0]) {
+		case '\'':
+			input = input[1 ..];
+			first = "say";
+			break;
+		case ':':
+			input = input[1 ..];
+			first = "emote";
+			break;
+		}
+	}
+
+	if (!first && !sscanf(input, "%s %s", first, input)) {
 		first = input;
 		input = "";
 	}
@@ -362,23 +365,14 @@ void receive_in(string input)
 	case "play":
 		push_state(clone_object("play"));
 		break;
-	case "statwatch":
-		push_state(clone_object("status"));
-		break;
-	case "reloadhelp":
-		GAME_HELPD->load();
-		break;
-	case "worldscan":
-		scan_world();
-		break;
 	case "quit":
 		query_user()->quit();
 		return;
-	case "login":
-		push_state(clone_object("login"));
-		break;
 	case "unban":
 		do_unban(input);
+		break;
+	case "nuke":
+		do_nuke(input);
 		break;
 	case "ban":
 		do_ban(input);
@@ -389,6 +383,9 @@ void receive_in(string input)
 	case "say":
 		do_say(input);
 		break;
+	case "emote":
+		do_emote(input);
+		break;
 	case "krecompile":
 		OBJECTD->klib_recompile();
 		break;
@@ -398,9 +395,6 @@ void receive_in(string input)
 	case "trecompile":
 		OBJECTD->klib_recompile();
 		OBJECTD->global_recompile();
-		break;
-	case "register":
-		push_state(clone_object("register"));
 		break;
 	case "":
 		break;

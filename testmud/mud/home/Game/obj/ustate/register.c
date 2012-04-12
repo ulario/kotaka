@@ -10,6 +10,7 @@ inherit GAME_LIB_USTATE;
 #define STATE_CHKPASS	3
 
 string name;
+string password;
 
 int state;
 int stopped;
@@ -30,12 +31,31 @@ private void prompt()
 {
 	switch(state) {
 	case STATE_GETNAME:
-		send_out("Login: ");
+		send_out("Please choose a username: ");
+		break;
+
+	case STATE_GETPASS:
+		send_out("Please choose a password: ");
 		break;
 
 	case STATE_CHKPASS:
-		send_out("Password: ");
+		send_out("Please confirm your password: ");
 		break;
+	}
+}
+
+private void terminate_register()
+{
+	object parent;
+
+	parent = query_parent();
+
+	if (parent <- "shell") {
+		pop_state();
+	} else if (parent <- "start") {
+		parent->swap_state(clone_object("shell"));
+	} else {
+		error("Illegal parent state");
 	}
 }
 
@@ -89,14 +109,28 @@ void receive_in(string input)
 			send_out("That is not a valid username.\n");
 			pop_state();
 			return;
-		} else if (!ACCOUNTD->query_is_registered(input)) {
-			send_out("No such user.\n");
+		} else if (ACCOUNTD->query_is_registered(input)) {
+			send_out("That name is already taken.\n");
 			pop_state();
 			return;
 		} else {
-			state = STATE_CHKPASS;
+			state = STATE_GETPASS;
 			query_user()->set_mode(MODE_NOECHO);
 			name = input;
+			break;
+		}
+		break;
+
+	case STATE_GETPASS:
+		send_out("\n");
+		if (ACCOUNTD->query_is_registered(input)) {
+			send_out("Whoops, someone else just swiped the username you wanted.\n");
+			query_user()->set_mode(MODE_ECHO);
+			pop_state();
+			return;
+		} else {
+			password = input;
+			state = STATE_CHKPASS;
 			break;
 		}
 		break;
@@ -104,22 +138,21 @@ void receive_in(string input)
 	case STATE_CHKPASS:
 		send_out("\n");
 		if (ACCOUNTD->query_is_registered(input)) {
-			send_out("Whoops, that account no longer exists.\n");
+			send_out("Whoops, someone else just swiped the username you wanted.\n");
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
-		} else if (!ACCOUNTD->authenticate(name, input)) {
+		} else if (input != password) {
 			send_out("Password mismatch.\n");
-			/* we will eventually want to ban IPs that */
-			/* fail too much */
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
 		} else {
+			ACCOUNTD->register_account(name, password);
 			query_user()->set_username(name);
 			GAME_USERD->add_user(name, query_user());
 			query_user()->set_mode(MODE_ECHO);
-			announce_login();
+			announce_register();
 			terminate_account_state();
 			return;
 		}
