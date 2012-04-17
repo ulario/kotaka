@@ -12,7 +12,7 @@ inherit LIB_KOTAKA_USER;
 object mobile;
 int keepalive;
 
-string name;
+string username;
 
 mapping aliases;
 string *disabled;
@@ -30,41 +30,40 @@ static void create(int clone)
 static void destruct(int clone)
 {
 	if (clone) {
-		LOGD->post_message("game", LOG_INFO, "User destructing");
 	}
 }
 
-string query_name()
+string query_username()
 {
-	return name;
+	return username;
 }
 
 int query_class()
 {
-	if (!name) {
+	if (!username) {
 		return 0;
 	}
 
-	if (!ACCOUNTD->query_is_registered(name)) {
+	if (!ACCOUNTD->query_is_registered(username)) {
 		return 0;
 	}
 
-	if (KERNELD->access(name, "/", FULL_ACCESS)) {
+	if (KERNELD->access(username, "/", FULL_ACCESS)) {
 		return 3;
 	}
 
-	if (sizeof( KERNELD->query_users() & ({ name }) )) {
+	if (sizeof( KERNELD->query_users() & ({ username }) )) {
 		return 2;
 	}
 
 	return 1;
 }
 
-void set_name(string new_name)
+void set_username(string new_username)
 {
 	ACCESS_CHECK(GAME());
 
-	name = new_name;
+	username = new_username;
 }
 
 void set_uid(int new_uid)
