@@ -25,7 +25,6 @@ static void create()
 
 	/* normal stuff */
 	PORTD->set_binary_manager(1, this_object());
-	PORTD->set_telnet_manager(0, this_object());
 }
 
 string query_banner(object LIB_CONN connection)
