@@ -356,6 +356,12 @@ void receive_in(string input)
 	}
 
 	switch(first) {
+	case "login":
+		push_state(clone_object("login"));
+		break;
+	case "register":
+		push_state(clone_object("register"));
+		break;
 	case "who":
 		do_who();
 		break;
