@@ -101,7 +101,7 @@ int login(string str)
 
 	set_mode(MODE_ECHO);
 
-	set_root_state(clone_object("~/obj/ustate/bootstrap"));
+	set_root_state(clone_object("~/obj/ustate/start"));
 
 	return MODE_NOCHANGE;
 }
