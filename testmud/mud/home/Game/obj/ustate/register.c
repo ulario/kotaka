@@ -62,6 +62,13 @@ private void terminate_register()
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
+
+	if (query_user()->query_username()) {
+		send_out("You are already logged in.\n");
+		pop_state();
+		return;
+	}
+
 	state = STATE_GETNAME;
 }
 
