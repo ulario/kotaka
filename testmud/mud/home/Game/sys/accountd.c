@@ -24,7 +24,7 @@ void register_account(string name, string password)
 		error("Duplicate account");
 	}
 
-	passwords[name] = password;
+	passwords[name] = hash_string("MD5", password);
 	save();
 }
 
@@ -53,10 +53,10 @@ int authenticate(string name, string password)
 		error("No such account");
 	}
 
-	return passwords[name] == password;
+	return passwords[name] == hash_string("MD5", password);
 }
 
-void change_password(string name, string oldpass, string newpass)
+void change_password(string name, string newpass)
 {
 	ACCESS_CHECK(GAME());
 
@@ -64,11 +64,7 @@ void change_password(string name, string oldpass, string newpass)
 		error("No such account");
 	}
 
-	if (passwords[name] != oldpass) {
-		error("Incorrect password");
-	}
-
-	passwords[name] = newpass;
+	passwords[name] = hash_string("MD5", newpass);
 }
 
 int username_to_uid(string username)
