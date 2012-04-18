@@ -32,6 +32,13 @@ int forbid_call(string path)
 	return 0;
 }
 
+string include_file(string compiled, string from, string path)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	return path;
+}
+
 string query_constructor(string path)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
