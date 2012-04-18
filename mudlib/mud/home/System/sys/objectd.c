@@ -204,11 +204,32 @@ private void destructed_program(string path)
 
 private mixed query_include_file(string compiled, string from, string path)
 {
-	if (find_object(DRIVER)->creator(compiled) != "System"
-		&& path == "/include/AUTO" && from == "/include/std.h") {
-		path = "/home/System/include/second_auto.h";
+	string creator;
+	object initd;
+
+	/* don't allow bypass of standard file */
+	if (path == "/include/std.h") {
+		return path;
 	}
-	
+
+	creator = find_object(DRIVER)->creator(compiled);
+
+	/* System has to be direct */
+	if (creator == "System") {
+		return path;
+	}
+
+	/* don't allow bypass of standard auto */
+	if (creator != "System" &&
+		path == "/include/AUTO" &&
+		from == "/include/std.h") {
+		return "/home/System/include/second_auto.h";
+	}
+
+	if (initd = find_object(USR_DIR + "/" + creator + "/initd")) {
+		return initd->include_file(compiled, from, path);
+	}
+
 	return path;
 }
 
