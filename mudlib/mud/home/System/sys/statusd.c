@@ -39,14 +39,14 @@ void disable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	PORTD->set_telnet_manager(1, nil);
+	PORTD->set_binary_manager(2, nil);
 }
 
 void enable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	PORTD->set_telnet_manager(1, this_object());
+	PORTD->set_binary_manager(2, this_object());
 }
 
 private float swap_used_ratio()
