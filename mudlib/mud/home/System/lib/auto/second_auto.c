@@ -105,7 +105,7 @@ static object load_object(mixed args ...)
 
 static object clone_object(mixed args ...)
 {
-	if (!SYSTEM() && free_objects() < 100) {
+	if (!SYSTEM() && free_objects() < 500) {
 		error("Too many objects");
 	}
 
