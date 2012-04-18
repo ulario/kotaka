@@ -206,3 +206,14 @@ object find_user(string name)
 
 	return ::find_user(name);
 }
+
+/*****************/
+/* miscellaneous */
+/*****************/
+
+void swapout()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	::swapout();
+}
