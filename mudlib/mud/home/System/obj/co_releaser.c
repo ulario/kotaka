@@ -25,7 +25,7 @@ void charge(int new_charges)
 static void release()
 {
 	if (charges--) {
-		CALLOUTD->release();
+		CALLOUTD->do_release();
 	} else {
 		destruct_object(this_object());
 	}
