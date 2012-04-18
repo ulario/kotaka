@@ -13,13 +13,15 @@ int callout;
 
 float min_dmem_ratio;		/* for fragmentation control */
 float min_dmem_slack;		/* avoidance of thrashing */
-float max_mem_size;		/* cap memory usage */
-float max_obj_ratio;		/* emergency shutdown trigger */
-float max_swap_ratio;		/* emergency shutdown trigger */
-float check_interval;		/* how frequently to check */
-float max_lag;			/* how late the watchdog check is allowed to be */
+float max_dmem_size;		/* cap memory usage */
 
-float deadline;
+float max_obj_ratio;		/* emergency shutdown trigger */
+float max_co_ratio;		/* emergency shutdown trigger */
+float max_swap_ratio;		/* emergency shutdown trigger */
+
+float check_interval;		/* how frequently to check */
+float max_lag;			/* max lag in watchdog check before we suspend callouts for 10 seconds */
+float deadline;			/* when the next watchdog cycle is due */
 
 float swap_warn_ratio;		/* how many cycles left until the next swap warning */
 int swap_warn_ticks;		/* how many cycles left until the next swap warning */
@@ -27,28 +29,38 @@ int swap_warn_ticks;		/* how many cycles left until the next swap warning */
 float obj_warn_ratio;		/* how many cycles left until the next swap warning */
 int obj_warn_ticks;		/* how many cycles left until the next swap warning */
 
+float co_warn_ratio;		/* how many cycles left until the next swap warning */
+int co_warn_ticks;		/* how many cycles left until the next swap warning */
+
 private void schedule(float fraction);
+private string percentage(mixed part, mixed total);
 
 static void create()
 {
-	float i;
-	min_dmem_ratio = 0.625;
-	min_dmem_slack = 1048576.0 * 16.0;
-	max_mem_size = 1024.0 * 1024.0 * 1024.0;
-	check_interval = 0.0;
-	
+	int i;
+
+	min_dmem_ratio = 0.75;
+	min_dmem_slack = 1048576.0 * 64.0;
+	max_dmem_size = 1048576.0 * 512.0;
+	check_interval = 10.0;
+
 	max_swap_ratio = 0.75;
-	max_obj_ratio = 0.75;
-	
+	max_obj_ratio = 0.95;
+	max_co_ratio = 0.95;
+
 	max_lag = 0.0;
 
 	obj_warn_ratio = 0.75;
+	co_warn_ratio = 0.75;
 	swap_warn_ratio = 0.50;
-	
-	callout = -1;
-	
-	call_out("enable", 0);
-	schedule(0.0);
+
+	callout = 0;
+}
+
+void upgrade()
+{
+	co_warn_ratio = 0.75;
+	max_co_ratio = 0.90;
 }
 
 void enable()
@@ -88,15 +100,11 @@ void set_config_item(string key, mixed value)
 	ACCESS_CHECK(KADMIN());
 	
 	switch(key) {
-	case "max_mem_size":
+	case "max_dmem_size":
 		value = (float)value;
-		
-		if (value < status(ST_SMEMSIZE) + 1048576.0) {
-			error("Invalid setting");
-		}
-		
-		max_mem_size = value;
-		
+
+		max_dmem_size = value;
+
 		break;
 		
 	case "min_dmem_ratio":
@@ -188,8 +196,8 @@ mixed query_config_item(string key)
 	ACCESS_CHECK(KADMIN());
 	
 	switch(key) {
-	case "max_mem_size":
-		return max_mem_size;
+	case "max_dmem_size":
+		return max_dmem_size;
 		
 	case "min_dmem_ratio":
 		return min_dmem_ratio;
@@ -220,7 +228,7 @@ mixed query_config_item(string key)
 mapping query_config()
 {
 	return ([
-		"max_mem_size": max_mem_size,
+		"max_dmem_size": max_dmem_size,
 		"min_dmem_ratio": min_dmem_ratio,
 		"min_dmem_slack": min_dmem_slack,
 		"max_swap_ratio": max_swap_ratio,
@@ -242,10 +250,10 @@ private string ralign(mixed num, int width)
 private string percentage(mixed part, mixed total)
 {
 	if (total == 0) {
-		return "  0%";
+		return "-1%";
 	}
-	
-	return ralign((int) ((float) part * 100.0 / (float) total), 1) + "%";
+
+	return (int)floor(((float)part / (float)total) * 100.0) + "%";
 }
 
 private void schedule(float health)
@@ -291,6 +299,8 @@ static void check()
 	float swapused;
 	float objsize;
 	float objused;
+	float cosize;
+	float coused;
 	float worst;
 	float fraction;
 	float tardy;
@@ -299,13 +309,15 @@ static void check()
 
 	int swap_warn_trigger;
 	int obj_warn_trigger;
-	
+	int co_warn_trigger;
+
 	int lag_trigger;
 	int swap_trigger;
 	int memory_trigger;
 	int frag_trigger;
 	int obj_trigger;
-	
+	int co_trigger;
+
 	if (swap_warn_ticks > 0) {
 		swap_warn_ticks--;
 	}
@@ -313,23 +325,33 @@ static void check()
 	if (obj_warn_ticks > 0) {
 		obj_warn_ticks--;
 	}
-	
+
+	if (co_warn_ticks > 0) {
+		co_warn_ticks--;
+	}
+
 	timestamp = millitime();
 	tardy = ((float)timestamp[0] + timestamp[1]) - deadline;
 
 	if (tardy < 0.0) {
 		tardy = 0.0;
 	}
-	
-	swapsize = (float)status()[ST_SWAPSIZE];
+
 	swapused = (float)status()[ST_SWAPUSED];
-	objsize = (float)status()[ST_OTABSIZE];
+	swapsize = (float)status()[ST_SWAPSIZE];
+
 	objused = (float)status()[ST_NOBJECTS];
-	smemsize = (float)status()[ST_SMEMSIZE];
+	objsize = (float)status()[ST_OTABSIZE];
+
+	coused = (float)(status()[ST_NCOSHORT] + status()[ST_NCOLONG]);
+	cosize = (float)status()[ST_COTABSIZE];
+
 	smemused = (float)status()[ST_SMEMUSED];
-	dmemsize = (float)status()[ST_DMEMSIZE];
+	smemsize = (float)status()[ST_SMEMSIZE];
+
 	dmemused = (float)status()[ST_DMEMUSED];
-	
+	dmemsize = (float)status()[ST_DMEMSIZE];
+
 	if (max_lag > 0.0 && tardy > max_lag) {
 		lag_trigger = 1;
 	}
@@ -360,14 +382,29 @@ static void check()
 	if (fraction >= max_obj_ratio) {
 		obj_trigger = 1;
 	}
-	
-	fraction = (smemsize + dmemsize) / max_mem_size;
+
+	fraction = coused / cosize;
 
 	if (worst > 1.0 - fraction) {
 		worst = 1.0 - fraction;
 	}
-	
-	if (smemsize + dmemsize > max_mem_size) {
+
+	if (fraction >= co_warn_ratio && co_warn_ticks <= 0) {
+		co_warn_ticks = 60;
+		co_warn_trigger = 1;
+	}
+
+	if (fraction >= max_co_ratio) {
+		co_trigger = 1;
+	}
+
+	fraction = dmemsize / max_dmem_size;
+
+	if (worst > 1.0 - fraction) {
+		worst = 1.0 - fraction;
+	}
+
+	if (dmemsize > max_dmem_size) {
 		memory_trigger = 1;
 	}
 
@@ -391,7 +428,11 @@ static void check()
 	if (obj_trigger) {
 		LOGD->post_message("system", LOG_ALERT, "Object usage exceeded quota");
 	}
-	
+
+	if (co_trigger) {
+		LOGD->post_message("system", LOG_ALERT, "Callout usage exceeded quota");
+	}
+
 	if (lag_trigger) {
 		LOGD->post_message("system", LOG_NOTICE, "System lag exceeded quota");
 	}
@@ -403,9 +444,10 @@ static void check()
 	if (frag_trigger) {
 		LOGD->post_message("system", LOG_NOTICE, "Memory fragmentation exceeded quota");
 	}
-	
-	if (swap_trigger || obj_trigger) {
+
+	if (swap_trigger || obj_trigger || co_trigger) {
 		LOGD->post_message("system", LOG_ALERT, "Freezing and shutting down");
+		CALLOUTD->suspend_callouts();
 		dump_state(1);
 		shutdown();
 	} else {
@@ -424,7 +466,13 @@ static void check()
 		}
 
 		if (obj_warn_trigger) {
+			LOGD->post_message("system", LOG_INFO, "Objects used: " + objused + ", obj size: " + objsize);
 			LOGD->post_message("system", LOG_INFO, "Object usage at " + percentage(objused, objsize));
+		}
+
+		if (co_warn_trigger) {
+			LOGD->post_message("system", LOG_INFO, "Callouts used: " + objused + ", co size: " + cosize);
+			LOGD->post_message("system", LOG_INFO, "Callout usage at " + percentage(coused, cosize));
 		}
 	}
 
