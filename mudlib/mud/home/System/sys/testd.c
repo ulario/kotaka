@@ -30,7 +30,6 @@ private void test_bigstruct_array()
 	arr->set_size(0x40000000);
 	
 	for (i = 1; i < 0x40000000; i <<= 1) {
-		LOGD->post_message("test", LOG_DEBUG, "Testing assignment of " + i);
 		arr->set_element(i, i);
 		ASSERT(arr->get_element(i) == i);
 	}
@@ -38,7 +37,6 @@ private void test_bigstruct_array()
 	for (j = 0x40000000; j > 0; j /= 3, j <<= 1) {
 		arr->set_size(j);
 		arr->set_size(0x40000000);
-		LOGD->post_message("test", LOG_DEBUG, "Testing truncation at " + j);
 
 		for (i = 1; i < 0x40000000; i <<= 1) {
 			if (i < j) {
@@ -93,49 +91,49 @@ private void test_bigstruct_deque()
 	for (x = 0; x < 3000; x++) {
 		deque->push_back(x);
 	}
-	ASSERT(deque->get_mass() == 3000);
+	ASSERT(deque->get_size() == 3000);
 
 	for (x = 0; x < 3000; x++) {
 		ASSERT(x == deque->get_front());
 		deque->pop_front();
 	}
 	
-	ASSERT(deque->get_mass() == 0);
+	ASSERT(deque->get_size() == 0);
 	ASSERT(deque->empty());
 	
 	for (x = 0; x < 3000; x++) {
 		deque->push_front(x);
 	}
 
-	ASSERT(deque->get_mass() == 3000);
+	ASSERT(deque->get_size() == 3000);
 
 	for (x = 0; x < 3000; x++) {
 		ASSERT(x == deque->get_back());
 		deque->pop_back();
 	}
 	
-	ASSERT(deque->get_mass() == 0);
+	ASSERT(deque->get_size() == 0);
 	ASSERT(deque->empty());
 	
 	for (x = 0; x < 3000; x++) {
 		deque->push_front(x);
 	}
 
-	ASSERT(deque->get_mass() == 3000);
+	ASSERT(deque->get_size() == 3000);
 
 	for (x = 2999; x >= 0; x--) {
 		ASSERT(x == deque->get_front());
 		deque->pop_front();
 	}
 	
-	ASSERT(deque->get_mass() == 0);
+	ASSERT(deque->get_size() == 0);
 	ASSERT(deque->empty());
 	
 	for (x = 0; x < 3000; x++) {
 		deque->push_back(x);
 	}
 
-	ASSERT(deque->get_mass() == 3000);
+	ASSERT(deque->get_size() == 3000);
 
 	for (x = 2999; x >= 0; x--) {
 		ASSERT(x == deque->get_back());
@@ -143,7 +141,7 @@ private void test_bigstruct_deque()
 	}
 	
 	ASSERT(deque->empty());
-	ASSERT(deque->get_mass() == 0);
+	ASSERT(deque->get_size() == 0);
 	
 	LOGD->post_message("test", LOG_DEBUG, "Deque test passed");
 }
@@ -158,11 +156,6 @@ private void test_bigstruct_map()
 
 	for (i = 0; i < 1000; i++) {
 		string key;
-
-		if (i % 100 == 0) {
-			LOGD->post_message("test", LOG_DEBUG, "Map test 1 " + (i / 10) + " percent complete");
-		}
-		
 		key = hash_string("crypt", "" + i);
 		map->set_element(key, i);
 		ASSERT(map->get_element(key) == i);
@@ -172,10 +165,6 @@ private void test_bigstruct_map()
 	map->set_type(T_INT);
 
 	for (i = 0; i < 1000; i++) {
-		if (i % 100 == 0) {
-			LOGD->post_message("test", LOG_DEBUG, "Map test 2 " + (i / 10) + " percent complete");
-		}
-		
 		map->set_element(i, i);
 		ASSERT(map->get_element(i) == i);
 	}
@@ -187,12 +176,6 @@ private void test_bigstruct_map()
 	
 	for (i = 0; i < 2500; i++) {
 		map->set_element(i, 0);
-
-		if (i % 100 == 0) {
-			LOGD->post_message("test", LOG_DEBUG,
-				"Defrag test (fill stage) " + (i / 25)
-				+ " percent complete");
-		}
 	}
 	
 	for (i = 0; i < 50; i++) {
@@ -244,28 +227,31 @@ void test()
 
 	ACCESS_CHECK(SYSTEM());
 
+#if 0
 	LOGD->post_message("test", LOG_DEBUG, "TestD test battery beginning");
 
 #ifdef SYS_NETWORKING
 	LOGD->post_message("test", LOG_DEBUG, "There are " + sizeof(ports()) + " ports open.");
 #endif
 
-#if 1
 #	if 1
+	LOGD->post_message("test", LOG_DEBUG, "Starting array test");
 	rlimits(200; -1) {
 		test_bigstruct_array();
 	}
 #	endif
 #	if 1
+	LOGD->post_message("test", LOG_DEBUG, "Starting deque test");
 	rlimits(200; -1) {
 		test_bigstruct_deque();
 	}
 #	endif
 #	if 1
+	LOGD->post_message("test", LOG_DEBUG, "Starting map test");
 	rlimits(200; -1) {
 		test_bigstruct_map();
 	}
 #	endif
-#endif
 	LOGD->post_message("test", LOG_DEBUG, "TestD test battery completed");
+#endif
 }
