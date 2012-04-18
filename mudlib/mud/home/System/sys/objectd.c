@@ -872,3 +872,71 @@ int forbid_inherit(string from, string path, int priv)
 		error("Internal error in ObjectD");
 	}
 }
+
+void scan_clones(string name)
+{
+	call_out("scan_clones_step", 0, name, 0);
+}
+
+static void scan_clones_step(string name, int index)
+{
+	int max;
+	int quota;
+
+	max = status()[ST_OTABSIZE];
+	quota = (int)sqrt((float)(max - index));
+
+	for (;
+		quota > 0 && index < max;
+		quota--, index++)
+	{
+		if (find_object(name + "#" + index)) {
+			LOGD->post_message("clone", LOG_INFO,
+				"Found " + name + "#" + index);
+		}
+	}
+
+	if (index < max) {
+		call_out("scan_clones_step", 0, name, index);
+	} else {
+		LOGD->post_message("clone", LOG_INFO, "Clone scan for " + name + " completed");
+	}
+}
+
+void purge_clones(string name)
+{
+	int max;
+
+	ACCESS_CHECK(KADMIN());
+
+	max = status()[ST_OTABSIZE];
+
+	call_out("purge_clones_step", 0, name, max, 0);
+}
+
+static void purge_clones_step(string name, int index, int npurge)
+{
+	int quota;
+
+	quota = (int)sqrt((float)index);
+
+	while (index > 0 && quota > 0) {
+		object obj;
+		index--;
+		quota--;
+
+		if (obj = find_object(name + "#" + index)) {
+			destruct_object(obj);
+			npurge++;
+		}
+	}
+
+	if (index > 0) {
+		call_out("purge_clones_step", 0, name, index, npurge);
+		LOGD->post_message("clone", LOG_INFO, "Clone purge for "
+			+ name + " at " + index + ", "
+			+ npurge + " clones purged");
+	} else {
+		LOGD->post_message("clone", LOG_INFO, "Clone scan for " + name + " completed");
+	}
+}
