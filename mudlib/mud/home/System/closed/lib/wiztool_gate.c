@@ -2,8 +2,8 @@
 #include <kernel/user.h>
 #include <kotaka/paths.h>
 
-inherit SECOND_AUTO;
-inherit LIB_WIZTOOL;
+inherit sa SECOND_AUTO;
+inherit lw LIB_WIZTOOL;
 
 static void message(string msg)
 {
