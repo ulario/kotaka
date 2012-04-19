@@ -51,7 +51,6 @@ static void create()
 	string *bins;
 	string test;
 
-	load_dir("lib", 1);
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("open", 1);
@@ -62,19 +61,6 @@ static void create()
 	PROPERTYD->load_property_type_file(
 		read_file("~/data/config/property.conf")
 	);
-	
-	/*
-	ROUTINED->load_account_property_type_file(
-		read_file("~/data/config/atype.conf")
-	);
-	*/
-
-	/* grant some common daemons write access */
-	proxy = PROXYD->get_proxy("Game");
-
-	proxy->set_access("Kotaka", "~Game/data/help", READ_ACCESS);
-	proxy->set_access("Kotaka", "~Game/data/save/world", WRITE_ACCESS);
-	proxy->set_access("Kotaka", "~Game/data/log", WRITE_ACCESS);
 }
 
 void reboot()
