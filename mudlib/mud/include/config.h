@@ -6,7 +6,7 @@
 
 # define SYS_PERSISTENT		/* off by default */
 
-# define CALLOUTRSRC	FALSE	/* don't have callouts as a resource */
+# define CALLOUTRSRC	TRUE	/* don't have callouts as a resource */
 
 # if defined( __NETWORK_PACKAGE__ ) || defined( __NETWORK_EXTENSIONS__ )
 #  define SYS_NETWORKING	/* Network package is enabled */
