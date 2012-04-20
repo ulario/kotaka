@@ -6,14 +6,11 @@
 
 static void create()
 {
-	call_out("ignite", 5);
 }
 
-static void ignite()
+void ignite(int count)
 {
-	if (TEST_CO_QUANTITY > 0) {
-		call_out("bomb", 0, TEST_CO_QUANTITY);
-	}
+	call_out("bomb", 0, count);
 }
 
 static void suspend()
