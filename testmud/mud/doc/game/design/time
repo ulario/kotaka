@@ -1,0 +1,14 @@
+Our TIMED is a nested queue.
+
+We have a master queue that holds each future second's worth of objects
+needing triggered, and each entry in this list is a sub queue of all the
+objects scheduled to go off.
+
+It's really ugly to insert or delete objects from the middle of the
+queue, so I simply let objects "hole out".
+
+For an object self destructing, it's easy.  The value in the queue shows
+up as nil and we pass it over.
+
+For an object removing itself, we note that an object can only be in the
+queue once.
