@@ -60,14 +60,10 @@ static void terminate_account_state()
 	object parent;
 
 	parent = query_parent();
-	
-	send_out(object_name(parent) + " is the parent ustate\n");
 
 	if (parent <- "~/obj/ustate/start") {
-		send_out("Parent is the bootstrap\n");
 		parent->swap_state(clone_object("shell"));
 	} else {
-		send_out("Parent is not the bootstrap\n");
 		pop_state();
 	}
 }
