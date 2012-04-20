@@ -22,7 +22,7 @@ static void create()
 	set_id_base(parts[sizeof(parts) - 1]);
 }
 
-static void gobj_destruct()
+static nomask void gobj_destruct()
 {
 	int sz;
 	int index;
