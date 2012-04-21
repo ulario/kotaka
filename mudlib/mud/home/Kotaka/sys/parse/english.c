@@ -22,43 +22,49 @@ mixed parse(string input)
 
 	ret = parse_string(grammar, input);
 
-	if (!ret)
+	if (!ret) {
 		error("Parse failure");
+	}
 
-	return ret[0];
+	return ret;
 }
-/*
-whitespace = / +/
-prep = /at|in|on|from|by|with|of|for|to/
-art = /a|an|the/
-conj = /and|or/
-word = /[^ ]+/
 
-iclause: vp
-iclause: vp ppl
+mixed *vp_verb(mixed *input)
+{
+	return ({ "verb", ({ input[0] }) });
+}
 
-vp: verb ? vp_verb
-vp: verb np ? vp_verb_np
+mixed *vp_verb_np(mixed *input)
+{
+	return ({ "verb", ({ input[0] }), "noun", ({ input[1 ..] }) });
+}
 
-pp: prep np ? pp_prep_np
+mixed *pp_prep_np(mixed *input)
+{
+	return ({ "prep", ({ input[0] }), "noun", ({ input[1 ..] }) });
+}
 
-np: oart oadjc noun ? np_oart_oadjc_noun
+mixed *np_oart_oadjc_noun(mixed *input)
+{
+	return ({ input[0], input[1], input[2] });
+}
 
-oart: ? oart
-oart: art ? oart_art
+mixed *oart(mixed *input)
+{
+	return ({ nil });
+}
 
-oadjc: ? oadjc
-oadjc: adjl ? oadjc_adjl
+mixed *oart_art(mixed *input)
+{
+	return ({ input[0] });
+}
 
-ppl: pp
-ppl: ppl pp
+mixed *oadjc(mixed *input)
+{
+	return ({ ({ }) });
+}
 
-adjl: adj
-adjl: adjl adj
-
-verb: word
-noun: word
-noun: prep
-adj: word
-adj: conj
-*/
+mixed *oadjc_adjl(mixed *input)
+{
+	return ({ input });
+}
