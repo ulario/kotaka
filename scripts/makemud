@@ -1,129 +1,60 @@
 #!/bin/bash
 
-COMMAND=$1
-shift
+# purge
+cd ~
+rm -rf dgd/kotaka/mud
+rm -rf dgd/kotaka/tmp
 
-case $COMMAND in
-phantasy)
-	# shentino's special command
-	# purge
-	cd ~
-	rm -rf dgd/mud
-	rm -rf dgd/tmp
+# skeleton
+mkdir -p dgd
+mkdir -p dgd/kotaka
+mkdir -p dgd/kotaka/mud
+mkdir -p dgd/kotaka/mud/doc
+mkdir -p dgd/kotaka/mud/doc/kernel
+mkdir -p dgd/kotaka/mud/home
+mkdir -p dgd/kotaka/mud/include
+mkdir -p dgd/kotaka/mud/kernel
+mkdir -p dgd/kotaka/mud/kernel/data
+mkdir -p dgd/kotaka/mud/log
+mkdir -p dgd/kotaka/tmp
 
-	# skeleton
-	mkdir -p dgd
-	mkdir -p dgd/mud
-	mkdir -p dgd/mud/doc
-	mkdir -p dgd/mud/doc/kernel
-	mkdir -p dgd/mud/usr
-	mkdir -p dgd/mud/include
-	mkdir -p dgd/mud/kernel
-	mkdir -p dgd/mud/kernel/data
-	mkdir -p dgd/mud/log
-	mkdir -p dgd/tmp
+# dgd
+for d in kfun net editor parser
+do
+	ln -s ../../../../git/dgd-osr/doc/$d dgd/kotaka/mud/doc
+done
 
-	# dgd
-	for d in kfun net editor parser
-	do
-		ln -s ../../../git/dgd-osr/doc/$d dgd/mud/doc
-	done
+# kernel-lib
+for d in efun hook lfun
+do
+	ln -s ../../../../../git/kernellib/doc/kernel/$d dgd/kotaka/mud/doc/kernel
+done
 
-	# kernel-lib
-	for d in efun hook lfun
-	do
-		ln -s ../../../../git/kernellib/doc/kernel/$d dgd/mud/doc/kernel
-	done
+for d in git/kernellib/kernel/*
+do
+	ln -s ../../../../$d dgd/kotaka/mud/kernel
+done
 
-	for d in git/kernellib/kernel/*
-	do
-		ln -s ../../../$d dgd/mud/kernel
-	done
+ln -s ../../../../git/kernellib/include/kernel dgd/kotaka/mud/include
 
-	ln -s ../../../git/kernellib/include/kernel dgd/mud/include
+# kotaka
+for d in git/kotaka/mudlib/mud/home/*
+do
+	ln -s ../../../../$d dgd/kotaka/mud/home
+done
 
-	# phantasmal
-	for d in git/phantasmal/mudlib/mud/usr/*
-	do
-		ln -s ../../../$d dgd/mud/usr
-	done
+for d in git/kotaka/mudlib/mud/include/*
+do
+	ln -s ../../../../$d dgd/kotaka/mud/include
+done
 
-	for d in git/phantasmal/mudlib/mud/include/*
-	do
-		ln -s ../../../$d dgd/mud/include
-	done
+# ulario
+for d in git/kotaka/testmud/mud/home/*
+do
+	ln -s ../../../../$d dgd/kotaka/mud/home
+done
 
-	# lovecraft
-	for d in git/phantasmal/testmud-seasofnight/mud/usr/*
-	do
-		ln -s ../../../$d dgd/mud/usr
-	done
-
-	for d in git/phantasmal/testmud-seasofnight/mud/include/*
-	do
-		ln -s -f ../../../$d dgd/mud/include
-	done
-	;;
-shentino)
-	# shentino's special command
-	# purge
-	cd ~
-	rm -rf dgd/mud
-	rm -rf dgd/tmp
-
-	# skeleton
-	mkdir -p dgd
-	mkdir -p dgd/mud
-	mkdir -p dgd/mud/doc
-	mkdir -p dgd/mud/doc/kernel
-	mkdir -p dgd/mud/home
-	mkdir -p dgd/mud/include
-	mkdir -p dgd/mud/kernel
-	mkdir -p dgd/mud/kernel/data
-	mkdir -p dgd/mud/log
-	mkdir -p dgd/tmp
-
-	# dgd
-	for d in kfun net editor parser
-	do
-		ln -s ../../../git/dgd-osr/doc/$d dgd/mud/doc
-	done
-
-	# kernel-lib
-	for d in efun hook lfun
-	do
-		ln -s ../../../../git/kernellib/doc/kernel/$d dgd/mud/doc/kernel
-	done
-
-	for d in git/kernellib/kernel/*
-	do
-		ln -s ../../../$d dgd/mud/kernel
-	done
-
-	ln -s ../../../git/kernellib/include/kernel dgd/mud/include
-
-	# kotaka
-	for d in git/kotaka/mudlib/mud/home/*
-	do
-		ln -s ../../../$d dgd/mud/home
-	done
-
-	for d in git/kotaka/mudlib/mud/include/*
-	do
-		ln -s ../../../$d dgd/mud/include
-	done
-
-	# ulario
-	for d in git/kotaka/testmud/mud/home/*
-	do
-		ln -s ../../../$d dgd/mud/home
-	done
-
-	for d in git/kotaka/testmud/mud/include/*
-	do
-		ln -s ../../../$d dgd/mud/include
-	done
-	;;
-*)
-	echo "Usage: makemud <command>"
-esac
+for d in git/kotaka/testmud/mud/include/*
+do
+	ln -s ../../../../$d dgd/kotaka/mud/include
+done
