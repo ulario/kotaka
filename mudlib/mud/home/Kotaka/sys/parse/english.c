@@ -1,12 +1,38 @@
 #include <kotaka/paths.h>
+#include <kotaka/log.h>
 
 string grammar;
+
+void decomment()
+{
+	string *lines;
+
+	int i;
+	int sz;
+
+	lines = explode(grammar, "\n");
+	sz = sizeof(lines);
+
+	for (i = 0; i < sz; i++) {
+		if (lines[i] == "") {
+			lines[i] = nil;
+		} else if (lines[i][0] == '#') {
+			lines[i] = nil;
+		}
+	}
+
+	lines -= ({ nil });
+	grammar = implode(lines, "\n");
+	LOGD->post_message("grammar", LOG_INFO, "Grammar:\n" + grammar);
+}
 
 static void create()
 {
 	::create();
-	
+
 	grammar = read_file("~/data/parse/english.dpd");
+
+	decomment();
 }
 
 static void upgraded()
@@ -14,6 +40,8 @@ static void upgraded()
 	::create();
 
 	grammar = read_file("~/data/parse/english.dpd");
+
+	decomment();
 }
 
 mixed parse(string input)
@@ -31,22 +59,22 @@ mixed parse(string input)
 
 mixed *vp_verb(mixed *input)
 {
-	return ({ "verb", ({ input[0] }) });
+	return ({ ({ "V", input[0], nil }) });
 }
 
 mixed *vp_verb_np(mixed *input)
 {
-	return ({ "verb", ({ input[0] }), "noun", ({ input[1 ..] }) });
+	return ({ ({ "V", input[0], input[1] }) });
 }
 
 mixed *pp_prep_np(mixed *input)
 {
-	return ({ "prep", ({ input[0] }), "noun", ({ input[1 ..] }) });
+	return ({ ({ "P", input[0], input[1] }) });
 }
 
 mixed *np_oart_oadjc_noun(mixed *input)
 {
-	return ({ input[0], input[1], input[2] });
+	return ({ ({ "N", input[0], input[1], input[2] }) });
 }
 
 mixed *oart(mixed *input)
