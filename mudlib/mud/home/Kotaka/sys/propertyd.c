@@ -44,7 +44,7 @@ void add_property(string name, int type, int code, varargs mixed extra)
 void del_property(string name)
 {
 	ACCESS_CHECK(PRIVILEGED());
-	
+
 	if (pinfo[name]) {
 		pinfo[name] = nil;
 	} else {

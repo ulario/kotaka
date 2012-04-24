@@ -66,7 +66,7 @@ object query_common_container(object a, object b)
 	while (le && re) {
 		la[le] = 1;
 		ra[re] = 1;
-		
+
 		if (la[re]) {
 			return re;
 		}
@@ -74,11 +74,11 @@ object query_common_container(object a, object b)
 		if (ra[le]) {
 			return le;
 		}
-		
+
 		le = le->_F_query_environment();
 		re = re->_F_query_environment();
 	}
-	
+
 	while (le) {
 		if (ra[le]) {
 			return le;
