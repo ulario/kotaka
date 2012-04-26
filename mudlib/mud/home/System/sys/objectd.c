@@ -57,14 +57,14 @@ void disable()
 {
 	ACCESS_CHECK(SYSTEM() || KADMIN());
 
-	find_object(DRIVER)->set_object_manager(nil);
+	DRIVER->set_object_manager(nil);
 }
 
 void enable()
 {
 	ACCESS_CHECK(SYSTEM() || KADMIN());
 
-	find_object(DRIVER)->set_object_manager(this_object());
+	DRIVER->set_object_manager(this_object());
 }
 
 void enable_programs_audit()
