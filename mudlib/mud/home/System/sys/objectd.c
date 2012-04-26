@@ -394,8 +394,6 @@ void scan_dirs(string path)
 	register_programs(queue);
 }
 
-private void write_preload(string path);
-
 void register_programs(object queue)
 {
 	int lc;
@@ -462,73 +460,6 @@ void register_programs(object queue)
 			compile_object(path);
 		}
 	}
-}
-
-private void write_preload(string path)
-{
-	object pinfo;
-	string file;
-	int *inh;
-	string *inhp;
-	string *inc;
-	int sz;
-	int index;
-	string ctor;
-	string dtor;
-	
-	string buf;
-	
-	buf = "";
-	
-	if (sscanf(path, "/kernel/%*s")) {
-		file = "~/data/kernel.programd";
-	} else {
-		file = "~/data/system.programd";
-	}
-	
-	pinfo = PROGRAMD->query_program_info(status(path)[O_INDEX]);
-	
-	if (!pinfo) {
-		error("No program info for " + path);
-	}
-	
-	inh = pinfo->query_inherits();
-
-	sz = sizeof(inh);
-	inhp = allocate(sz);
-	
-	for (index = 0; index < sz; index++) {
-		inhp[index] = PROGRAMD->
-			query_program_info(inh[index])->
-			query_path();
-	}
-
-	inc = pinfo->query_includes();
-	
-	ctor = pinfo->query_constructor();
-	dtor = pinfo->query_destructor();
-	
-	buf += "Program " + path;
-
-	if (sizeof(inh)) {
-		buf += "\nInherit " + implode(inhp, "\n\t");
-	}
-
-	if (sizeof(inc)) {
-		buf += "\nInclude " + implode(inc, "\n\t");
-	}
-	
-	if (ctor) {
-		buf += "\nConstructor " + ctor;
-	}
-	
-	if (dtor) {
-		buf += "\nDestructor " + dtor;
-	}
-	
-	buf += "\n\n";
-	
-	write_file(file, buf);
 }
 
 /**************/
