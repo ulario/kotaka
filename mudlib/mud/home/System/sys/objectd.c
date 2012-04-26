@@ -384,13 +384,13 @@ void register_programs(object queue);
 void scan_dirs(string path)
 {
 	object queue;
-	
+
 	ACCESS_CHECK(SYSTEM() || KADMIN());
 
 	queue = new_object(BIGSTRUCT_DEQUE_LWO);
 
 	scan(path, queue);
-	
+
 	register_programs(queue);
 }
 
@@ -430,12 +430,12 @@ void register_programs(object queue)
 
 	while (!lq->empty()) {
 		string path;
-		
+
 		lc++;
-		
+
 		path = lq->get_front();
 		lq->pop_front();
-		
+
 		destruct_object(path);
 	}
 
@@ -608,7 +608,7 @@ void compile(string owner, object obj, string *sources,
 		if (object_name(obj) != DRIVER) {
 			inherited |= ({ AUTO });
 		}
-		
+
 		compiled_program(path, inherited, includes, nil, nil);
 
 		includes = nil;
@@ -792,7 +792,7 @@ mixed include_file(string compiled, string from, string path)
 int touch(object obj, string func)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
-	
+
 	catch {
 		if (obj <- SECOND_AUTO) {
 			return 0;
