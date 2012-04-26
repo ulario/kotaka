@@ -726,7 +726,11 @@ int touch(object obj, string func)
 
 	catch {
 		if (obj <- SECOND_AUTO) {
-			return 0;
+			if (DRIVER->creator(function_object(func, obj)) == "System") {
+				return 1;
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
