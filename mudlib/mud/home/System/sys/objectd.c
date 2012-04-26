@@ -795,23 +795,7 @@ int touch(object obj, string func)
 	
 	catch {
 		if (obj <- SECOND_AUTO) {
-			string program;
-	
-			if (func == "_F_dummy") {
-				return obj->touch(func);
-			}
-
-			program = function_object(func, obj);
-
-			if (!program) {
-				return obj->touch(func);
-			}
-
-			if (sscanf(program, USR_DIR + "/System/%*s")) {
-				return 1;
-			}
-
-			return obj->touch(func);
+			return 0;
 		} else {
 			return 0;
 		}

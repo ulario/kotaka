@@ -6,6 +6,7 @@
 #include <status.h>
 
 inherit "call_guard";
+inherit "touch";
 
 /**********/
 /* status */
@@ -110,19 +111,6 @@ static object clone_object(mixed args ...)
 	}
 
 	return ::clone_object(args ...);
-}
-
-static void call_touch(object obj)
-{
-	string cpath;
-	string opath;
-	
-	cpath = object_name(previous_object());
-	opath = object_name(obj);
-	
-	ACCESS_CHECK(DRIVER->creator(cpath) == DRIVER->creator(opath));
-	
-	::call_touch(obj);
 }
 
 /*********/
@@ -247,20 +235,6 @@ void upgrade()
 void upgrade_failed()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
-}
-
-static int touch(string function)
-{
-	if (sscanf(object_name(this_object()), USR_DIR + "/System/%*s")) {
-		return 1;
-	}
-}
-
-nomask int _F_call_touch(string function)
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-	
-	return touch(function);
 }
 
 nomask void _F_dummy()
