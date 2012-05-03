@@ -530,19 +530,18 @@ void compile(string owner, object obj, string *sources,
 
 		path = object_name(obj);
 
-		if (upgraded) {
-			if (!forcing && obj <- SECOND_AUTO) {
-				obj->upgrade();
-			}
-		}
-
 		if (object_name(obj) != DRIVER) {
 			inherited |= ({ AUTO });
 		}
 
 		compiled_program(path, inherited, includes, nil, nil);
-
 		includes = nil;
+
+		if (upgraded) {
+			if (!forcing && obj <- SECOND_AUTO) {
+				obj->upgrade();
+			}
+		}
 	} : {
 		error("Internal error in ObjectD");
 	}
@@ -602,12 +601,6 @@ void compile_failed(string owner, string path)
 
 			upgrading = 0;
 			obj = find_object(path);
-
-			if (!forcing && obj <- SECOND_AUTO) {
-				catch {
-					obj->upgrade_failed();
-				}
-			}
 		}
 
 		LOGD->post_message("program", LOG_ERR,
