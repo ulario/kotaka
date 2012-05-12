@@ -30,15 +30,15 @@ static void create()
 {
 	::create();
 
+	LOGD->post_message("parse", LOG_INFO, "Loading grammar");
 	grammar = read_file("~/data/parse/english.dpd");
 
 	decomment();
 }
 
-static void upgraded()
+void upgrade()
 {
-	::create();
-
+	LOGD->post_message("parse", LOG_INFO, "Reloading grammar");
 	grammar = read_file("~/data/parse/english.dpd");
 
 	decomment();
@@ -46,15 +46,7 @@ static void upgraded()
 
 mixed parse(string input)
 {
-	mixed *ret;
-
-	ret = parse_string(grammar, input);
-
-	if (!ret) {
-		error("Parse failure");
-	}
-
-	return ret;
+	return parse_string(grammar, input);
 }
 
 mixed *vp_verb(mixed *input)
@@ -65,6 +57,11 @@ mixed *vp_verb(mixed *input)
 mixed *vp_verb_np(mixed *input)
 {
 	return ({ ({ "V", input[0], input[1] }) });
+}
+
+mixed *pp_prep(mixed *input)
+{
+	return ({ ({ "P", input[0], nil }) });
 }
 
 mixed *pp_prep_np(mixed *input)
@@ -95,4 +92,16 @@ mixed *oadjc(mixed *input)
 mixed *oadjc_adjl(mixed *input)
 {
 	return ({ input });
+}
+
+mixed *noun_word(mixed *input)
+{
+}
+
+mixed *verb_word(mixed *input)
+{
+}
+
+mixed *prep_word(mixed *input)
+{
 }

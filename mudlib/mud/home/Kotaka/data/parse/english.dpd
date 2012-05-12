@@ -10,6 +10,7 @@ iclause: vp ppl
 vp: verb ? vp_verb
 vp: verb np ? vp_verb_np
 
+pp: prep ? pp_prep
 pp: prep np ? pp_prep_np
 
 np: oart oadjc noun ? np_oart_oadjc_noun
@@ -28,6 +29,5 @@ adjl: adjl adj
 
 verb: word
 noun: word
-noun: prep
 adj: word
 adj: conj
