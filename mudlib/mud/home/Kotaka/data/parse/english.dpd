@@ -1,7 +1,6 @@
 whitespace = / +/
 prep = /at|in|on|from|by|with|of|for|to/
 art = /a|an|the/
-conj = /and|or/
 word = /[^ ]+/
 
 iclause: vp
@@ -30,4 +29,3 @@ adjl: adjl adj
 verb: word
 noun: word
 adj: word
-adj: conj
