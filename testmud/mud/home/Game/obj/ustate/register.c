@@ -44,21 +44,6 @@ private void prompt()
 	}
 }
 
-private void terminate_register()
-{
-	object parent;
-
-	parent = query_parent();
-
-	if (parent <- "shell") {
-		pop_state();
-	} else if (parent <- "start") {
-		parent->swap_state(clone_object("shell"));
-	} else {
-		error("Illegal parent state");
-	}
-}
-
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
@@ -112,6 +97,7 @@ void receive_in(string input)
 
 	switch(state) {
 	case STATE_GETNAME:
+		input = STRINGD->to_lower(input);
 		if (!STRINGD->is_valid_username(input)) {
 			send_out("That is not a valid username.\n");
 			pop_state();
@@ -130,7 +116,7 @@ void receive_in(string input)
 
 	case STATE_GETPASS:
 		send_out("\n");
-		if (ACCOUNTD->query_is_registered(input)) {
+		if (ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, someone else just swiped the username you wanted.\n");
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
@@ -144,7 +130,7 @@ void receive_in(string input)
 
 	case STATE_CHKPASS:
 		send_out("\n");
-		if (ACCOUNTD->query_is_registered(input)) {
+		if (ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, someone else just swiped the username you wanted.\n");
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
