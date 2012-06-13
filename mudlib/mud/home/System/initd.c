@@ -266,26 +266,14 @@ private void configure_logging()
 	load_object(LOGD);
 
 	LOGD->set_target("*", 255, "null");
-	LOGD->set_target("*", 255, "driver");
-	LOGD->set_target("*", 255, "file:/log/general.log");
-
-	LOGD->set_target("*",
-		LOG_EMERG | LOG_CRIT | LOG_ALERT,
-		"kadmins"
-	);
-
-	LOGD->set_target("system",
-		LOG_EMERG | LOG_CRIT | LOG_ALERT | LOG_ERR | LOG_WARNING,
-		"kadmins"
-	);
-
+	LOGD->set_target("*", 255 & ~(1 << LOG_DEBUG), "driver");
+	LOGD->set_target("*", 255 & ~(1 << LOG_DEBUG), "file:/log/general.log");
 	LOGD->set_target("status", 255, "channel:status");
 	LOGD->set_target("compile", 255, "file:/log/error.log");
 	LOGD->set_target("error", 255, "file:/log/error.log");
 	LOGD->set_target("error", 255, "driver");
 	LOGD->set_target("trace", 255, "file:/log/error.log");
 	LOGD->set_target("trace", 255, "driver");
-	LOGD->set_target("trace", 0, "driver");
 }
 
 int forbid_inherit(string from, string path, int priv)
