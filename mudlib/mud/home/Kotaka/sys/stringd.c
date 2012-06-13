@@ -607,6 +607,119 @@ int prefix_string(string prefix, string str)
 	return 0;
 }
 
+private int is_flat(mixed *arr)
+{
+	int sz;
+	int i;
+
+	sz = sizeof(arr);
+
+	for (i = 0; i < sz; i++) {
+		switch(typeof(arr[i])) {
+		case T_NIL:
+		case T_INT:
+		case T_FLOAT:
+		case T_STRING:
+		case T_OBJECT:
+			break;
+		case T_ARRAY:
+			if (sizeof(arr[i]) != 0) {
+				return 0;
+			}
+			break;
+		case T_MAPPING:
+			if (map_sizeof(arr[i]) != 0) {
+				return 0;
+			}
+			break;
+		}
+	}
+
+	return 1;
+}
+
+string hybrid_sprint(mixed data, varargs int indent, mapping seen)
+{
+	string ind;
+
+	ind = spaces(indent);
+
+	if (!seen)
+		seen = ([ ]);
+
+	switch (typeof(data)) {
+	case T_INT:
+	case T_NIL:
+	case T_STRING:
+	case T_FLOAT:
+	case T_OBJECT:
+		return mixed_sprint(data);
+	case T_ARRAY:
+		if (seen[data] != nil) {
+			return "#" + seen[data];
+		}
+
+		if (sizeof(data) == 0)
+			return "({ })";
+
+		if (is_flat(data)) {
+			return mixed_sprint(data, seen);
+		}
+
+		seen[data] = map_sizeof(seen);
+
+		{
+			string *parts;
+			int index;
+
+			parts = allocate(sizeof(data));
+
+			for (index = 0; index < sizeof(data); index++) {
+				parts[index] =
+					"  " + hybrid_sprint(data[index],
+					indent + 2, seen);
+			}
+
+			return "({\n" + ind + implode(parts,
+				",\n" + ind) + "\n" + ind + "})";
+		}
+	case T_MAPPING:
+		if (seen[data] != nil) {
+			return "@" + seen[data];
+		}
+
+		if (map_sizeof(data) == 0) {
+			return "([ ])";
+		}
+
+		if (is_flat(data)) {
+			return mixed_sprint(data, seen);
+		}
+
+		seen[data] = map_sizeof(seen);
+
+		{
+			mixed *indices;
+			string *parts;
+			int index;
+
+			parts = allocate(map_sizeof(data));
+			indices = map_indices(data);
+
+			for (index = 0; index < map_sizeof(data); index++) {
+				parts[index] =
+					"  " + mixed_sprint(indices[index], seen) +
+					":\n" + ind + "    " +
+					hybrid_sprint(data[indices[index]],
+					indent + 4, seen);
+			}
+
+			return "([\n" + ind + implode(parts,
+				",\n" + ind) + "\n" + ind + "])";
+		}
+	}
+}
+
 /************************/
 /* formatting functions */
 /************************/
