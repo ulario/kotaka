@@ -108,6 +108,7 @@ void receive_in(string input)
 			break;
 
 		case "3": /* guest */
+			GAME_USERD->add_guest(query_user());
 			swap_state(clone_object("shell"));
 			return;
 

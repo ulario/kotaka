@@ -11,6 +11,7 @@ static void send_to_all(string phrase)
 	object *users;
 
 	users = GAME_USERD->query_users();
+	users += GAME_USERD->query_guests();
 
 	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
 		users[sz]->message(phrase);
@@ -22,7 +23,9 @@ static void send_to_all_except(string phrase, object *exceptions)
 	int sz;
 	object *users;
 
-	users = GAME_USERD->query_users() - exceptions;
+	users = GAME_USERD->query_users();
+	users += GAME_USERD->query_guests();
+	users -= exceptions;
 
 	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
 		users[sz]->message(phrase);

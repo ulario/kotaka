@@ -124,9 +124,17 @@ void receive_in(string input)
 			pop_state();
 			return;
 		} else {
-			query_user()->set_username(name);
-			GAME_USERD->add_user(name, query_user());
-			query_user()->set_mode(MODE_ECHO);
+			object user;
+
+			user = query_user();
+			user->set_username(name);
+			if (GAME_USERD->query_is_guest(user)) {
+				GAME_USERD->promote_guest(name, user);
+			} else {
+				GAME_USERD->add_user(name, user);
+			}
+
+			user->set_mode(MODE_ECHO);
 			announce_login();
 			terminate_account_state();
 			return;
