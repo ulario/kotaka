@@ -95,6 +95,6 @@ string query_destructor(string path)
 	case USR_DIR + "/Game/lib/object":
 		return "gobj_destruct";
 	default:
-		LOGD->post_message("game", LOG_INFO, "No destructor registered for " + path);
+		LOGD->post_message("game", LOG_DEBUG, "No destructor registered for " + path);
 	}
 }
