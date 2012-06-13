@@ -130,6 +130,15 @@ void do_help()
 	push_state(pager);
 }
 
+void do_alist()
+{
+	string *users;
+
+	users = ACCOUNTD->query_accounts();
+
+	send_out("Users: " + implode(users, ", ") + "\n");
+}
+
 void do_emote(string args)
 {
 	object user;
@@ -367,6 +376,9 @@ void receive_in(string input)
 		break;
 	case "help":
 		do_help();
+		break;
+	case "alist":
+		do_alist();
 		break;
 	case "play":
 		push_state(clone_object("play"));
