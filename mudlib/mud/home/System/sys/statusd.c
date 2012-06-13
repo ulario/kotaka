@@ -156,12 +156,13 @@ int login(string str)
 	return MODE_NOCHANGE;
 }
 
-private void printstatus(object conn)
+private int printstatus(object conn)
 {
 	if (conn) {
-		conn->message("\0337\033[1;1H" + status_message() + "\n\0338");
+		return conn->message("\0337\033[1;1H" + status_message() + "\n\0338");
 	} else {
 		LOGD->post_message("status", LOG_INFO, status_message());
+		return 0;
 	}
 }
 
@@ -224,12 +225,20 @@ int receive_message(string str)
 
 static void report(varargs object conn)
 {
-	printstatus(conn);
+	int status;
+	
+	status = printstatus(conn);
 
 	if (conn) {
-		connections[conn][2] = call_out("report",
-			connections[conn][0], conn
-		);
+		if (status) {
+			connections[conn][2] = call_out("report",
+				connections[conn][0], conn
+			);
+		} else {
+			connections[conn][2] = call_out("report",
+				1, conn
+			);
+		}
 	} else {
 		schedule();
 	}
