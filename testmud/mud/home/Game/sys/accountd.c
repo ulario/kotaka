@@ -45,6 +45,11 @@ int query_is_registered(string name)
 	return !!passwords[name];
 }
 
+string *query_accounts()
+{
+	return map_indices(passwords);
+}
+
 int authenticate(string name, string password)
 {
 	ACCESS_CHECK(GAME());
