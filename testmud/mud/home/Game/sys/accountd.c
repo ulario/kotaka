@@ -72,11 +72,6 @@ void change_password(string name, string newpass)
 	passwords[name] = hash_string("MD5", newpass);
 }
 
-int username_to_uid(string username)
-{
-	return -1;
-}
-
 private void save()
 {
 	save_object("accountd.o");
