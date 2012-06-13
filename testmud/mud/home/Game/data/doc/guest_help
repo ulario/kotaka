@@ -1,11 +1,15 @@
-Ulario help
------------
+Ulario login help
+-----------------
 
-As a guest, your access to most commands is restricted.
-To do most things you will need to have a user account.
+Logging in allows you to identify yourself using a previously created
+account.
 
-If you have one, and wish to use it, please [1;36mlogin[0m.
-If you don't, and wish to get one, please [1;36mregister[0m.
+You can register a new account using a unique name by supplying a secret
+password which will be used to authenticate.
 
-(neither of the above are yet implemented as more than demo stubs, so
-restrictions on guest commands are lifted)
+You can connect anonymously as a guest.  You will be unable to speak or
+use any commands that can affect other players or the game, but you will
+be free to access all public information.
+
+You can terminates your connection.  You will be disconnected
+automatically if you do not either login or register within 60 seconds.
