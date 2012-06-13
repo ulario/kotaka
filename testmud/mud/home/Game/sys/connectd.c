@@ -24,6 +24,7 @@ static void create()
 	users = ([ ]);
 
 	/* normal stuff */
+	PORTD->set_telnet_manager(0, this_object());
 	PORTD->set_binary_manager(1, this_object());
 }
 
