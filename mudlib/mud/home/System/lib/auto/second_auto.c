@@ -123,19 +123,19 @@ private void _F_call_constructors()
 	string *ctors;
 	int index;
 	int sz;
-	
+
 	string base;
-	
+
 	pinfo = PROGRAMD->query_program_info(status(this_object())[O_INDEX]);
-	
+
 	if (!pinfo) {
 		INITD->message("No program info for " + object_name(this_object()));
 		return;
 	}
-	
+
 	ctors = pinfo->query_inherited_constructors();
 	sz = sizeof(ctors);
-	
+
 	for (index = 0; index < sz; index++) {
 		call_other(this_object(), ctors[index]);
 	}
@@ -147,9 +147,9 @@ private void _F_call_destructors()
 	string *dtors;
 	int index;
 	int sz;
-	
+
 	string base;
-	
+
 	pinfo = PROGRAMD->query_program_info(status(this_object())[O_INDEX]);
 
 	if (!pinfo) {
@@ -158,9 +158,9 @@ private void _F_call_destructors()
 	}
 
 	dtors = pinfo->query_inherited_destructors();
-	
+
 	sz = sizeof(dtors);
-	
+
 	for (index = sz - 1; index > 0; index--) {
 		call_other(this_object(), dtors[index]);
 	}
@@ -195,11 +195,11 @@ nomask void _F_sys_destruct()
 	object pinfo;
 	string oname;
 	string base;
-	
+
 	string *dtors;
-	
+
 	int clone;
-	
+
 	int index;
 	int sz;
 
