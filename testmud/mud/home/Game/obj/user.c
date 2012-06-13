@@ -109,8 +109,25 @@ int login(string str)
 int receive_message(string str)
 {
 	int ret;
+	object conn, conn2;
+	string ip;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
+	conn = previous_object();
+
+	while (conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	ip = query_ip_number(conn);
+
+	write_file("~/log",
+		(username ? username :
+		(
+			"(" + (ip ? ip : "nil") + ")"
+		))
+		+ ": " + str + "\n"
+	);
 
 	ret = ::receive_message(str);
 
