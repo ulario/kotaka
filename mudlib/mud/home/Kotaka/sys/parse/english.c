@@ -23,7 +23,6 @@ void decomment()
 
 	lines -= ({ nil });
 	grammar = implode(lines, "\n");
-	LOGD->post_message("grammar", LOG_INFO, "Grammar:\n" + grammar);
 }
 
 static void create()

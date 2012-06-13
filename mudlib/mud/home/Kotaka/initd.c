@@ -139,9 +139,9 @@ private void setup_channels()
 static void create()
 {
 	int i;
-	
+
 	load_object(STRINGD);
-	
+
 	load_dir("lib", 1);
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
@@ -165,8 +165,7 @@ int forbid_inherit(string from, string path, int priv)
 /** Object constructor/destructor */
 string query_constructor(string path)
 {
-	switch(path)
-	{
+	switch(path) {
 	case LIB_OBJECT:
 		return "kotaka_object_constructor";
 	}
@@ -174,8 +173,7 @@ string query_constructor(string path)
 
 string query_destructor(string path)
 {
-	switch(path)
-	{
+	switch(path) {
 	case LIB_OBJECT:
 		return "kotaka_object_destructor";
 	}

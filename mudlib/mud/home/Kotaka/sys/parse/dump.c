@@ -93,7 +93,7 @@ private mixed build(mixed *input)
 			
 			for (i = 0; i < sizeof(indices); i++) {
 				out[build(indices[i])] = build(values[i]);
-			} 
+			}
 		}
 		return out;
 	case T_MAPPING + 1:

@@ -1,6 +1,7 @@
 #include <kotaka/assert.h>
 #include <kotaka/privilege.h>
 #include <kotaka/paths.h>
+#include <kotaka/log.h>
 
 #include <type.h>
 
@@ -733,22 +734,22 @@ string normalize_whitespace(string input, int maxwidth)
 	string line;
 
 	int linewidth;
-	
+
 	input = replace(input, "\t", " ");
 	input = replace(input, "\n", " ");
-	
+
 	words = explode(input, " ") - ({ "" });
-	
+
 	line = "";
 	lines = ({ });
-	
+
 	for(index = 0; index < sizeof(words); index++) {
 		string word;
 		int wordwidth;
-		
+
 		word = words[index];
 		wordwidth = strlen(word) + 1;
-		
+
 		switch(word[strlen(word) - 1]) {
 		case '.':
 		case '!':
@@ -766,15 +767,15 @@ string normalize_whitespace(string input, int maxwidth)
 			linewidth = 0;
 			line = "";
 		}
-		
+
 		line += word;
 		linewidth += wordwidth;
 	}
-	
+
 	if (line != "") {
 		lines += ({ trim_whitespace(line) });
 	}
-	
+
 	return implode(lines, "\n") + "\n";
 }
 
