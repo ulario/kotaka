@@ -117,6 +117,7 @@ private void merge_node_left(object node)
 
 	prev->set_map( ([ ]) );
 	delete_node(prev);
+	/* todo: take care of the map emptying out */
 }
 
 private void merge_node_right(object node)
@@ -135,6 +136,7 @@ private void merge_node_right(object node)
 
 	next->set_map( ([ ]) );
 	delete_node(next);
+	/* todo: take care of the map emptying out */
 }
 
 private void split_node_right(object node)
