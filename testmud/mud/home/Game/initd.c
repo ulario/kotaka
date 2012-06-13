@@ -57,10 +57,6 @@ static void create()
 	load_dir("sys", 1);
 
 	root = find_object("sys/root");
-
-	PROPERTYD->load_property_type_file(
-		read_file("~/data/config/property.conf")
-	);
 }
 
 void reboot()
