@@ -7,6 +7,14 @@ inherit GAME_LIB_OBJECT;
 /* assembled from skins, absorbs damage */
 /* degrades from usage */
 
+/*
+
+damage absorption:
+
+damage cancelled to wearer = damage dealt * condition
+
+*/
+
 static void create(int clone)
 {
 	if (clone) {
