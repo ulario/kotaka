@@ -61,15 +61,15 @@ void receive_datagram(string packet)
 static int limited_login(string str, object conn)
 {
 	int newmode;
-	
+
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
-	
+
 	connection(conn);
 	::open(nil);
-	
+
 	newmode = ::receive_message(str);
-	
+
 	if (!this_object()) {
 		return MODE_DISCONNECT;
 	}
