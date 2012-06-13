@@ -72,14 +72,14 @@ string bits(string input)
 
 	for (a = 0; a < strlen(input); a++) {
 		int byte;
-		
+
 		byte = input[a];
-		
+
 		for (b = 0; b < 8; b++) {
 			buf += ((byte >> b) & 1) ? "#" : "-";
 		}
 	}
-	
+
 	return buf;
 }
 
