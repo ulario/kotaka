@@ -66,25 +66,35 @@ private void do_help()
 
 void receive_in(string input)
 {
-	string first;
+	string first, rest;
 
 	ACCESS_CHECK(previous_object() == query_user());
 
 	reading = 1;
 
-	if (!sscanf(input, "%s %s", first, input)) {
+	if (!sscanf(input, "%s %s", first, rest)) {
 		first = input;
-		input = "";
+		rest = "";
 	}
 
-	if (first == "quit") {
+	if (first == "") {
+	} else if (first == "quit") {
 		pop_state();
 		return;
 	} else if (first == "recompile") {
 		OBJECTD->klib_recompile();
 		OBJECTD->global_recompile();
 	} else {
-		mixed tree;
+		catch {
+			mixed tree;
+			string verb;
+
+			tree = PARSE_ENGLISH->parse(input);
+
+			send_out("English parse is:\n" + STRINGD->hybrid_sprint(tree) + "\n");
+		} : {
+			send_out("I couldn't understand that at all.\n");
+		}
 	}
 
 	reading = 0;
