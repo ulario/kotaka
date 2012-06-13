@@ -302,20 +302,20 @@ void post_message(string facility, int priority, string message)
 
 	timestamp = timestamp();
 	hits = ([ ]);
-	
+
 	if (facilities[facility]) {
 		mapping submap;
 		string *targets;
 		int *masks;
 		int index;
 		int sz;
-		
+
 		submap = facilities[facility];
 		targets = map_indices(submap);
 		masks = map_values(submap);
-		
+
 		sz = map_sizeof(submap);
-		
+
 		for (index = 0; index < sz; index++) {
 			if (masks[index] & (1 << priority)) {
 				hits[targets[index]] = 1;
@@ -329,13 +329,13 @@ void post_message(string facility, int priority, string message)
 		int *masks;
 		int index;
 		int sz;
-		
+
 		submap = facilities["*"];
 		targets = map_indices(submap);
 		masks = map_values(submap);
-		
+
 		sz = map_sizeof(submap);
-		
+
 		for (index = 0; index < sz; index++) {
 			if (masks[index] & (1 << priority)) {
 				hits[targets[index]] = 1;
@@ -349,10 +349,10 @@ void post_message(string facility, int priority, string message)
 		string *targets;
 		int sz;
 		int index;
-		
+
 		targets = map_indices(hits);
 		sz = sizeof(targets);
-		
+
 		for (index = 0; index < sz; index++) {
 			send_to_target(targets[index], facility, message);
 		}
