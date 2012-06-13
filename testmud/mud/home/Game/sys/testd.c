@@ -13,17 +13,6 @@ void ignite(int count)
 	call_out("bomb", 0, count);
 }
 
-static void suspend()
-{
-	LOGD->post_message("test", LOG_INFO, "Suspending callouts for " + (TEST_CO_INTERVAL + 10) + " seconds");
-
-	CALLOUTD->hold_callouts((float)(TEST_CO_INTERVAL + 10));
-
-	LOGD->post_message("test", LOG_INFO, "Self destructing");
-	destruct_object("~/obj/bomb");
-	destruct_object(this_object());
-}
-
 static void bomb(int quota)
 {
 	int max;
@@ -46,7 +35,5 @@ static void bomb(int quota)
 
 	if (quota > 0) {
 		call_out("bomb", 0, quota);
-	} else {
-		suspend();
 	}
 }
