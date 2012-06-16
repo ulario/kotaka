@@ -389,17 +389,21 @@ int login(string str)
 
 object intercept(object LIB_CONN conn, object LIB_USER user)
 {
+	object base_conn;
+
 	ACCESS_CHECK(previous_program() == LIB_SYSTEM_USER);
 
-	while (conn && conn <- LIB_USER) {
-		conn = conn->query_conn();
+	base_conn = conn;
+
+	while (base_conn && base_conn <- LIB_USER) {
+		base_conn = base_conn->query_conn();
 	}
 
-	if (!conn) {
+	if (!base_conn) {
 		error("Bad redirect");
 	}
 
-	intercepts[conn] = user;
+	intercepts[base_conn] = user;
 
 	return query_select(nil, conn);
 }
