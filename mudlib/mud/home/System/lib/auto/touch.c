@@ -1,5 +1,6 @@
 #include <kernel/kernel.h>
 #include <kotaka/privilege.h>
+#include <kotaka/paths.h>
 
 mapping touches;
 
