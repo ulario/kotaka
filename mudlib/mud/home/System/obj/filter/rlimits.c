@@ -68,13 +68,7 @@ static int limited_login(string str, object conn)
 	connection(conn);
 	::open(nil);
 
-	newmode = ::receive_message(str);
-
-	if (!this_object()) {
-		return MODE_DISCONNECT;
-	}
-
-	return newmode;
+	return ::receive_message(str);
 }
 
 static void limited_logout(int quit)

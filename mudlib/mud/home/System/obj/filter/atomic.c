@@ -14,23 +14,14 @@ static void create(int clone)
 	}
 }
 
-atomic int atomic_login(string str, object conn)
+atomic static int atomic_login(string str, object conn)
 {
 	int newmode;
-
-	ACCESS_CHECK(previous_program() == LIB_CONN
-		|| calling_object() == this_object());
 
 	connection(conn);
 	::open(nil);
 
-	newmode = ::receive_message(str);
-
-	if (!this_object()) {
-		return MODE_DISCONNECT;
-	}
-
-	return newmode;
+	return ::receive_message(str);
 }
 
 atomic static void atomic_logout(int quit)
@@ -38,7 +29,7 @@ atomic static void atomic_logout(int quit)
 	::logout(quit);
 }
 
-atomic static int atomic_receive_message(string str)
+static int atomic_receive_message(string str)
 {
 	return ::receive_message(str);
 }
