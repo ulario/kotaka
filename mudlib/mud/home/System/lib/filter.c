@@ -38,18 +38,12 @@ int login(string str)
 
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
-	
+
 	connection(previous_object());
-
 	conn::open(nil);
-	
-	newmode = conn::receive_message(nil, str);
-	
-	if (!this_object()) {
-		return MODE_DISCONNECT;
-	}
 
-	return newmode;
+	/* LIB_CONN does an implicit call to set_mode */
+	return conn::receive_message(nil, str);
 }
 
 void logout(int quit)
@@ -87,9 +81,8 @@ int receive_message(string str)
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
 
-	newmode = conn::receive_message(nil, str);
-	
-	return newmode;
+	/* LIB_CONN does an implicit call to set_mode */
+	return conn::receive_message(nil, str);
 }
 
 int message_done()
@@ -180,26 +173,18 @@ void set_mode(int new_mode)
 	ACCESS_CHECK(previous_program() == LIB_CONN || SYSTEM() ||
 		calling_object() == this_object());
 
-	if (!this_object()) {
-		if (new_mode != MODE_NOCHANGE) {
-			error("No object: trying to set mode " + new_mode);
-		}
-		
+	if (!this_object() || !query_conn() || new_mode == MODE_NOCHANGE) {
 		return;
 	}
 
-	conn = query_conn();
-	
-	if (!conn) {
+	if (new_mode == MODE_DISCONNECT) {
+		query_conn()->set_mode(MODE_BLOCK);
+		conn::close(nil, 1);
+		call_out("self_disconnect", 0);
 		return;
 	}
-	
-	switch(new_mode) {
-	case MODE_NOCHANGE:
-		break;
-	default:
-		conn->set_mode(new_mode);
-	}
+
+	query_conn()->set_mode(new_mode);
 }
 
 static void self_destruct()
