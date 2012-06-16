@@ -310,6 +310,25 @@ private void do_ban(string args)
 	}
 }
 
+private void do_trace()
+{
+	object conn;
+
+	send_out("Connection chain trace:\n");
+
+	conn = query_user();
+
+	while (conn) {
+		send_out(object_name(conn) + "\n");
+
+		if (conn <- LIB_USER) {
+			conn = conn->query_conn();
+		} else {
+			break;
+		}
+	}
+}
+
 private void do_unban(string args)
 {
 	string kicker_name;
@@ -365,6 +384,9 @@ void receive_in(string input)
 	}
 
 	switch(first) {
+	case "trace":
+		do_trace();
+		break;
 	case "login":
 		push_state(clone_object("login"));
 		break;
