@@ -126,19 +126,15 @@ object select(string str)
 	case BINARY_CONN:
 		switch(level) {
 		case 0:
-			return clone_object("~System/obj/filter/rlimits");
-		case 1:
 			return clone_object("~Game/obj/filter/telnet");
-		case 2:
+		default:
 			user = clone_object("~Game/obj/user");
 			users[user] = 1;
 			return user;
 		}
 	case TELNET_CONN:
 		switch(level) {
-		case 0:
-			return clone_object("~System/obj/filter/rlimits");
-		case 1:
+		default:
 			user = clone_object("~Game/obj/user");
 			users[user] = 1;
 			return user;
