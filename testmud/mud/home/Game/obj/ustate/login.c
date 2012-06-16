@@ -8,8 +8,10 @@ inherit GAME_LIB_USTATE;
 #define STATE_GETNAME	1
 #define STATE_GETPASS	2
 #define STATE_CHKPASS	3
+#define STATE_CHKDUPE	4
 
 string name;
+string password;
 
 int state;
 int stopped;
@@ -111,12 +113,13 @@ void receive_in(string input)
 
 	case STATE_CHKPASS:
 		send_out("\n");
+		password = input;
 		if (!ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, that account no longer exists.\n");
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
-		} else if (!ACCOUNTD->authenticate(name, input)) {
+		} else if (!ACCOUNTD->authenticate(name, password)) {
 			send_out("Password mismatch.\n");
 			/* we will eventually want to ban IPs that */
 			/* fail too much */
@@ -125,6 +128,50 @@ void receive_in(string input)
 			return;
 		} else {
 			object user;
+			/* todo: detect duplicates and prepare to */
+			/* evict a linkdead user */
+
+			user = query_user(name);
+			
+			if (user) {
+				send_out("You are already logged in.\nDo you wish to disconnect your previous login? ");
+				state = STATE_CHKDUPE;
+				break;
+			}
+
+			user->set_username(name);
+			if (GAME_USERD->query_is_guest(user)) {
+				GAME_USERD->promote_guest(name, user);
+			} else {
+				GAME_USERD->add_user(name, user);
+			}
+
+			user->set_mode(MODE_ECHO);
+			announce_login();
+			terminate_account_state();
+			return;
+		}
+		break;
+	case STATE_CHKDUPE:
+		if (!ACCOUNTD->query_is_registered(name)) {
+			send_out("Whoops, that account no longer exists.\n");
+			pop_state();
+			return;
+		} else if (!ACCOUNTD->authenticate(name, password)) {
+			send_out("Your password was just changed.\n");
+			pop_state();
+			return;
+		} else if (input == "yes") {
+			object user;
+
+			user = GAME_USERD->query_user(name);
+
+			if (user) {
+				send_out("Evicting previous connection.\n");
+				user->quit();
+			} else {
+				send_out("Your previous connection went away before I could evict it :P\n");
+			}
 
 			user = query_user();
 			user->set_username(name);
@@ -137,6 +184,10 @@ void receive_in(string input)
 			user->set_mode(MODE_ECHO);
 			announce_login();
 			terminate_account_state();
+			return;
+		} else {
+			send_out("Ok then.\n");
+			pop_state();
 			return;
 		}
 		break;
