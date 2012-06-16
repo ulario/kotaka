@@ -37,6 +37,7 @@ mapping binary_managers;	/* managers assigned to logical binary ports */
 mapping fixed_managers;		/* managers assigned to physical ports */
 
 mapping connections;		/* ([ connection : ({ type, lport, pport }) ]) */
+mapping intercepts;		/* ([ connection : user ]) */
 
 int enabled;		/*< active or not */
 int binary_port_count;	/*< number of ports currently registered */
@@ -78,6 +79,7 @@ static void create()
 	fixed_managers = ([ ]);
 
 	connections = ([ ]);
+	intercepts = ([ ]);
 
 	reblocked = ([ ]);
 }
@@ -372,15 +374,34 @@ int query_timeout(object LIB_CONN connection)
 
 object select(string str)
 {
-	ACCESS_CHECK(KERNEL());
+	ACCESS_CHECK(KERNEL() || SYSTEM());
 
 	return query_select(str, previous_object(1));
 }
 
 int login(string str)
 {
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
 	previous_object()->message("Internal error: connection manager fault\n");
 	return MODE_DISCONNECT;
+}
+
+object intercept(object LIB_CONN conn, object LIB_USER user)
+{
+	ACCESS_CHECK(previous_program() == LIB_SYSTEM_USER);
+
+	while (conn && conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	if (!conn) {
+		error("Bad redirect");
+	}
+
+	intercepts[conn] = user;
+
+	return query_select(nil, conn);
 }
 
 /********************/
@@ -405,10 +426,22 @@ private object query_select(string str, object conn)
 		}
 	}
 
-	manager = manager_of(base_conn);
+	switch(level) {
+	case 0:
+		return clone_object("~/obj/filter/rlimits");
+	case 1:
+		return clone_object("~/obj/filter/atomic");
+	}
 
-	if (manager) {
-		user = manager->select(str);
+	if (user = intercepts[base_conn]) {
+		intercepts[base_conn] = nil;
+		return user;
+	}
+
+	user = manager_of(base_conn);
+
+	if (user) {
+		user = user->select(str);
 	}
 
 	return user ? user : this_object();
