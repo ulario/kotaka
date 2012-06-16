@@ -35,7 +35,7 @@ receive_datagram
 int login(string str)
 {
 	int newmode;
-	
+
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
 	
@@ -52,26 +52,11 @@ int login(string str)
 	return newmode;
 }
 
-/*
-static void close(mixed *tls, int dest)
-{
-    rlimits (-1; -1) {
-	if (user) {
-	    catch {
-		user->logout(dest);
-	    }
-	}
-	if (!dest) {
-	    destruct_object(this_object());
-	}
-    }
-}
-*/
 void logout(int quit)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
-	
+
 	/* apparently, to say we're going linkdead, we have to mean it */
 	
 	/* 0 means linkdead, 1 means destruct/quit */
@@ -80,9 +65,9 @@ void logout(int quit)
 		/* we won't be destructed */
 	} else {
 		/* we will be klib destructed */
-		
+
 		/* apparently we have to be honest to the Klib here.
-		
+
 		We cannot return linkdead, unless we also allow
 		the klib to destruct us */
 	}
@@ -98,7 +83,7 @@ int receive_message(string str)
 {
 	int newmode;
 	string err;
-	
+
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
 
@@ -191,8 +176,7 @@ static void timeout()
 void set_mode(int new_mode)
 {
 	object conn;
-	int on_kernel;
-	
+
 	ACCESS_CHECK(previous_program() == LIB_CONN || SYSTEM() ||
 		calling_object() == this_object());
 

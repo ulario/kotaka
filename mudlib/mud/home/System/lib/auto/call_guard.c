@@ -10,7 +10,7 @@
 static mixed call_other(mixed obj, string func, varargs mixed args ...)
 {
 	string path;
-	
+
 	if (!this_object()) {
 		error("Cannot call_other from destructed object");
 	}
@@ -36,7 +36,7 @@ static mixed call_other(mixed obj, string func, varargs mixed args ...)
 	if (!function_object(func, obj)) {
 		error("Call to undefined function " + func + " in object " + path);
 	}
-	
+
 	return ::call_other(obj, func, args ...);
 }
 #endif
