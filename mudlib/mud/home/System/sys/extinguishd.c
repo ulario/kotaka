@@ -15,11 +15,7 @@ static void purge(string path, int quota)
 {
 	int max;
 
-	max = (int)sqrt((float)quota);
-
-	if (quota % max != 0) {
-		max = quota % max;
-	}
+	max = 200;
 
 	if (max > quota) {
 		max = quota;
