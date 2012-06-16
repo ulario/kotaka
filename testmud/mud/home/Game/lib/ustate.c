@@ -73,7 +73,7 @@ static void terminate_account_state()
 
 static void announce_register()
 {
-	send_out(
+	send_to_all(
 		titled_name(
 			query_user()->query_username(),
 			query_user()->query_class()
@@ -82,7 +82,7 @@ static void announce_register()
 
 static void announce_login()
 {
-	send_out(
+	send_to_all(
 		titled_name(
 			query_user()->query_username(),
 			query_user()->query_class()
