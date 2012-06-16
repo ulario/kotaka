@@ -273,16 +273,11 @@ mapping read_init_file(string subsystem)
 private void configure_logging()
 {
 	load_object(LOGD);
+	remove_file("/log/session.log");
 
-	LOGD->set_target("*", 255, "null");
-	LOGD->set_target("*", 255 & ~(1 << LOG_DEBUG), "driver");
-	LOGD->set_target("*", 255 & ~(1 << LOG_DEBUG), "file:/log/general.log");
-	LOGD->set_target("status", 255, "channel:status");
-	LOGD->set_target("compile", 255, "file:/log/error.log");
-	LOGD->set_target("error", 255, "file:/log/error.log");
-	LOGD->set_target("error", 255, "driver");
-	LOGD->set_target("trace", 255, "file:/log/error.log");
-	LOGD->set_target("trace", 255, "driver");
+	LOGD->set_target("*", 255, "driver");
+	LOGD->set_target("*", 255, "file:/log/general.log");
+	LOGD->set_target("*", 255, "file:/log/session.log");
 }
 
 int forbid_inherit(string from, string path, int priv)
