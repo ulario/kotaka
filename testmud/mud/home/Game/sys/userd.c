@@ -42,6 +42,13 @@ void delete_user(string name)
 	users[name] = nil;
 }
 
+object query_user(string name)
+{
+	ACCESS_CHECK(GAME());
+
+	return users[name];
+}
+
 void add_guest(object user)
 {
 	if (guests[user]) {
