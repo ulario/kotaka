@@ -139,14 +139,15 @@ void receive_in(string input)
 				break;
 			}
 
-			user->set_username(name);
 			if (GAME_USERD->query_is_guest(user)) {
 				GAME_USERD->promote_guest(name, user);
 			} else {
 				GAME_USERD->add_user(name, user);
 			}
 
+			user->set_username(name);
 			user->set_mode(MODE_ECHO);
+
 			announce_login();
 			terminate_account_state();
 			return;
@@ -174,14 +175,15 @@ void receive_in(string input)
 			}
 
 			user = query_user();
-			user->set_username(name);
 			if (GAME_USERD->query_is_guest(user)) {
 				GAME_USERD->promote_guest(name, user);
 			} else {
 				GAME_USERD->add_user(name, user);
 			}
 
+			user->set_username(name);
 			user->set_mode(MODE_ECHO);
+
 			announce_login();
 			terminate_account_state();
 			return;
