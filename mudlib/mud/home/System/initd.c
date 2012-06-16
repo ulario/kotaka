@@ -32,54 +32,63 @@ private void configure_klib();
 private void boot_subsystem(string subsystem);
 private void configure_logging();
 
+private void initialize()
+{
+	subsystems = ({ "System" });
+
+	load_dir("lib/bigstruct", 1);
+	load_dir("lwo/bigstruct", 1);
+	load_dir("obj/bigstruct", 1);
+
+	configure_logging();
+
+	LOGD->post_message("system", LOG_NOTICE,
+		"-----------------------------------------------------");
+	LOGD->post_message("system", LOG_NOTICE,
+		"Kotaka mudlib v" + KOTAKA_VERSION + " booting...");
+	LOGD->post_message("system", LOG_NOTICE,
+		"-----------------------------------------------------");
+
+	load_object(TESTD);
+
+	TESTD->test();
+
+	load_object(KERNELD);
+	configure_klib();
+	KERNELD->set_global_access("Kotaka", 1);
+	KERNELD->set_global_access("System", 1);
+
+	load_object("lwo/program_info");
+	load_object(PROGRAMD);
+	load_object(OBJECTD);
+
+	OBJECTD->enable();
+	OBJECTD->scan_dirs("/");
+
+	load_dir("closed", 1);
+	load_dir("lib", 1);
+	load_dir("lwo", 1);
+	load_dir("obj", 1);
+	load_dir("sys", 1);
+
+	TRASHD->enable();
+	PORTD->enable();
+//	ERRORD->enable();
+	STATUSD->enable();
+
+	/* Booted up */
+
+	boot_subsystem("Kotaka");
+	boot_subsystem("Game");
+
+	set_status("ok");
+}
+
 static void create()
 {
 	rlimits (500; -1) {
 		catch {
-			subsystems = ({ "System" });
-	
-			load_dir("lib/bigstruct", 1);
-			load_dir("lwo/bigstruct", 1);
-			load_dir("obj/bigstruct", 1);
-		
-			configure_logging();
-
-			LOGD->post_message("system", LOG_NOTICE,
-				"Kotaka mudlib v" + KOTAKA_VERSION + " booting...");
-
-			load_object(TESTD);
-		
-			TESTD->test();
-
-			load_object(KERNELD);
-			configure_klib();
-			KERNELD->set_global_access("Kotaka", 1);
-			KERNELD->set_global_access("System", 1);
-
-			load_object("lwo/program_info");
-			load_object(PROGRAMD);
-			load_object(OBJECTD);
-
-			OBJECTD->enable();
-			OBJECTD->scan_dirs("/");
-
-			load_dir("closed", 1);
-			load_dir("lib", 1);
-			load_dir("lwo", 1);
-			load_dir("obj", 1);
-			load_dir("sys", 1);
-
-			TRASHD->enable();
-			PORTD->enable();
-			ERRORD->enable();
-			STATUSD->enable();
-
-			/* Booted up */
-
-			boot_subsystem("Kotaka");
-			boot_subsystem("Game");
-
-			set_status("ok");
+			initialize();
 		} : {
 			LOGD->flush();
 			shutdown();
