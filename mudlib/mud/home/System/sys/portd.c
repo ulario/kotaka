@@ -22,6 +22,7 @@ inherit user LIB_USER;
 
 /* Number of user slots to keep spare for the Klib emergency login port */
 #define SPARE_USERS		5
+#define MAX_CONN_DEPTH		10
 
 #define CINFO_TYPE	0	/* binary, telnet */
 #define CINFO_LPORT	1	/* logical port */
@@ -298,7 +299,7 @@ string query_banner(object LIB_CONN connection)
 		base_conn = base_conn->query_conn();
 		level++;
 
-		if (level > 10) {
+		if (level > MAX_CONN_DEPTH) {
 			error("Connection chain length overflow");
 		}
 	}
@@ -344,7 +345,7 @@ int query_timeout(object LIB_CONN connection)
 		base_conn = base_conn->query_conn();
 		level++;
 
-		if (level > 10) {
+		if (level > MAX_CONN_DEPTH) {
 			error("Connection chain length overflow");
 		}
 	}
@@ -399,7 +400,7 @@ private object query_select(string str, object conn)
 		base_conn = base_conn->query_conn();
 		level++;
 
-		if (level > 10) {
+		if (level > MAX_CONN_DEPTH) {
 			error("Connection chain length overflow");
 		}
 	}
