@@ -31,7 +31,7 @@ static void receive_in(string str)
 	} else if (strlen(str) >= 2 && str[0 .. 1] == "..") {
 		str = str[1 ..];
 	}
-	
+
 	text += str;
 	text += "\n";
 }

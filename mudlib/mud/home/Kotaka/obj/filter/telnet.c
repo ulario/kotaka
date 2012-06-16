@@ -101,11 +101,11 @@ private void process_wont(int code)
 int login(string str)
 {
 	int ret;
-	
+
 	connection(previous_object());
 	::set_mode(MODE_RAW);
 	open(nil);
-	
+
 	return receive_message(str ? str + "\r\n" : nil);
 }
 
