@@ -113,17 +113,16 @@ void receive_in(string input)
 
 	case STATE_CHKPASS:
 		send_out("\n");
+		query_user()->set_mode(MODE_ECHO);
 		password = input;
 		if (!ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, that account no longer exists.\n");
-			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
 		} else if (!ACCOUNTD->authenticate(name, password)) {
 			send_out("Password mismatch.\n");
 			/* we will eventually want to ban IPs that */
 			/* fail too much */
-			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
 		} else {
