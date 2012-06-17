@@ -3,8 +3,9 @@
 
 /* overrides LIB_USTATE to provide auditing */
 
-inherit "utility";
 inherit LIB_USTATE;
+
+#include "utility.h"
 
 static void terminate_account_state()
 {
