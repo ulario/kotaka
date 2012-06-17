@@ -131,8 +131,8 @@ void receive_in(string input)
 			/* todo: detect duplicates and prepare to */
 			/* evict a linkdead user */
 
-			user = query_user(name);
-			
+			user = GAME_USERD->find_user(name);
+
 			if (user) {
 				send_out("You are already logged in.\nDo you wish to disconnect your previous login? ");
 				state = STATE_CHKDUPE;
@@ -165,7 +165,7 @@ void receive_in(string input)
 		} else if (input == "yes") {
 			object user;
 
-			user = GAME_USERD->query_user(name);
+			user = GAME_USERD->find_user(name);
 
 			if (user) {
 				send_out("Evicting previous connection.\n");
