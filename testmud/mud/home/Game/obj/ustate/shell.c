@@ -195,7 +195,7 @@ private void do_kick(string args)
 		return;
 	}
 
-	turkey = GAME_USERD->query_user(args);
+	turkey = GAME_USERD->find_user(args);
 
 	if (!turkey) {
 		send_out("No such user is on the mud.\n");
@@ -245,7 +245,7 @@ private void do_nuke(string args)
 
 	ACCOUNTD->unregister_account(args);
 
-	turkey = GAME_USERD->query_user(args);
+	turkey = GAME_USERD->find_user(args);
 	kicker_name = titled_name(user->query_username(), user->query_class());
 
 	user->message("You nuked " + args + " from the mud.\n");
@@ -297,7 +297,7 @@ private void do_ban(string args)
 
 	BAND->ban_username(args);
 
-	turkey = GAME_USERD->query_user(args);
+	turkey = GAME_USERD->find_user(args);
 	kicker_name = titled_name(user->query_username(), user->query_class());
 
 	user->message("You ban " + args + " from the mud.\n");
