@@ -133,6 +133,14 @@ void do_help()
 void do_alist()
 {
 	string *users;
+	object user;
+
+	user = query_user();
+
+	if (user->query_class() < 2) {
+		send_out("You do not have sufficient access rights to list accounts.\n");
+		return;
+	}
 
 	users = ACCOUNTD->query_accounts();
 
