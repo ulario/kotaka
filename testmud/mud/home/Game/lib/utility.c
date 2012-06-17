@@ -54,19 +54,6 @@ static string titled_name(string name, int class)
 	return name;
 }
 
-static void terminate_account_state()
-{
-	object parent;
-
-	parent = query_parent();
-
-	if (parent <- "~/obj/ustate/start") {
-		parent->swap_state(clone_object("shell"));
-	} else {
-		pop_state();
-	}
-}
-
 static void announce_register()
 {
 	send_to_all(
