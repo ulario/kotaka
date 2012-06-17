@@ -35,7 +35,6 @@
 #define LIB_SYSTEM_USER		(USR_DIR + "/System/lib/user")
 #define LIB_MANAGER		(USR_DIR + "/System/lib/manager")
 #define LIB_INITD		(USR_DIR + "/System/lib/initd")
-#define LIB_BIN			(USR_DIR + "/System/lib/bin")
 #define LIB_LIST		(USR_DIR + "/System/lib/list")
 #define SECOND_AUTO		(USR_DIR + "/System/lib/auto/second_auto")
 #define UTILITY_STRING		(USR_DIR + "/System/lib/utility/string")
