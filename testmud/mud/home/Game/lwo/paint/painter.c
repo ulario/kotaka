@@ -31,7 +31,7 @@ void start(int dx, int dy)
 /* FR FG FB FI BR BG BB BT */
 void set_color(int new_color)
 {
-	color = new_color;
+	color = new_color & 0xFF;
 }
 
 void move_pen(int new_x, int new_y)
@@ -66,8 +66,6 @@ void draw(string brush)
 
 	while (i < sz) {
 		int new_color;
-		int fore;
-		int back;
 		chars[pen_y][pen_x] = brush[i++];
 
 		if (color & 0x80) {
