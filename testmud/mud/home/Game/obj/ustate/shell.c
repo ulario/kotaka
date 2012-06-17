@@ -152,6 +152,13 @@ void do_emote(string args)
 	object user;
 	string name;
 
+	user = query_user();
+
+	if (user->query_class() < 1) {
+		send_out("You do not have sufficient access rights to emote.\n");
+		return;
+	}
+
 	args = STRINGD->trim_whitespace(args);
 
 	if (args == "") {
@@ -159,7 +166,6 @@ void do_emote(string args)
 		return;
 	}
 
-	user = query_user();
 	name = titled_name(user->query_username(), user->query_class());
 
 	send_out("You " + args + "\n");
@@ -171,6 +177,13 @@ void do_say(string args)
 	object user;
 	string name;
 
+	user = query_user();
+
+	if (user->query_class() < 1) {
+		send_out("You do not have sufficient access rights to speak.\n");
+		return;
+	}
+
 	args = STRINGD->trim_whitespace(args);
 
 	if (args == "") {
@@ -178,7 +191,6 @@ void do_say(string args)
 		return;
 	}
 
-	user = query_user();
 	name = titled_name(user->query_username(), user->query_class());
 
 	send_out("You say: " + args + "\n");
