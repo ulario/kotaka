@@ -145,6 +145,8 @@ void receive_in(string input)
 				GAME_USERD->add_user(name, user);
 			}
 
+			user = query_user();
+
 			user->set_username(name);
 			user->set_mode(MODE_ECHO);
 
