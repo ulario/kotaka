@@ -79,46 +79,6 @@ void end()
 	destruct_object(this_object());
 }
 
-void do_who()
-{
-	object *users;
-	string **lists;
-	int sz, i;
-
-	lists = ({ ({ }), ({ }), ({ }) });
-
-	send_out("User list\n");
-	send_out("---------\n");
-
-	users = GAME_USERD->query_users();
-	sz = sizeof(users);
-
-	for (i = 0; i < sz; i++) {
-		lists[users[i]->query_class() - 1]
-			+= ({ users[i]->query_username() });
-	}
-
-	for (i = 0; i < 3; i++) {
-		if (sizeof(lists[i])) {
-			int j;
-			string *list;
-			
-			list = lists[i];
-			sz = sizeof(list);
-
-			switch(i) {
-			case 0: send_out("Players:\n"); break;
-			case 1: send_out("Wizards:\n"); break;
-			case 2: send_out("Administrators:\n"); break;
-			}
-
-			for (j = 0; j < sz; j++) {
-				send_out(list[j] + "\n");
-			}
-		}
-	}
-}
-
 void do_help()
 {
 	object pager;
@@ -128,23 +88,6 @@ void do_help()
 	pager->set_text(read_file("~/data/help/player/index.hlp"));
 
 	push_state(pager);
-}
-
-void do_alist()
-{
-	string *users;
-	object user;
-
-	user = query_user();
-
-	if (user->query_class() < 2) {
-		send_out("You do not have sufficient access rights to list accounts.\n");
-		return;
-	}
-
-	users = ACCOUNTD->query_accounts();
-
-	send_out("Users: " + implode(users, ", ") + "\n");
 }
 
 void do_emote(string args)
@@ -197,158 +140,6 @@ void do_say(string args)
 	send_to_all_except(name + " says: " + args + "\n", ({ user }) );
 }
 
-private void do_kick(string args)
-{
-	object user;
-	object turkey;
-	string kicker_name;
-
-	user = query_user();
-
-	if (user->query_class() < 2) {
-		send_out("You do not have sufficient access rights to kick someone from the mud.\n");
-		return;
-	}
-
-	if (args == "") {
-		send_out("Who do you wish to kick?\n");
-		return;
-	}
-
-	turkey = GAME_USERD->find_user(args);
-
-	if (!turkey) {
-		send_out("No such user is on the mud.\n");
-		return;
-	}
-
-	kicker_name = titled_name(user->query_username(), user->query_class());
-
-	user->message("You kick " + args + " from the mud.\n");
-	turkey->message(kicker_name + " kicks you from the mud!\n");
-	send_to_all_except(kicker_name + " kicks " + args + "from the mud!\n", ({ turkey, query_user() }) );
-
-	turkey->quit();
-}
-
-private void do_nuke(string args)
-{
-	object turkey;
-	string kicker_name;
-
-	user = query_user();
-
-	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to nuke someone from the mud.\n");
-		return;
-	}
-
-	if (args == "") {
-		send_out("Who do you wish to nuke?\n");
-		return;
-	}
-
-	if (args == user->query_username()) {
-		send_out("You cannot nuke yourself.\n");
-		return;
-	}
-
-	if (args == "admin") {
-		send_out("You cannot nuke admin.\n");
-		return;
-	}
-
-	if (!ACCOUNTD->query_is_registered(args)) {
-		send_out("There is no such user.\n");
-		return;
-	}
-
-	ACCOUNTD->unregister_account(args);
-
-	turkey = GAME_USERD->find_user(args);
-	kicker_name = titled_name(user->query_username(), user->query_class());
-
-	user->message("You nuked " + args + " from the mud.\n");
-
-	send_to_all_except(args + " has been nuked from the mud by " + kicker_name + ".\n", ({ turkey, query_user() }) );
-
-	if (turkey) {
-		turkey->message("You have been nuked from the mud by " + kicker_name + "!\n");
-		turkey->quit();
-	}
-}
-
-private void do_ban(string args)
-{
-	object turkey;
-	string kicker_name;
-
-	user = query_user();
-
-	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to ban someone from the mud.\n");
-		return;
-	}
-
-	if (args == "") {
-		send_out("Who do you wish to ban?\n");
-		return;
-	}
-
-	if (args == user->query_username()) {
-		send_out("You cannot kick yourself.\n");
-		return;
-	}
-
-	if (args == "admin") {
-		send_out("You cannot ban admin.\n");
-		return;
-	}
-
-	if (args == user->query_username()) {
-		send_out("You cannot ban yourself.\n");
-		return;
-	}
-
-	if (BAND->query_is_banned(args)) {
-		send_out("That user is already banned.\n");
-		return;
-	}
-
-	BAND->ban_username(args);
-
-	turkey = GAME_USERD->find_user(args);
-	kicker_name = titled_name(user->query_username(), user->query_class());
-
-	user->message("You ban " + args + " from the mud.\n");
-
-	send_to_all_except(args + " has been banned from the mud by " + kicker_name + ".\n", ({ turkey, query_user() }) );
-
-	if (turkey) {
-		turkey->message("You have been banned from the mud by " + kicker_name + "!\n");
-		turkey->quit();
-	}
-}
-
-private void do_trace()
-{
-	object conn;
-
-	send_out("Connection chain trace:\n");
-
-	conn = query_user();
-
-	while (conn) {
-		send_out(object_name(conn) + "\n");
-
-		if (conn <- LIB_USER) {
-			conn = conn->query_conn();
-		} else {
-			break;
-		}
-	}
-}
-
 void receive_in(string input)
 {
 	string first;
@@ -376,23 +167,14 @@ void receive_in(string input)
 	}
 
 	switch(first) {
-	case "trace":
-		do_trace();
-		break;
 	case "login":
 		push_state(clone_object("login"));
 		break;
 	case "register":
 		push_state(clone_object("register"));
 		break;
-	case "who":
-		do_who();
-		break;
 	case "help":
 		do_help();
-		break;
-	case "alist":
-		do_alist();
 		break;
 	case "play":
 		push_state(clone_object("play"));
@@ -400,15 +182,6 @@ void receive_in(string input)
 	case "quit":
 		query_user()->quit();
 		return;
-	case "nuke":
-		do_nuke(input);
-		break;
-	case "ban":
-		do_ban(input);
-		break;
-	case "kick":
-		do_kick(input);
-		break;
 	case "say":
 		do_say(input);
 		break;

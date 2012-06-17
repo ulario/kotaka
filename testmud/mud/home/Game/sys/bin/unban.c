@@ -11,7 +11,7 @@ void main(string args)
 	user = query_user();
 
 	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to unban someone from the mud.");
+		send_out("Only an administrator can unban someone.\n");
 		return;
 	}
 
