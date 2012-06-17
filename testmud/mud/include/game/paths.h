@@ -1,5 +1,6 @@
 #include <config.h>
 
+#define LIB_BIN			(USR_DIR + "/Game/lib/bin")
 #define LIB_VERB		(USR_DIR + "/Game/lib/verb")
 #define LIB_TIME		(USR_DIR + "/Game/lib/time")
 #define GAME_LIB_USTATE		(USR_DIR + "/Game/lib/ustate")
@@ -7,6 +8,7 @@
 
 #define ALIASD			(USR_DIR + "/Game/sys/aliasd")
 #define BAND			(USR_DIR + "/Game/sys/band")
+#define BIND			(USR_DIR + "/Game/sys/bind")
 #define ACCOUNTD		(USR_DIR + "/Game/sys/accountd")
 #define ROOT			(USR_DIR + "/Game/sys/root")
 #define SNOOPD			(USR_DIR + "/Game/sys/snoopd")

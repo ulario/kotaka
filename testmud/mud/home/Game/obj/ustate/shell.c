@@ -459,7 +459,9 @@ void receive_in(string input)
 	case "":
 		break;
 	default:
-		send_out(first + ": command not recognized.\n");
+		if (!BIND->execute_command(first, input)) {
+			send_out(first + ": command not recognized.\n");
+		}
 	}
 
 	reading = 0;
