@@ -1,5 +1,7 @@
 #include <kotaka/paths.h>
 
+inherit "utility";
+
 static object query_ustate()
 {
 	return TLSD->query_tls_value("Game", "ustate");
