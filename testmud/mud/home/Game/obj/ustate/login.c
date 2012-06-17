@@ -131,21 +131,18 @@ void receive_in(string input)
 			/* todo: detect duplicates and prepare to */
 			/* evict a linkdead user */
 
-			user = GAME_USERD->find_user(name);
-
-			if (user) {
+			if (GAME_USERD->find_user(name)) {
 				send_out("You are already logged in.\nDo you wish to disconnect your previous login? ");
 				state = STATE_CHKDUPE;
 				break;
 			}
 
+			user = query_user();
 			if (GAME_USERD->query_is_guest(user)) {
 				GAME_USERD->promote_guest(name, user);
 			} else {
 				GAME_USERD->add_user(name, user);
 			}
-
-			user = query_user();
 
 			user->set_username(name);
 			user->set_mode(MODE_ECHO);
