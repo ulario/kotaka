@@ -79,67 +79,6 @@ void end()
 	destruct_object(this_object());
 }
 
-void do_help()
-{
-	object pager;
-
-	pager = clone_object("~Kotaka/obj/ustate/page");
-
-	pager->set_text(read_file("~/data/help/player/index.hlp"));
-
-	push_state(pager);
-}
-
-void do_emote(string args)
-{
-	object user;
-	string name;
-
-	user = query_user();
-
-	if (user->query_class() < 1) {
-		send_out("You do not have sufficient access rights to emote.\n");
-		return;
-	}
-
-	args = STRINGD->trim_whitespace(args);
-
-	if (args == "") {
-		send_out("Cat got your tongue?\n");
-		return;
-	}
-
-	name = titled_name(user->query_username(), user->query_class());
-
-	send_out("You " + args + "\n");
-	send_to_all_except(name + " " + args + "\n", ({ user }) );
-}
-
-void do_say(string args)
-{
-	object user;
-	string name;
-
-	user = query_user();
-
-	if (user->query_class() < 1) {
-		send_out("You do not have sufficient access rights to speak.\n");
-		return;
-	}
-
-	args = STRINGD->trim_whitespace(args);
-
-	if (args == "") {
-		send_out("Cat got your tongue?\n");
-		return;
-	}
-
-	name = titled_name(user->query_username(), user->query_class());
-
-	send_out("You say: " + args + "\n");
-	send_to_all_except(name + " says: " + args + "\n", ({ user }) );
-}
-
 void receive_in(string input)
 {
 	string first;
@@ -167,37 +106,6 @@ void receive_in(string input)
 	}
 
 	switch(first) {
-	case "login":
-		push_state(clone_object("login"));
-		break;
-	case "register":
-		push_state(clone_object("register"));
-		break;
-	case "help":
-		do_help();
-		break;
-	case "play":
-		push_state(clone_object("play"));
-		break;
-	case "quit":
-		query_user()->quit();
-		return;
-	case "say":
-		do_say(input);
-		break;
-	case "emote":
-		do_emote(input);
-		break;
-	case "krecompile":
-		OBJECTD->klib_recompile();
-		break;
-	case "recompile":
-		OBJECTD->global_recompile();
-		break;
-	case "trecompile":
-		OBJECTD->klib_recompile();
-		OBJECTD->global_recompile();
-		break;
 	case "":
 		break;
 	default:
