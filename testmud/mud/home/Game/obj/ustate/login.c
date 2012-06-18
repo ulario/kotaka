@@ -125,6 +125,9 @@ void receive_in(string input)
 			/* fail too much */
 			pop_state();
 			return;
+		} else if (BAND->query_is_banned(name)) {
+			send_out("You are banned.\n");
+			return;
 		} else {
 			object user;
 			/* todo: detect duplicates and prepare to */
@@ -159,6 +162,10 @@ void receive_in(string input)
 		} else if (!ACCOUNTD->authenticate(name, password)) {
 			send_out("Your password was just changed.\n");
 			pop_state();
+			return;
+		} else if (BAND->query_is_banned(name)) {
+			send_out("You were just banned.\n");
+			query_user()->quit();
 			return;
 		} else if (input == "yes") {
 			object user;

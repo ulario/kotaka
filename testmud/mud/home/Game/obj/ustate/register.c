@@ -121,6 +121,10 @@ void receive_in(string input)
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
+		} else if (BAND->query_is_banned(name)) {
+			send_out("That name is banned.\n");
+			query_user()->quit();
+			return;
 		} else {
 			password = input;
 			state = STATE_CHKPASS;
@@ -134,6 +138,10 @@ void receive_in(string input)
 			send_out("Whoops, someone else just swiped the username you wanted.\n");
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
+			return;
+		} else if (BAND->query_is_banned(name)) {
+			send_out("Whoops, the username you picked just got banned.\n");
+			query_user()->quit();
 			return;
 		} else if (input != password) {
 			send_out("Password mismatch.\n");
