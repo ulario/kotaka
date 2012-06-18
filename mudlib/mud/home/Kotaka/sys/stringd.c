@@ -5,40 +5,61 @@
 
 #include <type.h>
 
-string spaces;
-string nulls;
+string *chars;
 
 string hex(int i);
 string bin(int i);
 
 static void create()
 {
-	spaces = " ";
-	nulls = "\000";
+	chars = allocate(256);
 }
 
 static void upgraded()
 {
-	spaces = " ";
-	nulls = "\000";
+	chars = allocate(256);
+}
+
+string chars(int count, int code)
+{
+	string log;
+	int max;
+
+	max = 16384;
+
+	if (count > max) {
+		error("String too long");
+	}
+
+	if (!chars[code]) {
+		string single;
+		single = " ";
+		single[0] = code;
+		chars[code] = single;
+	}
+
+	log = chars[code];
+
+	while (strlen(log) < count) {
+		if (strlen(log) * 2 > max) {
+			log += log[0 .. max - strlen(log) - 1];
+		} else {
+			log += log;
+		}
+	}
+
+	chars[code] = log;
+	return log[0 .. count - 1];
 }
 
 string spaces(int count)
 {
-	while (strlen(spaces) < count) {
-		spaces += spaces;
-	}
-	
-	return spaces[0 .. count - 1];
+	return chars(count, ' ');
 }
 
 string nulls(int count)
 {
-	while (strlen(nulls) < count) {
-		nulls += nulls;
-	}
-	
-	return nulls[0 .. count - 1];
+	return chars(count, '\0');
 }
 
 string replace(string input, string from, string to);
