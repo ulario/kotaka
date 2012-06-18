@@ -91,14 +91,14 @@ int query_timeout(object LIB_CONN connection)
 	if (!base_conn) {
 		return -1;
 	}
-	
+
 	if (level == 0) {
 		connections[connection] = 1;
 		connection(connection);
 		::set_mode(MODE_RAW);
 		redirect(select(nil), nil);
 	}
-	
+
 	return 1;
 }
 
