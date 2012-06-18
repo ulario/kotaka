@@ -359,14 +359,7 @@ int query_timeout(object LIB_CONN connection)
 	}
 
 	catch {
-		int timeout;
-
-		timeout = manager->query_timeout(connection);
-
-		if (timeout == 0) {
-			connection(connection);
-			redirect(query_select(nil, connection), nil);
-		}
+		return manager->query_timeout(connection);
 	} : {
 		return -1;
 	}
