@@ -8,6 +8,7 @@
 inherit wiz "~/closed/lib/wiztool_gate";
 inherit man LIB_MANAGER;
 inherit user LIB_USER;
+inherit SECOND_AUTO;
 
 string message;
 mapping connections;
@@ -59,7 +60,7 @@ private void schedule()
 	if (callout) {
 		remove_call_out(callout);
 	}
-	
+
 	if (interval > 0.0) {
 		callout = call_out("report", interval);
 	} else {
@@ -96,6 +97,9 @@ string query_banner(object conn)
 int query_timeout(object conn)
 {
 	ACCESS_CHECK(previous_program() == PORTD);
+
+	connection(conn);
+	redirect(this_object(), nil);
 
 	return 0;
 }
