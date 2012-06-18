@@ -45,9 +45,9 @@ static string previous_program_unprotected(varargs int steps)
 static object calling_object(varargs int steps)
 {
 	mixed **trace;
-	
+
 	trace = call_trace();
-	
+
 	return find_object(trace[sizeof(trace) - (3 + steps)][TRACE_OBJNAME]);
 }
 
