@@ -1,6 +1,7 @@
 #include <kernel/kernel.h>
 #include <kotaka/privilege.h>
 #include <kotaka/paths.h>
+#include <kotaka/log.h>
 
 mapping touches;
 
@@ -9,12 +10,17 @@ static void call_touch(object obj)
 	string cpath;
 	string opath;
 
-	cpath = object_name(previous_object());
+	if (previous_program() == OBJECTD) {
+		::call_touch(obj);
+		return;
+	}
+
+	cpath = object_name(this_object());
 	opath = object_name(obj);
 
 	ACCESS_CHECK(DRIVER->creator(cpath) == DRIVER->creator(opath));
 
-	::call_touch(obj);
+	OBJECTD->call_touch(obj);
 }
 
 static int touch(string function)

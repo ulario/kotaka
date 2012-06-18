@@ -852,3 +852,10 @@ static void purge_clones_step(string name, int index, int npurge)
 		LOGD->post_message("clone", LOG_INFO, "Clone scan for " + name + " completed");
 	}
 }
+
+void call_touch(object obj)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	::call_touch(obj);
+}
