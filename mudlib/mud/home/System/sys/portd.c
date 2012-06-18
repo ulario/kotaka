@@ -433,8 +433,6 @@ private object query_select(string str, object conn)
 	switch(level) {
 	case 0:
 		return clone_object("~/obj/filter/rlimits");
-	case 1:
-		return clone_object("~/obj/filter/atomic");
 	}
 
 	if (user = intercepts[base_conn]) {
