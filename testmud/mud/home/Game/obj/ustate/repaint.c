@@ -9,6 +9,8 @@ inherit LIB_USTATE;
 int stopped;
 int reading;
 int introed;
+int frames;
+int due;
 float pi;
 
 string path;
@@ -45,16 +47,17 @@ void go()
 	stopped = 0;
 
 	call_out("sparkle", 0);
+	call_out("second", 1);
 }
 
 static void sparkle()
 {
 	int x, y, i;
-	object paint;
 	string buffer;
 	float angle, hand;
+	object paint;
 
-	call_out("sparkle", 1);
+	call_out("sparkle", 0);
 
 	send_out("\033[1;1HCanvas test:\n");
 
@@ -165,7 +168,42 @@ static void sparkle()
 	paint->move_pen(40, 8);
 	paint->draw("A");
 
+	paint->set_color(0x86);
+	for (x = 0; x < 80; x++) {
+		float hand;
+
+		hand = angle * sqrt(2.0);
+		y = (int)((cos((hand - floor(hand))* pi * 2.0 - pow((float)x / 80.0, 0.5) * 12.0)) * 8.0) + 8;
+
+		paint->move_pen(x, y);
+		paint->draw("C");
+	}
+
+	paint->set_color(0x8E);
+	for (x = 0; x < 80; x++) {
+		float hand;
+
+		hand = angle * sqrt(2.0);
+		y = (int)((cos((hand - floor(hand))* pi * 2.0 + pow((float)x / 80.0, 0.5) * 12.0)) * 8.0) + 8;
+
+		paint->move_pen(x, y);
+		paint->draw("C");
+	}
+
+	frames++;
+
 	send_out(paint->render_color());
+	if (due) {
+		due = 0;
+		send_out("FPS: " + frames);
+		frames = 0;
+	}
+}
+
+static void second()
+{
+	call_out("second", 1);
+	due = 1;
 }
 
 void end()
