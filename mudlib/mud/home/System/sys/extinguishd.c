@@ -13,20 +13,18 @@ void extinguish(string path)
 
 static void purge(string path, int quota)
 {
-	int max;
+	int limit;
 
-	max = 200;
+	limit = 200;
 
-	if (max > quota) {
-		max = quota;
+	if (quota % limit != 0) {
+		limit = quota % limit;
 	}
 
-	for (; quota > 0 && max > 0; quota--, max--) {
+	for (; quota > 0 && limit > 0; quota--, limit--) {
 		object obj;
 
-		obj = find_object(path + "#" + quota);
-
-		if (obj) {
+		if (obj = find_object(path + "#" + quota)) {
 			destruct_object(obj);
 		}
 	}
