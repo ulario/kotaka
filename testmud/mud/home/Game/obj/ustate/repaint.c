@@ -61,7 +61,7 @@ static void sparkle()
 
 	send_out("\033[1;1HCanvas test:\n");
 
-	paint = new_object("~/lwo/paint/painter");
+	paint = new_object(LWO_PAINTER);
 	paint->start(80, 20);
 	paint->set_color(0xC);
 
