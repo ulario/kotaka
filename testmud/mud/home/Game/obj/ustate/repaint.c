@@ -12,8 +12,11 @@ int introed;
 int frames;
 int due;
 float pi;
-
+float otime;
+float **sparks;
 string path;
+
+#define NSPARKS 50
 
 static void create(int clone)
 {
@@ -28,9 +31,24 @@ static void destruct(int clone)
 
 void begin()
 {
+	int i;
+	mixed *times;
+
 	ACCESS_CHECK(previous_object() == query_user());
 
 	send_out("\033[1;1H\033[2J");
+
+	call_out("sparkle", 0);
+	call_out("second", 1);
+	times = millitime();
+	otime = (float)times[0] + times[1];
+
+	sparks = allocate(NSPARKS);
+
+	for (i = 0; i < NSPARKS; i++) {
+		sparks[i] = allocate_float(4);
+		sparks[i][1] = 20.0;
+	}
 }
 
 void stop()
@@ -45,20 +63,121 @@ void go()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	stopped = 0;
+}
 
-	call_out("sparkle", 0);
-	call_out("second", 1);
+private void do_clock(object paint, float time)
+{
+	int i, x, y;
+	float hand;
+
+	paint->set_color(0x88);
+	for (i = 0; i < 12; i++) {
+		x = (int)((sin((float)i * pi / 6.0)) * 8.0) + 60;
+		y = (int)((-cos((float)i * pi / 6.0)) * 8.0) + 8;
+
+		paint->move_pen(x, y);
+		paint->draw("@");
+	}
+
+	hand = time / 60.0;
+	hand -= floor(hand);
+
+	paint->set_color(0x89);
+
+	for (i = 0; i < 8; i++) {
+		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 60;
+		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
+
+		paint->move_pen(x, y);
+		paint->draw("S");
+	}
+
+	hand = time / 3600.0;
+	hand -= floor(hand);
+
+	paint->set_color(0x8A);
+
+	for (i = 0; i < 6; i++) {
+		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 60;
+		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
+
+		paint->move_pen(x, y);
+		paint->draw("M");
+	}
+
+	hand = time / (3600.0 * 12.0);
+	hand -= floor(hand);
+
+	paint->set_color(0x8C);
+
+	for (i = 0; i < 4; i++) {
+		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 60;
+		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
+
+		paint->move_pen(x, y);
+		paint->draw("H");
+	}
+
+	paint->set_color(0x8F);
+	paint->move_pen(40, 8);
+	paint->draw("A");
+}
+
+private void do_sparks(object paint, float diff)
+{
+	int x, y, i;
+
+	for (i = 0; i < NSPARKS; i++) {
+		float ovy, nvy;
+		mixed *spark;
+
+		spark = sparks[i];
+
+		ovy = spark[3];
+		nvy = ovy + diff * 20.0;
+
+		spark[0] += spark[2] * diff;
+		spark[1] += (ovy + nvy) * 0.5 * diff;
+		spark[3] = nvy;
+
+		if (spark[1] >= 20.0) {
+			spark[0] = 10.0;
+			spark[1] = 20.0;
+
+			spark[2] = (float)random(1000) / 1000.0 * 40.0 - 10.0;
+			spark[3] = (float)random(1000) / 1000.0 * 20.0 - 30.0;
+		}
+
+		x = (int)floor(spark[0]);
+		y = (int)floor(spark[1]);
+		paint->move_pen(x, y);
+
+		switch(i % 5) {
+		case 0: paint->set_color(0x89); break;
+		case 1: paint->set_color(0x8B); break;
+		case 2: paint->set_color(0x8F); break;
+		case 3: paint->set_color(0x8E); break;
+		case 4: paint->set_color(0x8C); break;
+		}
+
+		paint->draw("+");
+	}
 }
 
 static void sparkle()
 {
 	int x, y, i;
 	string buffer;
-	float angle, hand;
+	float time, diff, hand;
 	object paint;
+	mixed *times;
+
+	times = millitime();
+	time = (float)times[0] + times[1];
+	diff = time - otime;
+	otime = time;
 
 	call_out("sparkle", 0);
-
 	send_out("\033[1;1HCanvas test:\n");
 
 	paint = new_object(LWO_PAINTER);
@@ -113,86 +232,13 @@ static void sparkle()
 	paint->move_pen(39, 17);
 	paint->draw("|||");
 
-	paint->set_color(0x88);
-
-	for (i = 0; i < 12; i++) {
-		x = (int)((sin((float)i * pi / 6.0)) * 8.0) + 40;
-		y = (int)((-cos((float)i * pi / 6.0)) * 8.0) + 8;
-
-		paint->move_pen(x, y);
-		paint->draw("@");
-	}
-
-	angle = millitime()[1] + (float)millitime()[0];
-
-	hand = angle / 60.0;
-	hand -= floor(hand);
-
-	paint->set_color(0x89);
-
-	for (i = 0; i < 8; i++) {
-		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 40;
-		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
-
-		paint->move_pen(x, y);
-		paint->draw("S");
-	}
-
-	hand = angle / 3600.0;
-	hand -= floor(hand);
-
-	paint->set_color(0x8A);
-
-	for (i = 0; i < 6; i++) {
-		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 40;
-		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
-
-		paint->move_pen(x, y);
-		paint->draw("M");
-	}
-
-	hand = angle / (3600.0 * 12.0);
-	hand -= floor(hand);
-
-	paint->set_color(0x8C);
-
-	for (i = 0; i < 4; i++) {
-		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 40;
-		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
-
-		paint->move_pen(x, y);
-		paint->draw("H");
-	}
-
-	paint->set_color(0x8F);
-	paint->move_pen(40, 8);
-	paint->draw("A");
-
-	paint->set_color(0x86);
-	for (x = 0; x < 80; x++) {
-		float hand;
-
-		hand = angle * sqrt(2.0);
-		y = (int)((cos((hand - floor(hand))* pi * 2.0 - pow((float)x / 80.0, 0.5) * 12.0)) * 8.0) + 8;
-
-		paint->move_pen(x, y);
-		paint->draw("C");
-	}
-
-	paint->set_color(0x8E);
-	for (x = 0; x < 80; x++) {
-		float hand;
-
-		hand = angle * sqrt(2.0);
-		y = (int)((cos((hand - floor(hand))* pi * 2.0 + pow((float)x / 80.0, 0.5) * 12.0)) * 8.0) + 8;
-
-		paint->move_pen(x, y);
-		paint->draw("C");
-	}
+	do_clock(paint, time);
+	do_sparks(paint, diff);
 
 	frames++;
 
 	send_out(paint->render_color());
+
 	if (due) {
 		due = 0;
 		send_out("FPS: " + frames);
