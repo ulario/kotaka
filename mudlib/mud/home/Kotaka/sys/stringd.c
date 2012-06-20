@@ -1305,39 +1305,39 @@ string **align_table(string **table, varargs int ralign)
 	int irow;
 	int icol;
 	int cols;
-	
+
 	int tsz;
-	
+
 	string **out;
-	
+
 	int *widths;
 	widths = ({ });
 	tsz = sizeof(table);
 	out = allocate(tsz);
-	
+
 	for (irow = 0; irow < tsz; irow++) {
 		string *row;
 		int rsz;
-		
+
 		row = table[irow];
-		
+
 		if (!row) {
 			continue;
 		}
 
 		rsz = sizeof(row);
-		
+
 		if (cols < rsz) {
 			cols = rsz;
 		}
-		
+
 		while (sizeof(widths) < cols) {
 			widths += ({ 0 });
 		}
-		
+
 		for (icol = 0; icol < rsz; icol++) {
 			int sz;
-			
+
 			sz = strlen(row[icol]);
 
 			if (widths[icol] < sz) {
@@ -1345,26 +1345,26 @@ string **align_table(string **table, varargs int ralign)
 			}
 		}
 	}
-	
+
 	for (irow = 0; irow < tsz; irow++) {
 		string *row;
 		int rsz;
-		
+
 		row = table[irow];
-		
+
 		if (!row) {
 			row = ({ });
 		}
-		
+
 		rsz = sizeof(row);
 
 		out[irow] = allocate(cols);
-		
+
 		for (icol = 0; icol < rsz; icol++) {
 			string cell;
 			string piece;
 			string spaces;
-			
+
 			piece = row[icol];
 			spaces = spaces(widths[icol] - strlen(piece));
 
@@ -1373,11 +1373,11 @@ string **align_table(string **table, varargs int ralign)
 			} else {
 				cell = piece + spaces;
 			}
-			
+
 			out[irow][icol] = cell;
 		}
 	}
-	
+
 	return out;
 }
 
@@ -1386,11 +1386,11 @@ string bin(int val)
 	int index;
 	string out;
 	out = "";
-	
+
 	if (!val) {
 		return "0";
 	}
-	
+
 	while (val) {
 		int bit;
 			
@@ -1595,6 +1595,50 @@ string simple_ansify(string chars, varargs string fore, string back)
 	return buf;
 }
 
+string wordwrap(string text, int width)
+{
+	string *words;
+	string buffer;
+	int tail;
+	int length;
+	int i;
+	int sz;
+
+	buffer = "";
+	words = explode(text, " ") - ({ nil, "" });
+	sz = sizeof(words);
+
+	for (i = 0; i < sz; i++) {
+		string word;
+		int wlen;
+		
+		word = words[i];
+		wlen = strlen(word);
+
+		if (length + tail + wlen > width) {
+			length = 0;
+			buffer += "\n";
+		} else {
+			buffer += spaces(tail);
+			length += tail;
+		}
+
+		buffer += word;
+		length += wlen;
+
+		switch(word[wlen - 1]) {
+		case '.':
+		case '?':
+		case '!':
+			tail = 2;
+			break;
+		default:
+			tail = 1;
+		}
+	}
+
+	return buffer;
+}
 
 static void destruct()
 {
