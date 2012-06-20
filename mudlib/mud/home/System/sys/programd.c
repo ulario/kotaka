@@ -62,11 +62,11 @@ void build_program_info(int pindex, string path, int *inherits, string *includes
 	int index;
 	int sz;
 	object pinfo;
-	
+
 	ACCESS_CHECK(SYSTEM());
-	
+
 	pinfo = new_object("~/lwo/program_info");
-	
+
 	pinfo->set_path(path);
 	pinfo->set_inherits(inherits);
 	pinfo->set_includes(includes);
