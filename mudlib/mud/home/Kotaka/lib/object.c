@@ -869,7 +869,7 @@ nomask mixed _F_query_property(string name)
 			} else {
 				arch = query_archetypes();
 			}
-			
+
 			for (index = 0; index < sizeof(arch); index++) {
 				value = arch[index]->
 					query_property(name);
@@ -905,20 +905,20 @@ nomask mixed _F_query_property(string name)
 			
 			string *extra;
 			object *arch;
-			
+
 			extra = info[2];
-			
+
 			lname = extra[0];
 			rname = extra[1];
-			
+
 			if (info[1] == PROP_MIXDOWN) {
 				arch = ({ query_environment() }) - ({ nil });
 			} else {
 				arch = query_archetypes();
 			}
-			
+
 			local = deep_copy(properties[lname]);
-			
+
 			switch(info[0]) {
 			case T_ARRAY:
 				gather = ({ });
@@ -973,18 +973,18 @@ nomask mixed _F_query_property(string name)
 			string func;
 			string lib;
 			string creator;
-		
+
 			func = info[2][0];	/* reader */
 			lib = function_object(func, this_object());
 			
 			if (!lib) {
 				error("No such function");
 			}
-			
+
 			creator = DRIVER->creator(lib);
-			
+
 			ACCESS_CHECK(creator == "Game");
-			
+
 			return call_other(this_object(), func);
 		}
 	default:
