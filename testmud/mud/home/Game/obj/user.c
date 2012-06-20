@@ -110,7 +110,7 @@ int receive_message(string str)
 {
 	int ret;
 	object conn, conn2;
-	string ip;
+	string ip, user;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 	conn = previous_object();
@@ -121,13 +121,12 @@ int receive_message(string str)
 
 	ip = query_ip_number(conn);
 
-	write_file("~/log",
-		(username ? username :
-		(
-			"(" + (ip ? ip : "nil") + ")"
-		))
-		+ ": " + str + "\n"
-	);
+	if (!ip)
+		ip = "nil";
+
+	user = username ? username : ip;
+
+	write_file("~/log-" + user, user + ": " + str + "\n");
 
 	ret = ::receive_message(str);
 
