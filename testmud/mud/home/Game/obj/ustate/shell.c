@@ -114,6 +114,10 @@ void receive_in(string input)
 		}
 	}
 
+	if (!this_object()) {
+		return;
+	}
+
 	reading = 0;
 
 	if (!stopped) {
