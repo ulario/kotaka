@@ -9,68 +9,35 @@ void main(string args)
 	int x, y;
 	object paint;
 	string buffer;
+	string *lines;
 
-	send_out("Canvas test:\n");
-
-	paint = new_object("~/lwo/paint/painter");
+	paint = new_object(LWO_PAINTER);
 	paint->start(80, 20);
 	paint->set_color(0xC);
+	paint->move_pen(0, 0);
+	paint->draw("-----------------");
+	paint->move_pen(0, 1);
+	paint->draw("- Ularian Woods -");
+	paint->move_pen(0, 2);
+	paint->draw(STRINGD->chars(80, '-'));
 
-	send_out(status(ST_TICKS) + " ticks starting.\n");
-
-	for (x = 0; x < 200; x++) {
-		paint->move_pen(random(80), random(20));
-		paint->set_color(random(16));
-		paint->draw("+");
+	paint->set_color(0x23);
+	for (y = 3; y < 20; y++) {
+		paint->move_pen(0, y);
+		paint->draw(";;;;;;;;;;;;;;;;;");
 	}
 
-	paint->set_color(0x2);
-	paint->move_pen(20, 0);
-	paint->draw("+-----------+");
-	paint->move_pen(20, 1);
-	paint->draw("|     /     |");
-	paint->move_pen(20, 2);
-	paint->draw("+-----------+");
+	paint->set_color(0x8F);
+	paint->move_pen(8, 11);
+	paint->draw("@");
 
-	buffer = "   " + random(250);
-	buffer = buffer[strlen(buffer) - 3 ..];
-	buffer += " / 250";
+	lines = explode(STRINGD->wordwrap("Outdoors in a misty forest surrounded by greenery.  Mosses, grasses, and leaves litter the ground, and many kinds of trees are growing, some with bunches of cute brown mushrooms at their feet.", 50), "\n");
+	paint->set_color(0x87);
 
-	paint->set_color(0xB);
-	paint->move_pen(22, 1);
-	paint->draw(buffer);
+	for (y = 0; y < sizeof(lines); y++) {
+		paint->move_pen(25, y + 5);
+		paint->draw(lines[y]);
+	}
 
-	paint->set_color(0x2A);
-	paint->move_pen(40, 10);
-	paint->draw("/");
-	paint->move_pen(39, 11);
-	paint->draw("//");
-	paint->move_pen(38, 12);
-	paint->draw("///");
-	paint->move_pen(37, 13);
-	paint->draw("////");
-	paint->move_pen(36, 14);
-	paint->draw("/////");
-
-	paint->set_color(0x20);
-	paint->move_pen(41, 11);
-	paint->draw("\\");
-	paint->move_pen(41, 12);
-	paint->draw("\\\\");
-	paint->move_pen(41, 13);
-	paint->draw("\\\\\\");
-	paint->move_pen(41, 14);
-	paint->draw("\\\\\\\\");
-
-	paint->set_color(0x30);
-	paint->move_pen(39, 15);
-	paint->draw("|||");
-	paint->move_pen(39, 16);
-	paint->draw("|||");
-	paint->move_pen(39, 17);
-	paint->draw("|||");
-
-	send_out(status(ST_TICKS) + " ticks after painting remaining.\n");
 	send_out(paint->render_color());
-	send_out(status(ST_TICKS) + " ticks after rendering remaining.\n");
 }
