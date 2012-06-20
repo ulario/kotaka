@@ -13,10 +13,10 @@ int frames;
 int due;
 float pi;
 float otime;
-float **sparks;
+float **particles;
 string path;
 
-#define NSPARKS 50
+#define NPARTICLES 100
 
 static void create(int clone)
 {
@@ -38,16 +38,16 @@ void begin()
 
 	send_out("\033[1;1H\033[2J");
 
-	call_out("sparkle", 0);
+	call_out("particlele", 0);
 	call_out("second", 1);
 	times = millitime();
 	otime = (float)times[0] + times[1];
 
-	sparks = allocate(NSPARKS);
+	particles = allocate(NPARTICLES);
 
-	for (i = 0; i < NSPARKS; i++) {
-		sparks[i] = allocate_float(4);
-		sparks[i][1] = 20.0;
+	for (i = 0; i < NPARTICLES; i++) {
+		particles[i] = allocate_float(4);
+		particles[i][1] = 20.0;
 	}
 }
 
@@ -119,37 +119,37 @@ private void do_clock(object paint, float time)
 	}
 
 	paint->set_color(0x8F);
-	paint->move_pen(40, 8);
+	paint->move_pen(60, 8);
 	paint->draw("A");
 }
 
-private void do_sparks(object paint, float diff)
+private void do_particles(object paint, float diff)
 {
 	int x, y, i;
 
-	for (i = 0; i < NSPARKS; i++) {
+	for (i = 0; i < NPARTICLES; i++) {
 		float ovy, nvy;
-		mixed *spark;
+		mixed *particle;
 
-		spark = sparks[i];
+		particle = particles[i];
 
-		ovy = spark[3];
+		ovy = particle[3];
 		nvy = ovy + diff * 20.0;
 
-		spark[0] += spark[2] * diff;
-		spark[1] += (ovy + nvy) * 0.5 * diff;
-		spark[3] = nvy;
+		particle[0] += particle[2] * diff;
+		particle[1] += (ovy + nvy) * 0.5 * diff;
+		particle[3] = nvy;
 
-		if (spark[1] >= 20.0) {
-			spark[0] = 10.0;
-			spark[1] = 20.0;
+		if (particle[1] >= 20.0) {
+			particle[0] = 10.0;
+			particle[1] = 20.0;
 
-			spark[2] = (float)random(1000) / 1000.0 * 40.0 - 10.0;
-			spark[3] = (float)random(1000) / 1000.0 * 20.0 - 30.0;
+			particle[2] = (float)random(1000) / 1000.0 * 40.0 - 10.0;
+			particle[3] = (float)random(1000) / 1000.0 * 20.0 - 30.0;
 		}
 
-		x = (int)floor(spark[0]);
-		y = (int)floor(spark[1]);
+		x = (int)floor(particle[0]);
+		y = (int)floor(particle[1]);
 		paint->move_pen(x, y);
 
 		switch(i % 5) {
@@ -164,7 +164,7 @@ private void do_sparks(object paint, float diff)
 	}
 }
 
-static void sparkle()
+static void particlele()
 {
 	int x, y, i;
 	string buffer;
@@ -177,7 +177,7 @@ static void sparkle()
 	diff = time - otime;
 	otime = time;
 
-	call_out("sparkle", 0);
+	call_out("particlele", 0);
 	send_out("\033[1;1HCanvas test:\n");
 
 	paint = new_object(LWO_PAINTER);
@@ -233,7 +233,7 @@ static void sparkle()
 	paint->draw("|||");
 
 	do_clock(paint, time);
-	do_sparks(paint, diff);
+	do_particles(paint, diff);
 
 	frames++;
 
