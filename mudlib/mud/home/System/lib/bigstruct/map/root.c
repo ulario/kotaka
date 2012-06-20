@@ -108,12 +108,11 @@ private void merge_node_left(object node)
 
 	prev = prev_node(node);
 
-	map = node->get_map() + prev->get_map();
+	map = prev->get_map() + node->get_map();
 
 	node->set_map(map);
 	node->set_size(map_sizeof(map));
-
-	node->reset_low_key();
+	node->set_low_key(prev->query_low_key());
 
 	prev->set_map( ([ ]) );
 	delete_node(prev);
@@ -132,11 +131,8 @@ private void merge_node_right(object node)
 	node->set_map(map);
 	node->set_size(map_sizeof(map));
 
-	node->reset_low_key();
-
 	next->set_map( ([ ]) );
 	delete_node(next);
-	/* todo: take care of the map emptying out */
 }
 
 private void split_node_right(object node)
