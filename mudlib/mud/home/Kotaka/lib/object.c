@@ -8,8 +8,6 @@
 
 #define ID(x, y) (((y) > 1) ? ((x) + "#" + (y)) : (x))
 
-inherit LIB_DEEP_COPY;
-
 /**********************/
 /* Archetype handling */
 /**********************/
@@ -698,14 +696,14 @@ nomask mapping _F_query_local_properties()
 {
 	ACCESS_CHECK(KOTAKA());
 
-	return deep_copy(properties);
+	return SUBD->deep_copy(properties);
 }
 
 nomask void _F_set_local_properties(mapping prop)
 {
 	ACCESS_CHECK(KOTAKA());
 
-	properties = deep_copy(prop);
+	properties = SUBD->deep_copy(prop);
 }
 
 nomask void _F_clear_local_properties()
@@ -740,7 +738,7 @@ nomask void _F_clear_removed_properties()
 
 nomask void _F_set_local_property(string name, mixed value, varargs int nosignal)
 {
-	properties[name] = deep_copy(value);
+	properties[name] = SUBD->deep_copy(value);
 }
 
 nomask void _F_set_property(string name, mixed value)
@@ -836,7 +834,7 @@ nomask mixed _F_query_property(string name)
 			value = properties[name];
 			
 			if (value) {
-				return deep_copy(value);
+				return SUBD->deep_copy(value);
 			}
 			
 			switch(info[0]) {
@@ -854,7 +852,7 @@ nomask mixed _F_query_property(string name)
 	case PROP_INHERIT:
 	case PROP_DROPDOWN:
 		if (properties[name] != nil)  {
-			return deep_copy(properties[name]);
+			return SUBD->deep_copy(properties[name]);
 		}
 		if (sizeof(removed_properties & ({ name }) )) {
 			return nil;
@@ -917,7 +915,7 @@ nomask mixed _F_query_property(string name)
 				arch = query_archetypes();
 			}
 
-			local = deep_copy(properties[lname]);
+			local = SUBD->deep_copy(properties[lname]);
 
 			switch(info[0]) {
 			case T_ARRAY:
@@ -1021,7 +1019,7 @@ mixed query_property(string name)
 
 mixed query_local_property(string name)
 {
-	return deep_copy(properties[name]);
+	return SUBD->deep_copy(properties[name]);
 }
 
 string *list_local_properties()
@@ -1031,7 +1029,7 @@ string *list_local_properties()
 
 mapping query_local_properties()
 {
-	return deep_copy(properties);
+	return SUBD->deep_copy(properties);
 }
 
 void set_local_properties(mapping prop)

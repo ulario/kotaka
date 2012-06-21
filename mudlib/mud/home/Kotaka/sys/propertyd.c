@@ -5,8 +5,6 @@
 
 #include <type.h>
 
-inherit LIB_DEEP_COPY;
-
 private mapping pinfo;
 /* ({ type, code, extra }) */
 

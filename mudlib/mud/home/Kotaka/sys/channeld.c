@@ -5,8 +5,6 @@
 #include <kotaka/paths.h>
 #include <kotaka/channel.h>
 
-inherit LIB_DEEP_COPY;
-
 mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
 mapping locks;		/*< configuration locks */
@@ -116,7 +114,7 @@ mixed query_channel_config(string channel, string key)
 		error("No such channel");
 	}
 
-	return deep_copy(config[key]);
+	return SUBD->deep_copy(config[key]);
 }
 
 /** sets a channel config entry
@@ -142,7 +140,7 @@ void set_channel_config(string channel, string key, mixed value)
 		error("No such channel");
 	}
 
-	config[key] = deep_copy(value);
+	config[key] = SUBD->deep_copy(value);
 }
 
 /** returns true if the channel exists */
