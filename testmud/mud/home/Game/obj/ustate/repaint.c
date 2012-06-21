@@ -16,7 +16,9 @@ float otime;
 float **particles;
 string path;
 
-#define NPARTICLES 10
+#define NPARTICLES 36
+#define CLK_X 45
+#define CLK_Y 9
 
 static void create(int clone)
 {
@@ -38,7 +40,7 @@ void begin()
 
 	send_out("\033[1;1H\033[2J");
 
-	call_out("particlele", 0);
+	call_out("particle", 0);
 	call_out("second", 1);
 	times = millitime();
 	otime = (float)times[0] + times[1];
@@ -70,13 +72,36 @@ private void do_clock(object paint, float time)
 	int i, x, y;
 	float hand;
 
-	paint->set_color(0x88);
-	for (i = 0; i < 12; i++) {
-		x = (int)((sin((float)i * pi / 6.0)) * 8.0) + 60;
-		y = (int)((-cos((float)i * pi / 6.0)) * 8.0) + 8;
+	paint->set_color(0x8F);
+	for (i = 0; i < 120; i++) {
+		x = (int)((sin((float)i * pi / 60.0)) * 8.0) + CLK_X;
+		y = (int)((-cos((float)i * pi / 60.0)) * 8.0) + CLK_Y;
 
 		paint->move_pen(x, y);
 		paint->draw("@");
+	}
+
+	paint->set_color(0x8B);
+	for (i = 0; i < 12; i++) {
+		x = (int)((sin((float)i * pi / 6.0)) * 7.0) + CLK_X;
+		y = (int)((-cos((float)i * pi / 6.0)) * 7.0) + CLK_Y;
+
+		paint->move_pen(x, y);
+		
+		switch(i) {
+		case 0:
+		case 6: paint->draw("|"); break;
+		case 1:
+		case 2:
+		case 7:
+		case 8: paint->draw("/"); break;
+		case 3:
+		case 9: paint->draw("-"); break;
+		case 4:
+		case 5:
+		case 10:
+		case 11: paint->draw("\\"); break;
+		}
 	}
 
 	hand = time / 60.0;
@@ -84,9 +109,9 @@ private void do_clock(object paint, float time)
 
 	paint->set_color(0x89);
 
-	for (i = 0; i < 8; i++) {
-		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 60;
-		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
+	for (i = 0; i < 7; i++) {
+		x = (int)((sin(hand * pi * 2.0)) * (float)i) + CLK_X;
+		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + CLK_Y;
 
 		paint->move_pen(x, y);
 		paint->draw("S");
@@ -97,9 +122,9 @@ private void do_clock(object paint, float time)
 
 	paint->set_color(0x8A);
 
-	for (i = 0; i < 6; i++) {
-		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 60;
-		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
+	for (i = 0; i < 5; i++) {
+		x = (int)((sin(hand * pi * 2.0)) * ((float)i + 0.5)) + CLK_X;
+		y = (int)((-cos(hand * pi * 2.0)) * ((float)i + 0.5)) + CLK_Y;
 
 		paint->move_pen(x, y);
 		paint->draw("M");
@@ -111,15 +136,15 @@ private void do_clock(object paint, float time)
 	paint->set_color(0x8C);
 
 	for (i = 0; i < 4; i++) {
-		x = (int)((sin(hand * pi * 2.0)) * (float)i) + 60;
-		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + 8;
+		x = (int)((sin(hand * pi * 2.0)) * (float)i) + CLK_X;
+		y = (int)((-cos(hand * pi * 2.0)) * (float)i) + CLK_Y;
 
 		paint->move_pen(x, y);
 		paint->draw("H");
 	}
 
 	paint->set_color(0x8F);
-	paint->move_pen(60, 8);
+	paint->move_pen(CLK_X, CLK_Y);
 	paint->draw("A");
 }
 
@@ -152,19 +177,20 @@ private void do_particles(object paint, float diff)
 		y = (int)floor(particle[1]);
 		paint->move_pen(x, y);
 
-		switch(i % 5) {
+		switch(i % 6) {
 		case 0: paint->set_color(0x89); break;
 		case 1: paint->set_color(0x8B); break;
-		case 2: paint->set_color(0x8F); break;
+		case 2: paint->set_color(0x8A); break;
 		case 3: paint->set_color(0x8E); break;
 		case 4: paint->set_color(0x8C); break;
+		case 5: paint->set_color(0x8D); break;
 		}
 
 		paint->draw("+");
 	}
 }
 
-static void particlele()
+static void particle()
 {
 	int x, y, i;
 	string buffer;
@@ -177,7 +203,7 @@ static void particlele()
 	diff = time - otime;
 	otime = time;
 
-	call_out("particlele", 0);
+	call_out("particle", 0);
 	send_out("\033[1;1HCanvas test:\n");
 
 	paint = new_object(LWO_PAINTER);
@@ -232,8 +258,8 @@ static void particlele()
 	paint->move_pen(39, 17);
 	paint->draw("|||");
 
-	do_clock(paint, time);
 	do_particles(paint, diff);
+	do_clock(paint, time);
 
 	frames++;
 
