@@ -74,9 +74,6 @@ void receive_in(string input)
 	case "quit":
 		pop_state();
 		return;
-	case "login":
-		push_state(clone_object("login"));
-		break;
 	default:
 		send_out(first + ": command not recognized.\n");
 	}
