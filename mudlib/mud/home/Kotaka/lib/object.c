@@ -14,8 +14,6 @@
 
 private object *archetypes;
 
-/* low */
-
 nomask int _F_is_archetype_of(object test)
 {
 	int index;
@@ -43,7 +41,7 @@ nomask int _F_is_archetype_of(object test)
 nomask object *_F_query_archetypes()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	return archetypes -= ({ nil });
 }
 
@@ -51,18 +49,18 @@ nomask void _F_set_archetypes(object *new_archs)
 {
 	int i;
 	int sz;
-	
+
 	object *old_archs;
 	object *check;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	archetypes -= ({ nil });
-	new_archs = ({ }) | (new_archs - ({ nil }));
+	new_archs = new_archs -= ({ nil });
 	check = new_archs - ({ archetypes });
-	
+
 	sz = sizeof(check);
-	
+
 	for (i = 0; i < sz; i++) {
 		if (!check[i] <- LIB_OBJECT) {
 			error("Bad argument 1 for function set_archetypes (found non LIB_OBJECT)");
@@ -71,7 +69,7 @@ nomask void _F_set_archetypes(object *new_archs)
 			error("Circular reference");
 		}
 	}
-	
+
 	archetypes = new_archs;
 }
 
@@ -171,8 +169,8 @@ void clear_archetypes()
 object *_F_query_inventory();
 object _F_query_environment();
 
-private string base;
-private int number;
+private string id_base;
+private int id_number;
 
 static void validate_base_id(string new_base)
 {
@@ -193,21 +191,21 @@ nomask string _F_query_id()
 {
 	ACCESS_CHECK(KOTAKA());
 
-	return ID(base, number);
+	return ID(id_base, id_number);
 }
 
 nomask string _F_query_id_base()
 {
 	ACCESS_CHECK(KOTAKA());
 
-	return base;
+	return id_base;
 }
 
 nomask int _F_query_id_number()
 {
 	ACCESS_CHECK(KOTAKA());
 	
-	return number;
+	return id_number;
 }
 
 nomask int _F_query_lowest_free(string trial, object exclude)
@@ -221,7 +219,7 @@ nomask int _F_query_lowest_free(string trial, object exclude)
 
 	taken = ([ ]);
 
-	inv = _F_query_inventory() - ({ exclude });
+	inv = map_values(inventory) - ({ exclude });
 
 	for (i = 0; i < sizeof(inv); i++) {
 		object check;
@@ -284,7 +282,7 @@ nomask object _F_find_by_id(string id)
 		return this_object();
 	}
 
-	inv = _F_query_inventory();
+	inv = map_values(inventory);
 
 	for(index = 0; index < sizeof(inv); index++) {
 		if (inv[index]->_F_query_id() == id) {
@@ -387,7 +385,7 @@ nomask void _F_set_id(string new_id)
 
 	new_id = ID(new_base, new_number);
 
-	if (env = _F_query_environment()) {
+	if (env = environment) {
 		object test;
 
 		test = env->_F_find_by_id(new_id);
@@ -414,7 +412,7 @@ nomask void _F_set_id_base(string new_base)
 	
 	validate_base_id(new_base);
 	
-	env = _F_query_environment();
+	env = environment;
 
 	if (env) {
 		new_number = env->_F_query_lowest_free(
@@ -435,7 +433,7 @@ nomask void _F_set_id_number(int new_number)
 	
 	ACCESS_CHECK(KOTAKA());
 
-	env = _F_query_environment();
+	env = environment;
 
 	if (env) {
 		other = env->_F_find_by_id(ID(base, new_number));
@@ -484,9 +482,9 @@ object *filter_by_base(string str)
 {
 	int index;
 	object *inv;
-	
-	inv = _F_query_inventory();
-	
+
+	inv = map_values(inventory);
+
 	for(index = 0; index < sizeof(inv); index++) {
 		if (inv[index]->_F_query_id_base() != str)
 			inv[index] = nil;
@@ -619,10 +617,8 @@ atomic nomask void _F_move(object new_env)
 		return;
 	}
 
-	base = _F_query_id_base();
-
 	if (new_env) {
-		new_number = new_env->_F_query_lowest_free(base, nil);
+		new_number = new_env->_F_query_lowest_free(id_base, nil);
 	} else {
 		new_number = 1;
 	}
