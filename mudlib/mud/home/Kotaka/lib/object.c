@@ -33,9 +33,9 @@ private void initialize()
 		archetypes = ({ });
 	}
 
-	if (!base) {
-		base = "anonymous";
-		number = 1;
+	if (!id_base) {
+		id_base = "anonymous";
+		id_number = 1;
 	}
 
 	if (!inventory) {
@@ -447,10 +447,10 @@ nomask void _F_set_id(string new_id)
 		}
 	}
 
-	old_id = ID(base, number);
+	old_id = ID(id_base, id_number);
 
-	base = new_base;
-	number = new_number;
+	id_base = new_base;
+	id_number = new_number;
 }
 
 nomask void _F_set_id_base(string new_base)
@@ -459,11 +459,11 @@ nomask void _F_set_id_base(string new_base)
 	int new_number;
 	string old_id;
 	string new_id;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	validate_base_id(new_base);
-	
+
 	env = environment;
 
 	if (env) {
@@ -473,9 +473,9 @@ nomask void _F_set_id_base(string new_base)
 	} else {
 		new_number = 1;
 	}
-	
-	base = new_base;
-	number = new_number;
+
+	id_base = new_base;
+	id_number = new_number;
 }
 
 nomask void _F_set_id_number(int new_number)
@@ -488,31 +488,31 @@ nomask void _F_set_id_number(int new_number)
 	env = environment;
 
 	if (env) {
-		other = env->_F_find_by_id(ID(base, new_number));
+		other = env->_F_find_by_id(ID(id_base, new_number));
 
 		if (other && other != this_object()) {
 			error("Duplicate ID");
 		}
 	}
 
-	number = new_number;
+	id_number = new_number;
 }
 
 /* high */
 
 string query_id()
 {
-	return ID(base, number);
+	return ID(id_base, id_number);
 }
 
 string query_id_base()
 {
-	return base;
+	return id_base;
 }
 
 int query_id_number()
 {
-	return number;
+	return id_number;
 }
 
 void set_id(string new_id)
