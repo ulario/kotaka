@@ -16,7 +16,7 @@ float otime;
 float **particles;
 string path;
 
-#define NPARTICLES 100
+#define NPARTICLES 10
 
 static void create(int clone)
 {
