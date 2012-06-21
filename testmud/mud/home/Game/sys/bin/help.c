@@ -11,5 +11,5 @@ void main(string args)
 
 	pager->set_text(read_file("~/data/help/player/index.hlp"));
 
-	query_user()->push_state(pager);
+	query_ustate()->push_state(pager);
 }
