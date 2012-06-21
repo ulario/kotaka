@@ -8,33 +8,88 @@
 
 #define ID(x, y) (((y) > 1) ? ((x) + "#" + (y)) : (x))
 
+/*************/
+/* Variables */
+/*************/
+
+private object *archetypes;
+
+private string id_base;
+private int id_number;
+
+private object environment;
+private mapping inventory;
+
+private mapping properties;
+private string *removed_properties;
+
+/*****************/
+/* General stuff */
+/*****************/
+
+private void initialize()
+{
+	if (!archetypes) {
+		archetypes = ({ });
+	}
+
+	if (!base) {
+		base = "anonymous";
+		number = 1;
+	}
+
+	if (!inventory) {
+		inventory = ([ ]);
+	}
+
+	if (!properties) {
+		properties = ([ ]);
+		removed_properties = ({ });
+	}
+}
+
+static void create()
+{
+	initialize();
+}
+
+nomask void kotaka_object_constructor()
+{
+	ACCESS_CHECK(previous_program() == SECOND_AUTO);
+
+	initialize();
+}
+
+nomask void kotaka_object_destructor()
+{
+	ACCESS_CHECK(previous_program() == SECOND_AUTO);
+}
+
 /**********************/
 /* Archetype handling */
 /**********************/
-
-private object *archetypes;
 
 nomask int _F_is_archetype_of(object test)
 {
 	int index;
 	int sz;
 	object *arch;
-	
+
 	ACCESS_CHECK(KOTAKA());
-	
+
 	arch = test->_F_query_archetypes();
 	sz = sizeof(arch);
-	
+
 	if (sizeof(arch & ({ this_object() }))) {
 		return 1;
 	}
-	
+
 	for(index = 0; index < sz; index++) {
 		if (_F_is_archetype_of(arch[index])) {
 			return 1;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -98,13 +153,13 @@ nomask void _F_add_archetype(object new_arch)
 nomask void _F_add_archetype_at(object new_arch, int position)
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	CHECKARG(new_arch, 1, "add_archetype_at");
 	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype_at");
-	
+
 	CHECKARG(position >= -1, 2, "add_archetype_at");
 	CHECKARG(position <= sizeof(archetypes), 2, "add_archetype_at");
-	
+
 	archetypes -= ({ nil });
 	
 	if (position == -1) {
@@ -169,9 +224,6 @@ void clear_archetypes()
 object *_F_query_inventory();
 object _F_query_environment();
 
-private string id_base;
-private int id_number;
-
 static void validate_base_id(string new_base)
 {
 	if (!STRINGD->is_valid_base_id(new_base)) {
@@ -204,7 +256,7 @@ nomask string _F_query_id_base()
 nomask int _F_query_id_number()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	return id_number;
 }
 
@@ -512,9 +564,6 @@ object locate_object(string path)
 /* Inventory handling */
 /**********************/
 
-private object environment;
-private mapping inventory;
-
 int forbid_move(object new_env)
 {
 	return 0;
@@ -682,9 +731,6 @@ object *query_inventory()
 /*********************/
 
 mixed query_property(string pname);
-
-private mapping properties;
-private string *removed_properties;
 
 /* low */
 
@@ -1055,46 +1101,4 @@ string *query_removed_properties()
 void clear_removed_properties()
 {
 	_F_clear_removed_properties();
-}
-
-/*****************/
-/* General stuff */
-/*****************/
-
-private void initialize()
-{
-	if (!archetypes) {
-		archetypes = ({ });
-	}
-
-	if (!base) {
-		base = "anonymous";
-		number = 1;
-	}
-
-	if (!inventory) {
-		inventory = ([ ]);
-	}
-
-	if (!properties) {
-		properties = ([ ]);
-		removed_properties = ({ });
-	}
-}
-
-static void create()
-{
-	initialize();
-}
-
-nomask void kotaka_object_constructor()
-{
-	ACCESS_CHECK(previous_program() == SECOND_AUTO);
-
-	initialize();
-}
-
-nomask void kotaka_object_destructor()
-{
-	ACCESS_CHECK(previous_program() == SECOND_AUTO);
 }
