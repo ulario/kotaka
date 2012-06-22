@@ -46,12 +46,19 @@ int query_is_banned(string username)
 	return !!username_bans[username];
 }
 
+void force_save()
+{
+	ACCESS_CHECK(GAME() || KADMIN());
+
+	save();
+}
+
 private void save()
 {
-	save_object("band.o");
+	save_object("~/data/save/band.o");
 }
 
 private void restore()
 {
-	restore_object("band.o");
+	restore_object("~/data/save/band.o");
 }

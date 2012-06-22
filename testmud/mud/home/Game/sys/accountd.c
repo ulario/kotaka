@@ -70,14 +70,22 @@ void change_password(string name, string newpass)
 	}
 
 	passwords[name] = hash_string("MD5", newpass);
+	save();
+}
+
+void force_save()
+{
+	ACCESS_CHECK(GAME() || KADMIN());
+
+	save();
 }
 
 private void save()
 {
-	save_object("accountd.o");
+	save_object("~/data/save/accountd.o");
 }
 
 private void restore()
 {
-	restore_object("accountd.o");
+	restore_object("~/data/save/accountd.o");
 }
