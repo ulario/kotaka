@@ -20,12 +20,16 @@ static void upgraded()
 	chars = allocate(256);
 }
 
-string chars(int count, int code)
+string chars(int code, int count)
 {
 	string log;
 	int max;
 
 	max = 16384;
+
+	if (code < 0 || code > 0xFF) {
+		error("Invalid character code");
+	}
 
 	if (count > max) {
 		error("String too long");
@@ -54,12 +58,12 @@ string chars(int count, int code)
 
 string spaces(int count)
 {
-	return chars(count, ' ');
+	return chars(' ', count);
 }
 
 string nulls(int count)
 {
-	return chars(count, '\0');
+	return chars('\0', count);
 }
 
 string replace(string input, string from, string to);
