@@ -24,7 +24,7 @@ void start(int dx, int dy)
 
 	for (i = 0; i < size_y; i++) {
 		chars[i] = STRINGD->spaces(size_x);
-		colors[i] = STRINGD->chars(size_x, '\007');
+		colors[i] = STRINGD->chars('\007', size_x);
 	}
 }
 
