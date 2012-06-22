@@ -5,6 +5,7 @@
 #include <kotaka/assert.h>
 #include <kotaka/checkarg.h>
 #include <kotaka/property.h>
+#include <kotaka/log.h>
 
 #define ID(x, y) (((y) > 1) ? ((x) + "#" + (y)) : (x))
 
@@ -138,14 +139,14 @@ nomask void _F_clear_archetypes()
 nomask void _F_add_archetype(object new_arch)
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	CHECKARG(new_arch, 1, "add_archetype");
 	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype");
-	
+
 	if (_F_is_archetype_of(new_arch)) {
 		error("Circular reference");
 	}
-	
+
 	archetypes -= ({ nil });
 	archetypes += ({ new_arch });
 }
@@ -271,7 +272,7 @@ nomask int _F_query_lowest_free(string trial, object exclude)
 
 	taken = ([ ]);
 
-	inv = map_values(inventory) - ({ exclude });
+	inv = map_indices(inventory) - ({ exclude });
 
 	for (i = 0; i < sizeof(inv); i++) {
 		object check;
@@ -300,6 +301,7 @@ nomask object _F_find_by_id(string id)
 	int number;
 	int index;
 	object *inv;
+	int sz;
 
 	ACCESS_CHECK(KOTAKA());
 
@@ -334,15 +336,14 @@ nomask object _F_find_by_id(string id)
 		return this_object();
 	}
 
-	inv = map_values(inventory);
+	inv = map_indices(inventory);
+	sz = sizeof(inv);
 
-	for(index = 0; index < sizeof(inv); index++) {
+	for (index = 0; index < sz; index++) {
 		if (inv[index]->_F_query_id() == id) {
 			return inv[index];
 		}
 	}
-
-	return nil;
 }
 
 nomask string _F_query_path(object root)
@@ -435,19 +436,22 @@ nomask void _F_set_id(string new_id)
 
 	validate_base_id(new_base);
 
+	old_id = ID(id_base, id_number);
 	new_id = ID(new_base, new_number);
 
-	if (env = environment) {
+	if (old_id == new_id) {
+		return;
+	}
+
+	if (environment) {
 		object test;
 
-		test = env->_F_find_by_id(new_id);
+		test = environment->_F_find_by_id(new_id);
 
 		if (test && test != this_object()) {
 			error("Duplicate ID");
 		}
 	}
-
-	old_id = ID(id_base, id_number);
 
 	id_base = new_base;
 	id_number = new_number;
@@ -474,6 +478,12 @@ nomask void _F_set_id_base(string new_base)
 		new_number = 1;
 	}
 
+	if (new_number == id_number) {
+		return;
+	}
+
+	old_id = ID(id_base, id_number);
+
 	id_base = new_base;
 	id_number = new_number;
 }
@@ -482,10 +492,15 @@ nomask void _F_set_id_number(int new_number)
 {
 	object env;
 	object other;
-	
+	string old_id;
+
 	ACCESS_CHECK(KOTAKA());
 
 	env = environment;
+
+	if (new_number == id_number) {
+		return;
+	}
 
 	if (env) {
 		other = env->_F_find_by_id(ID(id_base, new_number));
@@ -495,6 +510,7 @@ nomask void _F_set_id_number(int new_number)
 		}
 	}
 
+	old_id = ID(id_base, id_number);
 	id_number = new_number;
 }
 
@@ -535,7 +551,7 @@ object *filter_by_base(string str)
 	int index;
 	object *inv;
 
-	inv = map_values(inventory);
+	inv = map_indices(inventory);
 
 	for(index = 0; index < sizeof(inv); index++) {
 		if (inv[index]->_F_query_id_base() != str)
