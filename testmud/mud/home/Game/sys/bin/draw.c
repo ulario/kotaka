@@ -9,6 +9,14 @@ void main(string args)
 	object *contents;
 	object living;
 	int sz;
+	object user;
+
+	user = query_user();
+
+	if (user->query_class() < 1) {
+		send_out("You do not have sufficient access rights to draw the map.\n");
+		return;
+	}
 
 	root = find_object(ROOT);
 

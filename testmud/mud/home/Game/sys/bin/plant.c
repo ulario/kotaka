@@ -7,6 +7,14 @@ void main(string args)
 {
 	object seed;
 	object root;
+	object user;
+
+	user = query_user();
+
+	if (user->query_class() < 1) {
+		send_out("You do not have sufficient access rights to plant.\n");
+		return;
+	}
 
 	seed = clone_object("~/obj/object");
 

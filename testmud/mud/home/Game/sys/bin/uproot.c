@@ -8,6 +8,14 @@ void main(string args)
 	object *seeds;
 	object root;
 	int sz;
+	object user;
+
+	user = query_user();
+
+	if (user->query_class() < 1) {
+		send_out("You do not have sufficient access rights to uproot.\n");
+		return;
+	}
 
 	seeds = (root = find_object(GAME_ROOT))->query_inventory();
 
