@@ -127,6 +127,7 @@ void receive_in(string input)
 			return;
 		} else if (BAND->query_is_banned(name)) {
 			send_out("You are banned.\n");
+			query_user()->quit();
 			return;
 		} else {
 			object user;
