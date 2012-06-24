@@ -34,8 +34,6 @@ receive_datagram
 
 int login(string str)
 {
-	int newmode;
-
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
 

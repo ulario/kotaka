@@ -14,14 +14,9 @@ static void create(int clone)
 	}
 }
 
-atomic static int atomic_login(string str, object conn)
+atomic static int atomic_login(string str)
 {
-	int newmode;
-
-	connection(conn);
-	::open(nil);
-
-	return ::receive_message(str);
+	return ::login(str);
 }
 
 atomic static void atomic_logout(int quit)
@@ -55,7 +50,7 @@ int login(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	return atomic_login(str, previous_object());
+	return atomic_login(str);
 }
 
 void logout(int quit)
