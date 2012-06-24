@@ -29,6 +29,7 @@ private void scan_programs(string path);
 private void register_program(string path, string *inherits, string *includes);
 private string *fetch_from_initd(object initd, string path);
 private void compiled();
+private mixed query_include_file(string compiled, string from, string path);
 
 /* kernel library hooks */
 
@@ -229,6 +230,38 @@ private void compiled(string owner, string path, string *source, string inherite
 	}
 }
 
+private mixed query_include_file(string compiled, string from, string path)
+{
+	string creator;
+	object initd;
+
+	/* don't allow bypass of standard file */
+	if (path == "/include/std.h") {
+		return path;
+	}
+
+	creator = find_object(DRIVER)->creator(compiled);
+
+	/* System has to be direct */
+	if (creator == "System") {
+		return path;
+	}
+
+	/* don't allow bypass of standard auto */
+	if (creator != "System" &&
+		path == "/include/AUTO" &&
+		from == "/include/std.h") {
+		return USR_DIR + "/System/include/second_auto.h";
+	}
+
+	if (initd = find_object(USR_DIR + "/" + creator + "/initd")) {
+		return initd->include_file(compiled, from, path);
+	}
+
+	return path;
+}
+
+
 /* kernel library hooks */
 
 void compiling(string path)
@@ -315,7 +348,13 @@ void remove_program(string owner, string path, int timestamp, int index)
 
 mixed include_file(string compiled, string from, string path)
 {
-	ACCESS_CHECK(KERNEL());
+	ACCESS_CHECK(previous_program() == DRIVER);
+
+	path = query_include_file(compiled, from, path);
+
+	includes |= ({ path });
+
+	return path;
 }
 
 int touch(object obj, string function)
