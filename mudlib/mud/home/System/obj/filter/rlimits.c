@@ -14,9 +14,12 @@ static void create(int clone)
 	}
 }
 
-static int limited_login(string str, object conn)
+static int limited_login(string str)
 {
-	return ::login(str);
+	connection(previous_object(1));
+	::open(nil);
+
+	return ::receive_message(str);
 }
 
 static void limited_logout(int quit)
@@ -48,13 +51,15 @@ static void limited_receive_datagram(string packet)
 
 int login(string str)
 {
+	ACCESS_CHECK(previous_object()->query_user() == this_object());
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	return call_limited("limited_login", str, previous_object());
+	return call_limited("limited_login", str);
 }
 
 void logout(int quit)
 {
+	ACCESS_CHECK(previous_object()->query_user() == this_object());
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	call_limited("limited_logout", quit);
@@ -62,6 +67,7 @@ void logout(int quit)
 
 int receive_message(string str)
 {
+	ACCESS_CHECK(previous_object()->query_user() == this_object());
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	return call_limited("limited_receive_message", str);
@@ -69,6 +75,7 @@ int receive_message(string str)
 
 int message_done()
 {
+	ACCESS_CHECK(previous_object()->query_user() == this_object());
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	return call_limited("limited_message_done");
@@ -77,6 +84,7 @@ int message_done()
 #ifndef SYS_NETWORKING
 void open_datagram()
 {
+	ACCESS_CHECK(previous_object()->query_user() == this_object());
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	call_limited("limited_open_datagram");
@@ -85,6 +93,7 @@ void open_datagram()
 
 void receive_datagram(string packet)
 {
+	ACCESS_CHECK(previous_object()->query_user() == this_object());
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	call_limited("limited_receive_datagram", packet);
