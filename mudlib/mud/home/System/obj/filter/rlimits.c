@@ -14,18 +14,9 @@ static void create(int clone)
 	}
 }
 
-
 static int limited_login(string str, object conn)
 {
-	int newmode;
-
-	ACCESS_CHECK(previous_program() == LIB_CONN
-		|| calling_object() == this_object());
-
-	connection(conn);
-	::open(nil);
-
-	return ::receive_message(str);
+	return ::login(str);
 }
 
 static void limited_logout(int quit)
