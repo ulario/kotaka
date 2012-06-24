@@ -2,8 +2,11 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kotaka/bigstruct.h>
+#include <kotaka/log.h>
 #include <type.h>
 #include <status.h>
+
+inherit SECOND_AUTO;
 
 /****************/
 /* Declarations */
@@ -24,14 +27,14 @@ void recompile_everything();
 void disable();
 void enable();
 void discover_programs();
+object query_program_info(int oindex);
 
 /* internal functions */
 
 static void create();
-private void scan_programs(string path);
+private void scan_programs(string path, object libqueue, object objqueue);
 private void register_program(string path, string *inherits, string *includes, string constructor, string destructor);
 private string *fetch_from_initd(object initd, string path);
-private void compiled(string owner, string path, string *source, string *inherited);
 private mixed query_include_file(string compiled, string from, string path);
 
 /* kernel library hooks */
@@ -54,6 +57,25 @@ int forbid_inherit(string from, string path, int priv);
 /***************/
 
 /* external */
+
+void enable()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
+	DRIVER->set_object_manager(this_object());
+}
+
+void disable()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
+	DRIVER->set_object_manager(nil);
+}
+
+object query_program_info(int index)
+{
+	return progdb->get_element(index);
+}
 
 void recompile_kernel_library()
 {
@@ -123,26 +145,25 @@ void recompile_everything()
 	error("Not yet implemented");
 }
 
+void discover_programs()
+{
+	object libqueue;
+	object objqueue;
+
+	ACCESS_CHECK(PRIVILEGED());
+
+	libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+
+	scan_programs("/", libqueue, objqueue);
+}
+
 /* internal */
 
 static void create()
 {
 	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	progdb->set_type(T_INT);
-}
-
-void disable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN());
-
-	DRIVER->set_object_manager(nil);
-}
-
-void enable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN());
-
-	DRIVER->set_object_manager(this_object());
 }
 
 private void register_program(string path, string *inherits,
@@ -169,19 +190,27 @@ private void register_program(string path, string *inherits,
 		object subpinfo;
 		int suboindex;
 
-		oindices[i] = suboindex = status(inherits[i])[O_INDEX];
+		LOGD->post_message("object", LOG_DEBUG, "Inheriting: " + inherits[i]);
+
+		suboindex = status(inherits[i])[O_INDEX];
+		oindices[i] = suboindex;
 		subpinfo = progdb->get_element(suboindex);
-		ctors |= subpinfo->query_inherited_constructors();
-		ctors |= ({ subpinfo->query_constructor() });
-		dtors |= subpinfo->query_inherited_destructors();
-		dtors |= ({ subpinfo->query_destructor() });
+
+		if (subpinfo) {
+			ctors |= subpinfo->query_inherited_constructors();
+			ctors |= ({ subpinfo->query_constructor() });
+			dtors |= subpinfo->query_inherited_destructors();
+			dtors |= ({ subpinfo->query_destructor() });
+		}
 	}
+
+	ctors -= ({ nil });
+	dtors -= ({ nil });
 
 	pinfo = new_object(PROGRAM_INFO);
 	pinfo->set_path(path);
 	pinfo->set_inherits(inherits);
 	pinfo->set_includes(includes);
-
 	pinfo->set_inherited_constructors(ctors);
 	pinfo->set_constructor(constructor);
 	pinfo->set_inherited_destructors(dtors);
@@ -202,34 +231,6 @@ private string *fetch_from_initd(object initd, string path)
 	}
 
 	return ({ err, ctor, dtor });
-}
-
-private void compiled(string owner, string path, string *source, string *inherited)
-{
-	object initd;
-	string err;
-	string ctor;
-	string dtor;
-
-	ACCESS_CHECK(KERNEL());
-
-	initd = find_object(USR_DIR + "/" + owner + "/initd");
-
-	if (initd) {
-		string *ret;
-
-		ret = fetch_from_initd(initd, path);
-
-		err = ret[0];
-		ctor = ret[1];
-		dtor = ret[2];
-	}
-
-	register_program(path, inherited, includes, ctor, dtor);
-
-	if (err) {
-		error(err);
-	}
 }
 
 private mixed query_include_file(string compiled, string from, string path)
@@ -263,10 +264,55 @@ private mixed query_include_file(string compiled, string from, string path)
 	return path;
 }
 
+private void scan_programs(string path, object libqueue, object objqueue)
+{
+	string *names;
+	int *sizes;
+	mixed **dir;
+	int i;
+
+	path = find_object(DRIVER)->normalize_path(path, "/");
+
+	dir = get_dir(path + "/*");
+	names = dir[0];
+	sizes = dir[1];
+
+	for (i = 0; i < sizeof(names); i++) {
+		string name;
+		string opath;
+
+		name = names[i];
+
+		if (sizes[i] == -2) {
+			scan_programs(path + "/" + name, libqueue, objqueue);
+			continue;
+		}
+
+		if (strlen(name) > 2 && name[strlen(name) - 2 ..] == ".c") {
+			string opath;
+			mixed *status;
+			int oindex;
+
+			opath = path + "/" + name[0 .. strlen(name) - 3];
+
+			status = status(opath);
+
+			/* unregistered */
+			if (status) {
+				LOGD->post_message("object", LOG_DEBUG,
+					"Found object: " + opath);
+			}
+		}
+	}
+}
+
 /* kernel library hooks */
 
 void compiling(string path)
 {
+	LOGD->post_message("object", LOG_DEBUG,
+		"Compiling: " + path);
+
 	ACCESS_CHECK(KERNEL());
 
 	if (path == DRIVER || path == AUTO) {
@@ -283,16 +329,20 @@ void compiling(string path)
 void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
+	string err;
+
+	LOGD->post_message("object", LOG_DEBUG,
+		"Compile: " + object_name(obj));
 
 	ACCESS_CHECK(KERNEL());
 
 	path = object_name(obj);
 
 	if (path != DRIVER) {
-		inherited |= ({ "AUTO" });
+		inherited |= ({ AUTO });
 	}
 
-	compiled(owner, path, source, inherited);
+	register_program(path, inherited, includes, nil, nil);
 
 	if (upgrading) {
 		upgrading = 0;
@@ -303,13 +353,35 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 void compile_lib(string owner, string path, string *source, string inherited ...)
 {
+	string err;
+	string ctor;
+	string dtor;
+	object initd;
+
+	LOGD->post_message("object", LOG_DEBUG,
+		"Compile_lib: " + path);
+
 	ACCESS_CHECK(KERNEL());
 
 	if (path != AUTO) {
-		inherited |= ({ "AUTO" });
+		inherited |= ({ AUTO });
 	}
 
-	compiled(owner, path, source, inherited);
+	if (initd = find_object(USR_DIR + "/" + owner + "/initd")) {
+		string *ret;
+
+		ret = fetch_from_initd(initd, path);
+
+		err = ret[0];
+		ctor = ret[1];
+		dtor = ret[2];
+	}
+
+	register_program(path, inherited, includes, ctor, dtor);
+
+	if (err) {
+		error(err);
+	}
 }
 
 void compile_failed(string owner, string path)

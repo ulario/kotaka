@@ -57,15 +57,15 @@ static int call_out(string function, mixed delay, mixed args ...)
 	if (!this_object()) {
 		error("Cannot call_out from destructed object");
 	}
-	
+
 	if (!function_object(function, this_object())) {
-		error("Callout to undefined function " + function);
+		error("Call_out to undefined function " + function);
 	}
-	
+
 	if (!SYSTEM() && free_callouts() < 20) {
 		error("Too many callouts");
 	}
-	
+
 	return ::call_out(function, delay, args ...);
 }
 #endif
@@ -77,9 +77,9 @@ static int call_out(string function, mixed delay, mixed args ...)
 static object compile_object(mixed args ...)
 {
 	object obj;
-	
+
 	obj = find_object(args[0]);
-	
+
 	if (!SYSTEM() && !obj && free_objects() < 50) {
 		error("Too many objects");
 	}
@@ -90,14 +90,14 @@ static object compile_object(mixed args ...)
 static object load_object(mixed args ...)
 {
 	object obj;
-	
+
 	obj = find_object(args[0]);
-	
+
 	if (obj) {
 		return obj;
 	}
 
-	if (!SYSTEM() && !find_object(args[0]) && free_objects() < 50) {
+	if (!SYSTEM() && !obj && free_objects() < 50) {
 		error("Too many objects");
 	}
 
@@ -126,11 +126,10 @@ private void _F_call_constructors()
 
 	string base;
 
-	pinfo = PROGRAMD->query_program_info(status(this_object())[O_INDEX]);
+	pinfo = OBJECTD->query_program_info(status(this_object())[O_INDEX]);
 
 	if (!pinfo) {
-		INITD->message("No program info for " + object_name(this_object()));
-		return;
+		error("No program info for " + object_name(this_object()));
 	}
 
 	ctors = pinfo->query_inherited_constructors();
@@ -150,11 +149,10 @@ private void _F_call_destructors()
 
 	string base;
 
-	pinfo = PROGRAMD->query_program_info(status(this_object())[O_INDEX]);
+	pinfo = OBJECTD->query_program_info(status(this_object())[O_INDEX]);
 
 	if (!pinfo) {
-		INITD->message("No program info for " + object_name(this_object()));
-		return;
+		error("No program info for " + object_name(this_object()));
 	}
 
 	dtors = pinfo->query_inherited_destructors();

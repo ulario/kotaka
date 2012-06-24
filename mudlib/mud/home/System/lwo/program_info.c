@@ -63,63 +63,63 @@ static void create(int clone)
 void set_path(string new_path)
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	path = new_path;
 }
 
 void set_inherits(int *new_inherits)
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	inherits = new_inherits;
 }
 
 void set_includes(string *new_includes)
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	includes = new_includes;
 }
 
 void set_destructed()
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	destructed = 1;
 }
 
 void set_ghost()
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	ghost = 1;
 }
 
 void set_constructor(string new_constructor)
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	constructor = new_constructor;
 }
 
 void set_destructor(string new_destructor)
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	destructor = new_destructor;
 }
 
 void set_inherited_constructors(string *constructors)
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	inherited_constructors = constructors;
 }
 
 void set_inherited_destructors(string *destructors)
 {
 	ACCESS_CHECK(SYSTEM());
-	
+
 	inherited_destructors = destructors;
 }
 

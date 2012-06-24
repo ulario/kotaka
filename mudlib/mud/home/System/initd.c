@@ -55,15 +55,15 @@ private void initialize()
 
 	load_object(KERNELD);
 	configure_klib();
+
 	KERNELD->set_global_access("Kotaka", 1);
 	KERNELD->set_global_access("System", 1);
 
 	load_object("lwo/program_info");
-	load_object(PROGRAMD);
 	load_object(OBJECTD);
 
 	OBJECTD->enable();
-	OBJECTD->scan_dirs("/");
+	OBJECTD->discover_programs();
 
 	load_dir("closed", 1);
 	load_dir("lib", 1);
