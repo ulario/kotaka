@@ -229,15 +229,15 @@ object query_object_info(int oindex)
 	return objdb->get_element(oindex);
 }
 
-object query_inheritors(int oindex)
+object query_inheriters(int oindex)
 {
-	object inheritors;
+	object inheriters;
 	object indices;
 	int i, sz;
 
 	indices = objdb->get_indices();
-	inheritors = new_object(BIGSTRUCT_ARRAY_LWO);
-	inheritors->grant_access(previous_object(), READ_ACCESS);
+	inheriters = new_object(BIGSTRUCT_ARRAY_LWO);
+	inheriters->grant_access(previous_object(), READ_ACCESS);
 
 	sz = indices->get_size();
 
@@ -256,11 +256,38 @@ object query_inheritors(int oindex)
 		);
 
 		if (sizeof(pinfo->query_inherits() & ({ oindex }))) {
-			inheritors->push_back(suboindex);
+			inheriters->push_back(suboindex);
 		}
 	}
 
-	return inheritors;
+	return inheriters;
+}
+
+object query_includers(string path)
+{
+	object includers;
+	object indices;
+	int i, sz;
+
+	indices = objdb->get_indices();
+	includers = new_object(BIGSTRUCT_ARRAY_LWO);
+	includers->grant_access(previous_object(), READ_ACCESS);
+
+	sz = indices->get_size();
+
+	for (i = 0; i < sz; i++) {
+		object pinfo;
+		int suboindex;
+
+		suboindex = indices->get_element(i);
+		pinfo = objdb->get_element(suboindex);
+
+		if (sizeof(pinfo->query_includes() & ({ path }))) {
+			includers->push_back(suboindex);
+		}
+	}
+
+	return includers;
 }
 
 void recompile_kernel_library()
