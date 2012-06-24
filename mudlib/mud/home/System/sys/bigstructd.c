@@ -1,10 +1,9 @@
 #include <kotaka/bigstruct.h>
 #include <kotaka/privilege.h>
+#include <kotaka/paths.h>
 #include <kernel/access.h>
 
-/*
-TODO:  Track all bigstruct objects
-*/
+inherit SECOND_AUTO;
 
 object new_bigstruct(string type)
 {

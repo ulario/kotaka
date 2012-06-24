@@ -4,6 +4,8 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
+inherit SECOND_AUTO;
+
 static void create()
 {
 }
