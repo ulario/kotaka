@@ -14,6 +14,47 @@ static void create(int clone)
 	}
 }
 
+
+static int limited_login(string str, object conn)
+{
+	int newmode;
+
+	ACCESS_CHECK(previous_program() == LIB_CONN
+		|| calling_object() == this_object());
+
+	connection(conn);
+	::open(nil);
+
+	return ::receive_message(str);
+}
+
+static void limited_logout(int quit)
+{
+	::logout(quit);
+}
+
+static int limited_receive_message(string str)
+{
+	return ::receive_message(str);
+}
+
+static int limited_message_done()
+{
+	return ::message_done();
+}
+
+#ifndef SYS_NETWORKING
+static void limited_open_datagram()
+{
+	::open_datagram();
+}
+#endif
+
+static void limited_receive_datagram(string packet)
+{
+	::receive_datagram(packet);
+}
+
 int login(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
@@ -56,44 +97,4 @@ void receive_datagram(string packet)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	call_limited("limited_receive_datagram", packet);
-}
-
-static int limited_login(string str, object conn)
-{
-	int newmode;
-
-	ACCESS_CHECK(previous_program() == LIB_CONN
-		|| calling_object() == this_object());
-
-	connection(conn);
-	::open(nil);
-
-	return ::receive_message(str);
-}
-
-static void limited_logout(int quit)
-{
-	::logout(quit);
-}
-
-static int limited_receive_message(string str)
-{
-	return ::receive_message(str);
-}
-
-static int limited_message_done()
-{
-	return ::message_done();
-}
-
-#ifndef SYS_NETWORKING
-static void limited_open_datagram()
-{
-	::open_datagram();
-}
-#endif
-
-static void limited_receive_datagram(string packet)
-{
-	::receive_datagram(packet);
 }
