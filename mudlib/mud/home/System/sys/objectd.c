@@ -1,4 +1,5 @@
 #include <kernel/kernel.h>
+#include <kernel/access.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kotaka/bigstruct.h>
@@ -28,6 +29,7 @@ void disable();
 void enable();
 void discover_objects();
 object query_object_info(int oindex);
+object query_inheritors(int oindex);
 
 /* internal functions */
 
@@ -105,7 +107,7 @@ private void register_object(string path, string *inherits,
 
 	pinfo = new_object(OBJECT_INFO);
 	pinfo->set_path(path);
-	pinfo->set_inherits(inherits);
+	pinfo->set_inherits(oindices);
 	pinfo->set_includes(includes);
 	pinfo->set_inherited_constructors(ctors);
 	pinfo->set_constructor(constructor);
@@ -222,9 +224,43 @@ void disable()
 	DRIVER->set_object_manager(nil);
 }
 
-object query_object_info(int index)
+object query_object_info(int oindex)
 {
-	return objdb->get_element(index);
+	return objdb->get_element(oindex);
+}
+
+object query_inheritors(int oindex)
+{
+	object inheritors;
+	object indices;
+	int i, sz;
+
+	indices = objdb->get_indices();
+	inheritors = new_object(BIGSTRUCT_ARRAY_LWO);
+	inheritors->grant_access(previous_object(), READ_ACCESS);
+
+	sz = indices->get_size();
+
+	for (i = 0; i < sz; i++) {
+		object pinfo;
+		int suboindex;
+
+		suboindex = indices->get_element(i);
+		pinfo = objdb->get_element(suboindex);
+
+		LOGD->post_message("objectd", LOG_DEBUG, "Checking #" + suboindex);
+		LOGD->post_message("objectd", LOG_DEBUG,
+			"Inherits: " + STRINGD->mixed_sprint(
+				pinfo->query_inherits()
+			)
+		);
+
+		if (sizeof(pinfo->query_inherits() & ({ oindex }))) {
+			inheritors->push_back(suboindex);
+		}
+	}
+
+	return inheritors;
 }
 
 void recompile_kernel_library()
