@@ -49,9 +49,16 @@ mapping reblocked;	/*< objects that were already manually blocked */
 /* Declarations */
 /****************/
 
-static void create();
+/* internal */
 
+static void create();
 int login(string str);
+private object query_select(string str, object conn);
+private void register_with_klib_userd();
+private void unregister_with_klib_userd();
+
+/* external */
+
 void reboot();
 void clear_ports();
 
@@ -63,9 +70,6 @@ int free_users();
 void block_connections();
 void unblock_connections();
 int query_connection_count();
-private object query_select(string str, object conn);
-private void register_with_klib_userd();
-private void unregister_with_klib_userd();
 
 /* basic */
 
