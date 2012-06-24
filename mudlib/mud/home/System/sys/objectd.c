@@ -19,6 +19,7 @@ string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
 
 object progdb;		/* program database */
+object clonedb;		/* clone database */
 
 /* external functions */
 
@@ -55,6 +56,157 @@ int forbid_inherit(string from, string path, int priv);
 /***************/
 /* Definitions */
 /***************/
+
+/* internal */
+
+static void create()
+{
+	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	progdb->set_type(T_INT);
+}
+
+private void register_program(string path, string *inherits,
+	string *includes, string constructor, string destructor)
+{
+	int i;
+	int sz;
+	int oindex;
+	object pinfo;
+	int *oindices;
+	string *ctors;
+	string *dtors;
+
+	ACCESS_CHECK(SYSTEM());
+
+	oindex = status(path)[O_INDEX];
+
+	sz = sizeof(inherits);
+	oindices = allocate(sz);
+	ctors = ({ });
+	dtors = ({ });
+
+	for (i = 0; i < sz; i++) {
+		object subpinfo;
+		int suboindex;
+
+		suboindex = status(inherits[i])[O_INDEX];
+		oindices[i] = suboindex;
+		subpinfo = progdb->get_element(suboindex);
+
+		if (subpinfo) {
+			ctors |= subpinfo->query_inherited_constructors();
+			ctors |= ({ subpinfo->query_constructor() });
+			dtors |= subpinfo->query_inherited_destructors();
+			dtors |= ({ subpinfo->query_destructor() });
+		}
+	}
+
+	ctors -= ({ nil });
+	dtors -= ({ nil });
+
+	pinfo = new_object(PROGRAM_INFO);
+	pinfo->set_path(path);
+	pinfo->set_inherits(inherits);
+	pinfo->set_includes(includes);
+	pinfo->set_inherited_constructors(ctors);
+	pinfo->set_constructor(constructor);
+	pinfo->set_inherited_destructors(dtors);
+	pinfo->set_destructor(destructor);
+	progdb->set_element(oindex, pinfo);
+}
+
+private string *fetch_from_initd(object initd, string path)
+{
+	string ctor;
+	string dtor;
+	string err;
+
+	err = catch(ctor = initd->query_constructor(path));
+
+	if (!err) {
+		err = catch(dtor = initd->query_destructor(path));
+	}
+
+	return ({ err, ctor, dtor });
+}
+
+private mixed query_include_file(string compiled, string from, string path)
+{
+	string creator;
+	object initd;
+
+	/* don't allow bypass of standard file */
+	if (path == "/include/std.h") {
+		return path;
+	}
+
+	creator = find_object(DRIVER)->creator(compiled);
+
+	/* System has to be direct */
+	if (creator == "System") {
+		return path;
+	}
+
+	/* don't allow bypass of standard auto */
+	if (creator != "System" &&
+		path == "/include/AUTO" &&
+		from == "/include/std.h") {
+		return USR_DIR + "/System/include/second_auto.h";
+	}
+
+	if (initd = find_object(USR_DIR + "/" + creator + "/initd")) {
+		return initd->include_file(compiled, from, path);
+	}
+
+	return path;
+}
+
+private void scan_programs(string path, object libqueue, object objqueue)
+{
+	string *names;
+	int *sizes;
+	mixed **dir;
+	int i;
+
+	path = find_object(DRIVER)->normalize_path(path, "/");
+
+	dir = get_dir(path + "/*");
+	names = dir[0];
+	sizes = dir[1];
+
+	for (i = 0; i < sizeof(names); i++) {
+		string name;
+		string opath;
+
+		name = names[i];
+
+		if (sizes[i] == -2) {
+			scan_programs(path + "/" + name, libqueue, objqueue);
+			continue;
+		}
+
+		if (strlen(name) > 2 && name[strlen(name) - 2 ..] == ".c") {
+			string opath;
+			mixed *status;
+			int oindex;
+
+			opath = path + "/" + name[0 .. strlen(name) - 3];
+
+			status = status(opath);
+
+			/* unregistered */
+			if (!status) {
+				continue;
+			}
+
+			if (sscanf(opath, "%*s" + INHERITABLE_SUBDIR)) {
+				libqueue->push_back(opath);
+			} else {
+				objqueue->push_back(opath);
+			}
+		}
+	}
+}
 
 /* external */
 
@@ -225,157 +377,6 @@ void discover_programs()
 			objqueue->pop_front();
 
 			compile_object(path);
-		}
-	}
-}
-
-/* internal */
-
-static void create()
-{
-	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	progdb->set_type(T_INT);
-}
-
-private void register_program(string path, string *inherits,
-	string *includes, string constructor, string destructor)
-{
-	int i;
-	int sz;
-	int oindex;
-	object pinfo;
-	int *oindices;
-	string *ctors;
-	string *dtors;
-
-	ACCESS_CHECK(SYSTEM());
-
-	oindex = status(path)[O_INDEX];
-
-	sz = sizeof(inherits);
-	oindices = allocate(sz);
-	ctors = ({ });
-	dtors = ({ });
-
-	for (i = 0; i < sz; i++) {
-		object subpinfo;
-		int suboindex;
-
-		suboindex = status(inherits[i])[O_INDEX];
-		oindices[i] = suboindex;
-		subpinfo = progdb->get_element(suboindex);
-
-		if (subpinfo) {
-			ctors |= subpinfo->query_inherited_constructors();
-			ctors |= ({ subpinfo->query_constructor() });
-			dtors |= subpinfo->query_inherited_destructors();
-			dtors |= ({ subpinfo->query_destructor() });
-		}
-	}
-
-	ctors -= ({ nil });
-	dtors -= ({ nil });
-
-	pinfo = new_object(PROGRAM_INFO);
-	pinfo->set_path(path);
-	pinfo->set_inherits(inherits);
-	pinfo->set_includes(includes);
-	pinfo->set_inherited_constructors(ctors);
-	pinfo->set_constructor(constructor);
-	pinfo->set_inherited_destructors(dtors);
-	pinfo->set_destructor(destructor);
-	progdb->set_element(oindex, pinfo);
-}
-
-private string *fetch_from_initd(object initd, string path)
-{
-	string ctor;
-	string dtor;
-	string err;
-
-	err = catch(ctor = initd->query_constructor(path));
-
-	if (!err) {
-		err = catch(dtor = initd->query_destructor(path));
-	}
-
-	return ({ err, ctor, dtor });
-}
-
-private mixed query_include_file(string compiled, string from, string path)
-{
-	string creator;
-	object initd;
-
-	/* don't allow bypass of standard file */
-	if (path == "/include/std.h") {
-		return path;
-	}
-
-	creator = find_object(DRIVER)->creator(compiled);
-
-	/* System has to be direct */
-	if (creator == "System") {
-		return path;
-	}
-
-	/* don't allow bypass of standard auto */
-	if (creator != "System" &&
-		path == "/include/AUTO" &&
-		from == "/include/std.h") {
-		return USR_DIR + "/System/include/second_auto.h";
-	}
-
-	if (initd = find_object(USR_DIR + "/" + creator + "/initd")) {
-		return initd->include_file(compiled, from, path);
-	}
-
-	return path;
-}
-
-private void scan_programs(string path, object libqueue, object objqueue)
-{
-	string *names;
-	int *sizes;
-	mixed **dir;
-	int i;
-
-	path = find_object(DRIVER)->normalize_path(path, "/");
-
-	dir = get_dir(path + "/*");
-	names = dir[0];
-	sizes = dir[1];
-
-	for (i = 0; i < sizeof(names); i++) {
-		string name;
-		string opath;
-
-		name = names[i];
-
-		if (sizes[i] == -2) {
-			scan_programs(path + "/" + name, libqueue, objqueue);
-			continue;
-		}
-
-		if (strlen(name) > 2 && name[strlen(name) - 2 ..] == ".c") {
-			string opath;
-			mixed *status;
-			int oindex;
-
-			opath = path + "/" + name[0 .. strlen(name) - 3];
-
-			status = status(opath);
-
-			/* unregistered */
-			if (!status) {
-				continue;
-			}
-
-			if (sscanf(opath, "%*s" + INHERITABLE_SUBDIR)) {
-				libqueue->push_back(opath);
-			} else {
-				objqueue->push_back(opath);
-			}
 		}
 	}
 }
