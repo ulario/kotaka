@@ -261,8 +261,6 @@ private void register_program(string path, string *inherits,
 		object subpinfo;
 		int suboindex;
 
-		LOGD->post_message("object", LOG_DEBUG, "Inheriting: " + inherits[i]);
-
 		suboindex = status(inherits[i])[O_INDEX];
 		oindices[i] = suboindex;
 		subpinfo = progdb->get_element(suboindex);
@@ -348,14 +346,11 @@ private void scan_programs(string path, object libqueue, object objqueue)
 	names = dir[0];
 	sizes = dir[1];
 
-	LOGD->post_message("object", LOG_DEBUG, "Inside directory " + path + ", checking paths: " + implode(names, ", "));
-
 	for (i = 0; i < sizeof(names); i++) {
 		string name;
 		string opath;
 
 		name = names[i];
-		LOGD->post_message("object", LOG_DEBUG, "Checking path: " + path + "/" + name);
 
 		if (sizes[i] == -2) {
 			scan_programs(path + "/" + name, libqueue, objqueue);
@@ -373,13 +368,8 @@ private void scan_programs(string path, object libqueue, object objqueue)
 
 			/* unregistered */
 			if (!status) {
-				LOGD->post_message("object", LOG_DEBUG,
-					"Object not found: " + opath);
 				continue;
 			}
-
-			LOGD->post_message("object", LOG_DEBUG,
-				"Found object: " + opath);
 
 			if (sscanf(opath, "%*s" + INHERITABLE_SUBDIR)) {
 				libqueue->push_back(opath);
@@ -394,9 +384,6 @@ private void scan_programs(string path, object libqueue, object objqueue)
 
 void compiling(string path)
 {
-	LOGD->post_message("object", LOG_DEBUG,
-		"Compiling: " + path);
-
 	ACCESS_CHECK(KERNEL());
 
 	if (path == DRIVER || path == AUTO) {
@@ -414,9 +401,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
 	string err;
-
-	LOGD->post_message("object", LOG_DEBUG,
-		"Compile: " + object_name(obj));
 
 	ACCESS_CHECK(KERNEL());
 
@@ -446,9 +430,6 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	string ctor;
 	string dtor;
 	object initd;
-
-	LOGD->post_message("object", LOG_DEBUG,
-		"Compile_lib: " + path);
 
 	ACCESS_CHECK(KERNEL());
 
@@ -504,7 +485,6 @@ void destruct(string owner, object obj)
 		pinfo = progdb->get_element(status(obj)[O_INDEX]);
 
 		if (!pinfo) {
-			LOGD->post_message("object", LOG_DEBUG, "Destructing ghost: " + path);
 			return;
 		}
 
@@ -521,7 +501,6 @@ void destruct_lib(string owner, string path)
 	pinfo = progdb->get_element(status(path)[O_INDEX]);
 
 	if (!pinfo) {
-		LOGD->post_message("object", LOG_DEBUG, "Destructing ghost: " + path);
 		return;
 	}
 
