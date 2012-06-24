@@ -24,7 +24,7 @@ atomic static void atomic_logout(int quit)
 	::logout(quit);
 }
 
-static int atomic_receive_message(string str)
+atomic int atomic_receive_message(string str)
 {
 	return ::receive_message(str);
 }
