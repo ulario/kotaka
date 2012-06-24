@@ -14,34 +14,34 @@ static void create(int clone)
 	}
 }
 
-atomic static int atomic_login(string str)
+private atomic int atomic_login(string str)
 {
 	return ::login(str);
 }
 
-atomic static void atomic_logout(int quit)
+private atomic void atomic_logout(int quit)
 {
 	::logout(quit);
 }
 
-atomic int atomic_receive_message(string str)
+private atomic int atomic_receive_message(string str)
 {
 	return ::receive_message(str);
 }
 
-atomic static int atomic_message_done()
+private atomic int atomic_message_done()
 {
 	return ::message_done();
 }
 
 # ifndef SYS_NETWORKING
-atomic static void atomic_open_datagram()
+private atomic void atomic_open_datagram()
 {
 	::open_datagram();
 }
 # endif
 
-atomic static void atomic_receive_datagram(string packet)
+private atomic void atomic_receive_datagram(string packet)
 {
 	::receive_datagram(packet);
 }
