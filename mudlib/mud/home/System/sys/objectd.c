@@ -10,6 +10,8 @@
 
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
+int upgrading;		/* are we upgrading or making a new compile? */
+
 object progdb;		/* program database */
 
 /* external functions */
@@ -25,6 +27,7 @@ void discover_programs();
 static void create();
 private void scan_programs(string path);
 private void register_program(string path, string *inherits, string *includes);
+private string *fetch_from_initd(object initd, string path);
 
 /* kernel library hooks */
 
@@ -110,85 +113,17 @@ void recompile_kernel_library()
 
 void recompile_everything()
 {
-	ACCESS_CHECK(PRIVILEGED() || KADMIN());
+	ACCESS_CHECK(PRIVILEGED());
 
-	LOGD->post_message("system", LOG_NOTICE,
-		"Global recompile beginning...");
-
-	rlimits(0; -1) {
-		object libs;
-		object objs;
-
-		libs = new_object(BIGSTRUCT_DEQUE_LWO);
-		objs = new_object(BIGSTRUCT_DEQUE_LWO);
-
-		catch {
-			int i;
-			object pids;
-
-			int l;
-			int o;
-			int sz;
-
-			grpending = 0;
-			pids = PROGRAMD->query_program_numbers();
-			sz = pids->get_size();
-			
-			for (i = 0; i < sz; i++) {
-				string path;
-				object pinfo;
-
-				pinfo = PROGRAMD->query_program_info(pids->get_element(i));
-				path = pinfo->query_path();
-
-				/* do not tamper with the klib */
-				if (sscanf(path, "/kernel/%*s")) {
-					continue;
-				}
-
-				if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
-					libs->push_back(path);
-				} else {
-					objs->push_back(path);
-				}
-			}
-
-			while (!libs->empty()) {
-				string path;
-
-				path = libs->get_front();
-				libs->pop_front();
-
-				if (status(path)) {
-					destruct_object(path);
-				}
-			}
-
-			while (!objs->empty()) {
-				string path;
-
-				path = objs->get_front();
-				objs->pop_front();
-
-				if (status(path)) {
-					catch {
-						compile_object(path);
-					}
-				}
-			}
-		}
-	}
-
-	LOGD->post_message("system", LOG_NOTICE,
-		"Global recompile completed.");
+	error("Not yet implemented");
 }
 
 /* internal */
 
 static void create()
 {
-	progdb = clone_object(BIGSTRUCT_
-	progdb = 
+	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	progdb->set_type(T_INT);
 }
 
 void disable()
@@ -205,22 +140,129 @@ void enable()
 	DRIVER->set_object_manager(this_object());
 }
 
+private void register_program(string path, string *inherits,
+	string *includes, string constructor, string destructor)
+{
+	int i;
+	int sz;
+	int oindex;
+	object pinfo;
+	int *oindices;
+	string *ctors;
+	string *dtors;
+
+	ACCESS_CHECK(SYSTEM());
+
+	oindex = status(path)[O_INDEX];
+
+	sz = sizeof(inherits);
+	oindices = allocate(sz);
+	ctors = ({ });
+	dtors = ({ });
+
+	for (i = 0; i < sz; i++) {
+		object subpinfo;
+		int suboindex;
+
+		oindices[i] = suboindex = status(inherits[i])[O_INDEX];
+		subpinfo = progdb->get_element(suboindex);
+		ctors |= subpinfo->query_inherited_constructors();
+		ctors |= ({ subpinfo->query_constructor() });
+		dtors |= subpinfo->query_inherited_destructors();
+		dtors |= ({ subpinfo->query_destructor() });
+	}
+
+	pinfo = new_object(PROGRAM_INFO);
+	pinfo->set_path(path);
+	pinfo->set_inherits(inherits);
+	pinfo->set_includes(includes);
+
+	pinfo->set_inherited_constructors(ctors);
+	pinfo->set_constructor(constructor);
+	pinfo->set_inherited_destructors(dtors);
+	pinfo->set_destructor(destructor);
+	progdb->set_element(oindex, pinfo);
+}
+
+private string *fetch_from_initd(object initd, string path)
+{
+	string ctor;
+	string dtor;
+	string err;
+
+	err = catch(ctor = initd->query_constructor(path));
+
+	if (!err) {
+		err = catch(dtor = initd->query_destructor(path));
+	}
+
+	return ({ err, ctor, dtor });
+}
+
 /* kernel library hooks */
 
 void compiling(string path)
 {
+	object obj;
+
+	ACCESS_CHECK(KERNEL());
+
+	if (path == DRIVER || path == AUTO) {
+		includes = ({ });
+	} else {
+		includes = ({ "/include/std.h" });
+	}
+
+	if (find_object(path)) {
+		upgrading = 1;
+	}
 }
 
 void compile(string owner, object obj, string *source, string inherited ...)
 {
+	object initd;
+	string err;
+	string ctor;
+	string dtor;
+	string path;
+
+	ACCESS_CHECK(KERNEL());
+
+	path = object_name(obj);
+
+	if (upgrading) {
+		obj->upgrading();
+	}
+
+	initd = find_object(USR_DIR + "/" + owner + "/initd");
+
+	if (initd) {
+		string *ret;
+
+		ret = fetch_from_initd(initd, path);
+
+		err = ret[0];
+		ctor = ret[1];
+		dtor = ret[2];
+	}
+
+	register_program(object_name(obj), inherited, includes, ctor, dtor);
+
+	if (err) {
+		error(err);
+	}
 }
 
 void compile_lib(string owner, string path, string *source, string inherited ...)
 {
+	ACCESS_CHECK(KERNEL());
+
+	register_program(object_name(obj), inherited, includes, nil, nil);
 }
 
 void compile_failed(string owner, string path)
 {
+	upgrading = 0;
 }
 
 void clone(string owner, object obj)
