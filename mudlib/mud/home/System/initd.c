@@ -73,7 +73,7 @@ private void initialize()
 
 	TRASHD->enable();
 	PORTD->enable();
-//	ERRORD->enable();
+	ERRORD->enable();
 	STATUSD->enable();
 
 	/* Booted up */
