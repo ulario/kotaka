@@ -28,6 +28,7 @@ static void create();
 private void scan_programs(string path);
 private void register_program(string path, string *inherits, string *includes);
 private string *fetch_from_initd(object initd, string path);
+private void compiled();
 
 /* kernel library hooks */
 
@@ -199,26 +200,7 @@ private string *fetch_from_initd(object initd, string path)
 	return ({ err, ctor, dtor });
 }
 
-/* kernel library hooks */
-
-void compiling(string path)
-{
-	object obj;
-
-	ACCESS_CHECK(KERNEL());
-
-	if (path == DRIVER || path == AUTO) {
-		includes = ({ });
-	} else {
-		includes = ({ "/include/std.h" });
-	}
-
-	if (find_object(path)) {
-		upgrading = 1;
-	}
-}
-
-void compile(string owner, object obj, string *source, string inherited ...)
+private void compiled(string owner, string path, string *source, string inherited ...)
 {
 	object initd;
 	string err;
@@ -227,12 +209,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	string path;
 
 	ACCESS_CHECK(KERNEL());
-
-	path = object_name(obj);
-
-	if (upgrading) {
-		obj->upgrading();
-	}
 
 	initd = find_object(USR_DIR + "/" + owner + "/initd");
 
@@ -253,11 +229,63 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 }
 
-void compile_lib(string owner, string path, string *source, string inherited ...)
+/* kernel library hooks */
+
+void compiling(string path)
 {
 	ACCESS_CHECK(KERNEL());
 
-	register_program(object_name(obj), inherited, includes, nil, nil);
+	if (path == DRIVER || path == AUTO) {
+		includes = ({ });
+	} else {
+		includes = ({ "/include/std.h" });
+	}
+
+	if (find_object(path)) {
+		upgrading = 1;
+	}
+}
+
+void compile(string owner, object obj, string *source, string inherited ...)
+{
+	string path;
+
+	ACCESS_CHECK(KERNEL());
+
+	path = object_name(obj);
+
+	if (path != DRIVER) {
+		inherited |= ({ "AUTO" });
+	}
+
+	compiled(owner, path, source, inherited);
+
+	if (upgrading) {
+		upgrading = 0;
+
+		obj->upgrading();
+	}
+}
+
+void compile_lib(string owner, string path, string *source, string inherited ...)
+{
+	string path;
+
+	ACCESS_CHECK(KERNEL());
+
+	path = object_name(obj);
+
+	if (path != AUTO) {
+		inherited |= ({ "AUTO" });
+	}
+
+	compiled(owner, path, source, inherited);
+
+	if (upgrading) {
+		upgrading = 0;
+
+		obj->upgrading();
+	}
 }
 
 void compile_failed(string owner, string path)
@@ -267,32 +295,40 @@ void compile_failed(string owner, string path)
 
 void clone(string owner, object obj)
 {
+	ACCESS_CHECK(KERNEL());
 }
 
 void destruct(string owner, object obj)
 {
+	ACCESS_CHECK(KERNEL());
 }
 
 void destruct_lib(string owner, string path)
 {
+	ACCESS_CHECK(KERNEL());
 }
 
 void remove_program(string owner, string path, int timestamp, int index)
 {
+	ACCESS_CHECK(KERNEL());
 }
 
 mixed include_file(string compiled, string from, string path)
 {
+	ACCESS_CHECK(KERNEL());
 }
 
 int touch(object obj, string function)
 {
+	ACCESS_CHECK(KERNEL());
 }
 
 int forbid_call(string path)
 {
+	ACCESS_CHECK(KERNEL());
 }
 
 int forbid_inherit(string from, string path, int priv)
 {
+	ACCESS_CHECK(KERNEL());
 }
