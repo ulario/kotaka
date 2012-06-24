@@ -24,6 +24,12 @@ static void create()
 /*********************************/
 
 /*
+
+LIB_USER destructs on:
+
+*/
+
+/*
 login
 logout
 receive_message
@@ -48,21 +54,6 @@ void logout(int quit)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
-
-	/* apparently, to say we're going linkdead, we have to mean it */
-	
-	/* 0 means linkdead, 1 means destruct/quit */
-
-	if (quit) {
-		/* we won't be destructed */
-	} else {
-		/* we will be klib destructed */
-
-		/* apparently we have to be honest to the Klib here.
-
-		We cannot return linkdead, unless we also allow
-		the klib to destruct us */
-	}
 
 	conn::close(nil, quit);
 
@@ -114,6 +105,27 @@ void receive_datagram(string packet)
 /***************************************/
 /* connection hooks (user::conn->func) */
 /***************************************/
+
+/*
+
+LIB_CONN destructs on:
+
+set_mode
+	on MODE_DISCONNECT
+
+open
+	if userd returns -1 for timeout
+
+close
+	if not !dest
+
+disconnect
+	unconditional
+
+reboot
+	unconditional
+
+*/
 
 /*
 message
