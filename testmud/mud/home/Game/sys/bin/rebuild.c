@@ -9,11 +9,10 @@ void main(string args)
 
 	user = query_user();
 
-	if (user->query_class() < 2) {
+	if (user->query_class() < 1) {
 		send_out("You do not have sufficient access rights to rebuild.\n");
 		return;
 	}
 
-	OBJECTD->klib_recompile();
-	OBJECTD->global_recompile();
+	OBJECTD->recompile_everything();
 }
