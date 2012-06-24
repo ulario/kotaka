@@ -31,6 +31,7 @@ private void set_status(string str);
 private void configure_klib();
 private void boot_subsystem(string subsystem);
 private void configure_logging();
+private void check_config();
 
 private void initialize()
 {
@@ -86,7 +87,9 @@ private void initialize()
 
 static void create()
 {
-	rlimits (500; -1) {
+	check_config();
+
+	rlimits (0; -1) {
 		catch {
 			initialize();
 		} : {
@@ -293,4 +296,11 @@ int forbid_inherit(string from, string path, int priv)
 	}
 
 	return 0;
+}
+
+private void check_config()
+{
+	if (status(ST_ARRAYSIZE) < 256) {
+		error("Array size setting is too small");
+	}
 }
