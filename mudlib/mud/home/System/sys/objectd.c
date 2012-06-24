@@ -4,6 +4,7 @@
 #include <kotaka/privilege.h>
 #include <kotaka/bigstruct.h>
 #include <kotaka/log.h>
+#include <kotaka/assert.h>
 #include <type.h>
 #include <status.h>
 
@@ -248,13 +249,6 @@ object query_inheriters(int oindex)
 		suboindex = indices->get_element(i);
 		pinfo = objdb->get_element(suboindex);
 
-		LOGD->post_message("objectd", LOG_DEBUG, "Checking #" + suboindex);
-		LOGD->post_message("objectd", LOG_DEBUG,
-			"Inherits: " + STRINGD->mixed_sprint(
-				pinfo->query_inherits()
-			)
-		);
-
 		if (sizeof(pinfo->query_inherits() & ({ oindex }))) {
 			inheriters->push_back(suboindex);
 		}
@@ -418,6 +412,7 @@ void discover_objects()
 		objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
 		LOGD->post_message("object", LOG_DEBUG, "Discovering objects");
+
 		scan_objects("/", libqueue, objqueue);
 
 		LOGD->post_message("object", LOG_DEBUG, "Resetting objects");
@@ -527,13 +522,21 @@ void compile_failed(string owner, string path)
 
 void clone(string owner, object obj)
 {
+	object pinfo;
+
 	ACCESS_CHECK(KERNEL());
+
+	pinfo = objdb->get_element(status(obj)[O_INDEX]);
+	ASSERT(pinfo);
+
+	pinfo->add_clone(obj);
 }
 
 void destruct(string owner, object obj)
 {
 	int isclone;
 	string path;
+	object pinfo;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -542,16 +545,12 @@ void destruct(string owner, object obj)
 
 	obj->_F_destruct();
 
+	pinfo = objdb->get_element(status(obj)[O_INDEX]);
+	ASSERT(pinfo);
+
 	if (isclone) {
+		pinfo->remove_clone(obj);
 	} else {
-		object pinfo;
-
-		pinfo = objdb->get_element(status(obj)[O_INDEX]);
-
-		if (!pinfo) {
-			return;
-		}
-
 		pinfo->set_destructed();
 	}
 }
