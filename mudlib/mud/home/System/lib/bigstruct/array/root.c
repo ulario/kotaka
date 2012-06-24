@@ -242,6 +242,24 @@ atomic void set_element(int index, mixed value)
 	sub_set_element(top[level], index, value);
 }
 
+atomic void push_back(mixed data)
+{
+	int sz;
+
+	check_caller(WRITE_ACCESS);
+
+	sz = get_size();
+	set_size(sz + 1);
+	set_element(sz, data);
+}
+
+atomic void pop_back()
+{
+	check_caller(WRITE_ACCESS);
+
+	set_size(get_size() - 1);
+}
+
 atomic void clear()
 {
 	int old_size;

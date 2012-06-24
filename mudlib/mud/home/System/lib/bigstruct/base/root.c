@@ -75,7 +75,7 @@ void grant_access(object obj, int access)
 {
 	check_caller(FULL_ACCESS);
 
-	grants[obj] = access;
+	grants[obj] = access ? access : nil;
 }
 
 void grant_global_access(int access)
