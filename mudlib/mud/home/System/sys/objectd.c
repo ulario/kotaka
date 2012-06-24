@@ -1,6 +1,9 @@
 #include <kernel/kernel.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
+#include <kotaka/bigstruct.h>
+#include <type.h>
+#include <status.h>
 
 /****************/
 /* Declarations */
@@ -26,9 +29,9 @@ void discover_programs();
 
 static void create();
 private void scan_programs(string path);
-private void register_program(string path, string *inherits, string *includes);
+private void register_program(string path, string *inherits, string *includes, string constructor, string destructor);
 private string *fetch_from_initd(object initd, string path);
-private void compiled();
+private void compiled(string owner, string path, string *source, string *inherited);
 private mixed query_include_file(string compiled, string from, string path);
 
 /* kernel library hooks */
@@ -201,13 +204,12 @@ private string *fetch_from_initd(object initd, string path)
 	return ({ err, ctor, dtor });
 }
 
-private void compiled(string owner, string path, string *source, string inherited ...)
+private void compiled(string owner, string path, string *source, string *inherited)
 {
 	object initd;
 	string err;
 	string ctor;
 	string dtor;
-	string path;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -223,7 +225,7 @@ private void compiled(string owner, string path, string *source, string inherite
 		dtor = ret[2];
 	}
 
-	register_program(object_name(obj), inherited, includes, ctor, dtor);
+	register_program(path, inherited, includes, ctor, dtor);
 
 	if (err) {
 		error(err);
@@ -260,7 +262,6 @@ private mixed query_include_file(string compiled, string from, string path)
 
 	return path;
 }
-
 
 /* kernel library hooks */
 
@@ -302,23 +303,13 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 void compile_lib(string owner, string path, string *source, string inherited ...)
 {
-	string path;
-
 	ACCESS_CHECK(KERNEL());
-
-	path = object_name(obj);
 
 	if (path != AUTO) {
 		inherited |= ({ "AUTO" });
 	}
 
 	compiled(owner, path, source, inherited);
-
-	if (upgrading) {
-		upgrading = 0;
-
-		obj->upgrading();
-	}
 }
 
 void compile_failed(string owner, string path)
