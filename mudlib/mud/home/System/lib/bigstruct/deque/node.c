@@ -7,8 +7,6 @@
 inherit SECOND_AUTO;
 inherit "../base/node";
 
-#define MAX_MASS 256
-
 mixed *sub;
 object prev;
 object next;
@@ -18,10 +16,14 @@ int end;
 
 static void create()
 {
+	int arrsz;
+
 	::create();
-	
-	sub = allocate(MAX_MASS);
-	begin = end = MAX_MASS / 2;
+
+	arrsz = status(ST_ARRAYSIZE);
+
+	sub = allocate(arrsz);
+	begin = end = arrsz / 2;
 }
 
 static void destruct()
@@ -125,7 +127,7 @@ void set_back(mixed value)
 {
 	check_caller();
 	ASSERT(begin < end);
-	
+
 	sub[end - 1] = value;
 }
 

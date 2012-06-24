@@ -13,6 +13,12 @@ inherit SECOND_AUTO;
 inherit conn LIB_CONN;
 inherit user LIB_USER;
 
+#define DESTRUCT_OPEN		1
+#define DESTRUCT_CLOSE		2
+#define DESTRUCT_SET_MODE	3
+#define DESTRUCT_DISCONNECT	4
+#define DESTRUCT_REBOOT		5
+
 static void create()
 {
 	user::create();
@@ -44,7 +50,7 @@ int login(string str)
 		|| calling_object() == this_object());
 
 	connection(previous_object());
-	conn::open(nil);
+	open(nil);
 
 	/* LIB_CONN does an implicit call to set_mode */
 	return conn::receive_message(nil, str);
@@ -55,7 +61,7 @@ void logout(int quit)
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
 
-	conn::close(nil, quit);
+	close(nil, quit);
 
 	if (quit) {
 		destruct_object(this_object());
@@ -108,7 +114,7 @@ void receive_datagram(string packet)
 
 /*
 
-LIB_CONN destructs on:
+LIB_CONN self destructs on:
 
 set_mode
 	on MODE_DISCONNECT
