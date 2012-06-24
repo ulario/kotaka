@@ -140,9 +140,57 @@ void recompile_kernel_library()
 
 void recompile_everything()
 {
+	object indices;
+	object libqueue;
+	object objqueue;
+	int i;
+	int sz;
+
 	ACCESS_CHECK(PRIVILEGED());
 
-	error("Not yet implemented");
+	libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+
+	rlimits(0; -1) {
+		indices = progdb->get_indices();
+		sz = indices->get_size();
+
+		for (i = 0; i < sz; i++) {
+			int oindex;
+			object pinfo;
+			string path;
+
+			oindex = indices->get_element(i);
+			pinfo = progdb->get_element(oindex);
+			path = pinfo->query_path();
+
+			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
+				libqueue->push_back(path);
+			} else {
+				objqueue->push_back(path);
+			}
+		}
+
+		while (!libqueue->empty()) {
+			string path;
+	
+			path = libqueue->get_front();
+			libqueue->pop_front();
+
+			destruct_object(path);
+		}
+
+		while (!objqueue->empty()) {
+			string path;
+
+			path = objqueue->get_front();
+			objqueue->pop_front();
+
+			catch {
+				compile_object(path);
+			}
+		}
+	}
 }
 
 void discover_programs()
@@ -152,10 +200,33 @@ void discover_programs()
 
 	ACCESS_CHECK(PRIVILEGED());
 
-	libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	rlimits(0; -1) {
+		libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+		objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
-	scan_programs("/", libqueue, objqueue);
+		LOGD->post_message("object", LOG_DEBUG, "Discovering programs");
+		scan_programs("/", libqueue, objqueue);
+
+		LOGD->post_message("object", LOG_DEBUG, "Resetting programs");
+
+		while (!libqueue->empty()) {
+			string path;
+
+			path = libqueue->get_front();
+			libqueue->pop_front();
+			
+			destruct_object(path);
+		}
+
+		while (!objqueue->empty()) {
+			string path;
+
+			path = objqueue->get_front();
+			objqueue->pop_front();
+
+			compile_object(path);
+		}
+	}
 }
 
 /* internal */
@@ -277,11 +348,14 @@ private void scan_programs(string path, object libqueue, object objqueue)
 	names = dir[0];
 	sizes = dir[1];
 
+	LOGD->post_message("object", LOG_DEBUG, "Inside directory " + path + ", checking paths: " + implode(names, ", "));
+
 	for (i = 0; i < sizeof(names); i++) {
 		string name;
 		string opath;
 
 		name = names[i];
+		LOGD->post_message("object", LOG_DEBUG, "Checking path: " + path + "/" + name);
 
 		if (sizes[i] == -2) {
 			scan_programs(path + "/" + name, libqueue, objqueue);
@@ -298,9 +372,19 @@ private void scan_programs(string path, object libqueue, object objqueue)
 			status = status(opath);
 
 			/* unregistered */
-			if (status) {
+			if (!status) {
 				LOGD->post_message("object", LOG_DEBUG,
-					"Found object: " + opath);
+					"Object not found: " + opath);
+				continue;
+			}
+
+			LOGD->post_message("object", LOG_DEBUG,
+				"Found object: " + opath);
+
+			if (sscanf(opath, "%*s" + INHERITABLE_SUBDIR)) {
+				libqueue->push_back(opath);
+			} else {
+				objqueue->push_back(opath);
 			}
 		}
 	}
@@ -343,6 +427,11 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 
 	register_program(path, inherited, includes, nil, nil);
+	includes = nil;
+
+	if (sscanf(path, "/kernel/%*s")) {
+		return;
+	}
 
 	if (upgrading) {
 		upgrading = 0;
@@ -367,7 +456,7 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 		inherited |= ({ AUTO });
 	}
 
-	if (initd = find_object(USR_DIR + "/" + owner + "/initd")) {
+	if (!sscanf(path, "/kernel/%*s") && (initd = find_object(USR_DIR + "/" + owner + "/initd"))) {
 		string *ret;
 
 		ret = fetch_from_initd(initd, path);
@@ -378,6 +467,7 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	}
 
 	register_program(path, inherited, includes, ctor, dtor);
+	includes = nil;
 
 	if (err) {
 		error(err);
@@ -387,6 +477,7 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 void compile_failed(string owner, string path)
 {
 	upgrading = 0;
+	includes = nil;
 }
 
 void clone(string owner, object obj)
@@ -396,17 +487,52 @@ void clone(string owner, object obj)
 
 void destruct(string owner, object obj)
 {
+	int isclone;
+	string path;
+
 	ACCESS_CHECK(KERNEL());
+
+	path = object_name(obj);
+	isclone = sscanf(path, "%*s#%*d");
+
+	obj->_F_destruct();
+
+	if (isclone) {
+	} else {
+		object pinfo;
+
+		pinfo = progdb->get_element(status(obj)[O_INDEX]);
+
+		if (!pinfo) {
+			LOGD->post_message("object", LOG_DEBUG, "Destructing ghost: " + path);
+			return;
+		}
+
+		pinfo->set_destructed();
+	}
 }
 
 void destruct_lib(string owner, string path)
 {
+	object pinfo;
+
 	ACCESS_CHECK(KERNEL());
+
+	pinfo = progdb->get_element(status(path)[O_INDEX]);
+
+	if (!pinfo) {
+		LOGD->post_message("object", LOG_DEBUG, "Destructing ghost: " + path);
+		return;
+	}
+
+	pinfo->set_destructed();
 }
 
 void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(KERNEL());
+
+	progdb->set_element(index, nil);
 }
 
 mixed include_file(string compiled, string from, string path)
