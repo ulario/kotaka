@@ -126,10 +126,10 @@ private void _F_call_constructors()
 
 	string base;
 
-	pinfo = OBJECTD->query_program_info(status(this_object())[O_INDEX]);
+	pinfo = OBJECTD->query_object_info(status(this_object())[O_INDEX]);
 
 	if (!pinfo) {
-		error("No program info for " + object_name(this_object()));
+		error("No object info for " + object_name(this_object()));
 	}
 
 	ctors = pinfo->query_inherited_constructors();
@@ -149,10 +149,10 @@ private void _F_call_destructors()
 
 	string base;
 
-	pinfo = OBJECTD->query_program_info(status(this_object())[O_INDEX]);
+	pinfo = OBJECTD->query_object_info(status(this_object())[O_INDEX]);
 
 	if (!pinfo) {
-		error("No program info for " + object_name(this_object()));
+		error("No object info for " + object_name(this_object()));
 	}
 
 	dtors = pinfo->query_inherited_destructors();

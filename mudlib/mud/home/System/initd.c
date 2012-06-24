@@ -59,11 +59,11 @@ private void initialize()
 	KERNELD->set_global_access("Kotaka", 1);
 	KERNELD->set_global_access("System", 1);
 
-	load_object("lwo/program_info");
+	load_object(OBJECT_INFO);
 	load_object(OBJECTD);
 
 	OBJECTD->enable();
-	OBJECTD->discover_programs();
+	OBJECTD->discover_objects();
 
 	load_dir("closed", 1);
 	load_dir("lib", 1);

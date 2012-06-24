@@ -18,8 +18,7 @@ string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
 
-object progdb;		/* program database */
-object clonedb;		/* clone database */
+object objdb;		/* object database */
 
 /* external functions */
 
@@ -27,14 +26,14 @@ void recompile_kernel_library();
 void recompile_everything();
 void disable();
 void enable();
-void discover_programs();
-object query_program_info(int oindex);
+void discover_objects();
+object query_object_info(int oindex);
 
 /* internal functions */
 
 static void create();
-private void scan_programs(string path, object libqueue, object objqueue);
-private void register_program(string path, string *inherits, string *includes, string constructor, string destructor);
+private void scan_objects(string path, object libqueue, object objqueue);
+private void register_object(string path, string *inherits, string *includes, string constructor, string destructor);
 private string *fetch_from_initd(object initd, string path);
 private mixed query_include_file(string compiled, string from, string path);
 
@@ -61,11 +60,11 @@ int forbid_inherit(string from, string path, int priv);
 
 static void create()
 {
-	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	progdb->set_type(T_INT);
+	objdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	objdb->set_type(T_INT);
 }
 
-private void register_program(string path, string *inherits,
+private void register_object(string path, string *inherits,
 	string *includes, string constructor, string destructor)
 {
 	int i;
@@ -91,7 +90,7 @@ private void register_program(string path, string *inherits,
 
 		suboindex = status(inherits[i])[O_INDEX];
 		oindices[i] = suboindex;
-		subpinfo = progdb->get_element(suboindex);
+		subpinfo = objdb->get_element(suboindex);
 
 		if (subpinfo) {
 			ctors |= subpinfo->query_inherited_constructors();
@@ -104,7 +103,7 @@ private void register_program(string path, string *inherits,
 	ctors -= ({ nil });
 	dtors -= ({ nil });
 
-	pinfo = new_object(PROGRAM_INFO);
+	pinfo = new_object(OBJECT_INFO);
 	pinfo->set_path(path);
 	pinfo->set_inherits(inherits);
 	pinfo->set_includes(includes);
@@ -112,7 +111,7 @@ private void register_program(string path, string *inherits,
 	pinfo->set_constructor(constructor);
 	pinfo->set_inherited_destructors(dtors);
 	pinfo->set_destructor(destructor);
-	progdb->set_element(oindex, pinfo);
+	objdb->set_element(oindex, pinfo);
 }
 
 private string *fetch_from_initd(object initd, string path)
@@ -161,7 +160,7 @@ private mixed query_include_file(string compiled, string from, string path)
 	return path;
 }
 
-private void scan_programs(string path, object libqueue, object objqueue)
+private void scan_objects(string path, object libqueue, object objqueue)
 {
 	string *names;
 	int *sizes;
@@ -181,7 +180,7 @@ private void scan_programs(string path, object libqueue, object objqueue)
 		name = names[i];
 
 		if (sizes[i] == -2) {
-			scan_programs(path + "/" + name, libqueue, objqueue);
+			scan_objects(path + "/" + name, libqueue, objqueue);
 			continue;
 		}
 
@@ -194,7 +193,6 @@ private void scan_programs(string path, object libqueue, object objqueue)
 
 			status = status(opath);
 
-			/* unregistered */
 			if (!status) {
 				continue;
 			}
@@ -224,9 +222,9 @@ void disable()
 	DRIVER->set_object_manager(nil);
 }
 
-object query_program_info(int index)
+object query_object_info(int index)
 {
-	return progdb->get_element(index);
+	return objdb->get_element(index);
 }
 
 void recompile_kernel_library()
@@ -304,7 +302,7 @@ void recompile_everything()
 	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
 	rlimits(0; -1) {
-		indices = progdb->get_indices();
+		indices = objdb->get_indices();
 		sz = indices->get_size();
 
 		for (i = 0; i < sz; i++) {
@@ -313,7 +311,7 @@ void recompile_everything()
 			string path;
 
 			oindex = indices->get_element(i);
-			pinfo = progdb->get_element(oindex);
+			pinfo = objdb->get_element(oindex);
 			path = pinfo->query_path();
 
 			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
@@ -345,7 +343,7 @@ void recompile_everything()
 	}
 }
 
-void discover_programs()
+void discover_objects()
 {
 	object libqueue;
 	object objqueue;
@@ -356,10 +354,10 @@ void discover_programs()
 		libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 		objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
-		LOGD->post_message("object", LOG_DEBUG, "Discovering programs");
-		scan_programs("/", libqueue, objqueue);
+		LOGD->post_message("object", LOG_DEBUG, "Discovering objects");
+		scan_objects("/", libqueue, objqueue);
 
-		LOGD->post_message("object", LOG_DEBUG, "Resetting programs");
+		LOGD->post_message("object", LOG_DEBUG, "Resetting objects");
 
 		while (!libqueue->empty()) {
 			string path;
@@ -411,7 +409,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		inherited |= ({ AUTO });
 	}
 
-	register_program(path, inherited, includes, nil, nil);
+	register_object(path, inherited, includes, nil, nil);
 	includes = nil;
 
 	if (sscanf(path, "/kernel/%*s")) {
@@ -448,7 +446,7 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 		dtor = ret[2];
 	}
 
-	register_program(path, inherited, includes, ctor, dtor);
+	register_object(path, inherited, includes, ctor, dtor);
 	includes = nil;
 
 	if (err) {
@@ -458,6 +456,8 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 
 void compile_failed(string owner, string path)
 {
+	ACCESS_CHECK(KERNEL());
+
 	upgrading = 0;
 	includes = nil;
 }
@@ -483,7 +483,7 @@ void destruct(string owner, object obj)
 	} else {
 		object pinfo;
 
-		pinfo = progdb->get_element(status(obj)[O_INDEX]);
+		pinfo = objdb->get_element(status(obj)[O_INDEX]);
 
 		if (!pinfo) {
 			return;
@@ -499,7 +499,7 @@ void destruct_lib(string owner, string path)
 
 	ACCESS_CHECK(KERNEL());
 
-	pinfo = progdb->get_element(status(path)[O_INDEX]);
+	pinfo = objdb->get_element(status(path)[O_INDEX]);
 
 	if (!pinfo) {
 		return;
@@ -512,7 +512,7 @@ void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(KERNEL());
 
-	progdb->set_element(index, nil);
+	objdb->set_element(index, nil);
 }
 
 mixed include_file(string compiled, string from, string path)
