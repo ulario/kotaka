@@ -76,14 +76,12 @@ static mixed status(varargs mixed obj, mixed index)
 		}
 		break;
 
+	case T_STRING:
 	case T_OBJECT:
 		if (!obj) {
 			return nil;
 		}
-		obj = object_name(obj);
-		/* fall through */
 
-	case T_STRING:
 		switch (typeof(index)) {
 		case T_NIL:
 			status = ::status(obj);
