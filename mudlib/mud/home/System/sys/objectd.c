@@ -420,11 +420,7 @@ void discover_objects()
 		libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 		objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
-		LOGD->post_message("object", LOG_DEBUG, "Discovering objects");
-
 		scan_objects("/", libqueue, objqueue);
-
-		LOGD->post_message("object", LOG_DEBUG, "Resetting objects");
 
 		while (!libqueue->empty()) {
 			string path;
@@ -493,7 +489,6 @@ void discover_clones()
 					continue;
 				}
 
-				LOGD->post_message("object", LOG_DEBUG, "Discovered clone: " + path);
 				oindex = status(current, O_INDEX);
 				pinfo = objdb->get_element(oindex);
 				pinfo->add_clone(current);
