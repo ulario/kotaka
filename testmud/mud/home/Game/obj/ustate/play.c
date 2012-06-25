@@ -77,14 +77,11 @@ void receive_in(string input)
 		rest = "";
 	}
 
-	if (first == "") {
-	} else if (first == "quit") {
+	switch(first) {
+	case "quit":
 		pop_state();
 		return;
-	} else if (first == "recompile") {
-		OBJECTD->klib_recompile();
-		OBJECTD->global_recompile();
-	} else {
+	default:
 		catch {
 			mixed tree;
 			string verb;
