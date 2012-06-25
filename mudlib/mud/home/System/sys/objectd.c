@@ -22,6 +22,8 @@ int upgrading;		/* are we upgrading or making a new compile? */
 
 object objdb;		/* object database */
 
+int ignore_clones;	/* don't track clones */
+
 /* internal functions */
 
 static void create();
@@ -510,7 +512,10 @@ void full_reset()
 		objdb = clone_object(BIGSTRUCT_MAP_OBJ);
 		objdb->set_type(T_INT);
 
-		discover_clones();
+		ignore_clones = 1;
+		discover_objects();
+
+		ignore_clones = 0;
 		discover_clones();
 	}
 }
@@ -637,7 +642,9 @@ void clone(string owner, object obj)
 	pinfo = objdb->get_element(status(obj)[O_INDEX]);
 	ASSERT(pinfo);
 
-	pinfo->add_clone(obj);
+	if (!ignore_clones) {
+		pinfo->add_clone(obj);
+	}
 }
 
 void destruct(string owner, object obj)
@@ -665,7 +672,9 @@ void destruct(string owner, object obj)
 	}
 
 	if (isclone) {
-		pinfo->remove_clone(obj);
+		if (!ignore_clones) {
+			pinfo->remove_clone(obj);
+		}
 	} else {
 		pinfo->set_destructed();
 	}
