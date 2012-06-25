@@ -573,12 +573,18 @@ void destruct(string owner, object obj)
 	path = object_name(obj);
 	isclone = sscanf(path, "%*s#%*d");
 
+	pinfo = objdb->get_element(status(obj)[O_INDEX]);
+	ASSERT(pinfo);
+
+	if (!isclone) {
+		if (pinfo->query_clone_count()) {
+			error("Cannot destruct object with outstanding clones");
+		}
+	}
+
 	if (!sscanf(path, "/kernel/%*s")) {
 		obj->_F_sys_destruct();
 	}
-
-	pinfo = objdb->get_element(status(obj)[O_INDEX]);
-	ASSERT(pinfo);
 
 	if (isclone) {
 		pinfo->remove_clone(obj);
