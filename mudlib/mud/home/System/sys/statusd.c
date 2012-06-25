@@ -6,7 +6,7 @@
 #include <status.h>
 
 inherit wiz "~/closed/lib/wiztool_gate";
-inherit man LIB_MANAGER;
+inherit userd LIB_USERD;
 inherit user LIB_USER;
 inherit SECOND_AUTO;
 
@@ -21,7 +21,7 @@ private void schedule();
 static void create()
 {
 	wiz::create(0);
-	man::create();
+	userd::create();
 	user::create();
 
 	connections = ([ ]);
@@ -40,14 +40,14 @@ void disable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	PORTD->set_binary_manager(2, nil);
+	SYSTEM_USERD->set_binary_manager(2, nil);
 }
 
 void enable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	PORTD->set_binary_manager(2, this_object());
+	SYSTEM_USERD->set_binary_manager(2, this_object());
 }
 
 private float swap_used_ratio()
@@ -89,14 +89,14 @@ string status_message()
 
 string query_banner(object conn)
 {
-	ACCESS_CHECK(previous_program() == PORTD);
+	ACCESS_CHECK(previous_program() == SYSTEM_USERD);
 
 	return nil;
 }
 
 int query_timeout(object conn)
 {
-	ACCESS_CHECK(previous_program() == PORTD);
+	ACCESS_CHECK(previous_program() == SYSTEM_USERD);
 
 	connection(conn);
 	redirect(this_object(), nil);
@@ -106,7 +106,7 @@ int query_timeout(object conn)
 
 object select(string input)
 {
-	ACCESS_CHECK(previous_program() == PORTD);
+	ACCESS_CHECK(previous_program() == SYSTEM_USERD);
 
 	return this_object();
 }
