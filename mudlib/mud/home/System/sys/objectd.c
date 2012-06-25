@@ -416,7 +416,7 @@ void discover_objects()
 
 	ACCESS_CHECK(PRIVILEGED());
 
-	catch { rlimits(0; -1) {
+	rlimits(0; -1) {
 		libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 		objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
@@ -439,7 +439,7 @@ void discover_objects()
 
 			compile_object(path);
 		}
-	} } : { error("Failure"); }
+	}
 }
 
 void discover_clones()
@@ -654,10 +654,13 @@ void destruct(string owner, object obj)
 	ACCESS_CHECK(KERNEL());
 
 	path = object_name(obj);
-	isclone = sscanf(path, "%*s#%*d");
+	isclone = sscanf(path, "%s#%*d", path);
 
 	pinfo = objdb->get_element(status(obj)[O_INDEX]);
-	ASSERT(pinfo);
+
+	if (!pinfo) {
+		return;
+	}
 
 	if (!isclone) {
 		if (pinfo->query_clone_count()) {
