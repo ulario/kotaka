@@ -29,7 +29,7 @@ void main(string args)
 	int max;
 	int current;
 
-	paint = new_object("~/lwo/paint/painter");
+	paint = new_object(LWO_PAINTER);
 
 	paint->start(40, 5);
 	paint->set_color(0x0C);
