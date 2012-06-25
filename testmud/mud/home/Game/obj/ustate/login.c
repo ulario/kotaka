@@ -150,6 +150,12 @@ void receive_in(string input)
 			user->set_username(name);
 			user->set_mode(MODE_ECHO);
 
+			GAME_SUBD->send_to_all_except(
+				GAME_SUBD->titled_name(
+					user->query_username(),
+					user->query_class())
+				+ " logs in.\n", ({ user }));
+
 			terminate_account_state();
 			return;
 		}
