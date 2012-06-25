@@ -418,85 +418,12 @@ void bogus_reboot()
 
 string query_banner(object LIB_CONN connection)
 {
-	object base_conn;
-	int level;
-	object manager;
-
-	ACCESS_CHECK(KERNEL());
-
-	base_conn = connection;
-
-	while (base_conn && base_conn <- LIB_USER) {
-		base_conn = base_conn->query_conn();
-		level++;
-
-		if (level > MAX_CONN_DEPTH) {
-			error("Connection chain length overflow");
-		}
-	}
-
-	if (!connections[base_conn]) {
-		analyze_connection(base_conn);
-	}
-
-	manager = manager_of(base_conn);
-
-	if (!manager) {
-		return "Internal error:  No connection manager.\n";
-	}
-
-	catch {
-		if (free_users() < SPARE_USERS) {
-			return manager->query_overload_message(connection);
-		} else if (blocked) {
-			return manager->query_blocked_message(connection);
-		} else {
-			return manager->query_banner(connection);
-		}
-	} : {
-		return "Internal error";
-	}
 }
 
 int query_timeout(object LIB_CONN connection)
 {
-	object base_conn;
-	int level;
-	object manager;
-
-	ACCESS_CHECK(KERNEL());
-
-	if (free_users() < SPARE_USERS || blocked) {
-		return -1;
-	}
-
-	base_conn = connection;
-
-	while (base_conn && base_conn <- LIB_USER) {
-		base_conn = base_conn->query_conn();
-		level++;
-
-		if (level > MAX_CONN_DEPTH) {
-			error("Connection chain length overflow");
-		}
-	}
-
-	manager = manager_of(base_conn);
-
-	if (!manager) {
-		return -1;
-	}
-
-	catch {
-		return manager->query_timeout(connection);
-	} : {
-		return -1;
-	}
 }
 
 object select(string str)
 {
-	ACCESS_CHECK(KERNEL() || SYSTEM());
-
-	return query_select(str, previous_object(1));
 }
