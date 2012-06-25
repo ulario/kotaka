@@ -458,6 +458,8 @@ void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
 	string err;
+	int is_kernel;
+	int is_auto;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -470,8 +472,17 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	register_object(path, inherited, includes, nil, nil);
 	includes = nil;
 
-	if (sscanf(path, "/kernel/%*s")) {
+	is_kernel = sscanf(path, "/kernel/%*s");
+
+	if (is_kernel) {
 		return;
+	}
+
+	is_auto = sscanf(path, USR_DIR + "/System"
+		+ INHERITABLE_SUBDIR + "auto/%*s");
+
+	if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
+		error("Failure to inherit SECOND_AUTO: " + path);
 	}
 
 	if (upgrading) {
@@ -487,15 +498,29 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	string ctor;
 	string dtor;
 	object initd;
+	int is_kernel;
+	int is_auto;
 
 	ACCESS_CHECK(KERNEL());
 
 	if (path != AUTO) {
 		inherited |= ({ AUTO });
 	}
-	
-	if (!sscanf(path, "/kernel/%*s")) {
-		ASSERT(sizeof(({ SECOND_AUTO }) & inherited));
+
+	is_kernel = sscanf(path, "/kernel/%*s");
+
+	if (is_kernel) {
+		return;
+	}
+
+	is_auto = sscanf(path, USR_DIR + "/System"
+		+ INHERITABLE_SUBDIR + "auto/%*s");
+
+	if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
+		error("Failure to inherit SECOND_AUTO: " + path);
+	}
+
+	if (!is_kernel) {
 		initd = find_object(USR_DIR + "/" + owner + "/initd");
 	}
 
