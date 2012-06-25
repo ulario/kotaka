@@ -509,15 +509,16 @@ void full_reset()
 
 	rlimits (0; -1) {
 		LOGD->post_message("objectd", LOG_DEBUG, "Resetting object manager");
+
+		ignore_clones = 1;
 		destruct_object(objdb);
 
 		objdb = clone_object(BIGSTRUCT_MAP_OBJ);
 		objdb->set_type(T_INT);
 
-		ignore_clones = 1;
 		discover_objects();
-
 		ignore_clones = 0;
+
 		discover_clones();
 	}
 }
@@ -641,10 +642,10 @@ void clone(string owner, object obj)
 
 	ACCESS_CHECK(KERNEL());
 
-	pinfo = objdb->get_element(status(obj)[O_INDEX]);
-	ASSERT(pinfo);
-
 	if (!ignore_clones) {
+		pinfo = objdb->get_element(status(obj)[O_INDEX]);
+		ASSERT(pinfo);
+
 		pinfo->add_clone(obj);
 	}
 }
