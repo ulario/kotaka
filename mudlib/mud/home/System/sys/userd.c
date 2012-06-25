@@ -377,7 +377,6 @@ int query_timeout(object LIB_CONN connection)
 		/* stacking in progress */
 		return 0;
 	} else if (!(connection <- LIB_USER)) {
-		LOGD->post_message("userd", LOG_DEBUG, "Query_timeout: naked");
 		/* first level, ignore */
 		stacking = 1;
 		connection(connection);
