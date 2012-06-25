@@ -154,22 +154,6 @@ private object manager_of(object LIB_CONN connection)
 	return manager;
 }
 
-int login(string str)
-{
-	ACCESS_CHECK(previous_program() == LIB_CONN);
-
-	previous_object()->message("Internal error: connection manager fault\n");
-	return MODE_DISCONNECT;
-}
-
-int receive_message(string str)
-{
-	ACCESS_CHECK(previous_program() == LIB_CONN);
-
-	previous_object()->message("Internal error: connection manager fault\n");
-	return MODE_DISCONNECT;
-}
-
 private object query_select(string str, object conn)
 {
 	object base_conn;
@@ -426,4 +410,22 @@ int query_timeout(object LIB_CONN connection)
 
 object select(string str)
 {
+}
+
+/* connection hooks */
+
+int login(string str)
+{
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	previous_object()->message("Internal error: connection manager fault\n");
+	return MODE_DISCONNECT;
+}
+
+int receive_message(string str)
+{
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	previous_object()->message("Internal error: connection manager fault\n");
+	return MODE_DISCONNECT;
 }
