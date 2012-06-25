@@ -493,8 +493,13 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	if (path != AUTO) {
 		inherited |= ({ AUTO });
 	}
+	
+	if (!sscanf(path, "/kernel/%*s")) {
+		ASSERT(sizeof(({ SECOND_AUTO }) & inherited));
+		initd = find_object(USR_DIR + "/" + owner + "/initd");
+	}
 
-	if (!sscanf(path, "/kernel/%*s") && (initd = find_object(USR_DIR + "/" + owner + "/initd"))) {
+	if (initd) {
 		string *ret;
 
 		ret = fetch_from_initd(initd, path);
@@ -543,7 +548,9 @@ void destruct(string owner, object obj)
 	path = object_name(obj);
 	isclone = sscanf(path, "%*s#%*d");
 
-	obj->_F_destruct();
+	if (!sscanf(path, "/kernel/%*s")) {
+		obj->_F_sys_destruct();
+	}
 
 	pinfo = objdb->get_element(status(obj)[O_INDEX]);
 	ASSERT(pinfo);
