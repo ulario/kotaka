@@ -22,8 +22,8 @@ void main(string args)
 		return;
 	}
 
-	name = titled_name(user->query_username(), user->query_class());
+	name = SUBD->titled_name(user->query_username(), user->query_class());
 
 	send_out("You say: " + args + "\n");
-	send_to_all_except(name + " says: " + args + "\n", ({ user }) );
+	SUBD->send_to_all_except(name + " says: " + args + "\n", ({ user }) );
 }

@@ -39,11 +39,11 @@ void main(string args)
 	BAND->ban_username(args);
 
 	turkey = GAME_USERD->find_user(args);
-	kicker_name = titled_name(user->query_username(), user->query_class());
+	kicker_name = SUBD->titled_name(user->query_username(), user->query_class());
 
 	user->message("You ban " + args + " from the mud.\n");
 
-	send_to_all_except(args + " has been banned from the mud by " + kicker_name + ".\n", ({ turkey, query_user() }) );
+	SUBD->send_to_all_except(args + " has been banned from the mud by " + kicker_name + ".\n", ({ turkey, query_user() }) );
 
 	if (turkey) {
 		turkey->message("You have been banned from the mud by " + kicker_name + "!\n");

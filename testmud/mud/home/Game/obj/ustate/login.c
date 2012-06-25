@@ -150,7 +150,6 @@ void receive_in(string input)
 			user->set_username(name);
 			user->set_mode(MODE_ECHO);
 
-			announce_login();
 			terminate_account_state();
 			return;
 		}
@@ -190,7 +189,6 @@ void receive_in(string input)
 			user->set_username(name);
 			user->set_mode(MODE_ECHO);
 
-			announce_login();
 			terminate_account_state();
 			return;
 		} else {

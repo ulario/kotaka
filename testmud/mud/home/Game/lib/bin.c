@@ -19,5 +19,3 @@ static void send_out(string str)
 {
 	query_ustate()->send_out(str);
 }
-
-#include "utility.h"

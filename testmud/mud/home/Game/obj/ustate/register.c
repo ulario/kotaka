@@ -160,7 +160,6 @@ void receive_in(string input)
 				GAME_USERD->add_user(name, user);
 			}
 			user->set_mode(MODE_ECHO);
-			announce_register();
 			terminate_account_state();
 			return;
 		}

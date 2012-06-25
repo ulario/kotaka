@@ -64,12 +64,7 @@ void pre_end()
 	string name;
 
 	ACCESS_CHECK(previous_object() == query_user());
-
-	user = query_user();
-	name = titled_name(user->query_username(), user->query_class());
-
 	send_out("Come back soon.\n");
-	send_to_all_except(name + " dies and sinks into the ground.\n", ({ user }) );
 }
 
 void end()

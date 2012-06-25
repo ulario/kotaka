@@ -5,8 +5,6 @@
 
 inherit LIB_USTATE;
 
-#include "utility.h"
-
 static void terminate_account_state()
 {
 	object parent;

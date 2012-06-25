@@ -113,3 +113,29 @@ string draw_look(object living)
 
 	return painter->render_color();
 }
+
+string titled_name(string name, int class)
+{
+	if (name) {
+		STRINGD->to_title(name);
+	} else {
+		name = "guest";
+	}
+
+	switch(class) {
+	case 0:
+		name = "\033[1;34m" + name + "\033[0m";
+		break;
+	case 1:
+		name = "\033[1;32mMr " + name + "\033[0m";
+		break;
+	case 2:
+		name = "\033[1;33mSir " + name + "\033[0m";
+		break;
+	case 3:
+		name = "\033[1;31mLord " + name + "\033[0m";
+		break;
+	}
+
+	return name;
+}
