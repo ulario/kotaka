@@ -110,7 +110,9 @@ private void register_object(string path, string *inherits,
 
 	if (upgrading) {
 		pinfo = objdb->get_element(oindex);
-	} else {
+	}
+
+	if (!pinfo) {
 		pinfo = new_object(OBJECT_INFO);
 		pinfo->set_path(path);
 		objdb->set_element(oindex, pinfo);
@@ -414,7 +416,7 @@ void discover_objects()
 
 	ACCESS_CHECK(PRIVILEGED());
 
-	rlimits(0; -1) {
+	catch { rlimits(0; -1) {
 		libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 		objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
@@ -441,7 +443,7 @@ void discover_objects()
 
 			compile_object(path);
 		}
-	}
+	} } : { error("Failure"); }
 }
 
 void discover_clones()
