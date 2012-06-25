@@ -499,6 +499,22 @@ void discover_clones()
 	}
 }
 
+void full_reset()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	rlimits (0; -1) {
+		LOGD->post_message("objectd", LOG_DEBUG, "Resetting object manager");
+		destruct_object(objdb);
+
+		objdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		objdb->set_type(T_INT);
+
+		discover_clones();
+		discover_clones();
+	}
+}
+
 /* kernel library hooks */
 
 void compiling(string path)
