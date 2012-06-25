@@ -35,7 +35,7 @@ static void redirect(object LIB_USER user, string str)
 
 	/* will pile on mandated filters and then pass the connection off */
 	/* to the requested user */
-	::redirect(PORTD->intercept(conn, user), str);
+	::redirect(SYSTEM_USERD->intercept(conn, user), str);
 }
 
 static void set_mode(int new_mode)
