@@ -22,6 +22,14 @@ int upgrading;		/* are we upgrading or making a new compile? */
 
 object objdb;		/* object database */
 
+/* internal functions */
+
+static void create();
+private void scan_objects(string path, object libqueue, object objqueue);
+private void register_object(string path, string *inherits, string *includes, string constructor, string destructor);
+private string *fetch_from_initd(object initd, string path);
+private mixed query_include_file(string compiled, string from, string path);
+
 /* external functions */
 
 void recompile_kernel_library();
@@ -31,14 +39,6 @@ void enable();
 void discover_objects();
 object query_object_info(int oindex);
 object query_inheritors(int oindex);
-
-/* internal functions */
-
-static void create();
-private void scan_objects(string path, object libqueue, object objqueue);
-private void register_object(string path, string *inherits, string *includes, string constructor, string destructor);
-private string *fetch_from_initd(object initd, string path);
-private mixed query_include_file(string compiled, string from, string path);
 
 /* kernel library hooks */
 
