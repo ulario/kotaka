@@ -196,7 +196,7 @@ void receive_in(string input)
 				GAME_SUBD->titled_name(
 					user->query_username(),
 					user->query_class())
-				+ " logs in.\n", user);
+				+ " logs in.\n", ({ user }));
 
 			terminate_account_state();
 			return;

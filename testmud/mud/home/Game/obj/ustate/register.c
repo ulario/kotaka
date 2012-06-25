@@ -165,7 +165,7 @@ void receive_in(string input)
 				GAME_SUBD->titled_name(
 					user->query_username(),
 					user->query_class())
-				+ " registers.\n", user);
+				+ " registers.\n", ({ user }));
 
 			terminate_account_state();
 			return;

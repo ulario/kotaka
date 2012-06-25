@@ -72,7 +72,7 @@ void pre_end()
 			GAME_SUBD->titled_name(
 				user->query_username(),
 				user->query_class())
-			+ " logs out.", user);
+			+ " logs out.", ({ user }));
 	}
 	send_out("Come back soon.\n");
 }
