@@ -235,7 +235,7 @@ void block_connections()
 		return;
 	}
 
-	LOGD->post_message("system", LOG_NOTICE, "PortD: Blocking connections");
+	LOGD->post_message("userd", LOG_NOTICE, "Blocking connections");
 
 	blocked = 1;
 	reblocked = ([ ]);
@@ -276,7 +276,7 @@ void unblock_connections()
 		return;
 	}
 
-	LOGD->post_message("system", LOG_NOTICE, "PortD: Unblocking connections");
+	LOGD->post_message("userd", LOG_NOTICE, "Unblocking connections");
 
 	blocked = 0;
 	conns = userd::query_connections();
@@ -348,22 +348,16 @@ string query_banner(object LIB_CONN connection)
 {
 	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
 
-	LOGD->post_message("userd", LOG_DEBUG, "Query_banner for " + object_name(connection));
-
 	if (stacking) {
-		LOGD->post_message("userd", LOG_DEBUG, "Query_banner: stacking");
 		/* stacking in progress */
 		return nil;
 	} else if (!(connection <- LIB_USER)) {
-		LOGD->post_message("userd", LOG_DEBUG, "Query_banner: naked");
 		/* first level, ignore */
 		return nil;
 	} else {
 		/* stack built and we're not naked */
 		/* it is safe to call the lieutenant */
 		object userd;
-
-		LOGD->post_message("userd", LOG_DEBUG, "Query_banner: ready, call lieutenant");
 
 		userd = get_manager(connection);
 
@@ -379,10 +373,7 @@ int query_timeout(object LIB_CONN connection)
 {
 	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
 
-	LOGD->post_message("userd", LOG_DEBUG, "Query_timeout for " + object_name(connection));
-
 	if (stacking) {
-		LOGD->post_message("userd", LOG_DEBUG, "Query_timeout: stacking");
 		/* stacking in progress */
 		return 0;
 	} else if (!(connection <- LIB_USER)) {
@@ -396,8 +387,6 @@ int query_timeout(object LIB_CONN connection)
 		/* stack built and we're not naked */
 		/* it is safe to call the lieutenant */
 		object userd;
-
-		LOGD->post_message("userd", LOG_DEBUG, "Query_timeout: ready, call lieutenant");
 
 		userd = get_manager(connection);
 
@@ -418,22 +407,17 @@ object select(string str)
 	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
 	connection = previous_object(1);
 
-	LOGD->post_message("userd", LOG_DEBUG, "Select for " + object_name(connection));
-
 	if (stacking) {
-		LOGD->post_message("userd", LOG_DEBUG, "Select: stacking");
 		/* stacking in progress */
 		ASSERT(str == nil);
 		return this_object();
 	} else if (!(connection <- LIB_USER)) {
-		LOGD->post_message("userd", LOG_DEBUG, "Select: naked (goof)");
 		/* first level, ignore */
 		return this_object();
 	} else {
 		/* stack built and we're not naked */
 		/* it is safe to call the lieutenant */
 		object userd;
-		LOGD->post_message("userd", LOG_DEBUG, "Select: ready, call lieutenant");
 
 		userd = get_manager(connection);
 
@@ -462,7 +446,6 @@ int login(string str)
 
 		conn = previous_object();
 
-		LOGD->post_message("userd", LOG_DEBUG, "Login: ready to call lieutenant QB and QT");
 		stacking = 0;
 
 		banner = query_banner(conn);
@@ -489,8 +472,6 @@ int login(string str)
 int receive_message(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
-
-	LOGD->post_message("userd", LOG_DEBUG, "Receive_message: ready to call lieutenant select");
 
 	connection(previous_object());
 	redirect(select(str), str);
