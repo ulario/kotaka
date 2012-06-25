@@ -39,11 +39,12 @@ mapping fixed_managers;		/* managers assigned to physical ports */
 mapping connections;		/* ([ connection : ({ type, lport, pport }) ]) */
 mapping intercepts;		/* ([ connection : user ]) */
 
-int enabled;		/*< active or not */
-int binary_port_count;	/*< number of ports currently registered */
-int telnet_port_count;	/*< number of ports currently registered */
-int blocked;		/*< connection blocking is active */
-mapping reblocked;	/*< objects that were already manually blocked */
+int enabled;		/* active or not */
+int binary_port_count;	/* number of ports currently registered */
+int telnet_port_count;	/* number of ports currently registered */
+int blocked;		/* connection blocking is active */
+mapping reblocked;	/* objects that were already manually blocked */
+int stacking;		/* if we are currently building the connection stack */
 
 /****************/
 /* Declarations */
@@ -53,9 +54,9 @@ mapping reblocked;	/*< objects that were already manually blocked */
 
 static void create();
 int login(string str);
-private object query_select(string str, object conn);
 private void register_with_klib_userd();
 private void unregister_with_klib_userd();
+private object get_manager(object conn);
 
 /* external */
 
@@ -125,72 +126,6 @@ private void analyze_connection(object LIB_CONN connection)
 	connections[connection] = cinfo;
 }
 
-private object manager_of(object LIB_CONN connection)
-{
-	mixed *cinfo;
-	mapping checkme;
-	object manager;
-
-	cinfo = connections[connection];
-	switch(cinfo[CINFO_TYPE]) {
-	case "telnet":
-		checkme = telnet_managers;
-		break;
-
-	case "binary":
-		checkme = binary_managers;
-		break;
-
-	default:
-		error("Unexpected connection type");
-	}
-
-	manager = checkme[cinfo[CINFO_LPORT]];
-
-	if (!manager) {
-		manager = fixed_managers[cinfo[CINFO_PPORT]];
-	}
-
-	return manager;
-}
-
-private object query_select(string str, object conn)
-{
-	object base_conn;
-	int level;
-	object manager;
-	object user;
-
-	base_conn = conn;
-
-	while (base_conn && base_conn <- LIB_USER) {
-		base_conn = base_conn->query_conn();
-		level++;
-
-		if (level > MAX_CONN_DEPTH) {
-			error("Connection chain length overflow");
-		}
-	}
-
-	switch(level) {
-	case 0:
-		return clone_object("~/obj/filter/rlimits");
-	}
-
-	if (user = intercepts[base_conn]) {
-		intercepts[base_conn] = nil;
-		return user;
-	}
-
-	user = manager_of(base_conn);
-
-	if (user) {
-		user = user->select(str);
-	}
-
-	return user ? user : this_object();
-}
-
 private void register_with_klib_userd()
 {
 	mixed *status;
@@ -233,6 +168,36 @@ private void unregister_with_klib_userd()
 
 	telnet_port_count = 0;
 	binary_port_count = 0;
+}
+
+static void timeout(object conn)
+{
+	if (conn->query_user() == this_object()) {
+		connection(conn);
+		disconnect();
+	}
+}
+
+private object get_manager(object conn)
+{
+	object base;
+	int port;
+
+	base = conn;
+
+	while (base <- LIB_USER) {
+		base = base->query_conn();
+	}
+
+	port = base->query_port();
+
+	if (base <- TELNET_CONN) {
+		return telnet_managers[port];
+	}
+
+	if (base <- BINARY_CONN) {
+		return binary_managers[port];
+	}
 }
 
 /* external */
@@ -293,27 +258,6 @@ void block_connections()
 			conn->set_mode(MODE_BLOCK);
 		}
 	}
-}
-
-object intercept(object LIB_CONN conn, object LIB_USER user)
-{
-	object base_conn;
-
-	ACCESS_CHECK(previous_program() == LIB_SYSTEM_USER);
-
-	base_conn = conn;
-
-	while (base_conn && base_conn <- LIB_USER) {
-		base_conn = base_conn->query_conn();
-	}
-
-	if (!base_conn) {
-		error("Bad redirect");
-	}
-
-	intercepts[base_conn] = user;
-
-	return query_select(nil, conn);
 }
 
 void unblock_connections()
@@ -402,14 +346,103 @@ void bogus_reboot()
 
 string query_banner(object LIB_CONN connection)
 {
+	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
+
+	LOGD->post_message("userd", LOG_DEBUG, "Query_banner for " + object_name(connection));
+
+	if (stacking) {
+		LOGD->post_message("userd", LOG_DEBUG, "Query_banner: stacking");
+		/* stacking in progress */
+		return nil;
+	} else if (!(connection <- LIB_USER)) {
+		LOGD->post_message("userd", LOG_DEBUG, "Query_banner: naked");
+		/* first level, ignore */
+		return nil;
+	} else {
+		/* stack built and we're not naked */
+		/* it is safe to call the lieutenant */
+		object userd;
+
+		LOGD->post_message("userd", LOG_DEBUG, "Query_banner: ready, call lieutenant");
+
+		userd = get_manager(connection);
+
+		if (!userd) {
+			return "Internal error: no connection manager";
+		}
+
+		return userd->query_banner(connection);
+	}
 }
 
 int query_timeout(object LIB_CONN connection)
 {
+	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
+
+	LOGD->post_message("userd", LOG_DEBUG, "Query_timeout for " + object_name(connection));
+
+	if (stacking) {
+		LOGD->post_message("userd", LOG_DEBUG, "Query_timeout: stacking");
+		/* stacking in progress */
+		return 0;
+	} else if (!(connection <- LIB_USER)) {
+		LOGD->post_message("userd", LOG_DEBUG, "Query_timeout: naked");
+		/* first level, ignore */
+		stacking = 1;
+		connection(connection);
+		redirect(clone_object("~/obj/filter/rlimits"), nil);
+		return 0;
+	} else {
+		/* stack built and we're not naked */
+		/* it is safe to call the lieutenant */
+		object userd;
+
+		LOGD->post_message("userd", LOG_DEBUG, "Query_timeout: ready, call lieutenant");
+
+		userd = get_manager(connection);
+
+		if (!userd) {
+			return -1;
+		}
+
+		return userd->query_timeout(connection);
+	}
 }
 
 object select(string str)
 {
+	object connection;
+	/* do not call to lieutenant until after */
+	/* connection stack is built */
+
+	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
+	connection = previous_object(1);
+
+	LOGD->post_message("userd", LOG_DEBUG, "Select for " + object_name(connection));
+
+	if (stacking) {
+		LOGD->post_message("userd", LOG_DEBUG, "Select: stacking");
+		/* stacking in progress */
+		ASSERT(str == nil);
+		return this_object();
+	} else if (!(connection <- LIB_USER)) {
+		LOGD->post_message("userd", LOG_DEBUG, "Select: naked (goof)");
+		/* first level, ignore */
+		return this_object();
+	} else {
+		/* stack built and we're not naked */
+		/* it is safe to call the lieutenant */
+		object userd;
+		LOGD->post_message("userd", LOG_DEBUG, "Select: ready, call lieutenant");
+
+		userd = get_manager(connection);
+
+		if (!userd) {
+			return this_object();
+		}
+
+		return userd->select(str);
+	}
 }
 
 /* connection hooks */
@@ -418,14 +451,49 @@ int login(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	previous_object()->message("Internal error: connection manager fault\n");
-	return MODE_DISCONNECT;
+	if (stacking) {
+		object conn;
+		object base;
+		object user;
+		string banner;
+		mapping managers;
+		int port;
+		int timeout;
+
+		conn = previous_object();
+
+		LOGD->post_message("userd", LOG_DEBUG, "Login: ready to call lieutenant QB and QT");
+		stacking = 0;
+
+		banner = query_banner(conn);
+
+		if (banner) {
+			previous_object()->message(banner);
+		}
+
+		timeout = query_timeout(conn);
+
+		if (timeout < -1) {
+			return MODE_DISCONNECT;
+		}
+
+		call_out("timeout", timeout, conn);
+
+		return MODE_NOCHANGE;
+	} else {
+		previous_object()->message("Internal error: connection manager fault\n");
+		return MODE_DISCONNECT;
+	}
 }
 
 int receive_message(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	previous_object()->message("Internal error: connection manager fault\n");
-	return MODE_DISCONNECT;
+	LOGD->post_message("userd", LOG_DEBUG, "Receive_message: ready to call lieutenant select");
+
+	connection(previous_object());
+	redirect(select(str), str);
+
+	return MODE_NOCHANGE;
 }
