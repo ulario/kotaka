@@ -106,15 +106,20 @@ private void register_object(string path, string *inherits,
 	ctors -= ({ nil });
 	dtors -= ({ nil });
 
-	pinfo = new_object(OBJECT_INFO);
-	pinfo->set_path(path);
+	if (upgrading) {
+		pinfo = objdb->get_element(oindex);
+	} else {
+		pinfo = new_object(OBJECT_INFO);
+		pinfo->set_path(path);
+		objdb->set_element(oindex, pinfo);
+	}
+
 	pinfo->set_inherits(oindices);
 	pinfo->set_includes(includes);
 	pinfo->set_inherited_constructors(ctors);
 	pinfo->set_constructor(constructor);
 	pinfo->set_inherited_destructors(dtors);
 	pinfo->set_destructor(destructor);
-	objdb->set_element(oindex, pinfo);
 }
 
 private string *fetch_from_initd(object initd, string path)
