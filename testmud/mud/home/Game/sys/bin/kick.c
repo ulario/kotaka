@@ -28,11 +28,11 @@ void main(string args)
 		return;
 	}
 
-	kicker_name = SUBD->titled_name(user->query_username(), user->query_class());
+	kicker_name = GAME_SUBD->titled_name(user->query_username(), user->query_class());
 
 	user->message("You kick " + args + " from the mud.\n");
 	turkey->message(kicker_name + " kicks you from the mud!\n");
-	SUBD->send_to_all_except(kicker_name + " kicks " + args + "from the mud!\n", ({ turkey, query_user() }) );
+	GAME_SUBD->send_to_all_except(kicker_name + " kicks " + args + "from the mud!\n", ({ turkey, query_user() }) );
 
 	turkey->quit();
 }

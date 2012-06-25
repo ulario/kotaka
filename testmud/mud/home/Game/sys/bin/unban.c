@@ -25,8 +25,8 @@ void main(string args)
 		return;
 	}
 
-	kicker_name = SUBD->titled_name(user->query_username(), user->query_class());
+	kicker_name = GAME_SUBD->titled_name(user->query_username(), user->query_class());
 	user->message("You unban " + args + " from the mud.\n");
-	SUBD->send_to_all_except(args + " has been unbanned from the mud by " + kicker_name + ".\n", ({ user }) );
+	GAME_SUBD->send_to_all_except(args + " has been unbanned from the mud by " + kicker_name + ".\n", ({ user }) );
 	BAND->unban_username(args);
 }

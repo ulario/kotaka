@@ -63,7 +63,17 @@ void pre_end()
 	object user;
 	string name;
 
-	ACCESS_CHECK(previous_object() == query_user());
+	user = query_user();
+
+	ACCESS_CHECK(previous_object() == user);
+
+	if (user->query_username()) {
+		GAME_SUBD->send_to_all_except(
+			GAME_SUBD->titled_name(
+				user->query_username(),
+				user->query_class())
+			+ " logs out.", user);
+	}
 	send_out("Come back soon.\n");
 }
 

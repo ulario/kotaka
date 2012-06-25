@@ -39,11 +39,11 @@ private void do_nuke(string args)
 	ACCOUNTD->unregister_account(args);
 
 	turkey = GAME_USERD->find_user(args);
-	kicker_name = SUBD->titled_name(user->query_username(), user->query_class());
+	kicker_name = GAME_SUBD->titled_name(user->query_username(), user->query_class());
 
 	user->message("You nuked " + args + " from the mud.\n");
 
-	SUBD->send_to_all_except(args + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
+	GAME_SUBD->send_to_all_except(args + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
 
 	if (turkey) {
 		turkey->message("You have been nuked from the mud by " + kicker_name + "!\n");

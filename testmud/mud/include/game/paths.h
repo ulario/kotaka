@@ -17,4 +17,5 @@
 #define GAME_DRIVER		(USR_DIR + "/Game/sys/driver")
 #define GAME_USERD		(USR_DIR + "/Game/sys/userd")
 #define GAME_ROOT		(USR_DIR + "/Game/sys/root")
+#define GAME_SUBD		(USR_DIR + "/Game/sys/subd")
 #define GAME_TESTD		(USR_DIR + "/Game/sys/testd")

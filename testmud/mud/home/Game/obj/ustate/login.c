@@ -164,11 +164,12 @@ void receive_in(string input)
 			pop_state();
 			return;
 		} else if (BAND->query_is_banned(name)) {
-			send_out("You were just banned.\n");
+			send_out("Sorry, but you were just banned.\n");
 			query_user()->quit();
 			return;
 		} else if (input == "yes") {
 			object user;
+			int was_guest;
 
 			user = GAME_USERD->find_user(name);
 
@@ -176,11 +177,13 @@ void receive_in(string input)
 				send_out("Evicting previous connection.\n");
 				user->quit();
 			} else {
-				send_out("Your previous connection went away before I could evict it :P\n");
+				send_out("Your previous connection went away before I could evict it.\n");
 			}
 
 			user = query_user();
+
 			if (GAME_USERD->query_is_guest(user)) {
+				was_guest = TRUE;
 				GAME_USERD->promote_guest(name, user);
 			} else {
 				GAME_USERD->add_user(name, user);
@@ -188,6 +191,12 @@ void receive_in(string input)
 
 			user->set_username(name);
 			user->set_mode(MODE_ECHO);
+
+			GAME_SUBD->send_to_all_except(
+				GAME_SUBD->titled_name(
+					user->query_username(),
+					user->query_class())
+				+ " logs in.\n", user);
 
 			terminate_account_state();
 			return;
