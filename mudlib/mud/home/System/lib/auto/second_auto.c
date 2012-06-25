@@ -1,11 +1,13 @@
 #include <kotaka/privilege.h>
 #include <kotaka/paths.h>
+#include <kotaka/log.h>
 
 #include <trace.h>
 #include <type.h>
 #include <status.h>
 
 inherit "call_guard";
+inherit "callout_guard";
 inherit "touch";
 
 /**********/
@@ -15,12 +17,6 @@ inherit "touch";
 static int free_objects()
 {
 	return status()[ST_OTABSIZE] - status()[ST_NOBJECTS];
-}
-
-static int free_callouts()
-{
-	return status()[ST_COTABSIZE] -
-		(status()[ST_NCOSHORT] + status()[ST_NCOLONG]);
 }
 
 /*********/
@@ -50,25 +46,6 @@ static object calling_object(varargs int steps)
 
 	return find_object(trace[sizeof(trace) - (3 + steps)][TRACE_OBJNAME]);
 }
-
-#if 1
-static int call_out(string function, mixed delay, mixed args ...)
-{
-	if (!this_object()) {
-		error("Cannot call_out from destructed object");
-	}
-
-	if (!function_object(function, this_object())) {
-		error("Call_out to undefined function " + function);
-	}
-
-	if (!SYSTEM() && free_callouts() < 20) {
-		error("Too many callouts");
-	}
-
-	return ::call_out(function, delay, args ...);
-}
-#endif
 
 /**********/
 /* object */
