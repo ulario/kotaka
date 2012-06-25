@@ -7,7 +7,7 @@
 
 #include <status.h>
 
-inherit LIB_MANAGER;
+inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 
 mapping users;
@@ -24,8 +24,8 @@ static void create()
 	users = ([ ]);
 
 	/* normal stuff */
-	PORTD->set_telnet_manager(0, this_object());
-	PORTD->set_binary_manager(1, this_object());
+	SYSTEM_USERD->set_telnet_manager(0, this_object());
+	SYSTEM_USERD->set_binary_manager(1, this_object());
 }
 
 string query_banner(object LIB_CONN connection)
@@ -125,7 +125,7 @@ object select(string str)
 	switch(basename) {
 	case BINARY_CONN:
 		switch(level) {
-		case 0:
+		case 1:
 			return clone_object("~Game/obj/filter/telnet");
 		default:
 			user = clone_object("~Game/obj/user");

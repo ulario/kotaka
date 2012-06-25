@@ -73,7 +73,7 @@ private void initialize()
 	load_dir("sys", 1);
 
 	TRASHD->enable();
-	PORTD->enable();
+	SYSTEM_USERD->enable();
 	ERRORD->enable();
 	STATUSD->enable();
 
@@ -170,7 +170,7 @@ void reboot()
 	clear_admin();
 
 	catch {
-		PORTD->reboot();
+		SYSTEM_USERD->reboot();
 	}
 
 	WATCHDOGD->reboot();
