@@ -478,10 +478,6 @@ nomask void _F_set_id_base(string new_base)
 		new_number = 1;
 	}
 
-	if (new_number == id_number) {
-		return;
-	}
-
 	old_id = ID(id_base, id_number);
 
 	id_base = new_base;
