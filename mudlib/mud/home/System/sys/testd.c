@@ -228,7 +228,7 @@ void test()
 
 	ACCESS_CHECK(SYSTEM());
 
-#if 1
+#if 0
 	LOGD->post_message("test", LOG_DEBUG, "TestD test battery beginning");
 
 #ifdef SYS_NETWORKING
