@@ -62,9 +62,9 @@ private void unregister_with_klib_userd();
 void reboot();
 void clear_ports();
 
-void set_binary_manager(int port, object LIB_MANAGER manager);
-void set_telnet_manager(int port, object LIB_MANAGER manager);
-void set_fixed_manager(int port, object LIB_MANAGER manager);
+void set_binary_manager(int port, object LIB_USERD manager);
+void set_telnet_manager(int port, object LIB_USERD manager);
+void set_fixed_manager(int port, object LIB_USERD manager);
 
 int free_users();
 void block_connections();
@@ -188,7 +188,7 @@ void reboot()
 
 /* config */
 
-void set_binary_manager(int port, object LIB_MANAGER manager)
+void set_binary_manager(int port, object LIB_USERD manager)
 {
 	ACCESS_CHECK(PRIVILEGED());
 
@@ -197,14 +197,14 @@ void set_binary_manager(int port, object LIB_MANAGER manager)
 	binary_managers[port] = manager;
 }
 
-void set_telnet_manager(int port, object LIB_MANAGER manager)
+void set_telnet_manager(int port, object LIB_USERD manager)
 {
 	ACCESS_CHECK(PRIVILEGED());
 
 	telnet_managers[port] = manager;
 }
 
-void set_fixed_manager(int port, object LIB_MANAGER manager)
+void set_fixed_manager(int port, object LIB_USERD manager)
 {
 	ACCESS_CHECK(PRIVILEGED());
 
@@ -262,7 +262,7 @@ private void analyze_connection(object LIB_CONN connection)
 	connections[connection] = cinfo;
 }
 
-private object LIB_MANAGER manager_of(object LIB_CONN connection)
+private object manager_of(object LIB_CONN connection)
 {
 	mixed *cinfo;
 	mapping checkme;
