@@ -380,7 +380,7 @@ void recompile_everything()
 
 		while (!libqueue->empty()) {
 			string path;
-	
+
 			path = libqueue->get_front();
 			libqueue->pop_front();
 
@@ -433,6 +433,63 @@ void discover_objects()
 			objqueue->pop_front();
 
 			compile_object(path);
+		}
+	}
+}
+
+void discover_clones()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	rlimits (0; -1) {
+		object indices;
+		string *owners;
+		object first;
+		int sz, i;
+
+		indices = objdb->get_indices();
+		sz = indices->get_size();
+
+		for (i = 0; i < sz; i++) {
+			object pinfo;
+			int count;
+
+			pinfo = objdb->get_element(indices->get_element(i));
+			pinfo->reset_clones();
+		}
+
+		owners = KERNELD->query_owners();
+		sz = sizeof(owners);
+
+		for (i = 0; i < sz; i++) {
+			object current;
+
+			first = KERNELD->first_link(owners[i]);
+
+			current = first;
+			
+			if (!current) {
+				continue;
+			}
+
+			do {
+				int oindex;
+				string path;
+				object pinfo;
+
+				path = object_name(current);
+
+				if (!sscanf(path, "%*s#%*d")) {
+					current = KERNELD->next_link(current);
+					continue;
+				}
+
+				LOGD->post_message("object", LOG_DEBUG, "Discovered clone: " + path);
+				oindex = status(current, O_INDEX);
+				pinfo = objdb->get_element(oindex);
+				pinfo->add_clone(current);
+				current = KERNELD->next_link(current);
+			} while (current != first);
 		}
 	}
 }

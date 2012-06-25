@@ -12,14 +12,18 @@ static void create()
 {
 	string name;
 	string *parts;
+	int sz;
+
+	::create();
 
 	name = object_name(this_object());
 
 	sscanf(name, "%s#%*d", name);
 
 	parts = explode(name, "/");
+	sz = sizeof(parts);
 
-	set_id_base(parts[sizeof(parts) - 1]);
+	set_id_base(parts[sz - 1]);
 }
 
 static nomask void gobj_destruct()
