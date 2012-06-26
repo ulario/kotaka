@@ -41,9 +41,9 @@ static void move_notify(object old_env)
 	}
 
 	for (; new_env != common; new_env = new_env->query_environment()) {
-		xpos -= old_env->query_x_position();
-		ypos -= old_env->query_y_position();
-		zpos -= old_env->query_z_position();
+		xpos -= new_env->query_x_position();
+		ypos -= new_env->query_y_position();
+		zpos -= new_env->query_z_position();
 	}
 }
 
