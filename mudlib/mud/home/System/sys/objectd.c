@@ -213,9 +213,13 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 			}
 
 			if (sscanf(opath, "%*s" + INHERITABLE_SUBDIR)) {
-				libqueue->push_back(opath);
+				if (libqueue) {
+					libqueue->push_back(opath);
+				}
 			} else {
-				objqueue->push_back(opath);
+				if (objqueue) {
+					objqueue->push_back(opath);
+				}
 			}
 		}
 	}
@@ -550,7 +554,7 @@ object query_orphans()
 
 		pinfo = objdb->get_element(indices->get_element(i));
 
-		if (!file_info(path = pinfo->query_path()) + ".c") {
+		if (!file_info(path = pinfo->query_path() + ".c")) {
 			orphans->push_back(path);
 		}
 	}
