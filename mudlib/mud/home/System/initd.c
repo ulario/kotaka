@@ -65,6 +65,7 @@ private void initialize()
 
 	OBJECTD->enable();
 	OBJECTD->discover_objects();
+	OBJECTD->discover_clones();
 
 	load_dir("closed", 1);
 	load_dir("lib", 1);
