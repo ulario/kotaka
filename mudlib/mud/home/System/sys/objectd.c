@@ -27,7 +27,7 @@ int ignore_clones;	/* don't track clones */
 /* internal functions */
 
 static void create();
-private void scan_objects(string path, object libqueue, object objqueue);
+private void scan_objects(string path, object libqueue, object objqueue, object notqueue);
 private void register_object(string path, string *inherits, string *includes, string constructor, string destructor);
 private string *fetch_from_initd(object initd, string path);
 private mixed query_include_file(string compiled, string from, string path);
@@ -172,7 +172,7 @@ private mixed query_include_file(string compiled, string from, string path)
 	return path;
 }
 
-private void scan_objects(string path, object libqueue, object objqueue)
+private void scan_objects(string path, object libqueue, object objqueue, object notqueue)
 {
 	string *names;
 	int *sizes;
@@ -192,7 +192,7 @@ private void scan_objects(string path, object libqueue, object objqueue)
 		name = names[i];
 
 		if (sizes[i] == -2) {
-			scan_objects(path + "/" + name, libqueue, objqueue);
+			scan_objects(path + "/" + name, libqueue, objqueue, notqueue);
 			continue;
 		}
 
@@ -206,6 +206,9 @@ private void scan_objects(string path, object libqueue, object objqueue)
 			status = status(opath);
 
 			if (!status) {
+				if (notqueue) {
+					notqueue->push_back(opath);
+				}
 				continue;
 			}
 
@@ -420,7 +423,7 @@ void discover_objects()
 		libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 		objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
-		scan_objects("/", libqueue, objqueue);
+		scan_objects("/", libqueue, objqueue, nil);
 
 		while (!libqueue->empty()) {
 			string path;
@@ -468,6 +471,7 @@ void discover_clones()
 
 		for (i = 0; i < sz; i++) {
 			object current;
+			int nclones;
 
 			first = KERNELD->first_link(owners[i]);
 
@@ -476,6 +480,8 @@ void discover_clones()
 			if (!current) {
 				continue;
 			}
+
+			LOGD->post_message("objectd", LOG_DEBUG, "Searching for clones belonging to " + owners[i]);
 
 			do {
 				int oindex;
@@ -493,7 +499,15 @@ void discover_clones()
 				pinfo = objdb->get_element(oindex);
 				pinfo->add_clone(current);
 				current = KERNELD->next_link(current);
+				nclones++;
+
+				if (nclones % 100 == 0) {
+					LOGD->post_message("objectd", LOG_DEBUG, "Found " + nclones + " so far.");
+				}
+
 			} while (current != first);
+
+			LOGD->post_message("objectd", LOG_DEBUG, "Found " + nclones + " total.");
 		}
 	}
 }
@@ -516,6 +530,44 @@ void full_reset()
 
 		discover_clones();
 	}
+}
+
+object query_orphans()
+{
+	object orphans;
+	object indices;
+	int sz, i;
+
+	orphans = new_object(BIGSTRUCT_ARRAY_LWO);
+	orphans->grant_access(previous_object(), READ_ACCESS);
+
+	indices = objdb->get_indices();
+	sz = indices->get_size();
+
+	for (i = 0; i < sz; i++) {
+		object pinfo;
+		string path;
+
+		pinfo = objdb->get_element(indices->get_element(i));
+
+		if (!file_info(path = pinfo->query_path()) + ".c") {
+			orphans->push_back(path);
+		}
+	}
+
+	return orphans;
+}
+
+object query_dormant()
+{
+	object notlist;
+
+	notlist = new_object(BIGSTRUCT_ARRAY_LWO);
+	notlist->grant_access(previous_object(), READ_ACCESS);
+
+	scan_objects("/", nil, nil, notlist);
+
+	return notlist;
 }
 
 /* kernel library hooks */
