@@ -47,6 +47,7 @@ void set_inherited_destructors(string *destructors);
 
 void add_clone(object clone);
 void remove_clone(object clone);
+void reset_clones();
 
 string query_path();
 int *query_inherits();
@@ -152,7 +153,10 @@ void add_clone(object clone)
 void remove_clone(object clone)
 {
 	ACCESS_CHECK(SYSTEM());
-	ASSERT(nclones > 0);
+
+	if (nclones <= 0) {
+		error("Clone underflow for " + path);
+	}
 
 	nclones--;
 
@@ -161,6 +165,15 @@ void remove_clone(object clone)
 	}
 
 	clones[clone] = nil;
+}
+
+void reset_clones()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	clones = nil;
+	overflow = 0;
+	nclones = 0;
 }
 
 string query_path()
