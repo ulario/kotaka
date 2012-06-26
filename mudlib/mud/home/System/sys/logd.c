@@ -206,6 +206,16 @@ private void send_to_target(string target, string header, string message)
 		write_logfile(info, message);
 		break;
 
+	case "user":
+		{
+			object user;
+
+			if (user = this_user()) {
+				user->message(message + "\n");
+			}
+		}
+		break;
+
 	case "kusers":
 		{
 			object *users;
