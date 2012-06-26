@@ -282,6 +282,7 @@ private void configure_logging()
 	LOGD->set_target("*", 255, "driver");
 	LOGD->set_target("*", 255, "file:/log/general.log");
 	LOGD->set_target("*", 255, "file:/log/session.log");
+	LOGD->set_target("*", 255, "user");
 }
 
 int forbid_inherit(string from, string path, int priv)
