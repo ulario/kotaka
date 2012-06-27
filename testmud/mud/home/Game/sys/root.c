@@ -9,17 +9,7 @@ static void create()
 {
 	::create();
 
-	::set_id_base("root");
-}
-
-string query_id()
-{
-	return "ROOT";
-}
-
-string query_base()
-{
-	return "ROOT";
+	::set_id_base("ROOT");
 }
 
 void move(mixed args ...)
