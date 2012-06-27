@@ -76,6 +76,6 @@ string query_destructor(string path)
 {
 	switch(path) {
 	case USR_DIR + "/Game/lib/object":
-		return "gobj_destruct";
+		return "game_object_destruct";
 	}
 }

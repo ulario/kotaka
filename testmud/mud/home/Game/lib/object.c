@@ -26,7 +26,7 @@ static void create()
 	set_id_base(parts[sz - 1]);
 }
 
-static nomask void gobj_destruct()
+static nomask void game_object_destruct()
 {
 	int sz;
 	int index;
