@@ -47,7 +47,7 @@ string query_banner(object LIB_CONN connection)
 		return "";
 	}
 
-	if (level == 0) {
+	if (level == 1) {
 		int rnd;
 
 		files = get_dir("~/data/splash/telnet_banners/chars/*")[0];
@@ -68,10 +68,9 @@ string query_banner(object LIB_CONN connection)
 
 			write_file("~/data/splash/telnet_banners/ansi/" + files[splash], ansi);
 		};
-		
+
 		splash++;
-		
-	
+
 		return ansi;
 	}
 }
@@ -92,7 +91,7 @@ int query_timeout(object LIB_CONN connection)
 		return -1;
 	}
 
-	if (level == 0) {
+	if (level == 1) {
 		connections[connection] = 1;
 		connection(connection);
 		::set_mode(MODE_RAW);
