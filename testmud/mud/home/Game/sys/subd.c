@@ -1,4 +1,7 @@
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
+#include <game/paths.h>
+
 /* drawing the feedback screen: */
 
 /*
@@ -15,15 +18,17 @@ Then on the right we have a flowing paragraph describing the current "room"
 Then another paragraph with an inventory listing.
 */
 
-#define XM (80 - 17 - 1)
+#define XM (80 - 17 - 2)
 #define YM (2)
 
-string draw_look(object living)
+string draw_look(object living, varargs int facing)
 {
 	int x, y, i;
 	object painter;
 	object environment;
 	object *contents;
+
+	ACCESS_CHECK(GAME());
 
 	painter = new_object(LWO_PAINTER);
 
@@ -61,23 +66,36 @@ string draw_look(object living)
 
 		painter->move_pen(XM + i, YM - 1);
 		painter->draw("|");
+		painter->move_pen(XM + i, YM + 17);
+		painter->draw("|");
 		painter->move_pen(XM - 1, YM + i);
+		painter->draw("-");
+		painter->move_pen(XM + 17, YM + i);
 		painter->draw("-");
 	}
 
-	painter->set_color(0x8B);
+	painter->set_color(0x03);
+
 	if (environment) {
 		float ox, oy;
 		int sz;
 
+		float pi, sin, cos;
+
 		ox = living->query_x_position();
 		oy = living->query_y_position();
+
+		pi = SUBD->pi();
+
+		sin = sin((float)facing * pi / 180.0);
+		cos = cos((float)facing * pi / 180.0);
 
 		contents = environment->query_inventory() - ({ living });
 		sz = sizeof(contents);
 
 		for (i = 0; i < sz; i++) {
 			float dx, dy;
+			float vx, vy;
 			object neighbor;
 
 			neighbor = contents[i];
@@ -85,25 +103,38 @@ string draw_look(object living)
 			dx = neighbor->query_x_position() - ox;
 			dy = neighbor->query_y_position() - oy;
 
-			if (dx < -10.0 || dx > 10.0 || dy < -10.0 || dy > 10.0) {
+			vy = cos * dy - sin * dx;
+			vx = sin * dy + cos * dx;
+
+			if (vx < -10.0 || vx > 10.0 || vy < -10.0 || vy > 10.0) {
 				continue;
 			}
 
-			x = (int)dx + 8;
-			y = (int)dy + 8;
+			x = (int)vx + 8;
+			y = (int)vy + 8;
 
 			if (x < 0 || x > 16 || y < 0 || y > 16) {
 				continue;
 			}
 
 			painter->move_pen(XM + x, YM + y);
-			painter->draw("X");
+
+			if (neighbor <- "~/obj/wolf") {
+				painter->set_color(0x08);
+				painter->draw("w");
+			} else if (neighbor <- "~/obj/deer") {
+				painter->set_color(0x03);
+				painter->draw("d");
+			} else if (neighbor <- "~/obj/rock") {
+				painter->set_color(0x07);
+				painter->draw("@");
+			}
 		}
 	}
 
 	if (living) {
 		painter->move_pen(XM + 8, YM + 8);
-		painter->set_color(0x8F);
+		painter->set_color(0x0F);
 		painter->draw("@");
 	}
 
