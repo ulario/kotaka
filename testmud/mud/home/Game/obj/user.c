@@ -21,7 +21,7 @@ static void create(int clone)
 {
 	if (clone) {
 		::create();
-		
+
 		aliases = ([ ]);
 		disabled = ({ });
 	}
@@ -64,6 +64,11 @@ void set_username(string new_username)
 	ACCESS_CHECK(GAME());
 
 	username = new_username;
+}
+
+string query_name()
+{
+	return username;
 }
 
 void set_uid(int new_uid)
