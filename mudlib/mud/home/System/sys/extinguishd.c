@@ -7,7 +7,15 @@ inherit SECOND_AUTO;
 
 void extinguish(string path)
 {
-	ACCESS_CHECK(KADMIN());
+	if (!KADMIN()) {
+		string opath;
+
+		opath = object_name(previous_object());
+
+		ACCESS_CHECK(DRIVER->creator(opath));
+		ACCESS_CHECK(DRIVER->creator(opath) == DRIVER->creator(path));
+	}
+
 	call_out("purge", 0, path, status(ST_OTABSIZE));
 }
 
@@ -15,7 +23,7 @@ static void purge(string path, int quota)
 {
 	int limit;
 
-	limit = 200;
+	limit = 128;
 
 	if (quota % limit != 0) {
 		limit = quota % limit;
