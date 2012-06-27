@@ -217,3 +217,10 @@ void swapout()
 
 	::swapout();
 }
+
+void dump_state()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	::dump_state();
+}
