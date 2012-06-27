@@ -9,6 +9,7 @@ void main(string args)
 	object root;
 	int sz;
 	object user;
+	string sprint;
 
 	user = query_user();
 
@@ -26,5 +27,6 @@ void main(string args)
 		send_out("There were no seedlings to uproot.\n");
 	}
 	send_out("Root inventory is now:\n");
-	send_out(STRINGD->tree_sprint(root->query_inventory()) + "\n");
+	sprint = STRINGD->mixed_sprint(root->query_inventory());
+	send_out(STRINGD->wordwrap(sprint, 75) + "\n");
 }

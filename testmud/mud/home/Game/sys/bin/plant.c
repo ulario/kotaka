@@ -8,6 +8,7 @@ void main(string args)
 	object seed;
 	object root;
 	object user;
+	string sprint;
 
 	user = query_user();
 
@@ -16,14 +17,23 @@ void main(string args)
 		return;
 	}
 
-	seed = clone_object("~/obj/object");
+	switch(random(3)) {
+	case 0:
+		send_out("A placid leaf muncher is born.\n");
+		seed = clone_object("~/obj/deer");
+		break;
+	case 1:
+		send_out("A fierce spirited wolf is born.\n");
+		seed = clone_object("~/obj/wolf");
+		break;
+	case 2:
+		send_out("A boring rock is conjured.\n");
+		seed = clone_object("~/obj/rock");
+		break;
+	}
 
 	seed->move(root = find_object(GAME_ROOT));
 
 	seed->set_x_position((float)random(9));
 	seed->set_y_position((float)random(9));
-
-	send_out("A seed has been planted.\n");
-	send_out("Root inventory is now:\n");
-	send_out(STRINGD->tree_sprint(root->query_inventory()) + "\n");
 }
