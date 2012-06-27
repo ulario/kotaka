@@ -63,7 +63,7 @@ private string normalize(string in)
 void set_client(object new_client)
 {
 	ACCESS_CHECK(previous_program() == PROXYD);
-	
+
 	client = new_client;
 }
 
