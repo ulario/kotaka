@@ -7,6 +7,7 @@
 #include <kotaka/assert.h>
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
+#include <kotaka/property.h>
 
 #include <game/paths.h>
 
@@ -55,6 +56,9 @@ static void create()
 	load_dir("obj", 1);
 	load_dir("open", 1);
 	load_dir("sys", 1);
+
+	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 
 	root = find_object("sys/root");
 }
