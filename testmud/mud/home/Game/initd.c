@@ -57,6 +57,7 @@ static void create()
 	load_dir("open", 1);
 	load_dir("sys", 1);
 
+	PROXYD->get_proxy("Game")->grant_global_access("~");
 	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 
@@ -94,11 +95,7 @@ string bits(string input)
 string query_destructor(string path)
 {
 	switch(path) {
-	case USR_DIR + "/Game/lib/time":
-		return "time_destruct";
 	case USR_DIR + "/Game/lib/object":
 		return "gobj_destruct";
-	default:
-		LOGD->post_message("game", LOG_DEBUG, "No destructor registered for " + path);
 	}
 }
