@@ -1,13 +1,13 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-int execute_command(string cmd, string args)
+int do_action(string cmd, object actor, string args)
 {
 	object ustate;
 	object bin;
 
 	ACCESS_CHECK((ustate = previous_object())<-LIB_USTATE);
-	bin = find_object("~/sys/bin/" + cmd);
+	bin = find_object("~/sys/verb/" + cmd);
 
 	if (!bin) {
 		return FALSE;
@@ -15,7 +15,7 @@ int execute_command(string cmd, string args)
 
 	TLSD->set_tls_value("Game", "ustate", ustate);
 
-	bin->main(args);
+	bin->main(actor, args);
 
 	TLSD->set_tls_value("Game", "ustate", nil);
 
