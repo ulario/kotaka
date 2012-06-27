@@ -72,7 +72,7 @@ void pre_end()
 			GAME_SUBD->titled_name(
 				user->query_username(),
 				user->query_class())
-			+ " logs out.", ({ user }));
+			+ " logs out.\n", ({ user }));
 	}
 	send_out("Come back soon.\n");
 }
@@ -114,9 +114,15 @@ void receive_in(string input)
 	case "":
 		break;
 	default:
-		if (!BIND->execute_command(first, input)) {
-			send_out(first + ": command not recognized.\n");
-		}
+		if (BIND->execute_command("adm/" + first, input))
+			break;
+		if (BIND->execute_command("wiz/tool/" + first, input))
+			break;
+		if (BIND->execute_command("wiz/" + first, input))
+			break;
+		if (BIND->execute_command(first, input))
+			break;
+		send_out("No such command.\n");
 	}
 
 	if (!this_object()) {

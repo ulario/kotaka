@@ -23,7 +23,7 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	send_out("[\033[1;35mHELP\033[0m] ");
+	send_out("[\033[1;34mchargen\033[0m] ");
 }
 
 void stop()
@@ -73,15 +73,6 @@ void receive_in(string input)
 	}
 
 	switch(first) {
-	case "help":
-		return;
-	case "ls":
-		do_ls(input);
-		break;
-	case "cd":
-		/* going up is always allowed */
-		do_cd(input);
-		break;
 	case "quit":
 		pop_state();
 		return;
