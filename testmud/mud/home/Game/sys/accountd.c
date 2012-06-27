@@ -24,7 +24,7 @@ void register_account(string name, string password)
 		error("Duplicate account");
 	}
 
-	passwords[name] = hash_string("MD5", password);
+	passwords[name] = hash_string("SHA1", password);
 	save();
 }
 
@@ -58,7 +58,15 @@ int authenticate(string name, string password)
 		error("No such account");
 	}
 
-	return passwords[name] == hash_string("MD5", password);
+	if (passwords[name] == hash_string("SHA1", password))
+		return TRUE;
+
+	if (passwords[name] == hash_string("MD5", password)) {
+		passwords[name] = hash_string("SHA1", password);
+		save();
+		return TRUE;
+	}
+
 }
 
 void change_password(string name, string newpass)
@@ -69,7 +77,8 @@ void change_password(string name, string newpass)
 		error("No such account");
 	}
 
-	passwords[name] = hash_string("MD5", newpass);
+	passwords[name] = hash_string("SHA1", newpass);
+
 	save();
 }
 
