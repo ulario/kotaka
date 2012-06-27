@@ -51,7 +51,7 @@ static void bomb(int quota)
 {
 	int limit;
 
-	limit = 200;
+	limit = 64;
 
 	for (; quota > 0 && limit > 0; quota--, limit--) {
 		clone_object("~/obj/bomb");
