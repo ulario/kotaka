@@ -170,3 +170,34 @@ string titled_name(string name, int class)
 
 	return name;
 }
+
+void send_to_all(string phrase)
+{
+	int sz;
+	object *users;
+
+	ACCESS_CHECK(GAME());
+
+	users = GAME_USERD->query_users();
+	users += GAME_USERD->query_guests();
+
+	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
+		users[sz]->message(phrase);
+	}
+}
+
+void send_to_all_except(string phrase, object *exceptions)
+{
+	int sz;
+	object *users;
+
+	ACCESS_CHECK(GAME());
+
+	users = GAME_USERD->query_users();
+	users += GAME_USERD->query_guests();
+	users -= exceptions;
+
+	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
+		users[sz]->message(phrase);
+	}
+}
