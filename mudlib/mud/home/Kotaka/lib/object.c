@@ -820,19 +820,6 @@ nomask void _F_set_property(string name, mixed value)
 	if (info) {
 		switch(info[1]) {
 		case PROP_SIMPLE:
-			switch(info[0]) {
-			case T_INT:
-				if (value == 0) {
-					value = nil;
-				}
-				break;
-
-			case T_FLOAT:
-				if (value == 0.0) {
-					value = nil;
-				}
-				break;
-			}
 			break;
 
 		case PROP_COMBO:
@@ -887,17 +874,26 @@ nomask mixed _F_query_property(string name)
 			
 			value = properties[name];
 			
-			if (value) {
+			if (value != nil) {
 				return SUBD->deep_copy(value);
 			}
-			
+
 			switch(info[0]) {
 			case T_INT:
 				return 0;
-			
+
 			case T_FLOAT:
 				return 0.0;
 			
+			case T_ARRAY:
+				return ({ });
+
+			case T_MAPPING:
+				return ([ ]);
+
+			case T_STRING:
+				return "";
+
 			default:
 				return nil;
 			}
