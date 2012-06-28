@@ -289,25 +289,24 @@ private void configure_logging()
 
 int forbid_inherit(string from, string path, int priv)
 {
+	string creator;
+	int firstchar;
+
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	switch(path) {
-	case LIB_SYSTEM_USER:
-		switch(DRIVER->creator(from)) {
-		case "Game":
-		case "Kotaka":
-			return 0;
-		default:
-			return 1;
-		}
-		break;
-	}
-
-	if (sscanf(from, USR_DIR + "/System/%*s")) {
+	if (sscanf(path, USR_DIR + "/System/lib/auto/%*s")) {
 		return 0;
 	}
 
-	if (sscanf(path, USR_DIR + "/System/closed/%*s")) {
+	creator = DRIVER->creator(from);
+
+	if (!creator) {
+		return 1;
+	}
+
+	firstchar = creator[0];
+
+	if (firstchar < 'A' || firstchar > 'Z') {
 		return 1;
 	}
 
