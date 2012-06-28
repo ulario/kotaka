@@ -263,6 +263,8 @@ private void configure_klib()
 	for (index = 0; index < sizeof(wizards); index++) {
 		KERNELD->add_owner(wizards[index]);
 	}
+
+	KERNELD->set_rsrc("ticks", 100000000, 0, 0);
 }
 
 mapping read_init_file(string subsystem)
@@ -288,6 +290,18 @@ private void configure_logging()
 int forbid_inherit(string from, string path, int priv)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	switch(path) {
+	case LIB_SYSTEM_USER:
+		switch(DRIVER->creator(from)) {
+		case "Game":
+		case "Kotaka":
+			return 0;
+		default:
+			return 1;
+		}
+		break;
+	}
 
 	if (sscanf(from, USR_DIR + "/System/%*s")) {
 		return 0;
