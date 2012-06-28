@@ -147,11 +147,11 @@ int rsrc_incr(string rowner, string name, mixed index, int incr, varargs int for
 	return ::rsrc_incr(rowner, name, index, incr, force);
 }
 
-object compile_object(string path, varargs string source)
+object compile_object(string path, string source...)
 {
 	VERIFY();
 	path = normalize(path);
-	return wt::compile_object(path, source);
+	return wt::compile_object(path, source...);
 }
 
 object clone_object(string path)
