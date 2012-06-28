@@ -224,3 +224,10 @@ void dump_state()
 
 	::dump_state();
 }
+
+void shutdown()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	::shutdown();
+}
