@@ -782,5 +782,15 @@ int forbid_call(string path)
 
 int forbid_inherit(string from, string path, int priv)
 {
+	object initd;
+
 	ACCESS_CHECK(KERNEL());
+
+	initd = find_object(USR_DIR + "/" + DRIVER->creator(path) + "/initd");
+
+	if (!initd) {
+		error("No initd loaded for " + path);
+	}
+
+	return initd->forbid_inherit(from, path, priv);
 }
