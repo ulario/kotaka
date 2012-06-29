@@ -142,7 +142,7 @@ atomic void clear()
 		object turkey;
 
 		turkey = first;
-		first = last = nil;
+		first = last = new_node();
 
 		discard_node(turkey);
 	}
