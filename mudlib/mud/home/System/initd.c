@@ -77,6 +77,7 @@ private void initialize()
 	SYSTEM_USERD->enable();
 	ERRORD->enable();
 	STATUSD->enable();
+	WATCHDOGD->enable();
 
 	/* Booted up */
 
