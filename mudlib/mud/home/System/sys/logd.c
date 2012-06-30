@@ -37,12 +37,12 @@ static void create()
 {
 	facilities = ([ ]);
 	filebufs = ([ ]);
-	callout = -1;
+	callout = 0;
 }
 
 private void schedule()
 {
-	if (callout != -1) {
+	if (callout > 0) {
 		remove_call_out(callout);
 	}
 
@@ -127,7 +127,7 @@ private void write_logfile(string file, string message)
 	deque = filebufs[file];
 
 	if (!deque) {
-		deque = new_object(BIGSTRUCT_DEQUE_LWO);
+		deque = clone_object(BIGSTRUCT_DEQUE_OBJ);
 		filebufs[file] = deque;
 	}
 
@@ -144,7 +144,7 @@ void flush()
 	object *text_deques;
 	int i;
 
-	callout = -1;
+	callout = 0;
 
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
 
@@ -155,6 +155,7 @@ void flush()
 		for (i = sizeof(files) - 1; i >= 0; i--) {
 			catch {
 				object deque;
+				int quota;
 
 				deque = text_deques[i];
 
@@ -162,15 +163,35 @@ void flush()
 					string text;
 					text = deque->get_front();
 					deque->pop_front();
+
 					if (!write_file(files[i], text)) {
 						DRIVER->message("LogD: error writing to " + files[i] + "\n");
 					}
+
+					quota++;
+
+					if (quota > 500) {
+						DRIVER->message("LogD: incomplete flush of " + files[i] + "\n");
+						break;
+					}
+				}
+
+				if (!deque->empty()) {
+					continue;
+				}
+
+				filebufs[files[i]] = nil;
+
+				if (!sscanf(object_name(deque), "%*s#-1")) {
+					destruct_object(deque);
 				}
 			}
 		}
 	}
 
-	filebufs = ([ ]);
+	if (map_sizeof(filebufs)) {
+		schedule();
+	}
 }
 
 private void send_to_target(string target, string header, string message)
