@@ -14,7 +14,6 @@ int due;
 float pi;
 float otime;
 
-#define NPARTICLES 36
 #define CLK_X 45
 #define CLK_Y 9
 
@@ -43,13 +42,6 @@ void begin()
 
 	times = millitime();
 	otime = (float)times[0] + times[1];
-
-	particles = allocate(NPARTICLES);
-
-	for (i = 0; i < NPARTICLES; i++) {
-		particles[i] = allocate_float(4);
-		particles[i][1] = 20.0;
-	}
 }
 
 void stop()
