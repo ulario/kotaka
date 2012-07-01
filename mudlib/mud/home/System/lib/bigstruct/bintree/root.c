@@ -419,6 +419,27 @@ static object next_node(object node)
 	}
 }
 
+object query_first_node()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	return rightest(top);
+}
+
+object query_prev_node(object node)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	return prev_node(node);
+}
+
+object query_next_node(object node)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	return next_node(node);
+}
+
 static void rebalance_step_gather(object node, object array)
 {
 	object left;
