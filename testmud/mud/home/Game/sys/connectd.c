@@ -28,6 +28,16 @@ static void create()
 	SYSTEM_USERD->set_binary_manager(1, this_object());
 }
 
+string query_blocked_banner(object LIB_CONN connection)
+{
+	return "Sorry, but due to system maintenance you cannot log in right now.\n";
+}
+
+string query_overload_banner(object LIB_CONN connection)
+{
+	return "There are too many connections to this mud.\n";
+}
+
 string query_banner(object LIB_CONN connection)
 {
 	string *files;
