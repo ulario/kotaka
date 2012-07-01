@@ -20,13 +20,7 @@ inherit SECOND_AUTO;
 inherit userd API_USER;
 inherit user LIB_USER;
 
-/* Number of user slots to keep spare for the Klib emergency login port */
-#define SPARE_USERS		5
-#define MAX_CONN_DEPTH		10
-
-#define CINFO_TYPE	0	/* binary, telnet */
-#define CINFO_LPORT	1	/* logical port */
-#define CINFO_PPORT	2	/* physical port */
+int reserve;
 
 /*************/
 /* Variables */
@@ -68,6 +62,8 @@ int free_users();
 void block_connections();
 void unblock_connections();
 int query_connection_count();
+int query_reserve();
+void set_reserve(int new_reserve);
 
 /* initd hooks */
 
@@ -133,7 +129,7 @@ private void unregister_with_klib_userd()
 
 static void timeout(object conn)
 {
-	if (conn->query_user() == this_object()) {
+	if (conn && conn->query_user() == this_object()) {
 		connection(conn);
 		disconnect();
 	}
@@ -287,6 +283,18 @@ void set_fixed_manager(int port, object LIB_USERD manager)
 	fixed_managers[port] = manager;
 }
 
+void set_reserve(int new_reserve)
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	reserve = new_reserve;
+}
+
+int query_reserve()
+{
+	return reserve;
+}
+
 /* initd hooks */
 
 void prepare_reboot()
@@ -324,7 +332,7 @@ string query_banner(object LIB_CONN connection)
 
 	if (blocked) {
 		return userd->query_blocked_banner(connection);
-	} else if (free_users() < SPARE_USERS) {
+	} else if (free_users() < reserve) {
 		return userd->query_overload_banner(connection);
 	} else {
 		/* stack built and we're not naked */
@@ -348,7 +356,7 @@ int query_timeout(object LIB_CONN connection)
 		return 0;
 	}
 
-	if (blocked || free_users() < SPARE_USERS) {
+	if (blocked || free_users() < reserve) {
 		return -1;
 	} else {
 		/* stack built and we're not naked */
@@ -418,7 +426,12 @@ int login(string str)
 		catch {
 			banner = query_banner(conn);
 		} : {
+			banner = "Connection manager fault.\n";
 			timeout = -1;
+		}
+
+		if (banner) {
+			previous_object()->message(banner);
 		}
 
 		catch {
@@ -429,11 +442,7 @@ int login(string str)
 			timeout = -1;
 		}
 
-		if (banner) {
-			previous_object()->message(banner);
-		}
-
-		if (timeout < -1) {
+		if (timeout < 0) {
 			return MODE_DISCONNECT;
 		}
 
@@ -451,7 +460,7 @@ int receive_message(string str)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	connection(previous_object());
-	redirect(select(str), str);
+	redirect(this_object()->select(str), str);
 
 	return MODE_NOCHANGE;
 }
