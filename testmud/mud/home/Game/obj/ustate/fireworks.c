@@ -40,7 +40,7 @@ void begin()
 
 	send_out("\033[1;1H\033[2J");
 
-	call_out("particle", 0);
+	call_out("frame", 0);
 	call_out("second", 1);
 
 	times = millitime();
@@ -79,7 +79,7 @@ private void do_particles(object paint, float diff)
 		particle = particles[i];
 
 		ovy = particle[3];
-		nvy = ovy + diff * 80.0;
+		nvy = ovy + diff * 20.0;
 
 		particle[0] += particle[2] * diff;
 		particle[1] += (ovy + nvy) * 0.5 * diff;
@@ -89,8 +89,8 @@ private void do_particles(object paint, float diff)
 			particle[0] = 20.0;
 			particle[1] = 20.0;
 
-			particle[2] = (float)random(1000) / 1000.0 * 80.0 - 20.0;
-			particle[3] = (float)random(1000) / 1000.0 * 40.0 - 60.0;
+			particle[2] = (float)random(1000) / 1000.0 * 40.0 - 10.0;
+			particle[3] = (float)random(1000) / 1000.0 * 20.0 - 30.0;
 		}
 
 		x = (int)floor(particle[0]);
@@ -125,10 +125,12 @@ static void frame()
 
 	call_out("frame", 0);
 
+	paint = new_object(LWO_PAINTER);
+	paint->start(80, 20);
 	do_particles(paint, diff);
 
 	frames++;
-
+	send_out("\033[1;1H");
 	send_out(paint->render_color());
 
 	if (due) {
