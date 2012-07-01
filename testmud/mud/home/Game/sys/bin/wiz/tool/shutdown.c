@@ -12,6 +12,5 @@ void main(string args)
 		return;
 	}
 
-	proxy_call("dump_state");
 	proxy_call("shutdown");
 }

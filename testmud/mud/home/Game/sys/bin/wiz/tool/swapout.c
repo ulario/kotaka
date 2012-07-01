@@ -1,7 +1,7 @@
 #include <kotaka/paths.h>
 #include <game/paths.h>
 
-inherit LIB_BIN;
+inherit LIB_WIZBIN;
 
 void main(string args)
 {
@@ -12,5 +12,5 @@ void main(string args)
 		return;
 	}
 
-	KERNELD->swapout();
+	proxy_call("swapout");
 }
