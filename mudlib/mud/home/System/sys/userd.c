@@ -36,9 +36,6 @@ mapping telnet_managers;	/* managers assigned to logical telnet ports */
 mapping binary_managers;	/* managers assigned to logical binary ports */
 mapping fixed_managers;		/* managers assigned to physical ports */
 
-mapping connections;		/* ([ connection : ({ type, lport, pport }) ]) */
-mapping intercepts;		/* ([ connection : user ]) */
-
 int enabled;		/* active or not */
 int binary_port_count;	/* number of ports currently registered */
 int telnet_port_count;	/* number of ports currently registered */
@@ -89,41 +86,7 @@ static void create()
 	telnet_managers = ([ ]);
 	fixed_managers = ([ ]);
 
-	connections = ([ ]);
-	intercepts = ([ ]);
-
 	reblocked = ([ ]);
-}
-
-private void analyze_connection(object LIB_CONN connection)
-{
-	string path;
-	mixed *cinfo;
-	int lport;
-
-	if (connections[connection]) {
-		error("Duplicate analysis of connection");
-	}
-
-	path = object_name(connection);
-	sscanf(path, "%s#%*d", path);
-
-	switch(path) {
-	case TELNET_CONN:
-		lport = connection->query_port();
-		cinfo = ({ "telnet", lport, status()[ST_TELNETPORTS][lport] });
-		break;
-
-	case BINARY_CONN:
-		lport = connection->query_port();
-		cinfo = ({ "binary", lport, status()[ST_BINARYPORTS][lport] });
-		break;
-
-	default:
-		error("Unrecognized connection type: " + path);
-	}
-
-	connections[connection] = cinfo;
 }
 
 private void register_with_klib_userd()
@@ -155,8 +118,6 @@ private void unregister_with_klib_userd()
 	int index;
 
 	status = status();
-
-	USERD->set_telnet_manager(0, nil);
 
 	for (index = 0; index < telnet_port_count; index++) {
 		USERD->set_telnet_manager(index, nil);
