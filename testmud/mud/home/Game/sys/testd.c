@@ -8,6 +8,16 @@ static void create()
 {
 }
 
+void logbomb()
+{
+	int i;
+	call_out("logbomb", 0);
+
+	for (i = 0; i < 5000; i++) {
+		LOGD->post_message("test", LOG_DEBUG, STRINGD->chars(32, 10) + "\n");
+	}
+}
+
 void ignite(int count)
 {
 	call_out("bomb", 0, count);
@@ -51,7 +61,8 @@ static void bomb(int quota)
 {
 	int limit;
 
-	limit = 64;
+	limit = 10;
+	limit += quota % limit;
 
 	for (; quota > 0 && limit > 0; quota--, limit--) {
 		clone_object("~/obj/bomb");
