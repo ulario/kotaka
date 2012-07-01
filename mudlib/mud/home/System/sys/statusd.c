@@ -13,10 +13,7 @@ inherit SECOND_AUTO;
 string message;
 mapping connections;
 float interval;
-int callout;
 /* ([ connobj : ({ delay, trust, callout }) ]) */
-
-private void schedule();
 
 static void create()
 {
@@ -26,14 +23,6 @@ static void create()
 
 	connections = ([ ]);
 	interval = 0.0;
-	schedule();
-}
-
-void set_interval(float new_interval)
-{
-	interval = new_interval;
-
-	schedule();
 }
 
 void disable()
@@ -53,19 +42,6 @@ void enable()
 private float swap_used_ratio()
 {
 	return (float)status(ST_SWAPUSED) / (float)status(ST_SWAPSIZE);
-}
-
-private void schedule()
-{
-	if (callout) {
-		remove_call_out(callout);
-	}
-
-	if (interval > 0.0) {
-		callout = call_out("report", interval);
-	} else {
-		callout = 0;
-	}
 }
 
 mixed message(string msg)
@@ -227,23 +203,23 @@ int receive_message(string str)
 	return MODE_NOCHANGE;
 }
 
-static void report(varargs object conn)
+static void report(object conn)
 {
 	int status;
-	
+
+	if (!conn) {
+		return;
+	}
+
 	status = printstatus(conn);
 
-	if (conn) {
-		if (status) {
-			connections[conn][2] = call_out("report",
-				connections[conn][0], conn
-			);
-		} else {
-			connections[conn][2] = call_out("report",
-				1, conn
-			);
-		}
+	if (status) {
+		connections[conn][2] = call_out("report",
+			connections[conn][0], conn
+		);
 	} else {
-		schedule();
+		connections[conn][2] = call_out("report",
+			1, conn
+		);
 	}
 }
