@@ -42,11 +42,9 @@ static void create()
 
 private void schedule()
 {
-	if (callout > 0) {
-		remove_call_out(callout);
+	if (!callout) {
+		callout = call_out("flush", 0);
 	}
-
-	callout = call_out("flush", 0);
 }
 
 void set_target(string facility, int mask, string target_info)
@@ -170,7 +168,7 @@ void flush()
 
 					quota++;
 
-					if (quota > 500) {
+					if (quota > 100) {
 						DRIVER->message("LogD: incomplete flush of " + files[i] + "\n");
 						break;
 					}
