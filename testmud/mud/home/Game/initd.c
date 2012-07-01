@@ -57,7 +57,7 @@ static void create()
 	load_dir("open", 1);
 	load_dir("sys", 1);
 
-	PROXYD->get_proxy("Game")->grant_global_access("~");
+	PROXYD->get_proxy("Game")->set_global_access("~", 1);
 	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 
