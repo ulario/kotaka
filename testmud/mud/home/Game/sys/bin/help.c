@@ -5,11 +5,5 @@ inherit LIB_BIN;
 
 void main(string args)
 {
-	object pager;
-
-	pager = clone_object("~Kotaka/obj/ustate/page");
-
-	pager->set_text(read_file("~/data/help/player/index.hlp"));
-
-	query_ustate()->push_state(pager);
+	query_ustate()->push_state(clone_object("~/obj/ustate/help"));
 }
