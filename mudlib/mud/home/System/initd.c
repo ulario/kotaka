@@ -51,7 +51,6 @@ private void initialize()
 		"-----------------------------------------------------");
 
 	load_object(TESTD);
-
 	TESTD->test();
 
 	load_object(KERNELD);
@@ -64,8 +63,11 @@ private void initialize()
 	load_object(OBJECTD);
 
 	OBJECTD->enable();
-	OBJECTD->discover_objects();
-	OBJECTD->discover_clones();
+	OBJECTD->full_reset();
+	OBJECTD->audit_clones();
+
+	load_object(ERRORD);
+	ERRORD->enable();
 
 	load_dir("closed", 1);
 	load_dir("lib", 1);
@@ -73,11 +75,13 @@ private void initialize()
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 
+	SYSTEM_USERD->set_reserve(2);
+
 	TRASHD->enable();
 	SYSTEM_USERD->enable();
-	ERRORD->enable();
 	STATUSD->enable();
 	WATCHDOGD->enable();
+	OBJECTD->audit_clones();
 
 	/* Booted up */
 
