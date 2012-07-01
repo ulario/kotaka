@@ -143,6 +143,10 @@ void add_clone(object clone)
 		return;
 	}
 
+	if (!clone) {
+		return;
+	}
+
 	if (!clones) {
 		clones = ([ ]);
 	}
@@ -161,6 +165,10 @@ void remove_clone(object clone)
 	nclones--;
 
 	if (overflow) {
+		return;
+	}
+
+	if (!clone) {
 		return;
 	}
 
