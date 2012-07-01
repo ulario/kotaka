@@ -13,8 +13,6 @@ int frames;
 int due;
 float pi;
 float otime;
-float **particles;
-string path;
 
 #define NPARTICLES 36
 #define CLK_X 45
@@ -84,8 +82,8 @@ private void do_clock(object paint, float time)
 
 	paint->set_color(0x8B);
 	for (i = 0; i < 12; i++) {
-		x = (int)((sin((float)i * pi / 6.0)) * 7.0) + CLK_X;
-		y = (int)((-cos((float)i * pi / 6.0)) * 7.0) + CLK_Y;
+		x = (int)((sin((float)i * pi / 6.0)) * 7.25) + CLK_X;
+		y = (int)((-cos((float)i * pi / 6.0)) * 7.25) + CLK_Y;
 
 		paint->move_pen(x, y);
 		
@@ -149,49 +147,7 @@ private void do_clock(object paint, float time)
 	paint->draw("A");
 }
 
-private void do_particles(object paint, float diff)
-{
-	int x, y, i;
-
-	for (i = 0; i < NPARTICLES; i++) {
-		float ovy, nvy;
-		mixed *particle;
-
-		particle = particles[i];
-
-		ovy = particle[3];
-		nvy = ovy + diff * 80.0;
-
-		particle[0] += particle[2] * diff;
-		particle[1] += (ovy + nvy) * 0.5 * diff;
-		particle[3] = nvy;
-
-		if (particle[1] >= 20.0) {
-			particle[0] = 20.0;
-			particle[1] = 20.0;
-
-			particle[2] = (float)random(1000) / 1000.0 * 80.0 - 20.0;
-			particle[3] = (float)random(1000) / 1000.0 * 40.0 - 60.0;
-		}
-
-		x = (int)floor(particle[0]);
-		y = (int)floor(particle[1]);
-		paint->move_pen(x, y);
-
-		switch(i % 6) {
-		case 0: paint->set_color(0x89); break;
-		case 1: paint->set_color(0x8B); break;
-		case 2: paint->set_color(0x8A); break;
-		case 3: paint->set_color(0x8E); break;
-		case 4: paint->set_color(0x8C); break;
-		case 5: paint->set_color(0x8D); break;
-		}
-
-		paint->draw("+");
-	}
-}
-
-static void particle()
+static void frame()
 {
 	int x, y, i;
 	string buffer;
@@ -204,62 +160,12 @@ static void particle()
 	diff = time - otime;
 	otime = time;
 
-	call_out("particle", 0);
-	send_out("\033[1;1HCanvas test:\n");
+	call_out("frame", 0);
 
 	paint = new_object(LWO_PAINTER);
 	paint->start(80, 20);
 	paint->set_color(0xC);
 
-	send_out(status(ST_TICKS) + " ticks starting.\n");
-
-	paint->set_color(0x2);
-	paint->move_pen(20, 0);
-	paint->draw("+-----------+");
-	paint->move_pen(20, 1);
-	paint->draw("|     /     |");
-	paint->move_pen(20, 2);
-	paint->draw("+-----------+");
-
-	buffer = "   " + random(250);
-	buffer = buffer[strlen(buffer) - 3 ..];
-	buffer += " / 250";
-
-	paint->set_color(0xB);
-	paint->move_pen(22, 1);
-	paint->draw(buffer);
-
-	paint->set_color(0x2A);
-	paint->move_pen(40, 10);
-	paint->draw("/");
-	paint->move_pen(39, 11);
-	paint->draw("//");
-	paint->move_pen(38, 12);
-	paint->draw("///");
-	paint->move_pen(37, 13);
-	paint->draw("////");
-	paint->move_pen(36, 14);
-	paint->draw("/////");
-
-	paint->set_color(0x20);
-	paint->move_pen(41, 11);
-	paint->draw("\\");
-	paint->move_pen(41, 12);
-	paint->draw("\\\\");
-	paint->move_pen(41, 13);
-	paint->draw("\\\\\\");
-	paint->move_pen(41, 14);
-	paint->draw("\\\\\\\\");
-
-	paint->set_color(0x30);
-	paint->move_pen(39, 15);
-	paint->draw("|||");
-	paint->move_pen(39, 16);
-	paint->draw("|||");
-	paint->move_pen(39, 17);
-	paint->draw("|||");
-
-	do_particles(paint, diff);
 	do_clock(paint, time);
 
 	frames++;
