@@ -11,6 +11,7 @@ Loads all the non-critical stuff that isn't in System
 #include <kotaka/paths.h>
 #include <kotaka/channel.h>
 #include <kotaka/log.h>
+#include <kotaka/privilege.h>
 
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
@@ -157,24 +158,31 @@ static void create()
 	"sys/testd"->test();
 }
 
-/** Controls access to Common inheritables */
 int forbid_inherit(string from, string path, int priv)
 {
+	string creator;
+	int firstchar;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+	creator = DRIVER->creator(from);
+
+	if (!creator) {
+		return 1;
+	}
+
+	firstchar = creator[0];
+
+	if (firstchar < 'A' || firstchar > 'Z') {
+		return 1;
+	}
+
+	return 0;
 }
 
-/** Object constructor/destructor */
 string query_constructor(string path)
 {
-	switch(path) {
-	case LIB_OBJECT:
-		return "kotaka_object_constructor";
-	}
 }
 
 string query_destructor(string path)
 {
-	switch(path) {
-	case LIB_OBJECT:
-		return "kotaka_object_destructor";
-	}
 }
