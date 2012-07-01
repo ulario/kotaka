@@ -1,9 +1,10 @@
 #include <kotaka/paths.h>
 #include <game/paths.h>
+#include <kotaka/log.h>
 
 inherit LIB_BIN;
 
-static void wiztool_call(string function, varargs string args ...)
+static void proxy_call(string function, mixed args...)
 {
 	object proxy;
 	string name;
@@ -13,7 +14,7 @@ static void wiztool_call(string function, varargs string args ...)
 	name = query_user()->query_name();
 	proxy = PROXYD->get_proxy(name);
 
-	call_other(proxy, function, args ...);
+	call_other(proxy, function, args...);
 
 	messages = proxy->query_messages();
 
