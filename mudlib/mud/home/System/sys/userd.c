@@ -307,25 +307,28 @@ void bogus_reboot()
 
 string query_banner(object LIB_CONN connection)
 {
+	object userd;
+
 	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
 
-	if (stacking) {
-		/* stacking in progress */
+	if (stacking || !(connection <- LIB_USER)) {
+		/* either busy stacking or this is the first level, ignore */
 		return nil;
-	} else if (!(connection <- LIB_USER)) {
-		/* first level, ignore */
-		return nil;
+	}
+
+	userd = get_manager(connection);
+
+	if (!userd) {
+		return "Internal error: no connection manager";
+	}
+
+	if (blocked) {
+		return userd->query_blocked_banner(connection);
+	} else if (free_users() < SPARE_USERS) {
+		return userd->query_overload_banner(connection);
 	} else {
 		/* stack built and we're not naked */
 		/* it is safe to call the lieutenant */
-		object userd;
-
-		userd = get_manager(connection);
-
-		if (!userd) {
-			return "Internal error: no connection manager";
-		}
-
 		return userd->query_banner(connection);
 	}
 }
@@ -343,6 +346,10 @@ int query_timeout(object LIB_CONN connection)
 		connection(connection);
 		redirect(clone_object("~/obj/filter/rlimits"), nil);
 		return 0;
+	}
+
+	if (blocked || free_users() < SPARE_USERS) {
+		return -1;
 	} else {
 		/* stack built and we're not naked */
 		/* it is safe to call the lieutenant */
@@ -408,13 +415,23 @@ int login(string str)
 
 		stacking = 0;
 
-		banner = query_banner(conn);
+		catch {
+			banner = query_banner(conn);
+		} : {
+			timeout = -1;
+		}
+
+		catch {
+			if (!timeout) {
+				timeout = query_timeout(conn);
+			}
+		} : {
+			timeout = -1;
+		}
 
 		if (banner) {
 			previous_object()->message(banner);
 		}
-
-		timeout = query_timeout(conn);
 
 		if (timeout < -1) {
 			return MODE_DISCONNECT;
