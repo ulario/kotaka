@@ -123,7 +123,7 @@ void receive_in(string input)
 			send_out("Password mismatch.\n");
 			/* we will eventually want to ban IPs that */
 			/* fail too much */
-			pop_state();
+			query_user()->quit();
 			return;
 		} else if (BAND->query_is_banned(name)) {
 			send_out("You are banned.\n");
@@ -166,8 +166,8 @@ void receive_in(string input)
 			pop_state();
 			return;
 		} else if (!ACCOUNTD->authenticate(name, password)) {
-			send_out("Your password was just changed.\n");
-			pop_state();
+			send_out("Your password was just changed!\n");
+			query_user()->quit();
 			return;
 		} else if (BAND->query_is_banned(name)) {
 			send_out("Sorry, but you were just banned.\n");
