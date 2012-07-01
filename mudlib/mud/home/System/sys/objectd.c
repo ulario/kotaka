@@ -21,8 +21,10 @@ string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
 
 object objdb;		/* object database */
+int ignore_bigstruct_clones;	/* don't track bigstruct clones */
 
-int ignore_clones;	/* don't track clones */
+object rqueue;		/* reentrance queue */
+int in_objectd;		/* reentrance flag */
 
 /* internal functions */
 
@@ -31,6 +33,10 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 private void register_object(string path, string *inherits, string *includes, string constructor, string destructor);
 private string *fetch_from_initd(object initd, string path);
 private mixed query_include_file(string compiled, string from, string path);
+private void enter_objectd();
+private void exit_objectd();
+private void flush_rqueue();
+private void discover_self();
 
 /* external functions */
 
@@ -40,7 +46,8 @@ void disable();
 void enable();
 void discover_objects();
 object query_object_info(int oindex);
-object query_inheritors(int oindex);
+object query_inheriters(int oindex);
+object query_includers(string path);
 
 /* kernel library hooks */
 
@@ -67,6 +74,13 @@ static void create()
 {
 	objdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	objdb->set_type(T_INT);
+
+	rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+}
+
+private int is_bigstruct(string path)
+{
+	return sscanf(path, USR_DIR + "/System" + CLONABLE_SUBDIR + "bigstruct/%*s");
 }
 
 private void register_object(string path, string *inherits,
@@ -115,7 +129,10 @@ private void register_object(string path, string *inherits,
 	if (!pinfo) {
 		pinfo = new_object(OBJECT_INFO);
 		pinfo->set_path(path);
+
+		enter_objectd();
 		objdb->set_element(oindex, pinfo);
+		exit_objectd();
 	}
 
 	pinfo->set_inherits(oindices);
@@ -222,6 +239,68 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 				}
 			}
 		}
+	}
+}
+
+private void enter_objectd()
+{
+	in_objectd++;
+}
+
+private void exit_objectd()
+{
+	in_objectd--;
+
+	if (in_objectd) {
+		return;
+	}
+
+	flush_rqueue();
+}
+
+private void flush_rqueue()
+{
+	while (!rqueue->empty()) {
+		mixed *front;
+		object pinfo;
+
+		enter_objectd();
+
+		front = rqueue->get_front();
+		rqueue->pop_front();
+
+		LOGD->post_message("objectd", LOG_DEBUG,
+			"Rebuild: Flushing " + (front[2] ? object_name(front[2]) : "nil"));
+
+		pinfo = objdb->get_element(front[1]);
+
+		if (!pinfo) {
+			return;
+		}
+
+		if (front[0]) {
+			pinfo->add_clone(front[2]);
+		} else {
+			pinfo->remove_clone(front[2]);
+		}
+
+		exit_objectd();
+	}
+}
+
+private void discover_self()
+{
+	object node;
+	int oindex;
+
+	rqueue->push_back( ({ 1, status(objdb, O_INDEX), objdb }) );
+	oindex = status("~/obj/bigstruct/map/node", O_INDEX);
+
+	node = objdb->query_first_node();
+
+	while (node) {
+		rqueue->push_back( ({ 1, oindex, node }) );
+		node = objdb->query_next_node(node);
 	}
 }
 
@@ -434,7 +513,7 @@ void discover_objects()
 
 			path = libqueue->get_front();
 			libqueue->pop_front();
-			
+
 			destruct_object(path);
 		}
 
@@ -457,10 +536,15 @@ void discover_clones()
 		object indices;
 		string *owners;
 		object first;
+		object selfqueue;
 		int sz, i;
 
 		indices = objdb->get_indices();
 		sz = indices->get_size();
+
+		enter_objectd();
+
+		ignore_bigstruct_clones++;
 
 		for (i = 0; i < sz; i++) {
 			object pinfo;
@@ -480,12 +564,10 @@ void discover_clones()
 			first = KERNELD->first_link(owners[i]);
 
 			current = first;
-			
+
 			if (!current) {
 				continue;
 			}
-
-			LOGD->post_message("objectd", LOG_DEBUG, "Searching for clones belonging to " + owners[i]);
 
 			do {
 				int oindex;
@@ -495,8 +577,19 @@ void discover_clones()
 				path = object_name(current);
 
 				if (!sscanf(path, "%*s#%*d")) {
+					/* not a clone */
 					current = KERNELD->next_link(current);
 					continue;
+				}
+
+				if (is_bigstruct(path)) {
+					if (current == objdb || current <- "~/lib/bigstruct/map/node" && current->query_root() == objdb) {
+						/* one of ours */
+						/* we already have it queued */
+						LOGD->post_message("objectd", LOG_DEBUG, "Rebuild: Skipping native " + path);
+						current = KERNELD->next_link(current);
+						continue;
+					}
 				}
 
 				oindex = status(current, O_INDEX);
@@ -504,15 +597,15 @@ void discover_clones()
 				pinfo->add_clone(current);
 				current = KERNELD->next_link(current);
 				nclones++;
-
-				if (nclones % 100 == 0) {
-					LOGD->post_message("objectd", LOG_DEBUG, "Found " + nclones + " so far.");
-				}
-
 			} while (current != first);
-
-			LOGD->post_message("objectd", LOG_DEBUG, "Found " + nclones + " total.");
 		}
+
+		ignore_bigstruct_clones--;
+
+		exit_objectd();
+
+		discover_self();
+		flush_rqueue();
 	}
 }
 
@@ -523,15 +616,18 @@ void full_reset()
 	rlimits (0; -1) {
 		LOGD->post_message("objectd", LOG_DEBUG, "Resetting object manager");
 
-		ignore_clones = 1;
+		ignore_bigstruct_clones = 0;
+		ignore_bigstruct_clones++;
+
 		destruct_object(objdb);
+		rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
 		objdb = clone_object(BIGSTRUCT_MAP_OBJ);
 		objdb->set_type(T_INT);
 
-		discover_objects();
-		ignore_clones = 0;
+		ignore_bigstruct_clones--;
 
+		discover_objects();
 		discover_clones();
 	}
 }
@@ -572,6 +668,13 @@ object query_dormant()
 	scan_objects("/", nil, nil, notlist);
 
 	return notlist;
+}
+
+atomic void defragment()
+{
+	enter_objectd();
+	objdb->reindex();
+	exit_objectd();
 }
 
 /* kernel library hooks */
@@ -693,12 +796,23 @@ void clone(string owner, object obj)
 
 	ACCESS_CHECK(KERNEL());
 
-	if (!ignore_clones) {
-		pinfo = objdb->get_element(status(obj)[O_INDEX]);
-		ASSERT(pinfo);
-
-		pinfo->add_clone(obj);
+	if (ignore_bigstruct_clones && is_bigstruct(object_name(obj))) {
+		DRIVER->message(object_name(obj) + " clone skipped.\n");
+		return;
 	}
+
+	if (in_objectd) {
+		DRIVER->message(object_name(obj) + " clone deferred.\n");
+		rqueue->push_back( ({ 1, status(obj, O_INDEX), obj }) );
+		return;
+	}
+
+	pinfo = objdb->get_element(status(obj)[O_INDEX]);
+	ASSERT(pinfo);
+
+	enter_objectd();
+	pinfo->add_clone(obj);
+	exit_objectd();
 }
 
 void destruct(string owner, object obj)
@@ -710,9 +824,10 @@ void destruct(string owner, object obj)
 	ACCESS_CHECK(KERNEL());
 
 	path = object_name(obj);
+
 	isclone = sscanf(path, "%s#%*d", path);
 
-	pinfo = objdb->get_element(status(obj)[O_INDEX]);
+	pinfo = objdb->get_element(status(obj, O_INDEX));
 
 	if (!pinfo) {
 		return;
@@ -729,8 +844,16 @@ void destruct(string owner, object obj)
 	}
 
 	if (isclone) {
-		if (!ignore_clones) {
+		if (!ignore_bigstruct_clones || !is_bigstruct(path)) {
+			if (in_objectd) {
+				DRIVER->message(object_name(obj) + " destruct deferred.\n");
+				rqueue->push_back( ({ 0, status(obj, O_INDEX), obj }) );
+				return;
+			}
+
+			enter_objectd();
 			pinfo->remove_clone(obj);
+			exit_objectd();
 		}
 	} else {
 		pinfo->set_destructed();
@@ -756,7 +879,9 @@ void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(KERNEL());
 
+	enter_objectd();
 	objdb->set_element(index, nil);
+	exit_objectd();
 }
 
 mixed include_file(string compiled, string from, string path)
