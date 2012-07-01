@@ -88,7 +88,7 @@ static void check()
 	swap_size = status(ST_SWAPSIZE);
 	swap_free = swap_size - swap_used;
 
-	if ((float)swap_free / (float)swap_size < 0.10) {
+	if ((float)swap_free / (float)swap_size < 0.25) {
 		LOGD->post_message("watchdogd", LOG_NOTICE, "Swap file almost full, shutting down");
 		freeze();
 		dump_state(1);
