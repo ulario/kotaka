@@ -361,7 +361,7 @@ object get_values()
 	return array;
 }
 
-void rebalance()
+atomic void rebalance()
 {
 	check_caller(WRITE_ACCESS);
 

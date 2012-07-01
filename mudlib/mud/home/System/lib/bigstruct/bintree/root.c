@@ -398,15 +398,15 @@ static object next_node(object node)
 {
 	object right;
 	object parent;
-	
+
 	ASSERT(node);
-	
+
 	right = node->get_right();
-	
+
 	if (right) {
 		return leftest(right);
 	}
-	
+
 	parent = node->get_parent();
 	
 	while (parent) {
