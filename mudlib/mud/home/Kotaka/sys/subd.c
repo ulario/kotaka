@@ -160,3 +160,8 @@ object query_common_container(object a, object b)
 		re = re->_F_query_environment();
 	}
 }
+
+float pi()
+{
+	return atan(1.0) * 4.0;
+}
