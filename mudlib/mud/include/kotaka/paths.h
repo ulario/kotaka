@@ -25,6 +25,7 @@
 #define TOUCHD		(USR_DIR + "/System/sys/touchd")
 #define TRASHD		(USR_DIR + "/System/sys/trashd")
 #define WATCHDOGD	(USR_DIR + "/System/sys/watchdogd")
+#define WIZTOOLD	(USR_DIR + "/System/sys/wiztoold")
 #define SECRETD		(USR_DIR + "/System/sys/secretd")
 #define STATUSD		(USR_DIR + "/System/sys/statusd")
 
@@ -33,6 +34,7 @@
 #define CALL_GUARD		(USR_DIR + "/System/lib/auto/call_guard")
 #define LIB_FILTER		(USR_DIR + "/System/lib/filter")
 #define LIB_SYSTEM_USER		(USR_DIR + "/System/lib/user")
+#define LIB_SYSTEM_WIZTOOL	(USR_DIR + "/System/lib/wiztool")
 #define LIB_USERD		(USR_DIR + "/System/lib/userd")
 #define LIB_INITD		(USR_DIR + "/System/lib/initd")
 #define LIB_LIST		(USR_DIR + "/System/lib/list")
@@ -43,7 +45,6 @@
 
 /* lwos */
 
-#define LWO_CINFO		(USR_DIR + "/System/lwo/conn_info")
 #define OBJECT_INFO		(USR_DIR + "/System/lwo/object_info")
 
 /**********/
