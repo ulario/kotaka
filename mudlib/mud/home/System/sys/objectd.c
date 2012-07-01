@@ -910,10 +910,12 @@ void destruct(string owner, object obj)
 
 	pinfo = objdb->get_element(status(obj, O_INDEX));
 
+	if (!pinfo) {
+		return;
+	}
+
 	if (!isclone) {
-		if (status(obj, O_INSTANTIATED)) {
-			error("Cannot destruct object with outstanding clones");
-		}
+		path = name;
 	}
 
 	if (!sscanf(path, "/kernel/%*s")) {
