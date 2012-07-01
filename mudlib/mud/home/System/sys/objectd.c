@@ -889,7 +889,10 @@ void clone(string owner, object obj)
 	}
 
 	pinfo = objdb->get_element(status(obj)[O_INDEX]);
-	ASSERT(pinfo);
+
+	if (!pinfo) {
+		return;
+	};
 
 	enter_objectd();
 	pinfo->add_clone(obj);
