@@ -269,9 +269,6 @@ private void flush_rqueue()
 		front = rqueue->get_front();
 		rqueue->pop_front();
 
-		LOGD->post_message("objectd", LOG_DEBUG,
-			"Rebuild: Flushing " + (front[2] ? object_name(front[2]) : "nil"));
-
 		pinfo = objdb->get_element(front[1]);
 
 		if (!pinfo) {
@@ -582,14 +579,11 @@ void discover_clones()
 					continue;
 				}
 
-				if (is_bigstruct(path)) {
-					if (current == objdb || current <- "~/lib/bigstruct/map/node" && current->query_root() == objdb) {
-						/* one of ours */
-						/* we already have it queued */
-						LOGD->post_message("objectd", LOG_DEBUG, "Rebuild: Skipping native " + path);
-						current = KERNELD->next_link(current);
-						continue;
-					}
+				if (current == objdb || current <- "~/lib/bigstruct/map/node" && current->query_root() == objdb) {
+					/* one of ours */
+					/* get it during self discover */
+					current = KERNELD->next_link(current);
+					continue;
 				}
 
 				oindex = status(current, O_INDEX);
@@ -793,16 +787,17 @@ void compile_failed(string owner, string path)
 void clone(string owner, object obj)
 {
 	object pinfo;
+	string path;
 
 	ACCESS_CHECK(KERNEL());
 
-	if (ignore_bigstruct_clones && is_bigstruct(object_name(obj))) {
-		DRIVER->message(object_name(obj) + " clone skipped.\n");
+	path = object_name(obj);
+
+	if (ignore_bigstruct_clones && is_bigstruct(path)) {
 		return;
 	}
 
 	if (in_objectd) {
-		DRIVER->message(object_name(obj) + " clone deferred.\n");
 		rqueue->push_back( ({ 1, status(obj, O_INDEX), obj }) );
 		return;
 	}
@@ -818,14 +813,14 @@ void clone(string owner, object obj)
 void destruct(string owner, object obj)
 {
 	int isclone;
+	string name;
 	string path;
 	object pinfo;
 
 	ACCESS_CHECK(KERNEL());
 
-	path = object_name(obj);
-
-	isclone = sscanf(path, "%s#%*d", path);
+	name = object_name(obj);
+	isclone = sscanf(name, "%s#%*d", path);
 
 	pinfo = objdb->get_element(status(obj, O_INDEX));
 
@@ -834,7 +829,7 @@ void destruct(string owner, object obj)
 	}
 
 	if (!isclone) {
-		if (pinfo->query_clone_count()) {
+		if (status(obj, O_INSTANTIATED)) {
 			error("Cannot destruct object with outstanding clones");
 		}
 	}
@@ -846,7 +841,6 @@ void destruct(string owner, object obj)
 	if (isclone) {
 		if (!ignore_bigstruct_clones || !is_bigstruct(path)) {
 			if (in_objectd) {
-				DRIVER->message(object_name(obj) + " destruct deferred.\n");
 				rqueue->push_back( ({ 0, status(obj, O_INDEX), obj }) );
 				return;
 			}
