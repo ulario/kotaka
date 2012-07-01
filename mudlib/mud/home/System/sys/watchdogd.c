@@ -7,7 +7,6 @@
 #include <kotaka/log.h>
 
 inherit SECOND_AUTO;
-inherit "~/lib/utility/bsearch";
 
 int callout;
 
@@ -34,6 +33,8 @@ int co_warn_ticks;		/* how many cycles left until the next swap warning */
 
 private void schedule(float fraction);
 private string percentage(mixed part, mixed total);
+void freeze();
+void thaw();
 
 static void create()
 {
@@ -50,17 +51,11 @@ static void create()
 
 	max_lag = 0.0;
 
-	obj_warn_ratio = 0.75;
+	obj_warn_ratio = 0.005;
 	co_warn_ratio = 0.75;
 	swap_warn_ratio = 0.50;
 
 	callout = 0;
-}
-
-void upgrade()
-{
-	co_warn_ratio = 0.75;
-	max_co_ratio = 0.90;
 }
 
 void enable()
@@ -90,8 +85,12 @@ void reboot()
 	ACCESS_CHECK(SYSTEM());
 
 	if (callout) {
-		disable();
-		call_out("enable", 0);
+		mixed *time;
+
+		time = millitime();
+		remove_call_out(callout);
+		deadline = (float)time[0] + time[1];
+		callout = call_out("check", 0);
 	}
 }
 
@@ -124,9 +123,9 @@ void set_config_item(string key, mixed value)
 		if (value < 1048576.0) {
 			error("Invalid setting");
 		}
-		
+
 		min_dmem_slack = value;
-		
+
 		break;
 		
 	case "max_swap_ratio":
@@ -447,7 +446,7 @@ static void check()
 
 	if (swap_trigger || obj_trigger || co_trigger) {
 		LOGD->post_message("system", LOG_ALERT, "Freezing and shutting down");
-		CALLOUTD->suspend_callouts();
+		freeze();
 		dump_state(1);
 		shutdown();
 	} else {
@@ -462,6 +461,7 @@ static void check()
 		}
 
 		if (swap_warn_trigger) {
+			LOGD->post_message("system", LOG_INFO, "Swap sectors used: " + swapused + ", swap file size: " + swapsize);
 			LOGD->post_message("system", LOG_INFO, "Swap usage at " + percentage(swapused, swapsize));
 		}
 
@@ -481,4 +481,20 @@ static void check()
 	}
 
 	schedule(worst);
+}
+
+void freeze()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
+	CALLOUTD->suspend_callouts();
+	SYSTEM_USERD->block_connections();
+}
+
+void thaw()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
+	CALLOUTD->suspend_callouts();
+	SYSTEM_USERD->block_connections();
 }
