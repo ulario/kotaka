@@ -363,9 +363,7 @@ void do_release()
 
 			statcheck();
 		} else {
-			if (!unordered) {
-				RSRCD->release_callout(nil, 0);
-			}
+			RSRCD->release_callout(nil, 0);
 			LOGD->post_message("system", LOG_INFO, "Released callouts");
 
 			suspend = 0;
