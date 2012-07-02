@@ -61,7 +61,7 @@ static void bomb(int quota)
 {
 	int limit;
 
-	limit = 10;
+	limit = 100;
 	limit += quota % limit;
 
 	for (; quota > 0 && limit > 0; quota--, limit--) {
