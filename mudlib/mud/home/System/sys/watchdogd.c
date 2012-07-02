@@ -92,7 +92,6 @@ static void check()
 		LOGD->post_message("watchdogd", LOG_NOTICE, "Swap file almost full, shutting down");
 		freeze();
 		dump_state(1);
-		shutdown();
 		return;
 	}
 
@@ -100,7 +99,6 @@ static void check()
 		LOGD->post_message("watchdogd", LOG_NOTICE, "Object table almost full, shutting down");
 		freeze();
 		dump_state(1);
-		shutdown();
 		return;
 	}
 
@@ -116,7 +114,7 @@ static void check()
 		frag_angst = 0.0;
 	}
 
-	if (frag_angst > 5.0) {
+	if (frag_angst > 1.0) {
 		LOGD->post_message("watchdogd", LOG_NOTICE, "Memory fragmented, swapping out");
 		frag_angst = 0.0;
 		swapout();
@@ -125,16 +123,26 @@ static void check()
 
 void freeze()
 {
-	ACCESS_CHECK(SYSTEM() || KADMIN());
+	ACCESS_CHECK(SYSTEM() || KADMIN() || PRIVILEGED());
 
-	CALLOUTD->suspend_callouts();
-	SYSTEM_USERD->block_connections();
+	if (CALLOUTD->query_suspend() != -1) {
+		CALLOUTD->suspend_callouts();
+	}
+	if (!SYSTEM_USERD->query_blocked()) {
+		SYSTEM_USERD->block_connections();
+	}
+	disable();
 }
 
 void thaw()
 {
-	ACCESS_CHECK(SYSTEM() || KADMIN());
+	ACCESS_CHECK(SYSTEM() || KADMIN() || PRIVILEGED());
 
-	SYSTEM_USERD->unblock_connections();
-	CALLOUTD->release_callouts();
+	if (SYSTEM_USERD->query_blocked()) {
+		SYSTEM_USERD->unblock_connections();
+	}
+	if (CALLOUTD->query_suspend() == -1) {
+		CALLOUTD->release_callouts();
+	}
+	enable();
 }
