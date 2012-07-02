@@ -260,7 +260,7 @@ void qsort(mixed *arr, int begin, int end)
 	int low, mid, high;
 	mixed pivot;
 
-	mid = (begin + end) / 2
+	mid = (begin + end) / 2;
 	pivot = arr[mid];
 	low = begin;
 	high = end - 1;
