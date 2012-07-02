@@ -309,6 +309,14 @@ int forbid_inherit(string from, string path, int priv)
 		return 1;
 	}
 
+	if (creator == "System") {
+		return 0;
+	}
+
+	if (sscanf(path, USR_DIR + "/System/closed/%*s") {
+		return 1;
+	}
+
 	firstchar = creator[0];
 
 	if (firstchar < 'A' || firstchar > 'Z') {
