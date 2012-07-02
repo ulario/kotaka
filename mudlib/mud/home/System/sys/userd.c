@@ -61,6 +61,7 @@ void set_fixed_manager(int port, object LIB_USERD manager);
 int free_users();
 void block_connections();
 void unblock_connections();
+int query_blocked();
 int query_connection_count();
 int query_reserve();
 void set_reserve(int new_reserve);
@@ -250,6 +251,11 @@ void unblock_connections()
 	}
 
 	reblocked = nil;
+}
+
+int query_blocked()
+{
+	return blocked;
 }
 
 void reboot()
