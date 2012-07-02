@@ -263,7 +263,7 @@ private void send_to_target(string target, string header, string message)
 	case "kwizards":
 		{
 			string *kwizards;
-			object *users;
+			object *kusers;
 			int i;
 			int ksz;
 
@@ -288,13 +288,13 @@ private void send_to_target(string target, string header, string message)
 	case "kadmins":
 		{
 			string *kwizards;
-			object *users;
+			object *kusers;
 			int i;
 			int ksz;
-			
+
 			kusers = users();
 			ksz = sizeof(kusers);
-			
+
 			for (i = 0; i < ksz; i++) {
 				string username;
 
@@ -404,7 +404,7 @@ void post_message(string facility, int priority, string message)
 		sz = sizeof(targets);
 
 		for (index = 0; index < sz; index++) {
-			send_to_target(timestamp, targets[index], facility, message);
+			send_to_target(targets[index], facility, message);
 		}
 	} else {
 		DRIVER->message(creator + ": " + facility + ": " + message + "\n");
