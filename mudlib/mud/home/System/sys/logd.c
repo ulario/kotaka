@@ -196,6 +196,8 @@ private void send_to_target(string target, string header, string message)
 {
 	string prefix, info;
 	string *lines;
+	int sz, usz, i, j;
+	mixed users;
 
 	sscanf(target, "%s:%s", prefix, info);
 
@@ -205,48 +207,55 @@ private void send_to_target(string target, string header, string message)
 	}
 
 	lines = explode(message, "\n");
-	message = header + ": " + implode(lines, "\n" + header + ": ");
+	sz = sizeof(lines);
+	users = ([ ]);
 
 	switch(prefix) {
 	case "null":
 		break;
 
 	case "driver":
-		DRIVER->message(message + "\n");
+		for (i = 0; i < sz; i++) {
+			DRIVER->message(header + ": " + lines[i] + "\n");
+		}
 		break;
 
 	case "channel":
 		ASSERT(info);
-		CHANNELD->post_message(info, "Logger", message);
+
+		for (i = 0; i < sz; i++) {
+			CHANNELD->post_message(info, header, lines[i]);
+		}
+
 		break;
 
 	case "file":
 		ASSERT(info);
-		write_logfile(info, message);
+
+		for (i = 0; i < sz; i++) {
+			write_logfile(info, header + ": " + lines[i]);
+		}
+
 		break;
 
 	case "user":
-		{
-			object user;
-
-			if (user = this_user()) {
-				user->message(message + "\n");
-			}
+		if (this_user()) {
+			users[this_user()] = 1;
 		}
 		break;
 
 	case "kusers":
 		{
-			object *users;
+			object *kusers;
 			int i;
-			int sz;
+			int ksz;
 			
-			users = users();
+			kusers = users();
 			
-			sz = sizeof(users);
+			ksz = sizeof(users);
 			
-			for (i = 0; i < sz; i++) {
-				users[i]->message(message + "\n");
+			for (i = 0; i < ksz; i++) {
+				users[kusers[i]] = 1;
 			}
 		}
 		break;
@@ -256,21 +265,21 @@ private void send_to_target(string target, string header, string message)
 			string *kwizards;
 			object *users;
 			int i;
-			int sz;
+			int ksz;
 
 			kwizards = KERNELD->query_users();
-			users = users();
+			kusers = users();
 
-			sz = sizeof(users);
+			ksz = sizeof(kusers);
 
-			for (i = 0; i < sz; i++) {
+			for (i = 0; i < ksz; i++) {
 				if (
 					sizeof(
-						({ users[i]->query_name() })
+						({ kusers[i]->query_name() })
 						& kwizards
 					)
 				) {
-					users[i]->message(message + "\n");
+					users[kusers[i]] = 1;
 				}
 			}
 		}
@@ -281,18 +290,18 @@ private void send_to_target(string target, string header, string message)
 			string *kwizards;
 			object *users;
 			int i;
-			int sz;
+			int ksz;
 			
-			users = users();
-			sz = sizeof(users);
+			kusers = users();
+			ksz = sizeof(kusers);
 			
-			for (i = 0; i < sz; i++) {
+			for (i = 0; i < ksz; i++) {
 				string username;
-				
-				username = users[i]->query_name();
-				
+
+				username = kusers[i]->query_name();
+
 				if (KERNELD->access(username, "/", FULL_ACCESS)) {
-					users[i]->message(message + "\n");
+					users[kusers[i]] = 1;
 				}
 			}
 		}
@@ -305,13 +314,25 @@ private void send_to_target(string target, string header, string message)
 			kadmin = KERNELD->find_user("admin");
 
 			if (kadmin) {
-				kadmin->message(message + "\n");
+				users[kadmin] = 1;
 			}
 		}
 		break;
 
 	default:
 		DRIVER->message("Unparseable log target: " + target + "\n");
+	}
+
+	users = map_indices(users);
+	usz = sizeof(users);
+
+	for (i = 0; i < usz; i++) {
+		object user;
+			
+		user = users[i];
+		for (j = 0; j < sz; j++) {
+			user->message(header + ": " + lines[j] + "\n");
+		}
 	}
 }
 
@@ -383,7 +404,7 @@ void post_message(string facility, int priority, string message)
 		sz = sizeof(targets);
 
 		for (index = 0; index < sz; index++) {
-			send_to_target(targets[index], facility, message);
+			send_to_target(timestamp, targets[index], facility, message);
 		}
 	} else {
 		DRIVER->message(creator + ": " + facility + ": " + message + "\n");

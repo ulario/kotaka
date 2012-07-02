@@ -51,7 +51,7 @@ void add_channel(string channel, varargs int lock)
 	}
 
 	channels[channel] = ([ ]);
-	
+
 	if (lock) {
 		locks[channel] = program;
 	}
@@ -62,7 +62,7 @@ static void create()
 	channels = ([ ]);
 	subscribers = ([ ]);
 	locks = ([ ]);
-	
+
 	add_channel("error", 1);
 	add_channel("debug", 1);
 	add_channel("trace", 1);
@@ -274,7 +274,7 @@ void post_message(string channel, string sender, string message)
 		sz = sizeof(send_list);
 
 		for (index = 0; index < sz; index++) {
-			send_list[index]->channel_message(sender, message);
+			send_list[index]->channel_message(channel, sender, message);
 		}
 	}
 }
