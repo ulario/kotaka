@@ -319,7 +319,7 @@ void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end)
 
 	while (low < high) {
 		if (arr->get_element(low) > pivot) {
-			aswap(arr, low, --high);
+			baswap(arr, low, --high);
 		} else {
 			low++;
 		}
