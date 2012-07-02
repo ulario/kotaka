@@ -62,9 +62,9 @@ void reboot()
 
 static void check()
 {
-	int mem_size;
-	int mem_used;
-	int mem_free;
+	float mem_size;
+	float mem_used;
+	float mem_free;
 
 	int obj_size;
 	int obj_used;
@@ -81,8 +81,8 @@ static void check()
 		callout = call_out("check", 1);
 	}
 
-	mem_used = status(ST_SMEMUSED) + status(ST_DMEMUSED);
-	mem_size = status(ST_SMEMSIZE) + status(ST_DMEMSIZE);
+	mem_used = (float)status(ST_SMEMUSED) + (float)status(ST_DMEMUSED);
+	mem_size = (float)status(ST_SMEMSIZE) + (float)status(ST_DMEMSIZE);
 	mem_free = mem_size - mem_used;
 
 	obj_used = status(ST_NOBJECTS);
@@ -93,13 +93,13 @@ static void check()
 	swap_size = status(ST_SWAPSIZE);
 	swap_free = swap_size - swap_used;
 
-	if (mem_used >> 20 > 512) {
+	if (mem_used > (float)(512 << 20)) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
 		frag_angst = 0.0;
 		return;
 	}
 
-	frag_factor = ((float)mem_free / (float)(mem_size + (16 << 20))) - 0.25;
+	frag_factor = mem_free / (mem_size + (float)(16 << 20)) - 0.25;
 	frag_angst += frag_factor;
 
 	if (frag_angst <= 0.0) {
