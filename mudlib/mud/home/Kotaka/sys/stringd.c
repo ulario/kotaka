@@ -4,6 +4,7 @@
 #include <kotaka/log.h>
 
 #include <type.h>
+#include <limits.h>
 
 string *chars;
 
@@ -23,16 +24,13 @@ static void upgraded()
 string chars(int code, int count)
 {
 	string log;
-	int max;
-
-	max = 16384;
 
 	if (code < 0 || code > 0xFF) {
 		error("Invalid character code");
 	}
 
-	if (count > max) {
-		error("String too long");
+	if (count > MAX_STRING_SIZE) {
+		error("String too long (" + count + ")");
 	}
 
 	if (!chars[code]) {
@@ -45,8 +43,8 @@ string chars(int code, int count)
 	log = chars[code];
 
 	while (strlen(log) < count) {
-		if (strlen(log) * 2 > max) {
-			log += log[0 .. max - strlen(log) - 1];
+		if (strlen(log) * 2 > count) {
+			log += log[0 .. count - strlen(log) - 1];
 		} else {
 			log += log;
 		}
