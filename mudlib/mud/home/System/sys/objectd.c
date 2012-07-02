@@ -888,7 +888,7 @@ void clone(string owner, object obj)
 		return;
 	}
 
-	pinfo = objdb->get_element(status(obj)[O_INDEX]);
+	pinfo = objdb->get_element(status(obj, O_INDEX));
 
 	if (!pinfo) {
 		return;
