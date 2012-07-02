@@ -21,6 +21,11 @@ static void upgraded()
 	chars = allocate(256);
 }
 
+void reboot()
+{
+	chars = allocate(256);
+}
+
 string chars(int code, int count)
 {
 	string log;
