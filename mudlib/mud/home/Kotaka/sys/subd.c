@@ -245,3 +245,41 @@ float pi()
 {
 	return atan(1.0) * 4.0;
 }
+
+private void aswap(mixed *arr, int a, int b)
+{
+	mixed tmp;
+
+	tmp = arr[a];
+	arr[a] = arr[b];
+	arr[b] = tmp;
+}
+
+void qsort(mixed *arr, int begin, int end)
+{
+	int low, mid, high;
+	mixed pivot;
+
+	mid = (begin + end) / 2
+	pivot = arr[mid];
+	low = begin;
+	high = end - 1;
+
+	aswap(arr, mid, high);
+
+	while (low < high) {
+		if (arr[low] > pivot) {
+			aswap(arr, low, --high);
+		}
+		low++;
+	}
+
+	aswap(arr, low, end - 1);
+
+	if (begin < low - 1) {
+		qsort(arr, begin, low - 1);
+	}
+	if (low + 1 < end) {
+		qsort(arr, low + 1, end);
+	}
+}
