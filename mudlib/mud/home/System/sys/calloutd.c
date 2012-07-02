@@ -26,7 +26,7 @@ object releasers;
 
 int releases;		/* current number of release callouts */
 int max_releases;	/* maximum number of release callouts */
-int unordered;	/* allow current callouts to skip the suspension queue */
+int unordered;		/* allow current callouts to skip the suspension queue */
 
 object cmap;	/* ([ oindex : ([ handle : iterator ]) ]) */
 object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
@@ -323,6 +323,11 @@ void release_callouts()
 	}
 }
 
+int query_suspend()
+{
+	return suspend;
+}
+
 /* internal */
 
 void do_release()
@@ -392,6 +397,10 @@ private int bypass(object obj)
 		return 1;
 	}
 
+	if (obj <- "~/obj/co_releaser") {
+		return 1;
+	}
+
 	return DRIVER->creator(object_name(obj)) == "System";
 }
 
@@ -403,8 +412,6 @@ static void destruct()
 
 int empty()
 {
-	ACCESS_CHECK(SYSTEM());
-
 	return begin == end;
 }
 
