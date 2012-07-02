@@ -47,8 +47,6 @@ private void test_bigstruct_array()
 		}
 	}
 
-	LOGD->post_message("test", LOG_DEBUG, "Testing array slicing");
-
 	arr->set_element(49, 1337);
 	arr->set_element(50, 2337);
 	arr->set_element(150, 3337);
@@ -77,8 +75,6 @@ private void test_bigstruct_array()
 	arr->set_size(0);
 
 	ASSERT(status(ST_NOBJECTS) == i);
-
-	LOGD->post_message("test", LOG_DEBUG, "Array test passed");
 }
 
 private void test_bigstruct_deque()
@@ -142,8 +138,6 @@ private void test_bigstruct_deque()
 
 	ASSERT(deque->empty());
 	ASSERT(deque->get_size() == 0);
-
-	LOGD->post_message("test", LOG_DEBUG, "Deque test passed");
 }
 
 private void test_bigstruct_map()
@@ -172,9 +166,6 @@ private void test_bigstruct_map()
 
 	map->clear();
 
-	LOGD->post_message("test", LOG_DEBUG,
-		"Testing defrag");
-
 	for (i = 0; i < 2500; i++) {
 		map->set_element(i, 0);
 	}
@@ -183,34 +174,21 @@ private void test_bigstruct_map()
 		map->set_element(i * i, i);
 	}
 
-	LOGD->post_message("test", LOG_DEBUG,
-		"Lightweight defrag complete");
-
 	map->rebalance();
 
 	for (i = 0; i < 50; i++) {
 		ASSERT(map->get_element(i * i) == i);
 	}
 
-	LOGD->post_message("test", LOG_DEBUG,
-		"Lightweight defrag test complete");
-
 	map->reindex();
-
-	LOGD->post_message("test", LOG_DEBUG,
-		"Heavyweight defrag complete");
 
 	for (i = 0; i < 50; i++) {
 		ASSERT(map->get_element(i * i) == i);
 	}
 
-	LOGD->post_message("test", LOG_DEBUG,
-		"Heavyweight defrag test complete");
-
 	LOGD->flush();
 
 	map->clear();
-	LOGD->post_message("test", LOG_DEBUG, "Map test passed");
 }
 
 static void tls_test(varargs mixed args...)
@@ -228,31 +206,24 @@ void test()
 
 	ACCESS_CHECK(SYSTEM());
 
-#if 0
-	LOGD->post_message("test", LOG_DEBUG, "TestD test battery beginning");
-
-#ifdef SYS_NETWORKING
-	LOGD->post_message("test", LOG_DEBUG, "There are " + sizeof(ports()) + " ports open.");
-#endif
-
+#if 1
 #	if 1
-	LOGD->post_message("test", LOG_DEBUG, "Starting array test");
+	LOGD->post_message("test", LOG_DEBUG, "Starting array test...");
 	rlimits(200; -1) {
 		test_bigstruct_array();
 	}
 #	endif
 #	if 1
-	LOGD->post_message("test", LOG_DEBUG, "Starting deque test");
+	LOGD->post_message("test", LOG_DEBUG, "Starting deque test...");
 	rlimits(200; -1) {
 		test_bigstruct_deque();
 	}
 #	endif
 #	if 1
-	LOGD->post_message("test", LOG_DEBUG, "Starting map test");
+	LOGD->post_message("test", LOG_DEBUG, "Starting map test...");
 	rlimits(200; -1) {
 		test_bigstruct_map();
 	}
 #	endif
-	LOGD->post_message("test", LOG_DEBUG, "TestD test battery completed");
 #endif
 }
