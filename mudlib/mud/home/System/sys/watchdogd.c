@@ -14,6 +14,8 @@ float frag_angst;
 void freeze();
 void thaw();
 
+int swapover_actions;
+
 static void create()
 {
 }
@@ -72,6 +74,9 @@ static void check()
 	int swap_used;
 	int swap_free;
 
+	int freeze;
+	float frag_factor;
+
 	rlimits(0; -1) {
 		callout = call_out("check", 1);
 	}
@@ -88,61 +93,26 @@ static void check()
 	swap_size = status(ST_SWAPSIZE);
 	swap_free = swap_size - swap_used;
 
-	if ((float)swap_free / (float)swap_size < 0.25) {
-		LOGD->post_message("watchdogd", LOG_NOTICE, "Swap file almost full, shutting down");
-		freeze();
-		dump_state(1);
-		return;
-	}
-
-	if ((float)obj_free / (float)obj_size < 0.10) {
-		LOGD->post_message("watchdogd", LOG_NOTICE, "Object table almost full, shutting down");
-		freeze();
-		dump_state(1);
-		return;
-	}
-
 	if (mem_used >> 20 > 512) {
-		LOGD->post_message("watchdogd", LOG_NOTICE, "Memory full, swapping out");
+		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
 		frag_angst = 0.0;
 		return;
 	}
 
-	frag_angst += ((float)mem_free / (float)mem_size) - 0.50;
+	frag_factor = ((float)mem_free / (float)(mem_size + (16 << 20))) - 0.25;
+	frag_angst += frag_factor;
 
-	if (frag_angst < 0.0) {
+	if (frag_angst <= 0.0) {
 		frag_angst = 0.0;
 	}
+
+	LOGD->post_message("watchdog", LOG_NOTICE, "Free memory at " + mem_free);
+	LOGD->post_message("watchdog", LOG_NOTICE, "Fragmentation factor at " + frag_factor);
+	LOGD->post_message("watchdog", LOG_NOTICE, "Fragmentation angst at " + frag_angst);
 
 	if (frag_angst > 1.0) {
-		LOGD->post_message("watchdogd", LOG_NOTICE, "Memory fragmented, swapping out");
+		LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
 		frag_angst = 0.0;
 		swapout();
 	}
-}
-
-void freeze()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN() || PRIVILEGED());
-
-	if (CALLOUTD->query_suspend() != -1) {
-		CALLOUTD->suspend_callouts();
-	}
-	if (!SYSTEM_USERD->query_blocked()) {
-		SYSTEM_USERD->block_connections();
-	}
-	disable();
-}
-
-void thaw()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN() || PRIVILEGED());
-
-	if (SYSTEM_USERD->query_blocked()) {
-		SYSTEM_USERD->unblock_connections();
-	}
-	if (CALLOUTD->query_suspend() == -1) {
-		CALLOUTD->release_callouts();
-	}
-	enable();
 }
