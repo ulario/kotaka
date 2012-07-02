@@ -96,21 +96,11 @@ static void check()
 	if (mem_used > (float)(512 << 20)) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
 		frag_angst = 0.0;
+		swapout();
 		return;
 	}
 
-	frag_factor = mem_free / (mem_size + (float)(16 << 20)) - 0.25;
-	frag_angst += frag_factor;
-
-	if (frag_angst <= 0.0) {
-		frag_angst = 0.0;
-	}
-
-	LOGD->post_message("watchdog", LOG_NOTICE, "Free memory at " + mem_free);
-	LOGD->post_message("watchdog", LOG_NOTICE, "Fragmentation factor at " + frag_factor);
-	LOGD->post_message("watchdog", LOG_NOTICE, "Fragmentation angst at " + frag_angst);
-
-	if (frag_angst > 1.0) {
+	if ((mem_free - (float)(16 << 20)) / mem_size > 0.25) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
 		frag_angst = 0.0;
 		swapout();
