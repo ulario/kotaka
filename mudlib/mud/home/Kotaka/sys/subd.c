@@ -1,6 +1,8 @@
 #include <kotaka/privilege.h>
 #include <kotaka/paths.h>
 #include <kotaka/property.h>
+#include <kotaka/log.h>
+#include <kotaka/bigstruct.h>
 
 #include <type.h>
 
@@ -260,26 +262,76 @@ void qsort(mixed *arr, int begin, int end)
 	int low, mid, high;
 	mixed pivot;
 
-	mid = (begin + end) / 2;
-	pivot = arr[mid];
+	if (begin >= end) {
+		return;
+	}
+
 	low = begin;
+	mid = (begin + end) / 2;
 	high = end - 1;
 
+	pivot = arr[mid];
 	aswap(arr, mid, high);
 
 	while (low < high) {
 		if (arr[low] > pivot) {
 			aswap(arr, low, --high);
+		} else {
+			low++;
 		}
-		low++;
 	}
 
-	aswap(arr, low, end - 1);
+	aswap(arr, end - 1, low);
 
 	if (begin < low - 1) {
-		qsort(arr, begin, low - 1);
+		qsort(arr, begin, low);
 	}
+
 	if (low + 1 < end) {
 		qsort(arr, low + 1, end);
+	}
+}
+
+private void baswap(object arr, int a, int b)
+{
+	mixed tmp;
+
+	tmp = arr->get_element(a);
+	arr->set_element(a, arr->get_element(b));
+	arr->set_element(b, tmp);
+}
+
+void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end)
+{
+	int low, mid, high;
+	mixed pivot;
+
+	if (begin >= end) {
+		return;
+	}
+
+	low = begin;
+	mid = (begin + end) / 2;
+	high = end - 1;
+
+	pivot = arr->get_element(mid);
+	baswap(arr, mid, high);
+
+	while (low < high) {
+		if (arr->get_element(low) > pivot) {
+			aswap(arr, low, --high);
+		} else {
+			low++;
+		}
+	}
+
+	baswap(arr, end - 1, low);
+
+	if (begin < low - 1) {
+		bqsort(arr, begin, low);
+	}
+
+	if (low + 1 < end) {
+		bqsort(arr, low + 1, end);
 	}
 }
