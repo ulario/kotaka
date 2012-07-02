@@ -23,6 +23,8 @@ void main(string args)
 	}
 
 	for (i = 0; i < 3; i++) {
+		SUBD->qsort(lists[i], 0, sizeof(lists[i]));
+
 		if (sizeof(lists[i])) {
 			int j;
 			string *list;
