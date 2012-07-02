@@ -259,36 +259,35 @@ private void aswap(mixed *arr, int a, int b)
 
 void qsort(mixed *arr, int begin, int end)
 {
-	int low, mid, high;
-	mixed pivot;
+	while (begin < end) {
+		int low, mid, high;
+		mixed pivot;
 
-	if (begin >= end) {
-		return;
-	}
+		low = begin;
+		mid = (begin + end) / 2;
+		high = end - 1;
 
-	low = begin;
-	mid = (begin + end) / 2;
-	high = end - 1;
+		pivot = arr[mid];
+		aswap(arr, mid, high);
 
-	pivot = arr[mid];
-	aswap(arr, mid, high);
-
-	while (low < high) {
-		if (arr[low] > pivot) {
-			aswap(arr, low, --high);
-		} else {
-			low++;
+		while (low < high) {
+			if (arr[low] > pivot) {
+				aswap(arr, low, --high);
+			} else {
+				low++;
+			}
 		}
-	}
 
-	aswap(arr, end - 1, low);
+		mid = low;
+		aswap(arr, end - 1, mid);
 
-	if (begin < low - 1) {
-		qsort(arr, begin, low);
-	}
-
-	if (low + 1 < end) {
-		qsort(arr, low + 1, end);
+		if (mid - begin < end - mid) {
+			qsort(arr, begin, mid);
+			begin = mid + 1;
+		} else {
+			qsort(arr, mid + 1, end);
+			end = mid;
+		}
 	}
 }
 
@@ -303,35 +302,34 @@ private void baswap(object arr, int a, int b)
 
 void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end)
 {
-	int low, mid, high;
-	mixed pivot;
+	while (begin < end) {
+		int low, mid, high;
+		mixed pivot;
 
-	if (begin >= end) {
-		return;
-	}
+		low = begin;
+		mid = (begin + end) / 2;
+		high = end - 1;
 
-	low = begin;
-	mid = (begin + end) / 2;
-	high = end - 1;
+		pivot = arr->get_element(mid);
+		baswap(arr, mid, high);
 
-	pivot = arr->get_element(mid);
-	baswap(arr, mid, high);
-
-	while (low < high) {
-		if (arr->get_element(low) > pivot) {
-			baswap(arr, low, --high);
-		} else {
-			low++;
+		while (low < high) {
+			if (arr->get_element(low) > pivot) {
+				baswap(arr, low, --high);
+			} else {
+				low++;
+			}
 		}
-	}
 
-	baswap(arr, end - 1, low);
+		mid = low;
+		baswap(arr, end - 1, mid);
 
-	if (begin < low - 1) {
-		bqsort(arr, begin, low);
-	}
-
-	if (low + 1 < end) {
-		bqsort(arr, low + 1, end);
+		if (mid - begin < end - mid) {
+			bqsort(arr, begin, mid);
+			begin = mid + 1;
+		} else {
+			bqsort(arr, mid + 1, end);
+			end = mid;
+		}
 	}
 }
