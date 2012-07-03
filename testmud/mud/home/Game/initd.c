@@ -62,6 +62,8 @@ static void create()
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 
 	root = find_object("sys/root");
+
+	"sys/testd"->test();
 }
 
 void reboot()
