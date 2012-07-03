@@ -26,8 +26,6 @@ void enable()
 		error("Watchdog already enabled");
 	}
 
-	LOGD->post_message("system", LOG_NOTICE, "Watchdog enabled");
-
 	rlimits (0; -1) {
 		callout = call_out("check", 1);
 	}
@@ -44,7 +42,6 @@ void disable()
 	rlimits (0; -1) {
 		remove_call_out(callout);
 		callout = 0;
-		LOGD->post_message("system", LOG_NOTICE, "Watchdog disabled");
 	}
 }
 
