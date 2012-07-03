@@ -43,32 +43,39 @@ private void initialize()
 
 	configure_logging();
 
-	LOGD->post_message("system", LOG_NOTICE,
+	LOGD->post_message("boot", LOG_NOTICE,
 		"-----------------------------------------------------");
-	LOGD->post_message("system", LOG_NOTICE,
+	LOGD->post_message("boot", LOG_NOTICE,
 		"Kotaka mudlib v" + KOTAKA_VERSION + " booting...");
-	LOGD->post_message("system", LOG_NOTICE,
+	LOGD->post_message("boot", LOG_NOTICE,
 		"-----------------------------------------------------");
 
+	LOGD->post_message("boot", LOG_DEBUG, "Testing bigstruct library");
 	load_object(TESTD);
 	TESTD->test();
 
+	LOGD->post_message("boot", LOG_DEBUG, "Loading kernel manager");
 	load_object(KERNELD);
+
+	LOGD->post_message("boot", LOG_DEBUG, "Configuring kernel");
 	configure_klib();
 
-	KERNELD->set_global_access("Kotaka", 1);
-	KERNELD->set_global_access("System", 1);
-
+	LOGD->post_message("boot", LOG_DEBUG, "Loading object manager");
 	load_object(OBJECT_INFO);
 	load_object(OBJECTD);
 
+	LOGD->post_message("boot", LOG_DEBUG, "Enabling and initializing");
 	OBJECTD->enable();
 	OBJECTD->full_reset();
+
+	LOGD->post_message("boot", LOG_DEBUG, "Testing object manager");
 	OBJECTD->audit_clones();
 
+	LOGD->post_message("boot", LOG_DEBUG, "Loading error manager");
 	load_object(ERRORD);
 	ERRORD->enable();
 
+	LOGD->post_message("boot", LOG_DEBUG, "Loading system");
 	load_dir("closed", 1);
 	load_dir("lib", 1);
 	load_dir("lwo", 1);
@@ -76,12 +83,13 @@ private void initialize()
 	load_dir("sys", 1);
 
 	SYSTEM_USERD->set_reserve(2);
-
 	TRASHD->enable();
 	SYSTEM_USERD->enable();
 	STATUSD->enable();
 	WATCHDOGD->enable();
-	OBJECTD->audit_clones();
+
+	KERNELD->set_global_access("Kotaka", 1);
+	KERNELD->set_global_access("System", 1);
 
 	/* Booted up */
 
