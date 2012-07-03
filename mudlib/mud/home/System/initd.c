@@ -313,7 +313,7 @@ int forbid_inherit(string from, string path, int priv)
 		return 0;
 	}
 
-	if (sscanf(path, USR_DIR + "/System/closed/%*s") {
+	if (sscanf(path, USR_DIR + "/System/closed/%*s")) {
 		return 1;
 	}
 
