@@ -23,14 +23,13 @@ void main(string args)
 	}
 
 	for (i = 0; i < 3; i++) {
-		SUBD->qsort(lists[i], 0, sizeof(lists[i]));
-
 		if (sizeof(lists[i])) {
 			int j;
 			string *list;
 			
 			list = lists[i];
 			sz = sizeof(list);
+			SUBD->qsort(list, 0, sz);
 
 			switch(i) {
 			case 0: send_out("Administrators:\n"); break;
@@ -39,7 +38,7 @@ void main(string args)
 			}
 
 			for (j = 0; j < sz; j++) {
-				send_out(list[j] + "\n");
+				send_out(STRINGD->to_title(list[j]) + "\n");
 			}
 
 			send_out("\n");
