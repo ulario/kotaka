@@ -176,8 +176,7 @@ private mixed query_include_file(string compiled, string from, string path)
 	}
 
 	/* don't allow bypass of standard auto */
-	if (creator != "System" &&
-		path == "/include/AUTO" &&
+	if (path == "/include/AUTO" &&
 		from == "/include/std.h") {
 		return USR_DIR + "/System/include/second_auto.h";
 	}
