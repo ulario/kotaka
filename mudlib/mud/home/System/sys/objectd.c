@@ -618,8 +618,6 @@ void full_reset()
 	ACCESS_CHECK(PRIVILEGED());
 
 	rlimits (0; -1) {
-		LOGD->post_message("objectd", LOG_DEBUG, "Resetting object manager");
-
 		ignore_bigstruct_clones = 0;
 		ignore_bigstruct_clones++;
 
