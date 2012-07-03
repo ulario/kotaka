@@ -9,6 +9,7 @@
 inherit SECOND_AUTO;
 
 int callout;
+int frag_level;
 
 void freeze();
 void thaw();
@@ -89,14 +90,21 @@ static void check()
 	swap_size = status(ST_SWAPSIZE);
 	swap_free = swap_size - swap_used;
 
-	if (mem_used > (float)(512 << 20)) {
+	if (mem_used > (float)(1 << 30)) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
 		swapout();
 		return;
 	}
 
 	if ((mem_free - (float)(16 << 20)) / mem_size > 0.25) {
+		frag_level++;
+	} else if (frag_level) {
+		frag_level--;
+	}
+
+	if (frag_level > 60) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
 		swapout();
+		frag_level = 0;
 	}
 }
