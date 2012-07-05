@@ -66,7 +66,8 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_DEBUG, "Enabling and initializing");
 	OBJECTD->enable();
-	OBJECTD->full_reset();
+	OBJECTD->discover_objects();
+	OBJECTD->discover_clones();
 
 	LOGD->post_message("boot", LOG_DEBUG, "Testing object manager");
 	OBJECTD->audit_clones();
@@ -276,8 +277,6 @@ private void configure_klib()
 	for (index = 0; index < sizeof(wizards); index++) {
 		KERNELD->add_owner(wizards[index]);
 	}
-
-	KERNELD->set_rsrc("ticks", 100000000, 0, 0);
 }
 
 mapping read_init_file(string subsystem)
