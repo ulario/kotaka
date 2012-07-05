@@ -1,9 +1,3 @@
-/** Grants proxies
-
-A proxy is used to grant user level permissions to objects, or to allow
-one subsystem to take advantage of grants made by other subsystems.
-
-*/
 #include <kernel/kernel.h>
 
 #include <kotaka/paths.h>
