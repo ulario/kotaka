@@ -7,7 +7,7 @@ void main(string args)
 {
 	int count;
 
-	if (query_user()->query_class() < 2) {
+	if (query_user()->query_class() < 3) {
 		send_out("You do not have sufficient access rights to swap out the mud.\n");
 		return;
 	}
