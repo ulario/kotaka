@@ -18,44 +18,12 @@ Then on the right we have a flowing paragraph describing the current "room"
 Then another paragraph with an inventory listing.
 */
 
-#define XM (80 - 17 - 2)
-#define YM (2)
+#define XM (1)
+#define YM (1)
 
-string draw_look(object living, varargs int facing)
+private void draw_tickmarks(object painter)
 {
-	int x, y, i;
-	object painter;
-	object environment;
-	object *contents;
-
-	ACCESS_CHECK(GAME());
-
-	painter = new_object(LWO_PAINTER);
-
-	/* be really simple for now */
-	painter->start(80, 20);
-
-	if (!living) {
-		painter->set_color(0x4C);
-		for (i = 0; y < 17; y++) {
-			painter->move_pen(XM, YM + y);
-			painter->draw(STRINGD->chars('?', 17));
-		}
-	} else if (!(environment = living->query_environment())) {
-		painter->set_color(0x7);
-
-		for (i = 0; y < 17; y++) {
-			painter->move_pen(XM, YM + y);
-			painter->draw(STRINGD->chars(':', 17));
-		}
-	} else {
-		painter->set_color(0x20);
-
-		for (y = 0; y < 17; y++) {
-			painter->move_pen(XM, YM + y);
-			painter->draw(STRINGD->chars('`', 17));
-		}
-	}
+	int i;
 
 	for (i = 0; i < 17; i += 1) {
 		if (i % 4 == 0) {
@@ -73,7 +41,48 @@ string draw_look(object living, varargs int facing)
 		painter->move_pen(XM + 17, YM + i);
 		painter->draw("-");
 	}
+}
 
+string draw_look(object living, varargs int facing)
+{
+	int x, y, i;
+	object painter;
+	object environment;
+	object *contents;
+
+	ACCESS_CHECK(GAME());
+
+	painter = new_object(LWO_PAINTER);
+
+	/* be really simple for now */
+	painter->start(80, 20);
+
+	if (!living) {
+		painter->set_color(0x47);
+		for (i = 0; y < 17; y++) {
+			painter->move_pen(XM, YM + y);
+			painter->draw(STRINGD->chars(' ', 17));
+		}
+		painter->set_color(0x74);
+		painter->move_pen(XM + 6, YM + 8);
+		painter->draw("Error");
+	} else if (!(environment = living->query_environment())) {
+		painter->set_color(0x7);
+
+		for (i = 0; y < 17; y++) {
+			painter->move_pen(XM, YM + y);
+			painter->draw(STRINGD->chars(':', 17));
+		}
+	} else {
+		painter->set_color(0x20);
+
+		for (y = 0; y < 17; y++) {
+			painter->move_pen(XM, YM + y);
+			painter->draw(STRINGD->chars('`', 17));
+		}
+	}
+
+	draw_tickmarks(painter);
 	painter->set_color(0x03);
 
 	if (environment) {
