@@ -57,7 +57,6 @@ void disconnect()
 	}
 }
 
-/*
 int receive_message(string str)
 {
 	if (!dead) {
@@ -66,7 +65,7 @@ int receive_message(string str)
 		return MODE_NOCHANGE;
 	}
 }
-*/
+
 static void char()
 {
 	callout = -1;
