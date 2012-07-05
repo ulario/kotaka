@@ -9,10 +9,6 @@
 inherit SECOND_AUTO;
 
 int callout;
-int frag_level;
-
-void freeze();
-void thaw();
 
 static void create()
 {
@@ -75,8 +71,8 @@ static void check()
 		callout = call_out("check", 1);
 	}
 
-	mem_used = (float)status(ST_SMEMUSED) + (float)status(ST_DMEMUSED);
-	mem_size = (float)status(ST_SMEMSIZE) + (float)status(ST_DMEMSIZE);
+	mem_used = (float)status(ST_DMEMUSED);
+	mem_size = (float)status(ST_DMEMSIZE);
 	mem_free = mem_size - mem_used;
 
 	obj_used = status(ST_NOBJECTS);
@@ -87,21 +83,26 @@ static void check()
 	swap_size = status(ST_SWAPSIZE);
 	swap_free = swap_size - swap_used;
 
+	if ((float)obj_free / (float)obj_size < 0.25) {
+		if (CALLOUTD->query_suspend() != -1) {
+			CALLOUTD->suspend_callouts();
+		}
+	}
+
+	if ((float)swap_free / (float)swap_size < 0.25) {
+		if (CALLOUTD->query_suspend() != -1) {
+			CALLOUTD->suspend_callouts();
+		}
+	}
+
 	if (mem_used > (float)(1 << 30)) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
 		swapout();
 		return;
 	}
 
-	if ((mem_free - (float)(16 << 20)) / mem_size > 0.25) {
-		frag_level++;
-	} else if (frag_level) {
-		frag_level--;
-	}
-
-	if (frag_level > 60) {
+	if (mem_free > (float)(32 << 20) && (mem_free / mem_size) > 0.50) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
 		swapout();
-		frag_level = 0;
 	}
 }
