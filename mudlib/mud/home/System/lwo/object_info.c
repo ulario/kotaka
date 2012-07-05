@@ -129,6 +129,8 @@ void set_inherited_destructors(string *destructors)
 
 void add_clone(object clone)
 {
+	int oindex;
+
 	ACCESS_CHECK(SYSTEM());
 
 	nclones++;
@@ -151,11 +153,15 @@ void add_clone(object clone)
 		clones = ([ ]);
 	}
 
-	clones[clone] = 1;
+	sscanf(object_name(clone), "%*s#%d", oindex);
+
+	clones[oindex] = clone;
 }
 
 void remove_clone(object clone)
 {
+	int oindex;
+
 	ACCESS_CHECK(SYSTEM());
 
 	if (nclones <= 0) {
@@ -172,7 +178,9 @@ void remove_clone(object clone)
 		return;
 	}
 
-	clones[clone] = nil;
+	sscanf(object_name(clone), "%*s#%d", oindex);
+
+	clones[oindex] = clone;
 }
 
 void reset_clones()
@@ -230,7 +238,7 @@ object *query_clones()
 		return nil;
 	}
 
-	return clones ? map_indices(clones) : ({ });
+	return clones ? map_values(clones) : ({ });
 }
 
 int query_clone_count()
