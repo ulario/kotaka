@@ -906,12 +906,23 @@ void destruct(string owner, object obj)
 
 	pinfo = objdb->get_element(status(obj, O_INDEX));
 
-	if (!pinfo) {
-		return;
-	}
 
 	if (!isclone) {
 		path = name;
+	}
+
+	if (path == OBJECTD) {
+		error("Cannot destruct object manager");
+	}
+
+	if (sscanf(path, USR_DIR + "/System/%*s/bigstruct/")) {
+		if (!isclone && !sscanf(path, USR_DIR + "/System" + INHERITABLE_SUBDIR + "/bigstruct")) {
+			error("Cannot destruct bigstruct blueprint");
+		}
+	}
+
+	if (!pinfo) {
+		return;
 	}
 
 	if (!sscanf(path, "/kernel/%*s")) {
