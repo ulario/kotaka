@@ -118,9 +118,9 @@ static void create()
 int booting()
 {
 	mixed *frame;
-	
+
 	frame = call_trace()[0];
-	
+
 	return frame[TRACE_PROGNAME] == DRIVER
 		&& frame[TRACE_FUNCTION] == "initialize";
 }
@@ -128,9 +128,9 @@ int booting()
 int restoring()
 {
 	mixed *frame;
-	
+
 	frame = call_trace()[0];
-	
+
 	return frame[TRACE_PROGNAME] == DRIVER
 		&& frame[TRACE_FUNCTION] == "restored";
 }
@@ -184,11 +184,9 @@ void reboot()
 
 	clear_admin();
 
-	catch {
-		SYSTEM_USERD->reboot();
-	}
-
+	SYSTEM_USERD->reboot();
 	WATCHDOGD->reboot();
+	WIZTOOLD->reboot();
 
 	sz = sizeof(subsystems);
 
@@ -277,6 +275,8 @@ private void configure_klib()
 	for (index = 0; index < sizeof(wizards); index++) {
 		KERNELD->add_owner(wizards[index]);
 	}
+
+	KERNELD->set_rsrc("ticks", 1000000, 0, 0);
 }
 
 mapping read_init_file(string subsystem)
