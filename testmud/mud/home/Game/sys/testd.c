@@ -74,3 +74,7 @@ static void bomb(int quota)
 		call_out("bomb", 0, quota);
 	}
 }
+
+void test()
+{
+}
