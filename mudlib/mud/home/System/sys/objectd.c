@@ -826,14 +826,10 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 
 	is_kernel = sscanf(path, "/kernel/%*s");
 
-	if (is_kernel) {
-		return;
-	}
-
 	is_auto = sscanf(path, USR_DIR + "/System"
 		+ INHERITABLE_SUBDIR + "auto/%*s");
 
-	if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
+	if (!is_kernel && !is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
 		error("Failure to inherit SECOND_AUTO: " + path);
 	}
 
