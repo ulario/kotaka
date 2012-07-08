@@ -29,14 +29,14 @@ void disable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	SYSTEM_USERD->set_binary_manager(2, nil);
+	SYSTEM_USERD->set_telnet_manager(1, nil);
 }
 
 void enable()
 {
 	ACCESS_CHECK(KADMIN() || SYSTEM());
 
-	SYSTEM_USERD->set_binary_manager(2, this_object());
+	SYSTEM_USERD->set_telnet_manager(1, this_object());
 }
 
 private float swap_used_ratio()
