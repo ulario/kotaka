@@ -13,6 +13,21 @@ static void create()
 	wiztools = ([ ]);
 }
 
+void reboot()
+{
+	int sz;
+	object *wiz;
+
+	ACCESS_CHECK(SYSTEM());
+
+	wiz = map_values(wiztools);
+	sz = sizeof(wiz);
+
+	while (--sz >= 0) {
+		destruct_object(wiz[sz]);
+	}
+}
+
 object get_wiztool()
 {
 	string name;
