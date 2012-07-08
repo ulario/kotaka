@@ -243,14 +243,14 @@ void swapout()
 	::swapout();
 }
 
-void dump_state()
+void dump_state(varargs int increment)
 {
 	VERIFY();
-	::dump_state();
+	::dump_state(increment);
 }
 
-void shutdown()
+void shutdown(varargs int hotboot)
 {
 	VERIFY();
-	::shutdown();
+	::shutdown(hotboot);
 }
