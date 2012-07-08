@@ -37,7 +37,7 @@ void begin()
 
 	send_out("\033[1;1H\033[2J");
 
-	call_out("particle", 0);
+	call_out("frame", 0);
 	call_out("second", 1);
 
 	times = millitime();
@@ -162,6 +162,7 @@ static void frame()
 
 	frames++;
 
+	send_out("\033[1;1H");
 	send_out(paint->render_color());
 
 	if (due) {
