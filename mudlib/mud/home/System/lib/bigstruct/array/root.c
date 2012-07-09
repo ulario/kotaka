@@ -17,8 +17,6 @@ atomic static void create()
 	::create();
 	
 	top = allocate(4);
-	top[0] = new_node();
-	top[0]->set_level(0);
 	size = 0;
 }
 
@@ -160,7 +158,8 @@ atomic void set_size(int new_size)
 
 	switch(size)
 	{
-	case 0x00000000 .. 0x00000100: cur_level = 0; break;
+	case 0x00000000: cur_level = -1; break;
+	case 0x00000001 .. 0x00000100: cur_level = 0; break;
 	case 0x00000101 .. 0x00010000: cur_level = 1; break;
 	case 0x00010001 .. 0x01000000: cur_level = 2; break;
 	case 0x01000001 .. 0x7FFFFFFF: cur_level = 3; break;
@@ -168,7 +167,8 @@ atomic void set_size(int new_size)
 
 	switch(new_size)
 	{
-	case 0x00000000 .. 0x00000100: new_level = 0; break;
+	case 0x00000000: new_level = -1; break;
+	case 0x00000001 .. 0x00000100: new_level = 0; break;
 	case 0x00000101 .. 0x00010000: new_level = 1; break;
 	case 0x00010001 .. 0x01000000: new_level = 2; break;
 	case 0x01000001 .. 0x7FFFFFFF: new_level = 3; break;
@@ -183,10 +183,13 @@ atomic void set_size(int new_size)
 
 	if (new_size < size) {
 		while (cur_level > new_level) {
-			discard_node(top[cur_level--]);
+			discard_node(top[cur_level]);
+			top[cur_level--] = nil;
 		}
 
-		truncate_to(top[cur_level], new_size);
+		if (cur_level >= 0) {
+			truncate_to(top[cur_level], new_size);
+		}
 	}
 
 	size = new_size;
