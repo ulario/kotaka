@@ -7,9 +7,6 @@ inherit SECOND_AUTO;
 
 private object root;
 
-static object new_node();
-static void discard_node(object node);
-
 static void create()
 {
 	root = previous_object();

@@ -17,22 +17,6 @@ static void create()
 	array = allocate(256);
 }
 
-static void destruct()
-{
-	if (level) {
-		object *turkeys;
-		int sz;
-		int i;
-
-		turkeys = array - ({ nil });
-
-		sz = sizeof(turkeys);
-		for (i = 0; i < sz; i++) {
-			discard_node(turkeys[i]);
-		}
-	}
-}
-
 void set_level(int new_level)
 {
 	check_caller();

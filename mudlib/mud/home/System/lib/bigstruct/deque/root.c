@@ -24,10 +24,10 @@ atomic static void create()
 
 static void destruct()
 {
-	if (first) {
+	while (first) {
 		object turkey;
 		turkey = first;
-		first = last = nil;
+		first = first->get_next();
 		discard_node(turkey);
 	}
 }

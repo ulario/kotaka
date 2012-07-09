@@ -15,9 +15,29 @@ int size;
 atomic static void create()
 {
 	::create();
-	
+
 	top = allocate(4);
 	size = 0;
+}
+
+private void purge_node(object node)
+{
+	int level;
+
+	if (level = node->get_level()) {
+		object *turkeys;
+		int sz;
+		int i;
+
+		turkeys = node->get_array() - ({ nil });
+
+		sz = sizeof(turkeys);
+		for (i = 0; i < sz; i++) {
+			purge_node(turkeys[i]);
+		}
+	}
+
+	discard_node(node);
 }
 
 static void destruct()
@@ -26,7 +46,7 @@ static void destruct()
 
 	for (i = 0; i < 4; i++) {
 		if (top[i]) {
-			discard_node(top[i]);
+			purge_node(top[i]);
 		}
 	}
 }

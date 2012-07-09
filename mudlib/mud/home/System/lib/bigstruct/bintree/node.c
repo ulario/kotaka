@@ -11,17 +11,6 @@ private object parent;
 private object left;
 private object right;
 
-static void destruct()
-{
-	if (left) {
-		discard_node(left);
-	}
-
-	if (right) {
-		discard_node(right);
-	}
-}
-
 /* get */
 
 object get_parent()

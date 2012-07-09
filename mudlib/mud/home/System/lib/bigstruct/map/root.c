@@ -23,11 +23,6 @@ atomic static void create()
 	top = insert_node(nil);
 }
 
-static void destruct()
-{
-	::destruct();
-}
-
 void clear()
 {
 	check_caller(WRITE_ACCESS);

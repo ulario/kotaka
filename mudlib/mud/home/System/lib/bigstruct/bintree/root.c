@@ -17,10 +17,25 @@ static object next_node(object node);
 static void rotate_left(object node);
 static void rotate_right(object node);
 
+private void purge_node(object node)
+{
+	object subnode;
+
+	if (subnode = node->get_left()) {
+		purge_node(subnode);
+	}
+
+	if (subnode = node->get_right()) {
+		purge_node(subnode);
+	}
+
+	discard_node(node);
+}
+
 static void destruct()
 {
 	if (top) {
-		discard_node(top);
+		purge_node(top);
 	}
 }
 

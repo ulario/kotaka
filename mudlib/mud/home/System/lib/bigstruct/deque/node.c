@@ -26,13 +26,6 @@ static void create()
 	begin = end = arrsz / 2;
 }
 
-static void destruct()
-{
-	if (next) {
-		discard_node(next);
-	}
-}
-
 object get_prev()
 {
 	check_caller();
