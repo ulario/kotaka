@@ -16,7 +16,7 @@ void charge(int new_charges)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	while (new_charges-- > 0) {
+	while (new_charges-- > 0 && free_callouts() > 60) {
 		call_out("release", 0);
 		charges++;
 	}
