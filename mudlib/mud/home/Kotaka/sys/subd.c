@@ -257,10 +257,10 @@ private void aswap(mixed *arr, int a, int b)
 	arr[b] = tmp;
 }
 
-void qsort(mixed *arr, int begin, int end)
+void qsort(mixed *arr, int begin, int end, varargs string compfunc)
 {
 	while (begin < end) {
-		int low, mid, high;
+		int low, mid, high, sign;
 		mixed pivot;
 
 		low = begin;
@@ -271,7 +271,14 @@ void qsort(mixed *arr, int begin, int end)
 		aswap(arr, mid, high);
 
 		while (low < high) {
-			if (arr[low] > pivot) {
+			if (compfunc) {
+				sign = previous_object()->compfunc(arr[low], pivot);
+			} else if (arr[low] > pivot) {
+				sign = 1;
+			} else {
+				sign = 0;
+			}
+			if (sign > 0) {
 				aswap(arr, low, --high);
 			} else {
 				low++;
@@ -300,7 +307,7 @@ private void baswap(object arr, int a, int b)
 	arr->set_element(b, tmp);
 }
 
-void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end)
+void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end, varargs string compfunc)
 {
 	while (begin < end) {
 		int low, mid, high;
@@ -314,7 +321,14 @@ void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end)
 		baswap(arr, mid, high);
 
 		while (low < high) {
-			if (arr->get_element(low) > pivot) {
+			if (compfunc) {
+				sign = previous_object()->compfunc(arr->get_element(low), pivot);
+			} else if (arr->get_element(low) > pivot) {
+				sign = 1;
+			} else {
+				sign = 0;
+			}
+			if (sign > 0) {
 				baswap(arr, low, --high);
 			} else {
 				low++;
