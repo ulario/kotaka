@@ -83,3 +83,27 @@ static mixed **call_trace()
 	return trace - ({ nil });
 }
 #endif
+
+static mixed call_other_unprotected(varargs mixed args ...)
+{
+	return ::call_other(args ...);
+}
+
+static mixed **call_trace_unprotected()
+{
+	return ::call_trace();
+}
+
+static string previous_program_unprotected(varargs int steps)
+{
+	return ::previous_program(steps);
+}
+
+static object calling_object(varargs int steps)
+{
+	mixed **trace;
+
+	trace = call_trace();
+
+	return find_object(trace[sizeof(trace) - (3 + steps)][TRACE_OBJNAME]);
+}
