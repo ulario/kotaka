@@ -4,26 +4,17 @@
 #include <game/paths.h>
 #include <status.h>
 
-inherit LIB_USTATE;
+inherit "~/lib/animate";
 
-int stopped;
-int reading;
-int introed;
-int frames;
-int due;
-float pi;
-float otime;
 float **particles;
-string path;
 
-#define NPARTICLES 36
+#define NPARTICLES 30
 #define CLK_X 45
 #define CLK_Y 9
 
 static void create(int clone)
 {
 	::create();
-	pi = atan(1.0) * 4.0;
 }
 
 static void destruct(int clone)
@@ -34,17 +25,10 @@ static void destruct(int clone)
 void begin()
 {
 	int i;
-	mixed *times;
 
-	ACCESS_CHECK(previous_object() == query_user());
+	::begin();
 
 	send_out("\033[1;1H\033[2J");
-
-	call_out("frame", 0);
-	call_out("second", 1);
-
-	times = millitime();
-	otime = (float)times[0] + times[1];
 
 	particles = allocate(NPARTICLES);
 
@@ -52,20 +36,6 @@ void begin()
 		particles[i] = allocate_float(4);
 		particles[i][1] = 20.0;
 	}
-}
-
-void stop()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	stopped = 1;
-}
-
-void go()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	stopped = 0;
 }
 
 private void do_particles(object paint, float diff)
@@ -110,69 +80,15 @@ private void do_particles(object paint, float diff)
 	}
 }
 
-static void frame()
+static void do_frame(float diff)
 {
-	int x, y, i;
-	string buffer;
-	float time, diff, hand;
 	object paint;
-	mixed *times;
-
-	times = millitime();
-	time = (float)times[0] + times[1];
-	diff = time - otime;
-	otime = time;
-
-	call_out("frame", 0);
 
 	paint = new_object(LWO_PAINTER);
 	paint->start(80, 20);
+
 	do_particles(paint, diff);
 
-	frames++;
 	send_out("\033[1;1H");
 	send_out(paint->render_color());
-
-	if (due) {
-		due = 0;
-		send_out("FPS: " + frames);
-		frames = 0;
-	}
-}
-
-static void second()
-{
-	call_out("second", 1);
-	due = 1;
-}
-
-void end()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	destruct_object(this_object());
-}
-
-void receive_in(string input)
-{
-	string first;
-
-	ACCESS_CHECK(previous_object() == query_user());
-
-	reading = 1;
-
-	if (!sscanf(input, "%s %s", first, input)) {
-		first = input;
-		input = "";
-	}
-
-	switch(first) {
-	case "quit":
-		pop_state();
-		return;
-	default:
-		send_out(first + ": command not recognized.\n");
-	}
-
-	reading = 0;
 }
