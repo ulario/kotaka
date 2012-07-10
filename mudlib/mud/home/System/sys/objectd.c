@@ -74,8 +74,6 @@ static void create()
 	objdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	objdb->set_type(T_INT);
 
-	canary = clone_object("~/obj/canary");
-
 	rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 }
 
@@ -260,11 +258,17 @@ private void exit_objectd()
 
 private void flush_rqueue()
 {
+	ASSERT(in_objectd == 0);
+
+	if (rqueue->empty()) {
+		return;
+	}
+
+	enter_objectd();
+
 	while (!rqueue->empty()) {
 		mixed *front;
 		object pinfo;
-
-		enter_objectd();
 
 		front = rqueue->get_front();
 		rqueue->pop_front();
@@ -280,9 +284,9 @@ private void flush_rqueue()
 		} else {
 			pinfo->remove_clone(front[2]);
 		}
-
-		exit_objectd();
 	}
+
+	exit_objectd();
 }
 
 /* external */
@@ -530,10 +534,12 @@ void discover_clones()
 		object selfqueue;
 		int sz, i;
 
+		LOGD->post_message("object", LOG_DEBUG, "Collecting blueprint indices");
+
 		indices = objdb->get_indices();
 		sz = indices->get_size();
 
-		ignore_clones = 1;
+		LOGD->post_message("object", LOG_DEBUG, "Resetting clone databases");
 
 		for (i = 0; i < sz; i++) {
 			object pinfo;
@@ -542,6 +548,8 @@ void discover_clones()
 			pinfo = objdb->get_element(indices->get_element(i));
 			pinfo->reset_clones();
 		}
+
+		LOGD->post_message("object", LOG_DEBUG, "Discovering clones");
 
 		owners = KERNELD->query_owners();
 		sz = sizeof(owners);
@@ -567,7 +575,8 @@ void discover_clones()
 			} while (current != first);
 		}
 
-		ignore_clones = 0;
+		LOGD->post_message("object", LOG_DEBUG, "Discovered " + rqueue->get_size() + " clones");
+		LOGD->post_message("object", LOG_DEBUG, "in_objectd: " + in_objectd);
 		flush_rqueue();
 	}
 }
@@ -577,18 +586,18 @@ void full_reset()
 	ACCESS_CHECK(PRIVILEGED());
 
 	rlimits (0; -1) {
-		destruct_object(canary);
+		in_objectd = 0;
+		ignore_clones = 1;
+
 		destruct_object(objdb);
-
-		rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-
 		objdb = clone_object(BIGSTRUCT_MAP_OBJ);
 		objdb->set_type(T_INT);
 
+		ignore_clones = 0;
+
+		rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+
 		discover_objects();
-
-		canary = clone_object("~/obj/canary");
-
 		discover_clones();
 	}
 }
