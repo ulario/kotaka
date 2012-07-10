@@ -406,8 +406,7 @@ private int bypass(object obj)
 
 static void destruct()
 {
-	destruct_object(cmap);
-	destruct_object(cqueue);
+	error("Cannot destruct callout manager");
 }
 
 int empty()
