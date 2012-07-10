@@ -95,14 +95,16 @@ static void check()
 		}
 	}
 
-	if (mem_used > (float)(1 << 30)) {
+
+	if (mem_used > ldexp(1.0, 31)) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
 		swapout();
 		return;
 	}
 
-	if (mem_free > (float)(32 << 20) && (mem_free / mem_size) > 0.50) {
+	if (mem_free > (float)(64 << 20) && (mem_free / mem_size) > 0.50) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
 		swapout();
 	}
+
 }
