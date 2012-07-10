@@ -61,7 +61,9 @@ private void initialize()
 	configure_klib();
 
 	LOGD->post_message("boot", LOG_DEBUG, "Loading object manager");
+
 	load_object(OBJECT_INFO);
+	load_object("obj/canary");
 	load_object(OBJECTD);
 
 	LOGD->post_message("boot", LOG_DEBUG, "Enabling and initializing");
