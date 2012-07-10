@@ -413,7 +413,7 @@ void recompile_kernel_library()
 		string name;
 
 		name = names[i];
-		name = name[0..strlen(name) - 3];
+		name = name[0 .. strlen(name) - 3];
 
 		if (find_object("/kernel/obj/" + name)) {
 			compile_object("/kernel/obj/" + name);
@@ -534,12 +534,8 @@ void discover_clones()
 		object selfqueue;
 		int sz, i;
 
-		LOGD->post_message("object", LOG_DEBUG, "Collecting blueprint indices");
-
 		indices = objdb->get_indices();
 		sz = indices->get_size();
-
-		LOGD->post_message("object", LOG_DEBUG, "Resetting clone databases");
 
 		for (i = 0; i < sz; i++) {
 			object pinfo;
@@ -548,8 +544,6 @@ void discover_clones()
 			pinfo = objdb->get_element(indices->get_element(i));
 			pinfo->reset_clones();
 		}
-
-		LOGD->post_message("object", LOG_DEBUG, "Discovering clones");
 
 		owners = KERNELD->query_owners();
 		sz = sizeof(owners);
@@ -575,9 +569,9 @@ void discover_clones()
 			} while (current != first);
 		}
 
-		LOGD->post_message("object", LOG_DEBUG, "Discovered " + rqueue->get_size() + " clones");
-		LOGD->post_message("object", LOG_DEBUG, "in_objectd: " + in_objectd);
-		flush_rqueue();
+		if (!in_objectd) {
+			flush_rqueue();
+		}
 	}
 }
 
@@ -592,13 +586,16 @@ void full_reset()
 		destruct_object(objdb);
 		objdb = clone_object(BIGSTRUCT_MAP_OBJ);
 		objdb->set_type(T_INT);
+		rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
 		ignore_clones = 0;
 
-		rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+		enter_objectd();
 
 		discover_objects();
 		discover_clones();
+
+		exit_objectd();
 	}
 }
 
