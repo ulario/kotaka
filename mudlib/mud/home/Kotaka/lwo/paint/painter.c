@@ -83,19 +83,22 @@ void draw(string brush)
 
 string render()
 {
-	return implode(chars, "\n") + "\n";
+	return chars[..];
 }
 
-string render_color()
+string *render_color()
 {
 	int i, j;
 	int color, delta;
-	string buffer;
+	string *buffers;
 
-	buffer = "";
+	buffers = allocate(size_y);
 	color = 0x7;
 
 	for (i = 0; i < size_y; i++) {
+		string buffer;
+		buffer = "";
+
 		for (j = 0; j < size_x; j++) {
 			int new_color;
 			int dirty;
@@ -138,8 +141,9 @@ string render_color()
 			buffer += "\033[0m";
 			color = 0x07;
 		}
-		buffer += "\n";
+
+		buffers[i] = buffer;
 	}
 
-	return buffer;
+	return buffers;
 }
