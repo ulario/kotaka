@@ -5,5 +5,5 @@ inherit LIB_BIN;
 
 void main(string args)
 {
-	query_ustate()->push_state(clone_object("~/obj/ustate/fireworks"));
+	query_ustate()->push_state(clone_object("~/obj/ustate/movie/fireworks"));
 }
