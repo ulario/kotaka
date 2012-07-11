@@ -106,5 +106,5 @@ static void do_frame(float diff)
 	do_particles(paint, diff);
 
 	send_out("\033[1;1H");
-	send_out(paint->render_color());
+	send_out(implode(paint->render_color(), "\n"));
 }

@@ -93,5 +93,5 @@ void main(string args)
 	buffer = buffer[strlen(buffer) - 10 ..];
 	paint->draw(buffer);
 
-	send_out(paint->render_color());
+	send_out(implode(paint->render_color(), "\n") + "\n");
 }
