@@ -50,7 +50,6 @@ private void initialize()
 	LOGD->post_message("boot", LOG_NOTICE,
 		"-----------------------------------------------------");
 
-	LOGD->post_message("boot", LOG_DEBUG, "Testing bigstruct library");
 	load_object(TESTD);
 	TESTD->test();
 
@@ -66,7 +65,7 @@ private void initialize()
 	load_object("obj/canary");
 	load_object(OBJECTD);
 
-	LOGD->post_message("boot", LOG_DEBUG, "Enabling and initializing");
+	LOGD->post_message("boot", LOG_DEBUG, "Initializing object manager");
 	OBJECTD->enable();
 	OBJECTD->discover_objects();
 	OBJECTD->discover_clones();
@@ -156,6 +155,7 @@ void prepare_reboot()
 		}
 	}
 
+	CALLOUTD->suspend_callouts();
 	LOGD->post_message("system", LOG_NOTICE, "saving");
 }
 
@@ -197,6 +197,8 @@ void reboot()
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "reboot");
 		}
 	}
+
+	CALLOUTD->release_callouts();
 }
 
 /** Handles a bogus reboot */
@@ -216,6 +218,8 @@ void bogus_reboot()
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "bogus_reboot");
 		}
 	}
+
+	CALLOUTD->release_callouts();
 }
 
 /** Used to output messages to the console */
