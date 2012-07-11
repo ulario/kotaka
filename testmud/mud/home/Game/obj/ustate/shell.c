@@ -37,7 +37,9 @@ void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
 
-	send_out(read_file("~/data/doc/guest_welcome"));
+	if (!query_user()->query_username()) {
+		send_out(read_file("~/data/doc/guest_welcome"));
+	}
 }
 
 void stop()
@@ -119,6 +121,8 @@ void receive_in(string input)
 		if (BIND->execute_command("wiz/tool/" + first, input))
 			break;
 		if (BIND->execute_command("wiz/" + first, input))
+			break;
+		if (BIND->execute_command("movie/" + first, input))
 			break;
 		if (BIND->execute_command(first, input))
 			break;
