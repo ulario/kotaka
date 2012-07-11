@@ -15,4 +15,5 @@ void main(string args)
 	}
 
 	OBJECTD->full_reset();
+	OBJECTD->audit_clones();
 }
