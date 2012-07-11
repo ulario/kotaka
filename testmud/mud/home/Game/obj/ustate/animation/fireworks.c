@@ -9,8 +9,6 @@ inherit "~/lib/animate";
 float **particles;
 
 #define NPARTICLES 30
-#define CLK_X 45
-#define CLK_Y 9
 
 static void create(int clone)
 {

@@ -8,7 +8,7 @@ inherit "~/lib/animate";
 
 float pi;
 
-#define CLK_X 45
+#define CLK_X 9
 #define CLK_Y 9
 
 static void create(int clone)
