@@ -8,13 +8,6 @@ int *arr;
 
 static void create()
 {
-	int i, sz;
-
-	arr = allocate(sz = status(ST_ARRAYSIZE));
-
-	for (i = 0; i < sz; i++) {
-		arr[i] = random(1000000000);
-	}
 }
 
 private void test_qsort()
@@ -48,10 +41,22 @@ private void scramble()
 	}
 }
 
+private void fill()
+{
+	int sz;
+
+	for (sz = sizeof(arr) - 1; sz >= 0; sz--) {
+		arr[sz] = sz;
+	}
+}
+
 void test()
 {
-	LOGD->post_message("test", LOG_DEBUG, "Testing qsort...");
+	int l, sz;
 
+	arr = allocate(status(ST_ARRAYSIZE));
+
+	fill();
 	scramble();
 	test_qsort();
 }
