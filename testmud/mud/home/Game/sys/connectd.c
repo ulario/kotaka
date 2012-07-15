@@ -133,21 +133,17 @@ object select(string str)
 
 	switch(basename) {
 	case BINARY_CONN:
-		switch(level) {
-		case 1:
-			return clone_object("~Game/obj/filter/telnet");
-		default:
+		if (previous_object(2) <- "~Game/obj/filter/telnet") {
 			user = clone_object("~Game/obj/user");
 			users[user] = 1;
 			return user;
+		} else {
+			return clone_object("~Game/obj/filter/telnet");
 		}
 	case TELNET_CONN:
-		switch(level) {
-		default:
-			user = clone_object("~Game/obj/user");
-			users[user] = 1;
-			return user;
-		}
+		user = clone_object("~Game/obj/user");
+		users[user] = 1;
+		return user;
 	}
 }
 
