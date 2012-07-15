@@ -155,6 +155,7 @@ void prepare_reboot()
 		}
 	}
 
+	bogus = call_out("bogus_reboot");
 	CALLOUTD->suspend_callouts();
 	LOGD->post_message("system", LOG_NOTICE, "saving");
 }
@@ -182,6 +183,7 @@ void reboot()
 	LOGD->post_message("system", LOG_NOTICE, "rebooted successfully");
 	set_status("ok");
 
+	remove_call_out(bogus);
 	bogus = 0;
 
 	clear_admin();
