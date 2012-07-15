@@ -313,6 +313,7 @@ void release_callouts()
 
 		if (empty()) {
 			suspend = 0;
+			RSRCD->release_callout(nil, 0);
 			LOGD->post_message("system", LOG_INFO, "Released callouts");
 		} else {
 			suspend = 1;
