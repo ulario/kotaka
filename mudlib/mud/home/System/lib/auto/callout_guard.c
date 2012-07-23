@@ -45,7 +45,7 @@ private mixed **process_callouts(mixed **callouts)
 		for (i = 0; i < sz; i++) {
 			co = callouts[i];
 			co += ({ sizeof(co) });
-			callouts[i] = ({ co[CO_HANDLE], co[CO_FIRSTXARG], co[CO_DELAY] }) + co[CO_FIRSTXARG + 1];
+			callouts[i] = ({ co[CO_HANDLE], co[CO_FIRSTXARG], co[CO_DELAY] });
 		}
 	}
 
