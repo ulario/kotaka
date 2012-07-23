@@ -34,3 +34,10 @@ object query_canary()
 nomask void _F_dummy()
 {
 }
+
+nomask mixed _F_status(mixed args ...)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	return status(this_object(), args ...);
+}

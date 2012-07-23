@@ -44,6 +44,7 @@ private mixed **process_callouts(mixed **callouts)
 
 		for (i = 0; i < sz; i++) {
 			co = callouts[i];
+			co += ({ sizeof(co) });
 			callouts[i] = ({ co[CO_HANDLE], co[CO_FIRSTXARG], co[CO_DELAY] }) + co[CO_FIRSTXARG + 1];
 		}
 	}
@@ -84,7 +85,7 @@ static mixed status(varargs mixed obj, mixed index)
 
 		switch (typeof(index)) {
 		case T_NIL:
-			status = ::status(obj);
+			status = obj->_F_status();
 			if (!status) {
 				return nil;
 			}
@@ -92,7 +93,7 @@ static mixed status(varargs mixed obj, mixed index)
 			break;
 
 		case T_INT:
-			status = ::status(obj, index);
+			status = obj->_F_status(index);
 			if (index == O_CALLOUTS) {
 				status = process_callouts(status);
 			}
