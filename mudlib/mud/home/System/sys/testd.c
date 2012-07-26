@@ -206,7 +206,7 @@ void test()
 
 	ACCESS_CHECK(SYSTEM());
 
-#if 1
+#if 0
 #	if 1
 	LOGD->post_message("test", LOG_DEBUG, "Starting array test...");
 	rlimits(200; -1) {
