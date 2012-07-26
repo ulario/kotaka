@@ -81,7 +81,7 @@ void draw(string brush)
 	}
 }
 
-string render()
+string *render()
 {
 	return chars[..];
 }
