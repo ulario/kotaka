@@ -125,7 +125,7 @@ private void write_logfile(string file, string message)
 	deque = filebufs[file];
 
 	if (!deque) {
-		deque = clone_object(BIGSTRUCT_DEQUE_OBJ);
+		deque = new_object(BIGSTRUCT_DEQUE_LWO);
 		filebufs[file] = deque;
 	}
 
