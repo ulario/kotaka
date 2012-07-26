@@ -128,15 +128,23 @@ string draw_look(object living, varargs int facing)
 
 			painter->move_pen(XM + x, YM + y);
 
-			if (neighbor <- "~/obj/wolf") {
+			switch(neighbor->query_id_base()) {
+			case "wolf":
 				painter->set_color(0x08);
 				painter->draw("w");
-			} else if (neighbor <- "~/obj/deer") {
+				break;
+			case "deer":
 				painter->set_color(0x03);
 				painter->draw("d");
-			} else if (neighbor <- "~/obj/rock") {
+				break;
+			case "rock":
 				painter->set_color(0x07);
 				painter->draw("@");
+				break;
+			default:
+				painter->set_color(0x0D);
+				painter->draw("?");
+				break;
 			}
 		}
 	}
