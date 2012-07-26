@@ -84,13 +84,16 @@ private void do_particles(object paint, float diff)
 
 		paint->move_pen(x, y);
 
-		if (SUBD->rnd() * 10.0 - depth > 0.0) {
+		if (depth <= 2.5) {
+			paint->set_color(0xF);
+		} else if (depth <= 6.25) {
 			paint->set_color(0xA);
-			paint->draw("" + (i % 2));
-		} else {
+		} else if (depth <= 10.0) {
 			paint->set_color(0x2);
-			paint->draw("" + (i % 2));
+		} else {
+			paint->set_color(0x8);
 		}
+		paint->draw("" + (i % 2));
 	}
 }
 
