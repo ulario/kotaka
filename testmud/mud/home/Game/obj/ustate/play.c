@@ -34,8 +34,11 @@ private void prompt()
 		case "wolf":
 			send_out("(\033[1;30mgray wolf\033[0m) > ");
 			break;
+		case "rock":
+			send_out("(boring stone) > ");
+			break;
 		default:
-			send_out("(rock) > ");
+			send_out(body->query_id_base() + "> ");
 		}
 	} else {
 		send_out("(no character) > ");
