@@ -83,6 +83,7 @@ static void check()
 	swap_size = status(ST_SWAPSIZE);
 	swap_free = swap_size - swap_used;
 
+#if 0
 	if ((float)obj_free / (float)obj_size < 0.25) {
 		if (CALLOUTD->query_suspend() != -1) {
 			CALLOUTD->suspend_callouts();
@@ -94,7 +95,7 @@ static void check()
 			CALLOUTD->suspend_callouts();
 		}
 	}
-
+#endif
 
 	if (mem_used > ldexp(1.0, 31)) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
