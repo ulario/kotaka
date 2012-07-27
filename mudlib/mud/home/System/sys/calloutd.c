@@ -260,15 +260,13 @@ int query_suspend()
 
 /* internal */
 
-void do_release()
+static void do_release()
 {
 	mixed *callout;
 	object obj;
 	int ohandle;
 	int callouts;
 	int holes;
-
-	ACCESS_CHECK(SYSTEM());
 
 	handle = 0;
 
