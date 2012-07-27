@@ -18,7 +18,7 @@ Then on the right we have a flowing paragraph describing the current "room"
 Then another paragraph with an inventory listing.
 */
 
-#define XM (1)
+#define XM (61)
 #define YM (1)
 
 private void draw_tickmarks(object painter)
@@ -141,6 +141,10 @@ string draw_look(object living, varargs int facing)
 				painter->set_color(0x07);
 				painter->draw("@");
 				break;
+			case "soil":
+				painter->set_color(0x83);
+				painter->draw(":");
+				break;
 			default:
 				painter->set_color(0x0D);
 				painter->draw("?");
@@ -159,7 +163,7 @@ string draw_look(object living, varargs int facing)
 	painter->move_pen(0, 0);
 	painter->draw("Ularian Forest");
 
-	return painter->render_color();
+	return implode(painter->render_color(), "\n") + "\n";
 }
 
 string titled_name(string name, int class)
