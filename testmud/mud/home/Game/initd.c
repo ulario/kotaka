@@ -35,6 +35,7 @@ int wsave_pending;
 
 string bits(string input);
 static void do_test();
+private void build_world();
 
 /****************/
 /* Constructors */
@@ -63,11 +64,54 @@ static void create()
 
 	root = find_object("sys/root");
 
+	build_world();
+
 	"sys/testd"->test();
 }
 
 void reboot()
 {
+}
+
+private void place_object(string base)
+{
+	object obj;
+	float rnd1;
+	float rnd2;
+
+	rnd1 = SUBD->rnd() * SUBD->pi() * 2.0;
+	rnd2 = SUBD->rnd() * 30.0;
+
+	obj = clone_object("~/obj/object");
+	obj->set_id_base(base);
+	obj->move(root);
+	obj->set_x_position(sin(rnd1) * rnd2);
+	obj->set_y_position(cos(rnd1) * rnd2);
+}
+
+private void build_world()
+{
+	int i;
+	/* 50 soil spots */
+	/* 10 rocks */
+	/* 3 deer */
+	/* 1 wolf */
+
+	for (i = 0; i < 250; i++) {
+		place_object("soil");
+	}
+
+	for (i = 0; i < 10; i++) {
+		place_object("rock");
+	}
+
+	for (i = 0; i < 3; i++) {
+		place_object("deer");
+	}
+
+	for (i = 0; i < 1; i++) {
+		place_object("wolf");
+	}
 }
 
 /****************/
