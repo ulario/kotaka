@@ -9,6 +9,7 @@
 inherit SECOND_AUTO;
 
 int callout;
+int frag_agnst;
 
 static void create()
 {
@@ -104,8 +105,20 @@ static void check()
 	}
 
 	if (mem_free > (float)(64 << 20) && (mem_free / mem_size) > 0.50) {
-		LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
-		swapout();
+		if (!frag_angst) {
+			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented");
+		}
+		++frag_angst;
+		if (frag_angst >= 60) {
+			frag_angst = 0;
+			LOGD->post_message("watchdog", LOG_NOTICE, "Defragmenting");
+		}
+	} else {
+		if (frag_angst) {
+			if (!--frag_angst) {
+				LOGD->post_message("watchdog", LOG_NOTICE, "Memory no longer fragmented");
+			}
+		}
 	}
 
 }
