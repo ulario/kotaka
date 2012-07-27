@@ -28,7 +28,7 @@ static void create()
 	set_id_base(parts[sz - 1]);
 }
 
-int forbid_insert()
+int forbid_insert(object obj)
 {
 	return destructing;
 }
