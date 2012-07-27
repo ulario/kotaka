@@ -9,7 +9,7 @@
 inherit SECOND_AUTO;
 
 int callout;
-int frag_agnst;
+int frag_angst;
 
 static void create()
 {
