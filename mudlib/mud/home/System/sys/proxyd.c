@@ -59,7 +59,7 @@ object get_proxy(string user)
 			creator + " for " + user + ", assigned to " +
 			object_name(previous_object()));
 	}
-		
+
 	return proxy;
 }
 
