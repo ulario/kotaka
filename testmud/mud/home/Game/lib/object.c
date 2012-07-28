@@ -1,8 +1,9 @@
 #include <kotaka/paths.h>
 
-inherit LIB_OBJECT;
+inherit base LIB_OBJECT;
 
 inherit "position";
+inherit bulk "bulk";
 
 int destructing;
 
@@ -16,7 +17,8 @@ static void create()
 	string *parts;
 	int sz;
 
-	::create();
+	base::create();
+	bulk::create();
 
 	name = object_name(this_object());
 
