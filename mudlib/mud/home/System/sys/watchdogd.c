@@ -104,7 +104,7 @@ static void check()
 		return;
 	}
 
-	if (mem_free > (float)(64 << 20) && (mem_free / mem_size) > 0.50) {
+	if (mem_free > (float)(64 << 20) && (mem_free / mem_size) > 0.75) {
 		if (!frag_angst) {
 			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented");
 		}
@@ -112,6 +112,7 @@ static void check()
 		if (frag_angst >= 60) {
 			frag_angst = 0;
 			LOGD->post_message("watchdog", LOG_NOTICE, "Defragmenting");
+//			swapout();
 		}
 	} else {
 		if (frag_angst) {
