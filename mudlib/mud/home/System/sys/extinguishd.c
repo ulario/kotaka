@@ -16,7 +16,7 @@ void extinguish(string path)
 		ACCESS_CHECK(DRIVER->creator(opath) == DRIVER->creator(path));
 	}
 
-	call_out("purge", 0, path, 0);
+	call_out("purge", 0, path, status(ST_OTABSIZE));
 }
 
 static void purge(string path, int index)
@@ -24,11 +24,17 @@ static void purge(string path, int index)
 	int limit;
 	int quota;
 
-	quota = 100;
-	quota -= index % quota;
-	limit = status(ST_OTABSIZE);
+	quota = 256;
 
-	for (; quota > 0 && index < limit; quota--, index++) {
+	if (index >= status(ST_OTABSIZE)) {
+		index = status(ST_OTABSIZE) - 1;
+	}
+
+	if (index % quota > 0) {
+		quota = index % quota;
+	}
+
+	for (; quota > 0 && index >= 0; quota--, index--) {
 		object obj;
 
 		if (obj = find_object(path + "#" + index)) {
@@ -36,7 +42,8 @@ static void purge(string path, int index)
 		}
 	}
 
-	if (index < limit) {
+	if (index >= 0) {
+		LOGD->post_message("extinguish", LOG_DEBUG, "Continuing purge at " + index);
 		call_out("purge", 0, path, index);
 	}
 }
