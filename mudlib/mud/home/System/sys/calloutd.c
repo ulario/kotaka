@@ -50,7 +50,7 @@ static void create()
 	}
 }
 
-static void destrct()
+static void destruct()
 {
 	if (suspend) {
 		error("Cannot destruct while callouts are suspended");
