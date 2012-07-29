@@ -2,6 +2,7 @@
 #include <kotaka/bigstruct.h>
 #include <kotaka/log.h>
 #include <kotaka/assert.h>
+#include <status.h>
 
 object maze;
 int goal_size;
@@ -14,6 +15,30 @@ void create()
 	maze = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	goal_size = 1;
 	adjust();
+	call_out("spawn", 1.0);
+}
+
+void cpr()
+{
+	mixed **callouts;
+	int sz, i;
+
+	callouts = status(this_object(), O_CALLOUTS);
+	sz = sizeof(callouts);
+
+	for (i = 0; i < sz; i++) {
+		remove_call_out(callouts[i][CO_HANDLE]);
+	}
+
+	adjust = call_out("adjust", 0);
+	call_out("spawn", 0);
+}
+
+static void spawn()
+{
+	clone_object("~/obj/runner");
+
+	call_out("spawn", 0.1);
 }
 
 void destruct()
@@ -65,6 +90,8 @@ static void adjust()
 			turkey->move(basement);
 			destruct_object(turkey);
 			ASSERT(!turkey);
+		} else {
+			LOGD->post_message("maze", LOG_DEBUG, "Empty turkey");
 		}
 	} else if (sz < goal_size) {
 		object newroom;
@@ -72,8 +99,16 @@ static void adjust()
 
 		newroom = clone_object("~/obj/room");
 		maze->push_back(newroom);
-		ASSERT(maze->get_element(sz));
+		ASSERT(maze->get_element(sz) == newroom);
 	}
+}
+
+void reset()
+{
+	destruct_object(maze);
+	maze = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	goal_size = 1;
+	adjust();
 }
 
 int query_size()
