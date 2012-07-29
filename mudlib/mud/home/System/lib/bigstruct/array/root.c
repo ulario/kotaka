@@ -129,7 +129,7 @@ private void truncate_to(object node, int new_size)
 
 		for (i = masked + 1; i <= oldmasked; i++) {
 			if (array[i]) {
-				discard_node(array[i]);
+				purge_node(array[i]);
 				array[i] = nil;
 			}
 		}
@@ -196,14 +196,18 @@ atomic void set_size(int new_size)
 
 	if (new_size > size) {
 		while (cur_level < new_level) {
-			top[++cur_level] = new_node();
-			top[cur_level]->set_level(cur_level);
+			object node;
+
+			++cur_level;
+			node = new_node();
+			node->set_level(cur_level);
+			top[cur_level] = node;
 		}
 	}
 
 	if (new_size < size) {
 		while (cur_level > new_level) {
-			discard_node(top[cur_level]);
+			purge_node(top[cur_level]);
 			top[cur_level--] = nil;
 		}
 
@@ -222,11 +226,11 @@ atomic mixed get_element(int index)
 	check_caller(READ_ACCESS);
 
 	if (index < 0) {
-		error("Subscript out of range: " + index + " vs " + 0);
+		error("Subscript out of range");
 	}
 
 	if (index >= size) {
-		error("Subscript out of range: " + index + " vs " + size);
+		error("Subscript out of range");
 	}
 
 	switch(index)
