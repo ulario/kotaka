@@ -22,9 +22,7 @@ atomic static void create()
 
 private void purge_node(object node)
 {
-	int level;
-
-	if (level = node->get_level()) {
+	if (node->get_level()) {
 		object *turkeys;
 		int sz;
 		int i;
@@ -71,7 +69,7 @@ private mixed sub_get_element(object node, int index)
 
 	if (level) {
 		subnode = array[masked];
-		
+
 		if (subnode) {
 			return sub_get_element(subnode, index);
 		} else {
@@ -135,7 +133,7 @@ private void truncate_to(object node, int new_size)
 		}
 
 		if (array[masked]) {
-			truncate_to(array[masked], level - 1);
+			truncate_to(array[masked], new_size);
 		}
 	} else {
 		int i;
