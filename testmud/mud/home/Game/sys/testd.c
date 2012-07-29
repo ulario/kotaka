@@ -8,15 +8,7 @@ static void create()
 {
 }
 
-void logbomb()
-{
-	int i;
-	call_out("logbomb", 0);
-
-	for (i = 0; i < 5000; i++) {
-		LOGD->post_message("test", LOG_DEBUG, STRINGD->chars(32, 10) + "\n");
-	}
-}
+/* bomb tests */
 
 void ignite(int count)
 {
