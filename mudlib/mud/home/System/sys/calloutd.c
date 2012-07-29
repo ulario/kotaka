@@ -8,13 +8,6 @@
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
-# undef CO_HANDLE
-
-# define CO_OBJ		0	/* callout object */
-# define CO_HANDLE	1	/* handle in object */
-# define CO_PREV	2	/* previous callout */
-# define CO_NEXT	3	/* next callout */
-
 inherit SECOND_AUTO;
 
 int suspend;			/* callouts suspended */
@@ -234,19 +227,9 @@ void release_callouts()
 	if (previous_program() == RSRCD) {
 		LOGD->post_message("system", LOG_INFO, "Releasing callouts");
 
-		/* release future callouts immediately */
-		RSRCD->release_callout(nil, 0);
-
-		if (empty()) {
-			suspend = 0;
-			LOGD->post_message("system", LOG_INFO, "Released callouts");
-		} else {
-			suspend = 1;
-
-			/* start draining backed up callouts */
-			if (!handle) {
-				handle = call_out("do_release", 0);
-			}
+		/* start draining backed up callouts */
+		if (!handle) {
+			handle = call_out("do_release", 0);
 		}
 	} else {
 		RSRCD->release_callouts();
@@ -265,8 +248,6 @@ static void do_release()
 	mixed *callout;
 	object obj;
 	int ohandle;
-	int callouts;
-	int holes;
 
 	handle = 0;
 
@@ -283,8 +264,8 @@ static void do_release()
 		callout = release();
 
 		if (callout) {
-			obj = callout[CO_OBJ];
-			ohandle = callout[CO_HANDLE];
+			obj = callout[0];
+			ohandle = callout[1];
 
 			if (obj) {
 				catch {
@@ -299,6 +280,9 @@ static void do_release()
 			LOGD->post_message("system", LOG_INFO, "Released callouts");
 
 			suspend = 0;
+			begin = end = 0;
+			cmap->clear();
+			cqueue->clear();
 
 			if (callouts != 0) {
 				error(callouts + " callouts unaccounted for");
@@ -340,8 +324,6 @@ mixed *release()
 	ACCESS_CHECK(SYSTEM());
 
 	if (begin == end) {
-		cqueue->clear();
-		begin = end = 0;
 		return nil;
 	}
 
@@ -352,6 +334,12 @@ mixed *release()
 
 	if (!callout) {
 		holes--;
+		return ({ nil, -1 });
+	} else {
+		callouts--;
+	}
+
+	if (!callout[0]) {
 		return ({ nil, -1 });
 	}
 
@@ -366,8 +354,6 @@ mixed *release()
 	if (!map_sizeof(map)) {
 		cmap->set_element(oindex, nil);
 	}
-
-	callouts--;
 
 	return callout;
 }
