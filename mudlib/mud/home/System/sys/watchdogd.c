@@ -112,7 +112,7 @@ static void check()
 		if (frag_angst >= 60) {
 			frag_angst = 0;
 			LOGD->post_message("watchdog", LOG_NOTICE, "Defragmenting");
-//			swapout();
+			swapout();
 		}
 	} else {
 		if (frag_angst) {
