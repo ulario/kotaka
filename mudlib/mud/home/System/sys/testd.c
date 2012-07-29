@@ -30,7 +30,9 @@ private void test_bigstruct_array()
 	arr->set_size(0x40000000);
 
 	for (i = 1; i < 0x40000000; i <<= 1) {
+		arr->set_element(i - 1, i - 1);
 		arr->set_element(i, i);
+		ASSERT(arr->get_element(i - 1) == i - 1);
 		ASSERT(arr->get_element(i) == i);
 	}
 
@@ -43,6 +45,13 @@ private void test_bigstruct_array()
 				ASSERT(arr->get_element(i) == i);
 			} else {
 				ASSERT(arr->get_element(i) == nil);
+			}
+		}
+		for (i = 1; i < 0x40000000; i <<= 1) {
+			if ((i - 1) < j) {
+				ASSERT(arr->get_element(i - 1) == i - 1);
+			} else {
+				ASSERT(arr->get_element(i - 1) == nil);
 			}
 		}
 	}
@@ -206,7 +215,7 @@ void test()
 
 	ACCESS_CHECK(SYSTEM());
 
-#if 0
+#if 1
 #	if 1
 	LOGD->post_message("test", LOG_DEBUG, "Starting array test...");
 	rlimits(200; -1) {
