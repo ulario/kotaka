@@ -197,9 +197,26 @@ int receive_message(string str)
 	} else {
 		printstatus(conn);
 	}
-	
+
 	prompt(conn);
-	
+
+	return MODE_NOCHANGE;
+}
+
+int message_done()
+{
+	object conn;
+
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	conn = previous_object();
+
+	if (!connections[conn][2]) {
+		connections[conn][2] = call_out("report",
+			connections[conn][0], conn
+		);
+	}
+
 	return MODE_NOCHANGE;
 }
 
@@ -211,15 +228,13 @@ static void report(object conn)
 		return;
 	}
 
+	connections[conn][2] = 0;
+
 	status = printstatus(conn);
 
 	if (status) {
 		connections[conn][2] = call_out("report",
 			connections[conn][0], conn
-		);
-	} else {
-		connections[conn][2] = call_out("report",
-			1, conn
 		);
 	}
 }
