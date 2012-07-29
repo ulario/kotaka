@@ -35,7 +35,7 @@ int wsave_pending;
 
 string bits(string input);
 static void do_test();
-private void build_world();
+void build_world();
 
 /****************/
 /* Constructors */
@@ -89,7 +89,7 @@ private void place_object(string base)
 	obj->set_y_position(cos(rnd1) * rnd2);
 }
 
-private void build_world()
+void build_world()
 {
 	int i;
 	/* 50 soil spots */
