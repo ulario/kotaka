@@ -227,6 +227,8 @@ void release_callouts()
 	if (previous_program() == RSRCD) {
 		LOGD->post_message("system", LOG_INFO, "Releasing callouts");
 
+		suspend = 1;
+
 		/* start draining backed up callouts */
 		if (!handle) {
 			handle = call_out("do_release", 0);
