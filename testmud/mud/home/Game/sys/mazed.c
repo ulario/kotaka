@@ -6,6 +6,7 @@
 
 object maze;
 int goal_size;
+int goal_count;
 int adjust;
 
 static void adjust();
@@ -34,11 +35,19 @@ void cpr()
 	call_out("spawn", 0);
 }
 
+int difference()
+{
+	return goal_count - OBJECTD->query_object_info(status("~/obj/runner", O_INDEX))->query_clone_count();
+}
+
 static void spawn()
 {
-	clone_object("~/obj/runner");
-
-	call_out("spawn", 0.1);
+	if (difference() > 0) {
+		clone_object("~/obj/runner");
+		call_out("spawn", 0);
+	} else {
+		call_out("spawn", 1);
+	}
 }
 
 void destruct()
@@ -52,6 +61,11 @@ void destruct()
 	if (maze->get_size() && (basement = maze->get_element(0)))
 		destruct_object(basement);
 	destruct_object(maze);
+}
+
+void set_count_goal(int new_goal)
+{
+	goal_count = new_goal;
 }
 
 void set_size_goal(int new_goal)
