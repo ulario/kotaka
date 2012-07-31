@@ -1,7 +1,9 @@
 #include <kotaka/privilege.h>
+#include <type.h>
 
 int max_uid;
 
+mapping properties;
 mapping passwords;
 
 private void save();
@@ -11,9 +13,15 @@ static void create()
 {
 	max_uid = 1;
 
-	passwords = ([ ]);
-
 	restore();
+
+	if (!passwords) {
+		passwords = ([ ]);
+	}
+
+	if (!properties) {
+		properties = ([ ]);
+	}
 }
 
 void register_account(string name, string password)
@@ -37,6 +45,7 @@ void unregister_account(string name)
 	}
 
 	passwords[name] = nil;
+	properties[name] = nil;
 	save();
 }
 
@@ -97,4 +106,57 @@ private void save()
 private void restore()
 {
 	restore_object("~/data/save/accountd.o");
+}
+
+mixed query_account_property(string name, string property)
+{
+	if (!property) {
+		error("Invalid property name");
+	}
+
+	if (!passwords[name]) {
+		error("No such account");
+	}
+
+	if (properties[name]) {
+		return properties[name][property];
+	} else {
+		return nil;
+	}
+}
+
+void set_account_property(string name, string property, mixed value)
+{
+	mapping prop;
+
+	if (!property) {
+		error("Invalid property name");
+	}
+
+	if (!passwords[name]) {
+		error("No such account");
+	}
+
+	switch(typeof(value)) {
+	case T_ARRAY:
+	case T_OBJECT:
+	case T_MAPPING:
+		error("Invalid property value");
+	}
+
+	prop = properties[name];
+
+	if (!prop) {
+		if (value == nil) {
+			return;
+		}
+
+		properties[name] = prop = ([ ]);
+	}
+
+	prop[property] = value;
+
+	if (!map_sizeof(prop)) {
+		properties[name] = nil;
+	}
 }
