@@ -32,6 +32,7 @@ private void configure_klib();
 private void boot_subsystem(string subsystem);
 private void configure_logging();
 private void check_config();
+private void check_versions();
 
 private void initialize()
 {
@@ -104,6 +105,7 @@ private void initialize()
 static void create()
 {
 	check_config();
+	check_versions();
 
 	rlimits (0; -1) {
 		catch {
@@ -345,5 +347,33 @@ private void check_config()
 {
 	if (status(ST_ARRAYSIZE) < 256) {
 		error("Array size setting is too small");
+	}
+}
+
+/* shamelessly stolen from phantasmal, kudos to Noah Gibbs */
+private void check_versions()
+{
+	int major, minor, patch;
+
+	if (sscanf(status(ST_VERSION), "DGD %d.%d.%d", major, minor, patch) != 3) {
+		patch = 0;
+		if (sscanf(status(ST_VERSION), "DGD %d.%d", major, minor) != 2) {
+			minor = 0;
+			if(sscanf(status(ST_VERSION), "DGD %d", major) != 1) {
+				error("Cannot parse DGD driver version");
+			}
+		}
+	}
+
+	if (major < 1) {
+		error("DGD major version " + major + " too low for this version of kotaka");
+	}
+
+	if (major >= 2) {
+		error("DGD major version " + major + " too high for this version of kotaka");
+	}
+
+	if (minor < 4) {
+		error("DGD minor version " + major + "." + minor + " too low for this version of kotaka");
 	}
 }
