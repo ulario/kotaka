@@ -67,13 +67,13 @@ static object *parse_obj(string *input)
 	if (function_object("parse_object", previous_object(1))) {
 		return ({ previous_object(1)->parse_object(oname) });
 	}
-	
+
 	parts = explode(oname, ":") - ({ "" });
-	
+
 	if (sizeof(parts) == 0) {
 		error("Badly formatted object designation: <" + oname + ">");
 	}
-	
+
 	if (parts[0][0] == '/') {
 		string osubname;
 		
