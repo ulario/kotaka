@@ -96,6 +96,7 @@ private void test_bigstruct_deque()
 	for (x = 0; x < 3000; x++) {
 		deque->push_back(x);
 	}
+
 	ASSERT(deque->get_size() == 3000);
 
 	for (x = 0; x < 3000; x++) {
@@ -215,7 +216,7 @@ void test()
 
 	ACCESS_CHECK(SYSTEM());
 
-#if 1
+#if 0
 #	if 1
 	LOGD->post_message("test", LOG_DEBUG, "Starting array test...");
 	rlimits(200; -1) {
