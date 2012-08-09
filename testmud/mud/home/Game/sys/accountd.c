@@ -159,4 +159,6 @@ void set_account_property(string name, string property, mixed value)
 	if (!map_sizeof(prop)) {
 		properties[name] = nil;
 	}
+
+	save();
 }
