@@ -74,12 +74,8 @@ static void create()
 	objdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	objdb->set_type(T_INT);
 
+	/* MUST be lwo to avoid infinite loop */
 	rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-}
-
-private int is_bigstruct(string path)
-{
-	return sscanf(path, USR_DIR + "/System" + CLONABLE_SUBDIR + "bigstruct/%*s");
 }
 
 private void register_object(string path, string *inherits,
