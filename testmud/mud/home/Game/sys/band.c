@@ -46,6 +46,11 @@ int query_is_banned(string username)
 	return !!username_bans[username];
 }
 
+string *query_username_bans()
+{
+	return map_indices(username_bans);
+}
+
 void force_save()
 {
 	ACCESS_CHECK(GAME() || KADMIN());
