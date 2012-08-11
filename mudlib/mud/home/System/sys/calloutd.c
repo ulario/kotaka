@@ -13,9 +13,6 @@ inherit SECOND_AUTO;
 int suspend;			/* callouts suspended */
 int handle;			/* releaser handle */
 
-int lrc;			/* last reported callout count */
-int lrh;			/* last reported hole count */
-
 object cmap;	/* ([ oindex : ([ handle : iterator ]) ]) */
 object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
 
@@ -62,43 +59,6 @@ private int object_index(object obj)
 	}
 
 	return status(obj, O_INDEX);
-}
-
-/* public */
-
-private int changed_enough(int new, int old)
-{
-	if (new == old)
-		return 0;
-
-	if (old < new)
-		old = new;
-
-	if (new == 0)
-		return 1;
-
-	if (new % (int)sqrt((float)old) == 0)
-		return 1;
-}
-
-private void statcheck()
-{
-	if (changed_enough(callouts, lrc)) {
-		lrc = callouts;
-		LOGD->post_message("system", LOG_INFO, "callouts: " + callouts + " suspended");
-	}
-
-	if (changed_enough(holes, lrh)) {
-		lrh = holes;
-		LOGD->post_message("system", LOG_INFO, "callouts: " + holes + " holes");
-	}
-}
-
-atomic void hold_callouts(mixed delay)
-{
-	RSRCD->suspend_callouts();
-
-	call_out("release_callouts", delay);
 }
 
 /* rsrcd hooks */
@@ -151,8 +111,6 @@ void suspend(object obj, int handle)
 	cqueue->set_element(end++, ({ obj, handle }) );
 	end &= 0x0FFFFFFF;
 	callouts++;
-
-	statcheck();
 }
 
 int remove_callout(object obj, int handle)
@@ -180,8 +138,6 @@ int remove_callout(object obj, int handle)
 
 	callouts--;
 	holes++;
-
-	statcheck();
 
 	return TRUE;
 }
@@ -218,8 +174,6 @@ void remove_callouts(object obj)
 
 	callouts -= osz;
 	holes += osz;
-
-	statcheck();
 }
 
 void release_callouts()
@@ -228,6 +182,9 @@ void release_callouts()
 		LOGD->post_message("system", LOG_INFO, "Releasing callouts");
 
 		suspend = 1;
+
+		/* Don't send any more callouts our way */
+		RSRCD->release_callout(nil, 0);
 
 		/* start draining backed up callouts */
 		if (!handle) {
@@ -275,7 +232,6 @@ static void do_release()
 				}
 			}
 
-			statcheck();
 			handle = call_out("do_release", 0);
 		} else {
 			RSRCD->release_callout(nil, 0);
