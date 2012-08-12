@@ -1,4 +1,5 @@
 #include <kotaka/privilege.h>
+#include <kotaka/paths.h>
 #include <type.h>
 
 int max_uid;
@@ -100,12 +101,22 @@ void force_save()
 
 private void save()
 {
-	save_object("~/data/save/accountd.o");
+	string buf;
+
+	buf = STRINGD->hybrid_sprint( ({ properties, passwords }) );
+
+	SECRETD->write_file("accounts-tmp", buf);
+	SECRETD->remove_file("accounts");
+	SECRETD->rename_file("accounts-tmp", "accounts");
 }
 
 private void restore()
 {
-	restore_object("~/data/save/accountd.o");
+	string buf;
+
+	buf = SECRETD->read_file("accounts");
+
+	({ properties, passwords }) = "~Kotaka/sys/parse/value"->parse(buf);
 }
 
 mixed query_account_property(string name, string property)
