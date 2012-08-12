@@ -78,6 +78,11 @@ static void create()
 	rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 }
 
+void reboot()
+{
+	ACCESS_CHECK(SYSTEM());
+}
+
 private void register_object(string path, string *inherits,
 	string *includes, string constructor, string destructor)
 {

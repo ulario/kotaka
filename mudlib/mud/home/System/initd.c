@@ -190,8 +190,9 @@ void reboot()
 
 	clear_admin();
 
-	SYSTEM_USERD->reboot();
+	OBJECTD->reboot();
 	WATCHDOGD->reboot();
+	SYSTEM_USERD->reboot();
 	WIZTOOLD->reboot();
 
 	sz = sizeof(subsystems);
