@@ -64,8 +64,9 @@ private void save()
 
 	buf = STRINGD->hybrid_sprint(bans);
 
+	SECRETD->write_file("bans-tmp", buf);
 	SECRETD->remove_file("bans");
-	SECRETD->write_file("bans", buf);
+	SECRETD->rename_file("bans-tmp", "bans");
 }
 
 private void restore()
