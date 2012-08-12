@@ -61,6 +61,7 @@ static void create()
 	PROXYD->get_proxy("Game")->set_global_access("~", 1);
 	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
+	SECRETD->make_dir(".");
 
 	root = find_object("sys/root");
 
