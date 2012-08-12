@@ -1,3 +1,4 @@
+#include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
 /* keeps track of bans */
