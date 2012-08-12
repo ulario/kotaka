@@ -15,7 +15,7 @@ void main(string args)
 		return;
 	}
 
-	users = BAND->query_username_bans();
+	users = BAND->query_bans();
 	if (sizeof(users)) {
 		send_out("Banned users: " + implode(users, ", ") + "\n");
 	} else {

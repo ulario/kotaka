@@ -21,11 +21,11 @@ void ban_username(string username)
 		error("Cannot ban admin");
 	}
 
-	if (username_bans[username]) {
+	if (bans[username]) {
 		error("Username already banned");
 	}
 
-	username_bans[username] = 1;
+	bans[username] = 1;
 	save();
 }
 
@@ -33,7 +33,7 @@ void unban_username(string username)
 {
 	ACCESS_CHECK(GAME());
 
-	if (!username_bans[username]) {
+	if (!bans[username]) {
 		error("Username not banned");
 	}
 
@@ -46,9 +46,9 @@ int query_is_banned(string username)
 	return !!bans[username];
 }
 
-string *query_username_bans()
+string *query_bans()
 {
-	return map_indices(username_bans);
+	return map_indices(bans);
 }
 
 void force_save()
