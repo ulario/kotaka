@@ -116,6 +116,10 @@ private void restore()
 
 	buf = SECRETD->read_file("accounts");
 
+	if (!buf) {
+		return;
+	}
+
 	({ properties, passwords }) = "~Kotaka/sys/parse/value"->parse(buf);
 }
 
