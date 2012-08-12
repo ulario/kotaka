@@ -1,7 +1,7 @@
+#include <kotaka/paths.h>
 #include <type.h>
 #include <trace.h>
 
-#define CALL_GUARD "/home/System/lib/auto/call_guard"
 /* call_other masking is optional */
 #if 1
 
