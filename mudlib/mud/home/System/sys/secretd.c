@@ -8,6 +8,7 @@ inherit SECOND_AUTO;
 
 static void create()
 {
+	make_dir(USR_DIR + "/Secret");
 }
 
 /* lets users and subsystems alike store stuff secretly */
