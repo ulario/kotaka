@@ -11,7 +11,6 @@ static void create(int clone)
 	if (clone) {
 		base::create();
 		call_out("heartbeat", 1.0 + SUBD->rnd() * 10.0);
-		call_out("die", 120.0 + SUBD->rnd() * 6.0);
 	}
 }
 
@@ -26,11 +25,11 @@ static void heartbeat()
 	int size;
 
 	if ("~/sys/mazed"->difference() < 0) {
-		call_out("die", 2.0 + SUBD->rnd() * 5.0);
+		call_out("die", 0);
 		return;
 	}
 
-	call_out("heartbeat", 5.0 + SUBD->rnd() * 35.0);
+	call_out("heartbeat", 15.0 + SUBD->rnd() * 5.0);
 
 	size = "~/sys/mazed"->query_size();
 	data = STRINGD->chars(random(256), 10240 + random(64));
@@ -39,7 +38,7 @@ static void heartbeat()
 		object target;
 		int newroomid;
 
-		newroomid = (int)floor((float)size * SUBD->rnd() * SUBD->rnd() * SUBD->rnd());
+		newroomid = (int)floor((float)size * pow(SUBD->rnd(), 1.5));
 		target = "~/sys/mazed"->query_room(newroomid);
 
 		move(target);
