@@ -11,6 +11,7 @@ static int free_objects()
 
 private void _F_call_constructors()
 {
+	object objectd;
 	object pinfo;
 	string *ctors;
 	int index;
@@ -18,10 +19,16 @@ private void _F_call_constructors()
 
 	string base;
 
-	pinfo = OBJECTD->query_object_info(status(this_object(), O_INDEX));
+	objectd = find_object(OBJECTD);
+
+	if (!objectd) {
+		return;
+	}
+
+	pinfo = objectd->query_object_info(status(this_object(), O_INDEX));
 
 	if (!pinfo) {
-		error("No object info for " + object_name(this_object()));
+		return;
 	}
 
 	ctors = pinfo->query_inherited_constructors();
@@ -34,6 +41,7 @@ private void _F_call_constructors()
 
 private void _F_call_destructors()
 {
+	object objectd;
 	object pinfo;
 	string *dtors;
 	int index;
@@ -41,10 +49,16 @@ private void _F_call_destructors()
 
 	string base;
 
-	pinfo = OBJECTD->query_object_info(status(this_object(), O_INDEX));
+	objectd = find_object(OBJECTD);
+
+	if (!objectd) {
+		return;
+	}
+
+	pinfo = objectd->query_object_info(status(this_object(), O_INDEX));
 
 	if (!pinfo) {
-		error("No object info for " + object_name(this_object()));
+		return;
 	}
 
 	dtors = pinfo->query_inherited_destructors();
@@ -61,16 +75,16 @@ static int _F_sys_create(int clone)
 	object pinfo;
 	string base;
 	string oname;
-	
+
 	string *ctors;
-	
+
 	int index;
 	int sz;
-	
+
 	oname = object_name(this_object());
 	base = oname;
 	sscanf(base, "%s#%*d", base);
-	
+
 	if (DRIVER->creator(base) != "System") {
 		_F_call_constructors();
 	}
