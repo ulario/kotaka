@@ -109,7 +109,7 @@ static void check()
 			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented");
 		}
 		++frag_angst;
-		if (frag_angst >= 60) {
+		if (frag_angst >= 120) {
 			frag_angst = 0;
 			LOGD->post_message("watchdog", LOG_NOTICE, "Defragmenting");
 			swapout();
