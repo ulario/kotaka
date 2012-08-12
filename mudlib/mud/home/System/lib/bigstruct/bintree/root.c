@@ -313,10 +313,10 @@ static void delete_node(object node)
 {
 	object left, right;
 	object parent;
-	
+
 	left = node->get_left();
 	right = node->get_right();
-	
+
 	if (left && right) {
 		swap_nodes(node, next_node(node));
 		
@@ -337,9 +337,9 @@ static void delete_node(object node)
 		} else {
 			top = left;
 		}
-		
+
 		left->set_parent(parent);
-		
+
 		node->set_parent(nil);
 		node->set_left(nil);
 	} else if (right) {
