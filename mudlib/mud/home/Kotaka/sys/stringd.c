@@ -636,10 +636,14 @@ int prefix_string(string prefix, string str)
 	return 0;
 }
 
-private int is_flat(mixed *arr)
+private int is_flat(mixed arr)
 {
 	int sz;
 	int i;
+
+	if (typeof(arr) == T_MAPPING) {
+		return 0;
+	}
 
 	sz = sizeof(arr);
 
