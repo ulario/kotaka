@@ -2,14 +2,14 @@
 
 /* keeps track of bans */
 
-mapping username_bans;
+mapping bans;
 
 private void save();
 private void restore();
 
 static void create()
 {
-	username_bans = ([ ]);
+	bans = ([ ]);
 	restore();
 }
 
@@ -37,13 +37,13 @@ void unban_username(string username)
 		error("Username not banned");
 	}
 
-	username_bans[username] = nil;
+	bans[username] = nil;
 	save();
 }
 
 int query_is_banned(string username)
 {
-	return !!username_bans[username];
+	return !!bans[username];
 }
 
 string *query_username_bans()
@@ -60,10 +60,21 @@ void force_save()
 
 private void save()
 {
-	save_object("~/data/save/band.o");
+	string buf;
+
+	buf = STRINGD->hybrid_sprint(bans);
+
+	SECRETD->remove_file("bans");
+	SECRETD->write_file("bans", buf);
 }
 
 private void restore()
 {
-	restore_object("~/data/save/band.o");
+	string buf;
+
+	buf = SECRETD->read_file("bans");
+
+	if (buf) {
+		bans = "~Kotaka/sys/parse/value"->parse(buf);
+	}
 }
