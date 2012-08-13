@@ -183,6 +183,9 @@ void reboot()
 
 	ACCESS_CHECK(KERNEL());
 
+	check_config();
+	check_versions();
+
 	LOGD->post_message("system", LOG_NOTICE, "rebooted");
 	set_status("ok");
 
