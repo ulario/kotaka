@@ -217,6 +217,7 @@ void bogus_reboot()
 	LOGD->post_message("system", LOG_NOTICE, "state dumped");
 
 	set_status("ok");
+	bogus = 0;
 
 	sz = sizeof(subsystems);
 
