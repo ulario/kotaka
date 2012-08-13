@@ -3,6 +3,7 @@
 #include <kernel/rsrc.h>
 #include <kernel/tls.h>
 #include <kernel/user.h>
+#include <kernel/version.h>
 
 #include <kotaka/assert.h>
 #include <kotaka/privilege.h>
