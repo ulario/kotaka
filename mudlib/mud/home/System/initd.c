@@ -381,4 +381,26 @@ private void check_versions()
 	if (minor < 4) {
 		error("DGD minor version " + major + "." + minor + " too low for this version of kotaka");
 	}
+
+	if (sscanf(KERNEL_LIB_VERSION, "%d.%d.%d", major, minor, patch) != 3) {
+		patch = 0;
+		if (sscanf(status(KERNEL_LIB_VERSION), "%d.%d", major, minor) != 2) {
+			minor = 0;
+			if(sscanf(status(KERNEL_LIB_VERSION), "%d", major) != 1) {
+				error("Cannot parse kernel library version");
+			}
+		}
+	}
+
+	if (major < 1) {
+		error("Kernel library version " + major + " too low for this version of kotaka");
+	}
+
+	if (major >= 2) {
+		error("Kernel library version " + major + " too high for this version of kotaka");
+	}
+
+	if (minor < 3) {
+		error("Kernel library version " + major + "." + minor + " too low for this version of kotaka");
+	}
 }
