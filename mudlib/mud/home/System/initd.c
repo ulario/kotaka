@@ -157,8 +157,9 @@ void prepare_reboot()
 		}
 	}
 
-	bogus = call_out("bogus_reboot", 0);
 	CALLOUTD->suspend_callouts();
+	SYSTEM_USERD->block_connections();
+	bogus = call_out("bogus_reboot", 0);
 	LOGD->post_message("system", LOG_NOTICE, "saving");
 }
 
@@ -204,6 +205,7 @@ void reboot()
 	}
 
 	CALLOUTD->release_callouts();
+	SYSTEM_USERD->unblock_connections();
 }
 
 /** Handles a bogus reboot */
@@ -225,6 +227,7 @@ void bogus_reboot()
 	}
 
 	CALLOUTD->release_callouts();
+	SYSTEM_USERD->unblock_connections();
 }
 
 /** Used to output messages to the console */
