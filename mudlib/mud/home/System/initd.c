@@ -21,8 +21,7 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-int bogus;
-
+int dumped;
 string *subsystems;
 
 void console_post(string str, int level);
@@ -148,6 +147,11 @@ void prepare_reboot()
 	ACCESSD->save();
 
 	set_status("rebooting");
+	dumped = call_out("dumped_state", 0);
+
+	LOGD->post_message("system", LOG_NOTICE, "dumping state");
+	CALLOUTD->suspend_callouts();
+	SYSTEM_USERD->block_connections();
 
 	sz = sizeof(subsystems);
 
@@ -157,10 +161,6 @@ void prepare_reboot()
 		}
 	}
 
-	CALLOUTD->suspend_callouts();
-	SYSTEM_USERD->block_connections();
-	bogus = call_out("bogus_reboot", 0);
-	LOGD->post_message("system", LOG_NOTICE, "saving");
 }
 
 void clear_admin()
@@ -183,13 +183,12 @@ void reboot()
 
 	ACCESS_CHECK(KERNEL());
 
-	LOGD->post_message("system", LOG_NOTICE, "rebooted successfully");
+	LOGD->post_message("system", LOG_NOTICE, "rebooted");
 	set_status("ok");
 
-	remove_call_out(bogus);
-	bogus = 0;
-
 	clear_admin();
+	remove_call_out(dumped);
+	dumped = 0;
 
 	OBJECTD->reboot();
 	WATCHDOGD->reboot();
@@ -208,22 +207,23 @@ void reboot()
 	SYSTEM_USERD->unblock_connections();
 }
 
-/** Handles a bogus reboot */
-void bogus_reboot()
+static void dumped_state()
 {
 	int sz;
 	int index;
 
 	LOGD->post_message("system", LOG_NOTICE, "state dumped");
+	dumped = 0;
 
 	set_status("ok");
-	bogus = 0;
+
+	clear_admin();
 
 	sz = sizeof(subsystems);
 
 	for (index = 1; index < sz; index++) {
 		catch {
-			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "bogus_reboot");
+			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "dumped_state");
 		}
 	}
 
