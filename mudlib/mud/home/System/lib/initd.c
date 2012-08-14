@@ -13,7 +13,7 @@ void prepare_reboot()
 	ACCESS_CHECK(previous_program() == INITD);
 }
 
-void bogus_reboot()
+void dumped_state()
 {
 	ACCESS_CHECK(previous_program() == INITD);
 }
