@@ -120,4 +120,3 @@ static void process(string str)
 	break;
     }
 }
-
