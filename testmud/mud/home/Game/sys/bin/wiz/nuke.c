@@ -3,7 +3,7 @@
 
 inherit LIB_BIN;
 
-private void do_nuke(string args)
+void main(string args)
 {
 	object turkey;
 	object user;
