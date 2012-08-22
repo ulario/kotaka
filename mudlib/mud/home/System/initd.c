@@ -86,7 +86,6 @@ private void initialize()
 	load_dir("sys", 1);
 
 	SYSTEM_USERD->set_reserve(2);
-	TRASHD->enable();
 	SYSTEM_USERD->enable();
 	STATUSD->enable();
 	WATCHDOGD->enable();
