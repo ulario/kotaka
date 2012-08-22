@@ -110,10 +110,11 @@ static void check()
 		}
 
 		++frag_angst;
-		if (frag_angst >= 120) {
-			frag_angst = 0;
-			LOGD->post_message("watchdog", LOG_NOTICE, "Defragmenting");
-			swapout();
+
+		if (frag_angst >= 180) {
+			frag_angst -= 120;
+			LOGD->post_message("watchdog", LOG_NOTICE, "Memory still fragmented");
+//			swapout();
 		}
 	} else {
 		if (frag_angst) {
@@ -122,5 +123,4 @@ static void check()
 			}
 		}
 	}
-
 }
