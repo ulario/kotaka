@@ -4,21 +4,7 @@
 
 /* drawing the feedback screen: */
 
-/*
-we limit ourselves to 80 x 20
-
-The 5 remaining lines are reserved for player I/O
-
-first three rows are for header information
-
-Then a 17 x 17 overhead view on the left
-
-Then on the right we have a flowing paragraph describing the current "room"
-
-Then another paragraph with an inventory listing.
-*/
-
-#define XM (61)
+#define XM (1)
 #define YM (1)
 
 private void draw_tickmarks(object painter)
