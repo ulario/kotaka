@@ -131,7 +131,7 @@ int receive_message(string str)
 
 	user = username ? username : ip;
 
-	write_file("~/data/log/log-" + user, user + ": " + str + "\n");
+	SECRETD->write_file("log/log-" + user, "[" + SUBD->pmtime(millitime()) + "] " + user + ": " + str + "\n");
 
 	ret = ::receive_message(str);
 
