@@ -62,12 +62,15 @@ static void create()
 	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 	SECRETD->make_dir(".");
+	SECRETD->make_dir("log");
 
 	root = find_object("sys/root");
 
 	build_world();
 
 	"sys/testd"->test();
+
+	"sys/helpd"->load_help();
 }
 
 void reboot()

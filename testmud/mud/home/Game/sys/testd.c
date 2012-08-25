@@ -1,5 +1,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
+#include <kotaka/assert.h>
+#include <kotaka/privilege.h>
 #include "~/test.h"
 
 #include <status.h>
@@ -69,4 +71,12 @@ static void bomb(int quota)
 
 void test()
 {
+	ACCESS_CHECK(GAME());
+
+	"helpd"->add_topic("a/b");
+	"helpd"->add_topic("c/b");
+
+	ASSERT(sizeof("helpd"->query_topics("b")) == 2);
+
+	"helpd"->reset();
 }
