@@ -2,89 +2,17 @@
 #include <kotaka/privilege.h>
 #include <type.h>
 
-object helpdb;	/* ([ key : ([ entry : 1 ]) ]) */
+object help_root;
 
 static void create()
 {
-	helpdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	helpdb->set_type(T_STRING);
+	help_root = clone_object("~/obj/help");
 }
 
 static void destruct()
 {
-	destruct_object(helpdb);
-}
-
-private void add_to_index(string key, string topic)
-{
-	mapping list;
-
-	list = helpdb->get_element(key);
-
-	if (!list) {
-		list = ([ ]);
-		helpdb->set_element(key, list);
-	}
-
-	list[topic] = 1;
-}
-
-private void remove_from_index(string key, string topic)
-{
-	mapping list;
-
-	list = helpdb->get_element(key);
-
-	if (!list) {
-		return;
-	}
-
-	list[topic] = nil;
-
-	if (!map_sizeof(list)) {
-		helpdb->set_element(key, nil);
-	}
-}
-
-atomic void add_topic(string topic)
-{
-	string *parts;
-	int i;
-	int sz;
-
-	ACCESS_CHECK(PRIVILEGED());
-
-	parts = explode("/" + topic + "/", "/");
-
-	if (sizeof(parts & ({ "" }))) {
-		error("Invalid topic");
-	}
-
-	sz = sizeof(parts);
-
-	for (i = 0; i < sz; i++) {
-		add_to_index(implode(parts[i .. sz - 1], "/"), topic);
-	}
-}
-
-atomic void remove_topic(string topic)
-{
-	string *parts;
-	int i;
-	int sz;
-
-	ACCESS_CHECK(PRIVILEGED());
-
-	parts = explode("/" + topic + "/", "/");
-
-	if (sizeof(parts & ({ "" }))) {
-		error("Invalid topic");
-	}
-
-	sz = sizeof(parts);
-
-	for (i = 0; i < sz; i++) {
-		remove_from_index(implode(parts[i .. sz - 1], "/"), topic);
+	if (help_root) {
+		destruct_object(help_root);
 	}
 }
 
@@ -92,24 +20,19 @@ void reset()
 {
 	ACCESS_CHECK(PRIVILEGED());
 
-	helpdb->clear();
+	destruct_object(help_root);
+
+	help_root = clone_object("~/obj/help");
 }
 
-string *query_topics(string key)
+private void add_category(string category)
 {
-	mapping list;
+	help_root->insert_entry(category, 1);
+}
 
-	if (sizeof(explode("/" + key + "/", "/") & ({ "" }))) {
-		error("Invalid key");
-	}
-
-	list = helpdb->get_element(key);
-
-	if (!list) {
-		return ({ });
-	}
-
-	return map_indices(list);
+private void add_topic(string topic)
+{
+	help_root->insert_entry(topic, 0);
 }
 
 private void load_helpdir(string dir)
@@ -120,6 +43,8 @@ private void load_helpdir(string dir)
 	int sz;
 	int i;
 
+	add_category(dir);
+
 	dirlist = get_dir("~/data/help/" + dir + "/*");
 
 	names = dirlist[0];
@@ -129,11 +54,47 @@ private void load_helpdir(string dir)
 	for (i = 0; i < sz; i++) {
 		string entry;
 
+		entry = names[i];
+
 		if (sizes[i] == -2) {
-			load_helpdir(dir + "/" + names[i]);
+			load_helpdir(dir + "/" + entry);
 		} else if (sscanf(names[i], "%s.hlp", entry)) {
 			add_topic(dir + "/" + entry);
 		}
+	}
+}
+
+string *query_topics(string category)
+{
+	object subnode;
+
+	if (category == "") {
+		subnode = help_root;
+	} else {
+		subnode = help_root->find_node(category);
+	}
+
+	if (subnode) {
+		return subnode->query_topics();
+	} else {
+		return nil;
+	}
+}
+
+string *query_categories(string category)
+{
+	object subnode;
+
+	if (category == "") {
+		subnode = help_root;
+	} else {
+		subnode = help_root->find_node(category);
+	}
+
+	if (subnode) {
+		return subnode->query_categories();
+	} else {
+		return nil;
 	}
 }
 
@@ -154,9 +115,11 @@ private void load_rootdir()
 	for (i = 0; i < sz; i++) {
 		string entry;
 
+		entry = names[i];
+
 		if (sizes[i] == -2) {
-			load_helpdir(names[i]);
-		} else if (sscanf(names[i], "%s.hlp", entry)) {
+			load_helpdir(entry);
+		} else if (sscanf(entry, "%s.hlp", entry)) {
 			add_topic(entry);
 		}
 	}
@@ -166,6 +129,6 @@ void load_help()
 {
 	ACCESS_CHECK(PRIVILEGED());
 
-	helpdb->clear();
+	reset();
 	load_rootdir();
 }

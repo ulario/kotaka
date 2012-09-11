@@ -5,31 +5,22 @@ inherit LIB_BIN;
 
 void main(string args)
 {
-	string topic;
-	string *options;
+	string *topics;
+	string *categories;
 
-	args = STRINGD->replace(args, " ", "_");
+	topics = "~/sys/helpd"->query_topics(args);
 
-	if (args == "") {
-		topic = "index";
+	if (topics) {
+		categories = "~/sys/helpd"->query_categories(args);
+
+		if (sizeof(categories)) {
+			send_out("Categories: " + implode(categories, ", ") + "\n");
+		}
+		if (sizeof(topics)) {
+			send_out("Topics: " + implode(topics, ", ") + "\n");
+		}
 	} else {
-		topic = args;
-	}
-
-	options = "~/sys/helpd"->query_topics(topic);
-
-	if (!sizeof(options)) {
-		send_out("No such topic.\n");
+		send_out("No such category.\n");
 		return;
 	}
-
-	if (sizeof(options) > 1) {
-		send_out("Be more specific, we have:\n\n");
-		send_out(implode(options, "\n") + "\n\n");
-		return;
-	}
-
-	pager = clone_object("~Kotaka/obj/ustate/page");
-	pager->set_text(read_file("~/data/help/" + options[0] + ".hlp"));
-	query_ustate()->push_state(pager);
 }
