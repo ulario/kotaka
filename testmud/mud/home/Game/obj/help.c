@@ -10,6 +10,7 @@
 its location */
 
 object parent;		/* parent node, nil if root */
+string category;	/* our label in the parent, nil if root */
 mapping categories;	/* ([ name : subnode ]); */
 mapping topics;		/* ([ name : 1 ]) */
 mapping index;		/* ([ key : ([ entry : bits ]) ]), bit 1 = topic, bit 2 = category */
@@ -45,6 +46,13 @@ void set_parent(object "help" new_parent)
 	parent = new_parent;
 }
 
+void set_category(string new_category)
+{
+	ASSERT(!category);
+
+	category = new_category;
+}
+
 /* node search */
 object find_node(string category)
 {
@@ -78,8 +86,56 @@ string *query_categories()
 	return map_indices(categories);
 }
 
+mapping query_index()
+{
+	return index;
+}
+
+int is_empty()
+{
+	return !map_sizeof(topics) && !map_sizeof(categories);
+}
+
 /* insert/removal */
 /* entry is relative to node's current location in help tree */
+
+private void index_insert(string key, string entry, int is_category)
+{
+	mapping submap;
+
+	submap = index[key];
+
+	if (!submap) {
+		index[key] = submap = ([ ]);
+	}
+
+	if (submap[entry]) {
+		submap[entry] |= (1 << is_category);
+	} else {
+		submap[entry] = (1 << is_category);
+	}
+}
+
+private void index_delete(string key, string entry, int is_category)
+{
+	mapping submap;
+
+	submap = index[key];
+
+	if (!submap) {
+		return;
+	}
+
+	if (submap[entry]) {
+		submap[entry] &= ~(1 << is_category);
+		if (!submap[entry]) {
+			submap[entry] = nil;
+			if (!map_sizeof(submap)) {
+				index[key] = nil;
+			}
+		}
+	}
+}
 
 void insert_entry(string entry, int is_category)
 {
@@ -103,11 +159,18 @@ void insert_entry(string entry, int is_category)
 
 			subnode = clone_object("help");
 			subnode->set_parent(this_object());
+			subnode->set_category(parts[0]);
 			categories[parts[0]] = subnode;
 		} else {
 			ASSERT(!topics[parts[0]]);
 
 			topics[parts[0]] = 1;
+		}
+
+		index_insert(parts[0], parts[0], is_category);
+
+		if (parent) {
+			parent->index_entry(category, parts[0], parts[0], is_category);
 		}
 	}
 }
@@ -142,5 +205,33 @@ void delete_entry(string entry, int is_category)
 
 			topics[parts[0]] = nil;
 		}
+
+		index_delete(parts[0], parts[0], is_category);
+
+		if (parent) {
+			parent->deindex_entry(category, parts[0], parts[0], is_category);
+		}
+	}
+}
+
+void index_entry(string subcategory, string key, string entry, int is_category)
+{
+	index_insert(key, subcategory + "/" + entry, is_category);
+	index_insert(subcategory + "/" + key, subcategory + "/" + entry, is_category);
+
+	if (parent) {
+		parent->index_entry(category, key, subcategory + "/" + entry, is_category);
+		parent->index_entry(category, subcategory + "/" + key, subcategory + "/" + entry, is_category);
+	}
+}
+
+void deindex_entry(string subcategory, string key, string entry, int is_category)
+{
+	index_delete(key, subcategory + "/" + entry, is_category);
+	index_delete(subcategory + "/" + key, subcategory + "/" + entry, is_category);
+
+	if (parent) {
+		parent->unindex_entry(category, key, subcategory + "/" + entry, is_category);
+		parent->unindex_entry(category, subcategory + "/" + key, subcategory + "/" + entry, is_category);
 	}
 }

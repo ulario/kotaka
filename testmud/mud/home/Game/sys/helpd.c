@@ -98,6 +98,23 @@ string *query_categories(string category)
 	}
 }
 
+mapping query_index(string category)
+{
+	object subnode;
+
+	if (category == "") {
+		subnode = help_root;
+	} else {
+		subnode = help_root->find_node(category);
+	}
+
+	if (subnode) {
+		return subnode->query_index();
+	} else {
+		return nil;
+	}
+}
+
 private void load_rootdir()
 {
 	mixed **dirlist;
