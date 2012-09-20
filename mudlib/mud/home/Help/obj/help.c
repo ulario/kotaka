@@ -103,6 +103,8 @@ private void index_insert(string key, string entry, int is_category)
 {
 	mapping submap;
 
+	ACCESS_CHECK(HELP());
+
 	submap = index[key];
 
 	if (!submap) {
@@ -119,6 +121,8 @@ private void index_insert(string key, string entry, int is_category)
 private void index_delete(string key, string entry, int is_category)
 {
 	mapping submap;
+
+	ACCESS_CHECK(HELP());
 
 	submap = index[key];
 
@@ -142,6 +146,8 @@ void insert_entry(string entry, int is_category)
 	string *parts;
 	object subnode;
 	int sz;
+
+	ACCESS_CHECK(HELP());
 
 	parts = explode(entry, "/");
 	ASSERT((sz = sizeof(parts)) > 0);
@@ -181,6 +187,8 @@ void delete_entry(string entry, int is_category)
 	object subnode;
 	int sz;
 
+	ACCESS_CHECK(HELP());
+
 	parts = explode(entry, "/");
 	ASSERT((sz = sizeof(parts)) > 0);
 
@@ -216,6 +224,8 @@ void delete_entry(string entry, int is_category)
 
 void index_entry(string subcategory, string key, string entry, int is_category)
 {
+	ACCESS_CHECK(HELP());
+
 	index_insert(key, subcategory + "/" + entry, is_category);
 	index_insert(subcategory + "/" + key, subcategory + "/" + entry, is_category);
 
@@ -227,11 +237,13 @@ void index_entry(string subcategory, string key, string entry, int is_category)
 
 void deindex_entry(string subcategory, string key, string entry, int is_category)
 {
+	ACCESS_CHECK(HELP());
+
 	index_delete(key, subcategory + "/" + entry, is_category);
 	index_delete(subcategory + "/" + key, subcategory + "/" + entry, is_category);
 
 	if (parent) {
-		parent->unindex_entry(category, key, subcategory + "/" + entry, is_category);
-		parent->unindex_entry(category, subcategory + "/" + key, subcategory + "/" + entry, is_category);
+		parent->deindex_entry(category, key, subcategory + "/" + entry, is_category);
+		parent->deindex_entry(category, subcategory + "/" + key, subcategory + "/" + entry, is_category);
 	}
 }
