@@ -13,7 +13,7 @@ void main(string args)
 		root = "";
 	}
 
-	index = "~/sys/helpd"->query_index(root);
+	index = HELPD->query_index(root);
 	ASSERT(index);
 
 	if (index[args]) {

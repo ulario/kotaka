@@ -7,7 +7,7 @@ void main(string args)
 {
 	mapping index;
 
-	index = "~/sys/helpd"->query_index(args);
+	index = HELPD->query_index(args);
 
 	if (index) {
 		send_out("Index:\n" + STRINGD->hybrid_sprint(index) + "\n");

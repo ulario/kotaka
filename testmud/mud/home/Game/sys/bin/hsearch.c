@@ -8,7 +8,7 @@ void main(string args)
 {
 	mapping index;
 
-	index = "~/sys/helpd"->query_index("");
+	index = HELPD->query_index("");
 	ASSERT(index);
 
 	if (index[args]) {

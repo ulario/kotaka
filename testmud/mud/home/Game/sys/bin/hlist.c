@@ -108,7 +108,7 @@ void main(string args)
 		candidates = survivors = ({ "" });
 		sz = 1;
 	} else {
-		index = "~/sys/helpd"->query_index("");
+		index = HELPD->query_index("");
 		ASSERT(index);
 
 		if (index[args] == nil) {

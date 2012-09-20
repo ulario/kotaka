@@ -72,3 +72,9 @@
 /* lwos */
 
 #define LWO_PAINTER		(USR_DIR + "/Kotaka/lwo/painter")
+
+/********/
+/* Help */
+/********/
+
+#define HELPD			(USR_DIR + "/Help/sys/helpd")

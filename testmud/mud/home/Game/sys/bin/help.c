@@ -90,7 +90,7 @@ void main(string args)
 		args = "index";
 	}
 
-	index = "~/sys/helpd"->query_index("");
+	index = HELPD->query_index("");
 	ASSERT(index);
 
 	if (index[args] == nil) {
@@ -124,8 +124,8 @@ void main(string args)
 
 				text = "Contents of " + topic + ":\n\n";
 
-				categories = "~/sys/helpd"->query_categories(topic);
-				topics = "~/sys/helpd"->query_topics(topic);
+				categories = HELPD->query_categories(topic);
+				topics = HELPD->query_topics(topic);
 
 				if (sizeof(categories)) {
 					text += "Categories: " + implode(categories, ", ") + "\n\n";
