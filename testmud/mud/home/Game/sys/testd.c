@@ -72,11 +72,4 @@ static void bomb(int quota)
 void test()
 {
 	ACCESS_CHECK(GAME());
-
-	"helpd"->add_topic("a/b");
-	"helpd"->add_topic("c/b");
-
-	ASSERT(sizeof("helpd"->query_topics("b")) == 2);
-
-	"helpd"->reset();
 }
