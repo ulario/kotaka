@@ -27,7 +27,6 @@ string *subsystems;
 
 void console_post(string str, int level);
 void message(string str);
-private void set_status(string str);
 private void configure_klib();
 private void boot_subsystem(string subsystem);
 private void configure_logging();
@@ -97,8 +96,6 @@ private void initialize()
 
 	boot_subsystem("Kotaka");
 	boot_subsystem("Game");
-
-	set_status("ok");
 }
 
 static void create()
@@ -146,7 +143,6 @@ void prepare_reboot()
 
 	ACCESSD->save();
 
-	set_status("rebooting");
 	dumped = call_out("dumped_state", 0);
 
 	LOGD->post_message("system", LOG_NOTICE, "dumping state");
@@ -187,7 +183,6 @@ void reboot()
 	check_versions();
 
 	LOGD->post_message("system", LOG_NOTICE, "rebooted");
-	set_status("ok");
 
 	clear_admin();
 	remove_call_out(dumped);
@@ -217,8 +212,6 @@ static void dumped_state()
 
 	LOGD->post_message("system", LOG_NOTICE, "state dumped");
 	dumped = 0;
-
-	set_status("ok");
 
 	clear_admin();
 
