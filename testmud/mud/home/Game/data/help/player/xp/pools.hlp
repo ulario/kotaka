@@ -1,0 +1,82 @@
+XP Pools
+--------
+
+Experience points are the bread and butter of character creation.  They
+also serve as a sort of currency.
+
+You can have XP bound to your account, and it can also be attached to
+your characters.
+
+Account pools
+
+	You have two pools of XP attached to your account.
+
+	Active
+
+		Active XP is what you may consider your current balance.
+
+		This XP can be used either for character creation or to
+		acquire perks.  In the unfortunate event you incur XP
+		fines from breaking rules, they will be paid out of this
+		pool.
+
+		If your Active XP balance becomes negative you are not
+		eligible to play any characters on your roster.
+
+	Dormant
+
+		Dormant XP is XP you possess which is not available to use.
+
+		Unrecoverd Invested XP from a prematurely retired
+		character is returned to this pool.
+
+		Dormant XP is slowly returned to Active XP at a rate of
+		one point per hour.
+
+Character pools
+
+	XP attached to a character is in five pools.
+
+	Invested
+
+		Invested XP is XP spent to create the character.
+
+		To discourage churn in character creation, this XP must
+		be recovered before it can be reused.  If a character is
+		retired before all Invested XP is recovered, the
+		invested XP is put into your account's Dormant XP pool.
+
+		Invested XP is recovered into Recovered XP at one point
+		per hour of play with the character in question.
+
+	Recovered
+
+		Recovered XP is Invested XP that has been part of your
+		character long enough to be eligible for immediate reuse
+		once the character is retired.
+
+	Acquired
+
+		Acquired XP is XP you scoop up in the game world by
+		defeating monsters, completing quests, and so on.  It is
+		slowly absorbed into Earned XP with the passage of time
+		at a rate of 1 point per hour so long as your character
+		is alive.
+
+		If you die, Acquired XP is left behind in the body.
+
+	Earned
+
+		Earned XP is absorbed Acquired XP.
+
+		In addition to allocating this XP on additional skills
+		and characteristics, this XP pool is also eligible to be
+		deposited back into your account's Active XP pool if your
+		character is retired.
+
+		XP from this pool allocated to perks and skills for your
+		character are not lost, just locked.
+
+		Unlike Recovered XP and Invested XP however, Earned XP
+		can be lost forever if your character's soul is
+		destroyed instead of recoverd during retirement.
