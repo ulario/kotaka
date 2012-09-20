@@ -47,7 +47,7 @@ private void initialize()
 	LOGD->post_message("boot", LOG_NOTICE,
 		"-----------------------------------------------------");
 	LOGD->post_message("boot", LOG_NOTICE,
-		"Kotaka mudlib v" + KOTAKA_VERSION + " booting...");
+		"Kotaka mudlib " + KOTAKA_VERSION + " booting...");
 	LOGD->post_message("boot", LOG_NOTICE,
 		"-----------------------------------------------------");
 
@@ -255,10 +255,6 @@ string query_destructor(string path)
 /********************/
 
 /* Miscellaneous */
-
-private void set_status(string str)
-{
-}
 
 void message(string str)
 {
