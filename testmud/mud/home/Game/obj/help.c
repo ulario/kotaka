@@ -189,7 +189,7 @@ void delete_entry(string entry, int is_category)
 		subnode = categories[parts[0]];
 		ASSERT(subnode);
 
-		subnode->insert_entry(implode(parts[1 ..], "/"), is_category);
+		subnode->delete_entry(implode(parts[1 ..], "/"), is_category);
 	} else {
 		/* we are at the bottom */
 		if (is_category) {
