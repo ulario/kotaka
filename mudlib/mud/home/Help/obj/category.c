@@ -163,7 +163,7 @@ void insert_entry(string entry, int is_category)
 		if (is_category) {
 			ASSERT(!categories[parts[0]]);
 
-			subnode = clone_object("help");
+			subnode = clone_object("category");
 			subnode->set_parent(this_object());
 			subnode->set_category(parts[0]);
 			categories[parts[0]] = subnode;
