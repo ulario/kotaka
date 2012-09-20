@@ -39,7 +39,7 @@ static void destruct(int create)
 }
 
 /* setup */
-void set_parent(object "help" new_parent)
+void set_parent(object "category" new_parent)
 {
 	ASSERT(!parent);
 
