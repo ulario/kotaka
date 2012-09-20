@@ -4,7 +4,7 @@ object help_root;
 
 static void create()
 {
-	help_root = clone_object("~/obj/help");
+	help_root = clone_object("~/obj/category");
 }
 
 static void destruct()
@@ -20,7 +20,7 @@ void reset()
 
 	destruct_object(help_root);
 
-	help_root = clone_object("~/obj/help");
+	help_root = clone_object("~/obj/category");
 }
 
 void add_category(string category)
@@ -36,7 +36,6 @@ void add_topic(string topic)
 
 	help_root->insert_entry(topic, 0);
 }
-
 
 string *query_topics(string category)
 {
