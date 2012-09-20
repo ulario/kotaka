@@ -209,3 +209,24 @@ void send_to_all_except(string phrase, object *exceptions)
 		users[sz]->message(phrase);
 	}
 }
+
+int query_user_class(string username)
+{
+	if (!username) {
+		return 0;
+	}
+
+	if (!ACCOUNTD->query_is_registered(username)) {
+		return 0;
+	}
+
+	if (KERNELD->access(username, "/", FULL_ACCESS)) {
+		return 3;
+	}
+
+	if (sizeof( KERNELD->query_users() & ({ username }) )) {
+		return 2;
+	}
+
+	return 1;
+}

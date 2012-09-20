@@ -40,23 +40,7 @@ string query_username()
 
 int query_class()
 {
-	if (!username) {
-		return 0;
-	}
-
-	if (!ACCOUNTD->query_is_registered(username)) {
-		return 0;
-	}
-
-	if (KERNELD->access(username, "/", FULL_ACCESS)) {
-		return 3;
-	}
-
-	if (sizeof( KERNELD->query_users() & ({ username }) )) {
-		return 2;
-	}
-
-	return 1;
+	return "~/sys/subd"->query_user_class(username);
 }
 
 void set_username(string new_username)
