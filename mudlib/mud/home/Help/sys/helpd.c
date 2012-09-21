@@ -1,16 +1,16 @@
 #include <kotaka/privilege.h>
 
-object help_root;
+object root_category;
 
 static void create()
 {
-	help_root = clone_object("~/obj/category");
+	root_category = clone_object("~/obj/category");
 }
 
 static void destruct()
 {
-	if (help_root) {
-		destruct_object(help_root);
+	if (root_category) {
+		destruct_object(root_category);
 	}
 }
 
@@ -18,33 +18,47 @@ void reset()
 {
 	ACCESS_CHECK(PRIVILEGED());
 
-	destruct_object(help_root);
+	destruct_object(root_category);
 
-	help_root = clone_object("~/obj/category");
+	root_category = clone_object("~/obj/category");
 }
 
 void add_category(string category)
 {
 	ACCESS_CHECK(PRIVILEGED());
 
-	help_root->insert_entry(category, 1);
+	root_category->insert_entry(category, 1);
 }
 
 void add_topic(string topic)
 {
 	ACCESS_CHECK(PRIVILEGED());
 
-	help_root->insert_entry(topic, 0);
+	root_category->insert_entry(topic, 0);
 }
 
-string *query_topics(string category)
+void remove_category(string category)
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	root_category->delete_entry(category, 1);
+}
+
+void remove_topic(string topic)
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	root_category->delete_entry(topic, 0);
+}
+
+string *query_topics(varargs string category)
 {
 	object subnode;
 
-	if (category == "") {
-		subnode = help_root;
+	if (!category || category == "") {
+		subnode = root_category;
 	} else {
-		subnode = help_root->find_node(category);
+		subnode = root_category->find_node(category);
 	}
 
 	if (subnode) {
@@ -54,14 +68,14 @@ string *query_topics(string category)
 	}
 }
 
-string *query_categories(string category)
+string *query_categories(varargs string category)
 {
 	object subnode;
 
-	if (category == "") {
-		subnode = help_root;
+	if (!category || category == "") {
+		subnode = root_category;
 	} else {
-		subnode = help_root->find_node(category);
+		subnode = root_category->find_node(category);
 	}
 
 	if (subnode) {
@@ -71,14 +85,14 @@ string *query_categories(string category)
 	}
 }
 
-mapping query_index(string category)
+mapping query_index(varargs string category)
 {
 	object subnode;
 
-	if (category == "") {
-		subnode = help_root;
+	if (!category || category == "") {
+		subnode = root_category;
 	} else {
-		subnode = help_root->find_node(category);
+		subnode = root_category->find_node(category);
 	}
 
 	if (subnode) {
