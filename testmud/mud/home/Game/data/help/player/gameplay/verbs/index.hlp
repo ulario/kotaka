@@ -1,8 +1,22 @@
-Verb index
-----------
+Verbs and commands
+------------------
 
-go
-say
-look
+Things work a little differently here than on most muds.
 
-Please see help for each individual item.
+There are two basic instructions you can type in, commands and verbs.
+
+Commands are for out of game stuff, like reading help files, checking
+your mail, or for administrators, banning people.  You can use a command
+at any time.
+
+Verbs, however, do their stuff in the game world.  To use them, you need
+to be playing a character, and it's your character that's actually doing
+them.  This is because you can have more than one character at a time.
+
+See also:
+
+verbs/index
+	The verb index
+
+bin/verbs
+	The verb list command
