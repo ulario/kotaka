@@ -28,7 +28,6 @@ void full_reset()
 	first = cursor;
 
 	do {
-		LOGD->post_message("help", LOG_DEBUG, "Listing " + object_name(cursor));
 		turkeylist->push_back(cursor);
 		cursor = KERNELD->next_link(cursor);
 	} while (cursor != first);
