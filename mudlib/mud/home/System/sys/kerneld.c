@@ -96,22 +96,16 @@ void set_global_access(string dir, int flag)
 
 object first_link(string owner)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::first_link(owner);
 }
 
 object prev_link(object obj)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::prev_link(obj);
 }
 
 object next_link(object obj)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::next_link(obj);
 }
 
