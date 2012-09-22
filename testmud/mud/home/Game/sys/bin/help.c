@@ -172,7 +172,7 @@ void main(string args)
 	if (header) {
 		object pager;
 		pager = clone_object("~Kotaka/obj/ustate/page");
-		pager->set_text("[ " + header + " ]\n\n" + text);
+		pager->set_text("[\033[1;34m " + header + "\033[0m ]\n\n" + text);
 		query_ustate()->push_state(pager);
 	}
 }
