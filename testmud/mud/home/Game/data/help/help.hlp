@@ -1,0 +1,18 @@
+Using the help system
+---------------------
+
+The help system arranges topics into categories, and sometimes categories
+can also be nested.
+
+You can specify a topic or category by name, and it will be found.
+
+In the event a given name is shared by multiple topics, you can qualify it
+by prefixing it with one of the containing categories as needed to narrow
+down your choice.
+
+Additionally, topics and categories by default will mask names lower in
+the hierarchy, though any such masked names will be listed at the bottom
+of the help file.
+
+Categories, if they contain an "index" topic, will show that topic,
+otherwise they will show the topics and categories inside.
