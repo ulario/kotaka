@@ -341,8 +341,6 @@ void post_message(string facility, int priority, string message)
 	string creator;
 	mapping hits;
 
-	ACCESS_CHECK(PRIVILEGED());
-
 	CHECKARG(facility, 1, "post_message");
 	CHECKARG(facility != "", 1, "post_message");
 	CHECKARG(priority >= 0, 2, "post_message");
