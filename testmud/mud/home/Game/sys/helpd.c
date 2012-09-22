@@ -25,7 +25,9 @@ private void load_helpdir(string dir)
 		if (sizes[i] == -2) {
 			load_helpdir(dir + "/" + entry);
 		} else if (sscanf(names[i], "%s.hlp", entry)) {
-			HELPD->add_topic(dir + "/" + entry);
+			HELPD->add_topic(dir + "/" + entry,
+				read_file("~/data/help/" + dir + "/" + entry + ".hlp")
+			);
 		}
 	}
 }
@@ -52,7 +54,9 @@ private void load_rootdir()
 		if (sizes[i] == -2) {
 			load_helpdir(entry);
 		} else if (sscanf(entry, "%s.hlp", entry)) {
-			HELPD->add_topic(entry);
+			HELPD->add_topic(entry,
+				read_file("~/data/help/" + entry + ".hlp")
+			);
 		}
 	}
 }
