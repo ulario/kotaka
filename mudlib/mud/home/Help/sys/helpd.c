@@ -98,7 +98,22 @@ mapping query_index(varargs string category)
 	}
 
 	if (subnode) {
-		return subnode->query_index();
+		mapping index;
+
+		string *ind;
+		mapping *val;
+		int sz, i;
+
+		index = subnode->query_index()[..];
+
+		ind = map_indices(index);
+		val = map_values(index);
+
+		for (sz = map_sizeof(index), i = 0; i < sz; i++) {
+			index[ind[i]] = val[i][..];
+		}
+
+		return index;
 	} else {
 		return nil;
 	}
