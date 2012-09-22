@@ -1,6 +1,6 @@
 #include <kotaka/privilege.h>
 
-string content;
+mixed content;
 
 static void create(int clone)
 {
@@ -10,14 +10,14 @@ static void destruct(int clone)
 {
 }
 
-void set_content(string new_content)
+void set_content(mixed new_content)
 {
 	ACCESS_CHECK(HELP());
 
 	content = new_content;
 }
 
-string query_content()
+mixed query_content()
 {
 	ACCESS_CHECK(HELP());
 

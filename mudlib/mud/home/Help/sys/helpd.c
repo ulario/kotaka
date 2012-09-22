@@ -31,7 +31,7 @@ void add_category(string category)
 	root_category->insert_entry(category, 1);
 }
 
-void add_topic(string topic, varargs string content)
+void add_topic(string topic, varargs mixed content)
 {
 	ACCESS_CHECK(PRIVILEGED());
 	ASSERT(content);
@@ -129,7 +129,7 @@ int test_topic(string topic)
 	return !!subnode;
 }
 
-string query_content(string topic)
+mixed query_content(string topic)
 {
 	string *parts;
 	string category;
