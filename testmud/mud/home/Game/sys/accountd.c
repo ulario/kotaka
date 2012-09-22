@@ -60,25 +60,6 @@ string *query_accounts()
 	return map_indices(passwords);
 }
 
-int authenticate(string name, string password)
-{
-	ACCESS_CHECK(GAME());
-
-	if (!passwords[name]) {
-		error("No such account");
-	}
-
-	if (passwords[name] == hash_string("SHA1", password))
-		return TRUE;
-
-	if (passwords[name] == hash_string("MD5", password)) {
-		passwords[name] = hash_string("SHA1", password);
-		save();
-		return TRUE;
-	}
-
-}
-
 void change_password(string name, string newpass)
 {
 	ACCESS_CHECK(GAME());
@@ -87,9 +68,32 @@ void change_password(string name, string newpass)
 		error("No such account");
 	}
 
-	passwords[name] = hash_string("SHA1", newpass);
+	passwords[name] = hash_string("crypt", newpass, name);
 
 	save();
+}
+
+int authenticate(string name, string password)
+{
+	ACCESS_CHECK(GAME());
+
+	if (!passwords[name]) {
+		error("No such account");
+	}
+
+	if (passwords[name] == hash_string("crypt", password, name)) {
+		return TRUE;
+	}
+
+	if (passwords[name] == hash_string("SHA1", password)) {
+		change_password(name, password);
+		return TRUE;
+	}
+
+	if (passwords[name] == hash_string("MD5", password)) {
+		change_password(name, password);
+		return TRUE;
+	}
 }
 
 void force_save()
@@ -105,7 +109,7 @@ private void save()
 
 	buf = STRINGD->hybrid_sprint( ({ properties, passwords }) );
 
-	SECRETD->write_file("accounts-tmp", buf);
+	SECRETD->write_file("accounts-tmp", buf + "\n");
 	SECRETD->remove_file("accounts");
 	SECRETD->rename_file("accounts-tmp", "accounts");
 }
