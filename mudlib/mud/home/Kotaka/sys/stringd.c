@@ -284,14 +284,14 @@ string to_title(string text)
 {
 	string *words;
 	int index;
-	
+
 	words = explode(text, " ") - ({ "" });
-	
+
 	for (index = 0; index < sizeof(words); index++) {
 		string word;
-		
+
 		word = to_lower(words[index]);
-		
+
 		if (index == 0 || index == (sizeof(words) - 1)) {
 			word[0] = char_to_upper(word[0]);
 		} else {
@@ -307,10 +307,10 @@ string to_title(string text)
 				word[0] = char_to_upper(word[0]);
 			}
 		}
-		
+
 		words[index] = word;
 	}
-	
+
 	return implode(words, " ");
 }
 
