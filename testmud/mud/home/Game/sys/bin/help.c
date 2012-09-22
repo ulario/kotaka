@@ -117,8 +117,13 @@ void main(string args)
 
 	if (args == "") {
 		/* list root category */
-		header = "(root contents)";
-		text = list_category(nil);
+		if (HELPD->test_topic("index")) {
+			header = "index";
+			text = HELPD->query_content("index");
+		} else {
+			header = "(root contents)";
+			text = list_category(nil);
+		}
 	} else {
 		/* find topic, barf if ambiguous */
 		index = HELPD->query_index();
