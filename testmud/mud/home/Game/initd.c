@@ -64,13 +64,14 @@ static void create()
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
 
+	"sys/helpd"->load_help();
+
 	root = find_object("sys/root");
 
 	build_world();
 
 	"sys/testd"->test();
 
-	"sys/helpd"->load_help();
 }
 
 void reboot()
