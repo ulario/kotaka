@@ -109,6 +109,7 @@ void main(string args)
 		object paint;
 		object pager;
 		string text;
+		string header;
 
 		pager = clone_object("~Kotaka/obj/ustate/page");
 		paint = new_object("~Kotaka/lwo/painter");
@@ -116,30 +117,37 @@ void main(string args)
 		topic = survivors[0];
 
 		if (list[topic] & 1) {
+			header = topic;
 			text = HELPD->query_content(topic);
 		} else {
 			if (HELPD->test_topic(topic + "/index")) {
+				header = topic + "/index";
 				text = HELPD->query_content(topic + "/index");
 			} else {
+				string *chunks;
 				string *categories;
 				string *topics;
 
-				text = "Contents of " + topic + ":\n\n";
+				header = topic + " (contents)";
+
+				chunks = ({ });
 
 				categories = HELPD->query_categories(topic);
 				topics = HELPD->query_topics(topic);
 
 				if (sizeof(categories)) {
-					text += "Categories: " + implode(categories, ", ") + "\n\n";
+					chunks += ({ "Categories:\n    " + implode(categories, "\n    ") });
 				}
 
 				if (sizeof(topics)) {
-					text += "Topics: " + implode(topics, ", ") + "\n\n";
+					chunks += ({ "Topics:\n    " + implode(topics, "\n    ") });
 				}
 
 				if (!sizeof(categories) && !sizeof(topics)) {
-					text += "...nothing\n\n";
+					chunks += ({ "...nothing" });
 				}
+
+				text = implode(chunks, "\n\n");
 			}
 		}
 
@@ -147,6 +155,7 @@ void main(string args)
 			text += "\nSee also: " + implode(candidates - survivors, ", ") + "\n";
 		}
 
+		text = "[ " + header + " ]\n\n" + text;
 		pager->set_text(text);
 
 		query_ustate()->push_state(pager);
