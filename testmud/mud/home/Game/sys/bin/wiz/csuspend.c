@@ -10,7 +10,7 @@ void main(string args)
 	user = query_user();
 
 	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to reset the object manager.\n");
+		send_out("You do not have sufficient access rights to suspend callouts.\n");
 		return;
 	}
 
