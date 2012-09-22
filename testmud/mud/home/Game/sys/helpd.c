@@ -1,11 +1,14 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kotaka/bigstruct.h>
+#include <kotaka/log.h>
 
 static void load_helpfile(string dir, string entry)
 {
-	HELPD->add_topic(dir + "/" + entry,
-		read_file("~/data/help/" + (dir ? dir + "/" : "") + entry + ".hlp")
+	dir = (dir ? dir + "/" : "");
+
+	HELPD->add_topic(dir + entry,
+		read_file("~/data/help/" + dir + entry + ".hlp")
 	);
 }
 
