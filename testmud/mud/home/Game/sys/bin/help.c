@@ -90,7 +90,7 @@ void main(string args)
 		args = "index";
 	}
 
-	index = HELPD->query_index("");
+	index = HELPD->query_index();
 	ASSERT(index);
 
 	if (index[args] == nil) {
@@ -106,19 +106,21 @@ void main(string args)
 	sz = sizeof(survivors);
 
 	if (sz == 1) {
+		object paint;
 		object pager;
 		string text;
 
 		pager = clone_object("~Kotaka/obj/ustate/page");
+		paint = new_object("~Kotaka/lwo/painter");
 
 		topic = survivors[0];
 
 		if (list[topic] & 1) {
-			text = read_file("~/data/help/" + topic + ".hlp");
+			text = HELPD->query_content(topic);
 		} else {
-			text = read_file("~/data/help/" + topic + "/index.hlp");
-
-			if (!text) {
+			if (HELPD->test_topic(topic + "/index")) {
+				text = HELPD->query_content(topic + "/index");
+			} else {
 				string *categories;
 				string *topics;
 

@@ -11,8 +11,8 @@ its location */
 
 object parent;		/* parent node, nil if root */
 string category;	/* our label in the parent, nil if root */
-mapping categories;	/* ([ name : subnode ]); */
-mapping topics;		/* ([ name : 1 ]) */
+mapping categories;	/* ([ name : category object ]); */
+mapping topics;		/* ([ name : topic object ]) */
 mapping index;		/* ([ key : ([ entry : bits ]) ]), bit 1 = topic, bit 2 = category */
 
 static void create(int create)
@@ -31,6 +31,12 @@ static void destruct(int create)
 		int i, sz;
 
 		turkeys = map_values(categories);
+
+		for (sz = sizeof(turkeys), i = 0; i < sz; i++) {
+			destruct_object(turkeys[i]);
+		}
+
+		turkeys = map_values(topics);
 
 		for (sz = sizeof(turkeys), i = 0; i < sz; i++) {
 			destruct_object(turkeys[i]);
@@ -79,6 +85,11 @@ object find_node(string category)
 string *query_topics()
 {
 	return map_indices(topics);
+}
+
+object query_topic(string topic)
+{
+	return topics[topic];
 }
 
 string *query_categories()
@@ -141,7 +152,7 @@ private void index_delete(string key, string entry, int is_category)
 	}
 }
 
-void insert_entry(string entry, int is_category)
+object insert_entry(string entry, int is_category)
 {
 	string *parts;
 	object subnode;
@@ -157,7 +168,7 @@ void insert_entry(string entry, int is_category)
 		subnode = categories[parts[0]];
 		ASSERT(subnode);
 
-		subnode->insert_entry(implode(parts[1 ..], "/"), is_category);
+		return subnode->insert_entry(implode(parts[1 ..], "/"), is_category);
 	} else {
 		/* we are at the bottom */
 		if (is_category) {
@@ -170,7 +181,8 @@ void insert_entry(string entry, int is_category)
 		} else {
 			ASSERT(!topics[parts[0]]);
 
-			topics[parts[0]] = 1;
+			subnode = clone_object("topic");
+			topics[parts[0]] = subnode;
 		}
 
 		index_insert(parts[0], parts[0], is_category);
@@ -178,6 +190,8 @@ void insert_entry(string entry, int is_category)
 		if (parent) {
 			parent->index_entry(category, parts[0], parts[0], is_category);
 		}
+
+		return subnode;
 	}
 }
 
@@ -211,7 +225,7 @@ void delete_entry(string entry, int is_category)
 		} else {
 			ASSERT(topics[parts[0]]);
 
-			topics[parts[0]] = nil;
+			destruct_object(topics[parts[0]]);
 		}
 
 		index_delete(parts[0], parts[0], is_category);

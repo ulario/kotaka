@@ -1,4 +1,5 @@
 #include <kotaka/privilege.h>
+#include <kotaka/assert.h>
 
 object root_category;
 
@@ -30,11 +31,12 @@ void add_category(string category)
 	root_category->insert_entry(category, 1);
 }
 
-void add_topic(string topic)
+void add_topic(string topic, varargs string content)
 {
 	ACCESS_CHECK(PRIVILEGED());
+	ASSERT(content);
 
-	root_category->insert_entry(topic, 0);
+	root_category->insert_entry(topic, 0)->set_content(content);
 }
 
 void remove_category(string category)
@@ -100,4 +102,58 @@ mapping query_index(varargs string category)
 	} else {
 		return nil;
 	}
+}
+
+int test_topic(string topic)
+{
+	string *parts;
+	string category;
+	object subnode;
+	int sz;
+
+	parts = explode(topic, "/");
+
+	if ((sz = sizeof(parts)) > 1) {
+		topic = parts[sz - 1];
+		subnode = root_category->find_node(implode(parts[0 .. sz - 2], "/"));
+	} else {
+		subnode = root_category;
+	}
+
+	if (!subnode) {
+		return 0;
+	}
+
+	subnode = subnode->query_topic(topic);
+
+	return !!subnode;
+}
+
+string query_content(string topic)
+{
+	string *parts;
+	string category;
+	object subnode;
+	int sz;
+
+	parts = explode(topic, "/");
+
+	if ((sz = sizeof(parts)) > 1) {
+		topic = parts[sz - 1];
+		subnode = root_category->find_node(implode(parts[0 .. sz - 2], "/"));
+	} else {
+		subnode = root_category;
+	}
+
+	if (!subnode) {
+		error("No such category");
+	}
+
+	subnode = subnode->query_topic(topic);
+
+	if (!subnode) {
+		error("No such topic");
+	}
+
+	return subnode->query_content();
 }
