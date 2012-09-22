@@ -1,7 +1,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-private void load_helpdir(string dir)
+static void load_helpdir(string dir)
 {
 	mixed **dirlist;
 	string *names;
@@ -23,7 +23,7 @@ private void load_helpdir(string dir)
 		entry = names[i];
 
 		if (sizes[i] == -2) {
-			load_helpdir(dir + "/" + entry);
+			call_out("load_helpdir", 0, dir + "/" + entry);
 		} else if (sscanf(names[i], "%s.hlp", entry)) {
 			HELPD->add_topic(dir + "/" + entry,
 				read_file("~/data/help/" + dir + "/" + entry + ".hlp")
@@ -32,7 +32,7 @@ private void load_helpdir(string dir)
 	}
 }
 
-private void load_rootdir()
+static void load_rootdir()
 {
 	mixed **dirlist;
 	string *names;
@@ -52,7 +52,7 @@ private void load_rootdir()
 		entry = names[i];
 
 		if (sizes[i] == -2) {
-			load_helpdir(entry);
+			call_out("load_helpdir", 0, entry);
 		} else if (sscanf(entry, "%s.hlp", entry)) {
 			HELPD->add_topic(entry,
 				read_file("~/data/help/" + entry + ".hlp")
