@@ -82,6 +82,7 @@ static void create()
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
+	KERNELD->set_global_access("Game", 1);
 
 	"sys/helpd"->load_help();
 
@@ -91,6 +92,7 @@ static void create()
 
 	"sys/testd"->test();
 
+	INITD->boot_subsystem("Text");
 }
 
 void reboot()
