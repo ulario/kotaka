@@ -81,6 +81,8 @@ static void load_tick(object cqueue, object tqueue)
 		load_helpfile(dir, entry);
 
 		call_out("load_tick", 0, cqueue, tqueue);
+	} else {
+		LOGD->post_message("help", LOG_NOTICE, "Help information loaded.");
 	}
 }
 
