@@ -46,8 +46,9 @@ string *subsystems;
 
 void console_post(string str, int level);
 void message(string str);
+void boot_subsystem(string subsystem);
+
 private void configure_klib();
-private void boot_subsystem(string subsystem);
 private void configure_logging();
 private void check_config();
 private void check_versions();
@@ -177,7 +178,6 @@ void prepare_reboot()
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "prepare_reboot");
 		}
 	}
-
 }
 
 void clear_admin()
@@ -279,8 +279,10 @@ void message(string str)
 	LOGD->post_message("misc", LOG_NOTICE, str);
 }
 
-private void boot_subsystem(string subsystem)
+void boot_subsystem(string subsystem)
 {
+	ACCESS_CHECK(SYSTEM() || GAME());
+
 	subsystems += ({ subsystem });
 
 	KERNELD->add_user(subsystem);
