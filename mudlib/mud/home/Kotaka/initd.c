@@ -170,6 +170,7 @@ static void create()
 
 	setup_channels();
 
+	KERNELD->set_global_access("Kotaka", 1);
 	TLSD->set_tls_access("Kotaka", "opwd", "Game", WRITE_ACCESS);
 	TLSD->set_tls_access("Kotaka", "opwd", "System", READ_ACCESS);
 	TLSD->set_tls_access("Kotaka", "env", "System", READ_ACCESS);

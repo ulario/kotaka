@@ -27,6 +27,8 @@ inherit UTILITY_COMPILE;
 
 static void create()
 {
+	KERNELD->set_global_access("Help", 1);
+
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 }

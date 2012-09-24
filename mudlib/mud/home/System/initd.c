@@ -109,8 +109,6 @@ private void initialize()
 	STATUSD->enable();
 	WATCHDOGD->enable();
 
-	KERNELD->set_global_access("Kotaka", 1);
-	KERNELD->set_global_access("Help", 1);
 	KERNELD->set_global_access("System", 1);
 
 	/* Booted up */
