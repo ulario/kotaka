@@ -22,5 +22,6 @@
 
 static void create()
 {
+	KERNELD->set_global_access("Text", 1);
 	LOGD->post_message("text", LOG_DEBUG, "Hello world from a subsystem");
 }
