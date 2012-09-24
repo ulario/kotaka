@@ -23,6 +23,7 @@
 #include <kernel/rsrc.h>
 #include <kernel/user.h>
 
+#include <kotaka/log.h>
 #include <kotaka/privilege.h>
 #include <kotaka/paths.h>
 
@@ -99,7 +100,7 @@ void set_global_access(string dir, int flag)
 	ACCESS_CHECK(
 		SYSTEM()
 		|| (
-			DRIVER->creator(dir)
+			dir
 			== DRIVER->creator(
 				object_name(previous_object())
 			)
