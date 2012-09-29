@@ -33,5 +33,5 @@ void main(string args)
 		return;
 	}
 
-	"~/sys/helpd"->load_help();
+	"~/initd"->load_help();
 }
