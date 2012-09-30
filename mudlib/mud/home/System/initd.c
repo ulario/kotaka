@@ -114,6 +114,7 @@ private void initialize()
 	/* Booted up */
 
 	boot_subsystem("Kotaka");
+	boot_subsystem("Test");
 	boot_subsystem("Help");
 	boot_subsystem("Game");
 }
