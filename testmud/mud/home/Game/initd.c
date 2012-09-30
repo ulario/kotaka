@@ -101,7 +101,7 @@ void reboot()
 {
 }
 
-private void place_object(string base)
+static void place_object(string base, int remainder)
 {
 	object obj;
 	float rnd1;
@@ -115,31 +115,20 @@ private void place_object(string base)
 	obj->move(root);
 	obj->set_x_position(sin(rnd1) * rnd2);
 	obj->set_y_position(cos(rnd1) * rnd2);
+
+	if (remainder) {
+		call_out("place_object", 0, base, remainder - 1);
+	} else {
+		LOGD->post_message("world", LOG_NOTICE, "Finished placing " + base);
+	}
 }
 
 void build_world()
 {
-	int i;
-	/* 50 soil spots */
-	/* 10 rocks */
-	/* 3 deer */
-	/* 1 wolf */
-
-	for (i = 0; i < 250; i++) {
-		place_object("soil");
-	}
-
-	for (i = 0; i < 10; i++) {
-		place_object("rock");
-	}
-
-	for (i = 0; i < 3; i++) {
-		place_object("deer");
-	}
-
-	for (i = 0; i < 1; i++) {
-		place_object("wolf");
-	}
+	call_out("place_object", 0, "soil", 200);
+	call_out("place_object", 0, "rock", 40);
+	call_out("place_object", 0, "deer", 10);
+	call_out("place_object", 0, "wolf", 3);
 }
 
 /****************/
