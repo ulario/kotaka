@@ -27,6 +27,10 @@
 
 inherit SECOND_AUTO;
 
+#define MAX_MEMORY	(1 << 28)	/* 256 megabytes */
+#define FRAG_RATIO	(0.25)		/* one quarter free */
+#define FREE_SLACK	(1 << 25)	/* 32 megabytes */
+
 int callout;
 int frag_angst;
 
@@ -91,8 +95,8 @@ static void check()
 		callout = call_out("check", 1);
 	}
 
-	mem_used = (float)status(ST_DMEMUSED);
-	mem_size = (float)status(ST_DMEMSIZE);
+	mem_used = (float)status(ST_DMEMUSED) + (float)status(ST_SMEMUSED);
+	mem_size = (float)status(ST_DMEMSIZE) + (float)status(ST_SMEMSIZE);
 	mem_free = mem_size - mem_used;
 
 	obj_used = status(ST_NOBJECTS);
@@ -117,13 +121,13 @@ static void check()
 	}
 #endif
 
-	if (mem_used > ldexp(1.0, 31)) {
+	if (mem_used > (float)MAX_MEMORY) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
 		swapout();
 		return;
 	}
 
-	if (mem_free > (float)(64 << 20) && (mem_free / mem_size) > 0.75) {
+	if ((mem_free - (float)FREE_SLACK) / mem_size) > (float)FRAG_RATIO) {
 		if (!frag_angst) {
 			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented");
 		}
@@ -132,8 +136,8 @@ static void check()
 
 		if (frag_angst >= 180) {
 			frag_angst -= 120;
-			LOGD->post_message("watchdog", LOG_NOTICE, "Memory still fragmented");
-			/* swapout(); */
+			LOGD->post_message("watchdog", LOG_NOTICE, "Memory still fragmented, swapping out");
+			swapout();
 		}
 	} else {
 		if (frag_angst) {
