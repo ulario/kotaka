@@ -127,7 +127,7 @@ static void check()
 		return;
 	}
 
-	if ((mem_free - (float)FREE_SLACK) / mem_size) > (float)FRAG_RATIO) {
+	if (((mem_free - (float)FREE_SLACK) / mem_size) > (float)FRAG_RATIO) {
 		if (!frag_angst) {
 			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented");
 		}
