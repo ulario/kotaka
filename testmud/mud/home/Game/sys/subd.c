@@ -24,7 +24,7 @@
 
 /* drawing the feedback screen: */
 
-#define XM (1)
+#define XM (80 - 18)
 #define YM (1)
 
 private void draw_tickmarks(object painter)
