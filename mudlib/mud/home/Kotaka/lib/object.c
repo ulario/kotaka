@@ -38,7 +38,7 @@ private string id_base;
 private int id_number;
 
 private object environment;
-private mapping inventory;
+private object *inventory;
 
 private mapping properties;
 private string *removed_properties;
@@ -59,7 +59,7 @@ private void initialize()
 	}
 
 	if (!inventory) {
-		inventory = ([ ]);
+		inventory = ({ });
 	}
 
 	if (!properties) {
@@ -291,17 +291,17 @@ nomask int _F_query_lowest_free(string trial, object exclude)
 
 	taken = ([ ]);
 
-	inv = map_indices(inventory) - ({ exclude });
+	inv = inventory - ({ nil, exclude });
 
 	for (i = 0; i < sizeof(inv); i++) {
 		object check;
 
 		check = inv[i];
-		
+
 		if (check->_F_query_id_base() != trial) {
 			continue;
 		}
-		
+
 		taken[check->_F_query_id_number()] = 1;
 	}
 
@@ -319,7 +319,6 @@ nomask object _F_find_by_id(string id)
 	string base;
 	int number;
 	int index;
-	object *inv;
 	int sz;
 
 	ACCESS_CHECK(KOTAKA());
@@ -355,12 +354,12 @@ nomask object _F_find_by_id(string id)
 		return this_object();
 	}
 
-	inv = map_indices(inventory);
-	sz = sizeof(inv);
+	inventory -= ({ nil });
+	sz = sizeof(inventory);
 
 	for (index = 0; index < sz; index++) {
-		if (inv[index]->_F_query_id() == id) {
-			return inv[index];
+		if (inventory[index]->_F_query_id() == id) {
+			return inventory[index];
 		}
 	}
 }
@@ -566,10 +565,11 @@ object *filter_by_base(string str)
 	int index;
 	object *inv;
 
-	inv = map_indices(inventory);
+	inventory -= ({ nil });
+	inv = inventory[..];
 
 	for(index = 0; index < sizeof(inv); index++) {
-		if (inv[index]->_F_query_id_base() != str)
+		if (inventory[index]->_F_query_id_base() != str)
 			inv[index] = nil;
 	}
 	
@@ -633,21 +633,24 @@ nomask object *_F_query_inventory()
 {
 	ACCESS_CHECK(KOTAKA());
 
-	return map_indices(inventory);
+	return inventory - ({ nil });
 }
 
 nomask void _F_add_inventory(object arriving)
 {
 	ACCESS_CHECK(KOTAKA());
+	ASSERT(arriving);
+	ASSERT(!sizeof( ({ arriving }) & inventory ));
 
-	inventory[arriving] = 1;
+	inventory = ({ arriving }) + (inventory - ({ nil }));
 }
 
 nomask void _F_del_inventory(object departing)
 {
 	ACCESS_CHECK(KOTAKA());
+	ASSERT(departing);
 
-	inventory[departing] = nil;
+	inventory -= ({ departing });
 }
 
 nomask int _F_is_container_of(object test)
@@ -754,7 +757,7 @@ object query_environment()
 
 object *query_inventory()
 {
-	return map_indices(inventory);
+	return _F_query_inventory();
 }
 
 /*********************/
