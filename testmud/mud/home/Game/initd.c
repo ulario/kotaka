@@ -54,7 +54,6 @@ int wsave_pending;
 /****************/
 
 void load_help();
-string bits(string input);
 static void do_test();
 void build_world();
 
