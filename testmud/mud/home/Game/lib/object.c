@@ -21,7 +21,7 @@
 
 inherit base LIB_OBJECT;
 
-inherit "position";
+inherit position "position";
 inherit bulk "bulk";
 
 int destructing;
@@ -38,6 +38,7 @@ static void create()
 
 	base::create();
 	bulk::create();
+	position::create();
 
 	name = object_name(this_object());
 
