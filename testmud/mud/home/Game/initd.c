@@ -45,7 +45,7 @@ inherit UTILITY_COMPILE;
 /* Variables */
 /*************/
 
-object root;
+object world;
 int save_pending;
 int wsave_pending;
 
@@ -86,13 +86,10 @@ static void create()
 	SECRETD->make_dir("log");
 	KERNELD->set_global_access("Game", 1);
 
-	load_help();
-
-	root = find_object("sys/root");
-
-	build_world();
-
 	"sys/testd"->test();
+
+	load_help();
+	build_world();
 
 	INITD->boot_subsystem("Text");
 }
@@ -112,7 +109,7 @@ static void place_object(string base, int remainder)
 
 	obj = clone_object("~/obj/object");
 	obj->set_id_base(base);
-	obj->move(root);
+	obj->move(world);
 	obj->set_x_position(sin(rnd1) * rnd2);
 	obj->set_y_position(cos(rnd1) * rnd2);
 
@@ -125,6 +122,8 @@ static void place_object(string base, int remainder)
 
 void build_world()
 {
+	world = clone_object("~/obj/object");
+
 	call_out("place_object", 0, "soil", 200);
 	call_out("place_object", 0, "rock", 40);
 	call_out("place_object", 0, "deer", 10);
@@ -244,6 +243,11 @@ static void load_rootdir()
 	}
 
 	call_out("load_tick", 0, cqueue, tqueue);
+}
+
+object query_world()
+{
+	return world;
 }
 
 void load_help()
