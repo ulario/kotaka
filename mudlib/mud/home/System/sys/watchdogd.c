@@ -27,9 +27,9 @@
 
 inherit SECOND_AUTO;
 
-#define MAX_MEMORY	(1 << 28)	/* 256 megabytes */
+#define MAX_MEMORY	(256 << 20)	/* 256 megabytes */
 #define FRAG_RATIO	(0.25)		/* one quarter free */
-#define FREE_SLACK	(1 << 25)	/* 32 megabytes */
+#define FREE_SLACK	(32 << 20)	/* 32 megabytes */
 
 int callout;
 int frag_angst;
