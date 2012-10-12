@@ -20,6 +20,8 @@
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
 
+inherit LIB_INITD;
+
 static void create()
 {
 	KERNELD->set_global_access("Text", 1);

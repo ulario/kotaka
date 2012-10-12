@@ -20,6 +20,8 @@
 #include <kotaka/log.h>
 #include <kotaka/paths.h>
 
+inherit LIB_INITD;
+
 static void create()
 {
 	LOGD->post_message("test", LOG_DEBUG, "Test subsystem loaded");
