@@ -788,6 +788,10 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		error("Failure to inherit SECOND_AUTO: " + path);
 	}
 
+	if (path == USR_DIR + "/" + owner + "/initd" && !sizeof(({ LIB_INITD }) & inherited)) {
+		error("Failure to inherit LIB_INITD: " + path);
+	}
+
 	if (upgrading) {
 		upgrading = 0;
 
