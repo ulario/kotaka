@@ -31,11 +31,13 @@ int reading;
 int introed;
 int facing;
 
+object world;
 object body;
 
 static void create(int clone)
 {
 	::create();
+	world = GAME_INITD->query_world();
 }
 
 static void destruct(int clone)
@@ -124,7 +126,7 @@ void receive_in(string input)
 			object *inv;
 			int sz;
 
-			inv = GAME_ROOT->query_inventory();
+			inv = world->query_inventory();
 			sz = sizeof(inv);
 
 			if (!sz) {
