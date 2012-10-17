@@ -180,19 +180,6 @@ void receive_in(string input)
 			}
 		}
 		break;
-	case "look":
-		if (!body) {
-			send_out("Lacking a body, you have no eyes to see with.\n");
-		} else {
-			string buffer;
-
-			buffer = GAME_SUBD->draw_look(body, facing);
-
-			send_out("Currently facing " + facing + " degrees clockwise of due north.\n");
-			send_out("You see:\n");
-			send_out(buffer);
-		}
-		break;
 	default:
 		if (!VERBD->do_action(first, body, input)) {
 			send_out("The art of " + first + "ing is unknown to you.\n");
