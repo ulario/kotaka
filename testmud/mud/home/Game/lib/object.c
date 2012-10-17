@@ -55,6 +55,19 @@ int forbid_insert(object obj)
 	return destructing;
 }
 
+static void move_notify(object old_env)
+{
+	object env;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
+
+	if (old_env) {
+		old_env->bulk_invalidate();
+	}
+}
+
 static nomask void game_object_destruct()
 {
 	int sz;

@@ -26,6 +26,13 @@ inherit LIB_OBJECT;
 /* keep it short and sweet and to the point for now */
 float mass;		/* kg */
 
+/* caching */
+float cached_content_mass;	/* cached mass of our contents */
+int dirty;
+
+void bulk_invalidate();
+void bulk_sync();
+
 static void create()
 {
 	mass = 0.0;
@@ -39,6 +46,7 @@ void set_mass(float new_mass)
 	}
 
 	mass = new_mass;
+	bulk_invalidate();
 }
 
 /* kilograms */
@@ -50,6 +58,21 @@ float query_mass()
 /* mass of us + our contents */
 float query_total_mass()
 {
+	ACCESS_CHECK(GAME());
+
+	if (dirty) {
+		bulk_sync();
+	}
+
+	return mass + cached_content_mass;
+}
+
+/***********/
+/* Caching */
+/***********/
+
+void bulk_sync(varargs int force)
+{
 	int i;
 	int sz;
 	object *inv;
@@ -57,12 +80,35 @@ float query_total_mass()
 
 	ACCESS_CHECK(GAME());
 
+	if (!dirty && !force) {
+		return;
+	}
+
 	inv = query_inventory();
 	sz = sizeof(inv);
 
 	for (i = 0; i < sz; i++) {
-		sum += inv[i]->query_total_mass();
+		object subobj;
+
+		subobj = inv[i];
+
+		subobj->bulk_sync(force);
+		sum += subobj->query_total_mass();
 	}
 
-	return sum + mass;
+	cached_content_mass = sum;
+	dirty = 0;
+}
+
+void bulk_invalidate()
+{
+	object env;
+
+	ACCESS_CHECK(GAME());
+
+	dirty = 1;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
 }
