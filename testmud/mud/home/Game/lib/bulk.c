@@ -65,7 +65,7 @@ float query_total_mass()
 {
 	ACCESS_CHECK(GAME());
 
-	if (dirty) {
+	if (bulk_dirty) {
 		bulk_sync();
 	}
 
@@ -85,7 +85,7 @@ void bulk_sync(varargs int force)
 
 	ACCESS_CHECK(GAME());
 
-	if (!dirty && !force) {
+	if (!bulk_dirty && !force) {
 		return;
 	}
 
@@ -93,16 +93,11 @@ void bulk_sync(varargs int force)
 	sz = sizeof(inv);
 
 	for (i = 0; i < sz; i++) {
-		object subobj;
-
-		subobj = inv[i];
-
-		subobj->bulk_sync(force);
-		sum += subobj->query_total_mass();
+		sum += inv[i]->query_total_mass();
 	}
 
 	cached_content_mass = sum;
-	dirty = 0;
+	bulk_dirty = 0;
 }
 
 void bulk_invalidate(varargs int force)
@@ -111,12 +106,12 @@ void bulk_invalidate(varargs int force)
 
 	ACCESS_CHECK(GAME());
 
-	if (dirty && !force) {
+	if (bulk_dirty && !force) {
 		/* if we're already dirty, our containers should be too */
 		return;
 	}
 
-	dirty = 1;
+	bulk_dirty = 1;
 
 	if (env = query_environment()) {
 		env->bulk_invalidate(force);
