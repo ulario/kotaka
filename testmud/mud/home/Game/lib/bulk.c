@@ -24,23 +24,11 @@
 inherit LIB_OBJECT;
 
 /* keep it short and sweet and to the point for now */
-float density;		/* kg/l */
 float mass;		/* kg */
 
 static void create()
 {
-	density = -1.0;
 	mass = 0.0;
-}
-
-/* kilograms per liter */
-void set_density(float new_density)
-{
-	if (new_density == 0.0) {
-		error("Invalid density");
-	}
-
-	density = new_density;
 }
 
 /* kilograms */
@@ -53,22 +41,10 @@ void set_mass(float new_mass)
 	mass = new_mass;
 }
 
-/* kilograms per liter */
-float query_density()
-{
-	return density;
-}
-
 /* kilograms */
 float query_mass()
 {
 	return mass;
-}
-
-/* return volume in cubic meters */
-float query_volume()
-{
-	return 1000.0 * mass / density;
 }
 
 /* mass of us + our contents */
