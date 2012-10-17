@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kotaka/checkarg.h>
+#include <game/paths.h>
 
 inherit LIB_OBJECT;
 
@@ -50,7 +51,9 @@ void set_mass(float new_mass)
 	mass = new_mass;
 
 	if (env = query_environment()) {
-		env->bulk_invalidate();
+		if (!env->query_bulk_dirty()) {
+			env->bulk_invalidate();
+		}
 	}
 }
 
@@ -75,6 +78,13 @@ float query_total_mass()
 /***********/
 /* Caching */
 /***********/
+
+int query_bulk_dirty()
+{
+	ACCESS_CHECK(GAME());
+
+	return bulk_dirty;
+}
 
 void bulk_sync(varargs int force)
 {

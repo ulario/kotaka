@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <game/paths.h>
 
 inherit base LIB_OBJECT;
 
@@ -60,11 +61,15 @@ static void move_notify(object old_env)
 	object env;
 
 	if (env = query_environment()) {
-		env->bulk_invalidate();
+		if (!env->query_bulk_dirty()) {
+			env->bulk_invalidate();
+		}
 	}
 
 	if (old_env) {
-		old_env->bulk_invalidate();
+		if (!old_env->query_bulk_dirty()) {
+			old_env->bulk_invalidate();
+		}
 	}
 }
 
