@@ -29,15 +29,14 @@ float mass;		/* kg */
 
 static void create()
 {
-	/* be sensible, one kilogram */
-	density = 1.0;
-	mass = 1.0;
+	density = -1.0;
+	mass = 0.0;
 }
 
 /* kilograms per liter */
 void set_density(float new_density)
 {
-	if (new_density <= 0.0) {
+	if (new_density == 0.0) {
 		error("Invalid density");
 	}
 
@@ -70,4 +69,24 @@ float query_mass()
 float query_volume()
 {
 	return 1000.0 * mass / density;
+}
+
+/* mass of us + our contents */
+float query_total_mass()
+{
+	int i;
+	int sz;
+	object *inv;
+	float sum;
+
+	ACCESS_CHECK(GAME());
+
+	inv = query_inventory();
+	sz = sizeof(inv);
+
+	for (i = 0; i < sz; i++) {
+		sum += inv[i]->query_total_mass();
+	}
+
+	return sum + mass;
 }
