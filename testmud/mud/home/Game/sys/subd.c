@@ -134,7 +134,7 @@ string draw_look(object living, varargs int facing)
 
 			painter->move_pen(XM + x, YM + y);
 
-			switch(neighbor->query_id_base()) {
+			switch(neighbor->query_property("id")) {
 			case "wolf":
 				painter->set_color(0x08);
 				painter->draw("w");

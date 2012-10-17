@@ -48,7 +48,7 @@ static void destruct(int clone)
 private void prompt()
 {
 	if (body) {
-		switch(body->query_id_base()) {
+		switch(body->query_property("id")) {
 		case "deer":
 			send_out("(\033[1;37mwhite-tailed \033[0;33mdeer\033[0m) > ");
 			break;
@@ -59,7 +59,7 @@ private void prompt()
 			send_out("(boring stone) > ");
 			break;
 		default:
-			send_out(body->query_id_base() + "> ");
+			send_out(body->query_property("id") + "> ");
 		}
 	} else {
 		send_out("(no character) > ");
@@ -134,7 +134,7 @@ void receive_in(string input)
 			} else {
 				body = inv[random(sz)];
 
-				switch(body->query_id_base()) {
+				switch(body->query_property("id")) {
 				case "wolf":
 					send_out("You are now a shaggy furred wolf with sharp teeth.\n");
 					break;

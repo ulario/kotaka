@@ -79,6 +79,7 @@ static void create()
 	load_dir("sys", 1);
 
 	PROXYD->get_proxy("Game")->set_global_access("~", 1);
+	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 	SECRETD->make_dir(".");
@@ -107,7 +108,8 @@ static void place_object(string base, int remainder)
 	rnd2 = SUBD->rnd() * 30.0;
 
 	obj = clone_object("~/obj/object");
-	obj->set_id_base(base);
+	obj->set_property("id", base);
+
 	obj->move(world);
 	obj->set_x_position(sin(rnd1) * rnd2);
 	obj->set_y_position(cos(rnd1) * rnd2);

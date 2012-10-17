@@ -47,7 +47,7 @@ static void create()
 	parts = explode(name, "/");
 	sz = sizeof(parts);
 
-	set_id_base(parts[sz - 1]);
+	set_property("id", parts[sz - 1]);
 }
 
 int forbid_insert(object obj)
