@@ -30,8 +30,8 @@ float mass;		/* kg */
 int bulk_dirty;			/* if cache is invalid */
 float cached_content_mass;	/* cached mass of our contents */
 
-void bulk_invalidate();		/* invalidate */
-void bulk_sync();		/* synchronize bulk cache */
+void bulk_invalidate(varargs int force);	/* invalidate */
+void bulk_sync(varargs int force);		/* synchronize bulk cache */
 
 static void create()
 {
