@@ -655,39 +655,68 @@ int prefix_string(string prefix, string str)
 	return 0;
 }
 
-private int is_flat(mixed arr)
+int is_simple(mixed data)
+{
+	int sz;
+
+	switch (typeof(data)) {
+	case T_INT:
+	case T_NIL:
+	case T_STRING:
+	case T_FLOAT:
+	case T_OBJECT:
+		return 1;
+	case T_ARRAY:
+		sz = sizeof(data);
+		return sz == 0;
+	case T_MAPPING:
+		sz = map_sizeof(data);
+		return sz == 0;
+	}
+}
+
+int is_flat(mixed data)
 {
 	int sz;
 	int i;
 
-	if (typeof(arr) == T_MAPPING) {
+	if (is_simple(data)) {
+		return 1;
+	}
+
+	switch (typeof(data)) {
+	case T_ARRAY:
+		sz = sizeof(data);
+
+		for (i = 0; i < sz; i++) {
+			if (!is_simple(data[i])) {
+				return 0;
+			}
+		}
+
+		return 1;
+	case T_MAPPING:
+		sz = map_sizeof(data);
+
+		{
+			mixed *ind;
+			mixed *val;
+
+
+			ind = map_indices(data);
+			val = map_values(data);
+			
+			for (i = 0; i < sz; i++) {
+				if (!is_simple(ind[i])) {
+					return 0;
+				}
+				if (!is_simple(val[i])) {
+					return 0;
+				}
+			}
+		}
 		return 0;
 	}
-
-	sz = sizeof(arr);
-
-	for (i = 0; i < sz; i++) {
-		switch(typeof(arr[i])) {
-		case T_NIL:
-		case T_INT:
-		case T_FLOAT:
-		case T_STRING:
-		case T_OBJECT:
-			break;
-		case T_ARRAY:
-			if (sizeof(arr[i]) != 0) {
-				return 0;
-			}
-			break;
-		case T_MAPPING:
-			if (map_sizeof(arr[i]) != 0) {
-				return 0;
-			}
-			break;
-		}
-	}
-
-	return 1;
 }
 
 string hybrid_sprint(mixed data, varargs int indent, mapping seen)
@@ -761,8 +790,8 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 			for (index = 0; index < map_sizeof(data); index++) {
 				parts[index] =
 					"  " + mixed_sprint(indices[index], seen) +
-					":\n" + ind + "    " +
-					hybrid_sprint(data[indices[index]],
+					" : " + (is_simple(data[indices[index]]) ? "" : "\n" + ind + "    ") +
+						hybrid_sprint(data[indices[index]],
 					indent + 4, seen);
 			}
 
