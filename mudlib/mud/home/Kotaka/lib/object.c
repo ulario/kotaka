@@ -48,11 +48,6 @@ private void initialize()
 		archetypes = ({ });
 	}
 
-	if (!id_base) {
-		id_base = "anonymous";
-		id_number = 1;
-	}
-
 	if (!inventory) {
 		inventory = ({ });
 	}
@@ -333,7 +328,7 @@ atomic nomask void _F_move(object new_env)
 		}
 
 		if (_F_is_container_of(new_env)) {
-			error("Cyclic containment attempted");
+			error("Recursive containment");
 		}
 	}
 
@@ -341,17 +336,10 @@ atomic nomask void _F_move(object new_env)
 		return;
 	}
 
-	if (new_env) {
-		new_number = new_env->_F_query_lowest_free(id_base, nil);
-	} else {
-		new_number = 1;
-	}
-
 	if (environment) {
 		environment->_F_del_inventory(this_object());
 	}
 	environment = new_env;
-	_F_set_id_number(new_number);
 	if (environment) {
 		environment->_F_add_inventory(this_object());
 	}
