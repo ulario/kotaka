@@ -27,11 +27,11 @@ inherit LIB_OBJECT;
 float mass;		/* kg */
 
 /* caching */
+int bulk_dirty;			/* if cache is invalid */
 float cached_content_mass;	/* cached mass of our contents */
-int dirty;
 
-void bulk_invalidate();
-void bulk_sync();
+void bulk_invalidate();		/* invalidate */
+void bulk_sync();		/* synchronize bulk cache */
 
 static void create()
 {
@@ -41,12 +41,17 @@ static void create()
 /* kilograms */
 void set_mass(float new_mass)
 {
+	object env;
+
 	if (new_mass < 0.0) {
 		error("Negative mass");
 	}
 
 	mass = new_mass;
-	bulk_invalidate();
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
 }
 
 /* kilograms */
@@ -100,15 +105,20 @@ void bulk_sync(varargs int force)
 	dirty = 0;
 }
 
-void bulk_invalidate()
+void bulk_invalidate(varargs int force)
 {
 	object env;
 
 	ACCESS_CHECK(GAME());
 
+	if (dirty && !force) {
+		/* if we're already dirty, our containers should be too */
+		return;
+	}
+
 	dirty = 1;
 
 	if (env = query_environment()) {
-		env->bulk_invalidate();
+		env->bulk_invalidate(force);
 	}
 }
