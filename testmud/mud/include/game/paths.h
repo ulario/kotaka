@@ -1,6 +1,7 @@
 #include <config.h>
 
 #define LIB_BIN			(USR_DIR + "/Game/lib/bin")
+#define LIB_BULK		(USR_DIR + "/Game/lib/bulk")
 #define LIB_WIZBIN		(USR_DIR + "/Game/lib/wizbin")
 #define LIB_VERB		(USR_DIR + "/Game/lib/verb")
 #define LIB_TIME		(USR_DIR + "/Game/lib/time")
