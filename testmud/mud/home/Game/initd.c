@@ -98,11 +98,19 @@ void reboot()
 {
 }
 
+int t1;
+int t2;
+int t3;
+
 static void place_object(string base, int remainder)
 {
 	object obj;
 	float rnd1;
 	float rnd2;
+
+	int nt1;
+	int nt2;
+	int nt3;
 
 	rnd1 = SUBD->rnd() * SUBD->pi() * 2.0;
 	rnd2 = SUBD->rnd() * 30.0;
@@ -110,9 +118,22 @@ static void place_object(string base, int remainder)
 	obj = clone_object("~/obj/object");
 	obj->set_property("id", base);
 
+	nt1 = status(ST_TICKS);
+
 	obj->move(world);
+
+	nt2 = status(ST_TICKS);
+
 	obj->set_x_position(sin(rnd1) * rnd2);
 	obj->set_y_position(cos(rnd1) * rnd2);
+
+	nt3 = status(ST_TICKS);
+
+	LOGD->post_message("debug", LOG_DEBUG, "New ticks used: " + ((nt1 - nt2) - (t1 - t2)) + ", " + ((nt2 - nt3) - (t2 - t3)) );
+
+	t1 = nt1;
+	t2 = nt2;
+	t3 = nt3;
 
 	if (remainder) {
 		call_out("place_object", 0, base, remainder - 1);
