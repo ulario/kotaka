@@ -51,9 +51,7 @@ void set_mass(float new_mass)
 	mass = new_mass;
 
 	if (env = query_environment()) {
-		if (!env->query_bulk_dirty()) {
-			env->bulk_invalidate();
-		}
+		env->bulk_invalidate();
 	}
 }
 

@@ -61,15 +61,11 @@ static void move_notify(object old_env)
 	object env;
 
 	if (env = query_environment()) {
-		if (!env->query_bulk_dirty()) {
-			env->bulk_invalidate();
-		}
+		env->bulk_invalidate();
 	}
 
 	if (old_env) {
-		if (!old_env->query_bulk_dirty()) {
-			old_env->bulk_invalidate();
-		}
+		old_env->bulk_invalidate();
 	}
 }
 
