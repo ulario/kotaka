@@ -17,65 +17,58 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/bigstruct.h>
+#include <kotaka/privilege.h>
+#include <kotaka/log.h>
 #include <kotaka/paths.h>
+#include <kotaka/assert.h>
 #include <game/paths.h>
 
-inherit base LIB_OBJECT;
-
-inherit position "position";
-inherit bulk "bulk";
-
-int destructing;
-
-/*****************/
-/* General stuff */
-/*****************/
+object queue;
 
 static void create()
 {
-	string name;
-	string *parts;
-	int sz;
-
-	base::create();
-	bulk::create();
-	position::create();
-
-	name = object_name(this_object());
-
-	sscanf(name, "%s#%*d", name);
-
-	parts = explode(name, "/");
-	sz = sizeof(parts);
-
-	set_property("id", parts[sz - 1]);
+	queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
 }
 
-int forbid_insert(object obj)
+static void destruct()
 {
-	return destructing;
+	destruct_object(queue);
 }
 
-static void move_notify(object old_env)
+void enqueue(object obj)
 {
-	bulk::move_notify(old_env);
-	position::move_notify(old_env);
+	ACCESS_CHECK(previous_program() == LIB_BULK);
+
+	LOGD->post_message("bulk", LOG_DEBUG, "Refreshing bulk cache for " + obj->query_property("id"));
+
+	if (queue->empty()) {
+		call_out("process", 0);
+	}
+
+	queue->push_back(obj);
 }
 
-static nomask void game_object_destruct()
+static void process()
 {
-	int sz;
-	int index;
-	object env;
-	object *children;
+	object obj;
 
-	destructing = 1;
+	obj = queue->get_front();
+	queue->pop_front();
 
-	children = query_inventory();
-	env = query_environment();
-	sz = sizeof(children);
+	if (obj) {
+		object env;
 
-	for (index = 0; index < sz; index++) {
-		children[index]->move(env);
+		obj->bulk_sync();
+
+		if (env = obj->query_environment()) {
+			ASSERT(env->query_bulk_dirty());
+
+			queue->push_back(env);
+		}
+	}
+
+	if (!queue->empty()) {
+		call_out("process", 0);
 	}
 }

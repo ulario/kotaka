@@ -10,7 +10,9 @@
 
 #define ALIASD			(USR_DIR + "/Game/sys/aliasd")
 #define BAND			(USR_DIR + "/Game/sys/band")
+#define BULKD			(USR_DIR + "/Game/sys/bulkd")
 #define BIND			(USR_DIR + "/Game/sys/bind")
+#define BULKD			(USR_DIR + "/Game/sys/bulkd")
 #define VERBD			(USR_DIR + "/Game/sys/verbd")
 #define ACCOUNTD		(USR_DIR + "/Game/sys/accountd")
 #define SNOOPD			(USR_DIR + "/Game/sys/snoopd")

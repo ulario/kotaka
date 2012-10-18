@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kotaka/checkarg.h>
+#include <kotaka/assert.h>
 #include <game/paths.h>
 
 inherit LIB_OBJECT;
@@ -48,11 +49,12 @@ void set_mass(float new_mass)
 		error("Negative mass");
 	}
 
-	mass = new_mass;
-
 	if (env = query_environment()) {
 		env->bulk_invalidate();
+		env->bulk_queue();
 	}
+
+	mass = new_mass;
 }
 
 /* kilograms */
@@ -123,5 +125,31 @@ void bulk_invalidate(varargs int force)
 
 	if (env = query_environment()) {
 		env->bulk_invalidate(force);
+	}
+}
+
+void bulk_queue(varargs int force)
+{
+	ACCESS_CHECK(GAME());
+
+	ASSERT(bulk_dirty);
+
+	BULKD->enqueue(this_object());
+}
+
+/* hooks */
+
+static void move_notify(object old_env)
+{
+	object env;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+		env->bulk_queue();
+	}
+
+	if (old_env) {
+		old_env->bulk_invalidate();
+		old_env->bulk_queue();
 	}
 }
