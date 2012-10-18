@@ -69,9 +69,12 @@ string draw_look(object living, varargs int facing)
 			painter->move_pen(XM, YM + y);
 			painter->draw(STRINGD->chars(' ', 17));
 		}
+		painter->move_pen(XM + 5, YM + 7);
 		painter->set_color(0x74);
-		painter->move_pen(XM + 6, YM + 8);
-		painter->draw("Error");
+		painter->draw(" Error ");
+		painter->set_color(0x47);
+		painter->move_pen(XM + 5, YM + 9);
+		painter->draw("No body");
 	} else if (!(environment = living->query_environment())) {
 		painter->set_color(0x7);
 
@@ -148,7 +151,7 @@ string draw_look(object living, varargs int facing)
 				painter->draw("@");
 				break;
 			case "soil":
-				painter->set_color(0x83);
+				painter->set_color(0x23);
 				painter->draw(":");
 				break;
 			default:
