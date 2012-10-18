@@ -40,8 +40,6 @@ void enqueue(object obj)
 {
 	ACCESS_CHECK(previous_program() == LIB_BULK);
 
-	LOGD->post_message("bulk", LOG_DEBUG, "Refreshing bulk cache for " + obj->query_property("id"));
-
 	if (queue->empty()) {
 		call_out("process", 0);
 	}
