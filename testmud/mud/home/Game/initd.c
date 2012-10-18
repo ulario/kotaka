@@ -113,6 +113,7 @@ static void place_object(string base, int remainder)
 
 	obj = clone_object("~/obj/object");
 	obj->set_property("id", base);
+	obj->set_mass(SUBD->rnd() * 2.0 + 2.0);
 
 	obj->move(world);
 
