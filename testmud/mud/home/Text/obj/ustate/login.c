@@ -21,12 +21,14 @@
 #include <kotaka/privilege.h>
 
 #include <game/paths.h>
+#include <text/paths.h>
 
-inherit GAME_LIB_USTATE;
+inherit TEXT_LIB_USTATE;
 
 #define STATE_GETNAME	1
 #define STATE_GETPASS	2
 #define STATE_CHKPASS	3
+#define STATE_CHKDUPE	4
 
 string name;
 string password;
@@ -50,15 +52,11 @@ private void prompt()
 {
 	switch(state) {
 	case STATE_GETNAME:
-		send_out("Please choose a username: ");
-		break;
-
-	case STATE_GETPASS:
-		send_out("Please choose a password: ");
+		send_out("Login: ");
 		break;
 
 	case STATE_CHKPASS:
-		send_out("Please confirm your password: ");
+		send_out("Password: ");
 		break;
 	}
 }
@@ -121,72 +119,116 @@ void receive_in(string input)
 			send_out("That is not a valid username.\n");
 			pop_state();
 			return;
-		} else if (ACCOUNTD->query_is_registered(input)) {
-			send_out("That name is already taken.\n");
+		} else if (!ACCOUNTD->query_is_registered(input)) {
+			send_out("No such user.\n");
 			pop_state();
 			return;
 		} else {
-			state = STATE_GETPASS;
+			state = STATE_CHKPASS;
 			query_user()->set_mode(MODE_NOECHO);
 			name = input;
 			break;
 		}
 		break;
 
-	case STATE_GETPASS:
-		send_out("\n");
-		if (ACCOUNTD->query_is_registered(name)) {
-			send_out("Whoops, someone else just swiped the username you wanted.\n");
-			query_user()->set_mode(MODE_ECHO);
-			pop_state();
-			return;
-		} else if (BAND->query_is_banned(name)) {
-			send_out("That name is banned.\n");
-			query_user()->quit();
-			return;
-		} else {
-			password = input;
-			state = STATE_CHKPASS;
-			break;
-		}
-		break;
-
 	case STATE_CHKPASS:
 		send_out("\n");
-		if (ACCOUNTD->query_is_registered(name)) {
-			send_out("Whoops, someone else just swiped the username you wanted.\n");
-			query_user()->set_mode(MODE_ECHO);
+		query_user()->set_mode(MODE_ECHO);
+		password = input;
+		if (!ACCOUNTD->query_is_registered(name)) {
+			send_out("Whoops, that account no longer exists.\n");
 			pop_state();
 			return;
-		} else if (BAND->query_is_banned(name)) {
-			send_out("Whoops, the username you picked just got banned.\n");
+		} else if (!ACCOUNTD->authenticate(name, password)) {
+			send_out("Password mismatch.\n");
+			/* we will eventually want to ban IPs that */
+			/* fail too much */
 			query_user()->quit();
 			return;
-		} else if (input != password) {
-			send_out("Password mismatch.\n");
-			query_user()->set_mode(MODE_ECHO);
-			pop_state();
+		} else if (BAND->query_is_banned(name)) {
+			send_out("You are banned.\n");
+			query_user()->quit();
 			return;
 		} else {
 			object user;
-			
-			user = query_user();
-			ACCOUNTD->register_account(name, password);
-			user->set_username(name);
-			if (GAME_USERD->query_is_guest(user)) {
-				GAME_USERD->promote_guest(name, user);
-			} else {
-				GAME_USERD->add_user(name, user);
+			/* todo: detect duplicates and prepare to */
+			/* evict a linkdead user */
+
+			if (TEXT_USERD->find_user(name)) {
+				send_out("You are already logged in.\nDo you wish to disconnect your previous login? ");
+				state = STATE_CHKDUPE;
+				break;
 			}
+
+			user = query_user();
+			if (TEXT_USERD->query_is_guest(user)) {
+				TEXT_USERD->promote_guest(name, user);
+			} else {
+				TEXT_USERD->add_user(name, user);
+			}
+
+			user->set_username(name);
 			user->set_mode(MODE_ECHO);
 
-			GAME_SUBD->send_to_all_except(
-				GAME_SUBD->titled_name(
+			TEXT_SUBD->send_to_all_except(
+				TEXT_SUBD->titled_name(
 					user->query_username(),
 					user->query_class())
-				+ " registers.\n", ({ user }));
+				+ " logs in.\n", ({ user }));
 
 			terminate_account_state();
+			return;
+		}
+		break;
+	case STATE_CHKDUPE:
+		if (!ACCOUNTD->query_is_registered(name)) {
+			send_out("Whoops, that account no longer exists.\n");
+			pop_state();
+			return;
+		} else if (!ACCOUNTD->authenticate(name, password)) {
+			send_out("Your password was just changed!\n");
+			query_user()->quit();
+			return;
+		} else if (BAND->query_is_banned(name)) {
+			send_out("Sorry, but you were just banned.\n");
+			query_user()->quit();
+			return;
+		} else if (input == "yes") {
+			object user;
+			int was_guest;
+
+			user = TEXT_USERD->find_user(name);
+
+			if (user) {
+				send_out("Evicting previous connection.\n");
+				user->quit();
+			} else {
+				send_out("Your previous connection went away before I could evict it.\n");
+			}
+
+			user = query_user();
+
+			if (TEXT_USERD->query_is_guest(user)) {
+				was_guest = TRUE;
+				TEXT_USERD->promote_guest(name, user);
+			} else {
+				TEXT_USERD->add_user(name, user);
+			}
+
+			user->set_username(name);
+			user->set_mode(MODE_ECHO);
+
+			TEXT_SUBD->send_to_all_except(
+				TEXT_SUBD->titled_name(
+					user->query_username(),
+					user->query_class())
+				+ " logs in.\n", ({ user }));
+
+			terminate_account_state();
+			return;
+		} else {
+			send_out("Ok then.\n");
+			pop_state();
 			return;
 		}
 		break;

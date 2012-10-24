@@ -23,8 +23,9 @@
 #include <kotaka/assert.h>
 
 #include <game/paths.h>
+#include <text/paths.h>
 
-inherit LIB_USTATE;
+inherit TEXT_LIB_USTATE;
 
 int stopped;
 int reading;

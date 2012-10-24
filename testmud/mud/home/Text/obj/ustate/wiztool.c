@@ -20,7 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-#include <game/paths.h>
+#include <text/paths.h>
 
 inherit LIB_USTATE;
 
@@ -28,7 +28,7 @@ int stopped;
 int reading;
 int introed;
 
-string path;
+object wiztool;
 
 static void create(int clone)
 {
@@ -42,7 +42,33 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	send_out("[\033[1;34mchargen\033[0m] ");
+	string str;
+
+	if (str = query_editor(wiztool)) {
+		if (str == "insert") {
+			send_out(": ");
+		} else {
+			send_out("Edit> ");
+		}
+	} else {
+		send_out("[\033[1;30mWiztool\033[0m] ");
+	}
+}
+
+void message(string str)
+{
+	ACCESS_CHECK(previous_object() == wiztool);
+
+	send_out(str);
+}
+
+void begin()
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
+	wiztool = WIZTOOLD->get_wiztool();
+
+	send_out("Emergency wiztool activated.\n\n");
 }
 
 void stop()
@@ -67,15 +93,9 @@ void end()
 {
 	ACCESS_CHECK(previous_object() == query_user());
 
+	wiztool->dispose();
+
 	destruct_object(this_object());
-}
-
-private void do_ls(string args)
-{
-}
-
-private void do_cd(string args)
-{
 }
 
 void receive_in(string input)
@@ -92,11 +112,13 @@ void receive_in(string input)
 	}
 
 	switch(first) {
+	case "":
+		break;
 	case "quit":
 		pop_state();
 		return;
 	default:
-		send_out(first + ": command not recognized.\n");
+		wiztool->input(first + " " + input);
 	}
 
 	reading = 0;

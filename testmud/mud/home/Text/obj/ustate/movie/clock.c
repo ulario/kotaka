@@ -20,7 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-#include <game/paths.h>
+#include <text/paths.h>
 #include <status.h>
 
 inherit "~/lib/animate";

@@ -17,17 +17,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kernel/access.h>
-
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-#include <game/paths.h>
+#include <text/paths.h>
 
-inherit GAME_LIB_USTATE;
+inherit LIB_USTATE;
 
 int stopped;
 int reading;
+int introed;
+
+string path;
 
 static void create(int clone)
 {
@@ -41,24 +42,7 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	string name;
-
-	name = query_user()->query_username();
-
-	if (!name) {
-		name = "guest";
-	}
-
-	send_out("[" + name + "@ulario] ");
-}
-
-void begin()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	if (!query_user()->query_username()) {
-		send_out(read_file("~/data/doc/guest_welcome"));
-	}
+	send_out("[\033[1;34mchargen\033[0m] ");
 }
 
 void stop()
@@ -79,30 +63,19 @@ void go()
 	}
 }
 
-void pre_end()
-{
-	object user;
-	string name;
-
-	user = query_user();
-
-	ACCESS_CHECK(previous_object() == user);
-
-	if (user->query_username()) {
-		GAME_SUBD->send_to_all_except(
-			GAME_SUBD->titled_name(
-				user->query_username(),
-				user->query_class())
-			+ " logs out.\n", ({ user }));
-	}
-	send_out("Come back soon.\n");
-}
-
 void end()
 {
 	ACCESS_CHECK(previous_object() == query_user());
 
 	destruct_object(this_object());
+}
+
+private void do_ls(string args)
+{
+}
+
+private void do_cd(string args)
+{
 }
 
 void receive_in(string input)
@@ -113,45 +86,17 @@ void receive_in(string input)
 
 	reading = 1;
 
-	if (strlen(input) > 0) {
-		switch(input[0]) {
-		case '\'':
-			input = input[1 ..];
-			first = "say";
-			break;
-		case ':':
-			input = input[1 ..];
-			first = "emote";
-			break;
-		}
-	}
-
-	if (!first && !sscanf(input, "%s %s", first, input)) {
+	if (!sscanf(input, "%s %s", first, input)) {
 		first = input;
 		input = "";
 	}
 
 	switch(first) {
-	case "":
-		break;
-	default:
-		if (BIND->execute_command("adm/" + first, input))
-			break;
-		if (BIND->execute_command("wiz/tool/" + first, input))
-			break;
-		if (BIND->execute_command("wiz/debug/" + first, input))
-			break;
-		if (BIND->execute_command("wiz/" + first, input))
-			break;
-		if (BIND->execute_command("movie/" + first, input))
-			break;
-		if (BIND->execute_command(first, input))
-			break;
-		send_out("No such command.\n");
-	}
-
-	if (!this_object()) {
+	case "quit":
+		pop_state();
 		return;
+	default:
+		send_out(first + ": command not recognized.\n");
 	}
 
 	reading = 0;

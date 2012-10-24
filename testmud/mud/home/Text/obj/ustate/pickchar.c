@@ -20,7 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-#include <game/paths.h>
+#include <text/paths.h>
 
 inherit LIB_USTATE;
 
@@ -42,14 +42,7 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	send_out("[\033[1;35mHelp\033[0m] ");
-}
-
-void begin()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	send_out("Welcome to the help system.\n\n");
+	send_out("[\033[1;35mHELP\033[0m] ");
 }
 
 void stop()
@@ -77,6 +70,14 @@ void end()
 	destruct_object(this_object());
 }
 
+private void do_ls(string args)
+{
+}
+
+private void do_cd(string args)
+{
+}
+
 void receive_in(string input)
 {
 	string first;
@@ -91,6 +92,15 @@ void receive_in(string input)
 	}
 
 	switch(first) {
+	case "help":
+		return;
+	case "ls":
+		do_ls(input);
+		break;
+	case "cd":
+		/* going up is always allowed */
+		do_cd(input);
+		break;
 	case "quit":
 		pop_state();
 		return;

@@ -17,26 +17,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kernel/access.h>
+
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-#include <game/paths.h>
+#include <text/paths.h>
 
-inherit GAME_LIB_USTATE;
+inherit TEXT_LIB_USTATE;
 
-#define STATE_GETCHOICE		1
-#define STATE_REGISTER_GETNAME	2
-#define STATE_REGISTER_GETPASS	3
-#define STATE_REGISTER_CHKPASS	4
-#define STATE_LOGIN_GETNAME	5
-#define STATE_LOGIN_CHKPASS	6
-
-string name;
-string password;
-int state;
 int stopped;
 int reading;
-int dead;
 
 static void create(int clone)
 {
@@ -50,26 +41,24 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	send_out("Welcome to Ulario.\n");
-	send_out("Please choose one of the following options:\n");
-	send_out("1. login\n");
-	send_out("2. register a new account\n");
-	send_out("3. connect as a guest\n");
-	send_out("4. get help for this menu\n");
-	send_out("5. disconnect\n> ");
-}
+	string name;
 
-static void timeout()
-{
-	send_out("\n\nSorry, but you took too long.\n");
-	query_user()->quit();
+	name = query_user()->query_username();
+
+	if (!name) {
+		name = "guest";
+	}
+
+	send_out("[" + name + "@ulario] ");
 }
 
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
-	call_out("timeout", 120);
-	state = STATE_GETCHOICE;
+
+	if (!query_user()->query_username()) {
+		send_out(read_file("~/data/doc/guest_welcome"));
+	}
 }
 
 void stop()
@@ -92,9 +81,21 @@ void go()
 
 void pre_end()
 {
-	ACCESS_CHECK(previous_object() == query_user());
+	object user;
+	string name;
 
-	dead = 1;
+	user = query_user();
+
+	ACCESS_CHECK(previous_object() == user);
+
+	if (user->query_username()) {
+		TEXT_SUBD->send_to_all_except(
+			TEXT_SUBD->titled_name(
+				user->query_username(),
+				user->query_class())
+			+ " logs out.\n", ({ user }));
+	}
+	send_out("Come back soon.\n");
 }
 
 void end()
@@ -104,47 +105,53 @@ void end()
 	destruct_object(this_object());
 }
 
-private void do_help()
-{
-	send_out(read_file("~/data/doc/guest_help"));
-}
-
 void receive_in(string input)
 {
+	string first;
+
 	ACCESS_CHECK(previous_object() == query_user());
 
 	reading = 1;
 
-	switch(state) {
-	case STATE_GETCHOICE:
-		switch(input) {
-		case "1": /* login */
-			push_state(clone_object("login"));
+	if (strlen(input) > 0) {
+		switch(input[0]) {
+		case '\'':
+			input = input[1 ..];
+			first = "say";
 			break;
-
-		case "2": /* register */
-			push_state(clone_object("register"));
+		case ':':
+			input = input[1 ..];
+			first = "emote";
 			break;
-
-		case "3": /* guest */
-			GAME_USERD->add_guest(query_user());
-			swap_state(clone_object("shell"));
-			return;
-
-		case "4":
-			do_help();
-			break;
-
-		case "5":
-			send_out("Thanks for visiting.\n");
-			query_user()->quit();
-			return;
-
-		default:
-			send_out("That is not a valid option.\n");
 		}
+	}
 
+	if (!first && !sscanf(input, "%s %s", first, input)) {
+		first = input;
+		input = "";
+	}
+
+	switch(first) {
+	case "":
 		break;
+	default:
+		if (BIND->execute_command("adm/" + first, input))
+			break;
+		if (BIND->execute_command("wiz/tool/" + first, input))
+			break;
+		if (BIND->execute_command("wiz/debug/" + first, input))
+			break;
+		if (BIND->execute_command("wiz/" + first, input))
+			break;
+		if (BIND->execute_command("movie/" + first, input))
+			break;
+		if (BIND->execute_command(first, input))
+			break;
+		send_out("No such command.\n");
+	}
+
+	if (!this_object()) {
+		return;
 	}
 
 	reading = 0;

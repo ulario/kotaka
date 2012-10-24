@@ -24,7 +24,7 @@
 #include <kotaka/assert.h>
 #include <kernel/access.h>
 
-#include <game/paths.h>
+#include <text/paths.h>
 
 inherit LIB_KOTAKA_USER;
 
@@ -64,7 +64,7 @@ int query_class()
 
 void set_username(string new_username)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	username = new_username;
 }
@@ -76,14 +76,14 @@ string query_name()
 
 void set_uid(int new_uid)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	LOGD->post_message("game", LOG_INFO, "User has new UID: " + new_uid);
 }
 
 void set_mobile(object new_mobile)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	mobile = new_mobile;
 }
@@ -186,7 +186,7 @@ string *query_disabled_aliases()
 
 void add_alias(string prefix, string output)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	PERMISSION_CHECK(prefix != "aliases");
 	PERMISSION_CHECK(prefix != "alias");
@@ -197,8 +197,8 @@ void add_alias(string prefix, string output)
 
 void del_alias(string prefix)
 {
-	ACCESS_CHECK(GAME());
-	
+	ACCESS_CHECK(TEXT());
+
 	aliases[prefix] = nil;
 }
 
