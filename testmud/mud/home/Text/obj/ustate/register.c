@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
+#include <account/paths.h>
 #include <game/paths.h>
 #include <text/paths.h>
 

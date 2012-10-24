@@ -21,6 +21,7 @@
 #include <kotaka/privilege.h>
 #include <kernel/access.h>
 
+#include <account/paths.h>
 #include <game/paths.h>
 #include <text/paths.h>
 
