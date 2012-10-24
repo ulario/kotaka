@@ -32,11 +32,11 @@ int execute_command(string cmd, string args)
 		return FALSE;
 	}
 
-	TLSD->set_tls_value("Game", "ustate", ustate);
+	TLSD->set_tls_value("Text", "ustate", ustate);
 
 	bin->main(args);
 
-	TLSD->set_tls_value("Game", "ustate", nil);
+	TLSD->set_tls_value("Text", "ustate", nil);
 
 	return TRUE;
 }

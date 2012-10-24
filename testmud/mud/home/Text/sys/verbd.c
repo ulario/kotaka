@@ -32,11 +32,11 @@ int do_action(string cmd, object actor, string args)
 		return FALSE;
 	}
 
-	TLSD->set_tls_value("Game", "ustate", ustate);
+	TLSD->set_tls_value("Text", "ustate", ustate);
 
 	bin->main(actor, args);
 
-	TLSD->set_tls_value("Game", "ustate", nil);
+	TLSD->set_tls_value("Text", "ustate", nil);
 
 	return TRUE;
 }

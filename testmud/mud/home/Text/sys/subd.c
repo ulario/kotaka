@@ -20,7 +20,9 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kernel/access.h>
+
 #include <game/paths.h>
+#include <text/paths.h>
 
 /* drawing the feedback screen: */
 
@@ -56,7 +58,7 @@ string draw_look(object living, varargs int facing)
 	object environment;
 	object *contents;
 
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	painter = new_object(LWO_PAINTER);
 
@@ -206,10 +208,10 @@ void send_to_all(string phrase)
 	int sz;
 	object *users;
 
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
-	users = GAME_USERD->query_users();
-	users += GAME_USERD->query_guests();
+	users = TEXT_USERD->query_users();
+	users += TEXT_USERD->query_guests();
 
 	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
 		users[sz]->message(phrase);
@@ -221,10 +223,10 @@ void send_to_all_except(string phrase, object *exceptions)
 	int sz;
 	object *users;
 
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
-	users = GAME_USERD->query_users();
-	users += GAME_USERD->query_guests();
+	users = TEXT_USERD->query_users();
+	users += TEXT_USERD->query_guests();
 	users -= exceptions;
 
 	for (sz = sizeof(users) - 1; sz >= 0; sz--) {

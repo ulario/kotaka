@@ -63,14 +63,14 @@ object select(string str)
 
 	switch(basename) {
 	case BINARY_CONN:
-		if (previous_object(2) <- "~Game/obj/filter/telnet") {
-			user = clone_object("~Game/obj/user");
+		if (previous_object(2) <- "~/obj/filter/telnet") {
+			user = clone_object("~/obj/user");
 			return user;
 		} else {
-			return clone_object("~Game/obj/filter/telnet");
+			return clone_object("~/obj/filter/telnet");
 		}
 	case TELNET_CONN:
-		user = clone_object("~Game/obj/user");
+		user = clone_object("~/obj/user");
 		return user;
 	}
 }
@@ -164,12 +164,12 @@ void upgrade()
 		guests = ([ ]);
 	}
 
-	LOGD->post_message("game", LOG_INFO, "Game user manager upgraded.");
+	LOGD->post_message("Text", LOG_INFO, "Text user manager upgraded.");
 }
 
 void add_user(string name, object user)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	if (users[name]) {
 		error("Duplicate user");
@@ -180,7 +180,7 @@ void add_user(string name, object user)
 
 void delete_user(string name)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	if (!users[name]) {
 		error("No such user");
@@ -214,7 +214,7 @@ int query_is_guest(object user)
 
 void promote_guest(string name, object user)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	if (!guests[user]) {
 		error("No such guest");
@@ -230,7 +230,7 @@ void promote_guest(string name, object user)
 
 void rename_user(string oldname, string newname)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	if (!users[oldname]) {
 		error("No such user");
@@ -246,7 +246,7 @@ void rename_user(string oldname, string newname)
 
 object find_user(string name)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	return users[name];
 }
