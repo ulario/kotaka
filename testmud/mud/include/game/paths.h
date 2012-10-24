@@ -4,9 +4,7 @@
 #define LIB_TIME		(USR_DIR + "/Game/lib/time")
 #define GAME_LIB_OBJECT		(USR_DIR + "/Game/lib/object")
 
-#define BAND			(USR_DIR + "/Game/sys/band")
 #define BULKD			(USR_DIR + "/Game/sys/bulkd")
-#define ACCOUNTD		(USR_DIR + "/Game/sys/accountd")
 #define SNOOPD			(USR_DIR + "/Game/sys/snoopd")
 #define TIMED			(USR_DIR + "/Game/sys/timed")
 #define GAME_INITD		(USR_DIR + "/Game/initd")
