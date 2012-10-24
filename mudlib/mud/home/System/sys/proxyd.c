@@ -44,7 +44,7 @@ object get_proxy(string user)
 
 	string creator;
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	creator = DRIVER->creator(previous_program());
 
