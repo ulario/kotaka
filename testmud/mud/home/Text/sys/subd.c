@@ -180,6 +180,10 @@ string draw_look(object living, varargs int facing)
 
 string titled_name(string name, int class)
 {
+	string username;
+
+	username = name;
+
 	if (name) {
 		name = STRINGD->to_title(name);
 	} else {
@@ -191,13 +195,43 @@ string titled_name(string name, int class)
 		name = "\033[1;34m" + name + "\033[0m";
 		break;
 	case 1:
-		name = "\033[1;32mMr. " + name + "\033[0m";
+		switch(ACCOUNTD->query_account_property(username, "gender")) {
+		case nil:
+			name = "\033[1;32m" + name + "\033[0m";
+			break;
+		case "male":
+			name = "\033[1;32mMr. " + name + "\033[0m";
+			break;
+		case "female":
+			name = "\033[1;32mMs. " + name + "\033[0m";
+			break;
+		}
 		break;
 	case 2:
-		name = "\033[1;33mSir " + name + "\033[0m";
+		switch(ACCOUNTD->query_account_property(username, "gender")) {
+		case nil:
+			name = "\033[1;32m" + name + "\033[0m";
+			break;
+		case "male":
+			name = "\033[1;32mSir " + name + "\033[0m";
+			break;
+		case "female":
+			name = "\033[1;32mDame " + name + "\033[0m";
+			break;
+		}
 		break;
 	case 3:
-		name = "\033[1;31mLord " + name + "\033[0m";
+		switch(ACCOUNTD->query_account_property(username, "gender")) {
+		case nil:
+			name = "\033[1;32m" + name + "\033[0m";
+			break;
+		case "male":
+			name = "\033[1;32mLord " + name + "\033[0m";
+			break;
+		case "female":
+			name = "\033[1;32mLady " + name + "\033[0m";
+			break;
+		}
 		break;
 	}
 
