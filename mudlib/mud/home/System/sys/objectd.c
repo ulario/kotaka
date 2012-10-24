@@ -400,7 +400,7 @@ void recompile_kernel_library()
 	mixed **dir;
 	int i;
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	dir = get_dir("/kernel/lib/*");
 	names = dir[0];
@@ -463,7 +463,7 @@ void recompile_everything()
 	int i;
 	int sz;
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
