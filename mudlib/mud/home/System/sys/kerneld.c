@@ -48,7 +48,7 @@ static void create()
 
 int access(string user, string file, int access)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	return ::access(user, file, access);
 }

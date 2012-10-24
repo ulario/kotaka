@@ -287,7 +287,7 @@ void reboot()
 
 void set_binary_manager(int port, object LIB_USERD manager)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(INTERFACE());
 
 	PERMISSION_CHECK(port != 0);
 
@@ -296,14 +296,14 @@ void set_binary_manager(int port, object LIB_USERD manager)
 
 void set_telnet_manager(int port, object LIB_USERD manager)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(INTERFACE());
 
 	telnet_managers[port] = manager;
 }
 
 void set_fixed_manager(int port, object LIB_USERD manager)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(INTERFACE());
 
 	fixed_managers[port] = manager;
 }

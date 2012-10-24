@@ -88,20 +88,20 @@ nomask object query_root()
 
 nomask void force_quit()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(INTERFACE());
 	disconnect();
 }
 
 void send_out(string str)
 {
-	ACCESS_CHECK(PRIVILEGED() || LOCAL());
+	ACCESS_CHECK(INTERFACE() || LOCAL() || KOTAKA());
 
 	::message(str);
 }
 
 void send_in(string str)
 {
-	ACCESS_CHECK(PRIVILEGED() || LOCAL());
+	ACCESS_CHECK(INTERFACE() || LOCAL() || KOTAKA());
 
 	error("Stack underflow");
 }
@@ -220,7 +220,7 @@ private void do_escape(string str)
 
 int receive_message(string str)
 {
-	ACCESS_CHECK(PRIVILEGED() || LOCAL());
+	ACCESS_CHECK(INTERFACE() || LOCAL() || KOTAKA());
 
 	if (str && strlen(str) > 0 && str[0] == '!') {
 		do_escape(str[1 ..]);
@@ -234,7 +234,7 @@ int receive_message(string str)
 
 void set_mode(int new_mode)
 {
-	ACCESS_CHECK(PRIVILEGED() || LOCAL());
+	ACCESS_CHECK(INTERFACE() || LOCAL() || KOTAKA());
 
 	::set_mode(new_mode);
 }
