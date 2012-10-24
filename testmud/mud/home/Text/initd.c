@@ -21,9 +21,13 @@
 #include <kotaka/log.h>
 
 inherit LIB_INITD;
+inherit UTILITY_COMPILE;
 
 static void create()
 {
+	load_dir("obj", 1);
+	load_dir("sys", 1);
+
 	KERNELD->set_global_access("Text", 1);
-	LOGD->post_message("text", LOG_DEBUG, "Hello world from a subsystem");
+	LOGD->post_message("text", LOG_DEBUG, "Hello world from the text subsystem.");
 }
