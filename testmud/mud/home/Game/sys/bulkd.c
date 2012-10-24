@@ -25,6 +25,7 @@
 #include <game/paths.h>
 
 object queue;
+int handle;
 
 static void create()
 {
@@ -36,37 +37,88 @@ static void destruct()
 	destruct_object(queue);
 }
 
+void reset()
+{
+	destruct_object(queue);
+
+	remove_call_out(handle);
+
+	queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
+}
+
 void enqueue(object obj)
 {
 	ACCESS_CHECK(previous_program() == LIB_BULK);
 
 	if (queue->empty()) {
-		call_out("process", 0);
+		handle = call_out("process", 0.1, "enqueue");
 	}
 
 	queue->push_back(obj);
 }
 
-static void process()
+private void bulk_clean(object obj)
 {
-	object obj;
+	object *inv;
+	int i, sz;
+	int subdirty;
 
-	obj = queue->get_front();
-	queue->pop_front();
+	inv = obj->query_inventory();
 
-	if (obj) {
+	sz = sizeof(inv);
+
+	for (i = 0; i < sz; i++) {
+		object subobj;
+
+		subobj = inv[i];
+
+		if (subobj->query_bulk_dirty()) {
+			subdirty = 1;
+
+			if (!subobj->query_bulk_queued()) {
+				subobj->bulk_queue();
+			}
+		}
+	}
+
+	if (!subdirty) {
 		object env;
 
 		obj->bulk_sync();
 
-		if (env = obj->query_environment()) {
-			ASSERT(env->query_bulk_dirty());
+		env = obj->query_environment();
 
-			queue->push_back(env);
+		if (env && env->query_bulk_dirty()) {
+			if (!env->query_bulk_queued()) {
+				env->bulk_queue();
+			}
+		}
+	}
+}
+
+static void process(string who)
+{
+	object obj;
+
+	handle = 0;
+
+	if (queue->empty()) {
+		error("Duplicate call by " + who);
+	}
+
+	obj = queue->get_front();
+	queue->pop_front();
+
+	obj->bulk_dequeued();
+
+	if (obj) {
+		if (obj->query_bulk_dirty()) {
+			bulk_clean(obj);
 		}
 	}
 
-	if (!queue->empty()) {
-		call_out("process", 0);
+	if (!queue->empty() && !handle) {
+		LOGD->post_message("bulk", LOG_DEBUG, "Ticking...");
+		handle = call_out("process", 0, "who");
 	}
 }

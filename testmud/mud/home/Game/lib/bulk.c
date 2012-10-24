@@ -30,6 +30,7 @@ float mass;		/* kg */
 
 /* caching */
 int bulk_dirty;			/* if cache is invalid */
+int bulk_queued;		/* if we are in the bulkd queue */
 float cached_content_mass;	/* cached mass of our contents */
 
 void bulk_invalidate(varargs int force);	/* invalidate */
@@ -51,7 +52,10 @@ void set_mass(float new_mass)
 
 	if (env = query_environment()) {
 		env->bulk_invalidate();
-		env->bulk_queue();
+
+		if (!env->query_bulk_queued()) {
+			env->bulk_queue();
+		}
 	}
 
 	mass = new_mass;
@@ -79,9 +83,12 @@ float query_total_mass()
 
 int query_bulk_dirty()
 {
-	ACCESS_CHECK(GAME());
-
 	return bulk_dirty;
+}
+
+int query_bulk_queued()
+{
+	return bulk_queued;
 }
 
 void bulk_sync(varargs int force)
@@ -90,8 +97,6 @@ void bulk_sync(varargs int force)
 	int sz;
 	object *inv;
 	float sum;
-
-	ACCESS_CHECK(GAME());
 
 	if (!bulk_dirty && !force) {
 		return;
@@ -112,8 +117,6 @@ void bulk_invalidate(varargs int force)
 {
 	object env;
 
-	ACCESS_CHECK(GAME());
-
 	if (bulk_dirty && !force) {
 		/* if we're already dirty, our containers should be too */
 		return;
@@ -126,11 +129,19 @@ void bulk_invalidate(varargs int force)
 	}
 }
 
+void bulk_dequeued()
+{
+	bulk_queued = 0;
+}
+
 void bulk_queue(varargs int force)
 {
-	ACCESS_CHECK(GAME());
+	if (!force) {
+		ASSERT(bulk_dirty);
+		ASSERT(!bulk_queued);
+	}
 
-	ASSERT(bulk_dirty);
+	bulk_queued = 1;
 
 	BULKD->enqueue(this_object());
 }
@@ -143,11 +154,17 @@ static void move_notify(object old_env)
 
 	if (env = query_environment()) {
 		env->bulk_invalidate();
-		env->bulk_queue();
+
+		if (!env->query_bulk_queued()) {
+			env->bulk_queue();
+		}
 	}
 
 	if (old_env) {
 		old_env->bulk_invalidate();
-		old_env->bulk_queue();
+
+		if (!old_env->query_bulk_queued()) {
+			old_env->bulk_queue();
+		}
 	}
 }
