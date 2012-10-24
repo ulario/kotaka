@@ -21,7 +21,7 @@
 
 static object query_ustate()
 {
-	return TLSD->query_tls_value("Game", "ustate");
+	return TLSD->query_tls_value("Text", "ustate");
 }
 
 static object query_user()

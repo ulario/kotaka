@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
-#include <game/paths.h>
 #include <kotaka/log.h>
+#include <text/paths.h>
 
 inherit LIB_BIN;
 
