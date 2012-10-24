@@ -66,8 +66,6 @@ float query_mass()
 /* mass of us + our contents */
 float query_total_mass()
 {
-	ACCESS_CHECK(GAME());
-
 	if (bulk_dirty) {
 		bulk_sync();
 	}
