@@ -46,7 +46,7 @@ static void create()
 
 void register_account(string name, string password)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	if (passwords[name]) {
 		error("Duplicate account");
@@ -58,7 +58,7 @@ void register_account(string name, string password)
 
 void unregister_account(string name)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	if (!passwords[name]) {
 		error("No such account");
@@ -81,7 +81,7 @@ string *query_accounts()
 
 void change_password(string name, string newpass)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	if (!passwords[name]) {
 		error("No such account");
@@ -94,7 +94,7 @@ void change_password(string name, string newpass)
 
 int authenticate(string name, string password)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(TEXT());
 
 	if (!passwords[name]) {
 		error("No such account");
@@ -117,7 +117,7 @@ int authenticate(string name, string password)
 
 void force_save()
 {
-	ACCESS_CHECK(GAME() || KADMIN());
+	ACCESS_CHECK(TEXT() || KADMIN());
 
 	save();
 }
