@@ -323,10 +323,6 @@ atomic nomask void _F_move(object new_env)
 	this = this_object();
 
 	if (new_env) {
-		if (query_owner() != new_env->query_owner()) {
-			error("Owner mismatch");
-		}
-
 		if (_F_is_container_of(new_env)) {
 			error("Recursive containment");
 		}
