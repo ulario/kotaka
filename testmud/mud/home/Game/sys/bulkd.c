@@ -51,7 +51,7 @@ void enqueue(object obj)
 	ACCESS_CHECK(previous_program() == LIB_BULK);
 
 	if (queue->empty()) {
-		handle = call_out("process", 0.1, "enqueue");
+		handle = call_out("process", 1.0, "enqueue");
 	}
 
 	queue->push_back(obj);
@@ -118,7 +118,6 @@ static void process(string who)
 	}
 
 	if (!queue->empty() && !handle) {
-		LOGD->post_message("bulk", LOG_DEBUG, "Ticking...");
 		handle = call_out("process", 0, "who");
 	}
 }
