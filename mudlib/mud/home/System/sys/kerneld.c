@@ -55,21 +55,21 @@ int access(string user, string file, int access)
 
 void add_user(string user)
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(SYSTEM() || INTERFACE());
 
 	::add_user(user);
 }
 
 void remove_user(string user)
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(SYSTEM() || INTERFACE());
 
 	::remove_user(user);
 }
 
 string *query_users()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	return ::query_users();
 }
