@@ -50,6 +50,10 @@ void set_mass(float new_mass)
 		error("Negative mass");
 	}
 
+	if (new_mass == mass) {
+		return;
+	}
+
 	if (env = query_environment()) {
 		env->bulk_invalidate();
 
@@ -152,8 +156,12 @@ static void move_notify(object old_env)
 {
 	object env;
 
+	if (!mass && !bulk_dirty && !cached_content_mass) {
+		return;
+	}
+
 	if (env = query_environment()) {
-		env->bulk_invalidate();
+		env->bulk_invalidate(); /* recursive */
 
 		if (!env->query_bulk_queued()) {
 			env->bulk_queue();
@@ -161,7 +169,7 @@ static void move_notify(object old_env)
 	}
 
 	if (old_env) {
-		old_env->bulk_invalidate();
+		old_env->bulk_invalidate(); /* recursive */
 
 		if (!old_env->query_bulk_queued()) {
 			old_env->bulk_queue();
