@@ -398,9 +398,9 @@ private void check_versions()
 
 	if (sscanf(KERNEL_LIB_VERSION, "%d.%d.%d", major, minor, patch) != 3) {
 		patch = 0;
-		if (sscanf(status(KERNEL_LIB_VERSION), "%d.%d", major, minor) != 2) {
+		if (sscanf(KERNEL_LIB_VERSION, "%d.%d", major, minor) != 2) {
 			minor = 0;
-			if(sscanf(status(KERNEL_LIB_VERSION), "%d", major) != 1) {
+			if(sscanf(KERNEL_LIB_VERSION, "%d", major) != 1) {
 				error("Cannot parse kernel library version");
 			}
 		}
