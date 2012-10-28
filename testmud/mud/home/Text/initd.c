@@ -29,5 +29,4 @@ static void create()
 	load_dir("sys", 1);
 
 	KERNELD->set_global_access("Text", 1);
-	LOGD->post_message("text", LOG_DEBUG, "Hello world from the text subsystem.");
 }
