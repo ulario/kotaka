@@ -192,6 +192,13 @@ void clear_admin()
 	}
 }
 
+void hotboot()
+{
+	ACCESS_CHECK(KERNEL());
+
+	LOGD->post_message("system", LOG_NOTICE, "hotbooted!");
+}
+
 void reboot()
 {
 	int index;
