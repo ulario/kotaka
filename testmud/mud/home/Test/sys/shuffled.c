@@ -23,12 +23,19 @@
 object rooms;
 object mobs;
 object cmdqueue;
+int handle;
+
+int room_goal;
 
 static void create()
 {
 	rooms = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	mobs = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	cmdqueue = new_object(BIGSTRUCT_ARRAY_OBJ);
+
+	room_goal = 1;
+
+	handle = call_out("process", 0);
 }
 
 static void destruct()
@@ -37,7 +44,44 @@ static void destruct()
 	destruct_object(mobs);
 }
 
-void set_size()
+void set_room_count(int new_count)
 {
 	ACCESS_CHECK(TEXT());
+
+	room_goal = new_count;
+
+	if (!handle) {
+		handle = call_out("process", 0);
+	}
+}
+
+static void process()
+{
+	handle = 0;
+
+	if (rooms->get_size() > room_goal) {
+		object turkey;
+
+		turkey = rooms->get_back();
+		rooms->pop_back();
+
+		destruct_object(turkey);
+	} else if (rooms->get_size() < room_goal) {
+		rooms->push_back(clone_object("~/obj/shuffleroom"));
+	}
+
+	if (mobs->get_size() > mob_goal) {
+		object turkey;
+
+		turkey = mobs->get_back();
+		mobs->pop_back();
+
+		destruct_object(turkey);
+	} else if (mobs->get_size() < mob_goal) {
+		mobs->push_back(clone_object("~/obj/shufflemob"));
+	}
+
+	if (rooms->get_size() != room_goal || mobs->get_size() != mob_goal) {
+		handle = call_out("process", 0);
+	}
 }
