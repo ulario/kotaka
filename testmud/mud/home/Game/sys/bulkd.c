@@ -119,6 +119,6 @@ static void process(string who)
 	}
 
 	if (!queue->empty() && !handle) {
-		handle = call_out("process", 0, "who");
+		handle = call_out("process", 0, who);
 	}
 }
