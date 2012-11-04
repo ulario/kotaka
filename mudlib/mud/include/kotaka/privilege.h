@@ -5,6 +5,7 @@
 #define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
 #define TEXT()		(sscanf(previous_program(), USR_DIR + "/Text/%*s"))
 #define GAME()		(sscanf(previous_program(), USR_DIR + "/Game/%*s"))
+#define ACCOUNT()	(sscanf(previous_program(), USR_DIR + "/Account/%*s"))
 #define KADMIN()	(previous_program(1) == LIB_WIZTOOL && \
 			previous_program() == USR_DIR + "/admin/_code")
 #define CODE()		(previous_program(1) == LIB_WIZTOOL && \
