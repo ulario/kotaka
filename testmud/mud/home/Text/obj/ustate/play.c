@@ -183,7 +183,9 @@ void receive_in(string input)
 		break;
 	default:
 		if (!VERBD->do_action(first, body, input)) {
-			send_out("The art of " + first + "ing is unknown to you.\n");
+			if (!execute_command(first, input) {
+				send_out("Not a valid command or verb.\n");
+			}
 		}
 		break;
 	}
