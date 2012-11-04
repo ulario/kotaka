@@ -49,6 +49,7 @@ private void purge_node(object node)
 		turkeys = node->get_array() - ({ nil });
 
 		sz = sizeof(turkeys);
+
 		for (i = 0; i < sz; i++) {
 			purge_node(turkeys[i]);
 		}
@@ -292,16 +293,43 @@ atomic void push_back(mixed data)
 
 	check_caller(WRITE_ACCESS);
 
-	sz = get_size();
-	set_size(sz + 1);
-	set_element(sz, data);
+	set_size(size + 1);
+	set_element(size - 1, data);
 }
 
 atomic void pop_back()
 {
 	check_caller(WRITE_ACCESS);
 
-	set_size(get_size() - 1);
+	set_size(size - 1);
+}
+
+mixed get_front()
+{
+	check_caller(READ_ACCESS);
+
+	return get_element(0);
+}
+
+mixed get_back()
+{
+	check_caller(READ_ACCESS);
+
+	return get_element(size - 1);
+}
+
+void set_front(mixed value)
+{
+	check_caller(WRITE_ACCESS);
+
+	set_element(0, value);
+}
+
+void set_back(mixed value)
+{
+	check_caller(WRITE_ACCESS);
+
+	set_element(size - 1, value);
 }
 
 atomic void clear()
