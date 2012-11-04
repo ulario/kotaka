@@ -19,6 +19,7 @@
  */
 #include <kotaka/bigstruct.h>
 #include <kotaka/privilege.h>
+#include <status.h>
 
 object rooms;
 object mobs;
@@ -32,7 +33,7 @@ static void create()
 	rooms = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	mobs = clone_object(BIGSTRUCT_ARRAY_OBJ);
 
-	room_goal = 1000000;
+	room_goal = status(ST_OTABSIZE) / 2;
 
 	handle = call_out("process", 0);
 }
