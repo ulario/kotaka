@@ -183,7 +183,7 @@ void receive_in(string input)
 		break;
 	default:
 		if (!VERBD->do_action(first, body, input)) {
-			if (!execute_command(first, input) {
+			if (!execute_command(first, input)) {
 				send_out("Not a valid command or verb.\n");
 			}
 		}
