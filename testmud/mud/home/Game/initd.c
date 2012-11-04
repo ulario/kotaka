@@ -133,10 +133,10 @@ void build_world()
 {
 	world = clone_object("~/obj/object");
 
-	call_out("place_object", 0, "soil", 200);
-	call_out("place_object", 0, "rock", 40);
-	call_out("place_object", 0, "deer", 10);
-	call_out("place_object", 0, "wolf", 3);
+	call_out("place_object", 0, "soil", 1000);
+	call_out("place_object", 0, "rock", 600);
+	call_out("place_object", 0, "deer", 300);
+	call_out("place_object", 0, "wolf", 100);
 }
 
 /****************/
