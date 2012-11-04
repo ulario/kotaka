@@ -32,7 +32,7 @@ static void create()
 	rooms = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	mobs = clone_object(BIGSTRUCT_ARRAY_OBJ);
 
-	room_goal = 1;
+	room_goal = 1000000;
 
 	handle = call_out("process", 0);
 }
@@ -63,6 +63,26 @@ void set_mob_goal(int new_count)
 	if (!handle) {
 		handle = call_out("process", 0);
 	}
+}
+
+int query_room_count()
+{
+	return rooms->get_size();
+}
+
+int query_mob_count()
+{
+	return mobs->get_size();
+}
+
+int query_room_goal()
+{
+	return room_goal;
+}
+
+int query_mob_goal()
+{
+	return mob_goal;
 }
 
 static void process()
