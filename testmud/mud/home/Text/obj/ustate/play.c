@@ -117,6 +117,8 @@ void receive_in(string input)
 	}
 
 	switch(first) {
+	case "":
+		break;
 	case "quit":
 		pop_state();
 		return;
