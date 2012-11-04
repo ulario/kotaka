@@ -51,6 +51,7 @@ void enqueue(object obj)
 	ACCESS_CHECK(previous_program() == LIB_BULK);
 
 	if (queue->empty()) {
+		/* let things batch up for a bit */
 		handle = call_out("process", 1.0, "enqueue");
 	}
 
