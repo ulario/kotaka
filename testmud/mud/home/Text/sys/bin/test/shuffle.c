@@ -47,10 +47,26 @@ void main(string args)
 		send_out("Mob count/goal: " + SHUFFLED->query_mob_count() + "/" + SHUFFLED->query_mob_goal() + "\n");
 		break;
 	case "rooms":
-		send_out("Not yet implemented\n");
+		{
+			int number;
+
+			if (sscanf(args, "%d", number)) {
+				SHUFFLED->set_room_goal(number);
+			} else {
+				send_out("That's not a number");
+			}
+		}
 		break;
 	case "mobs":
-		send_out("Not yet implemented\n");
+		{
+			int number;
+
+			if (sscanf(args, "%d", number)) {
+				SHUFFLED->set_mob_goal(number);
+			} else {
+				send_out("That's not a number");
+			}
+		}
 		break;
 	}
 }
