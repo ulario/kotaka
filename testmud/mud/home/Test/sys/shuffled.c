@@ -22,7 +22,6 @@
 
 object rooms;
 object mobs;
-object cmdqueue;
 int handle;
 
 int room_goal;
@@ -32,7 +31,6 @@ static void create()
 {
 	rooms = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	mobs = clone_object(BIGSTRUCT_ARRAY_OBJ);
-	cmdqueue = new_object(BIGSTRUCT_ARRAY_OBJ);
 
 	room_goal = 1;
 
