@@ -91,6 +91,7 @@ static void create()
 	load_help();
 	build_world();
 
+	INITD->boot_subsystem("Test");
 	INITD->boot_subsystem("Account");
 	INITD->boot_subsystem("Text");
 }
