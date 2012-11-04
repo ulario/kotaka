@@ -19,3 +19,17 @@
  */
 
 inherit "~Game/lib/object";
+
+static void create(int clone)
+{
+	if (clone) {
+		::create();
+	}
+}
+
+static void destruct(int clone)
+{
+	if (clone) {
+		::destruct();
+	}
+}
