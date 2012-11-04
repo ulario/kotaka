@@ -26,6 +26,7 @@ object cmdqueue;
 int handle;
 
 int room_goal;
+int mob_goal;
 
 static void create()
 {
@@ -44,11 +45,22 @@ static void destruct()
 	destruct_object(mobs);
 }
 
-void set_room_count(int new_count)
+void set_room_goal(int new_count)
 {
 	ACCESS_CHECK(TEXT());
 
 	room_goal = new_count;
+
+	if (!handle) {
+		handle = call_out("process", 0);
+	}
+}
+
+void set_mob_goal(int new_count)
+{
+	ACCESS_CHECK(TEXT());
+
+	mob_goal = new_count;
 
 	if (!handle) {
 		handle = call_out("process", 0);
