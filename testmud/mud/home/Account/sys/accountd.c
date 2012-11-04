@@ -52,7 +52,7 @@ void register_account(string name, string password)
 		error("Duplicate account");
 	}
 
-	passwords[name] = hash_string("SHA1", password);
+	passwords[name] = hash_string("crypt", password, name);
 	save();
 }
 
@@ -81,7 +81,7 @@ string *query_accounts()
 
 void change_password(string name, string newpass)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || ACCOUNT());
 
 	if (!passwords[name]) {
 		error("No such account");
@@ -101,6 +101,7 @@ int authenticate(string name, string password)
 	}
 
 	if (passwords[name] == hash_string("crypt", password, name)) {
+		change_password(name, password);
 		return TRUE;
 	}
 
