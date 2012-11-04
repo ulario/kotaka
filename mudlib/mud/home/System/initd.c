@@ -311,7 +311,7 @@ private void configure_klib()
 		KERNELD->add_owner(wizards[index]);
 	}
 
-	KERNELD->set_rsrc("ticks", 10000000, 0, 0);
+	KERNELD->set_rsrc("ticks", 100000000, 0, 0);
 }
 
 mapping read_init_file(string subsystem)
