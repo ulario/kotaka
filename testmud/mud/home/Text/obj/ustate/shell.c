@@ -135,21 +135,9 @@ void receive_in(string input)
 	case "":
 		break;
 	default:
-		if (BIND->execute_command("adm/" + first, input))
-			break;
-		if (BIND->execute_command("wiz/tool/" + first, input))
-			break;
-		if (BIND->execute_command("wiz/debug/" + first, input))
-			break;
-		if (BIND->execute_command("wiz/" + first, input))
-			break;
-		if (BIND->execute_command("test/" + first, input))
-			break;
-		if (BIND->execute_command("movie/" + first, input))
-			break;
-		if (BIND->execute_command(first, input))
-			break;
-		send_out("No such command.\n");
+		if (!execute_command(first, input)) {
+			send_out("No such command.\n");
+		}
 	}
 
 	if (!this_object()) {

@@ -36,3 +36,22 @@ static void terminate_account_state()
 		pop_state();
 	}
 }
+
+int execute_command(string command, string args)
+{
+	if (BIND->execute_command("adm/" + first, input))
+		return 1;
+	if (BIND->execute_command("wiz/tool/" + first, input))
+		return 1;
+	if (BIND->execute_command("wiz/debug/" + first, input))
+		return 1;
+	if (BIND->execute_command("wiz/" + first, input))
+		return 1;
+	if (BIND->execute_command("test/" + first, input))
+		return 1;
+	if (BIND->execute_command("movie/" + first, input))
+		return 1;
+	if (BIND->execute_command(first, input))
+		return 1;
+	return 0;
+}
