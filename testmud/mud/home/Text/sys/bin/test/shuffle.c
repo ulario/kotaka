@@ -22,6 +22,8 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
+#define SHUFFLED "~Test/sys/shuffled"
+
 inherit LIB_BIN;
 
 void main(string args)
@@ -38,10 +40,11 @@ void main(string args)
 		send_out("Shuffle test commands:\n");
 		send_out("stats: show statistics\n");
 		send_out("rooms: set rooms goal\n");
-		send_out("stats: set mobs goal\n");
+		send_out("mobs: set mobs goal\n");
 		break;
 	case "stats":
-		send_out("Not yet implemented\n");
+		send_out("Room count/goal: " + SHUFFLED->query_room_count() + "/" + SHUFFLED->query_room_goal() + "\n");
+		send_out("Mob count/goal: " + SHUFFLED->query_mob_count() + "/" + SHUFFLED->query_mob_goal() + "\n");
 		break;
 	case "rooms":
 		send_out("Not yet implemented\n");
