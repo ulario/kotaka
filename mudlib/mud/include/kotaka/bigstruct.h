@@ -15,8 +15,6 @@
 #define LIB_BIGSTRUCT_BINTREE_ROOT \
 	(USR_DIR + "/System/lib/bigstruct/bintree/root")
 
-
-
 #define LIB_BIGSTRUCT_ARRAY_NODE \
 	(USR_DIR + "/System/lib/bigstruct/array/node")
 #define LIB_BIGSTRUCT_ARRAY_ROOT \
@@ -31,6 +29,8 @@
 	(USR_DIR + "/System/lib/bigstruct/map/node")
 #define LIB_BIGSTRUCT_MAP_ROOT \
 	(USR_DIR + "/System/lib/bigstruct/map/root")
+
+
 
 #define BIGSTRUCT_ARRAY_OBJ \
 	(USR_DIR + "/System/obj/bigstruct/array/root")
