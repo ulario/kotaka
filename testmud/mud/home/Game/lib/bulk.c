@@ -46,10 +46,6 @@ void set_mass(float new_mass)
 {
 	object env;
 
-	if (new_mass < 0.0) {
-		error("Negative mass");
-	}
-
 	if (new_mass == mass) {
 		return;
 	}
