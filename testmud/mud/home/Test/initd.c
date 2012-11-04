@@ -21,8 +21,14 @@
 #include <kotaka/paths.h>
 
 inherit LIB_INITD;
+inherit UTILITY_COMPILE;
 
 static void create()
 {
+	LOGD->post_message("test", LOG_DEBUG, "Test subsystem loading...");
+
+	load_dir("obj", 1);
+	load_dir("sys", 1);
+
 	LOGD->post_message("test", LOG_DEBUG, "Test subsystem loaded");
 }
