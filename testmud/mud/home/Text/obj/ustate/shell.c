@@ -143,6 +143,8 @@ void receive_in(string input)
 			break;
 		if (BIND->execute_command("wiz/" + first, input))
 			break;
+		if (BIND->execute_command("test/" + first, input))
+			break;
 		if (BIND->execute_command("movie/" + first, input))
 			break;
 		if (BIND->execute_command(first, input))
