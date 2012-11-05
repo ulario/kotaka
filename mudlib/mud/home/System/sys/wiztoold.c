@@ -52,7 +52,7 @@ object get_wiztool()
 	string name;
 	object wiztool;
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	name = this_user()->query_name();
 
