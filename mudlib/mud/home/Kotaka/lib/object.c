@@ -293,6 +293,7 @@ nomask int _F_is_container_of(object test)
 {
 	object env;
 	object this;
+	int steps;
 
 	ACCESS_CHECK(KOTAKA());
 
@@ -304,10 +305,25 @@ nomask int _F_is_container_of(object test)
 			return 1;
 		}
 
+		steps++;
+
+		if (steps > 100) {
+			error("Nested too deeply");
+		}
+
 		env = env->_F_query_environment();
 	}
 
 	return 0;
+}
+
+nomask int _F_depth()
+{
+	if (environment) {
+		return environment->_F_depth() + 1;
+	} else {
+		return 0;
+	}
 }
 
 atomic nomask void _F_move(object new_env)
@@ -323,8 +339,16 @@ atomic nomask void _F_move(object new_env)
 	this = this_object();
 
 	if (new_env) {
+		if (new_env == this) {
+			error("Self containment");
+		}
+
 		if (_F_is_container_of(new_env)) {
 			error("Recursive containment");
+		}
+
+		if (new_env->_F_depth() >= 50) {
+			error("Nested too deeply");
 		}
 	}
 
