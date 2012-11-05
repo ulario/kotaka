@@ -25,21 +25,6 @@
 
 inherit LIB_VERB;
 
-private void list_append(object list, object obj)
-{
-	object *inv;
-	int sz, i;
-
-	list->push_back(obj);
-
-	inv = obj->query_inventory();
-	sz = sizeof(inv);
-
-	for (i = 0; i < sz; i++) {
-		list_append(list, inv[i]);
-	}
-}
-
 void main(object actor, string args)
 {
 	object world;
@@ -48,9 +33,7 @@ void main(object actor, string args)
 	int ticks, ticks2;
 	int i, sz;
 
-	list = new_object(BIGSTRUCT_ARRAY_LWO);
-
-	list_append(list, world = GAME_INITD->query_world());
+	list = TEXT_SUBD->mega_inventory(world = GAME_INITD->query_world());
 
 	sz = list->get_size();
 
@@ -58,6 +41,11 @@ void main(object actor, string args)
 
 	for (i = 0; i < sz; i++) {
 		list->get_element(i)->bulk_invalidate(1);
+	}
+	for (i = 0; i < sz; i++) {
 		list->get_element(i)->bulk_queue(1);
+	}
+	for (i = 1; i < sz; i++) {
+		list->get_element(i)->move(world);
 	}
 }
