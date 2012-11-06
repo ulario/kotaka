@@ -19,28 +19,34 @@
  */
 #include <kotaka/paths.h>
 #include <account/paths.h>
-#include <text/paths.h>
 #include <game/paths.h>
+#include <text/paths.h>
 
 inherit LIB_BIN;
 
 void main(string args)
 {
-	string *users;
+	object turkey;
 	object user;
+	string kicker_name;
+	string turkey_name;
 
 	user = query_user();
 
-	if (user->query_class() < 2) {
-		send_out("You do not have sufficient access rights to list bans.\n");
+	if (user->query_class() < 3) {
+		send_out("Only an administrator can remove a siteban.\n");
 		return;
 	}
 
-	users = BAND->query_username_bans();
-
-	if (sizeof(users)) {
-		send_out("Banned users: " + implode(users, ", ") + "\n");
-	} else {
-		send_out("Tnere are no banned users.\n");
+	if (args == "") {
+		send_out("What site do you wish to unban?\n");
+		return;
 	}
+
+	if (!BAND->query_is_site_banned(args)) {
+		send_out("That site is not banned.\n");
+		return;
+	}
+
+	BAND->unban_site(args);
 }

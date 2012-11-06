@@ -142,7 +142,7 @@ void receive_in(string input)
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
-		} else if (BAND->query_is_banned(name)) {
+		} else if (BAND->query_is_username_banned(name)) {
 			send_out("That name is banned.\n");
 			query_user()->quit();
 			return;
@@ -160,7 +160,7 @@ void receive_in(string input)
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
-		} else if (BAND->query_is_banned(name)) {
+		} else if (BAND->query_is_username_banned(name)) {
 			send_out("Whoops, the username you picked just got banned.\n");
 			query_user()->quit();
 			return;

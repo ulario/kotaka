@@ -20,13 +20,15 @@
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 #include <kotaka/paths.h>
+#include <account/paths.h>
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 
-mapping connections;
-mapping users;
-mapping guests;
+mapping connections;	/* all connections */
+mapping burned;		/* burned connections */
+mapping users;		/* all logged in user objects */
+mapping guests;		/* all guest user objects */
 int splash;
 
 static void create()
@@ -36,6 +38,7 @@ static void create()
 	connections = ([ ]);
 	users = ([ ]);
 	guests = ([ ]);
+	burned = ([ ]);
 
 	SYSTEM_USERD->set_telnet_manager(0, this_object());
 	SYSTEM_USERD->set_binary_manager(1, this_object());
@@ -85,6 +88,30 @@ string query_overload_banner(object LIB_CONN connection)
 	return "There are too many connections to this mud.\n";
 }
 
+private int is_sitebanned(string ip)
+{
+	string o1, o2, o3, o4;
+	sscanf(ip, "%s.%s.%s.%s", o1, o2, o3, o4);
+
+	if (BAND->query_is_site_banned(o1 + "." + o2 + "." + o3 + "." + o4)) {
+		return 1;
+	}
+
+	if (BAND->query_is_site_banned(o1 + "." + o2 + "." + o3 + ".*")) {
+		return 1;
+	}
+
+	if (BAND->query_is_site_banned(o1 + "." + o2 + ".*.*")) {
+		return 1;
+	}
+
+	if (BAND->query_is_site_banned(o1 + ".*.*.*")) {
+		return 1;
+	}
+
+	return 0;
+}
+
 string query_banner(object LIB_CONN connection)
 {
 	string *files;
@@ -98,6 +125,10 @@ string query_banner(object LIB_CONN connection)
 	while (base_conn && base_conn <- LIB_USER) {
 		level++;
 		base_conn = base_conn->query_conn();
+	}
+
+	if (is_sitebanned(query_ip_number(base_conn))) {
+		return "You are banned.\n";
 	}
 
 	if (!base_conn) {
@@ -145,6 +176,10 @@ int query_timeout(object LIB_CONN connection)
 	}
 
 	if (!base_conn) {
+		return -1;
+	}
+
+	if (is_sitebanned(query_ip_number(base_conn))) {
 		return -1;
 	}
 

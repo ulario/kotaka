@@ -53,7 +53,7 @@ void main(string args)
 		return;
 	}
 
-	if (BAND->query_is_banned(args)) {
+	if (BAND->query_is_username_banned(args)) {
 		send_out("That user is already banned.\n");
 		return;
 	}
@@ -80,19 +80,4 @@ void main(string args)
 	}
 
 	BAND->ban_username(args);
-
-	turkey = TEXT_USERD->find_user(args);
-
-	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-	turkey_name = TEXT_SUBD->titled_name(args, "~/sys/subd"->query_user_class(args));
-
-	user->message("You ban " + turkey_name + " from the mud.\n");
-
-	TEXT_SUBD->send_to_all_except(kicker_name + " banned " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
-
-	if (turkey) {
-		turkey->message("You have been banned from the mud by " + kicker_name + ".\n");
-		turkey->quit();
-		TEXT_SUBD->send_to_all_except(kicker_name + " kicked " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
-	}
 }

@@ -43,7 +43,7 @@ void main(string args)
 		return;
 	}
 
-	if (!BAND->query_is_banned(args)) {
+	if (!BAND->query_is_username_banned(args)) {
 		send_out("That user is not banned.\n");
 		return;
 	}

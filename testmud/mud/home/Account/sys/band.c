@@ -23,19 +23,55 @@
 /* keeps track of bans */
 
 mapping bans;
+mapping sitebans;
 
 private void save();
 private void restore();
 
 static void create()
 {
-	bans = ([ ]);
 	restore();
+
+	if (!bans) {
+		bans = ([ ]);
+	}
+
+	if (!sitebans) {
+		sitebans = ([ ]);
+	}
+}
+
+void ban_site(string site)
+{
+	ACCESS_CHECK(INTERFACE());
+
+	if (site == "127.0.0.1" || site == "::1") {
+		error("Cannot ban localhost");
+	}
+
+	if (sitebans[site]) {
+		error("Site already banned");
+	}
+
+	sitebans[site] = 1;
+	save();
+}
+
+void unban_site(string site)
+{
+	ACCESS_CHECK(INTERFACE());
+
+	if (!sitebans[site]) {
+		error("Username not banned");
+	}
+
+	sitebans[site] = nil;
+	save();
 }
 
 void ban_username(string username)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(INTERFACE());
 
 	if (username == "admin") {
 		error("Cannot ban admin");
@@ -51,7 +87,7 @@ void ban_username(string username)
 
 void unban_username(string username)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(INTERFACE());
 
 	if (!bans[username]) {
 		error("Username not banned");
@@ -61,19 +97,29 @@ void unban_username(string username)
 	save();
 }
 
-int query_is_banned(string username)
+int query_is_username_banned(string username)
 {
 	return !!bans[username];
 }
 
-string *query_bans()
+int query_is_site_banned(string site)
+{
+	return !!sitebans[site];
+}
+
+string *query_username_bans()
 {
 	return map_indices(bans);
 }
 
+string *query_site_bans()
+{
+	return map_indices(sitebans);
+}
+
 void force_save()
 {
-	ACCESS_CHECK(GAME() || KADMIN());
+	ACCESS_CHECK(GAME() || KADMIN() || INTERFACE());
 
 	save();
 }
@@ -82,7 +128,7 @@ private void save()
 {
 	string buf;
 
-	buf = STRINGD->hybrid_sprint(bans);
+	buf = STRINGD->hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
 
 	SECRETD->remove_file("bans-tmp");
 	SECRETD->write_file("bans-tmp", buf + "\n");
@@ -97,6 +143,11 @@ private void restore()
 	buf = SECRETD->read_file("bans");
 
 	if (buf) {
-		bans = "~Kotaka/sys/parse/value"->parse(buf);
+		mapping save;
+
+		save = "~Kotaka/sys/parse/value"->parse(buf);
+
+		bans = save["bans"];
+		sitebans = save["sitebans"];
 	}
 }
