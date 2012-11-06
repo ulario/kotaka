@@ -34,6 +34,7 @@ int bulk_dirty;			/* if cache is invalid */
 int bulk_queued;		/* if we are in the bulkd queue */
 
 float cached_content_mass;	/* cached mass of our contents */
+float cached_content_volume;	/* cached volume of our contents */
 
 void bulk_invalidate(varargs int force);	/* invalidate */
 void bulk_sync(varargs int force);		/* synchronize bulk cache */
@@ -74,7 +75,6 @@ float query_mass()
 	return mass;
 }
 
-/* mass of us + our contents */
 float query_total_mass()
 {
 	if (bulk_dirty) {
@@ -121,6 +121,20 @@ float query_volume()
 	}
 }
 
+float query_total_volume()
+{
+	if (bulk_dirty) {
+		bulk_sync();
+	}
+
+	return query_volume() + cached_content_volume;
+}
+
+float query_average_density()
+{
+	return query_total_mass() / query_total_volume() * 1000.0;
+}
+
 /***********/
 /* Caching */
 /***********/
@@ -140,7 +154,8 @@ void bulk_sync(varargs int force)
 	int i;
 	int sz;
 	object *inv;
-	float sum;
+	float mass_sum;
+	float volume_sum;
 
 	if (!bulk_dirty && !force) {
 		return;
@@ -150,10 +165,13 @@ void bulk_sync(varargs int force)
 	sz = sizeof(inv);
 
 	for (i = 0; i < sz; i++) {
-		sum += inv[i]->query_total_mass();
+		mass_sum += inv[i]->query_total_mass();
+		volume_sum += inv[i]->query_total_volume();
 	}
 
-	cached_content_mass = sum;
+	cached_content_mass = mass_sum;
+	cached_content_volume = volume_sum;
+
 	bulk_dirty = 0;
 }
 
