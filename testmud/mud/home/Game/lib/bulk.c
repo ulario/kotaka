@@ -161,7 +161,7 @@ void set_capacity(float new_capacity)
 	capacity = new_capacity;
 
 	/* rigid objects change size when they change capacity */
-	if (!flexible && env = query_environment()) {
+	if (!flexible && (env = query_environment())) {
 		env->bulk_invalidate();
 
 		if (!env->query_bulk_queued()) {
