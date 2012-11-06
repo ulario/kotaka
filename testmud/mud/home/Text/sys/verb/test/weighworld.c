@@ -31,6 +31,8 @@ void main(object actor, string args)
 	ticks = status(ST_TICKS);
 
 	send_out("The world has a mass of " + GAME_INITD->query_world()->query_total_mass() + " kilograms.\n");
+	send_out("The world has a volume of " + GAME_INITD->query_world()->query_total_volume() + " cubic meters.\n");
+	send_out("The world has an average density of " + GAME_INITD->query_world()->query_average_density() + " kilograms per liter.\n");
 
 	ticks2 = status(ST_TICKS);
 
