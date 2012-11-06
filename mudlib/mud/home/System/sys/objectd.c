@@ -597,7 +597,7 @@ void discover_clones()
 
 void full_reset()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	rlimits (0; -1) {
 		in_objectd = 0;
@@ -666,7 +666,7 @@ atomic void defragment()
 
 void audit_clones()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	rlimits (0; -1) {
 		object indices;

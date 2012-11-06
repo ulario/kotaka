@@ -40,7 +40,7 @@ void full_reset()
 	object first;
 	object this;
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	turkeylist = new_object(BIGSTRUCT_DEQUE_LWO);
 
