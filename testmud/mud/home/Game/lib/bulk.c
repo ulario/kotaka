@@ -27,10 +27,12 @@ inherit LIB_OBJECT;
 
 /* keep it short and sweet and to the point for now */
 float mass;		/* kg */
+float density;		/* kg/l */
 
 /* caching */
 int bulk_dirty;			/* if cache is invalid */
 int bulk_queued;		/* if we are in the bulkd queue */
+
 float cached_content_mass;	/* cached mass of our contents */
 
 void bulk_invalidate(varargs int force);	/* invalidate */
@@ -39,6 +41,7 @@ void bulk_sync(varargs int force);		/* synchronize bulk cache */
 static void create()
 {
 	mass = 0.0;
+	density = 1.0;
 }
 
 /* kilograms */
@@ -48,6 +51,10 @@ void set_mass(float new_mass)
 
 	if (new_mass == mass) {
 		return;
+	}
+
+	if (new_mass < 0.0) {
+		error("Invalid mass");
 	}
 
 	if (env = query_environment()) {
@@ -75,6 +82,43 @@ float query_total_mass()
 	}
 
 	return mass + cached_content_mass;
+}
+
+void set_density(float new_density)
+{
+	object env;
+
+	if (new_density == density) {
+		return;
+	}
+
+	if (new_density <= 0.0) {
+		error("Invalid density");
+	}
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+
+		if (!env->query_bulk_queued()) {
+			env->bulk_queue();
+		}
+	}
+
+	density = new_density;
+}
+
+float query_density()
+{
+	return density;
+}
+
+float query_volume()
+{
+	if (mass) {
+		return mass / density / 1000.0;
+	} else {
+		return -1;
+	}
 }
 
 /***********/
