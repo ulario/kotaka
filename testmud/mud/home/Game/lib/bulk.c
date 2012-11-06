@@ -25,9 +25,13 @@
 
 inherit LIB_OBJECT;
 
-/* keep it short and sweet and to the point for now */
+/* bulk */
 float mass;		/* kg */
 float density;		/* kg/l */
+
+int flexible;
+float capacity;		/* m^3 */
+float max_mass;		/* kg */
 
 /* caching */
 int bulk_dirty;			/* if cache is invalid */
@@ -45,7 +49,8 @@ static void create()
 	density = 1.0;
 }
 
-/* kilograms */
+/* mass */
+
 void set_mass(float new_mass)
 {
 	object env;
@@ -69,7 +74,6 @@ void set_mass(float new_mass)
 	mass = new_mass;
 }
 
-/* kilograms */
 float query_mass()
 {
 	return mass;
@@ -83,6 +87,13 @@ float query_total_mass()
 
 	return mass + cached_content_mass;
 }
+
+void figure_mass(float volume)
+{
+	set_mass(density / volume / 1000.0);
+}
+
+/* density */
 
 void set_density(float new_density)
 {
@@ -112,6 +123,13 @@ float query_density()
 	return density;
 }
 
+void figure_density(float volume)
+{
+	set_density(mass / volume / 1000.0);
+}
+
+/* volume */
+
 float query_volume()
 {
 	return mass / density / 1000.0;
@@ -123,22 +141,48 @@ float query_total_volume()
 		bulk_sync();
 	}
 
-	return query_volume() + cached_content_volume;
+	if (flexible) {
+		return query_volume() + cached_content_volume;
+	} else {
+		return query_volume() + capacity;
+	}
 }
 
-float query_average_density()
+/* capacity */
+
+void set_capacity(float new_capacity)
 {
-	return query_total_mass() / query_total_volume() / 1000.0;
+	object env;
+
+	if (capacity == new_capacity) {
+		return;
+	}
+
+	capacity = new_capacity;
+
+	/* rigid objects change size when they change capacity */
+	if (!flexible && env = query_environment()) {
+		env->bulk_invalidate();
+
+		if (!env->query_bulk_queued()) {
+			env->bulk_queue();
+		}
+	}
 }
 
-void figure_density(float volume)
+float query_capacity()
 {
-	set_density(mass / volume / 1000.0);
+	return capacity;
 }
 
-void figure_mass(float volume)
+void set_max_mass(float new_max_mass)
 {
-	set_mass(density / volume / 1000.0);
+	max_mass = new_max_mass;
+}
+
+float query_max_mass()
+{
+	return max_mass;
 }
 
 /***********/
