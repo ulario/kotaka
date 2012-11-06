@@ -29,6 +29,8 @@ inherit TEXT_LIB_USTATE;
 int stopped;
 int reading;
 
+object body;
+
 static void create(int clone)
 {
 	::create();
@@ -39,17 +41,23 @@ static void destruct(int clone)
 	::destruct();
 }
 
+/* int do_action(string cmd, object actor, string args) */
+
 private void prompt()
 {
-	string name;
+	if (body) {
+		send_out(body->query_property("id") + "> ");
+	} else {
+		string name;
 
-	name = query_user()->query_username();
+		name = query_user()->query_username();
 
-	if (!name) {
-		name = "guest";
+		if (!name) {
+			name = "guest";
+		}
+
+		send_out("[" + name + "@ulario] ");
 	}
-
-	send_out("[" + name + "@ulario] ");
 }
 
 void begin()
@@ -105,6 +113,28 @@ void end()
 	destruct_object(this_object());
 }
 
+private void do_input(string first, string input)
+{
+	if (execute_command(first, input)) {
+		return;
+	}
+
+	if (body && VERBD->do_action(body, first, input)) {
+		return;
+	}
+
+	if (body) {
+		send_out("No such command or verb.\n");
+	} else {
+		send_out("No such command.\n");
+	}
+}
+
+void set_body(object new_body)
+{
+	body = new_body;
+}
+
 void receive_in(string input)
 {
 	string first;
@@ -135,9 +165,7 @@ void receive_in(string input)
 	case "":
 		break;
 	default:
-		if (!execute_command(first, input)) {
-			send_out("No such command.\n");
-		}
+		do_input(first, input);
 	}
 
 	if (!this_object()) {
