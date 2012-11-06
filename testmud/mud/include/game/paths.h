@@ -1,7 +1,7 @@
 #include <config.h>
 
+#define LIB_ACTION		(USR_DIR + "/Game/lib/action")
 #define LIB_BULK		(USR_DIR + "/Game/lib/bulk")
-#define LIB_TIME		(USR_DIR + "/Game/lib/time")
 #define GAME_LIB_OBJECT		(USR_DIR + "/Game/lib/object")
 
 #define BULKD			(USR_DIR + "/Game/sys/bulkd")
