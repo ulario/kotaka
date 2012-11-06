@@ -114,11 +114,7 @@ float query_density()
 
 float query_volume()
 {
-	if (mass) {
-		return mass / density / 1000.0;
-	} else {
-		return -1;
-	}
+	return mass / density / 1000.0;
 }
 
 float query_total_volume()
@@ -132,7 +128,17 @@ float query_total_volume()
 
 float query_average_density()
 {
-	return query_total_mass() / query_total_volume() * 1000.0;
+	return query_total_mass() / query_total_volume() / 1000.0;
+}
+
+void figure_density(float volume)
+{
+	set_density(mass / volume / 1000.0);
+}
+
+void figure_mass(float volume)
+{
+	set_mass(density / volume / 1000.0);
 }
 
 /***********/
