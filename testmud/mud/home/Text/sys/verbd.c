@@ -20,21 +20,21 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-int do_action(string cmd, object actor, string args)
+int do_action(object actor, string command, string args)
 {
 	object ustate;
-	object bin;
+	object verb;
 
 	ACCESS_CHECK((ustate = previous_object())<-LIB_USTATE);
-	bin = find_object("~/sys/verb/" + cmd);
+	verb = find_object("~/sys/verb/" + command);
 
-	if (!bin) {
+	if (!verb) {
 		return FALSE;
 	}
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
 
-	bin->main(actor, args);
+	verb->main(actor, args);
 
 	TLSD->set_tls_value("Text", "ustate", nil);
 
