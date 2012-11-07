@@ -33,5 +33,5 @@ void main(string args)
 		return;
 	}
 
-	"~/initd"->load_help();
+	"~Game/initd"->load_help();
 }
