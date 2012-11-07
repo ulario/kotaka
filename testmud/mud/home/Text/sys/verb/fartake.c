@@ -49,7 +49,7 @@ void main(object actor, string args)
 	sz = sizeof(inv);
 
 	if (!sz) {
-		send_out("There is nothing for you to take!");
+		send_out("There is nothing for you to take!\n");
 		return;
 	}
 
