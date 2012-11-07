@@ -115,7 +115,15 @@ static void place_object(string base, int remainder)
 
 	obj = clone_object("~/obj/object");
 	obj->set_property("id", base);
+
 	obj->set_mass(SUBD->rnd() * 2.0 + 2.0);
+
+	switch(base) {
+	case "deer": obj->set_density(1.1); break;
+	case "wolf": obj->set_density(0.9); break;
+	case "soil": obj->set_density(1.5); break;
+	case "rock": obj->set_density(6.3); break;
+	}
 
 	obj->move(world);
 
@@ -132,11 +140,14 @@ static void place_object(string base, int remainder)
 void build_world()
 {
 	world = clone_object("~/obj/object");
+	world->set_capacity(1000000.0);
+	world->set_mass(1e+9);
+	world->set_density(6.5);
 
 	call_out("place_object", 0, "soil", 1000);
-	call_out("place_object", 0, "rock", 600);
-	call_out("place_object", 0, "deer", 300);
-	call_out("place_object", 0, "wolf", 100);
+	call_out("place_object", 0, "rock", 100);
+	call_out("place_object", 0, "deer", 10);
+	call_out("place_object", 0, "wolf", 1);
 }
 
 /****************/
@@ -261,7 +272,7 @@ object query_world()
 
 void load_help()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	HELPD->reset();
 	load_rootdir();
