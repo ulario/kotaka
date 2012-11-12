@@ -155,6 +155,15 @@ private void draw_background(object living, object environment, object gc)
 	}
 }
 
+int position_sort(object a, object b)
+{
+	if (a->query_y_position() < b->query_y_position()) {
+		return -1;
+	}
+
+	return 1;
+}
+
 string draw_look(object living, varargs int facing)
 {
 	int x, y, i;
@@ -193,6 +202,8 @@ string draw_look(object living, varargs int facing)
 
 		contents = environment->query_inventory() - ({ living });
 		sz = sizeof(contents);
+
+		SUBD->qsort(contents, 0, sz, "position_sort");
 
 		gc->set_clip(-8, -8, 8, 8);
 
