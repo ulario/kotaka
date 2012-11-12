@@ -162,6 +162,16 @@ void build_world()
 	call_out("place_object", 0, "wolf", 50);
 }
 
+object create_object()
+{
+	return clone_object("~/obj/object");
+}
+
+void destroy_object(object obj)
+{
+	destruct_object(obj);
+}
+
 /****************/
 /* System hooks */
 /****************/
