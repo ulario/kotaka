@@ -54,6 +54,54 @@ private void draw_tickmarks(object painter)
 	}
 }
 
+private void default_painter(object neighbor, object living, object painter)
+{
+	float dx, dy;
+	float ox, oy;
+
+	int x, y;
+
+	dx = neighbor->query_x_position() - living->query_x_position();
+	dy = neighbor->query_y_position() - living->query_y_position();
+
+	/*
+	vy = cos * dy - sin * dx;
+	vx = sin * dy + cos * dx;
+	*/
+
+	x = (int)dx + 8;
+	y = (int)dy + 8;
+
+	if (x < 0 || x > 16 || y < 0 || y > 16) {
+		return;
+	}
+
+	painter->move_pen(XM + x, YM + y);
+
+	switch(neighbor->query_property("id")) {
+	case "wolf":
+		painter->set_color(0x08);
+		painter->draw("w");
+		break;
+	case "deer":
+		painter->set_color(0x03);
+		painter->draw("d");
+		break;
+	case "rock":
+		painter->set_color(0x07);
+		painter->draw("@");
+		break;
+	case "soil":
+		painter->set_color(0x23);
+		painter->draw(":");
+		break;
+	default:
+		painter->set_color(0x0D);
+		painter->draw("?");
+		break;
+	}
+}
+
 string draw_look(object living, varargs int facing)
 {
 	int x, y, i;
@@ -105,9 +153,6 @@ string draw_look(object living, varargs int facing)
 
 		float pi, sin, cos;
 
-		ox = living->query_x_position();
-		oy = living->query_y_position();
-
 		pi = SUBD->pi();
 
 		sin = sin((float)facing * pi / 180.0);
@@ -119,50 +164,16 @@ string draw_look(object living, varargs int facing)
 		for (i = 0; i < sz; i++) {
 			float dx, dy;
 			float vx, vy;
+
 			object neighbor;
+			object painthandler;
 
 			neighbor = contents[i];
 
-			dx = neighbor->query_x_position() - ox;
-			dy = neighbor->query_y_position() - oy;
-
-			vy = cos * dy - sin * dx;
-			vx = sin * dy + cos * dx;
-
-			if (vx < -10.0 || vx > 10.0 || vy < -10.0 || vy > 10.0) {
-				continue;
-			}
-
-			x = (int)vx + 8;
-			y = (int)vy + 8;
-
-			if (x < 0 || x > 16 || y < 0 || y > 16) {
-				continue;
-			}
-
-			painter->move_pen(XM + x, YM + y);
-
-			switch(neighbor->query_property("id")) {
-			case "wolf":
-				painter->set_color(0x08);
-				painter->draw("w");
-				break;
-			case "deer":
-				painter->set_color(0x03);
-				painter->draw("d");
-				break;
-			case "rock":
-				painter->set_color(0x07);
-				painter->draw("@");
-				break;
-			case "soil":
-				painter->set_color(0x23);
-				painter->draw(":");
-				break;
-			default:
-				painter->set_color(0x0D);
-				painter->draw("?");
-				break;
+			if (painthandler = neighbor->query_property("painter")) {
+				painthandler->paint_text(neighbor, living, painter);
+			} else {
+				default_painter(neighbor, living, painter);
 			}
 		}
 	}
