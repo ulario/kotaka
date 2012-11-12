@@ -22,9 +22,7 @@
 
 object layer;
 
-int pen_x, pen_y;
 int size_x, size_y;
-int color;
 
 static void create(int clone)
 {
@@ -39,32 +37,14 @@ void set_size(int dx, int dy)
 	layer->set_size(dx, dy);
 }
 
-/*
-0x01 = foreground red
-0x02 = foreground green
-0x04 = foreground blue
-0x08 = foreground intense
-0x10 = background red
-0x20 = background green
-0x40 = background blue
-0x80 = background transparent
-*/
-void set_color(int new_color)
+object create_gc()
 {
-	color = new_color & 0xFF;
-}
+	object gc;
 
-void move_pen(int new_x, int new_y)
-{
-	pen_x = new_x;
-	pen_y = new_y;
-}
+	gc = new_object("gc");
+	gc->set_layer(layer);
 
-void draw(string brush)
-{
-	layer->draw(brush, pen_x, pen_y, color);
-
-	pen_x += strlen(brush);
+	return gc;
 }
 
 string *render()
