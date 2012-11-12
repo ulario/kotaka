@@ -35,14 +35,16 @@ void paint_text(object obj, object viewer, object painter)
 	xlow = (int)dx;
 	ylow = (int)dy;
 
-	painter->set_color(0x30);
+	painter->set_color(0x80 + random(6) + 9);
 
-	painter->move_pen(xlow, ylow);
-	painter->draw("/--\\");
-	painter->move_pen(xlow, ylow + 1);
-	painter->draw("|::|");
+	painter->move_pen(xlow, ylow - 2);
+	painter->draw("^");
+	painter->move_pen(xlow - 1, ylow - 1);
+	painter->draw("/|\\");
+	painter->move_pen(xlow - 2, ylow);
+	painter->draw("<-+->");
+	painter->move_pen(xlow - 1, ylow + 1);
+	painter->draw("\\|/");
 	painter->move_pen(xlow, ylow + 2);
-	painter->draw("|::|");
-	painter->move_pen(xlow, ylow + 3);
-	painter->draw("\\--/");
+	painter->draw("v");
 }
