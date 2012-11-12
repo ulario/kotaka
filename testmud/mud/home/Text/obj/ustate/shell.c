@@ -119,7 +119,7 @@ private void do_input(string first, string input)
 		return;
 	}
 
-	if (body && VERBD->do_action(body, first, input)) {
+	if (VERBD->do_action(body, first, input)) {
 		return;
 	}
 
