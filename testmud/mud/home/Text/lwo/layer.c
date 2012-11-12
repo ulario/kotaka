@@ -29,7 +29,7 @@ static void create(int clone)
 {
 }
 
-void start(int dx, int dy)
+void set_size(int dx, int dy)
 {
 	int i;
 

@@ -39,7 +39,7 @@ void start(int dx, int dy)
 	size_x = dx;
 	size_y = dy;
 
-	layer->start(dx, dy);
+	layer->set_size(dx, dy);
 }
 
 /* FR FG FB FI BR BG BB BT */
