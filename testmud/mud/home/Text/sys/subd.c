@@ -27,29 +27,24 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
-/* drawing the feedback screen: */
-
-#define XM (80 - 18)
-#define YM (1)
-
 private void draw_tickmarks(object painter)
 {
 	int i;
 
-	for (i = 0; i < 17; i += 1) {
+	for (i = -8; i <= 8; i += 1) {
 		if (i % 4 == 0) {
 			painter->set_color(0x8F);
 		} else {
 			painter->set_color(0x88);
 		}
 
-		painter->move_pen(XM + i, YM - 1);
+		painter->move_pen(i, -9);
 		painter->draw("|");
-		painter->move_pen(XM + i, YM + 17);
+		painter->move_pen(i, 9);
 		painter->draw("|");
-		painter->move_pen(XM - 1, YM + i);
+		painter->move_pen(-9, i);
 		painter->draw("-");
-		painter->move_pen(XM + 17, YM + i);
+		painter->move_pen(9, i);
 		painter->draw("-");
 	}
 }
@@ -69,14 +64,14 @@ private void default_painter(object neighbor, object living, object painter)
 	vx = sin * dy + cos * dx;
 	*/
 
-	x = (int)dx + 8;
-	y = (int)dy + 8;
+	x = (int)dx;
+	y = (int)dy;
 
-	if (x < 0 || x > 16 || y < 0 || y > 16) {
+	if (x < -8 || x > 8 || y < -8 || y > 8) {
 		return;
 	}
 
-	painter->move_pen(XM + x, YM + y);
+	painter->move_pen(x, y);
 
 	switch(neighbor->query_property("id")) {
 	case "wolf":
@@ -108,42 +103,52 @@ string draw_look(object living, varargs int facing)
 	object painter;
 	object environment;
 	object *contents;
+	object gc;
 
 	ACCESS_CHECK(TEXT());
 
 	painter = new_object(LWO_PAINTER);
 	painter->set_size(80, 20);
+	gc = painter->create_gc();
+
+	gc->set_offset(40, 9);
+	gc->set_clip(-9, -9, 9, 9);
+
+	draw_tickmarks(gc);
+
+	gc->set_clip(-8, -8, 8, 8);
 
 	if (!living) {
 		painter->set_color(0x47);
-		for (i = 0; y < 17; y++) {
-			painter->move_pen(XM, YM + y);
-			painter->draw(STRINGD->chars(' ', 17));
-		}
-		painter->move_pen(XM + 5, YM + 7);
-		painter->set_color(0x74);
-		painter->draw(" Error ");
-		painter->set_color(0x47);
-		painter->move_pen(XM + 5, YM + 9);
-		painter->draw("No body");
-	} else if (!(environment = living->query_environment())) {
-		painter->set_color(0x7);
 
-		for (i = 0; y < 17; y++) {
-			painter->move_pen(XM, YM + y);
-			painter->draw(STRINGD->chars(':', 17));
+		for (i = -8; y <= 8; y++) {
+			gc->move_pen(-8, y);
+			gc->draw(STRINGD->chars(' ', 17));
+		}
+
+		gc->move_pen(-3, -1);
+		gc->set_color(0x74);
+		gc->draw(" Error ");
+		gc->set_color(0x47);
+		gc->move_pen(-3, 1);
+		gc->draw("No body");
+	} else if (!(environment = living->query_environment())) {
+		gc->set_color(0x7);
+
+		for (i = -8; y <= 8; y++) {
+			gc->move_pen(-8, y);
+			gc->draw(STRINGD->chars(':', 17));
 		}
 	} else {
-		painter->set_color(0x20);
+		gc->set_color(0x20);
 
-		for (y = 0; y < 17; y++) {
-			painter->move_pen(XM, YM + y);
-			painter->draw(STRINGD->chars('`', 17));
+		for (y = -8; y <= 8; y++) {
+			gc->move_pen(-8, y);
+			gc->draw(STRINGD->chars('`', 17));
 		}
 	}
 
-	draw_tickmarks(painter);
-	painter->set_color(0x03);
+	gc->set_color(0x03);
 
 	if (environment) {
 		float ox, oy;
@@ -159,6 +164,8 @@ string draw_look(object living, varargs int facing)
 		contents = environment->query_inventory() - ({ living });
 		sz = sizeof(contents);
 
+		gc->set_clip(-8, -8, 8, 8);
+
 		for (i = 0; i < sz; i++) {
 			float dx, dy;
 			float vx, vy;
@@ -169,22 +176,24 @@ string draw_look(object living, varargs int facing)
 			neighbor = contents[i];
 
 			if (painthandler = neighbor->query_property("painter")) {
-				painthandler->paint_text(neighbor, living, painter);
+				painthandler->paint_text(neighbor, living, gc);
 			} else {
-				default_painter(neighbor, living, painter);
+				default_painter(neighbor, living, gc);
 			}
 		}
 	}
 
 	if (living) {
-		painter->move_pen(XM + 8, YM + 8);
-		painter->set_color(0x0F);
-		painter->draw("@");
+		gc->move_pen(0, 0);
+		gc->set_color(0x0F);
+		gc->draw("@");
 	}
 
-	painter->set_color(0x07);
-	painter->move_pen(0, 0);
-	painter->draw("Ularian Forest");
+	gc->set_clip(0, 0, 79, 3);
+	gc->set_offset(0, 0);
+	gc->set_color(0x07);
+	gc->move_pen(0, 0);
+	gc->draw("Ularian Forest");
 
 	return implode(painter->render_color(), "\n") + "\n";
 }
