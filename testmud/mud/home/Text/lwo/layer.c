@@ -41,7 +41,7 @@ void set_size(int dx, int dy)
 
 	for (i = 0; i < size_y; i++) {
 		chars[i] = STRINGD->spaces(size_x);
-		colors[i] = STRINGD->chars('\007', size_x);
+		colors[i] = STRINGD->chars(0x87, size_x);
 	}
 }
 
