@@ -22,9 +22,6 @@
 
 object layer;
 
-string *chars;
-string *colors;
-
 int pen_x, pen_y;
 int size_x, size_y;
 int color;
