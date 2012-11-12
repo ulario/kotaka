@@ -81,6 +81,7 @@ static void create()
 	PROXYD->get_proxy("Game")->set_global_access("~", 1);
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("painter", T_OBJECT, PROP_SIMPLE);
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
@@ -119,10 +120,21 @@ static void place_object(string base, int remainder)
 	obj->set_mass(SUBD->rnd() * 2.0 + 2.0);
 
 	switch(base) {
-	case "deer": obj->set_density(1.1); break;
-	case "wolf": obj->set_density(0.9); break;
-	case "soil": obj->set_density(1.5); break;
-	case "rock": obj->set_density(6.3); break;
+	case "deer":
+		obj->set_density(1.1);
+		break;
+	case "wolf":
+		obj->set_density(0.9);
+		break;
+	case "soil":
+		obj->set_density(1.5);
+		obj->set_property("painter",
+			find_object("~/sys/handler/paint/room")
+		);
+		break;
+	case "rock":
+		obj->set_density(6.3);
+		break;
 	}
 
 	obj->move(world);
@@ -144,9 +156,9 @@ void build_world()
 	world->set_mass(1e+9);
 	world->set_density(6.5);
 
-	call_out("place_object", 0, "soil", 1000);
-	call_out("place_object", 0, "rock", 100);
-	call_out("place_object", 0, "deer", 10);
+	call_out("place_object", 0, "soil", 100);
+	call_out("place_object", 0, "rock", 20);
+	call_out("place_object", 0, "deer", 4);
 	call_out("place_object", 0, "wolf", 1);
 }
 
