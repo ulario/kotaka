@@ -23,17 +23,18 @@
 
 inherit LIB_BIN;
 
-static void proxy_call(string function, mixed args...)
+static mixed proxy_call(string function, mixed args...)
 {
 	object proxy;
 	string name;
 	string *messages;
 	int sz, i;
+	mixed retval;
 
 	name = query_user()->query_name();
 	proxy = PROXYD->get_proxy(name);
 
-	call_other(proxy, function, args...);
+	retval = call_other(proxy, function, args...);
 
 	messages = proxy->query_messages();
 
@@ -42,4 +43,6 @@ static void proxy_call(string function, mixed args...)
 	for (i = 0; i < sz; i++) {
 		query_ustate()->send_out(messages[i]);
 	}
+
+	return retval;
 }
