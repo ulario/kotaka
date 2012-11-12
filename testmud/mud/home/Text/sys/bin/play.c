@@ -38,7 +38,14 @@ void main(string args)
 	world = GAME_INITD->query_world();
 	inv = world->query_inventory();
 
-	body = inv[random(sizeof(inv))];
+	if (sizeof(inv)) {
+		body = inv[random(sizeof(inv))];
+	} else {
+		body = GAME_INITD->create_object();
+
+		body->set_property("id", "human");
+	}
+
 
 	query_ustate()->set_body(body);
 }
