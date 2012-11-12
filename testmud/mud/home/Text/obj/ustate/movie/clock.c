@@ -137,7 +137,7 @@ static void do_frame(float diff)
 	mixed *time;
 
 	paint = new_object(LWO_PAINTER);
-	paint->start(80, 20);
+	paint->set_size(80, 20);
 	paint->set_color(0xC);
 
 	time = millitime();

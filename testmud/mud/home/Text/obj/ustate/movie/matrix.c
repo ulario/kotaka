@@ -99,7 +99,7 @@ private void do_particles(object paint, float diff)
 		depth = particle[2];
 
 		x = (int)floor(particle[0] / depth + 40.0);
-		y = (int)floor(particle[1] / depth + 12.5);
+		y = (int)floor(particle[1] / depth + 10.0);
 
 		paint->move_pen(x, y);
 
@@ -121,7 +121,7 @@ static void do_frame(float diff)
 	object paint;
 
 	paint = new_object(LWO_PAINTER);
-	paint->start(80, 25);
+	paint->set_size(80, 20);
 	paint->set_color(0xF);
 
 	do_particles(paint, diff);

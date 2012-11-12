@@ -102,7 +102,7 @@ static void do_frame(float diff)
 	object paint;
 
 	paint = new_object(LWO_PAINTER);
-	paint->start(80, 20);
+	paint->set_size(80, 20);
 
 	do_particles(paint, diff);
 

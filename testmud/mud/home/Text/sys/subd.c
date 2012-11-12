@@ -112,9 +112,7 @@ string draw_look(object living, varargs int facing)
 	ACCESS_CHECK(TEXT());
 
 	painter = new_object(LWO_PAINTER);
-
-	/* be really simple for now */
-	painter->start(80, 20);
+	painter->set_size(80, 20);
 
 	if (!living) {
 		painter->set_color(0x47);

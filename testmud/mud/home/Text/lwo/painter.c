@@ -34,7 +34,7 @@ static void create(int clone)
 	layer = new_object("layer");
 }
 
-void start(int dx, int dy)
+void set_size(int dx, int dy)
 {
 	size_x = dx;
 	size_y = dy;
