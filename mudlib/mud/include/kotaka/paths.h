@@ -69,10 +69,6 @@
 #define LIB_DRIVER		(USR_DIR + "/Kotaka/lib/driver")
 #define LIB_DEEP_COPY		(USR_DIR + "/Kotaka/lib/deep_copy")
 
-/* lwos */
-
-#define LWO_PAINTER		(USR_DIR + "/Kotaka/lwo/painter")
-
 /********/
 /* Help */
 /********/
