@@ -27,25 +27,28 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
-private void draw_tickmarks(object painter)
+private void draw_tickmarks(object gc)
 {
 	int i;
 
+	gc->set_offset(70, 10);
+	gc->set_clip(-9, -9, 9, 9);
+
 	for (i = -8; i <= 8; i += 1) {
 		if (i % 4 == 0) {
-			painter->set_color(0x8F);
+			gc->set_color(0x8F);
 		} else {
-			painter->set_color(0x88);
+			gc->set_color(0x88);
 		}
 
-		painter->move_pen(i, -9);
-		painter->draw("|");
-		painter->move_pen(i, 9);
-		painter->draw("|");
-		painter->move_pen(-9, i);
-		painter->draw("-");
-		painter->move_pen(9, i);
-		painter->draw("-");
+		gc->move_pen(i, -9);
+		gc->draw("|");
+		gc->move_pen(i, 9);
+		gc->draw("|");
+		gc->move_pen(-9, i);
+		gc->draw("-");
+		gc->move_pen(9, i);
+		gc->draw("-");
 	}
 }
 
@@ -97,6 +100,61 @@ private void default_painter(object neighbor, object living, object painter)
 	}
 }
 
+private void draw_banner(object gc)
+{
+	gc->set_clip(0, 0, 79, 3);
+	gc->set_offset(0, 0);
+
+	gc->set_color(0x08);
+	gc->move_pen(0, 0);
+	gc->draw(STRINGD->chars(':', 80));
+	gc->move_pen(0, 1);
+	gc->draw(STRINGD->chars(':', 80));
+	gc->move_pen(0, 2);
+	gc->draw(STRINGD->chars(':', 80));
+	gc->set_color(0x07);
+	gc->move_pen(0, 0);
+	gc->draw("Ularian Forest");
+}
+
+private void draw_background(object living, object environment, object gc)
+{
+	int y;
+
+	gc->set_clip(-8, -8, 8, 8);
+	gc->set_offset(70, 10);
+
+	if (!living) {
+		gc->set_color(0x47);
+
+		for (y = -8; y <= 8; y++) {
+			gc->move_pen(-8, y);
+			gc->draw(STRINGD->chars(' ', 17));
+		}
+
+		gc->move_pen(-3, -1);
+		gc->set_color(0x74);
+		gc->draw(" Error ");
+		gc->set_color(0x47);
+		gc->move_pen(-3, 1);
+		gc->draw("No body");
+	} else if (!environment) {
+		gc->set_color(0x7);
+
+		for (y = -8; y <= 8; y++) {
+			gc->move_pen(-8, y);
+			gc->draw(STRINGD->chars(':', 17));
+		}
+	} else {
+		gc->set_color(0x20);
+
+		for (y = -8; y <= 8; y++) {
+			gc->move_pen(-8, y);
+			gc->draw(STRINGD->chars('`', 17));
+		}
+	}
+}
+
 string draw_look(object living, varargs int facing)
 {
 	int x, y, i;
@@ -111,42 +169,14 @@ string draw_look(object living, varargs int facing)
 	painter->set_size(80, 20);
 	gc = painter->create_gc();
 
-	gc->set_offset(40, 9);
-	gc->set_clip(-9, -9, 9, 9);
+	if (living) {
+		environment = living->query_environment();
+	}
+
+	draw_banner(gc);
 
 	draw_tickmarks(gc);
-
-	gc->set_clip(-8, -8, 8, 8);
-
-	if (!living) {
-		painter->set_color(0x47);
-
-		for (i = -8; y <= 8; y++) {
-			gc->move_pen(-8, y);
-			gc->draw(STRINGD->chars(' ', 17));
-		}
-
-		gc->move_pen(-3, -1);
-		gc->set_color(0x74);
-		gc->draw(" Error ");
-		gc->set_color(0x47);
-		gc->move_pen(-3, 1);
-		gc->draw("No body");
-	} else if (!(environment = living->query_environment())) {
-		gc->set_color(0x7);
-
-		for (i = -8; y <= 8; y++) {
-			gc->move_pen(-8, y);
-			gc->draw(STRINGD->chars(':', 17));
-		}
-	} else {
-		gc->set_color(0x20);
-
-		for (y = -8; y <= 8; y++) {
-			gc->move_pen(-8, y);
-			gc->draw(STRINGD->chars('`', 17));
-		}
-	}
+	draw_background(living, environment, gc);
 
 	gc->set_color(0x03);
 
@@ -188,12 +218,6 @@ string draw_look(object living, varargs int facing)
 		gc->set_color(0x0F);
 		gc->draw("@");
 	}
-
-	gc->set_clip(0, 0, 79, 3);
-	gc->set_offset(0, 0);
-	gc->set_color(0x07);
-	gc->move_pen(0, 0);
-	gc->draw("Ularian Forest");
 
 	return implode(painter->render_color(), "\n") + "\n";
 }
