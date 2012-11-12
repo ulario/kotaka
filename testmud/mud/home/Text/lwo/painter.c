@@ -20,6 +20,8 @@
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
 
+object layer;
+
 string *chars;
 string *colors;
 
@@ -29,22 +31,15 @@ int color;
 
 static void create(int clone)
 {
+	layer = new_object("layer");
 }
 
 void start(int dx, int dy)
 {
-	int i;
-
 	size_x = dx;
 	size_y = dy;
 
-	chars = allocate(size_y);
-	colors = allocate(size_y);
-
-	for (i = 0; i < size_y; i++) {
-		chars[i] = STRINGD->spaces(size_x);
-		colors[i] = STRINGD->chars('\007', size_x);
-	}
+	layer->start(dx, dy);
 }
 
 /* FR FG FB FI BR BG BB BT */
@@ -61,55 +56,27 @@ void move_pen(int new_x, int new_y)
 
 void draw(string brush)
 {
-	int i;
-	int sz;
+	layer->draw(brush, pen_x, pen_y, color);
 
-	sz = strlen(brush);
-
-	if (pen_y < 0 || pen_y >= size_y || pen_x >= size_x || pen_x + sz < 0) {
-		/* completely out of bounds */
-		pen_x += sz;
-		return;
-	}
-
-	if (pen_x < 0) {
-		/* head truncated */
-		brush = brush[-pen_x ..];
-		sz += pen_x;
-		pen_x = 0;
-	} else if (pen_x + sz > size_x) {
-		/* tail truncated */
-		sz = size_x - pen_x;
-		brush = brush[0 .. sz - 1];
-	}
-
-	while (i < sz) {
-		int new_color;
-		chars[pen_y][pen_x] = brush[i++];
-
-		if (color & 0x80) {
-			/* transparent background */
-			new_color = (colors[pen_y][pen_x] & 0x70) | (color & 0xF);
-		} else {
-			new_color = color;
-		}
-
-		colors[pen_y][pen_x] = new_color;
-
-		pen_x++;
-	}
+	pen_x += strlen(brush);
 }
 
 string *render()
 {
-	return chars[..];
+	return layer->query_chars();
 }
 
 string *render_color()
 {
 	int i, j;
 	int color, delta;
+
+	string *colors;
+	string *chars;
 	string *buffers;
+
+	colors = layer->query_colors();
+	chars = layer->query_chars();
 
 	buffers = allocate(size_y);
 	color = 0x7;
