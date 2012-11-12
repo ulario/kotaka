@@ -157,9 +157,9 @@ void build_world()
 	world->set_density(6.5);
 
 	call_out("place_object", 0, "soil", 100);
-	call_out("place_object", 0, "rock", 20);
-	call_out("place_object", 0, "deer", 4);
-	call_out("place_object", 0, "wolf", 1);
+	call_out("place_object", 0, "rock", 50);
+	call_out("place_object", 0, "deer", 50);
+	call_out("place_object", 0, "wolf", 50);
 }
 
 /****************/
