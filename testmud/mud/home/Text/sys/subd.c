@@ -119,7 +119,7 @@ private void draw_banner(object gc)
 
 private void draw_background(object living, object environment, object gc)
 {
-	int y;
+	int x, y;
 
 	gc->set_clip(-8, -8, 8, 8);
 	gc->set_offset(70, 10);
@@ -141,9 +141,28 @@ private void draw_background(object living, object environment, object gc)
 	} else if (!environment) {
 		gc->set_color(0x7);
 
-		for (y = -8; y <= 8; y++) {
-			gc->move_pen(-8, y);
-			gc->draw(STRINGD->chars(':', 17));
+		for (y = -8; y <= 8; y += 1) {
+			for (x = -8; x <= 8; x += 1) {
+				gc->move_pen(x, y);
+				gc->set_color(random(2) * 4);
+				gc->draw(":");
+			}
+		}
+
+		gc->set_color(0x0C);
+
+		for (y = -6; y <= 6; y += 4) {
+			for (x = -6; x <= 6; x += 4) {
+				gc->move_pen(x, y);
+				gc->draw("+");
+			}
+		}
+
+		for (y = -8; y <= 8; y += 4) {
+			for (x = -8; x <= 8; x += 4) {
+				gc->move_pen(x, y);
+				gc->draw("+");
+			}
 		}
 	} else {
 		gc->set_color(0x20);
