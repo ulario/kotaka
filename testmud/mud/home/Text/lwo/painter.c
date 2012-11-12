@@ -39,7 +39,16 @@ void set_size(int dx, int dy)
 	layer->set_size(dx, dy);
 }
 
-/* FR FG FB FI BR BG BB BT */
+/*
+0x01 = foreground red
+0x02 = foreground green
+0x04 = foreground blue
+0x08 = foreground intense
+0x10 = background red
+0x20 = background green
+0x40 = background blue
+0x80 = background transparent
+*/
 void set_color(int new_color)
 {
 	color = new_color & 0xFF;
