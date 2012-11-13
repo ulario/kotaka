@@ -52,7 +52,7 @@ private void draw_tickmarks(object gc)
 	}
 }
 
-private void default_painter(object neighbor, object living, object painter)
+private void default_painter(object gc, object neighbor, object living)
 {
 	float dx, dy;
 	float ox, oy;
@@ -74,53 +74,37 @@ private void default_painter(object neighbor, object living, object painter)
 		return;
 	}
 
-	painter->move_pen(x, y);
+	gc->move_pen(x, y);
 
 	switch(neighbor->query_property("id")) {
 	case "wolf":
-		painter->set_color(0x08);
-		painter->draw("w");
+		gc->set_color(0x08);
+		gc->draw("w");
 		break;
 	case "deer":
-		painter->set_color(0x03);
-		painter->draw("d");
+		gc->set_color(0x03);
+		gc->draw("d");
 		break;
 	case "rock":
-		painter->set_color(0x07);
-		painter->draw("@");
+		gc->set_color(0x07);
+		gc->draw("@");
 		break;
 	case "soil":
-		painter->set_color(0x23);
-		painter->draw(":");
+		gc->set_color(0x23);
+		gc->draw(":");
 		break;
 	default:
-		painter->set_color(0x0D);
-		painter->draw("?");
+		gc->set_color(0x0D);
+		gc->draw("?");
 		break;
 	}
 }
 
 private void draw_background(object gc)
 {
-	int x, y;
-
 	gc->set_clip(0, 0, 79, 19);
-	gc->set_offset(0, 0);
+	gc->set_offset(0, 3);
 	gc->set_color(0x04);
-
-	for (y = 4; y < 20; y += 2) {
-		for (x = 0; x < 60; x += 8) {
-			gc->move_pen(x, y);
-			gc->draw("+");
-		}
-	}
-
-	for (y = 3; y < 20; y += 2) {
-		for (x = 4; x < 60; x += 8) {
-			gc->move_pen(x, y);
-			gc->draw("+");
-		}
-	}
 }
 
 private void draw_prose(object gc, object actor)
@@ -151,27 +135,45 @@ private void draw_prose(object gc, object actor)
 		gc->draw("A boring room description.");
 		gc->move_pen(0, 2);
 		gc->draw("A boring inventory list.");
+		gc->move_pen(0, 4);
+		gc->draw("Your location is "
+			+ actor->query_x_position() + ", "
+			+ actor->query_y_position()
+		);
+	}
+}
+
+private void draw_frame(object gc)
+{
+	int y;
+
+	gc->set_clip(0, 0, 79, 19);
+	gc->set_offset(0, 0);
+
+	gc->set_color(0x07);
+	gc->move_pen(0, 0);
+	gc->draw(STRINGD->chars('-', 80));
+
+	for (y = 1; y < 20; y++) {
+		gc->move_pen(60, y);
+		gc->draw("|");
 	}
 }
 
 private void draw_banner(object gc)
 {
-	gc->set_clip(0, 0, 79, 3);
-	gc->set_offset(0, 0);
+	gc->set_clip(0, 0, 59, 3);
+	gc->set_offset(0, 1);
 
 	gc->set_color(0x08);
-	gc->move_pen(0, 0);
-	gc->draw(STRINGD->chars(':', 60));
 	gc->move_pen(0, 1);
-	gc->draw(STRINGD->chars(':', 60));
-	gc->move_pen(0, 2);
-	gc->draw(STRINGD->chars(':', 60));
+	gc->draw(STRINGD->chars('-', 60));
 	gc->set_color(0x07);
-	gc->move_pen(3, 1);
+	gc->move_pen(3, 0);
 	gc->draw("Ularian Forest");
 }
 
-private void draw_map(object gc, object living)
+private void draw_environment(object gc, object living)
 {
 	object env;
 	int x, y;
@@ -220,11 +222,30 @@ private void draw_map(object gc, object living)
 			}
 		}
 	} else {
-		gc->set_color(0x20);
+		object stack;
+		object painter;
 
-		for (y = -8; y <= 8; y++) {
-			gc->move_pen(-8, y);
-			gc->draw(STRINGD->chars('`', 17));
+		stack = new_object(BIGSTRUCT_DEQUE_LWO);
+
+		while (env) {
+			stack->push_back(env);
+			env = env->query_environment();
+		}
+
+		while (!stack->empty()) {
+			env = stack->get_back();
+			stack->pop_back();
+
+			if (painter = env->query_property("painter")) {
+				painter->paint_text(gc, env, living);
+			} else {
+				gc->set_color(0x20);
+
+				for (y = -8; y <= 8; y++) {
+					gc->move_pen(-8, y);
+					gc->draw(STRINGD->chars('`', 17));
+				}
+			}
 		}
 	}
 }
@@ -268,9 +289,9 @@ private void draw_neighbors(object gc, object living)
 			neighbor = contents[i];
 
 			if (painthandler = neighbor->query_property("painter")) {
-				painthandler->paint_text(neighbor, living, gc);
+				painthandler->paint_text(gc, neighbor, living);
 			} else {
-				default_painter(neighbor, living, gc);
+				default_painter(gc, neighbor, living);
 			}
 		}
 	}
@@ -294,14 +315,15 @@ string draw_look(object living, varargs int facing)
 		environment = living->query_environment();
 	}
 
+	draw_frame(gc);
 	draw_background(gc);
 	draw_banner(gc);
 
 	draw_prose(gc, living);
 
 	draw_tickmarks(gc);
-	draw_map(gc, living);
-	draw_neighbors(gc, environment);
+	draw_environment(gc, living);
+	draw_neighbors(gc, living);
 
 	if (living) {
 		gc->move_pen(0, 0);
