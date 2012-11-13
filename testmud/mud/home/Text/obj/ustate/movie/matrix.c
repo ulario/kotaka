@@ -119,12 +119,16 @@ private void do_particles(object paint, float diff)
 static void do_frame(float diff)
 {
 	object paint;
+	object gc;
 
 	paint = new_object(LWO_PAINTER);
 	paint->set_size(80, 20);
-	paint->set_color(0xF);
 
-	do_particles(paint, diff);
+	gc = paint->create_gc();
+	gc->set_clip(0, 0, 79, 19);
+	gc->set_color(0xF);
+
+	do_particles(gc, diff);
 
 	send_out("\033[1;1H");
 	send_out(implode(paint->render_color(), "\n"));

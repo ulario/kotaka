@@ -134,14 +134,18 @@ private void do_clock(object paint, float time)
 static void do_frame(float diff)
 {
 	object paint;
+	object gc;
 	mixed *time;
 
 	paint = new_object(LWO_PAINTER);
 	paint->set_size(80, 20);
-	paint->set_color(0xC);
+
+	gc = paint->create_gc();
+	gc->set_clip(0, 0, 79, 19);
+	gc->set_color(0xC);
 
 	time = millitime();
-	do_clock(paint, (float)time[0] + time[1]);
+	do_clock(gc, (float)time[0] + time[1]);
 
 	send_out("\033[1;1H");
 	send_out(implode(paint->render_color(), "\n"));
