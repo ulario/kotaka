@@ -68,6 +68,7 @@ void full_reset()
 		destruct_object(turkey);
 	}
 
+	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 }
