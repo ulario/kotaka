@@ -100,6 +100,29 @@ private void default_painter(object neighbor, object living, object painter)
 	}
 }
 
+private void draw_background(object gc)
+{
+	int x, y;
+
+	gc->set_clip(0, 0, 79, 19);
+	gc->set_offset(0, 0);
+	gc->set_color(0x09);
+
+	for (y = 4; y < 20; y += 2) {
+		for (x = 0; x < 60; x += 8) {
+			gc->move_pen(x, y);
+			gc->draw("+");
+		}
+	}
+
+	for (y = 3; y < 20; y += 2) {
+		for (x = 4; x < 60; x += 8) {
+			gc->move_pen(x, y);
+			gc->draw("+");
+		}
+	}
+}
+
 private void draw_banner(object gc)
 {
 	gc->set_clip(0, 0, 79, 3);
@@ -107,17 +130,17 @@ private void draw_banner(object gc)
 
 	gc->set_color(0x08);
 	gc->move_pen(0, 0);
-	gc->draw(STRINGD->chars(':', 80));
+	gc->draw(STRINGD->chars(':', 60));
 	gc->move_pen(0, 1);
-	gc->draw(STRINGD->chars(':', 80));
+	gc->draw(STRINGD->chars(':', 60));
 	gc->move_pen(0, 2);
-	gc->draw(STRINGD->chars(':', 80));
+	gc->draw(STRINGD->chars(':', 60));
 	gc->set_color(0x07);
 	gc->move_pen(0, 0);
 	gc->draw("Ularian Forest");
 }
 
-private void draw_background(object living, object environment, object gc)
+private void draw_map(object living, object environment, object gc)
 {
 	int x, y;
 
@@ -201,10 +224,11 @@ string draw_look(object living, varargs int facing)
 		environment = living->query_environment();
 	}
 
+	draw_background(gc);
 	draw_banner(gc);
 
 	draw_tickmarks(gc);
-	draw_background(living, environment, gc);
+	draw_map(living, environment, gc);
 
 	gc->set_color(0x03);
 
