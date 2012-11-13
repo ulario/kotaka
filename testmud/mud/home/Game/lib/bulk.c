@@ -29,7 +29,9 @@ inherit LIB_OBJECT;
 float mass;		/* kg */
 float density;		/* kg/l */
 
-int flexible;
+int flexible;		/* flexible container */
+int virtual;		/* for areas, zones, etc */
+
 float capacity;		/* m^3 */
 float max_mass;		/* kg */
 
@@ -141,7 +143,7 @@ float query_total_volume()
 		bulk_sync();
 	}
 
-	if (flexible) {
+	if (flexible || virtual) {
 		return query_volume() + cached_content_volume;
 	} else {
 		return query_volume() + capacity;
@@ -183,6 +185,34 @@ void set_max_mass(float new_max_mass)
 float query_max_mass()
 {
 	return max_mass;
+}
+
+/* flexible */
+
+void set_flexible(int new_flexible)
+{
+	flexible = new_flexible;
+}
+
+int query_flexible()
+{
+	return flexible;
+}
+
+/* virtual */
+
+/* a virtual object is organizational */
+
+/* a virtual object that is also flexible has infinite capacity */
+
+void set_virtual(int new_virtual)
+{
+	virtual = new_virtual;
+}
+
+int query_virtual()
+{
+	return virtual;
 }
 
 /***********/
