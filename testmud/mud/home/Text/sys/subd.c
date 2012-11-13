@@ -238,6 +238,44 @@ int position_sort(object a, object b)
 	return 1;
 }
 
+private void draw_neighbors(object gc, object living)
+{
+	object environment;
+
+	if (living) {
+		environment = living->query_environment();
+	}
+
+	if (environment) {
+		float ox, oy;
+		int sz, i;
+		object *contents;
+
+		contents = environment->query_inventory() - ({ living });
+		sz = sizeof(contents);
+
+		SUBD->qsort(contents, 0, sz, "position_sort");
+
+		gc->set_clip(-8, -8, 8, 8);
+
+		for (i = 0; i < sz; i++) {
+			float dx, dy;
+			float vx, vy;
+
+			object neighbor;
+			object painthandler;
+
+			neighbor = contents[i];
+
+			if (painthandler = neighbor->query_property("painter")) {
+				painthandler->paint_text(neighbor, living, gc);
+			} else {
+				default_painter(neighbor, living, gc);
+			}
+		}
+	}
+}
+
 string draw_look(object living, varargs int facing)
 {
 	int x, y, i;
@@ -263,43 +301,7 @@ string draw_look(object living, varargs int facing)
 
 	draw_tickmarks(gc);
 	draw_map(gc, living);
-
-	gc->set_color(0x03);
-
-	if (environment) {
-		float ox, oy;
-		int sz;
-
-		float pi, sin, cos;
-
-		pi = SUBD->pi();
-
-		sin = sin((float)facing * pi / 180.0);
-		cos = cos((float)facing * pi / 180.0);
-
-		contents = environment->query_inventory() - ({ living });
-		sz = sizeof(contents);
-
-		SUBD->qsort(contents, 0, sz, "position_sort");
-
-		gc->set_clip(-8, -8, 8, 8);
-
-		for (i = 0; i < sz; i++) {
-			float dx, dy;
-			float vx, vy;
-
-			object neighbor;
-			object painthandler;
-
-			neighbor = contents[i];
-
-			if (painthandler = neighbor->query_property("painter")) {
-				painthandler->paint_text(neighbor, living, gc);
-			} else {
-				default_painter(neighbor, living, gc);
-			}
-		}
-	}
+	draw_neighbors(gc, environment);
 
 	if (living) {
 		gc->move_pen(0, 0);
