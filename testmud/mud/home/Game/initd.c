@@ -128,14 +128,15 @@ static void place_object(string base, int remainder)
 		break;
 	case "soil":
 		obj->set_density(1.5);
-		obj->set_property("painter",
-			find_object("~/sys/handler/paint/room")
-		);
 		break;
 	case "rock":
 		obj->set_density(6.3);
 		break;
 	}
+
+	obj->set_property("painter",
+		find_object("~/sys/handler/paint/room")
+	);
 
 	obj->move(world);
 
@@ -155,6 +156,8 @@ void build_world()
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
 	world->set_density(6.5);
+	world->set_property("painter",
+		find_object("~/sys/handler/paint/world"));
 
 	call_out("place_object", 0, "soil", 100);
 	call_out("place_object", 0, "rock", 50);
