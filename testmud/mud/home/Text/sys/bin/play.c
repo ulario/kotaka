@@ -44,8 +44,8 @@ void main(string args)
 		body = GAME_INITD->create_object();
 
 		body->set_property("id", "human");
+		body->move(world);
 	}
-
 
 	query_ustate()->set_body(body);
 }
