@@ -19,29 +19,11 @@
  */
 #include <kotaka/paths.h>
 #include <text/paths.h>
-#include <game/paths.h>
 
 inherit LIB_VERB;
 
 void main(object actor, string args)
 {
-	object shack, env;
-
-	if (!actor) {
-		send_out("Odd...without a body you have no hands.\nPlease inhabit an object first.\n");
-		return;
-	}
-
-	env = actor->query_environment();
-
-	shack = GAME_INITD->create_object();
-	shack->move(env);
-	shack->set_property("id", "shack");
-	shack->set_property("painter", find_object("~Game/sys/handler/paint/room"));
-
-	shack->set_x_position(actor->query_x_position());
-	shack->set_y_position(actor->query_y_position());
-	shack->set_z_position(actor->query_z_position());
-
-	send_out("You build a shack.\n");
+	actor->set_x_position(SUBD->rnd() * 8.0 - 4.0);
+	actor->set_y_position(SUBD->rnd() * 8.0 - 4.0);
 }
