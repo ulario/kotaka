@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 #include <game/paths.h>
+#include <kotaka/log.h>
 
 inherit LIB_VERB;
 
@@ -32,13 +33,12 @@ static void mop()
 	inv = world->query_inventory();
 
 	if (sizeof(inv)) {
-		call_out("mop", 0.1);
+		call_out("mop", 0);
+		GAME_INITD->destroy_object(inv[random(sizeof(inv))]);
 	}
-
-	GAME_INITD->destroy_object(inv[random(sizeof(inv))]);
 }
 
 void main(object actor, string args)
 {
-	call_out("mop", 0.1);
+	call_out("mop", 0);
 }
