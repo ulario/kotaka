@@ -19,32 +19,53 @@
  */
 #include <kotaka/assert.h>
 
-void paint_text(object obj, object viewer, object painter)
+void paint_text(object gc, object obj, object viewer)
 {
-	float dx, dy;
-	int xlow, ylow;
-	int xhigh, yhigh;
+	int x, y;
 
 	int row;
 
-	ASSERT(obj->query_environment() == viewer->query_environment());
+	if (viewer->query_environment() == obj) {
+		x = -(int)viewer->query_x_position() - 1;
+		y = -(int)viewer->query_y_position() - 1;
 
-	dx = obj->query_x_position() - viewer->query_x_position();
-	dy = obj->query_y_position() - viewer->query_y_position();
+		gc->set_color(0x03);
 
-	xlow = (int)dx;
-	ylow = (int)dy;
+		gc->move_pen(x, y);
+		gc->draw("+----+");
+		gc->move_pen(x, y + 1);
+		gc->draw("|    |");
+		gc->move_pen(x, y + 2);
+		gc->draw("|    |");
+		gc->move_pen(x, y + 3);
+		gc->draw("|    |");
+		gc->move_pen(x, y + 4);
+		gc->draw("|    |");
+		gc->move_pen(x, y + 5);
+		gc->draw("+----+");
+	} else {
+		float dx, dy;
 
-	painter->set_color(0x80 + random(6) + 9);
+		dx = obj->query_x_position() - viewer->query_x_position();
+		dy = obj->query_y_position() - viewer->query_y_position();
 
-	painter->move_pen(xlow, ylow - 2);
-	painter->draw("^");
-	painter->move_pen(xlow - 1, ylow - 1);
-	painter->draw("/|\\");
-	painter->move_pen(xlow - 2, ylow);
-	painter->draw("<-+->");
-	painter->move_pen(xlow - 1, ylow + 1);
-	painter->draw("\\|/");
-	painter->move_pen(xlow, ylow + 2);
-	painter->draw("v");
+		if (fabs(dx) > 10.0 || fabs(dy) > 10.0) {
+			/* out of bounds */
+			return;
+		}
+
+		x = (int)dx;
+		y = (int)dy;
+
+		gc->set_color(0x30);
+
+		gc->move_pen(x, y);
+		gc->draw("+--+");
+		gc->move_pen(x, y + 1);
+		gc->draw("|  |");
+		gc->move_pen(x, y + 2);
+		gc->draw("|  |");
+		gc->move_pen(x, y + 3);
+		gc->draw("+--+");
+	}
 }
