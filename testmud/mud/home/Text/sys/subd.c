@@ -106,7 +106,7 @@ private void draw_background(object gc)
 
 	gc->set_clip(0, 0, 79, 19);
 	gc->set_offset(0, 0);
-	gc->set_color(0x09);
+	gc->set_color(0x04);
 
 	for (y = 4; y < 20; y += 2) {
 		for (x = 0; x < 60; x += 8) {
@@ -123,6 +123,37 @@ private void draw_background(object gc)
 	}
 }
 
+private void draw_prose(object gc, object actor)
+{
+	object env;
+
+	if (actor) {
+		env = actor->query_environment();
+	}
+
+	gc->set_clip(0, 0, 60, 15);
+	gc->set_offset(0, 4);
+
+	gc->set_color(0x07);
+
+	if (!actor) {
+		gc->move_pen(0, 0);
+		gc->draw("How strange, you don't even exist.");
+		gc->move_pen(0, 2);
+		gc->draw("Your neighbors are undefined.");
+	} else if (!env) {
+		gc->move_pen(0, 0);
+		gc->draw("You are in the void.");
+		gc->move_pen(0, 2);
+		gc->draw("You have no neighbors at all.");
+	} else {
+		gc->move_pen(0, 0);
+		gc->draw("A boring room description.");
+		gc->move_pen(0, 2);
+		gc->draw("A boring inventory list.");
+	}
+}
+
 private void draw_banner(object gc)
 {
 	gc->set_clip(0, 0, 79, 3);
@@ -136,12 +167,13 @@ private void draw_banner(object gc)
 	gc->move_pen(0, 2);
 	gc->draw(STRINGD->chars(':', 60));
 	gc->set_color(0x07);
-	gc->move_pen(0, 0);
+	gc->move_pen(3, 1);
 	gc->draw("Ularian Forest");
 }
 
-private void draw_map(object living, object environment, object gc)
+private void draw_map(object gc, object living)
 {
+	object env;
 	int x, y;
 
 	gc->set_clip(-8, -8, 8, 8);
@@ -161,7 +193,7 @@ private void draw_map(object living, object environment, object gc)
 		gc->set_color(0x47);
 		gc->move_pen(-3, 1);
 		gc->draw("No body");
-	} else if (!environment) {
+	} else if (!(env = living->query_environment())) {
 		gc->set_color(0x7);
 
 		for (y = -8; y <= 8; y += 1) {
@@ -227,8 +259,10 @@ string draw_look(object living, varargs int facing)
 	draw_background(gc);
 	draw_banner(gc);
 
+	draw_prose(gc, living);
+
 	draw_tickmarks(gc);
-	draw_map(living, environment, gc);
+	draw_map(gc, living);
 
 	gc->set_color(0x03);
 
