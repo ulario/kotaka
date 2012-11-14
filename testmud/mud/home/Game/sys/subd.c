@@ -17,3 +17,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+float *measure_delta(object a, object b)
+{
+	object cc;
+
+	float dx, dy, dz;
+
+	cc = SUBD->query_common_container(a, b);
+
+	if (!cc) {
+		error("Objects not on same plane of existence");
+	}
+
+	while (b != cc) {
+		dx += b->query_x_position();
+		dy += b->query_y_position();
+		dz += b->query_z_position();
+		b = b->query_environment();
+	}
+
+	while (a != cc) {
+		dx -= a->query_x_position();
+		dy -= a->query_y_position();
+		dz -= a->query_z_position();
+		a = a->query_environment();
+	}
+
+	return ({ dx, dy, dz });
+}
