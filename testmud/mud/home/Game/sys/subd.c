@@ -17,7 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-float *measure_delta(object a, object b)
+
+#include <kotaka/paths.h>
+
+float *query_position_difference(object a, object b)
 {
 	object cc;
 
