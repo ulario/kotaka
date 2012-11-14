@@ -19,9 +19,12 @@
  */
 #include <kotaka/paths.h>
 #include <kotaka/assert.h>
+#include <game/paths.h>
 
 void paint_text(object gc, object obj, object viewer)
 {
+	float dx, dy, dz;
+
 	int mx, my;
 	int i;
 
@@ -32,8 +35,10 @@ void paint_text(object gc, object obj, object viewer)
 		gc->draw(STRINGD->chars(':', 17));
 	}
 
-	mx = -(int)viewer->query_x_position();
-	my = -(int)viewer->query_y_position();
+	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
+
+	mx = (int)dx;
+	my = (int)dy;
 
 	gc->set_color(0x09);
 

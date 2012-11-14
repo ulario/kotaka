@@ -19,15 +19,21 @@
  */
 #include <kotaka/assert.h>
 
+#include <game/paths.h>
+
 void paint_text(object gc, object obj, object viewer)
 {
-	int x, y;
+	float dx, dy, dz;
 
 	int row;
 
-	if (viewer->query_environment() == obj) {
-		x = -(int)viewer->query_x_position() - 1;
-		y = -(int)viewer->query_y_position() - 1;
+	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
+
+	if (obj->is_container_of(viewer)) {
+		int x, y;
+
+		x = (int)dx - 1;
+		y = (int)dy - 1;
 
 		gc->set_color(0x03);
 
@@ -44,10 +50,7 @@ void paint_text(object gc, object obj, object viewer)
 		gc->move_pen(x, y + 5);
 		gc->draw("+----+");
 	} else {
-		float dx, dy;
-
-		dx = obj->query_x_position() - viewer->query_x_position();
-		dy = obj->query_y_position() - viewer->query_y_position();
+		int x, y;
 
 		if (fabs(dx) > 10.0 || fabs(dy) > 10.0) {
 			/* out of bounds */
