@@ -29,9 +29,8 @@
 inherit SECOND_AUTO;
 
 mixed **comperr;
-string lasterror;	/*< last error */
-mixed **lasttrace;	/*< last trace */
-int in_errord;		/*< Prevents recursion */
+string lasterror;	/* last error */
+mixed **lasttrace;	/* last trace */
 
 /* in atomic error, we throw a stringified mapping */
 /*
@@ -158,6 +157,8 @@ void runtime_error(string error, int caught, mixed **trace)
 
 	ACCESS_CHECK(previous_program() == DRIVER);
 
+	DRIVER->set_error_manager(nil);
+
 	catch {
 		if (error[0] == '(') {
 			mapping thrown;
@@ -210,11 +211,9 @@ void runtime_error(string error, int caught, mixed **trace)
 
 		LOGD->post_message("error", caught ? LOG_NOTICE : LOG_ERR, errstr);
 		LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
-	} : {
-		disable();
-
-		LOGD->post_message("system", LOG_CRIT, "Error in error manager, error manager disabled.");
 	}
+
+	DRIVER->set_error_manager(this_object());
 }
 
 /** Intercepts atomic errors
