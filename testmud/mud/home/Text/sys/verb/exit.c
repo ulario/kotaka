@@ -24,13 +24,29 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
+	object genv;
 	object env;
 
 	env = actor->query_environment();
 
 	if (env) {
-		actor->move(env->query_environment());
-		send_out("You exit.\n");
+		genv = env->query_environment();
+
+		if (genv) {
+			float ax, ay;
+
+			ax = actor->query_x_position();
+			ay = actor->query_y_position();
+
+			if (ax < 0.0 || ax > 4.0 || ay < 0.0 || ay > 4.0) {
+				send_out("Don't know how you escaped, but you need to be in bounds of the shack to exit it.\n");
+			} else {
+				actor->move(genv);
+				send_out("You exit.\n");
+			}
+		} else {
+			send_out("You can't just exit the universe!\n");
+		}
 	} else {
 		send_out("You are already nowhere.\n");
 	}
