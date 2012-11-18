@@ -46,11 +46,9 @@ static void create()
 	}
 }
 
-int access_of(object obj)
+private int access_of(object obj)
 {
 	int highest;
-
-	ACCESS_CHECK(BIGSTRUCT());
 
 	if (grants[obj]) {
 		highest = grants[obj];
