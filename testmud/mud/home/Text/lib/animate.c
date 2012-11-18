@@ -49,7 +49,7 @@ static void do_frame(float diff);
 void begin()
 {
 	oldtime = millitime();
-	framerate = 10;
+	framerate = 30;
 
 	query_user()->set_mode(MODE_NOECHO);
 
