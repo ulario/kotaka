@@ -84,7 +84,7 @@ private void _F_call_destructors()
 
 	sz = sizeof(dtors);
 
-	for (index = sz - 1; index > 0; index--) {
+	for (index = sz - 1; index >= 0; index--) {
 		call_other(this_object(), dtors[index]);
 	}
 }
