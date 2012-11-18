@@ -33,8 +33,7 @@ static void create()
 
 static void check_caller()
 {
-	ACCESS_CHECK(previous_object() == root || sscanf(object_name(previous_object()),
-		USR_DIR + "/System/%*s/bigstruct/"));
+	ACCESS_CHECK(previous_object() == root);
 }
 
 nomask object query_root()
