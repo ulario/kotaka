@@ -89,7 +89,7 @@ private void _F_call_destructors()
 	}
 }
 
-static int _F_sys_create(int clone)
+nomask void _F_sys_create(int clone)
 {
 	object pinfo;
 	string base;
