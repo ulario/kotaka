@@ -57,9 +57,9 @@ private void initialize()
 {
 	subsystems = ({ "System" });
 
-	load_dir("lib/bigstruct", 1);
-	load_dir("lwo/bigstruct", 1);
-	load_dir("obj/bigstruct", 1);
+	load_object(KERNELD);
+
+	boot_subsystem("Bigstruct");
 
 	configure_logging();
 
@@ -72,9 +72,6 @@ private void initialize()
 
 	load_object(TESTD);
 	TESTD->test();
-
-	LOGD->post_message("boot", LOG_DEBUG, "Loading kernel manager");
-	load_object(KERNELD);
 
 	LOGD->post_message("boot", LOG_DEBUG, "Configuring kernel");
 	configure_klib();
