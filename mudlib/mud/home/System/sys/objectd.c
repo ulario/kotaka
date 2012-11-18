@@ -94,6 +94,7 @@ static void create()
 	objdb->set_type(T_INT);
 
 	/* MUST be lwo to avoid infinite loop */
+	/* when tracking our own resources */
 	rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 }
 
