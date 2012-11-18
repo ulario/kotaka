@@ -24,6 +24,8 @@ static void create(int clone)
 {
 	if (clone) {
 		::create();
+
+		call_out("jump", 0);
 	}
 }
 
@@ -32,4 +34,10 @@ static void destruct(int clone)
 	if (clone) {
 		::destruct();
 	}
+}
+
+static void jump()
+{
+	move("../sys/shuffled"->pick_room());
+	call_out("jump", "../sys/shuffled"->query_jump_delay());
 }

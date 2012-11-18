@@ -36,12 +36,15 @@ void main(string args)
 	}
 
 	switch(first) {
-	case "":
+	case "help":
 		send_out("Shuffle test commands:\n");
 		send_out("stats: show statistics\n");
 		send_out("rooms: set rooms goal\n");
 		send_out("mobs: set mobs goal\n");
+		send_out("power: set room concentration power\n");
+		send_out("delay: set average mob jump delay\n");
 		break;
+	case "":
 	case "stats":
 		send_out("Room count/goal: " + SHUFFLED->query_room_count() + "/" + SHUFFLED->query_room_goal() + "\n");
 		send_out("Mob count/goal: " + SHUFFLED->query_mob_count() + "/" + SHUFFLED->query_mob_goal() + "\n");
@@ -63,6 +66,28 @@ void main(string args)
 
 			if (sscanf(args, "%d", number)) {
 				SHUFFLED->set_mob_goal(number);
+			} else {
+				send_out("That's not a number");
+			}
+		}
+		break;
+	case "power":
+		{
+			float number;
+
+			if (sscanf(args, "%f", number)) {
+				SHUFFLED->set_power(number);
+			} else {
+				send_out("That's not a number");
+			}
+		}
+		break;
+	case "delay":
+		{
+			float number;
+
+			if (sscanf(args, "%f", number)) {
+				SHUFFLED->set_jump_delay(number);
 			} else {
 				send_out("That's not a number");
 			}

@@ -19,11 +19,14 @@
  */
 #include <kotaka/bigstruct.h>
 #include <kotaka/privilege.h>
+#include <kotaka/paths.h>
 #include <status.h>
 
 object rooms;
 object mobs;
 int handle;
+float power;
+float delay;
 
 int room_goal;
 int mob_goal;
@@ -33,9 +36,9 @@ static void create()
 	rooms = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	mobs = clone_object(BIGSTRUCT_ARRAY_OBJ);
 
-	room_goal = status(ST_OTABSIZE) / 2;
+	delay = 0.001 * (float)room_goal;
 
-	handle = call_out("process", 0);
+	power = 1.0;
 }
 
 static void destruct()
@@ -47,6 +50,10 @@ static void destruct()
 void set_room_goal(int new_count)
 {
 	ACCESS_CHECK(TEXT());
+
+	if (mob_goal > 0 && new_count == 0) {
+		error("Cannot have mobs without rooms");
+	}
 
 	room_goal = new_count;
 
@@ -64,6 +71,28 @@ void set_mob_goal(int new_count)
 	if (!handle) {
 		handle = call_out("process", 0);
 	}
+}
+
+void set_power(float new_power)
+{
+	ACCESS_CHECK(TEXT());
+
+	if (new_power <= 0.0) {
+		error("Invalid power");
+	}
+
+	power = new_power;
+}
+
+void set_jump_delay(float new_delay)
+{
+	ACCESS_CHECK(TEXT());
+
+	if (new_delay <= 0.0) {
+		error("Invalid delay");
+	}
+
+	delay = new_delay;
 }
 
 int query_room_count()
@@ -90,17 +119,6 @@ static void process()
 {
 	handle = 0;
 
-	if (rooms->get_size() > room_goal) {
-		object turkey;
-
-		turkey = rooms->get_back();
-		rooms->pop_back();
-
-		destruct_object(turkey);
-	} else if (rooms->get_size() < room_goal) {
-		rooms->push_back(clone_object("~/obj/shuffleroom"));
-	}
-
 	if (mobs->get_size() > mob_goal) {
 		object turkey;
 
@@ -108,11 +126,33 @@ static void process()
 		mobs->pop_back();
 
 		destruct_object(turkey);
+	} else if (rooms->get_size() < room_goal) {
+		rooms->push_back(clone_object("~/obj/shuffleroom"));
 	} else if (mobs->get_size() < mob_goal) {
 		mobs->push_back(clone_object("~/obj/shufflemob"));
-	}
+	} else if (rooms->get_size() > room_goal) {
+		object turkey;
 
+		turkey = rooms->get_back();
+		rooms->pop_back();
+
+		destruct_object(turkey);
+	}
 	if (rooms->get_size() != room_goal || mobs->get_size() != mob_goal) {
 		handle = call_out("process", 0);
 	}
+}
+
+object pick_room()
+{
+	float room;
+
+	room = pow(SUBD->rnd(), power) * (float)rooms->get_size();
+
+	return rooms->get_element((int)room);
+}
+
+float query_jump_delay()
+{
+	return (SUBD->rnd() + SUBD->rnd()) * delay;
 }
