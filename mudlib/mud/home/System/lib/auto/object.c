@@ -104,9 +104,13 @@ static int _F_sys_create(int clone)
 	base = oname;
 	sscanf(base, "%s#%*d", base);
 
-	if (DRIVER->creator(base) != "System") {
-		_F_call_constructors();
+	if (DRIVER->creator(base) == "System") {
+		return;
 	}
+	if (DRIVER->creator(base) == "Bigstruct") {
+		return;
+	}
+	_F_call_constructors();
 }
 
 static void destruct(varargs int clone)
@@ -140,9 +144,13 @@ nomask void _F_sys_destruct()
 		destruct(clone);
 	}
 
-	if (DRIVER->creator(base) != "System") {
-		_F_call_destructors();
+	if (DRIVER->creator(base) == "System") {
+		return;
 	}
+	if (DRIVER->creator(base) == "Bigstruct") {
+		return;
+	}
+	_F_call_destructors();
 }
 
 void upgrading()
