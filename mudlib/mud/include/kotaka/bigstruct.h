@@ -1,48 +1,48 @@
 #include <config.h>
 
 #define LIB_BIGSTRUCT_BASE_NODE \
-	(USR_DIR + "/System/lib/bigstruct/base/node")
+	(USR_DIR + "/Bigstruct/lib/base/node")
 #define LIB_BIGSTRUCT_BASE_ROOT \
-	(USR_DIR + "/System/lib/bigstruct/base/root")
+	(USR_DIR + "/Bigstruct/lib/base/root")
 
 #define LIB_BIGSTRUCT_ALLOC_OBJ \
-	(USR_DIR + "/System/lib/bigstruct/alloc/obj")
+	(USR_DIR + "/Bigstruct/lib/alloc/obj")
 #define LIB_BIGSTRUCT_ALLOC_LWO \
-	(USR_DIR + "/System/lib/bigstruct/alloc/lwo")
+	(USR_DIR + "/Bigstruct/lib/alloc/lwo")
 
 #define LIB_BIGSTRUCT_BINTREE_NODE \
-	(USR_DIR + "/System/lib/bigstruct/bintree/node")
+	(USR_DIR + "/Bigstruct/lib/bintree/node")
 #define LIB_BIGSTRUCT_BINTREE_ROOT \
-	(USR_DIR + "/System/lib/bigstruct/bintree/root")
+	(USR_DIR + "/Bigstruct/lib/bintree/root")
 
 #define LIB_BIGSTRUCT_ARRAY_NODE \
-	(USR_DIR + "/System/lib/bigstruct/array/node")
+	(USR_DIR + "/Bigstruct/lib/array/node")
 #define LIB_BIGSTRUCT_ARRAY_ROOT \
-	(USR_DIR + "/System/lib/bigstruct/array/root")
+	(USR_DIR + "/Bigstruct/lib/array/root")
 
 #define LIB_BIGSTRUCT_DEQUE_NODE \
-	(USR_DIR + "/System/lib/bigstruct/deque/node")
+	(USR_DIR + "/Bigstruct/lib/deque/node")
 #define LIB_BIGSTRUCT_DEQUE_ROOT \
-	(USR_DIR + "/System/lib/bigstruct/deque/root")
+	(USR_DIR + "/Bigstruct/lib/deque/root")
 
 #define LIB_BIGSTRUCT_MAP_NODE \
-	(USR_DIR + "/System/lib/bigstruct/map/node")
+	(USR_DIR + "/Bigstruct/lib/map/node")
 #define LIB_BIGSTRUCT_MAP_ROOT \
-	(USR_DIR + "/System/lib/bigstruct/map/root")
+	(USR_DIR + "/Bigstruct/lib/map/root")
 
 
 
 #define BIGSTRUCT_ARRAY_OBJ \
-	(USR_DIR + "/System/obj/bigstruct/array/root")
+	(USR_DIR + "/Bigstruct/obj/array/root")
 #define BIGSTRUCT_ARRAY_LWO \
-	(USR_DIR + "/System/lwo/bigstruct/array/root")
+	(USR_DIR + "/Bigstruct/lwo/array/root")
 
 #define BIGSTRUCT_DEQUE_OBJ \
-	(USR_DIR + "/System/obj/bigstruct/deque/root")
+	(USR_DIR + "/Bigstruct/obj/deque/root")
 #define BIGSTRUCT_DEQUE_LWO \
-	(USR_DIR + "/System/lwo/bigstruct/deque/root")
+	(USR_DIR + "/Bigstruct/lwo/deque/root")
 
 #define BIGSTRUCT_MAP_OBJ \
-	(USR_DIR + "/System/obj/bigstruct/map/root")
+	(USR_DIR + "/Bigstruct/obj/map/root")
 #define BIGSTRUCT_MAP_LWO \
-	(USR_DIR + "/System/lwo/bigstruct/map/root")
+	(USR_DIR + "/Bigstruct/lwo/map/root")
