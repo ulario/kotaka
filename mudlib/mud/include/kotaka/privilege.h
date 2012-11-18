@@ -1,6 +1,7 @@
 #include <config.h>
 #include <kernel/kernel.h>
 #include <kernel/user.h>
+#define BIGSTRUCT()	(sscanf(previous_program(), USR_DIR + "/Bigstruct/%*s"))
 #define KOTAKA()	(sscanf(previous_program(), USR_DIR + "/Kotaka/%*s"))
 #define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
 #define TEXT()		(sscanf(previous_program(), USR_DIR + "/Text/%*s"))
