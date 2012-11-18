@@ -28,11 +28,11 @@ void paint_text(object gc, object obj, object viewer)
 	int mx, my;
 	int i;
 
-	gc->set_color(0x03);
+	gc->set_color(0x2A);
 
-	for (i = -8; i <= 8; i++) {
-		gc->move_pen(-8, i);
-		gc->draw(STRINGD->chars(':', 17));
+	for (my = -8; my <= 8; my++) {
+		gc->move_pen(-8, my);
+		gc->draw(STRINGD->chars('\'', 17));
 	}
 
 	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
@@ -40,7 +40,7 @@ void paint_text(object gc, object obj, object viewer)
 	mx = (int)dx;
 	my = (int)dy;
 
-	gc->set_color(0x09);
+	gc->set_color(0x89);
 
 	for (i = 1; i <= 2; i++) {
 		gc->move_pen(mx - i, my - i);
@@ -54,6 +54,6 @@ void paint_text(object gc, object obj, object viewer)
 	}
 
 	gc->move_pen(mx, my);
-	gc->set_color(0x0F);
+	gc->set_color(0x8F);
 	gc->draw("X");
 }

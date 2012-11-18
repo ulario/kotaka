@@ -57,18 +57,31 @@ void paint_text(object gc, object obj, object viewer)
 			return;
 		}
 
-		x = (int)dx;
-		y = (int)dy;
+		x = (int)(dx);
+		y = (int)(dy);
 
 		gc->set_color(0x30);
 
 		gc->move_pen(x, y);
-		gc->draw("+--+");
+		gc->draw("/--\\");
 		gc->move_pen(x, y + 1);
 		gc->draw("|  |");
 		gc->move_pen(x, y + 2);
 		gc->draw("|  |");
 		gc->move_pen(x, y + 3);
-		gc->draw("+--+");
+		gc->draw("|__|");
+		gc->set_color(0x8F);
+		gc->move_pen(x + 2, y + 3);
+		switch(random(3)) {
+		case 0:
+			gc->draw(".");
+			break;
+		case 1:
+			gc->draw("+");
+			break;
+		case 2:
+			gc->draw("x");
+			break;
+		}
 	}
 }
