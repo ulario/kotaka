@@ -314,7 +314,7 @@ object get_indices()
 
 	check_caller(READ_ACCESS);
 
-	array = new_object("~/lwo/bigstruct/array/root");
+	array = new_object(BIGSTRUCT_ARRAY_LWO);
 
 	node = leftest(top);
 
