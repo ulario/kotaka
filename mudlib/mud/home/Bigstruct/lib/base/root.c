@@ -68,7 +68,7 @@ static void check_caller(int access)
 	pobj = previous_object();
 
 	if (!sscanf(object_name(pobj),
-		USR_DIR + "/System/%*s/bigstruct/"))
+		USR_DIR + "/Bigstruct/%*s/"))
 	{
 		ACCESS_CHECK(access_of(pobj) >= access);
 	}
