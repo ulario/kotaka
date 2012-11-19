@@ -29,33 +29,33 @@ int binary_search_floor(mixed *arr, mixed value)
 {
 	int begin;
 	int end;
-	
+
 	begin = 0;
 	end = sizeof(arr);
-	
+
 	if (begin == end) {
 		/* zero size array */
 		return -1;
 	}
-	
+
 	if (value < arr[begin]) {
 		/* completely out of range */
 		return -1;
 	}
-	
+
 	if (value >= arr[end - 1]) {
 		/* it floats to the top floor */
 		return end - 1;
 	}
-	
+
 	while (end - begin > 1) {
 		int midpoint;
 		mixed probe;
-		
+
 		midpoint = (begin + end) >> 1;
-		
+
 		probe = arr[midpoint];
-		
+
 		if (value < probe) {
 			/* too low */
 			end = midpoint;
@@ -63,7 +63,7 @@ int binary_search_floor(mixed *arr, mixed value)
 			begin = midpoint;
 		}
 	}
-	
+
 	return begin;
 }
 
@@ -89,11 +89,11 @@ int binary_search_ceiling(mixed *arr, mixed value)
 	while (end - begin > 1) {
 		int midpoint;
 		mixed probe;
-		
+
 		midpoint = (begin + end) >> 1;
-		
+
 		probe = arr[midpoint];
-		
+
 		if (value <= probe) {
 			end = midpoint;
 		} else {
@@ -135,7 +135,7 @@ mixed deep_copy(mixed in, varargs mapping dupes)
 			{
 				mixed data;
 				object new;
-				
+
 				new = new_object(in);
 				dupes[in] = new;
 				new->finish_deep_copy(dupes);
@@ -157,11 +157,11 @@ mixed deep_copy(mixed in, varargs mapping dupes)
 
 			ind = map_indices(in);
 			val = map_values(in);
-			
+
 			for (index = 0; index < sizeof(ind); index++) {
 				ind[index] = deep_copy(ind[index], dupes);
 				val[index] = deep_copy(val[index], dupes);
-				
+
 				dupes[in][ind[index]] = val[index];
 			}
 		}
@@ -222,13 +222,13 @@ object query_common_container(object a, object b)
 {
 	mapping la, ra;
 	object le, re;
-	
+
 	le = a;
 	re = b;
-	
+
 	la = ([ ]);
 	ra = ([ ]);
-	
+
 	while (le && re) {
 		la[le] = 1;
 		ra[re] = 1;

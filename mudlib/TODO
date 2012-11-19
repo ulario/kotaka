@@ -5,12 +5,12 @@ Garbage collect roots of obj-based structures
 
 	Someone allocating a huge bigstruct and then abandoning it could
 	cause a DoS problem.
-	
+
 	Should find a way to let abandoned bigstructs be garbage
 	collected if their owner poofs.
-	
+
 	At a minimum this will mean that bigstruct objects need tracking.
-	
+
 	Bigstruct is a good thing to add to resources.
 
 Planning to do
@@ -24,7 +24,7 @@ Have a conveniently written Makefile to take care of installation
 
 	More in line with tradition, having the ubiquitous "make" do
 	everything will simplify things for the end user.
-	
+
 	Running the install script is nice though...
 
 Blocked
@@ -33,7 +33,7 @@ Blocked
 Make all execution rounds atomic
 
 	How do I handle:
-	
+
 	* editors
 	* file operations
 
@@ -71,14 +71,14 @@ RB-trees
 Interface/Implementation separation
 
 	Get UlarioMUD specific stuff moved into ~Game.
-	
+
 	Game-specific stuff is being removed into the "client" package.
 
 Constructors and destructors
 
 	Use ProgramD to register constructors and destructors, and use
 	the inheritance trees to build linear lists.
-	
+
 Last resort verbs
 
 	Implement old style /bin verbs as a failsafe if stuff quits
@@ -87,7 +87,7 @@ Last resort verbs
 Help files
 
 	All bins have helps
-	
+
 	cmdhelpcheck and kcmdhelpcheck useful here.
 
 Continuous improvements

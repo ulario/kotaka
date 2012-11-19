@@ -29,7 +29,7 @@ void main(object actor, string args)
 
 	float my_x;
 	float my_y;
-	
+
 	float dx, dy;
 	float dsquare;
 

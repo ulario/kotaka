@@ -38,7 +38,7 @@ static void create()
 {
 	::create();
 	::set_tls_size(1);
-	
+
 	registry = ([ ]);
 }
 
@@ -48,31 +48,31 @@ int query_tls_access(string domain, string key, string user)
 	string creator;
 	mapping dmap;
 	mapping kmap;
-	
+
 	if (user == "System") {
 		return FULL_ACCESS;
 	}
-	
+
 	if (domain == user) {
 		return FULL_ACCESS;
 	}
-	
+
 	dmap = registry[domain];
-	
+
 	if (!dmap) {
 		return 0;
 	}
-	
+
 	kmap = dmap[key];
-	
+
 	if (!kmap) {
 		return 0;
 	}
-	
+
 	if (!kmap[user]) {
 		return 0;
 	}
-	
+
 	return kmap[user];
 }
 
@@ -81,41 +81,41 @@ mixed set_tls_access(string domain, string key, string user, int access)
 	string creator;
 	mapping dmap;
 	mapping kmap;
-	
+
 	creator = DRIVER->creator(previous_program());
-	
+
 	if (query_tls_access(domain, key, creator) != FULL_ACCESS) {
 		error("Insufficient access granting privileges");
 	}
-	
+
 	if (access == FULL_ACCESS && creator != "System") {
 		error("Insufficient access granting privileges");
 	}
-	
+
 	dmap = registry[domain];
-	
+
 	if (!dmap) {
 		dmap = ([ ]);
 	}
-	
+
 	kmap = dmap[key];
-	
+
 	if (!kmap) {
 		kmap = ([ ]);
 	}
-	
+
 	kmap[user] = access ? access : nil;
-	
+
 	if (!map_sizeof(kmap)) {
 		kmap = nil;
 	}
-	
+
 	dmap[key] = kmap;
 
 	if (!map_sizeof(dmap)) {
 		dmap = nil;
 	}
-	
+
 	registry[domain] = dmap;
 }
 
@@ -126,27 +126,27 @@ mixed query_tls_value(string domain, string key)
 	mapping dmap;
 
 	creator = DRIVER->creator(previous_program());
-	
+
 	if (query_tls_access(domain, key, creator) < READ_ACCESS) {
 		error("Access denied");
 	}
-	
+
 	if (INITD->booting()) {
 		return nil;
 	}
 
 	heap = get_tlvar(0);
-	
+
 	if (!heap) {
 		return nil;
 	}
-	
+
 	dmap = heap[domain];
-	
+
 	if (!dmap) {
 		return nil;
 	}
-	
+
 	return dmap[key];
 }
 
@@ -155,19 +155,19 @@ void set_tls_value(string domain, string key, mixed value)
 	string creator;
 	mapping heap;
 	mapping dmap;
-	
+
 	if (INITD->booting()) {
 		error("Cannot set TLS during boot");
 	}
-	
+
 	creator = DRIVER->creator(previous_program());
-	
+
 	if (query_tls_access(domain, key, creator) < WRITE_ACCESS) {
 		error("Access denied");
 	}
-	
+
 	heap = get_tlvar(0);
-	
+
 	if (!heap) {
 		if (value == nil) {
 			return;
@@ -175,9 +175,9 @@ void set_tls_value(string domain, string key, mixed value)
 			heap = ([ ]);
 		}
 	}
-	
+
 	dmap = heap[domain];
-	
+
 	if (!dmap) {
 		if (value == nil) {
 			return;
@@ -185,18 +185,18 @@ void set_tls_value(string domain, string key, mixed value)
 			dmap = ([ ]);
 		}
 	}
-	
+
 	dmap[key] = value;
-	
+
 	if (map_sizeof(dmap) == 0) {
 		dmap = nil;
 	}
-	
+
 	heap[domain] = dmap;
 
 	if (map_sizeof(heap) == 0) {
 		heap = nil;
 	}
-	
+
 	set_tlvar(0, heap);
 }

@@ -58,9 +58,9 @@ mapping bans
 void add_channel(string channel, varargs int lock)
 {
 	string program;
-	
+
 	program == previous_program();
-	
+
 	ACCESS_CHECK(PRIVILEGED());
 
 	CHECKARG(1, channel, "add_channel");
@@ -247,7 +247,7 @@ string *query_subscriptions(object subscriber)
 	string *names;
 	mixed *values;
 	int i;
-	
+
 	ACCESS_CHECK(PRIVILEGED());
 
 	CHECKARG(subscriber, 1, "query_subscriptions");

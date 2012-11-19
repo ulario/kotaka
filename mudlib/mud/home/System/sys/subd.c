@@ -37,7 +37,7 @@ string quote_escape(string input)
 	input = replace(input, "\n", "\\n");
 	input = replace(input, "\r", "\\r");
 	input = replace(input, "\t", "\\t");
-	
+
 	return input;
 }
 

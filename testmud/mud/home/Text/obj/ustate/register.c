@@ -171,7 +171,7 @@ void receive_in(string input)
 			return;
 		} else {
 			object user;
-			
+
 			user = query_user();
 			ACCOUNTD->register_account(name, password);
 			user->set_username(name);

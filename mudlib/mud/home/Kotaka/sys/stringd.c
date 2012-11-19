@@ -130,12 +130,12 @@ int is_whitespace(string str)
 	int iter;
 
 	len = strlen(str);
-	
+
 	for (iter = 0; iter < len; iter++) {
 		if (!char_is_whitespace(str[iter]))
 			return 0;
 	}
-	
+
 	return 1;
 }
 
@@ -259,11 +259,11 @@ string to_lower(string text)
 
 	newword = text;
 	len = strlen(newword);
-	
+
 	for (ctr = 0; ctr < len; ctr++) {
 		newword[ctr] = char_to_lower(newword[ctr]);
 	}
-	
+
 	return newword;
 }
 
@@ -275,11 +275,11 @@ string to_upper(string text)
 
 	newword = text;
 	len = strlen(newword);
-	
+
 	for (ctr = 0; ctr < len; ctr++) {
 		newword[ctr] = char_to_upper(newword[ctr]);
 	}
-	
+
 	return newword;
 }
 
@@ -406,9 +406,9 @@ int strcmp(string s1, string s2)
 string replace(string input, string from, string to)
 {
 	string *arr;
-	
+
 	arr = explode(from + input + from, from);
-	
+
 	return implode(arr, to);
 }
 
@@ -419,7 +419,7 @@ string quote_escape(string input)
 	input = replace(input, "\n", "\\n");
 	input = replace(input, "\r", "\\r");
 	input = replace(input, "\t", "\\t");
-	
+
 	return input;
 }
 
@@ -430,7 +430,7 @@ string quote_unescape(string input)
 	input = replace(input, "\\n", "\n");
 	input = replace(input, "\\\"", "\"");
 	input = replace(input, "\\\\", "\\");
-	
+
 	return input;
 }
 
@@ -438,7 +438,7 @@ string object_escape(string input)
 {
 	input = replace(input, "\\", "\\\\");
 	input = replace(input, ">", "\\>");
-	
+
 	return input;
 }
 
@@ -446,7 +446,7 @@ string object_unescape(string input)
 {
 	input = replace(input, "\\>", ">");
 	input = replace(input, "\\\\", "\\");
-	
+
 	return input;
 }
 
@@ -479,20 +479,20 @@ string mixed_sprint(mixed data, varargs mapping seen)
 			string mantissa;
 			string exponent;
 			string str;
-			
+
 			str = (string)data;
-			
+
 			if (!sscanf(str, "%se%s", mantissa, exponent)) {
 				mantissa = str;
 				exponent = "";
 			} else {
 				exponent = "e" + exponent;
 			}
-			
+
 			if (!sscanf(mantissa, "%*s.")) {
 				mantissa += ".0";
 			}
-			
+
 			return mantissa + exponent;
 		}
 
@@ -500,9 +500,9 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		if (seen[data] != nil) {
 			return "#" + seen[data];
 		}
-		
+
 		seen[data] = map_sizeof(seen);
-		
+
 		if (sizeof(data) == 0)
 			return "({ })";
 
@@ -519,12 +519,12 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		if (seen[data] != nil) {
 			return "@" + seen[data];
 		}
-		
+
 		seen[data] = map_sizeof(seen);
-		
+
 		if (map_sizeof(data) == 0)
 			return "([ ])";
-			
+
 		arr = map_indices(data);
 		tmp = "([ ";
 		for (iter = 0; iter < sizeof(arr); iter++) {
@@ -542,17 +542,17 @@ string mixed_sprint(mixed data, varargs mapping seen)
 			string *parts;
 			string path;
 			object env, root;
-			
+
 			parts = ({ });
-			
+
 			env = data;
-			
+
 			while (env) {
 				root = env;
 				parts = ({ env->query_id() }) + parts;
 				env = env->query_environment();
 			}
-			
+
 			if (root) {
 				return "<" + implode(parts, ":") + ">";
 			} else {
@@ -572,7 +572,7 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 	string ind;
 
 	ind = "";
-	
+
 	if (!seen)
 		seen = ([ ]);
 
@@ -590,16 +590,16 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 		if (seen[data] != nil) {
 			return "#" + seen[data];
 		}
-		
+
 		seen[data] = map_sizeof(seen);
-		
+
 		if (sizeof(data) == 0)
 			return "({ })";
-		
+
 		{
 			string *parts;
 			int index;
-			
+
 			parts = allocate(sizeof(data));
 
 			for (index = 0; index < sizeof(data); index++) {
@@ -615,9 +615,9 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 		if (seen[data] != nil) {
 			return "@" + seen[data];
 		}
-		
+
 		seen[data] = map_sizeof(seen);
-		
+
 		if (map_sizeof(data) == 0)
 			return "([ ])";
 		{
@@ -705,7 +705,7 @@ int is_flat(mixed data)
 
 			ind = map_indices(data);
 			val = map_values(data);
-			
+
 			for (i = 0; i < sz; i++) {
 				if (!is_simple(ind[i])) {
 					return 0;
@@ -841,7 +841,7 @@ string normalize_whitespace(string input, int maxwidth)
 		default:
 			word += " ";
 		}
-		
+
 		if (wordwidth + linewidth > maxwidth) {
 			lines += ({ trim_whitespace(line) });
 			linewidth = 0;
@@ -897,21 +897,21 @@ string stime(int time)
 int ip_to_number(string ip)
 {
 	int a, b, c, d;
-	
+
 	sscanf(ip, "%d.%d.%d.%d", a, b, c, d);
-	
+
 	return a << 24 | b << 16 | c << 8 | d;
 }
 
 string ip_to_string(int ip)
 {
 	int a, b, c, d;
-	
+
 	a = (ip >> 24) & 0xFF;
 	b = (ip >> 16) & 0xFF;
 	c = (ip >> 8) & 0xFF;
 	d = (ip) & 0xFF;
-	
+
 	return a + "." + b + "." + c + "." + d;
 }
 
@@ -942,20 +942,20 @@ string dump_sprint(mixed data, varargs mapping seen)
 			string mantissa;
 			string exponent;
 			string str;
-			
+
 			str = (string)data;
-			
+
 			if (!sscanf(str, "%se%s", mantissa, exponent)) {
 				mantissa = str;
 				exponent = "";
 			} else {
 				exponent = "e" + exponent;
 			}
-			
+
 			if (!sscanf(mantissa, "%*s.")) {
 				mantissa += ".0";
 			}
-			
+
 			return mantissa + exponent;
 		}
 
@@ -963,9 +963,9 @@ string dump_sprint(mixed data, varargs mapping seen)
 		if (seen[data] != nil) {
 			return "#" + seen[data];
 		}
-		
+
 		seen[data] = map_sizeof(seen);
-		
+
 		if (sizeof(data) == 0)
 			return "({ })";
 
@@ -982,12 +982,12 @@ string dump_sprint(mixed data, varargs mapping seen)
 		if (seen[data] != nil) {
 			return "#" + seen[data];
 		}
-		
+
 		seen[data] = map_sizeof(seen);
-		
+
 		if (map_sizeof(data) == 0)
 			return "([ ])";
-			
+
 		arr = map_indices(data);
 		tmp = "([ ";
 		for (iter = 0; iter < sizeof(arr); iter++) {
@@ -1005,11 +1005,11 @@ string dump_sprint(mixed data, varargs mapping seen)
 			if (seen[data] != nil) {
 				return "#" + seen[data];
 			}
-		
+
 			seen[data] = map_sizeof(seen);
-		
+
 			save_value = data->save();
-			
+
 			return "(<" + path + "|" + dump_sprint(save_value, seen) + ">)";
 		} else if (function_object("sprint_object", previous_object())) {
 			return previous_object()->sprint_object(data);
@@ -1017,17 +1017,17 @@ string dump_sprint(mixed data, varargs mapping seen)
 			string *parts;
 			string path;
 			object env, root;
-			
+
 			parts = ({ });
-			
+
 			env = data;
-			
+
 			while (env) {
 				root = env;
 				parts = ({ env->query_id() }) + parts;
 				env = env->query_environment();
 			}
-			
+
 			if (root) {
 				return "<" + implode(parts, ":") + ">";
 			} else {
@@ -1046,20 +1046,20 @@ string string_truncate(string line, int bits)
 {
 	int bytes;
 	int mask;
-	
+
 	bytes = (bits + 7) >> 3;
 	mask = 0xFF >> ((8 - bits) & 0x7);
-	
+
 	if (strlen(line) > bytes) {
 		line = line[0 .. bytes - 1];
 	} else while (strlen(line) < bytes) {
 		line += "\000";
 	}
-		
+
 	if (strlen(line) == bytes) {
 		line[bytes - 1] &= mask;
 	}
-	
+
 	return rtrim_null(line);
 }
 
@@ -1070,15 +1070,15 @@ string string_rshift(string a, int bits)
 
 	a = a[bits / 8 ..];
 	bits %= 8;
-	
+
 	buf = a[0];
-	
+
 	for (index = 0; index < strlen(a); index++) {
 		buf |= ((index + 1) < strlen(a) ? a[index + 1] : 0) << 8;
 		a[index] = (buf >> bits) & 255;
 		buf >>= 8;
 	}
-	
+
 	return rtrim_null(a);
 }
 
@@ -1118,11 +1118,11 @@ string string_or(string a, string b)
 		a = b;
 		b = c;
 	}
-	
+
 	for (i = 0; i <= strlen(b); i++) {
 		a[i] |= b[i];
 	}
-	
+
 	return a;
 }
 
@@ -1136,11 +1136,11 @@ string string_xor(string a, string b)
 		a = b;
 		b = c;
 	}
-	
+
 	for (i = 0; i <= strlen(b); i++) {
 		a[i] ^= b[i];
 	}
-	
+
 	return a;
 }
 
@@ -1148,17 +1148,17 @@ string string_nand(string a, string b)
 {
 	int lim;
 	int i;
-	
+
 	lim = strlen(a);
-	
+
 	if (lim > strlen(b)) {
 		lim = strlen(b);
 	}
-	
+
 	for (i = 0; i < lim; i++) {
 		a[i] &= ~b[i];
 	}
-	
+
 	return a;
 }
 
@@ -1166,44 +1166,44 @@ string string_patch(string canvas, string brush, int coff, int blen)
 {
 	int smask;
 	int emask;
-	
+
 	int sbyte;
 	int ebyte;
-	
+
 	int sbit;
 	int ebit;
-	
+
 	int byte;
-	
+
 	brush = string_lshift(brush, coff);
-	
+
 	sbit = coff;
 	ebit = coff + blen - 1;
-	
+
 	sbyte = sbit >> 3;
 	ebyte = ebit >> 3;
-	
+
 	sbit &= 7;
 	ebit &= 7;
 
 	smask = (0xFF << sbit) & 0xFF;
 	emask = 0xFF >> (7 - ebit);
-	
+
 	while(strlen(brush) <= ebyte) {
 		brush += "\000";
 	}
-	
+
 	while(strlen(canvas) <= ebyte) {
 		canvas += "\000";
 	}
-	
+
 	if (sbyte == ebyte) {
 		smask &= emask;
 	} else {
 		for (byte = sbyte + 1; byte < ebyte - 1; byte++) {
 			canvas[byte] = brush[byte];
 		}
-		
+
 		canvas[ebyte] =
 			(canvas[ebyte] & ~emask) | (brush[ebyte] & emask);
 	}
@@ -1211,7 +1211,7 @@ string string_patch(string canvas, string brush, int coff, int blen)
 	canvas[sbyte] =
 		(canvas[sbyte] & ~smask)
 		| (brush[sbyte] & smask);
-	
+
 	return canvas;
 }
 
@@ -1221,18 +1221,18 @@ string string_from_seconds(int seconds, varargs int details)
 	string unit;
 	string out;
 	int ago;
-	
+
 	if (seconds == 0) {
 		return "now";
 	}
-	
+
 	if (seconds < 0) {
 		ago = 1;
 		seconds = -seconds;
 	}
-	
+
 	details++;
-	
+
 	while (details-- && seconds) {
 		if (seconds >= 86400) {
 			count = seconds / 86400;
@@ -1255,27 +1255,27 @@ string string_from_seconds(int seconds, varargs int details)
 		if (count > 1) {
 			unit += "s";
 		}
-		
+
 		if (out) {
 			out += ", " + count + " " + unit;
 		} else {
 			out = count + " " + unit;
 		}
 	}
-	
+
 	if (ago) {
 		out += " ago";
 	}
-	
+
 	return out;
 }
 
 string pack_int(int value, varargs int be)
 {
 	string out;
-	
+
 	out = "    ";
-		
+
 	if (be) {
 		out[0] = value & 0xFF;
 		out[1] = (value >> 8) & 0xFF;
@@ -1293,7 +1293,7 @@ string pack_int(int value, varargs int be)
 int unpack_int(string str, varargs int be)
 {
 	int value;
-	
+
 	if (be) {
 		value |= str[0];
 		value |= str[1] << 8;
@@ -1305,7 +1305,7 @@ int unpack_int(string str, varargs int be)
 		value |= str[1] << 16;
 		value |= str[0] << 24;
 	}
-	
+
 	return value;
 }
 
@@ -1313,24 +1313,24 @@ string vpack_int(int value, varargs int be)
 {
 	string out;
 	string char;
-	
+
 	char = " ";
 	out = "";
-	
+
 	do {
 		char[0] = (value & 0x7F) | 0x80;
-		
+
 		if (be) {
 			out = char + out;
 		} else {
 			out = out + char;
 		}
-		
+
 		value >>= 7;
 	} while (value);
 
 	out[strlen(out) - 1] &= 0x7F;
-	
+
 	return out;
 }
 
@@ -1339,9 +1339,9 @@ int vunpack_int(string str, varargs int be)
 	string char;
 	int value;
 	int index;
-	
+
 	char = " ";
-	
+
 	if (be) {
 		for (index = 0; index < strlen(str); index++) {
 			value <<= 7;
@@ -1355,7 +1355,7 @@ int vunpack_int(string str, varargs int be)
 			value = char[0] & 0x7F;
 		}
 	}
-	
+
 	return value;
 }
 
@@ -1452,15 +1452,15 @@ string bin(int val)
 
 	while (val) {
 		int bit;
-			
+
 		bit = val & 0x1;
 		val >>= 1;
-			
+
 		out = " " + out;
-			
+
 		out[0] = '0' + bit;
 	}
-	
+
 	return out;
 }
 string hex(int val)
@@ -1468,26 +1468,26 @@ string hex(int val)
 	int index;
 	string out;
 	out = "";
-	
+
 	if (!val) {
 		return "0";
 	}
-	
+
 	while (val) {
 		int nibble;
-			
+
 		nibble = val & 0xF;
 		val >>= 4;
-			
+
 		out = " " + out;
-			
+
 		if (nibble > 9) {
 			out[0] = 'a' + (nibble - 10);
 		} else {
 			out[0] = '0' + nibble;
 		}
 	}
-	
+
 	return out;
 }
 
@@ -1538,16 +1538,16 @@ string simple_ansify(string chars, varargs string fore, string back)
 	int forecolor;
 	int backcolor;
 	buf = "";
-	
+
 	/* 1 = blue bit */
 	/* 2 = green bit */
 	/* 4 = red bit */
 	/* 8 = intense/blink bit */
 	forecolor = 7;
 	backcolor = 0;
-	
+
 	sz = strlen(chars);
-	
+
 	for (i = 0; i < sz; i++) {
 		int target_bits;
 		int forecolor_change;
@@ -1556,47 +1556,47 @@ string simple_ansify(string chars, varargs string fore, string back)
 		int blink_change;
 		string *codes;
 		string escape;
-		
+
 		codes = ({ });
-		
+
 		target_bits = -1;
-		
+
 		if (fore) {
 			target_bits = target_bits(fore[i]);
 		}
-		
+
 		if (target_bits == -1) {
 			target_bits = 7;
 		}
-		
+
 		if ((target_bits & 7) != (forecolor & 7)) {
 			forecolor_change = 1;
 		}
 		if ((target_bits & 8) != (forecolor & 8)) {
 			bold_change = 1;
 		}
-		
+
 		forecolor = target_bits;
-		
+
 		target_bits = -1;
-		
+
 		if (back) {
 			target_bits = target_bits(back[i]);
 		}
-		
+
 		if (target_bits == -1) {
 			target_bits = 0;
 		}
-		
+
 		if ((target_bits & 7) != (backcolor & 7)) {
 			backcolor_change = 1;
 		}
 		if ((target_bits & 8) != (backcolor & 8)) {
 			blink_change = 1;
 		}
-		
+
 		backcolor = target_bits;
-		
+
 		if (forecolor == 7 && backcolor == 0 &&
 			(bold_change
 				|| blink_change
@@ -1610,47 +1610,47 @@ string simple_ansify(string chars, varargs string fore, string back)
 			forecolor_change = 0;
 			backcolor_change = 0;
 		}
-		
+
 		if (bold_change) {
 			if (forecolor & 8) {
 				codes += ({ "1" });
 			} else {
 				codes += ({ "22" });
 			}
-			
+
 			bold_change = 0;
 		}
-		
+
 		if (forecolor_change) {
 			codes += ({ "3" + (forecolor & 7) });
-			
+
 			forecolor_change = 0;
 		}
-		
+
 		if (blink_change) {
 			if (backcolor & 8) {
 				codes += ({ "5" });
 			} else {
 				codes += ({ "25" });
 			}
-			
+
 			blink_change = 0;
 		}
-		
+
 		if (backcolor_change) {
 			codes += ({ "4" + (backcolor & 7) });
-			
+
 			backcolor_change = 0;
 		}
-		
+
 		if (sizeof(codes)) {
 			escape = "\033[" + implode(codes, ";") + "m";
 			buf += escape;
 		}
-		
+
 		buf += chars[i .. i];
 	}
-	
+
 	return buf;
 }
 
@@ -1670,7 +1670,7 @@ string wordwrap(string text, int width)
 	for (i = 0; i < sz; i++) {
 		string word;
 		int wlen;
-		
+
 		word = words[i];
 		wlen = strlen(word);
 

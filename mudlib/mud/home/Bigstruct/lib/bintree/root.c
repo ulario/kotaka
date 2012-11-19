@@ -61,28 +61,28 @@ static void destruct()
 static object leftest(object node)
 {
 	object left;
-	
+
 	left = node;
-	
+
 	while (left) {
 		node = left;
 		left = node->get_left();
 	}
-	
+
 	return node;
 }
 
 static object rightest(object node)
 {
 	object right;
-	
+
 	right = node;
-	
+
 	while (right) {
 		node = right;
 		right = node->get_right();
 	}
-	
+
 	return node;
 }
 
@@ -101,17 +101,17 @@ static object uncle(object node)
 	object grandparent;
 	object uncle;
 	object parent;
-	
+
 	parent = node->get_parent();
 	grandparent = parent->get_parent();
 
 	uncle = grandparent->get_left();
 	parent = node->get_parent();
-	
+
 	if (uncle == parent) {
 		uncle = grandparent->get_right();
 	}
-	
+
 	return uncle;
 }
 
@@ -119,10 +119,10 @@ static object sibling(object node)
 {
 	object parent;
 	object left;
-	
+
 	parent = node->get_parent();
 	left = parent->get_left();
-	
+
 	if (node == left) {
 		return parent->get_right();
 	} else {
@@ -276,37 +276,37 @@ static atomic void swap_nodes(object a, object b)
 static object insert_node(object next)
 {
 	object node;
-	
+
 	node = new_node();
-	
+
 	if (next) {
 		object next_left;
-		
+
 		next_left = next->get_left();
-		
+
 		if (next_left) {
 			object next_left_rightest;
-			
+
 			next_left_rightest = rightest(next_left);
-			
+
 			next_left_rightest->set_right(node);
 			node->set_parent(next_left_rightest);
 		} else {
 			next->set_left(node);
 			node->set_parent(next);
 		}
-		
+
 		ASSERT(next_node(node) == next);
 		ASSERT(prev_node(next) == node);
 	} else {
 		/* needs to go on extreme right */
 		/* zip right and glue it on */
-		
+
 		if (top) {
 			object parent;
-			
+
 			parent = rightest(top);
-			
+
 			parent->set_right(node);
 			node->set_parent(parent);
 		} else {
@@ -317,7 +317,7 @@ static object insert_node(object next)
 		ASSERT(next_node(node) == nil);
 		ASSERT(rightest(top) == node);
 	}
-	
+
 	if (next) {
 		ASSERT(prev_node(next) == node);
 		ASSERT(next_node(node) == next);
@@ -338,13 +338,13 @@ static void delete_node(object node)
 
 	if (left && right) {
 		swap_nodes(node, next_node(node));
-		
+
 		left = node->get_left();
 		right = node->get_right();
 	}
 
 	parent = node->get_parent();
-	
+
 	if (left) {
 		/* slide left branch up */
 		if (parent) {
@@ -371,9 +371,9 @@ static void delete_node(object node)
 		} else {
 			top = right;
 		}
-		
+
 		right->set_parent(parent);
-		
+
 		node->set_parent(nil);
 		node->set_right(nil);
 	} else {
@@ -387,19 +387,19 @@ static void delete_node(object node)
 		} else {
 			top = nil;
 		}
-		
+
 		node->set_parent(nil);
 	}
-	
+
 	discard_node(node);
 }
 
 void clear()
 {
 	check_caller(WRITE_ACCESS);
-	
+
 	discard_node(top);
-	
+
 	top = nil;
 }
 
@@ -407,22 +407,22 @@ static object prev_node(object node)
 {
 	object left;
 	object parent;
-	
+
 	ASSERT(node);
-	
+
 	left = node->get_left();
-	
+
 	if (left) {
 		return rightest(left);
 	}
-	
+
 	parent = node->get_parent();
-	
+
 	while (parent) {
 		if (parent->get_right() == node) {
 			return parent;
 		}
-		
+
 		node = parent;
 		parent = parent->get_parent();
 	}
@@ -442,12 +442,12 @@ static object next_node(object node)
 	}
 
 	parent = node->get_parent();
-	
+
 	while (parent) {
 		if (parent->get_left() == node) {
 			return parent;
 		}
-		
+
 		node = parent;
 		parent = parent->get_parent();
 	}
@@ -479,17 +479,17 @@ static void rebalance_step_gather(object node, object array)
 	object left;
 	object right;
 	int sz;
-	
+
 	left = node->get_left();
 	right = node->get_right();
-	
+
 	if (left) {
 		rebalance_step_gather(left, array);
 	}
-	
+
 	sz = array->get_size();
 	array->set_size(sz + 1);
-	
+
 	array->set_element(sz, node);
 
 	if (right) {
@@ -500,7 +500,7 @@ static void rebalance_step_gather(object node, object array)
 static void rotate_up_to(object node, object ceiling)
 {
 	object parent;
-	
+
 	while (parent = node->get_parent(),
 		parent != nil && parent != ceiling) {
 
@@ -516,20 +516,20 @@ static void rebalance_step_scatter(object array, object ceiling)
 {
 	int mid;
 	int high;
-	
+
 	object node;
-	
+
 	high = array->get_size() - 1;
 	mid = high / 2;
-	
+
 	node = array->get_element(mid);
-	
+
 	rotate_up_to(node, ceiling);
-	
+
 	if (mid > 1) {
 		rebalance_step_scatter(array->slice(0, mid - 1), node);
 	}
-	
+
 	if (mid < high - 1) {
 		rebalance_step_scatter(array->slice(mid + 1, high), node);
 	}
@@ -538,9 +538,9 @@ static void rebalance_step_scatter(object array, object ceiling)
 static void rebalance()
 {
 	object array;
-	
+
 	array = new_object(BIGSTRUCT_ARRAY_LWO);
-	
+
 	rebalance_step_gather(top, array);
 	rebalance_step_scatter(array, nil);
 }

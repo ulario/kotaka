@@ -36,9 +36,9 @@ private void pour()
 {
 	string line;
 	int count;
-	
+
 	count = 0;
-	
+
 	for (;;) {
 		if (linebuf->empty() || count >= 20) {
 			break;
@@ -46,10 +46,10 @@ private void pour()
 
 		line = linebuf->getline();
 		send_out(line + "\n");
-		
+
 		count++;
 	}
-	
+
 	if (linebuf->empty()) {
 		pop_state();
 	} else {

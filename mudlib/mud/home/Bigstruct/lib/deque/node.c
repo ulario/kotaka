@@ -108,11 +108,11 @@ void set_next(object new)
 mixed get_front()
 {
 	check_caller();
-	
+
 	if (begin >= end) {
 		error("Subscript out of range");
 	}
-	
+
 	return sub[begin];
 }
 
@@ -123,7 +123,7 @@ mixed get_back()
 	if (begin >= end) {
 		error("Subscript out of range");
 	}
-	
+
 	return sub[end - 1];
 }
 
@@ -131,7 +131,7 @@ void set_front(mixed value)
 {
 	check_caller();
 	ASSERT(begin < end);
-	
+
 	sub[begin] = value;
 }
 
@@ -202,9 +202,9 @@ void set_element(int index, mixed data)
 void dump()
 {
 	int index;
-	
+
 	LOGD->post_message("dump", LOG_DEBUG, "[" + begin + ", " + end + ")");
-	
+
 	for (index = begin; index < end; index++) {
 		LOGD->post_message("dump", LOG_DEBUG, index + ": " + sub[index]);
 	}

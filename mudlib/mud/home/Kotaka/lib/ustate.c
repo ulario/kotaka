@@ -92,17 +92,17 @@ nomask object query_top()
 {
 	object top;
 	object newtop;
-	
+
 	if (!current) {
 		return this_object();
 	}
-	
+
 	top = current;
-	
+
 	while (newtop = top->query_current()) {
 		top = newtop;
 	}
-	
+
 	return top;
 }
 

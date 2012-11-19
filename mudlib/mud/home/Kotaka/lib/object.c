@@ -141,7 +141,7 @@ nomask void _F_set_archetypes(object *new_archs)
 nomask void _F_clear_archetypes()
 {
 	ACCESS_CHECK(KOTAKA());
-	
+
 	archetypes = ({ });
 }
 
@@ -171,7 +171,7 @@ nomask void _F_add_archetype_at(object new_arch, int position)
 	CHECKARG(position <= sizeof(archetypes), 2, "add_archetype_at");
 
 	archetypes -= ({ nil });
-	
+
 	if (position == -1) {
 		archetypes += ({ new_arch });
 	} else {
@@ -542,9 +542,9 @@ nomask mixed _F_query_property(string name)
 	case PROP_SIMPLE:
 		{
 			mixed value;
-			
+
 			value = properties[name];
-			
+
 			if (value != nil) {
 				return SUBD->deep_copy(value);
 			}
@@ -555,7 +555,7 @@ nomask mixed _F_query_property(string name)
 
 			case T_FLOAT:
 				return 0.0;
-			
+
 			case T_ARRAY:
 				return ({ });
 
@@ -582,7 +582,7 @@ nomask mixed _F_query_property(string name)
 			int index;
 			mixed value;
 			object *arch;
-			
+
 			if (info[1] == PROP_DROPDOWN) {
 				arch = ({ query_environment() }) - ({ nil });
 			} else {
@@ -597,14 +597,14 @@ nomask mixed _F_query_property(string name)
 					return value;
 				}
 			}
-			
+
 			switch(info[0]) {
 			case T_INT:
 				return 0;
-			
+
 			case T_FLOAT:
 				return 0.0;
-			
+
 			default:
 				return nil;
 			}
@@ -616,12 +616,12 @@ nomask mixed _F_query_property(string name)
 			int index;
 			mixed local;
 			mixed gather;
-			
+
 			mixed remove;
-			
+
 			string lname;
 			string rname;
-			
+
 			string *extra;
 			object *arch;
 
@@ -645,22 +645,22 @@ nomask mixed _F_query_property(string name)
 				if (!local) {
 					local = ({ });
 				}
-				
+
 				break;
 
 			case T_MAPPING:
 				gather = ([ ]);
-				
+
 				if (!local) {
 					local = ([ ]);
 				}
-				
+
 				break;
 
 			default:
 				error("Illegal combo type");
 			}
-			
+
 			for (index = 0; index < sizeof(arch);
 				index++) {
 				gather |=
@@ -670,7 +670,7 @@ nomask mixed _F_query_property(string name)
 
 			if (rname) {
 				remove = query_property(rname);
-				
+
 				if (!remove) {
 					remove = ({ });
 				}
@@ -682,7 +682,7 @@ nomask mixed _F_query_property(string name)
 			} else {
 				gather |= local;
 			}
-			
+
 			return gather;
 		}
 		break;
@@ -695,7 +695,7 @@ nomask mixed _F_query_property(string name)
 
 			func = info[2][0];	/* reader */
 			lib = function_object(func, this_object());
-			
+
 			if (!lib) {
 				error("No such function");
 			}

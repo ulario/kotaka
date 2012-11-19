@@ -77,7 +77,7 @@ static void upgraded()
 private mixed build(mixed *input)
 {
 	mixed out;
-	
+
 	switch(input[0]) {
 	case T_NIL:
 		return nil;
@@ -90,10 +90,10 @@ private mixed build(mixed *input)
 		{
 			mixed *elements;
 			int i;
-			
+
 			elements = input[1];
 			out = congs[map_sizeof(congs)] = allocate(sizeof(elements));
-			
+
 			for (i = 0; i < sizeof(out); i++) {
 				out[i] = build(elements[i]);
 			} 
@@ -104,12 +104,12 @@ private mixed build(mixed *input)
 			mixed *indices;
 			mixed *values;
 			int i;
-			
+
 			indices = input[1];
 			values = input[2];
-			
+
 			out = congs[map_sizeof(congs)] = ([ ]);
-			
+
 			for (i = 0; i < sizeof(indices); i++) {
 				out[build(indices[i])] = build(values[i]);
 			}
@@ -119,15 +119,15 @@ private mixed build(mixed *input)
 		{
 			mixed value;
 			string path;
-			
-			
+
+
 			path = input[1];
-			
+
 			out = congs[map_sizeof(congs)] =
 				CONFIGD->query_game_driver()->make_lwo(path);
-			
+
 			value = build(input[2]);
-			
+
 			out->load(value);
 		}
 		return out;
@@ -141,11 +141,11 @@ private mixed build(mixed *input)
 mixed parse(string input)
 {
 	mixed *elements;
-	
+
 	congs = ([ ]);
 
 	elements = parse_string(grammar, input);
-	
+
 	return build(elements[0]);
 }
 
@@ -180,15 +180,15 @@ static mixed *parse_obj(string *input)
 	string oname, osubname;
 	string *parts;
 	object root, obj;
-	
+
 	oname = input[0];
 	oname = oname[1 .. strlen(oname) - 2];	/* strip off angle brackets */
 
 	if (function_object("parse_object", previous_object(1))) {
 		object ret;
-		
+
 		ret = previous_object(1)->parse_object(oname);
-		
+
 		if (!ret) {
 			CHANNELD->post_message("warning", oname,
 				"Previous object returned nil");
@@ -196,25 +196,25 @@ static mixed *parse_obj(string *input)
 
 		return ({ ({ T_OBJECT, ret }) });
 	}
-	
+
 	parts = explode(oname, ":") - ({ "" });
-	
+
 	if (sizeof(parts) == 0) {
 		error("<" + oname + "> Badly formatted object designation");
 	}
-	
+
 	if (parts[0][0] == '/') {
 		string osubname;
-		
+
 		root = find_object(parts[0]);
-		
+
 		if (!root) {
 			error(parts[0] + ": no such object");
 		}
 	} else {
 		error("Unspecified base for object");
 	}
-	
+
 	osubname = implode(parts[1 ..], ":");
 	obj = root->locate_object(osubname);
 
@@ -223,7 +223,7 @@ static mixed *parse_obj(string *input)
 			"Cannot find " + osubname + " in " +
 			object_name(root));
 	}
-	
+
 	return ({ ({ T_OBJECT, obj }) });
 }
 
@@ -235,11 +235,11 @@ static mixed *make_arr(mixed *input)
 
 	elements = input[1 .. sizeof(input) - 2];
 	nocomma = allocate(sizeof(elements) / 2 + 1);
-	
+
 	for (i = 0; i < sizeof(nocomma); i++) {
 		nocomma[i] = elements[i * 2];
 	}
-	
+
 	return ({ ({ T_ARRAY, nocomma }) });
 }
 
@@ -258,12 +258,12 @@ static mixed *make_map(mixed *input)
 	elements = input[1 .. sizeof(input) - 2];
 	indices = allocate(sizeof(elements) / 4 + 1);
 	values = allocate(sizeof(elements) / 4 + 1);
-	
+
 	for (i = 0; i < sizeof(indices); i++) {
 		indices[i] = elements[i * 4];
 		values[i] = elements[i * 4 + 2];
 	}
-	
+
 	return ({ ({ T_MAPPING, indices, values }) });
 }
 

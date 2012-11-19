@@ -163,7 +163,7 @@ private string query_brief(object obj)
 void set_aliases(mapping new_aliases)
 {
 	ACCESS_CHECK(previous_object() == query_root());
-	
+
 	aliases = new_aliases;
 }
 

@@ -45,7 +45,7 @@ void main(string args)
 		if (sizeof(lists[i])) {
 			int j;
 			string *list;
-			
+
 			list = lists[i];
 			sz = sizeof(list);
 			SUBD->qsort(list, 0, sz);

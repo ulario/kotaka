@@ -89,7 +89,7 @@ object find_node(string category)
 	ASSERT((sz = sizeof(parts)) > 0);
 
 	subnode = categories[parts[0]];
-	
+
 	if (subnode) {
 		if (sz == 1) {
 			return subnode;

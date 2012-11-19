@@ -137,7 +137,7 @@ private void do_escape(string str)
 	if (!sizeof(words)) {
 		return;
 	}
-	
+
 	switch(words[0]) {
 	case "help":
 		::message(
@@ -153,10 +153,10 @@ private void do_escape(string str)
 
 	case "list":
 		children = root->query_top()->query_children();
-			
+
 		if (sizeof(children)) {
 			int i;
-			
+
 			::message("List of child ustates:\n");
 
 			for (i = 0; i < sizeof(children); i++) {
@@ -176,7 +176,7 @@ private void do_escape(string str)
 
 	case "suspend":
 		parent = root->query_top()->query_parent();
-			
+
 		if (!parent) {
 			::message("Cannot suspend root ustate\n");
 		} else {
@@ -187,16 +187,16 @@ private void do_escape(string str)
 	case "switch":
 		{
 			int i;
-			
+
 			i = (int)words[1];
-			
+
 			children = root->query_top()->query_children();
 
 			if (i >= sizeof(children)) {
 				::message("Index out of range.\n");
 				return;
 			}
-			
+
 			root->query_top()->switch_state(children[i]);
 		}
 		break;
@@ -374,12 +374,12 @@ void switch_state(object parent, object new)
 	oldtop = root->query_top();
 
 	parent->_F_set_current(new);
-	
+
 	newtop = root->query_top();
-	
+
 	if (oldtop != newtop) {
 		oldtop->stop();
-		
+
 		if (newtop) {
 			newtop->go();
 		}

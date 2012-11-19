@@ -70,7 +70,7 @@ private void do_clock(object paint, float time)
 		y = (int)((-cos((float)i * pi / 6.0)) * 7.25) + CLK_Y;
 
 		paint->move_pen(x, y);
-		
+
 		switch(i) {
 		case 0:
 		case 6: paint->draw("|"); break;

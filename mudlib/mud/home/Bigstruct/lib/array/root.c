@@ -265,9 +265,9 @@ atomic mixed get_element(int index)
 atomic void set_element(int index, mixed value)
 {
 	int level;
-	
+
 	check_caller(WRITE_ACCESS);
-	
+
 	if (index < 0) {
 		error("Subscript out of range");
 	}

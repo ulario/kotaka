@@ -180,7 +180,7 @@ int receive_message(string str)
 	conn = previous_object();
 
 	params = explode(str, " ") - ({ "" });
-	
+
 	if (sizeof(params)) switch(params[0]) {
 	case "redraw":
 		redraw(conn);
@@ -195,9 +195,9 @@ int receive_message(string str)
 			break;
 		} else {
 			float interval;
-			
+
 			sscanf(params[1], "%f", interval);
-			
+
 			if (interval < 15.0 && !connections[conn][1]) {
 				conn->message("Intervals less than 15 seconds\nare only allowed for local connections.\n");
 				break;

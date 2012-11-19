@@ -120,7 +120,7 @@ private void process_wont(int code)
 int receive_message(string str)
 {
 	string line;
-	
+
 	if (str) {
 		inbuf += str;
 	} else {
@@ -194,7 +194,7 @@ void set_mode(int newmode)
 	if (!query_conn()) {
 		return;
 	}
-	
+
 	switch (newmode) {
 	case MODE_ECHO:
 		if (echo_status || echo_pending) {

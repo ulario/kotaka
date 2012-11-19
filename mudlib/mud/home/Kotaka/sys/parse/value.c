@@ -26,7 +26,7 @@ string grammar;
 static void create()
 {
 	::create();
-	
+
 	grammar = read_file("~/data/parse/value.dpd");
 }
 
@@ -40,27 +40,27 @@ static void upgraded()
 mixed parse(string input)
 {
 	mixed *ret;
-	
+
 	ret = parse_string(grammar, input);
-	
+
 	if (!ret)
 		error("Parse failure");
-	
+
 	return ret[0];
 }
 
 static string *parse_str(string *input)
 {
 	string str;
-	
+
 	str = input[0];
 	str = str[1 .. strlen(str) - 2];
-	
+
 	str = STRINGD->replace(str, "\\t", "\t");
 	str = STRINGD->replace(str, "\\n", "\n");
 	str = STRINGD->replace(str, "\\\"", "\"");
 	str = STRINGD->replace(str, "\\\\", "\\");
-	
+
 	return ({ str });
 }
 
@@ -79,7 +79,7 @@ static object *parse_obj(string *input)
 	string oname, osubname;
 	string *parts;
 	object root, obj;
-	
+
 	oname = input[0];
 	oname = oname[1 .. strlen(oname) - 2];	/* strip off angle brackets */
 
@@ -95,9 +95,9 @@ static object *parse_obj(string *input)
 
 	if (parts[0][0] == '/') {
 		string osubname;
-		
+
 		root = find_object(parts[0]);
-		
+
 		if (!root)
 			error(parts[0] + ": no such object");
 	} else if (parts[0] != "ROOT") {

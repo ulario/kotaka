@@ -47,11 +47,11 @@ static mixed call_other(mixed obj, string func, varargs mixed args ...)
 	default:
 		error("Bad argument 1 for function call_other (type mismatch)");
 	}
-	
+
 	if (!obj) {
 		error("Bad argument 1 for function call_other (target object " + path + " does not exist)");
 	}
-	
+
 	if (!function_object(func, obj)) {
 		error("Call to undefined function " + func + " in object " + path);
 	}
@@ -69,7 +69,7 @@ static string previous_program(varargs int n)
 
 	while (1) {
 		tmp = ::previous_program(idx);
-		
+
 		if (tmp != CALL_GUARD) {
 			if (!n) {
 				return tmp;
@@ -85,20 +85,20 @@ static mixed **call_trace()
 	mixed **trace;
 	int index;
 	int sz;
-	
+
 	trace = ::call_trace();
 	sz = sizeof(trace);
-	
+
 	for (index = 0; index < sz; index++) {
 		mixed *frame;
-		
+
 		frame = trace[index];
-		
+
 		if (frame[TRACE_PROGNAME] == CALL_GUARD) {
 			trace[index] = nil;
 		}
 	}
-	
+
 	return trace - ({ nil });
 }
 #endif

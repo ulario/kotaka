@@ -43,9 +43,9 @@ int empty()
 string getline()
 {
 	string line;
-	
+
 	line = nil;
-	
+
 	if (sscanf(buf, "%s\n%s", line, buf)) {
 		return line;
 	} else if (buf != "") {

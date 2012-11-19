@@ -268,11 +268,11 @@ private void send_to_target(string target, string header, string message)
 			object *kusers;
 			int i;
 			int ksz;
-			
+
 			kusers = users();
-			
+
 			ksz = sizeof(users);
-			
+
 			for (i = 0; i < ksz; i++) {
 				users[kusers[i]] = 1;
 			}
@@ -329,7 +329,7 @@ private void send_to_target(string target, string header, string message)
 	case "kadmin":
 		{
 			object kadmin;
-			
+
 			kadmin = KERNELD->find_user("admin");
 
 			if (kadmin) {
@@ -347,7 +347,7 @@ private void send_to_target(string target, string header, string message)
 
 	for (i = 0; i < usz; i++) {
 		object user;
-			
+
 		user = users[i];
 		for (j = 0; j < sz; j++) {
 			user->message(header + ": " + lines[j] + "\n");

@@ -183,11 +183,11 @@ object clone_object(string path)
 int destruct_object(mixed obj)
 {
 	VERIFY();
-	
+
 	if (typeof(obj) == T_STRING) {
 		obj = normalize(obj);
 	}
-	
+
 	return wt::destruct_object(obj);
 }
 

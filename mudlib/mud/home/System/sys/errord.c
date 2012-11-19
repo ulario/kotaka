@@ -85,11 +85,11 @@ string sprintframe(mixed *frame, varargs int include_args)
 	func = frame[TRACE_FUNCTION];
 	lnum = frame[TRACE_LINE];
 	ext = frame[TRACE_EXTERNAL];
-	
+
 	if (prog == CALL_GUARD) {
 		flags[0] = 'G';
 	}
-	
+
 	if (ext) {
 		flags[1] = 'E';
 	}
@@ -176,7 +176,7 @@ void runtime_error(string error, int caught, mixed **trace)
 
 		if (comperr) {
 			cerrstrs = allocate(sizeof(comperr));
-			
+
 			for (i = 0; i < sizeof(comperr); i++) {
 				mixed *cframe;
 
