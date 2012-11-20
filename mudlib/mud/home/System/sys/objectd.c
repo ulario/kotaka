@@ -152,6 +152,21 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 	}
 }
 
+private int is_protected(string path)
+{
+	if (sscanf(path, USR_DIR + "/Bigstruct/%*s/")) {
+		return 1;
+	}
+
+	switch(path) {
+	case INITD:
+	case OBJECTD:
+		return 1;
+	}
+
+	return 0;
+}
+
 /* external */
 
 void enable()
@@ -501,18 +516,10 @@ void destruct(string owner, object obj)
 		return;
 	}
 
-	if (!isclone) {
-		path = name;
-	}
+	path = name;
 
-	if (path == OBJECTD) {
-		error("Cannot destruct object manager");
-	}
-
-	if (sscanf(path, USR_DIR + "/System/%*s/bigstruct/")) {
-		if (!isclone && !sscanf(path, USR_DIR + "/System" + INHERITABLE_SUBDIR + "/bigstruct")) {
-			error("Cannot destruct bigstruct blueprint");
-		}
+	if (is_protected(path)) {
+		error("Forbidden");
 	}
 
 	if (find_object(PROGRAMD)) {
