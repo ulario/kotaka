@@ -260,7 +260,7 @@ void recompile_everything()
 			string path;
 
 			oindex = indices->get_element(i);
-			pinfo = PROGRAMD->query_object_info(oindex);
+			pinfo = PROGRAMD->query_program_info(oindex);
 			path = pinfo->query_path();
 
 			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
@@ -412,7 +412,7 @@ object query_orphans()
 	orphans = new_object(BIGSTRUCT_ARRAY_LWO);
 	orphans->grant_access(previous_object(), READ_ACCESS);
 
-	indices = PROGRAMD->query_object_indices();
+	indices = PROGRAMD->query_program_indices();
 	sz = indices->get_size();
 
 	for (i = 0; i < sz; i++) {
@@ -549,7 +549,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		inherited |= ({ AUTO });
 	}
 
-	register_object(path, inherited, includes, nil, nil);
+	PROGRAMD->register_program(path, inherited, includes, nil, nil);
 	includes = nil;
 
 	is_kernel = sscanf(path, "/kernel/%*s");
@@ -614,7 +614,7 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 		dtor = ret[2];
 	}
 
-	register_object(path, inherited, includes, ctor, dtor);
+	PROGRAMD->register_program(path, inherited, includes, ctor, dtor);
 	includes = nil;
 
 	if (err) {
@@ -672,7 +672,7 @@ void destruct(string owner, object obj)
 	name = object_name(obj);
 	isclone = sscanf(name, "%s#%*d", path);
 
-	pinfo = objdb->get_element(status(obj, O_INDEX));
+	pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
 
 	if (!isclone) {
 		path = name;

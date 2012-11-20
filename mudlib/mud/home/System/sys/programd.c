@@ -86,7 +86,7 @@ void register_program(string path, string *inherits,
 	pinfo->set_destructor(destructor);
 }
 
-object query_object_indices()
+object query_program_indices()
 {
 	object indices;
 
@@ -97,7 +97,7 @@ object query_object_indices()
 	return indices;
 }
 
-object query_object_info(int oindex)
+object query_program_info(int oindex)
 {
 	return db->get_element(oindex);
 }
