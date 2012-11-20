@@ -159,3 +159,10 @@ object query_includers(string path)
 
 	return includers;
 }
+
+void remove_program(int index)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	db->set_element(index, nil);
+}

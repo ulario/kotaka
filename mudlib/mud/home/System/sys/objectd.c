@@ -636,28 +636,6 @@ void clone(string owner, object obj)
 	string path;
 
 	ACCESS_CHECK(KERNEL());
-/*
-	path = object_name(obj);
-
-	if (ignore_clones) {
-		return;
-	}
-
-	if (in_objectd) {
-		rqueue->push_back( ({ 1, status(obj, O_INDEX), obj }) );
-		return;
-	}
-
-	pinfo = objdb->get_element(status(obj, O_INDEX));
-
-	if (!pinfo) {
-		return;
-	};
-
-	enter_objectd();
-	pinfo->add_clone(obj);
-	exit_objectd();
-*/
 }
 
 void destruct(string owner, object obj)
@@ -670,7 +648,10 @@ void destruct(string owner, object obj)
 	ACCESS_CHECK(KERNEL());
 
 	name = object_name(obj);
-	isclone = sscanf(name, "%s#%*d", path);
+
+	if (sscanf(name, "%s#%*d", path)) {
+		return;
+	}
 
 	pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
 
@@ -696,24 +677,7 @@ void destruct(string owner, object obj)
 		obj->_F_sys_destruct();
 	}
 
-	if (isclone) {
-/*
-		if (ignore_clones) {
-			return;
-		}
-
-		if (in_objectd) {
-			rqueue->push_back( ({ 0, status(obj, O_INDEX), obj }) );
-			return;
-		}
-
-		enter_objectd();
-		pinfo->remove_clone(obj);
-		exit_objectd();
-*/
-	} else {
-		pinfo->set_destructed();
-	}
+	pinfo->set_destructed();
 }
 
 void destruct_lib(string owner, string path)
@@ -734,11 +698,8 @@ void destruct_lib(string owner, string path)
 void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(KERNEL());
-/*
-	enter_objectd();
-	objdb->set_element(index, nil);
-	exit_objectd();
-*/
+
+	PROGRAMD->remove_program(index);
 }
 
 mixed include_file(string compiled, string from, string path)
