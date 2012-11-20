@@ -85,3 +85,16 @@ void register_program(string path, string *inherits,
 	pinfo->set_inherited_destructors(dtors);
 	pinfo->set_destructor(destructor);
 }
+
+object query_object_indices()
+{
+	object indices;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	indices = db->get_indices();
+
+	indices->grant_access(previous_object(), FULL_ACCESS);
+
+	return indices;
+}

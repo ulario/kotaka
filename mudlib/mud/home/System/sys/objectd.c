@@ -216,7 +216,8 @@ object query_object_indices()
 {
 	object indices;
 
-	indices = objdb->get_indices();
+	indices = PROGRAMD->query_object_indices();
+
 	indices->grant_access(previous_object(), READ_ACCESS);
 
 	return indices;
