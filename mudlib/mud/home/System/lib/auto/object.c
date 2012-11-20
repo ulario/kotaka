@@ -30,7 +30,7 @@ static int free_objects()
 
 private void _F_call_constructors()
 {
-	object objectd;
+	object programd;
 	object pinfo;
 	string *ctors;
 	int index;
@@ -38,13 +38,13 @@ private void _F_call_constructors()
 
 	string base;
 
-	objectd = find_object(OBJECTD);
+	programd = find_object(PROGRAMD);
 
-	if (!objectd) {
+	if (!programd) {
 		return;
 	}
 
-	pinfo = objectd->query_object_info(status(this_object(), O_INDEX));
+	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
 
 	if (!pinfo) {
 		return;
@@ -60,7 +60,7 @@ private void _F_call_constructors()
 
 private void _F_call_destructors()
 {
-	object objectd;
+	object programd;
 	object pinfo;
 	string *dtors;
 	int index;
@@ -68,13 +68,13 @@ private void _F_call_destructors()
 
 	string base;
 
-	objectd = find_object(OBJECTD);
+	programd = find_object(PROGRAMD);
 
-	if (!objectd) {
+	if (!programd) {
 		return;
 	}
 
-	pinfo = objectd->query_object_info(status(this_object(), O_INDEX));
+	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
 
 	if (!pinfo) {
 		return;
