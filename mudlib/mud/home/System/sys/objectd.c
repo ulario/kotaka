@@ -412,7 +412,10 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		inherited |= ({ AUTO });
 	}
 
-	PROGRAMD->register_program(path, inherited, includes, nil, nil);
+	if (find_object(PROGRAMD)) {
+		PROGRAMD->register_program(path, inherited, includes, nil, nil);
+	}
+
 	includes = nil;
 
 	is_kernel = sscanf(path, "/kernel/%*s");
@@ -477,7 +480,10 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 		dtor = ret[2];
 	}
 
-	PROGRAMD->register_program(path, inherited, includes, ctor, dtor);
+	if (find_object(PROGRAMD)) {
+		PROGRAMD->register_program(path, inherited, includes, ctor, dtor);
+	}
+
 	includes = nil;
 
 	if (err) {
