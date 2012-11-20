@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/bigstruct.h>
+#include <kotaka/paths.h>
 
 object db;	/* program database */
 
@@ -25,4 +26,62 @@ static void create()
 {
 	db = clone_object(BIGSTRUCT_MAP_OBJ);
 	db->set_type(T_INT);
+}
+
+void register_program(string path, string *inherits,
+	string *includes, string constructor, string destructor)
+{
+	int i;
+	int sz;
+	int oindex;
+	object pinfo;
+	int *oindices;
+	string *ctors;
+	string *dtors;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	oindex = status(path)[O_INDEX];
+
+	sz = sizeof(inherits);
+	oindices = allocate(sz);
+	ctors = ({ });
+	dtors = ({ });
+
+	for (i = 0; i < sz; i++) {
+		object subpinfo;
+		int suboindex;
+
+		suboindex = status(inherits[i])[O_INDEX];
+		oindices[i] = suboindex;
+		subpinfo = db->get_element(suboindex);
+
+		if (subpinfo) {
+			ctors |= subpinfo->query_inherited_constructors();
+			ctors |= ({ subpinfo->query_constructor() });
+			dtors |= subpinfo->query_inherited_destructors();
+			dtors |= ({ subpinfo->query_destructor() });
+		}
+	}
+
+	ctors -= ({ nil });
+	dtors -= ({ nil });
+
+	if (upgrading) {
+		pinfo = db->get_element(oindex);
+	}
+
+	if (!pinfo) {
+		pinfo = new_object(OBJECT_INFO);
+		pinfo->set_path(path);
+
+		db->set_element(oindex, pinfo);
+	}
+
+	pinfo->set_inherits(oindices);
+	pinfo->set_includes(includes);
+	pinfo->set_inherited_constructors(ctors);
+	pinfo->set_constructor(constructor);
+	pinfo->set_inherited_destructors(dtors);
+	pinfo->set_destructor(destructor);
 }

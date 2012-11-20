@@ -39,9 +39,6 @@ string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
 
-object objdb;		/* object database */
-int ignore_clones;	/* ignore clones? */
-
 object rqueue;		/* reentrance queue */
 int in_objectd;		/* reentrance flag */
 
@@ -99,66 +96,6 @@ static void create()
 void reboot()
 {
 	ACCESS_CHECK(SYSTEM());
-}
-
-private void register_object(string path, string *inherits,
-	string *includes, string constructor, string destructor)
-{
-	int i;
-	int sz;
-	int oindex;
-	object pinfo;
-	int *oindices;
-	string *ctors;
-	string *dtors;
-
-	ACCESS_CHECK(SYSTEM());
-
-	oindex = status(path)[O_INDEX];
-
-	sz = sizeof(inherits);
-	oindices = allocate(sz);
-	ctors = ({ });
-	dtors = ({ });
-
-	for (i = 0; i < sz; i++) {
-		object subpinfo;
-		int suboindex;
-
-		suboindex = status(inherits[i])[O_INDEX];
-		oindices[i] = suboindex;
-		subpinfo = objdb->get_element(suboindex);
-
-		if (subpinfo) {
-			ctors |= subpinfo->query_inherited_constructors();
-			ctors |= ({ subpinfo->query_constructor() });
-			dtors |= subpinfo->query_inherited_destructors();
-			dtors |= ({ subpinfo->query_destructor() });
-		}
-	}
-
-	ctors -= ({ nil });
-	dtors -= ({ nil });
-
-	if (upgrading) {
-		pinfo = objdb->get_element(oindex);
-	}
-
-	if (!pinfo) {
-		pinfo = new_object(OBJECT_INFO);
-		pinfo->set_path(path);
-
-		enter_objectd();
-		objdb->set_element(oindex, pinfo);
-		exit_objectd();
-	}
-
-	pinfo->set_inherits(oindices);
-	pinfo->set_includes(includes);
-	pinfo->set_inherited_constructors(ctors);
-	pinfo->set_constructor(constructor);
-	pinfo->set_inherited_destructors(dtors);
-	pinfo->set_destructor(destructor);
 }
 
 private string *fetch_from_initd(object initd, string path)
