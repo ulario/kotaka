@@ -84,12 +84,15 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_DEBUG, "Initializing object manager");
 	OBJECTD->enable();
+
 	OBJECTD->discover_objects();
+/*
 	OBJECTD->discover_clones();
-
+*/
 	LOGD->post_message("boot", LOG_DEBUG, "Testing object manager");
+/*
 	OBJECTD->audit_clones();
-
+*/
 	LOGD->post_message("boot", LOG_DEBUG, "Loading error manager");
 	load_object(ERRORD);
 	ERRORD->enable();
