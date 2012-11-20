@@ -42,43 +42,6 @@ int upgrading;		/* are we upgrading or making a new compile? */
 object rqueue;		/* reentrance queue */
 int in_objectd;		/* reentrance flag */
 
-/* internal functions */
-
-static void create();
-private void scan_objects(string path, object libqueue, object objqueue, object notqueue);
-private void register_object(string path, string *inherits, string *includes, string constructor, string destructor);
-private string *fetch_from_initd(object initd, string path);
-private mixed query_include_file(string compiled, string from, string path);
-private void enter_objectd();
-private void exit_objectd();
-private void flush_rqueue();
-
-/* external functions */
-
-void recompile_kernel_library();
-void recompile_everything();
-void disable();
-void enable();
-void discover_objects();
-object query_object_info(int oindex);
-object query_inheriters(int oindex);
-object query_includers(string path);
-
-/* kernel library hooks */
-
-void compiling(string path);
-void compile(string owner, object obj, string *source, string inherited ...);
-void compile_lib(string owner, string path, string *source, string inherited ...);
-void compile_failed(string owner, string path);
-void clone(string owner, object obj);
-void destruct(string owner, object obj);
-void destruct_lib(string owner, string path);
-void remove_program(string owner, string path, int timestamp, int index);
-mixed include_file(string compiled, string from, string path);
-int touch(object obj, string function);
-int forbid_call(string path);
-int forbid_inherit(string from, string path, int priv);
-
 /***************/
 /* Definitions */
 /***************/
