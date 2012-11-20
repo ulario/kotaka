@@ -39,9 +39,6 @@ string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
 
-object rqueue;		/* reentrance queue */
-int in_objectd;		/* reentrance flag */
-
 /***************/
 /* Definitions */
 /***************/
@@ -50,10 +47,6 @@ int in_objectd;		/* reentrance flag */
 
 static void create()
 {
-	compile_object("programd");
-	/* MUST be lwo to avoid infinite loop */
-	/* when tracking our own resources */
-	rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 }
 
 void reboot()
@@ -508,8 +501,6 @@ void destruct(string owner, object obj)
 		return;
 	}
 
-	pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
-
 	if (!isclone) {
 		path = name;
 	}
@@ -522,6 +513,10 @@ void destruct(string owner, object obj)
 		if (!isclone && !sscanf(path, USR_DIR + "/System" + INHERITABLE_SUBDIR + "/bigstruct")) {
 			error("Cannot destruct bigstruct blueprint");
 		}
+	}
+
+	if (find_object(PROGRAMD)) {
+		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
 	}
 
 	if (!pinfo) {
@@ -541,7 +536,9 @@ void destruct_lib(string owner, string path)
 
 	ACCESS_CHECK(KERNEL());
 
-	pinfo = PROGRAMD->query_program_info(status(path)[O_INDEX]);
+	if (find_object(PROGRAMD)) {
+		pinfo = PROGRAMD->query_program_info(status(path)[O_INDEX]);
+	}
 
 	if (!pinfo) {
 		return;
@@ -554,7 +551,9 @@ void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(KERNEL());
 
-	PROGRAMD->remove_program(index);
+	if (find_object(PROGRAMD)) {
+		PROGRAMD->remove_program(index);
+	}
 }
 
 mixed include_file(string compiled, string from, string path)
