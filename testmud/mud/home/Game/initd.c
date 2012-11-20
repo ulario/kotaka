@@ -89,12 +89,13 @@ static void create()
 
 	"sys/testd"->test();
 
+	INITD->boot_subsystem("Test");
+	INITD->boot_subsystem("Help");
+	INITD->boot_subsystem("Text");
+	INITD->boot_subsystem("Account");
+
 	load_help();
 	build_world();
-
-	INITD->boot_subsystem("Test");
-	INITD->boot_subsystem("Account");
-	INITD->boot_subsystem("Text");
 }
 
 void reboot()
