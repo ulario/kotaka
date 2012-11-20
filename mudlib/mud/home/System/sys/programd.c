@@ -76,7 +76,7 @@ void register_program(string path, string *inherits,
 	pinfo = db->get_element(oindex);
 
 	if (!pinfo) {
-		pinfo = new_object(OBJECT_INFO);
+		pinfo = new_object(PROGRAM_INFO);
 		pinfo->set_path(path);
 
 		db->set_element(oindex, pinfo);

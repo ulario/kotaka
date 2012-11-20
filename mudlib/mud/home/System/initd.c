@@ -61,43 +61,19 @@ private void initialize()
 
 	boot_subsystem("Bigstruct");
 
-	configure_logging();
+	load_object(PROGRAM_INFO);
+	load_object(OBJECTD);
 
-	LOGD->post_message("boot", LOG_NOTICE,
-		"-----------------------------------------------------");
-	LOGD->post_message("boot", LOG_NOTICE,
-		"Kotaka mudlib " + KOTAKA_VERSION + " booting...");
-	LOGD->post_message("boot", LOG_NOTICE,
-		"-----------------------------------------------------");
+	OBJECTD->enable();
+	OBJECTD->discover_objects();
+
+	configure_logging();
 
 	load_object(TESTD);
 	TESTD->test();
 
-	LOGD->post_message("boot", LOG_DEBUG, "Configuring kernel");
 	configure_klib();
 
-	LOGD->post_message("boot", LOG_DEBUG, "Loading object manager");
-
-	load_object(OBJECT_INFO);
-	load_object("obj/canary");
-	load_object(OBJECTD);
-
-	LOGD->post_message("boot", LOG_DEBUG, "Initializing object manager");
-	OBJECTD->enable();
-
-	OBJECTD->discover_objects();
-/*
-	OBJECTD->discover_clones();
-*/
-	LOGD->post_message("boot", LOG_DEBUG, "Testing object manager");
-/*
-	OBJECTD->audit_clones();
-*/
-	LOGD->post_message("boot", LOG_DEBUG, "Loading error manager");
-	load_object(ERRORD);
-	ERRORD->enable();
-
-	LOGD->post_message("boot", LOG_DEBUG, "Loading system");
 	load_dir("closed", 1);
 	load_dir("lib", 1);
 	load_dir("lwo", 1);
