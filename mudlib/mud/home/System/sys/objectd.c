@@ -196,55 +196,6 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 	}
 }
 
-private void enter_objectd()
-{
-	in_objectd++;
-}
-
-private void exit_objectd()
-{
-	in_objectd--;
-
-	if (in_objectd) {
-		return;
-	}
-
-	flush_rqueue();
-}
-
-private void flush_rqueue()
-{
-	ASSERT(in_objectd == 0);
-
-	if (rqueue->empty()) {
-		return;
-	}
-
-	enter_objectd();
-
-	while (!rqueue->empty()) {
-		mixed *front;
-		object pinfo;
-
-		front = rqueue->get_front();
-		rqueue->pop_front();
-
-		pinfo = objdb->get_element(front[1]);
-
-		if (!pinfo) {
-			return;
-		}
-
-		if (front[0]) {
-			pinfo->add_clone(front[2]);
-		} else {
-			pinfo->remove_clone(front[2]);
-		}
-	}
-
-	exit_objectd();
-}
-
 /* external */
 
 void enable()
