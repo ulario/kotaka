@@ -449,14 +449,14 @@ object query_orphans()
 	orphans = new_object(BIGSTRUCT_ARRAY_LWO);
 	orphans->grant_access(previous_object(), READ_ACCESS);
 
-	indices = objdb->get_indices();
+	indices = PROGRAMD->query_object_indices();
 	sz = indices->get_size();
 
 	for (i = 0; i < sz; i++) {
 		object pinfo;
 		string path;
 
-		pinfo = objdb->get_element(indices->get_element(i));
+		pinfo = PROGRAMD->query_program_info(indices->get_element(i));
 
 		if (!file_info(path = pinfo->query_path() + ".c")) {
 			orphans->push_back(path);
@@ -476,13 +476,6 @@ object query_dormant()
 	scan_objects("/", nil, nil, notlist);
 
 	return notlist;
-}
-
-atomic void defragment()
-{
-	enter_objectd();
-	objdb->reindex();
-	exit_objectd();
 }
 
 void audit_clones()
