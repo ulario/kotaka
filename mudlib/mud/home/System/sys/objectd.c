@@ -297,7 +297,7 @@ void recompile_everything()
 			string path;
 
 			oindex = indices->get_element(i);
-			pinfo = objdb->get_element(oindex);
+			pinfo = PROGRAMD->query_object_info(oindex);
 			path = pinfo->query_path();
 
 			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
@@ -362,6 +362,7 @@ void discover_objects()
 	}
 }
 
+/*
 void discover_clones()
 {
 	ACCESS_CHECK(PRIVILEGED());
@@ -373,14 +374,14 @@ void discover_clones()
 		object selfqueue;
 		int sz, i;
 
-		indices = objdb->get_indices();
+		indices = PROGRAMD->query_object_indices();
 		sz = indices->get_size();
 
 		for (i = 0; i < sz; i++) {
 			object pinfo;
 			int count;
 
-			pinfo = objdb->get_element(indices->get_element(i));
+			pinfo = PROGRAMD->get_element(indices->get_element(i));
 			pinfo->reset_clones();
 		}
 
@@ -437,6 +438,7 @@ void full_reset()
 		exit_objectd();
 	}
 }
+*/
 
 object query_orphans()
 {
