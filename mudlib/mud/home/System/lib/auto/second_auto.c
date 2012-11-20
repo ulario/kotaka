@@ -30,25 +30,9 @@ inherit "callout_guard";
 inherit "touch";
 inherit "object";
 
-object canary;
-
 /**********/
 /* status */
 /**********/
-
-void set_canary(object new_canary)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	canary = new_canary;
-}
-
-object query_canary()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	return canary;
-}
 
 nomask void _F_dummy()
 {
