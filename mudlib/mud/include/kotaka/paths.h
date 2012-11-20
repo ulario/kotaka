@@ -45,7 +45,7 @@
 
 /* lwos */
 
-#define OBJECT_INFO		(USR_DIR + "/System/lwo/object_info")
+#define PROGRAM_INFO		(USR_DIR + "/System/lwo/program_info")
 
 /**********/
 /* Kotaka */
