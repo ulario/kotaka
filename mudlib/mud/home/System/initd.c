@@ -57,28 +57,25 @@ private void initialize()
 {
 	subsystems = ({ "System" });
 
-	load_object(KERNELD);
-
-	boot_subsystem("Bigstruct");
+	load_object(ERRORD);
+	ERRORD->enable();
 
 	load_object(PROGRAM_INFO);
 	load_object(OBJECTD);
 
 	OBJECTD->enable();
 
+	load_object(KERNELD);
+	configure_klib();
+
+	boot_subsystem("Bigstruct");
+
 	load_object(PROGRAMD);
-
 	OBJECTD->discover_objects();
-
-	configure_logging();
 
 	load_object(TESTD);
 	TESTD->test();
 
-	configure_klib();
-
-	load_dir("closed", 1);
-	load_dir("lib", 1);
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("sys", 1);
