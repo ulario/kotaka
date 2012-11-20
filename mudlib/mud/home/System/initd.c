@@ -60,37 +60,58 @@ private void initialize()
 	load_object(ERRORD);
 	ERRORD->enable();
 
+	load_object(LOGD);
+	configure_logging();
+
+	LOGD->post_message("boot", LOG_INFO, "Logging initialized.");
+	LOGD->post_message("boot", LOG_INFO, "\n---=--=-==-=== Welcome to " + KOTAKA_VERSION + " ===-==-=--=---\n");
+
+	LOGD->post_message("boot", LOG_INFO, "Loading object manager.");
 	load_object(PROGRAM_INFO);
 	load_object(OBJECTD);
 
 	OBJECTD->enable();
 
+	LOGD->post_message("boot", LOG_INFO, "Loading kernel manager");
 	load_object(KERNELD);
 	configure_klib();
 
+	LOGD->post_message("boot", LOG_INFO, "Loading bigstruct");
 	boot_subsystem("Bigstruct");
 
+	LOGD->post_message("boot", LOG_INFO, "Loading program manager");
 	load_object(PROGRAMD);
+
+	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
 	OBJECTD->discover_objects();
 
+	LOGD->post_message("boot", LOG_INFO, "Testing");
 	load_object(TESTD);
 	TESTD->test();
 
+	LOGD->post_message("boot", LOG_INFO, "Loading system");
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 
+	LOGD->post_message("boot", LOG_INFO, "Configuring user manager");
 	SYSTEM_USERD->set_reserve(2);
 	SYSTEM_USERD->enable();
+
+	LOGD->post_message("boot", LOG_INFO, "Starting status manager");
 	STATUSD->enable();
+
+	LOGD->post_message("boot", LOG_INFO, "Starting watchdog");
 	WATCHDOGD->enable();
 
 	KERNELD->set_global_access("System", 1);
 
 	/* Booted up */
 
+	LOGD->post_message("boot", LOG_INFO, "Booting kotaka");
 	boot_subsystem("Kotaka");
-	boot_subsystem("Help");
+
+	LOGD->post_message("boot", LOG_INFO, "Booting game");
 	boot_subsystem("Game");
 }
 
