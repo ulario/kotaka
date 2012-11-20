@@ -44,10 +44,6 @@ string destructor;		/* destructor */
 string *inherited_constructors;	/* constructors */
 string *inherited_destructors;	/* destructors */
 
-int nclones;			/* number of clones */
-int overflow;			/* if we overflowed the array */
-mapping clones;			/* clones */
-
 /****************/
 /* Declarations */
 /****************/
@@ -64,10 +60,6 @@ void set_destructor(string destructor);
 void set_inherited_constructors(string *constructors);
 void set_inherited_destructors(string *destructors);
 
-void add_clone(object clone);
-void remove_clone(object clone);
-void reset_clones();
-
 string query_path();
 int *query_inherits();
 string *query_includes();
@@ -78,9 +70,6 @@ string query_destructor();
 
 string *query_inherited_constructors();
 string *query_inherited_destructors();
-
-object *query_clones();
-int query_clone_count();
 
 /***************/
 /* definitions */
@@ -146,71 +135,6 @@ void set_inherited_destructors(string *destructors)
 	inherited_destructors = destructors;
 }
 
-void add_clone(object clone)
-{
-	int oindex;
-
-	ACCESS_CHECK(SYSTEM());
-
-	nclones++;
-
-	if (overflow) {
-		return;
-	}
-
-	if (nclones > status(ST_ARRAYSIZE)) {
-		overflow = 1;
-		clones = nil;
-		return;
-	}
-
-	if (!clone) {
-		return;
-	}
-
-	if (!clones) {
-		clones = ([ ]);
-	}
-
-	sscanf(object_name(clone), "%*s#%d", oindex);
-
-	clones[oindex] = clone;
-}
-
-void remove_clone(object clone)
-{
-	int oindex;
-
-	ACCESS_CHECK(SYSTEM());
-
-	if (nclones <= 0) {
-		error("Clone underflow for " + path);
-	}
-
-	nclones--;
-
-	if (overflow) {
-		return;
-	}
-
-	if (!clone) {
-		return;
-	}
-
-	sscanf(object_name(clone), "%*s#%d", oindex);
-
-	clones[oindex] = clone;
-}
-
-void reset_clones()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	clones = nil;
-	overflow = 0;
-	nclones = 0;
-}
-
 string query_path()
 {
 	return path;
@@ -249,18 +173,4 @@ string *query_inherited_constructors()
 string *query_inherited_destructors()
 {
 	return inherited_destructors;
-}
-
-object *query_clones()
-{
-	if (overflow) {
-		return nil;
-	}
-
-	return clones ? map_values(clones) : ({ });
-}
-
-int query_clone_count()
-{
-	return nclones;
 }
