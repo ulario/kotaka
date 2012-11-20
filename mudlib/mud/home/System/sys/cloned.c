@@ -71,3 +71,80 @@ void discover_clones()
 	}
 }
 */
+
+/*
+void audit_clones()
+{
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
+
+	rlimits (0; -1) {
+		object indices;
+		string *owners;
+		object first;
+		int orsz, odsz, i;
+
+		object truecounts;
+
+		truecounts = new_object(BIGSTRUCT_MAP_LWO);
+		truecounts->set_type(T_INT);
+		indices = objdb->get_indices();
+		odsz = indices->get_size();
+
+		for (i = 0; i < odsz; i++) {
+			truecounts->set_element(indices->get_element(i), 0);
+		}
+
+		owners = KERNELD->query_owners();
+		orsz = sizeof(owners);
+
+		for (i = 0; i < orsz; i++) {
+			object current;
+			int nclones;
+
+			first = KERNELD->first_link(owners[i]);
+
+			current = first;
+
+			if (!current) {
+				continue;
+			}
+
+			do {
+				int oindex;
+				string path;
+				object pinfo;
+
+				path = object_name(current);
+
+				if (!sscanf(path, "%*s#%*d")) {
+					current = KERNELD->next_link(current);
+					continue;
+				}
+
+				oindex = status(current, O_INDEX);
+				truecounts->set_element(oindex,
+					truecounts->get_element(oindex) + 1);
+				current = KERNELD->next_link(current);
+			} while (current != first);
+		}
+
+		ASSERT(truecounts->get_indices()->get_size() == odsz);
+
+		for (i = 0; i < odsz; i++) {
+			int mycount;
+			int truecount;
+			int oindex;
+			object pinfo;
+
+			oindex = indices->get_element(i);
+			pinfo = objdb->get_element(oindex);
+			mycount = pinfo->query_clone_count();
+			truecount = truecounts->get_element(oindex);
+
+			if (mycount != truecount) {
+				DRIVER->message("ObjectD audit fail: " + pinfo->query_path() + ", recorded " + mycount + ", counted " + truecount + "\n");
+			}
+		}
+	}
+}
+*/
