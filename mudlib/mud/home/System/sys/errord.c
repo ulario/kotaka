@@ -205,12 +205,21 @@ void runtime_error(string error, int caught, mixed **trace)
 			tracestr = printstack(trace);
 		}
 
-		if (compstr) {
-			LOGD->post_message("compile", LOG_INFO, compstr);
-		}
+		if (find_object(LOGD)) {
+			if (compstr) {
+				LOGD->post_message("compile", LOG_INFO, compstr);
+			}
 
-		LOGD->post_message("error", caught ? LOG_NOTICE : LOG_ERR, errstr);
-		LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
+			LOGD->post_message("error", caught ? LOG_NOTICE : LOG_ERR, errstr);
+			LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
+		} else {
+			if (compstr) {
+				DRIVER->message(compstr);
+			}
+
+			DRIVER->message(errstr);
+			DRIVER->message(tracestr);
+		}
 	}
 
 	DRIVER->set_error_manager(this_object());
