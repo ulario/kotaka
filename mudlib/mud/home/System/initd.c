@@ -65,6 +65,9 @@ private void initialize()
 	load_object(OBJECTD);
 
 	OBJECTD->enable();
+
+	load_object(PROGRAMD);
+
 	OBJECTD->discover_objects();
 
 	configure_logging();
