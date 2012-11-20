@@ -166,3 +166,13 @@ void remove_program(int index)
 
 	db->set_element(index, nil);
 }
+
+void reset_program_database()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	destruct_object(db);
+
+	db = clone_object(BIGSTRUCT_MAP_OBJ);
+	db->set_type(T_INT);
+}

@@ -329,26 +329,10 @@ void full_reset()
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
-	rlimits (0; -1) {
-		in_objectd = 0;
-		ignore_clones = 1;
+	PROGRAMD->reset_program_database();
 
-		destruct_object(objdb);
-		objdb = clone_object(BIGSTRUCT_MAP_OBJ);
-		objdb->set_type(T_INT);
-		rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-
-		ignore_clones = 0;
-
-		enter_objectd();
-
-		discover_objects();
-		discover_clones();
-
-		exit_objectd();
-	}
+	discover_objects();
 }
-*/
 
 object query_orphans()
 {
