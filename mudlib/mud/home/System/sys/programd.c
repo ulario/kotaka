@@ -17,3 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/bigstruct.h>
+
+object db;	/* program database */
+
+static void create()
+{
+	db = clone_object(BIGSTRUCT_MAP_OBJ);
+	db->set_type(T_INT);
+}

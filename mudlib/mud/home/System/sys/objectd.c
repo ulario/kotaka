@@ -90,9 +90,7 @@ int forbid_inherit(string from, string path, int priv);
 
 static void create()
 {
-	objdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	objdb->set_type(T_INT);
-
+	compile_object("programd");
 	/* MUST be lwo to avoid infinite loop */
 	/* when tracking our own resources */
 	rqueue = new_object(BIGSTRUCT_DEQUE_LWO);
