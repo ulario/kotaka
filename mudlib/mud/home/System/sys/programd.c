@@ -17,8 +17,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kernel/access.h>
 #include <kotaka/bigstruct.h>
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
+#include <status.h>
+#include <type.h>
+
+inherit SECOND_AUTO;
 
 object db;	/* program database */
 
@@ -67,9 +73,7 @@ void register_program(string path, string *inherits,
 	ctors -= ({ nil });
 	dtors -= ({ nil });
 
-	if (upgrading) {
-		pinfo = db->get_element(oindex);
-	}
+	pinfo = db->get_element(oindex);
 
 	if (!pinfo) {
 		pinfo = new_object(OBJECT_INFO);
