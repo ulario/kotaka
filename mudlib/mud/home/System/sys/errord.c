@@ -214,11 +214,11 @@ void runtime_error(string error, int caught, mixed **trace)
 			LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
 		} else {
 			if (compstr) {
-				DRIVER->message(compstr);
+				DRIVER->message(compstr + "\n");
 			}
 
-			DRIVER->message(errstr);
-			DRIVER->message(tracestr);
+			DRIVER->message(errstr + "\n");
+			DRIVER->message(tracestr + "\n");
 		}
 	}
 
