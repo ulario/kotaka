@@ -25,7 +25,6 @@
 #include <kotaka/privilege.h>
 #include <kotaka/checkarg.h>
 #include <kotaka/assert.h>
-#include <kotaka/bigstruct.h>
 
 inherit SECOND_AUTO;
 
@@ -141,15 +140,12 @@ private void write_logfile(string file, string message)
 		filebufs = ([ ]);
 	}
 
-	deque = filebufs[file];
-
-	if (!deque) {
-		deque = new_object(BIGSTRUCT_DEQUE_LWO);
-		filebufs[file] = deque;
+	if (!filebufs[file]) {
+		filebufs[file] = "";
 	}
 
 	for (i = 0; i < sz; i++) {
-		deque->push_back(timestamp + " " + lines[i] + "\n");
+		filebufs[file] += timestamp + " " + lines[i] + "\n";
 	}
 
 	schedule();
@@ -171,37 +167,11 @@ void flush()
 
 		for (i = sizeof(files) - 1; i >= 0; i--) {
 			catch {
-				object deque;
-				int quota;
-
-				deque = text_deques[i];
-
-				while (!deque->empty()) {
-					string text;
-					text = deque->get_front();
-					deque->pop_front();
-
-					if (!write_file(files[i], text)) {
-						DRIVER->message("LogD: error writing to " + files[i] + "\n");
-					}
-
-					quota++;
-
-					if (quota > 100) {
-						DRIVER->message("LogD: incomplete flush of " + files[i] + "\n");
-						break;
-					}
-				}
-
-				if (!deque->empty()) {
-					continue;
+				if (!write_file(files[i], filebufs[files[i]])) {
+					DRIVER->message("LogD: error writing to " + files[i] + "\n");
 				}
 
 				filebufs[files[i]] = nil;
-
-				if (!sscanf(object_name(deque), "%*s#-1")) {
-					destruct_object(deque);
-				}
 			}
 		}
 	}
