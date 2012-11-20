@@ -90,11 +90,68 @@ object query_object_indices()
 {
 	object indices;
 
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
 	indices = db->get_indices();
 
 	indices->grant_access(previous_object(), FULL_ACCESS);
 
 	return indices;
+}
+
+object query_object_info(int oindex)
+{
+	return db->get_element(oindex);
+}
+
+object query_inheriters(int oindex)
+{
+	object inheriters;
+	object indices;
+	int i, sz;
+
+	indices = db->get_indices();
+	inheriters = new_object(BIGSTRUCT_ARRAY_LWO);
+	inheriters->grant_access(previous_object(), READ_ACCESS);
+
+	sz = indices->get_size();
+
+	for (i = 0; i < sz; i++) {
+		object pinfo;
+		int suboindex;
+
+		suboindex = indices->get_element(i);
+		pinfo = db->get_element(suboindex);
+
+		if (sizeof(pinfo->query_inherits() & ({ oindex }))) {
+			inheriters->push_back(suboindex);
+		}
+	}
+
+	return inheriters;
+}
+
+object query_includers(string path)
+{
+	object includers;
+	object indices;
+	int i, sz;
+
+	indices = db->get_indices();
+	includers = new_object(BIGSTRUCT_ARRAY_LWO);
+	includers->grant_access(previous_object(), READ_ACCESS);
+
+	sz = indices->get_size();
+
+	for (i = 0; i < sz; i++) {
+		object pinfo;
+		int suboindex;
+
+		suboindex = indices->get_element(i);
+		pinfo = db->get_element(suboindex);
+
+		if (sizeof(pinfo->query_includes() & ({ path }))) {
+			includers->push_back(suboindex);
+		}
+	}
+
+	return includers;
 }
