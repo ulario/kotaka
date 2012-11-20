@@ -278,6 +278,7 @@ void recompile_everything()
 	object indices;
 	object libqueue;
 	object objqueue;
+
 	int i;
 	int sz;
 
@@ -287,7 +288,7 @@ void recompile_everything()
 	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
 	rlimits(0; -1) {
-		indices = objdb->get_indices();
+		indices = PROGRAMD->get_object_indices();
 		sz = indices->get_size();
 
 		for (i = 0; i < sz; i++) {
