@@ -478,6 +478,7 @@ object query_dormant()
 	return notlist;
 }
 
+/*
 void audit_clones()
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
@@ -522,7 +523,6 @@ void audit_clones()
 				path = object_name(current);
 
 				if (!sscanf(path, "%*s#%*d")) {
-					/* not a clone */
 					current = KERNELD->next_link(current);
 					continue;
 				}
@@ -553,7 +553,7 @@ void audit_clones()
 		}
 	}
 }
-
+*/
 /* kernel library hooks */
 
 void compiling(string path)
