@@ -259,7 +259,7 @@ void recompile_everything()
 	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
 	rlimits(0; -1) {
-		indices = PROGRAMD->get_object_indices();
+		indices = PROGRAMD->query_program_indices();
 		sz = indices->get_size();
 
 		for (i = 0; i < sz; i++) {
@@ -509,7 +509,7 @@ void clone(string owner, object obj)
 
 void destruct(string owner, object obj)
 {
-	int isclone;
+	int is_clone;
 	string name;
 	string path;
 	object pinfo;
@@ -518,14 +518,10 @@ void destruct(string owner, object obj)
 
 	name = object_name(obj);
 
-	if (sscanf(name, "%s#%*d", path)) {
-		return;
-	}
+	is_clone = sscanf(name, "%s#%*d", path);
 
-	path = name;
-
-	if (is_protected(path)) {
-		error("Forbidden");
+	if (!path) {
+		path = name;
 	}
 
 	if (find_object(PROGRAMD)) {
@@ -540,7 +536,9 @@ void destruct(string owner, object obj)
 		obj->_F_sys_destruct();
 	}
 
-	pinfo->set_destructed();
+	if (!is_clone) {
+		pinfo->set_destructed();
+	}
 }
 
 void destruct_lib(string owner, string path)
