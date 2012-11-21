@@ -46,6 +46,9 @@ inherit UTILITY_COMPILE;
 /*************/
 
 object world;
+
+mapping masters;
+
 int save_pending;
 int wsave_pending;
 
@@ -81,7 +84,7 @@ static void create()
 	PROXYD->get_proxy("Game")->set_global_access("~", 1);
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
-	PROPERTYD->add_property("painter", T_OBJECT, PROP_SIMPLE);
+	PROPERTYD->add_property("painter", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
@@ -153,17 +156,29 @@ static void place_object(string base, int remainder)
 
 void build_world()
 {
+	object master;
+
 	world = clone_object("~/obj/object");
+
+	masters = ([ ]);
+
+	master = clone_object("~/obj/object");
+	master->set_property("shack");
+	master->set_property("painter",
+		USR_DIR + "/Game/sys/handler/paint/shack");
+	masters["shack"] = master;
+
+	master = clone_object("~/obj/object");
+	master->set_property("human");
+	master->set_property("painter",
+		USR_DIR + "/Game/sys/handler/paint/human");
+	masters["human"] = master;
+
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
 	world->set_density(6.5);
 	world->set_property("painter",
-		find_object("~/sys/handler/paint/world"));
-
-	call_out("place_object", 0, "soil", 100);
-	call_out("place_object", 0, "rock", 50);
-	call_out("place_object", 0, "deer", 50);
-	call_out("place_object", 0, "wolf", 50);
+		USR_DIR + "/Game/sys/handler/paint/world");
 }
 
 object create_object()
@@ -174,6 +189,11 @@ object create_object()
 void destroy_object(object obj)
 {
 	destruct_object(obj);
+}
+
+object query_master(string name)
+{
+	return masters[name];
 }
 
 /****************/
