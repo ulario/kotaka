@@ -21,7 +21,7 @@
 #include <kotaka/assert.h>
 #include <game/paths.h>
 
-void paint_text(object gc, object obj, object viewer)
+void on_paint_text(object gc, object obj, object viewer)
 {
 	float dx, dy, dz;
 
