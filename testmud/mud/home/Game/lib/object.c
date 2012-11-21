@@ -24,6 +24,7 @@ inherit base LIB_OBJECT;
 
 inherit position "position";
 inherit bulk "bulk";
+inherit "timer";
 
 int destructing;
 
