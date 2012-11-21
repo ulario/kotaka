@@ -223,7 +223,7 @@ private void draw_environment(object gc, object living)
 		}
 	} else {
 		object stack;
-		object painter;
+		string painter;
 
 		stack = new_object(BIGSTRUCT_DEQUE_LWO);
 
@@ -237,14 +237,11 @@ private void draw_environment(object gc, object living)
 			stack->pop_back();
 
 			if (painter = env->query_property("painter")) {
-				painter->paint_text(gc, env, living);
+				painter->on_paint_text(gc, env, living);
 			} else {
-				gc->set_color(0x20);
-
-				for (y = -8; y <= 8; y++) {
-					gc->move_pen(-8, y);
-					gc->draw(STRINGD->chars('`', 17));
-				}
+				gc->set_color(0x0F);
+				gc->move_pen(0, 0);
+				gc->draw("?");
 			}
 		}
 	}
@@ -284,12 +281,12 @@ private void draw_neighbors(object gc, object living)
 			float vx, vy;
 
 			object neighbor;
-			object painthandler;
+			string painter;
 
 			neighbor = contents[i];
 
-			if (painthandler = neighbor->query_property("painter")) {
-				painthandler->paint_text(gc, neighbor, living);
+			if (painter = neighbor->query_property("painter")) {
+				painter->on_paint_text(gc, neighbor, living);
 			} else {
 				default_painter(gc, neighbor, living);
 			}
