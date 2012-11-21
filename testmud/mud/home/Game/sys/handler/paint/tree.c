@@ -17,50 +17,69 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths.h>
 #include <kotaka/assert.h>
+
 #include <game/paths.h>
 
 void on_paint_text(object gc, object obj, object viewer)
 {
 	float dx, dy, dz;
+	int x, y;
+	float mass;
 
-	int mx, my;
-	int i;
-
-	for (my = -8; my <= 8; my++) {
-		for (mx = -8; mx <= 8; mx++) {
-			gc->move_pen(mx, my);
-
-			if (SUBD->rnd() < 0.05) {
-				gc->set_color(0x2A);
-				gc->draw(STRINGD->chars('.', 17));
-			} else {
-				gc->set_color(0x20);
-				gc->draw(STRINGD->chars('\'', 17));
-			}
-		}
-	}
+	int row;
 
 	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
 
-	mx = (int)dx;
-	my = (int)dy;
 
-	gc->set_color(0x89);
-
-	for (i = 1; i <= 2; i++) {
-		gc->move_pen(mx - i, my - i);
-		gc->draw("\\");
-		gc->move_pen(mx + i, my + i);
-		gc->draw("\\");
-		gc->move_pen(mx - i, my + i);
-		gc->draw("/");
-		gc->move_pen(mx + i, my - i);
-		gc->draw("/");
+	if (fabs(dx) > 10.0 || fabs(dy) > 10.0) {
+		/* out of bounds */
+		return;
 	}
 
-	gc->move_pen(mx, my);
-	gc->set_color(0x8F);
-	gc->draw("X");
+	x = (int)(dx);
+	y = (int)(dy);
+
+	mass = obj->query_mass();
+
+	if (mass < 0.05) {
+		gc->move_pen(x, y);
+		gc->set_color(0x8B);
+		gc->draw("^");
+	} else if (mass < 0.25) {
+		gc->move_pen(x, y);
+		gc->set_color(0x83);
+		gc->draw("|");
+		gc->move_pen(x, y - 1);
+		gc->set_color(0x8B);
+		gc->draw("^");
+	} else if (mass < 1.0) {
+		gc->set_color(0x38);
+		gc->move_pen(x, y);
+		gc->draw("#");
+		gc->move_pen(x, y - 1);
+		gc->draw("#");
+
+		gc->set_color(0x2A);
+		gc->move_pen(x - 1, y - 2);
+		gc->draw("//\\");
+		gc->move_pen(x, y - 3);
+		gc->draw("/");
+	} else {
+		gc->set_color(0x38);
+		gc->move_pen(x, y);
+		gc->draw("#");
+		gc->move_pen(x, y - 1);
+		gc->draw("#");
+		gc->move_pen(x, y - 2);
+		gc->draw("#");
+
+		gc->set_color(0x2A);
+		gc->move_pen(x - 2, y - 3);
+		gc->draw("///\\\\");
+		gc->move_pen(x - 1, y - 4);
+		gc->draw("//\\");
+		gc->move_pen(x, y - 5);
+		gc->draw("/");
+	}
 }

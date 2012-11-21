@@ -17,50 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths.h>
 #include <kotaka/assert.h>
+
 #include <game/paths.h>
 
-void on_paint_text(object gc, object obj, object viewer)
+void on_create(object obj)
 {
-	float dx, dy, dz;
-
-	int mx, my;
-	int i;
-
-	for (my = -8; my <= 8; my++) {
-		for (mx = -8; mx <= 8; mx++) {
-			gc->move_pen(mx, my);
-
-			if (SUBD->rnd() < 0.05) {
-				gc->set_color(0x2A);
-				gc->draw(STRINGD->chars('.', 17));
-			} else {
-				gc->set_color(0x20);
-				gc->draw(STRINGD->chars('\'', 17));
-			}
-		}
-	}
-
-	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
-
-	mx = (int)dx;
-	my = (int)dy;
-
-	gc->set_color(0x89);
-
-	for (i = 1; i <= 2; i++) {
-		gc->move_pen(mx - i, my - i);
-		gc->draw("\\");
-		gc->move_pen(mx + i, my + i);
-		gc->draw("\\");
-		gc->move_pen(mx - i, my + i);
-		gc->draw("/");
-		gc->move_pen(mx + i, my - i);
-		gc->draw("/");
-	}
-
-	gc->move_pen(mx, my);
-	gc->set_color(0x8F);
-	gc->draw("X");
+	obj->set_timer(0.0, 1.0, 1.5);
 }

@@ -17,50 +17,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths.h>
 #include <kotaka/assert.h>
+#include <kotaka/log.h>
+#include <kotaka/paths.h>
 #include <game/paths.h>
 
-void on_paint_text(object gc, object obj, object viewer)
+void on_timer(object obj)
 {
-	float dx, dy, dz;
+	obj->set_mass(obj->query_mass() + SUBD->rnd() * 0.05);
 
-	int mx, my;
-	int i;
+	destruct_object(obj);
 
-	for (my = -8; my <= 8; my++) {
-		for (mx = -8; mx <= 8; mx++) {
-			gc->move_pen(mx, my);
+	return;
 
-			if (SUBD->rnd() < 0.05) {
-				gc->set_color(0x2A);
-				gc->draw(STRINGD->chars('.', 17));
-			} else {
-				gc->set_color(0x20);
-				gc->draw(STRINGD->chars('\'', 17));
-			}
-		}
+	if (obj->query_mass() > 2.0) {
+		destruct_object(obj);
+	} else if (obj->query_mass() < 1.0) {
+		/* grow! */
+		obj->set_mass(obj->query_mass() + SUBD->rnd() * 0.05);
+	} else {
+		/* bloom! */
+		float lx, ly;
+		float px, py, pa;
+		float dx, dy;
+
+		object sprout;
+
+		pa = SUBD->rnd() * SUBD->pi() * 2.0;
+
+		px = 8.0 * sin(pa);
+		py = 8.0 * cos(pa);
+
+		lx = obj->query_x_position();
+		ly = obj->query_y_position();
+
+		sprout = clone_object("~/obj/object");
+		sprout->add_archetype(GAME_INITD->query_master("tree"));
+		sprout->move(obj->query_environment());
+		sprout->set_x_position(lx + px);
+		sprout->set_y_position(ly + py);
+
+		"../create/tree"->on_create(sprout);
 	}
-
-	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
-
-	mx = (int)dx;
-	my = (int)dy;
-
-	gc->set_color(0x89);
-
-	for (i = 1; i <= 2; i++) {
-		gc->move_pen(mx - i, my - i);
-		gc->draw("\\");
-		gc->move_pen(mx + i, my + i);
-		gc->draw("\\");
-		gc->move_pen(mx - i, my + i);
-		gc->draw("/");
-		gc->move_pen(mx + i, my - i);
-		gc->draw("/");
-	}
-
-	gc->move_pen(mx, my);
-	gc->set_color(0x8F);
-	gc->draw("X");
 }
