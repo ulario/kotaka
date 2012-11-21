@@ -25,7 +25,7 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
-	object shack, env;
+	object tree, env;
 
 	if (!actor) {
 		send_out("Odd...without a body you have no hands.\nPlease inhabit an object first.\n");
@@ -34,14 +34,15 @@ void main(object actor, string args)
 
 	env = actor->query_environment();
 
-	shack = GAME_INITD->create_object();
-	shack->set_property("id", "shack");
-	shack->add_archetype(GAME_INITD->query_master("shack"));
-	shack->move(env);
+	tree = GAME_INITD->create_object();
+	tree->set_property("id", "tree");
+	tree->add_archetype(GAME_INITD->query_master("tree"));
+	tree->move(env);
 
-	shack->set_x_position(actor->query_x_position());
-	shack->set_y_position(actor->query_y_position());
-	shack->set_z_position(actor->query_z_position());
+	tree->set_x_position(actor->query_x_position());
+	tree->set_y_position(actor->query_y_position());
+	tree->set_z_position(actor->query_z_position());
+	"~Game/sys/handler/create/tree"->on_create(tree);
 
-	send_out("You build a shack.\n");
+	send_out("You plant a tree.\n");
 }
