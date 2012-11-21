@@ -85,6 +85,7 @@ static void create()
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
 	PROPERTYD->add_property("painter", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("timer", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
@@ -163,16 +164,24 @@ void build_world()
 	masters = ([ ]);
 
 	master = clone_object("~/obj/object");
-	master->set_property("shack");
+	master->set_property("id", "shack");
 	master->set_property("painter",
 		USR_DIR + "/Game/sys/handler/paint/shack");
 	masters["shack"] = master;
 
 	master = clone_object("~/obj/object");
-	master->set_property("human");
+	master->set_property("id", "human");
 	master->set_property("painter",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	masters["human"] = master;
+
+	master = clone_object("~/obj/object");
+	master->set_property("id", "tree");
+	master->set_property("painter",
+		USR_DIR + "/Game/sys/handler/paint/tree");
+	master->set_property("timer",
+		USR_DIR + "/Game/sys/handler/timer/tree");
+	masters["tree"] = master;
 
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
