@@ -64,7 +64,7 @@ private void initialize()
 	configure_logging();
 
 	LOGD->post_message("boot", LOG_INFO, "Logging initialized.");
-	LOGD->post_message("boot", LOG_INFO, "\n---=--=-==-=== Welcome to " + KOTAKA_VERSION + " ===-==-=--=---\n");
+	LOGD->post_message("boot", LOG_INFO, "Welcome to Kotaka " + KOTAKA_VERSION);
 
 	LOGD->post_message("boot", LOG_INFO, "Loading object manager.");
 	load_object(PROGRAM_INFO);
