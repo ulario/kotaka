@@ -44,6 +44,7 @@ void main(string args)
 		body = GAME_INITD->create_object();
 
 		body->set_property("id", "human");
+		body->add_archetype(GAME_INITD->query_master("human"));
 		body->move(world);
 	}
 
