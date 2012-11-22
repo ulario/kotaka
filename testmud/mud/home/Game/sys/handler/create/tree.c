@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/assert.h>
-
+#include <kotaka/paths.h>
 #include <game/paths.h>
 
 void on_create(object obj)
 {
 	obj->set_mass(1.0);
-	obj->set_timer(0.0, 0.0, 0.0);
+	obj->set_timer(SUBD->rnd() * 400.0 + 250.0, 250.0, 400.0);
 }

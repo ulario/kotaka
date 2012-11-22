@@ -125,6 +125,5 @@ void on_timer(object obj)
 		"../create/tree"->on_create(sprout);
 	}
 
-	obj->set_mass(mass + 10.0);
-	obj->set_timer(SUBD->rnd() * 40.0 + 25.0, 0.0, 0.0);
+	obj->set_mass(mass + 1.0);
 }

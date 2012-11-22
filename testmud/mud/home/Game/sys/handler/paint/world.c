@@ -32,11 +32,11 @@ void on_paint_text(object gc, object obj, object viewer)
 		for (mx = -8; mx <= 8; mx++) {
 			gc->move_pen(mx, my);
 
-			if (SUBD->rnd() < 0.05) {
-				gc->set_color(0x2A);
+			if (SUBD->rnd() < 0.5) {
+				gc->set_color(0x02);
 				gc->draw(STRINGD->chars('.', 17));
 			} else {
-				gc->set_color(0x20);
+				gc->set_color(0x01);
 				gc->draw(STRINGD->chars('\'', 17));
 			}
 		}
