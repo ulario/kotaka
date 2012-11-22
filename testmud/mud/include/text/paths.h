@@ -18,4 +18,3 @@
 /* lwos */
 
 #define LWO_PAINTER		(USR_DIR + "/Text/lwo/painter")
-
