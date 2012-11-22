@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <kotaka/log.h>
+#include <status.h>
 
 inherit LIB_OBJECT;
 
@@ -47,12 +49,36 @@ void set_timer(float delay, float low, float high)
 		remove_call_out(handle);
 	}
 
-	call_out("tick", delay);
+	handle = call_out("tick", delay);
+}
+
+private int overloaded()
+{
+	mixed **co;
+	int sz, i;
+
+	co = status(this_object(), O_CALLOUTS);
+	sz = sizeof(co);
+
+	for (i = 0; i < sz; i++) {
+		if (co[i][CO_FUNCTION] == "tick") {
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 static void tick()
 {
 	string handler;
+
+	handle = 0;
+
+	if (overloaded()) {
+		LOGD->post_message("timer", LOG_DEBUG, "Too many timer callouts, dropping a tick");
+		return;
+	}
 
 	handler = query_property("timer");
 
@@ -63,6 +89,6 @@ static void tick()
 	}
 
 	if (this_object() && max_interval > 0.0) {
-		call_out("tick", min_interval + SUBD->rnd() * (max_interval - min_interval));
+		handle = call_out("tick", min_interval + SUBD->rnd() * (max_interval - min_interval));
 	}
 }
