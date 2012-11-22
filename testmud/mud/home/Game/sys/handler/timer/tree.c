@@ -96,10 +96,10 @@ void on_timer(object obj)
 
 		object sprout;
 
-		obj->set_mass(obj->query_mass() - 1.0);
+		obj->set_mass(90.0);
 
 		pa = SUBD->rnd() * SUBD->pi() * 2.0;
-		pr = SUBD->rnd() * 3.0 + 3.0;
+		pr = SUBD->rnd() * 16.0 + 3.0;
 
 		px = pr * sin(pa);
 		py = pr * cos(pa);
@@ -111,8 +111,6 @@ void on_timer(object obj)
 		sy = py + ly;
 
 		if (crowded(obj->query_environment(), nil, sx, sy)) {
-			/* dead sprout */
-			LOGD->post_message("plant", LOG_DEBUG, "Sprout died from overcrowding");
 			return;
 		}
 
@@ -127,5 +125,6 @@ void on_timer(object obj)
 		"../create/tree"->on_create(sprout);
 	}
 
-	obj->set_mass(mass + 0.1);
+	obj->set_mass(mass + 10.0);
+	obj->set_timer(SUBD->rnd() * 40.0 + 25.0, 0.0, 0.0);
 }
