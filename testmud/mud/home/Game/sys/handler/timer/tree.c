@@ -52,8 +52,6 @@ int crowded(object world, object self, float tx, float ty)
 		dx = cx - tx;
 		dy = cy - ty;
 
-		LOGD->post_message("plant", LOG_DEBUG, "Tree " + i + " distance: " + (sqrt(dx * dx + dy * dy)));
-
 		if (dx * dx + dy * dy < 16.0) {
 			return 1;
 		}
@@ -75,12 +73,9 @@ void on_timer(object obj)
 		)
 	) {
 		if (mass < 0.01) {
-			LOGD->post_message("plant", LOG_DEBUG, "Tree starved");
 			destruct_object(obj);
 			return;
 		} else {
-			LOGD->post_message("plant", LOG_DEBUG, "Tree starving");
-
 			if (mass > 1.0) {
 				obj->set_mass(mass - sqrt(mass) * 0.1);
 			} else {
