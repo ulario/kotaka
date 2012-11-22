@@ -42,18 +42,18 @@ void on_paint_text(object gc, object obj, object viewer)
 
 	mass = obj->query_mass();
 
-	if (mass < 0.05) {
+	if (mass < 0.5) {
 		gc->move_pen(x, y);
-		gc->set_color(0x8B);
+		gc->set_color(0x8A);
 		gc->draw("^");
-	} else if (mass < 0.25) {
+	} else if (mass < 2.5) {
 		gc->move_pen(x, y);
 		gc->set_color(0x83);
 		gc->draw("|");
 		gc->move_pen(x, y - 1);
-		gc->set_color(0x8B);
+		gc->set_color(0x8A);
 		gc->draw("^");
-	} else if (mass < 1.0) {
+	} else if (mass < 50.0) {
 		gc->set_color(0x38);
 		gc->move_pen(x, y);
 		gc->draw("#");

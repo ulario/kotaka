@@ -23,5 +23,6 @@
 
 void on_create(object obj)
 {
-	obj->set_timer(0.0, 1.0, 1.5);
+	obj->set_mass(1.0);
+	obj->set_timer(1.0, 0.1, 0.15);
 }

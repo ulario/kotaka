@@ -22,41 +22,115 @@
 #include <kotaka/paths.h>
 #include <game/paths.h>
 
+int crowded(object world, object self, float tx, float ty)
+{
+	/* no trees allowed within a radius of 4 meters */
+	object *inv;
+	int sz;
+	int i;
+
+	inv = world->query_inventory();
+
+	inv -= ({ self });
+
+	sz = sizeof(inv);
+
+	for (i = 0; i < sz; i++) {
+		float cx, cy;
+		float dx, dy;
+		object obj;
+
+		obj = inv[i];
+
+		if (obj->query_property("id") != "tree") {
+			continue;
+		}
+
+		cx = obj->query_x_position();
+		cy = obj->query_y_position();
+
+		dx = cx - tx;
+		dy = cy - ty;
+
+		LOGD->post_message("plant", LOG_DEBUG, "Tree " + i + " distance: " + (sqrt(dx * dx + dy * dy)));
+
+		if (dx * dx + dy * dy < 16.0) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 void on_timer(object obj)
 {
-	obj->set_mass(obj->query_mass() + SUBD->rnd() * 0.05);
+	float mass;
 
-	destruct_object(obj);
+	mass = obj->query_mass();
 
-	return;
+	if (
+		crowded(
+			obj->query_environment(), obj,
+			obj->query_x_position(), obj->query_y_position()
+		)
+	) {
+		if (mass < 0.01) {
+			LOGD->post_message("plant", LOG_DEBUG, "Tree starved");
+			destruct_object(obj);
+			return;
+		} else {
+			LOGD->post_message("plant", LOG_DEBUG, "Tree starving");
 
-	if (obj->query_mass() > 2.0) {
-		destruct_object(obj);
-	} else if (obj->query_mass() < 1.0) {
-		/* grow! */
-		obj->set_mass(obj->query_mass() + SUBD->rnd() * 0.05);
-	} else {
+			if (mass > 1.0) {
+				obj->set_mass(mass - sqrt(mass) * 0.1);
+			} else {
+				obj->set_mass(mass * 0.9);
+			}
+		}
+
+		return; // starving trees don't grow
+	}
+
+	if (mass > 100.0) {
 		/* bloom! */
 		float lx, ly;
 		float px, py, pa;
 		float dx, dy;
+		float sx, sy;
+		float pr;
 
 		object sprout;
 
-		pa = SUBD->rnd() * SUBD->pi() * 2.0;
+		obj->set_mass(obj->query_mass() - 1.0);
 
-		px = 8.0 * sin(pa);
-		py = 8.0 * cos(pa);
+		pa = SUBD->rnd() * SUBD->pi() * 2.0;
+		pr = SUBD->rnd() * 3.0 + 3.0;
+
+		px = pr * sin(pa);
+		py = pr * cos(pa);
 
 		lx = obj->query_x_position();
 		ly = obj->query_y_position();
 
+		sx = px + lx;
+		sy = py + ly;
+
+		if (crowded(obj->query_environment(), nil, sx, sy)) {
+			/* dead sprout */
+			LOGD->post_message("plant", LOG_DEBUG, "Sprout died from overcrowding");
+			return;
+		}
+
 		sprout = clone_object("~/obj/object");
 		sprout->add_archetype(GAME_INITD->query_master("tree"));
+		sprout->set_property("id", "tree");
 		sprout->move(obj->query_environment());
-		sprout->set_x_position(lx + px);
-		sprout->set_y_position(ly + py);
+		sprout->set_x_position(sx);
+		sprout->set_y_position(sy);
+		sprout->set_mass(1.0);
 
 		"../create/tree"->on_create(sprout);
 	}
+
+	obj->set_mass(mass + 0.1);
 }
