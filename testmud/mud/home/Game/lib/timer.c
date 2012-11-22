@@ -24,6 +24,16 @@ inherit LIB_OBJECT;
 float min_interval;
 float max_interval;
 
+int handle;
+
+void clear_timer()
+{
+	if (handle) {
+		remove_call_out(handle);
+		handle = 0;
+	}
+}
+
 void set_timer(float delay, float low, float high)
 {
 	if (high < low) {
@@ -32,6 +42,10 @@ void set_timer(float delay, float low, float high)
 
 	min_interval = low;
 	max_interval = high;
+
+	if (handle) {
+		remove_call_out(handle);
+	}
 
 	call_out("tick", delay);
 }
