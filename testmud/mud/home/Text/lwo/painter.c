@@ -86,7 +86,7 @@ string *render_color()
 					if (new_color & 0x8) {
 						buffer += "1";
 					} else {
-						buffer += "21";
+						buffer += "22";
 					}
 				}
 				if (delta & 0x7) {
