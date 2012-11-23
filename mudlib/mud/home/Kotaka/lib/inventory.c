@@ -17,3 +17,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+private object environment;
+private object *inventory;
+
+static void initialize_inventory()
+{
+	ACCESS_CHECK(previous_program() == LIB_OBJECT);
+
+	if (!inventory) {
+		inventory = ({ });
+	}
+}

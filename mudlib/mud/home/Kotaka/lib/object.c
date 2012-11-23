@@ -25,24 +25,14 @@
 inherit archetype "archetype";
 inherit property "property";
 
-/*************/
-/* Variables */
-/*************/
-
-private object environment;
-private object *inventory;
-
 /*****************/
 /* General stuff */
 /*****************/
 
 private void initialize()
 {
-	if (!inventory) {
-		inventory = ({ });
-	}
-
 	initialize_archetype();
+	initialize_inventory();
 	initialize_property();
 }
 
