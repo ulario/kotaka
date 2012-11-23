@@ -47,56 +47,48 @@ static void initialize_property()
 	}
 }
 
-nomask mapping _F_query_local_properties()
+nomask mapping query_local_properties()
 {
-	ACCESS_CHECK(KOTAKA());
-
 	return SUBD->deep_copy(properties);
 }
 
-nomask void _F_set_local_properties(mapping prop)
+nomask void set_local_properties(mapping prop)
 {
-	ACCESS_CHECK(KOTAKA());
-
 	properties = SUBD->deep_copy(prop);
 }
 
-nomask void _F_clear_local_properties()
+nomask void clear_local_properties()
 {
-	mapping old_props;
-
-	ACCESS_CHECK(KOTAKA());
-
 	properties = ([ ]);
 }
 
-nomask void _F_set_removed_properties(string *remove)
+nomask void set_removed_properties(string *remove)
 {
 	ACCESS_CHECK(KOTAKA());
 
 	removed_properties = remove - ({ nil });
 }
 
-nomask string *_F_query_removed_properties()
+nomask string *query_removed_properties()
 {
 	ACCESS_CHECK(KOTAKA());
 
 	return removed_properties[..];
 }
 
-nomask void _F_clear_removed_properties()
+nomask void clear_removed_properties()
 {
 	ACCESS_CHECK(KOTAKA());
 
 	removed_properties = ({ });
 }
 
-nomask void _F_set_local_property(string name, mixed value, varargs int nosignal)
+nomask void set_local_property(string name, mixed value, varargs int nosignal)
 {
 	properties[name] = SUBD->deep_copy(value);
 }
 
-nomask void _F_set_property(string name, mixed value)
+nomask void set_property(string name, mixed value)
 {
 	mixed *info;
 	mixed old;
@@ -149,10 +141,10 @@ nomask void _F_set_property(string name, mixed value)
 		}
 	}
 
-	_F_set_local_property(name, value);
+	set_local_property(name, value);
 }
 
-nomask mixed _F_query_property(string name)
+nomask mixed query_property(string name)
 {
 	mixed *info;
 	object propkey;
@@ -214,9 +206,9 @@ nomask mixed _F_query_property(string name)
 			object *arch;
 
 			if (info[1] == PROP_DROPDOWN) {
-				arch = ({ _F_query_environment() }) - ({ nil });
+				arch = ({ query_environment() }) - ({ nil });
 			} else {
-				arch = _F_query_archetypes();
+				arch = query_archetypes();
 			}
 
 			for (index = 0; index < sizeof(arch); index++) {
@@ -261,9 +253,9 @@ nomask mixed _F_query_property(string name)
 			rname = extra[1];
 
 			if (info[1] == PROP_MIXDOWN) {
-				arch = ({ _F_query_environment() }) - ({ nil });
+				arch = ({ query_environment() }) - ({ nil });
 			} else {
-				arch = _F_query_archetypes();
+				arch = query_archetypes();
 			}
 
 			local = SUBD->deep_copy(properties[lname]);
@@ -339,75 +331,4 @@ nomask mixed _F_query_property(string name)
 	default:
 		error("Invalid property code of " + info[1]);
 	}
-}
-
-nomask void _F_setprop_pre(string propname, mixed old, mixed new)
-{
-/*	_F_emit_signal("setprop:" + propname, old, new);*/
-}
-
-nomask void _F_setprop_post(string propname, mixed old, mixed new)
-{
-/*	_F_emit_signal("setprop-post:" + propname, old, new);*/
-}
-
-/* high */
-
-void set_local_property(string name, mixed value)
-{
-	_F_set_local_property(name, value);
-}
-
-void set_property(string name, mixed value)
-{
-	_F_set_property(name, value);
-}
-
-mixed query_property(string name)
-{
-	return _F_query_property(name);
-}
-
-mixed query_local_property(string name)
-{
-	return SUBD->deep_copy(properties[name]);
-}
-
-string *list_local_properties()
-{
-	return map_indices(properties);
-}
-
-mapping query_local_properties()
-{
-	return SUBD->deep_copy(properties);
-}
-
-void set_local_properties(mapping prop)
-{
-	CHECKARG(prop, 1, "set_local_properties");
-
-	_F_set_local_properties(prop);
-}
-
-void clear_local_properties()
-{
-	_F_clear_local_properties();
-}
-
-void set_removed_properties(string *remove)
-{
-	CHECKARG(remove, 1, "set_removed_properties");
-
-	_F_set_removed_properties(remove);
-}
-
-string *query_removed_properties()
-{
-	return removed_properties[..];
-}
-
-void clear_removed_properties()
-{
-	_F_clear_removed_properties();
 }

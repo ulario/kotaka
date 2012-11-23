@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-object *_F_query_archetypes();
+object *query_archetypes();
 
-object _F_query_environment();
-object *_F_query_inventory();
+object query_environment();
+object *query_inventory();
