@@ -22,13 +22,12 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
+inherit archetype "archetype";
 inherit property "property";
 
 /*************/
 /* Variables */
 /*************/
-
-private object *archetypes;
 
 private object environment;
 private object *inventory;
