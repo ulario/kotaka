@@ -48,17 +48,17 @@ nomask void _F_sys_create(int clone)
 		return;
 	}
 
-	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
-
-	if (!pinfo) {
-		return;
-	}
-
 	if (DRIVER->creator(base) == "System") {
 		return;
 	}
 
 	if (DRIVER->creator(base) == "Bigstruct") {
+		return;
+	}
+
+	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
+
+	if (!pinfo) {
 		return;
 	}
 
@@ -99,6 +99,14 @@ nomask void _F_sys_destruct()
 		destruct(clone);
 	}
 
+	if (DRIVER->creator(base) == "System") {
+		return;
+	}
+
+	if (DRIVER->creator(base) == "Bigstruct") {
+		return;
+	}
+
 	programd = find_object(PROGRAMD);
 
 	if (!programd) {
@@ -108,14 +116,6 @@ nomask void _F_sys_destruct()
 	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
 
 	if (!pinfo) {
-		return;
-	}
-
-	if (DRIVER->creator(base) == "System") {
-		return;
-	}
-
-	if (DRIVER->creator(base) == "Bigstruct") {
 		return;
 	}
 
