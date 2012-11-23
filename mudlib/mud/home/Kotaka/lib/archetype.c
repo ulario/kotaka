@@ -18,3 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 private object *archetypes;
+
+static void initialize()
+{
+	if (!archetypes) {
+		archetypes = ({ });
+	}
+}

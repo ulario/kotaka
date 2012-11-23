@@ -38,14 +38,11 @@ private object *inventory;
 
 private void initialize()
 {
-	if (!archetypes) {
-		archetypes = ({ });
-	}
-
 	if (!inventory) {
 		inventory = ({ });
 	}
 
+	archetype::initialize();
 	property::initialize();
 }
 
