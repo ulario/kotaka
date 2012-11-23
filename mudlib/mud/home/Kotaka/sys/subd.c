@@ -241,8 +241,8 @@ object query_common_container(object a, object b)
 			return le;
 		}
 
-		le = le->_F_query_environment();
-		re = re->_F_query_environment();
+		le = le->query_environment();
+		re = re->query_environment();
 	}
 
 	while (le) {
@@ -250,7 +250,7 @@ object query_common_container(object a, object b)
 			return le;
 		}
 
-		le = le->_F_query_environment();
+		le = le->query_environment();
 	}
 
 	while (re) {
@@ -258,7 +258,7 @@ object query_common_container(object a, object b)
 			return re;
 		}
 
-		re = re->_F_query_environment();
+		re = re->query_environment();
 	}
 }
 
