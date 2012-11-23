@@ -110,9 +110,9 @@ static void process(string who)
 	obj = queue->get_front();
 	queue->pop_front();
 
-	obj->bulk_dequeued();
-
 	if (obj) {
+		obj->bulk_dequeued();
+
 		if (obj->query_bulk_dirty()) {
 			bulk_clean(obj);
 		}
