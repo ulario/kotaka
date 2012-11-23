@@ -29,21 +29,9 @@
 
 inherit SECOND_AUTO;
 
-/****************/
-/* Declarations */
-/****************/
-
-/* variables */
-
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
-
-/***************/
-/* Definitions */
-/***************/
-
-/* internal */
 
 static void create()
 {
@@ -166,8 +154,6 @@ private int is_protected(string path)
 
 	return 0;
 }
-
-/* external */
 
 void enable()
 {
@@ -380,7 +366,6 @@ object query_dormant()
 	return notlist;
 }
 
-/* kernel library hooks */
 
 void compiling(string path)
 {
