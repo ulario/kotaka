@@ -64,22 +64,16 @@ nomask void clear_local_properties()
 
 nomask void set_removed_properties(string *remove)
 {
-	ACCESS_CHECK(KOTAKA());
-
 	removed_properties = remove - ({ nil });
 }
 
 nomask string *query_removed_properties()
 {
-	ACCESS_CHECK(KOTAKA());
-
 	return removed_properties[..];
 }
 
 nomask void clear_removed_properties()
 {
-	ACCESS_CHECK(KOTAKA());
-
 	removed_properties = ({ });
 }
 
@@ -93,8 +87,6 @@ nomask void set_property(string name, mixed value)
 	mixed *info;
 	mixed old;
 	string basename;
-
-	ACCESS_CHECK(KOTAKA());
 
 	info = PROPERTYD->query_property(name);
 
@@ -144,6 +136,11 @@ nomask void set_property(string name, mixed value)
 	set_local_property(name, value);
 }
 
+nomask mixed query_local_property(string name)
+{
+	return SUBD->deep_copy(properties[name]);
+}
+
 nomask mixed query_property(string name)
 {
 	mixed *info;
@@ -151,8 +148,6 @@ nomask mixed query_property(string name)
 	string basename;
 
 	int flags;
-
-	ACCESS_CHECK(KOTAKA());
 
 	info = PROPERTYD->query_property(name);
 
