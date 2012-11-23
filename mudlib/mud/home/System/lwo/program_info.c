@@ -75,7 +75,7 @@ string query_destructor();
 string *query_inherited_constructors();
 string *query_inherited_destructors();
 
-object query_first_clone(object obj);
+object query_first_clone();
 
 /***************/
 /* definitions */
