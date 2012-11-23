@@ -28,15 +28,19 @@ static int free_objects()
 	return status(ST_OTABSIZE) - status(ST_NOBJECTS);
 }
 
-private void _F_call_constructors()
+nomask void _F_sys_create(int clone)
 {
-	object programd;
-	object pinfo;
-	string *ctors;
 	int index;
 	int sz;
-
+	object pinfo;
+	object programd;
 	string base;
+	string *ctors;
+	string oname;
+
+	oname = object_name(this_object());
+	base = oname;
+	sscanf(base, "%s#%*d", base);
 
 	programd = find_object(PROGRAMD);
 
@@ -47,6 +51,14 @@ private void _F_call_constructors()
 	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
 
 	if (!pinfo) {
+		return;
+	}
+
+	if (DRIVER->creator(base) == "System") {
+		return;
+	}
+
+	if (DRIVER->creator(base) == "Bigstruct") {
 		return;
 	}
 
@@ -58,77 +70,20 @@ private void _F_call_constructors()
 	}
 }
 
-private void _F_call_destructors()
-{
-	object programd;
-	object pinfo;
-	string *dtors;
-	int index;
-	int sz;
-
-	string base;
-
-	programd = find_object(PROGRAMD);
-
-	if (!programd) {
-		return;
-	}
-
-	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
-
-	if (!pinfo) {
-		return;
-	}
-
-	dtors = pinfo->query_inherited_destructors();
-
-	sz = sizeof(dtors);
-
-	for (index = sz - 1; index >= 0; index--) {
-		call_other(this_object(), dtors[index]);
-	}
-}
-
-nomask void _F_sys_create(int clone)
-{
-	object pinfo;
-	string base;
-	string oname;
-
-	string *ctors;
-
-	int index;
-	int sz;
-
-	oname = object_name(this_object());
-	base = oname;
-	sscanf(base, "%s#%*d", base);
-
-	if (DRIVER->creator(base) == "System") {
-		return;
-	}
-	if (DRIVER->creator(base) == "Bigstruct") {
-		return;
-	}
-	_F_call_constructors();
-}
-
 static void destruct(varargs int clone)
 {
 }
 
 nomask void _F_sys_destruct()
 {
-	object pinfo;
-	string oname;
-	string base;
-
-	string *dtors;
-
 	int clone;
-
 	int index;
 	int sz;
+	object pinfo;
+	object programd;
+	string base;
+	string *dtors;
+	string oname;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
@@ -144,13 +99,33 @@ nomask void _F_sys_destruct()
 		destruct(clone);
 	}
 
+	programd = find_object(PROGRAMD);
+
+	if (!programd) {
+		return;
+	}
+
+	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
+
+	if (!pinfo) {
+		return;
+	}
+
 	if (DRIVER->creator(base) == "System") {
 		return;
 	}
+
 	if (DRIVER->creator(base) == "Bigstruct") {
 		return;
 	}
-	_F_call_destructors();
+
+	dtors = pinfo->query_inherited_destructors();
+
+	sz = sizeof(dtors);
+
+	for (index = sz - 1; index >= 0; index--) {
+		call_other(this_object(), dtors[index]);
+	}
 }
 
 void upgrading()
