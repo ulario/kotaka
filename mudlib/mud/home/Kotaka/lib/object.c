@@ -36,7 +36,7 @@ private object *inventory;
 /* General stuff */
 /*****************/
 
-private void initialize()
+static void initialize()
 {
 	if (!inventory) {
 		inventory = ({ });
