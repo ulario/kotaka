@@ -36,14 +36,14 @@ private object *inventory;
 /* General stuff */
 /*****************/
 
-static void initialize()
+private void initialize()
 {
 	if (!inventory) {
 		inventory = ({ });
 	}
 
-	archetype::initialize();
-	property::initialize();
+	initialize_archetype();
+	initialize_property();
 }
 
 static void create()

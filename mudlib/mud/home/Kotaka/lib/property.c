@@ -37,8 +37,10 @@ mixed query_property(string name);
 
 /* low */
 
-static void initialize()
+static void initialize_property()
 {
+	ACCESS_CHECK(previous_program() == LIB_OBJECT);
+
 	if (!properties) {
 		properties = ([ ]);
 		removed_properties = ({ });
