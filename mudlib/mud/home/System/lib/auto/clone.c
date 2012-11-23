@@ -17,3 +17,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
+
+object prev, next;
+
+nomask void set_prev_clone(object new_prev)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	prev = new_prev;
+}
+
+nomask void set_next_clone(object new_next)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	next = new_next;
+}
+
+nomask object query_prev_clone()
+{
+	return prev;
+}
+
+nomask object query_next_clone()
+{
+	return next;
+}
