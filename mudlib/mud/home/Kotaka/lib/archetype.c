@@ -23,10 +23,6 @@
 
 private object *archetypes;
 
-/**********************/
-/* Archetype handling */
-/**********************/
-
 static void initialize_archetype()
 {
 	ACCESS_CHECK(previous_program() == LIB_OBJECT);

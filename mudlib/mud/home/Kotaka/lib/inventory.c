@@ -25,10 +25,6 @@
 private object environment;
 private object *inventory;
 
-/**********************/
-/* Inventory handling */
-/**********************/
-
 static void initialize_inventory()
 {
 	ACCESS_CHECK(previous_program() == LIB_OBJECT);

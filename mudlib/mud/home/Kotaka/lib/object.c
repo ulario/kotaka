@@ -26,10 +26,6 @@ inherit "archetype";
 inherit "inventory";
 inherit "property";
 
-/*****************/
-/* General stuff */
-/*****************/
-
 private void initialize()
 {
 	initialize_archetype();

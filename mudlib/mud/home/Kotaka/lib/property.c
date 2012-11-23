@@ -29,13 +29,7 @@ inherit "declaration";
 private mapping properties;
 private string *removed_properties;
 
-/*********************/
-/* Property handling */
-/*********************/
-
 mixed query_property(string name);
-
-/* low */
 
 static void initialize_property()
 {
