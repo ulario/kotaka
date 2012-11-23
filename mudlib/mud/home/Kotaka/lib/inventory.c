@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths.h>
+#include <kotaka/privilege.h>
+
 private object environment;
 private object *inventory;
 
