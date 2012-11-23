@@ -44,6 +44,8 @@ string destructor;		/* destructor */
 string *inherited_constructors;	/* constructors */
 string *inherited_destructors;	/* destructors */
 
+object first;			/* first clone */
+
 /****************/
 /* Declarations */
 /****************/
@@ -60,6 +62,8 @@ void set_destructor(string destructor);
 void set_inherited_constructors(string *constructors);
 void set_inherited_destructors(string *destructors);
 
+void set_first_clone(object obj);
+
 string query_path();
 int *query_inherits();
 string *query_includes();
@@ -70,6 +74,8 @@ string query_destructor();
 
 string *query_inherited_constructors();
 string *query_inherited_destructors();
+
+object query_first_clone(object obj);
 
 /***************/
 /* definitions */
@@ -135,6 +141,13 @@ void set_inherited_destructors(string *destructors)
 	inherited_destructors = destructors;
 }
 
+void set_first_clone(object obj)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	first = obj;
+}
+
 string query_path()
 {
 	return path;
@@ -173,4 +186,9 @@ string *query_inherited_constructors()
 string *query_inherited_destructors()
 {
 	return inherited_destructors;
+}
+
+object query_first_clone()
+{
+	return first;
 }
