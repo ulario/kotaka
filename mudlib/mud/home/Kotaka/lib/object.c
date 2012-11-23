@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-inherit "property";
+inherit property "property";
 
 /*************/
 /* Variables */
@@ -42,10 +42,7 @@ private void initialize()
 		inventory = ({ });
 	}
 
-	if (!properties) {
-		properties = ([ ]);
-		removed_properties = ({ });
-	}
+	property::initialize();
 }
 
 static void create()

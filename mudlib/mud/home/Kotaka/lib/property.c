@@ -33,9 +33,15 @@ private string *removed_properties;
 /* Property handling */
 /*********************/
 
-mixed query_property(string pname);
-
 /* low */
+
+static void initialize()
+{
+	if (!properties) {
+		properties = ([ ]);
+		removed_properties = ({ });
+	}
+}
 
 nomask mapping _F_query_local_properties()
 {
