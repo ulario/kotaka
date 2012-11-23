@@ -19,18 +19,18 @@
  */
 #include <kotaka/privilege.h>
 
-object prev, next;
+private object prev, next;
 
 nomask void set_prev_clone(object new_prev)
 {
-	ACCESS_CHECK(previous_program() == OBJECTD);
+	ACCESS_CHECK(SYSTEM());
 
 	prev = new_prev;
 }
 
 nomask void set_next_clone(object new_next)
 {
-	ACCESS_CHECK(previous_program() == OBJECTD);
+	ACCESS_CHECK(SYSTEM());
 
 	next = new_next;
 }
