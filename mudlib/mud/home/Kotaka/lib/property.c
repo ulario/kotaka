@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/checkarg.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kotaka/property.h>
@@ -203,9 +204,9 @@ nomask mixed _F_query_property(string name)
 			object *arch;
 
 			if (info[1] == PROP_DROPDOWN) {
-				arch = ({ query_environment() }) - ({ nil });
+				arch = ({ _F_query_environment() }) - ({ nil });
 			} else {
-				arch = query_archetypes();
+				arch = _F_query_archetypes();
 			}
 
 			for (index = 0; index < sizeof(arch); index++) {
@@ -250,9 +251,9 @@ nomask mixed _F_query_property(string name)
 			rname = extra[1];
 
 			if (info[1] == PROP_MIXDOWN) {
-				arch = ({ query_environment() }) - ({ nil });
+				arch = ({ _F_query_environment() }) - ({ nil });
 			} else {
-				arch = query_archetypes();
+				arch = _F_query_archetypes();
 			}
 
 			local = SUBD->deep_copy(properties[lname]);
