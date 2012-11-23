@@ -27,8 +27,9 @@
 
 inherit "call_guard";
 inherit "callout_guard";
-inherit "touch";
+inherit "clone";
 inherit "object";
+inherit "touch";
 
 /**********/
 /* status */
