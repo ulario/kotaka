@@ -190,9 +190,7 @@ private void discover_clones()
 			do {
 				name = object_name(obj);
 
-				if (!sscanf(name, "%*s#%*d")) {
-					LOGD->post_message("clone", LOG_DEBUG, "Skipping non clone " + name);
-				} else {
+				if (sscanf(name, "%*s#%*d")) {
 					queue->push_back( ({ 1, obj }) );
 					count++;
 				}
@@ -200,6 +198,4 @@ private void discover_clones()
 			} while (obj != first);
 		}
 	}
-
-	LOGD->post_message("clone", LOG_DEBUG, "There were " + count + " clones discovered");
 }
