@@ -60,8 +60,6 @@ void set_destructor(string destructor);
 void set_inherited_constructors(string *constructors);
 void set_inherited_destructors(string *destructors);
 
-void set_first_clone(object obj);
-
 string query_path();
 int *query_inherits();
 string *query_includes();
