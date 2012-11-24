@@ -72,6 +72,11 @@ object query_first_clone()
 	return first;
 }
 
+int query_clone_count()
+{
+	return count;
+}
+
 object *query_clones()
 {
 	return map_indices(clones);
