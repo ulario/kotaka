@@ -27,8 +27,11 @@
 
 inherit SECOND_AUTO;
 
+private void discover_clones();
+
 static void create()
 {
+	discover_clones();
 }
 
 void add_clone(object obj)
@@ -65,6 +68,7 @@ private void discover_clones()
 				name = object_name(obj);
 
 				if (sscanf(name, "%*s#%*d")) {
+					LOGD->post_message("clone", LOG_DEBUG, "Found clone " + name);
 					// deal with clone here
 					count++;
 				}
