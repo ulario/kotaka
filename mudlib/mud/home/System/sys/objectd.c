@@ -486,10 +486,11 @@ void compile_failed(string owner, string path)
 
 void clone(string owner, object obj)
 {
-	object pinfo;
-	string path;
-
 	ACCESS_CHECK(KERNEL());
+
+	if (find_object(CLONED)) {
+		CLONED->add_clone(obj);
+	}
 }
 
 void destruct(string owner, object obj)
@@ -521,7 +522,11 @@ void destruct(string owner, object obj)
 		obj->_F_sys_destruct();
 	}
 
-	if (!is_clone) {
+	if (is_clone) {
+		if (find_object(CLONED)) {
+			CLONED->remove_clone(obj);
+		}
+	} else {
 		pinfo->set_destructed();
 	}
 }
