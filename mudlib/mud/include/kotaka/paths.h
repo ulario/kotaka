@@ -7,6 +7,7 @@
 /* daemons */
 
 #define CALLOUTD	(USR_DIR + "/System/sys/calloutd")
+#define CLONED		(USR_DIR + "/System/sys/cloned")
 #define DEFAULT_MANAGER	(USR_DIR + "/System/sys/default_manager")
 #define ERRORD		(USR_DIR + "/System/sys/errord")
 #define FILTERD		(USR_DIR + "/System/sys/filterd")
