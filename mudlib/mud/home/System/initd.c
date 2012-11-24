@@ -85,6 +85,9 @@ private void initialize()
 	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
 	OBJECTD->discover_objects();
 
+	LOGD->post_message("boot", LOG_INFO, "Loading clone manager");
+	load_object(CLONED);
+
 	LOGD->post_message("boot", LOG_INFO, "Testing");
 	load_object(TESTD);
 	TESTD->test();
