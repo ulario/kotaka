@@ -45,7 +45,7 @@ void ban_site(string site)
 {
 	ACCESS_CHECK(INTERFACE());
 
-	if (site == "127.0.0.1" || site == "::1") {
+	if (sscanf(site, "127.%*s") || site == "::1") {
 		error("Cannot ban localhost");
 	}
 
@@ -59,7 +59,7 @@ void ban_site(string site)
 
 void unban_site(string site)
 {
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || KADMIN());
 
 	if (!sitebans[site]) {
 		error("Username not banned");
