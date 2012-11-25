@@ -24,5 +24,5 @@
 void on_create(object obj)
 {
 	obj->set_mass(1.0);
-	obj->set_timer(SUBD->rnd() * 400.0 + 250.0, 250.0, 400.0);
+	obj->set_timer(SUBD->rnd() * 30.0, 15.0);
 }
