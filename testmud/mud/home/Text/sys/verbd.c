@@ -20,13 +20,41 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
+object find_verb(string command)
+{
+	object verb;
+
+	if (verb = find_object("~/sys/verb/adm/" + command)) {
+		return verb;
+	}
+	if (verb = find_object("~/sys/verb/wiz/tool/" + command)) {
+		return verb;
+	}
+	if (verb = find_object("~/sys/verb/wiz/debug/" + command)) {
+		return verb;
+	}
+	if (verb = find_object("~/sys/verb/wiz/" + command)) {
+		return verb;
+	}
+	if (verb = find_object("~/sys/verb/test/" + command)) {
+		return verb;
+	}
+	if (verb = find_object("~/sys/verb/movie" + command)) {
+		return verb;
+	}
+	if (verb = find_object("~/sys/verb/" + command)) {
+		return verb;
+	}
+}
+
 int do_action(object actor, string command, string args)
 {
 	object ustate;
 	object verb;
 
 	ACCESS_CHECK((ustate = previous_object())<-LIB_USTATE);
-	verb = find_object("~/sys/verb/" + command);
+
+	verb = find_verb(command);
 
 	if (!verb) {
 		return FALSE;
