@@ -42,6 +42,16 @@ static void create()
 	db->set_type(T_INT);
 
 	discover_clones();
+
+	call_out("defragment", 5);
+}
+
+static void defragment()
+{
+	LOGD->post_message("program", LOG_DEBUG, "Defragmenting clone database");
+	call_out("defragment", 60);
+
+	db->reindex();
 }
 
 void add_clone(object obj)

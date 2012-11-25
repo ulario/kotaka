@@ -19,6 +19,7 @@
  */
 #include <kernel/access.h>
 #include <kotaka/bigstruct.h>
+#include <kotaka/log.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <status.h>
@@ -32,6 +33,16 @@ static void create()
 {
 	db = clone_object(BIGSTRUCT_MAP_OBJ);
 	db->set_type(T_INT);
+
+	call_out("defragment", 5);
+}
+
+static void defragment()
+{
+	LOGD->post_message("program", LOG_DEBUG, "Defragmenting program database");
+	call_out("defragment", 60);
+
+	db->reindex();
 }
 
 void register_program(string path, string *inherits,
