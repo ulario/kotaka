@@ -115,10 +115,6 @@ void end()
 
 private void do_input(string first, string input)
 {
-	if (execute_command(first, input)) {
-		return;
-	}
-
 	if (VERBD->do_action(body, first, input)) {
 		return;
 	}
