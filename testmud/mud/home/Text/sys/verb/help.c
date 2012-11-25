@@ -21,7 +21,7 @@
 #include <text/paths.h>
 #include <kotaka/assert.h>
 
-inherit LIB_BIN;
+inherit LIB_VERB;
 
 int topic_compare(string lhs, string rhs)
 {

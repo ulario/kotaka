@@ -21,7 +21,7 @@
 #include <text/paths.h>
 #include <game/paths.h>
 
-inherit LIB_BIN;
+inherit LIB_VERB;
 
 void main(object actor, string args)
 {

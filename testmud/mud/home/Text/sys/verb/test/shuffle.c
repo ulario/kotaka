@@ -24,7 +24,7 @@
 
 #define SHUFFLED "~Test/sys/shuffled"
 
-inherit LIB_BIN;
+inherit LIB_VERB;
 
 void main(object actor, string args)
 {
