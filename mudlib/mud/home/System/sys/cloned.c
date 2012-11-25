@@ -46,12 +46,29 @@ static void create()
 	call_out("defragment", 5);
 }
 
+void add_clone(object obj);
+
+private void flush()
+{
+	while (sizeof(overflow)) {
+		object over;
+
+		over = overflow[0];
+		overflow = overflow[1 ..];
+		add_clone(over);
+	}
+}
+
 static void defragment()
 {
 	LOGD->post_message("program", LOG_DEBUG, "Defragmenting clone database");
 	call_out("defragment", 60);
 
+	busy = 1;
 	db->reindex();
+	busy = 0;
+
+	flush();
 }
 
 void add_clone(object obj)
@@ -100,14 +117,7 @@ void add_clone(object obj)
 	}
 
 	cinfo->add_clone(obj);
-
-	while (sizeof(overflow)) {
-		object over;
-
-		over = overflow[0];
-		overflow = overflow[1 ..];
-		add_clone(over);
-	}
+	flush();
 }
 
 void remove_clone(object obj)
