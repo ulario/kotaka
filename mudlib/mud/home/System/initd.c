@@ -67,7 +67,6 @@ private void initialize()
 	LOGD->post_message("boot", LOG_INFO, "Welcome to Kotaka " + KOTAKA_VERSION);
 
 	LOGD->post_message("boot", LOG_INFO, "Loading object manager");
-	load_object(PROGRAM_INFO);
 	load_object(OBJECTD);
 
 	OBJECTD->enable();
@@ -80,12 +79,14 @@ private void initialize()
 	boot_subsystem("Bigstruct");
 
 	LOGD->post_message("boot", LOG_INFO, "Loading program manager");
+	load_object(PROGRAM_INFO);
 	load_object(PROGRAMD);
 
 	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
 	OBJECTD->discover_objects();
 
 	LOGD->post_message("boot", LOG_INFO, "Loading clone manager");
+	load_object(CLONE_INFO);
 	load_object(CLONED);
 
 	LOGD->post_message("boot", LOG_INFO, "Testing");
