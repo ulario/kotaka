@@ -63,8 +63,6 @@ void add_clone(object obj)
 	index = status(obj, O_INDEX);
 	cinfo = db->get_element(index);
 
-	LOGD->post_message("clone", LOG_DEBUG, "Adding clone: " + object_name(obj));
-
 	if (!cinfo) {
 		busy = 1;
 		db->set_element(index, cinfo = new_object(CLONE_INFO));
@@ -105,9 +103,9 @@ void add_clone(object obj)
 void remove_clone(object obj)
 {
 	object cinfo;
-	int index;
 	object prev;
 	object next;
+	int index;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
@@ -166,4 +164,9 @@ private void discover_clones()
 			} while (obj != first);
 		}
 	}
+}
+
+object query_clone_info(int oindex)
+{
+	return db->get_element(oindex);
 }
