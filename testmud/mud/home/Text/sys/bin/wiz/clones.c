@@ -26,7 +26,7 @@ inherit LIB_WIZBIN;
 void main(string args)
 {
 	mixed *st;
-	object oinfo;
+	object cinfo;
 	int oindex;
 	int count;
 
@@ -42,7 +42,7 @@ void main(string args)
 		return;
 	}
 
-	oinfo = OBJECTD->query_object_info(st[O_INDEX]);
+	cinfo = CLONED->query_clone_info(st[O_INDEX]);
 
-	send_out("There are " + oinfo->query_clone_count() + " clones.\n");
+	send_out("There are " + cinfo->query_clone_count() + " clones.\n");
 }
