@@ -69,21 +69,26 @@ void add_clone(object obj)
 		busy = 1;
 		db->set_element(index, cinfo = new_object(CLONE_INFO));
 		busy = 0;
-		cinfo->set_first_clone(obj);
-		obj->set_prev_clone(obj);
-		obj->set_next_clone(obj);
+
+		if (!sscanf(object_name(obj), "/kernel/%*s")) {
+			cinfo->set_first_clone(obj);
+			obj->set_prev_clone(obj);
+			obj->set_next_clone(obj);
+		}
 	} else {
-		object first;
-		object next;
+		if (!sscanf(object_name(obj), "/kernel/%*s")) {
+			object first;
+			object next;
 
-		first = cinfo->query_first_clone();
-		next = first->query_next_clone();
+			first = cinfo->query_first_clone();
+			next = first->query_next_clone();
 
-		first->set_next_clone(obj);
-		next->set_prev_clone(obj);
+			first->set_next_clone(obj);
+			next->set_prev_clone(obj);
 
-		obj->set_prev_clone(first);
-		obj->set_next_clone(next);
+			obj->set_prev_clone(first);
+			obj->set_next_clone(next);
+		}
 	}
 
 	cinfo->add_clone(obj);
@@ -109,6 +114,10 @@ void remove_clone(object obj)
 	index = status(obj, O_INDEX);
 	cinfo = db->get_element(index);
 	cinfo->remove_clone(obj);
+
+	if (sscanf(object_name(obj), "/kernel/%*s")) {
+		return;
+	}
 
 	if (obj == obj->query_next_clone()) {
 		/* last clone */
