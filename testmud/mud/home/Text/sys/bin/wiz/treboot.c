@@ -25,12 +25,21 @@ inherit LIB_BIN;
 void main(string args)
 {
 	object user;
+	object *users;
+	int i, sz;
 
 	user = query_user();
 
 	if (user->query_class() < 3) {
 		send_out("You do not have sufficient access rights to reboot the text system.\n");
 		return;
+	}
+
+	users = TEXT_USERD->query_users() + TEXT_USERD->query_guests();
+	sz = sizeof(users);
+
+	for (i = 0; i < sz; i++) {
+		users[i]->quit();
 	}
 
 	"~Text/initd"->full_reset();
