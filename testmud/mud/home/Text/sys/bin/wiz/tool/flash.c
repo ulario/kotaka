@@ -23,7 +23,7 @@
 
 inherit LIB_WIZBIN;
 
-atomic void main(string args)
+atomic void main(object actor, string args)
 {
 	proxy_call("destruct_object", args);
 	proxy_call("compile_object", args);

@@ -120,7 +120,7 @@ private string list_category(string category)
 	return implode(chunks, "\n\n");
 }
 
-void main(string args)
+void main(object actor, string args)
 {
 	mapping index;
 	mapping list;

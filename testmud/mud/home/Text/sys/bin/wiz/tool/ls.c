@@ -23,7 +23,7 @@
 
 inherit LIB_WIZBIN;
 
-void main(string args)
+void main(object actor, string args)
 {
 	mixed **dirinfo;
 

@@ -22,7 +22,7 @@
 
 inherit LIB_BIN;
 
-void main(string args)
+void main(object actor, string args)
 {
 	query_ustate()->push_state(clone_object("~/obj/ustate/login"));
 }

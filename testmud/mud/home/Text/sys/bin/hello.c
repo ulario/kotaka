@@ -22,7 +22,7 @@
 
 inherit LIB_BIN;
 
-void main(string args)
+void main(object actor, string args)
 {
 	send_out("Hello world.\n");
 }

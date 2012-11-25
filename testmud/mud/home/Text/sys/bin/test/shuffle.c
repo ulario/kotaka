@@ -26,7 +26,7 @@
 
 inherit LIB_BIN;
 
-void main(string args)
+void main(object actor, string args)
 {
 	string first;
 

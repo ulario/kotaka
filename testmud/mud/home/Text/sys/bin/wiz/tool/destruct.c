@@ -22,7 +22,7 @@
 
 inherit LIB_WIZBIN;
 
-void main(string args)
+void main(object actor, string args)
 {
 	proxy_call("destruct_object", args);
 }
