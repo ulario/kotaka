@@ -23,8 +23,7 @@
 
 inherit LIB_OBJECT;
 
-float min_interval;
-float max_interval;
+float interval;
 
 int handle;
 
@@ -36,18 +35,14 @@ void clear_timer()
 	}
 }
 
-void set_timer(float delay, float low, float high)
+void set_timer(float delay, float new_interval)
 {
-	if (high < low) {
-		error("Illegal interval");
-	}
-
-	min_interval = low;
-	max_interval = high;
-
 	if (handle) {
 		remove_call_out(handle);
+		handle = 0;
 	}
+
+	interval = new_interval;
 
 	handle = call_out("tick", delay);
 }
@@ -88,7 +83,12 @@ static void tick()
 		error("No handler");
 	}
 
-	if (this_object() && max_interval > 0.0) {
-		handle = call_out("tick", min_interval + SUBD->rnd() * (max_interval - min_interval));
+	if (handle) {
+		/* changed in handler */
+		return;
+	}
+
+	if (this_object() && interval >= 0.0 && !handle) {
+		handle = call_out("tick", interval);
 	}
 }
