@@ -52,25 +52,4 @@ void test()
 	string err;
 
 	ACCESS_CHECK(SYSTEM());
-
-#if 0
-#	if 1
-	LOGD->post_message("test", LOG_DEBUG, "Starting array test...");
-	rlimits(200; -1) {
-		test_bigstruct_array();
-	}
-#	endif
-#	if 1
-	LOGD->post_message("test", LOG_DEBUG, "Starting deque test...");
-	rlimits(200; -1) {
-		test_bigstruct_deque();
-	}
-#	endif
-#	if 1
-	LOGD->post_message("test", LOG_DEBUG, "Starting map test...");
-	rlimits(200; -1) {
-		test_bigstruct_map();
-	}
-#	endif
-#endif
 }
