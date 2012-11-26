@@ -420,6 +420,10 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		error("Failure to inherit LIB_INITD: " + path);
 	}
 
+	if (!find_object(USR_DIR + "/" + owner + "/initd")) {
+		error("No initd while loading " + path);
+	}
+
 	if (upgrading) {
 		upgrading = 0;
 
@@ -463,6 +467,8 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 		err = ret[0];
 		ctor = ret[1];
 		dtor = ret[2];
+	} else if (!is_kernel) {
+		error("No initd while loading " + path);
 	}
 
 	if (find_object(PROGRAMD)) {
