@@ -68,7 +68,9 @@ nomask object query_environment()
 
 nomask object *query_inventory()
 {
-	return inventory -= ({ nil });
+	inventory -= ({ nil });
+
+	return inventory[..];
 }
 
 nomask void add_inventory(object arriving)
