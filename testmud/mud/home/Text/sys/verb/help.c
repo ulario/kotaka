@@ -93,31 +93,84 @@ string *topic_filter(string *topics)
 	return contenders;
 }
 
-private string list_category(string category)
+mapping deep_list(string category)
 {
-	string *chunks;
-	string *categories;
-	string *topics;
-	string text;
+	mapping submap;
 
-	chunks = ({ });
+	string *topics;
+	string *categories;
+	int sz, i;
 
 	categories = HELPD->query_categories(category);
 	topics = HELPD->query_topics(category);
 
-	if (sizeof(categories)) {
-		chunks += ({ "Categories:\n    " + implode(categories, "\n    ") });
+	submap = ([ ]);
+
+	sz = sizeof(categories);
+
+	if (!category) {
+		for (i = 0; i < sz; i++) {
+			string subcategory;
+
+			subcategory = categories[i];
+
+			submap += deep_list(subcategory);
+		}
+	} else {
+		for (i = 0; i < sz; i++) {
+			string subcategory;
+
+			subcategory = category + "/" + categories[i];
+
+			submap += deep_list(subcategory);
+		}
 	}
 
-	if (sizeof(topics)) {
-		chunks += ({ "Topics:\n    " + implode(topics, "\n    ") });
+	submap[category] = topics;
+
+	return submap;
+}
+
+private string list_category(string category)
+{
+	string buf;
+	string *categories;
+	mapping list;
+	int sz, i;
+
+	list = deep_list(category);
+	categories = map_indices(list);
+	sz = sizeof(categories);
+
+	buf = "";
+
+	for (i = 0; i < sz; i++) {
+		string *topics;
+		string subcategory;
+		string line;
+
+		subcategory = categories[i];
+		topics = list[subcategory];
+
+		if (!sizeof(topics)) {
+			continue;
+		}
+
+		if (subcategory) {
+			buf += subcategory + ":\n";
+		} else {
+			buf += "Root:\n";
+		}
+
+		line = implode(topics, ",");
+		line = STRINGD->replace(line, " ", "_");
+		line = STRINGD->replace(line, ",", ", ");
+		line = STRINGD->wordwrap(line, 60);
+		line = STRINGD->replace(line, "\n", "\n    ");
+		buf += "    " + line + "\n\n";
 	}
 
-	if (!sizeof(categories) && !sizeof(topics)) {
-		chunks += ({ "...nothing" });
-	}
-
-	return implode(chunks, "\n\n");
+	return buf;
 }
 
 void main(object actor, string args)
