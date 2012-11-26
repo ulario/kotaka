@@ -165,7 +165,7 @@ private string list_category(string category)
 		line = implode(topics, ",");
 		line = STRINGD->replace(line, " ", "_");
 		line = STRINGD->replace(line, ",", ", ");
-		line = STRINGD->wordwrap(line, 60);
+		line = STRINGD->wordwrap(line, 72);
 		line = STRINGD->replace(line, "\n", "\n    ");
 		buf += "    " + line + "\n\n";
 	}
