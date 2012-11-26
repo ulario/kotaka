@@ -24,25 +24,31 @@ object find_verb(string command)
 {
 	object verb;
 
-	if (verb = find_object("~/sys/verb/adm/" + command)) {
+	if (verb = find_object("~/sys/verb/ooc/adm/" + command)) {
 		return verb;
 	}
-	if (verb = find_object("~/sys/verb/wiz/tool/" + command)) {
+	if (verb = find_object("~/sys/verb/ooc/wiz/tool/" + command)) {
 		return verb;
 	}
-	if (verb = find_object("~/sys/verb/wiz/debug/" + command)) {
+	if (verb = find_object("~/sys/verb/ooc/wiz/debug/" + command)) {
 		return verb;
 	}
-	if (verb = find_object("~/sys/verb/wiz/" + command)) {
+	if (verb = find_object("~/sys/verb/ooc/wiz/" + command)) {
 		return verb;
 	}
-	if (verb = find_object("~/sys/verb/test/" + command)) {
+	if (verb = find_object("~/sys/verb/ooc/test/" + command)) {
 		return verb;
 	}
-	if (verb = find_object("~/sys/verb/movie/" + command)) {
+	if (verb = find_object("~/sys/verb/ooc/movie/" + command)) {
 		return verb;
 	}
-	if (verb = find_object("~/sys/verb/direction/" + command)) {
+	if (verb = find_object("~/sys/verb/ic/direction/" + command)) {
+		return verb;
+	}
+	if (verb = find_object("~/sys/verb/ooc/" + command)) {
+		return verb;
+	}
+	if (verb = find_object("~/sys/verb/ic/" + command)) {
 		return verb;
 	}
 	if (verb = find_object("~/sys/verb/" + command)) {
