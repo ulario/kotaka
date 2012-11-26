@@ -74,16 +74,16 @@ private void initialize()
 	load_object(OBJECTD);
 	OBJECTD->enable();
 
+	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
+	OBJECTD->discover_objects();
+
 	LOGD->post_message("boot", LOG_INFO, "Loading kernel manager");
 	load_object(KERNELD);
 	configure_klib();
 
 	LOGD->post_message("boot", LOG_INFO, "Loading bigstruct");
 	boot_subsystem("Bigstruct");
-
-	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
 	PROGRAMD->convert_database();
-	OBJECTD->discover_objects();
 
 	LOGD->post_message("boot", LOG_INFO, "Loading clone manager");
 	load_object(CLONE_INFO);
