@@ -64,8 +64,6 @@ static void process(string str)
 
     switch (str) {
     case "code":
-    case "history":
-    case "clear":
     case "compile":
     case "clone":
     case "destruct":
