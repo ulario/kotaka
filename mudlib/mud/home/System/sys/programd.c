@@ -39,7 +39,6 @@ static void create()
 
 static void defragment()
 {
-	LOGD->post_message("program", LOG_DEBUG, "Defragmenting program database");
 	call_out("defragment", 60);
 
 	db->reindex();

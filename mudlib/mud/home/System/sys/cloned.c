@@ -61,7 +61,6 @@ private void flush()
 
 static void defragment()
 {
-	LOGD->post_message("program", LOG_DEBUG, "Defragmenting clone database");
 	call_out("defragment", 60);
 
 	busy = 1;
