@@ -39,7 +39,7 @@ object find_verb(string command)
 	if (verb = find_object("~/sys/verb/test/" + command)) {
 		return verb;
 	}
-	if (verb = find_object("~/sys/verb/movie" + command)) {
+	if (verb = find_object("~/sys/verb/movie/" + command)) {
 		return verb;
 	}
 	if (verb = find_object("~/sys/verb/direction/" + command)) {
