@@ -1,1 +1,1 @@
-#define KOTAKA_VERSION "0.9.1"
+#define KOTAKA_VERSION "0.9.2"
