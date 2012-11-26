@@ -32,6 +32,11 @@ void main(object actor, string args)
 
 	int i, sz;
 
+	if (!actor) {
+		send_out("Odd...without a body you have no hands.\nPlease inhabit an object first.\n");
+		return;
+	}
+
 	env = actor->query_environment();
 
 	if (!env) {

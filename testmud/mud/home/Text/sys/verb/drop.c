@@ -24,5 +24,9 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
+	if (!actor) {
+		send_out("Odd...without a body you have no hands.\nPlease inhabit an object first.\n");
+		return;
+	}
 	send_out("You say hello to the world.\n");
 }

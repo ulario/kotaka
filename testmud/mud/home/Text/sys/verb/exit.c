@@ -27,6 +27,11 @@ void main(object actor, string args)
 	object genv;
 	object env;
 
+	if (!actor) {
+		send_out("Odd...without a body you have no legs.\nPlease inhabit an object first.\n");
+		return;
+	}
+
 	env = actor->query_environment();
 
 	if (env) {
