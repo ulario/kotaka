@@ -3,7 +3,7 @@
 /* lib */
 
 #define LIB_VERB		(USR_DIR + "/Text/lib/verb")
-#define LIB_WIZBIN		(USR_DIR + "/Text/lib/wizbin")
+#define LIB_WIZVERB		(USR_DIR + "/Text/lib/wizverb")
 #define TEXT_LIB_USTATE		(USR_DIR + "/Text/lib/ustate")
 
 /* sys */
