@@ -87,6 +87,52 @@ private mixed query_include_file(string compiled, string from, string path)
 	return path;
 }
 
+private void scan_objects_light(string path, mapping libqueue, mapping objqueue)
+{
+	string *names;
+	int *sizes;
+	mixed **dir;
+	int i;
+
+	path = find_object(DRIVER)->normalize_path(path, "/");
+
+	dir = get_dir(path + "/*");
+	names = dir[0];
+	sizes = dir[1];
+
+	for (i = 0; i < sizeof(names); i++) {
+		string name;
+		string opath;
+
+		name = names[i];
+
+		if (sizes[i] == -2) {
+			scan_objects_light(path + "/" + name, libqueue, objqueue);
+			continue;
+		}
+
+		if (strlen(name) > 2 && name[strlen(name) - 2 ..] == ".c") {
+			string opath;
+			mixed *status;
+			int oindex;
+
+			opath = path + "/" + name[0 .. strlen(name) - 3];
+
+			status = status(opath);
+
+			if (!status) {
+				continue;
+			}
+
+			if (sscanf(opath, "%*s" + INHERITABLE_SUBDIR)) {
+				libqueue[opath] = 1;
+			} else {
+				objqueue[opath] = 1;
+			}
+		}
+	}
+}
+
 private void scan_objects(string path, object libqueue, object objqueue, object notqueue)
 {
 	string *names;
@@ -288,33 +334,34 @@ void recompile_everything()
 
 void discover_objects()
 {
-	object libqueue;
-	object objqueue;
-
 	ACCESS_CHECK(PRIVILEGED());
 
 	rlimits(0; -1) {
-		libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-		objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+		mixed libqueue;
+		mixed objqueue;
+		int sz, i;
 
-		scan_objects("/", libqueue, objqueue, nil);
+		libqueue = ([ ]);
+		objqueue = ([ ]);
 
-		while (!libqueue->empty()) {
-			string path;
+		scan_objects_light("/", libqueue, objqueue);
 
-			path = libqueue->get_front();
-			libqueue->pop_front();
+		libqueue = map_indices(libqueue);
+		sz = sizeof(libqueue);
 
-			destruct_object(path);
+		for (i = 0; i < sz; i++) {
+			DRIVER->message("Destructing " + libqueue[i] + "\n");
+
+			destruct_object(libqueue[i]);
 		}
 
-		while (!objqueue->empty()) {
-			string path;
+		objqueue = map_indices(objqueue);
+		sz = sizeof(objqueue);
 
-			path = objqueue->get_front();
-			objqueue->pop_front();
+		for (i = 0; i < sz; i++) {
+			DRIVER->message("Compiling " + objqueue[i] + "\n");
 
-			compile_object(path);
+			compile_object(objqueue[i]);
 		}
 	}
 }
