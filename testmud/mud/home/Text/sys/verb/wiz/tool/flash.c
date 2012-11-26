@@ -21,7 +21,7 @@
 #include <text/paths.h>
 #include <kotaka/log.h>
 
-inherit LIB_WIZBIN;
+inherit LIB_WIZVERB;
 
 atomic void main(object actor, string args)
 {

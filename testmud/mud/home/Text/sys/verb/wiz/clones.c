@@ -21,7 +21,7 @@
 #include <text/paths.h>
 #include <status.h>
 
-inherit LIB_WIZBIN;
+inherit LIB_WIZVERB;
 
 void main(object actor, string args)
 {

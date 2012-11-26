@@ -20,7 +20,7 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 
-inherit LIB_WIZBIN;
+inherit LIB_WIZVERB;
 
 void main(object actor, string args)
 {
