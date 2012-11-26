@@ -37,6 +37,20 @@ static void create()
 {
 }
 
+void check_security(string user, string creator)
+{
+	PERMISSION_CHECK(user != "System");
+
+	if (user[0] >= 'a' && user[0] <= 'z') {
+		/* Proxies for users must be initiated by that user */
+		PERMISSION_CHECK(this_user());
+		PERMISSION_CHECK(this_user()->query_name() == user);
+	} else {
+		/* Infrastructure can only be proxied by itself */
+		PERMISSION_CHECK(creator == user);
+	}
+}
+
 object get_proxy(string user)
 {
 	object proxy;
@@ -51,22 +65,7 @@ object get_proxy(string user)
 	CHECKARG(user && user != "" &&
 		STRINGD->is_valid_username(user), 1, "get_proxy");
 
-	switch(user) {
-	case "System":
-		/* System doesn't need proxies */
-		error("Permission denied");
-
-	case "Common":
-	case "Game":
-		/* Infrastructure can only be proxied by itself */
-		PERMISSION_CHECK(creator == user);
-		break;
-
-	default:
-		/* Proxies for users must be initiated by that user */
-		PERMISSION_CHECK(this_user());
-		PERMISSION_CHECK(this_user()->query_name() == user);
-	}
+	check_security(user, creator);
 
 	proxy = new_object("~/lwo/proxy", user);
 
