@@ -350,8 +350,6 @@ void discover_objects()
 		sz = sizeof(libqueue);
 
 		for (i = 0; i < sz; i++) {
-			DRIVER->message("Destructing " + libqueue[i] + "\n");
-
 			destruct_object(libqueue[i]);
 		}
 
@@ -359,8 +357,6 @@ void discover_objects()
 		sz = sizeof(objqueue);
 
 		for (i = 0; i < sz; i++) {
-			DRIVER->message("Compiling " + objqueue[i] + "\n");
-
 			compile_object(objqueue[i]);
 		}
 	}
