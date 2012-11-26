@@ -140,6 +140,8 @@ private int is_wiztool_command(string command)
 	case "statedump":
 	case "shutdown":
 	case "reboot":
+	case "hotboot":
+	case "fulldump":
 		return 1;
 	default:
 		return 0;
