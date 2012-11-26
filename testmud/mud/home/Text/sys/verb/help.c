@@ -189,13 +189,8 @@ void main(object actor, string args)
 
 	if (args == "") {
 		/* list root category */
-		if (HELPD->test_topic("index")) {
-			header = "index";
-			text = HELPD->query_content("index");
-		} else {
-			header = "(root contents)";
-			text = list_category(nil);
-		}
+		header = "Root contents:";
+		text = list_category(nil);
 	} else {
 		/* find topic, barf if ambiguous */
 		index = HELPD->query_index();
@@ -220,13 +215,8 @@ void main(object actor, string args)
 				header = topic;
 				text = HELPD->query_content(topic);
 			} else {
-				if (HELPD->test_topic(topic + "/index")) {
-					header = topic + "/index";
-					text = HELPD->query_content(topic + "/index");
-				} else {
-					header = topic + " (contents)";
-					text = list_category(topic);
-				}
+				header = topic + " contents";
+				text = list_category(topic);
 			}
 
 			if (sizeof(candidates - survivors)) {
