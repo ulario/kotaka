@@ -42,6 +42,9 @@ object find_verb(string command)
 	if (verb = find_object("~/sys/verb/movie" + command)) {
 		return verb;
 	}
+	if (verb = find_object("~/sys/verb/direction/" + command)) {
+		return verb;
+	}
 	if (verb = find_object("~/sys/verb/" + command)) {
 		return verb;
 	}
