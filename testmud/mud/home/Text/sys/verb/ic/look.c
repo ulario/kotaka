@@ -24,5 +24,5 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
-	send_out(TEXT_SUBD->draw_look(actor, 0));
+	send_out(RENDERD->draw_look(actor, 0));
 }
