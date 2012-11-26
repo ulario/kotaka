@@ -81,6 +81,32 @@ object get_proxy(string user)
 	return proxy;
 }
 
+object get_wiztool(string user)
+{
+	object wiztool;
+	int firstchar;
+
+	string creator;
+
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
+
+	creator = DRIVER->creator(previous_program());
+
+	CHECKARG(user && user != "" &&
+		STRINGD->is_valid_username(user), 1, "get_proxy");
+
+	check_security(user, creator);
+
+	wiztool = new_object("~/lwo/wiztool", user);
+
+	if (audit) {
+		INITD->message("Wiztool being issued to " +
+			creator + " for " + user);
+	}
+
+	return proxy;
+}
+
 void enable_audit()
 {
 	ACCESS_CHECK(SYSTEM());
