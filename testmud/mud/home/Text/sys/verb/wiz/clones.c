@@ -45,4 +45,23 @@ void main(object actor, string args)
 	cinfo = CLONED->query_clone_info(st[O_INDEX]);
 
 	send_out("There are " + cinfo->query_clone_count() + " clones.\n");
+
+	if (cinfo->query_clone_count() < 20) {
+		object *clones;
+
+		clones = cinfo->query_clones();
+
+		if (clones) {
+			int sz, i;
+			sz = sizeof(clones);
+
+			for (i = 0; i < sz; i++) {
+				send_out(object_name(clones[i]) + "\n");
+			}
+		} else {
+			send_out("There were too many to list at one point.\n");
+		}
+	} else {
+		send_out("There are too many to list.\n");
+	}
 }
