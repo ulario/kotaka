@@ -89,10 +89,6 @@ private void initialize()
 	load_object(CLONE_INFO);
 	load_object(CLONED);
 
-	LOGD->post_message("boot", LOG_INFO, "Testing");
-	load_object(TESTD);
-	TESTD->test();
-
 	LOGD->post_message("boot", LOG_INFO, "Loading system");
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
