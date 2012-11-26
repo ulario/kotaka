@@ -55,7 +55,7 @@ private void check_versions();
 
 private void initialize()
 {
-	subsystems = ({ "System" });
+	subsystems = ({ });
 
 	load_object(ERRORD);
 	ERRORD->enable();
@@ -172,7 +172,7 @@ void prepare_reboot()
 
 	sz = sizeof(subsystems);
 
-	for (index = sz - 1; index >= 1; index--) {
+	for (index = sz - 1; index >= 0; index--) {
 		catch {
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "prepare_reboot");
 		}
@@ -222,7 +222,7 @@ void reboot()
 
 	sz = sizeof(subsystems);
 
-	for (index = 1; index < sz; index++) {
+	for (index = 0; index < sz; index++) {
 		catch {
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "reboot");
 		}
@@ -244,7 +244,7 @@ static void dumped_state()
 
 	sz = sizeof(subsystems);
 
-	for (index = 1; index < sz; index++) {
+	for (index = 0; index < sz; index++) {
 		catch {
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "dumped_state");
 		}
