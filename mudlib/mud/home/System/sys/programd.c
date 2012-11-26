@@ -27,12 +27,35 @@
 
 inherit SECOND_AUTO;
 
+mapping map;
 object db;	/* program database */
 
 static void create()
 {
+	map = ([ ]);
+
+}
+
+void convert_database()
+{
+	int *ind;
+	object *val;
+
+	int i, sz;
+
 	db = clone_object(BIGSTRUCT_MAP_OBJ);
 	db->set_type(T_INT);
+
+	ind = map_indices(map);
+	val = map_values(map);
+
+	sz = sizeof(ind);
+
+	for (i = 0; i < sz; i++) {
+		db->set_element(ind[i], val[i]);
+	}
+
+	map = nil;
 
 	call_out("defragment", 5);
 }
@@ -70,7 +93,12 @@ void register_program(string path, string *inherits,
 
 		suboindex = status(inherits[i])[O_INDEX];
 		oindices[i] = suboindex;
-		subpinfo = db->get_element(suboindex);
+
+		if (db) {
+			subpinfo = db->get_element(suboindex);
+		} else {
+			subpinfo = map[suboindex];
+		}
 
 		if (subpinfo) {
 			ctors |= subpinfo->query_inherited_constructors();
@@ -83,13 +111,21 @@ void register_program(string path, string *inherits,
 	ctors -= ({ nil });
 	dtors -= ({ nil });
 
-	pinfo = db->get_element(oindex);
+	if (db) {
+		pinfo = db->get_element(oindex);
+	} else {
+		pinfo = map[oindex];
+	}
 
 	if (!pinfo) {
 		pinfo = new_object(PROGRAM_INFO);
 		pinfo->set_path(path);
 
-		db->set_element(oindex, pinfo);
+		if (db) {
+			db->set_element(oindex, pinfo);
+		} else {
+			map[oindex] = pinfo;
+		}
 	}
 
 	pinfo->set_inherits(oindices);
