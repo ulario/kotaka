@@ -26,7 +26,6 @@
 
 #include <kotaka/bigstruct.h>
 
-inherit SECOND_AUTO;
 inherit "../base/root";
 
 object first;

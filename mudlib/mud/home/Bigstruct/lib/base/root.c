@@ -24,8 +24,6 @@
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
-inherit SECOND_AUTO;
-
 private mapping grants;
 private int global_access;
 

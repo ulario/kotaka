@@ -27,7 +27,6 @@
 
 #include <type.h>
 
-inherit SECOND_AUTO;
 inherit "../bintree/root";
 
 #define MIN_MASS 256

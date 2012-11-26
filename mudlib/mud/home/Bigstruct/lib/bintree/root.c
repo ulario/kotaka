@@ -25,7 +25,6 @@
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
-inherit SECOND_AUTO;
 inherit "../base/root";
 
 object top;

@@ -24,7 +24,6 @@
 
 #include <status.h>
 
-inherit SECOND_AUTO;
 inherit "../bintree/node";
 
 /* only root may manipulate nodes */

@@ -23,7 +23,6 @@
 #include <kotaka/log.h>
 #include <status.h>
 
-inherit SECOND_AUTO;
 inherit "../base/node";
 
 mixed *sub;
