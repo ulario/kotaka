@@ -123,6 +123,7 @@ static void process(string str)
     case "statedump":
     case "shutdown":
     case "reboot":
+    case "hotboot":
 	call_other(this_object(), "cmd_" + str, user, str, arg);
 	break;
 
@@ -130,4 +131,30 @@ static void process(string str)
 	message("No command: " + str + "\n");
 	break;
     }
+}
+
+static void cmd_statedump(object user, string cmd, string str)
+{
+    switch(str) {
+    case nil:
+	dump_state();
+	break;
+    case "-p":
+	dump_state(1);
+	break;
+    default:
+	message("Usage: " + cmd + "\n");
+	message("Options:\n\t-p  Partial snapshot\n");
+    }
+}
+
+static void cmd_hotboot(object user, string cmd, string str)
+{
+    if (str) {
+	message("Usage: " + cmd + "\n");
+	return;
+    }
+
+    dump_state();
+    shutdown(1);
 }
