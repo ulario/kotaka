@@ -17,6 +17,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
+#include <kotaka/bigstruct.h>
+#include <kotaka/log.h>
+#include <kotaka/paths.h>
+#include <kotaka/privilege.h>
+#include <status.h>
+#include <type.h>
 
 private void test_bigstruct_array()
 {
