@@ -28,15 +28,14 @@
 
 inherit SECOND_AUTO;
 
+mapping bmap;	/* keeping track of bigstruct clones */
 object db;
-int busy;
-object *overflow;
 
 private void discover_clones();
 
 static void create()
 {
-	overflow = ({ });
+	bmap = ([ ]);
 
 	db = clone_object(BIGSTRUCT_MAP_OBJ);
 	db->set_type(T_INT);
@@ -48,32 +47,18 @@ static void create()
 
 void add_clone(object obj);
 
-private void flush()
-{
-	while (sizeof(overflow)) {
-		object over;
-
-		over = overflow[0];
-		overflow = overflow[1 ..];
-		add_clone(over);
-	}
-}
-
 static void defragment()
 {
 	call_out("defragment", 60);
 
-	busy = 1;
 	db->reindex();
-	busy = 0;
-
-	flush();
 }
 
 void add_clone(object obj)
 {
 	object cinfo;
 	int index;
+	int is_bigstruct;
 
 	ACCESS_CHECK(previous_program() == OBJECTD || previous_program() == CLONED);
 
@@ -81,18 +66,24 @@ void add_clone(object obj)
 		return;
 	}
 
-	if (busy) {
-		overflow += ({ obj });
-		return;
+	index = status(obj, O_INDEX);
+
+	is_bigstruct = DRIVER->creator(object_name(obj)) == "Bigstruct";
+
+	if (is_bigstruct) {
+		cinfo = bmap[index];
+	} else {
+		cinfo = db->get_element(index);
 	}
 
-	index = status(obj, O_INDEX);
-	cinfo = db->get_element(index);
-
 	if (!cinfo) {
-		busy = 1;
-		db->set_element(index, cinfo = new_object(CLONE_INFO));
-		busy = 0;
+		cinfo = new_object(CLONE_INFO);
+
+		if (is_bigstruct) {
+			bmap[index] = cinfo;
+		} else {
+			db->set_element(index, cinfo);
+		}
 
 		if (!sscanf(object_name(obj), "/kernel/%*s")) {
 			cinfo->set_first_clone(obj);
@@ -116,7 +107,6 @@ void add_clone(object obj)
 	}
 
 	cinfo->add_clone(obj);
-	flush();
 }
 
 void remove_clone(object obj)
@@ -125,20 +115,32 @@ void remove_clone(object obj)
 	object prev;
 	object next;
 	int index;
+	int is_bigstruct;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	index = status(obj, O_INDEX);
-	cinfo = db->get_element(index);
-	cinfo->remove_clone(obj);
+	is_bigstruct = DRIVER->creator(object_name(obj)) == "Bigstruct";
 
-	if (sscanf(object_name(obj), "/kernel/%*s")) {
-		return;
+	index = status(obj, O_INDEX);
+
+	if (is_bigstruct) {
+		cinfo = bmap[index];
+	} else {
+		cinfo = db->get_element(index);
 	}
+	cinfo->remove_clone(obj);
 
 	if (obj == obj->query_next_clone()) {
 		/* last clone */
-		db->set_element(index, nil);
+		if (is_bigstruct) {
+			bmap[index] = nil;
+		} else {
+			db->set_element(index, nil);
+		}
+		return;
+	}
+
+	if (sscanf(object_name(obj), "/kernel/%*s")) {
 		return;
 	}
 
@@ -185,7 +187,11 @@ private void discover_clones()
 	}
 }
 
-object query_clone_info(int oindex)
+object query_clone_info(int index)
 {
-	return db->get_element(oindex);
+	if (bmap[index]) {
+		return bmap[index];
+	}
+
+	return db->get_element(index);
 }
