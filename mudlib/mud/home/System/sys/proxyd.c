@@ -104,7 +104,7 @@ object get_wiztool(string user)
 			creator + " for " + user);
 	}
 
-	return proxy;
+	return wiztool;
 }
 
 void enable_audit()
