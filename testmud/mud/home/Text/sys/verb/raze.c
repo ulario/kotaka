@@ -35,8 +35,7 @@ void main(object actor, string args)
 	env = actor->query_environment();
 
 	if (!env) {
-		send_out("You enter the world.\n");
-		actor->move(GAME_INITD->query_world());
+		send_out("You aren't anywhere.\n");
 		return;
 	}
 
