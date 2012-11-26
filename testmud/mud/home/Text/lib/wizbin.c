@@ -21,7 +21,7 @@
 #include <kotaka/log.h>
 #include <text/paths.h>
 
-inherit LIB_BIN;
+inherit LIB_VERB;
 
 static mixed proxy_call(string function, mixed args...)
 {
