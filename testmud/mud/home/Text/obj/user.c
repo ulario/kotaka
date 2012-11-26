@@ -46,6 +46,13 @@ static void create(int clone)
 	}
 }
 
+void dispatch_wiztool(string line)
+{
+	ACCESS_CHECK(TEXT());
+
+	PROXYD->get_wiztool(query_name())->input(line);
+}
+
 static void destruct(int clone)
 {
 	if (clone) {

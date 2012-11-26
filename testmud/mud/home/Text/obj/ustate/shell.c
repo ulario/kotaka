@@ -113,9 +113,47 @@ void end()
 	destruct_object(this_object());
 }
 
+private int is_wiztool_command(string command)
+{
+	switch(command) {
+	case "code":
+	case "compile":
+	case "clone":
+	case "destruct":
+
+	case "ls":
+	case "cp":
+	case "mv":
+	case "rm":
+	case "mkdir":
+	case "rmdir":
+
+	case "access":
+	case "grant":
+	case "ungrant":
+	case "quota":
+	case "rsrc":
+
+	case "people":
+	case "status":
+	case "swapout":
+	case "statedump":
+	case "shutdown":
+	case "reboot":
+		return 1;
+	default:
+		return 0;
+	}
+}
+
 private void do_input(string first, string input)
 {
 	if (VERBD->do_action(body, first, input)) {
+		return;
+	}
+
+	if (is_wiztool_command(first)) {
+		query_user()->dispatch_wiztool(first + " " + input);
 		return;
 	}
 
