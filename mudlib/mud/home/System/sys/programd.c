@@ -149,7 +149,11 @@ object query_program_indices()
 
 object query_program_info(int oindex)
 {
-	return db->get_element(oindex);
+	if (db) {
+		return db->get_element(oindex);
+	} else {
+		return map[oindex];
+	}
 }
 
 object query_inheriters(int oindex)
