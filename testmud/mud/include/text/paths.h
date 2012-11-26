@@ -2,7 +2,6 @@
 
 /* lib */
 
-#define LIB_BIN			(USR_DIR + "/Text/lib/bin")
 #define LIB_VERB		(USR_DIR + "/Text/lib/verb")
 #define LIB_WIZBIN		(USR_DIR + "/Text/lib/wizbin")
 #define TEXT_LIB_USTATE		(USR_DIR + "/Text/lib/ustate")
