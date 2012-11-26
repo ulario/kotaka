@@ -1,15 +1,54 @@
-#include <kernel/kernel.h>
-#include <kernel/user.h>
+/*
+ * This file is part of Kotaka, a mud library for DGD
+ * http://github.com/shentino/kotaka
+ *
+ * Copyright (C) 2012  Raymond Jennings
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+# include <kernel/kernel.h>
+# include <kernel/user.h>
+#include <kotaka/paths.h>
+#include <kotaka/privilege.h>
 
-inherit LIB_WIZTOOL;
+inherit a SECOND_AUTO;
+inherit w LIB_SYSTEM_WIZTOOL;
 
 private object user;		/* associated user object */
 
+/*
+ * NAME:	create()
+ * DESCRIPTION:	initialize object
+ */
 static void create(int clone)
 {
     if (clone) {
-	::create();
-	user = this_user();
+	::create(200);
+    }
+}
+
+void set_user(object new_user)
+{
+    ACCESS_CHECK(!user);
+
+    user = new_user;
+}
+
+void dispose()
+{
+    if (previous_object() == user) {
+        destruct_object(this_object());
     }
 }
 
@@ -64,6 +103,8 @@ static void process(string str)
 
     switch (str) {
     case "code":
+    case "history":
+    case "clear":
     case "compile":
     case "clone":
     case "destruct":
@@ -76,6 +117,7 @@ static void process(string str)
     case "rm":
     case "mkdir":
     case "rmdir":
+    case "ed":
 
     case "access":
     case "grant":
