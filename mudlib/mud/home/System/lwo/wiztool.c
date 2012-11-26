@@ -35,20 +35,7 @@ static void create(int clone)
 {
     if (clone) {
 	::create(200);
-    }
-}
-
-void set_user(object new_user)
-{
-    ACCESS_CHECK(!user);
-
-    user = new_user;
-}
-
-void dispose()
-{
-    if (previous_object() == user) {
-        destruct_object(this_object());
+	user = this_user();
     }
 }
 
@@ -69,6 +56,11 @@ void input(string str)
 {
     if (previous_object() == user) {
 	call_limited("process", str);
+    } else {
+	error("Security violation:  Caller is "
+		+ object_name(previous_object())
+		+ " but user is " + object_name(user)
+	);
     }
 }
 
