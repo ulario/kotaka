@@ -202,8 +202,6 @@ private void test_bigstruct_map()
 		ASSERT(map->get_element(i * i) == i);
 	}
 
-	LOGD->flush();
-
 	map->clear();
 }
 
