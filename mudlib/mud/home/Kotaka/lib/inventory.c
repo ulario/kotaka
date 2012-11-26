@@ -25,7 +25,7 @@
 private object environment;
 private object *inventory;
 
-static void initialize_inventory()
+nomask static void initialize_inventory()
 {
 	ACCESS_CHECK(previous_program() == LIB_OBJECT);
 

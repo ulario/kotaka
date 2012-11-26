@@ -24,14 +24,15 @@
 
 #include <type.h>
 
-inherit "declaration";
+nomask object query_environment();
+nomask object *query_archetypes();
 
 private mapping properties;
 private string *removed_properties;
 
 mixed query_property(string name);
 
-static void initialize_property()
+nomask static void initialize_property()
 {
 	ACCESS_CHECK(previous_program() == LIB_OBJECT);
 

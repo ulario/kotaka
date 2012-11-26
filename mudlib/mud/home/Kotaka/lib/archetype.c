@@ -23,7 +23,7 @@
 
 private object *archetypes;
 
-static void initialize_archetype()
+nomask static void initialize_archetype()
 {
 	ACCESS_CHECK(previous_program() == LIB_OBJECT);
 
