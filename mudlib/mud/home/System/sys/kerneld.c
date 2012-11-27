@@ -110,6 +110,13 @@ void set_global_access(string dir, int flag)
 	::set_global_access(dir, flag);
 }
 
+string *query_global_access()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	return ::query_global_access();
+}
+
 /**********/
 /* objreg */
 /**********/
