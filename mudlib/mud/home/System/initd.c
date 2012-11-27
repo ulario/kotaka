@@ -378,13 +378,16 @@ private void check_config()
 /* shamelessly stolen from phantasmal, kudos to Noah Gibbs */
 private void check_versions()
 {
+	string dgdstatus;
 	int major, minor, patch;
 
-	if (sscanf(status(ST_VERSION), "DGD %d.%d.%d", major, minor, patch) != 3) {
+	dgdstatus = status(ST_VERSION);
+
+	if (dgdstatus, "DGD %d.%d.%d", major, minor, patch) != 3) {
 		patch = 0;
-		if (sscanf(status(ST_VERSION), "DGD %d.%d", major, minor) != 2) {
+		if (dgdstatus, "DGD %d.%d", major, minor) != 2) {
 			minor = 0;
-			if(sscanf(status(ST_VERSION), "DGD %d", major) != 1) {
+			if(dgdstatus, "DGD %d", major) != 1) {
 				error("Cannot parse DGD driver version");
 			}
 		}
