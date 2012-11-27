@@ -27,9 +27,6 @@ object find_verb(string command)
 	if (verb = find_object("~/sys/verb/ooc/adm/" + command)) {
 		return verb;
 	}
-	if (verb = find_object("~/sys/verb/ooc/wiz/tool/" + command)) {
-		return verb;
-	}
 	if (verb = find_object("~/sys/verb/ooc/wiz/debug/" + command)) {
 		return verb;
 	}
