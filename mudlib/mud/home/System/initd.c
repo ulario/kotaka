@@ -383,11 +383,11 @@ private void check_versions()
 
 	dgdstatus = status(ST_VERSION);
 
-	if (dgdstatus, "DGD %d.%d.%d", major, minor, patch) != 3) {
+	if (sscanf(dgdstatus, "DGD %d.%d.%d", major, minor, patch) != 3) {
 		patch = 0;
-		if (dgdstatus, "DGD %d.%d", major, minor) != 2) {
+		if (sscanf(dgdstatus, "DGD %d.%d", major, minor) != 2) {
 			minor = 0;
-			if(dgdstatus, "DGD %d", major) != 1) {
+			if(sscanf(dgdstatus, "DGD %d", major) != 1) {
 				error("Cannot parse DGD driver version");
 			}
 		}
