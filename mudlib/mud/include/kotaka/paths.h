@@ -8,26 +8,21 @@
 
 #define CALLOUTD	(USR_DIR + "/System/sys/calloutd")
 #define CLONED		(USR_DIR + "/System/sys/cloned")
-#define DEFAULT_MANAGER	(USR_DIR + "/System/sys/default_manager")
 #define ERRORD		(USR_DIR + "/System/sys/errord")
 #define FILTERD		(USR_DIR + "/System/sys/filterd")
 #define INITD		(USR_DIR + "/System/initd")
 #define KERNELD		(USR_DIR + "/System/sys/kerneld")
-#define LISTD		(USR_DIR + "/System/sys/listd")
 #define LOGD		(USR_DIR + "/System/sys/logd")
 #define OBJECTD		(USR_DIR + "/System/sys/objectd")
 #define PROGRAMD	(USR_DIR + "/System/sys/programd")
 #define PROXYD		(USR_DIR + "/System/sys/proxyd")
 #define SECRETD		(USR_DIR + "/System/sys/secretd")
 #define STATUSD		(USR_DIR + "/System/sys/statusd")
-#define SYSTEM_DEFAULT_USER (USR_DIR + "/System/sys/default_user")
 #define SYSTEM_USERD	(USR_DIR + "/System/sys/userd")
 #define TESTD		(USR_DIR + "/System/sys/testd")
 #define TLSD		(USR_DIR + "/System/sys/tlsd")
 #define TOUCHD		(USR_DIR + "/System/sys/touchd")
-#define TRASHD		(USR_DIR + "/System/sys/trashd")
 #define WATCHDOGD	(USR_DIR + "/System/sys/watchdogd")
-#define WIZTOOLD	(USR_DIR + "/System/sys/wiztoold")
 
 /* libs */
 
