@@ -288,10 +288,13 @@ void boot_subsystem(string subsystem)
 
 	KERNELD->add_user(subsystem);
 	KERNELD->add_owner(subsystem);
-	KERNELD->set_global_access(subsystem, 1);
 
 	rlimits(100; -1) {
 		load_object(USR_DIR + "/" + subsystem + "/initd");
+	}
+
+	if (!sizeof(KERNELD->query_global_access() & ({ subsystem }))) {
+		error("Failure to grant global access by " + subsystem);
 	}
 }
 
