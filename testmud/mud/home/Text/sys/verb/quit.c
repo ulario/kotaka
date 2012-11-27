@@ -24,5 +24,9 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
-	query_user()->quit();
+	if (query_ustate()->query_body()) {
+		query_ustate()->set_body(nil);
+	} else {
+		query_user()->quit();
+	}
 }
