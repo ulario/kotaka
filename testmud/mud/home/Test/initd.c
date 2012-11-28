@@ -25,6 +25,8 @@ inherit UTILITY_COMPILE;
 
 static void create()
 {
+	KERNELD->set_global_access("Test", 1);
+
 	LOGD->post_message("test", LOG_DEBUG, "Test subsystem loading...");
 
 	load_dir("obj", 1);
