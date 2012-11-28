@@ -41,7 +41,10 @@ void reset()
 {
 	destruct_object(queue);
 
-	remove_call_out(handle);
+	if (handle) {
+		remove_call_out(handle);
+		handle = 0;
+	}
 
 	queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
 }
