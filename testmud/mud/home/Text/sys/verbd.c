@@ -20,36 +20,46 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
+string *gather_dirs(string dir)
+{
+	string *buf;
+
+	mixed **dirlist;
+	string *names;
+	int *sizes;
+
+	int i, sz;
+
+	dirlist = get_dir(dir + "/*");
+
+	names = dirlist[0];
+	sizes = dirlist[1];
+
+	buf = ({ dir });
+	sz = sizeof(names);
+
+	for (i = 0; i < sz; i++) {
+		if (sizes[i] == -2) {
+			buf += gather_dirs(dir + "/" + names[i]);
+		}
+	}
+
+	return buf;
+}
+
 object find_verb(string command)
 {
 	object verb;
+	string *dirs;
+	int i, sz;
 
-	if (verb = find_object("~/sys/verb/ooc/adm/" + command)) {
-		return verb;
-	}
-	if (verb = find_object("~/sys/verb/ooc/wiz/debug/" + command)) {
-		return verb;
-	}
-	if (verb = find_object("~/sys/verb/ooc/wiz/" + command)) {
-		return verb;
-	}
-	if (verb = find_object("~/sys/verb/ooc/test/" + command)) {
-		return verb;
-	}
-	if (verb = find_object("~/sys/verb/ooc/movie/" + command)) {
-		return verb;
-	}
-	if (verb = find_object("~/sys/verb/ic/direction/" + command)) {
-		return verb;
-	}
-	if (verb = find_object("~/sys/verb/ooc/" + command)) {
-		return verb;
-	}
-	if (verb = find_object("~/sys/verb/ic/" + command)) {
-		return verb;
-	}
-	if (verb = find_object("~/sys/verb/" + command)) {
-		return verb;
+	dirs = gather_dirs("~/sys/verb");
+	sz = sizeof(dirs);
+
+	for (i = 0; i < sz; i++) {
+		if (verb = find_object(dirs[i] + "/" + command)) {
+			return verb;
+		}
 	}
 }
 
