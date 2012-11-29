@@ -78,12 +78,16 @@ nomask void add_inventory(object arriving)
 	ASSERT(arriving);
 	ASSERT(!sizeof( ({ arriving }) & inventory ));
 
+	ACCESS_CHECK(KOTAKA());
+
 	inventory = ({ arriving }) + (inventory - ({ nil }));
 }
 
 nomask void del_inventory(object departing)
 {
 	ASSERT(departing);
+
+	ACCESS_CHECK(KOTAKA());
 
 	inventory -= ({ departing });
 }
