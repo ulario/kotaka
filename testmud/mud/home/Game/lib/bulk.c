@@ -61,10 +61,6 @@ void set_mass(float new_mass)
 		return;
 	}
 
-	if (new_mass < 0.0) {
-		error("Invalid mass");
-	}
-
 	if (env = query_environment()) {
 		env->bulk_invalidate();
 
@@ -105,7 +101,7 @@ void set_density(float new_density)
 		return;
 	}
 
-	if (new_density <= 0.0) {
+	if (new_density == 0.0) {
 		error("Invalid density");
 	}
 
