@@ -61,7 +61,7 @@ void add_channel(string channel, varargs int lock)
 
 	program == previous_program();
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	CHECKARG(1, channel, "add_channel");
 
@@ -93,7 +93,7 @@ static void create()
 /** lists all the channels */
 string *query_channels()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	return map_indices(channels);
 }
@@ -101,7 +101,7 @@ string *query_channels()
 /** deletes a channel */
 void del_channel(string channel)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	CHECKARG(1, channel, "del_channel");
 
@@ -122,7 +122,7 @@ mixed query_channel_config(string channel, string key)
 {
 	mapping config;
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	CHECKARG(channel, 1, "query_channel_config");
 	CHECKARG(key, 2, "query_channel_config");
@@ -148,7 +148,7 @@ void set_channel_config(string channel, string key, mixed value)
 {
 	mapping config;
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	CHECKARG(channel, 1, "set_channel_config");
 	CHECKARG(key, 2, "set_channel_config");
@@ -165,7 +165,7 @@ void set_channel_config(string channel, string key, mixed value)
 /** returns true if the channel exists */
 int test_channel(string channel)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 	CHECKARG(channel, 1, "test_channel");
 
 	return !!channels[channel];
@@ -182,7 +182,7 @@ Access control is the caller's responsiblity.
 */
 void subscribe_channel(string channel, object subscriber)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	CHECKARG(channel, 1, "subscribed_user");
 	CHECKARG(subscriber, 1, "subscribe_user");
@@ -201,7 +201,7 @@ void subscribe_channel(string channel, object subscriber)
 /** unsubscribe a user from a channel */
 void unsubscribe_user(string channel, object subscriber)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	CHECKARG(channel, 1, "unsubscribe_user");
 	CHECKARG(subscriber, 1, "unsubscribe_user");
@@ -225,7 +225,7 @@ void unsubscribe_user(string channel, object subscriber)
 int is_subscribed(string channel, object user)
 {
 	mixed *data;
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	CHECKARG(channel, 1, "is_subscribed");
 	CHECKARG(user, 1, "is_subscribed");
@@ -248,7 +248,7 @@ string *query_subscriptions(object subscriber)
 	mixed *values;
 	int i;
 
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	CHECKARG(subscriber, 1, "query_subscriptions");
 
