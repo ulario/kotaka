@@ -198,8 +198,7 @@ int query_flexible()
 /* virtual */
 
 /* a virtual object is organizational */
-
-/* a virtual object that is also flexible has infinite capacity */
+/* things like rooms, countries, cities, and so on */
 
 void set_virtual(int new_virtual)
 {
