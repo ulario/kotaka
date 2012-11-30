@@ -56,7 +56,9 @@ nomask int is_archetype_of(object test)
 
 nomask object *query_archetypes()
 {
-	return archetypes -= ({ nil });
+	archetypes -= ({ nil });
+
+	return archetypes[..];
 }
 
 nomask void set_archetypes(object *new_archs)
