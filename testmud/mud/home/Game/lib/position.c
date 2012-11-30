@@ -36,20 +36,12 @@ static void move_notify(object old_env)
 	new_env = query_environment();
 
 	if (!old_env || !new_env) {
-		xpos = 0.0;
-		ypos = 0.0;
-		zpos = 0.0;
-
 		return;
 	}
 
 	common = SUBD->query_common_container(old_env, new_env);
 
 	if (!common) {
-		xpos = 0.0;
-		ypos = 0.0;
-		zpos = 0.0;
-
 		return;
 	}
 
