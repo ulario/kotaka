@@ -80,7 +80,9 @@ int do_action(object actor, string command, string args)
 
 	verb->main(actor, args);
 
-	TLSD->set_tls_value("Text", "ustate", nil);
+	if (this_object()) {
+		TLSD->set_tls_value("Text", "ustate", nil);
+	}
 
 	return TRUE;
 }
