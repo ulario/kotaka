@@ -88,6 +88,10 @@ mixed set_tls_access(string domain, string key, string user, int access)
 		error("Insufficient access granting privileges");
 	}
 
+	if (domain == user) {
+		error("Self access is fixed at full");
+	}
+
 	if (access == FULL_ACCESS && creator != "System") {
 		error("Insufficient access granting privileges");
 	}
