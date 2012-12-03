@@ -68,7 +68,6 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_INFO, "Loading object manager");
 	load_object(OBJECTD);
-	OBJECTD->enable();
 
 	LOGD->post_message("boot", LOG_INFO, "Loading program manager");
 	load_object(PROGRAM_INFO);

@@ -35,6 +35,7 @@ int upgrading;		/* are we upgrading or making a new compile? */
 
 static void create()
 {
+	DRIVER->set_object_manager(this_object());
 }
 
 void reboot()
