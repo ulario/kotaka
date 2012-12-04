@@ -48,5 +48,5 @@ void main(object actor, string args)
 		body->move(world);
 	}
 
-	query_ustate()->set_body(body);
+	query_user()->set_body(body);
 }
