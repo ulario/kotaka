@@ -83,10 +83,8 @@ static void create()
 
 	PROXYD->get_proxy("Game")->set_global_access("~", 1);
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
-	PROPERTYD->add_property("facing", T_INT, PROP_SIMPLE);
-	PROPERTYD->add_property("painter", T_STRING, PROP_INHERIT);
-	PROPERTYD->add_property("timer", T_STRING, PROP_INHERIT);
-	PROPERTYD->add_property("holding", T_MAPPING, PROP_SIMPLE);
+	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("event:timer", T_STRING, PROP_INHERIT);
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
 	KERNELD->set_global_access("Game", 1);
@@ -139,7 +137,7 @@ static void place_object(string base, int remainder)
 		break;
 	}
 
-	obj->set_property("painter",
+	obj->set_property("event:paint",
 		find_object("~/sys/handler/paint/room")
 	);
 
@@ -167,28 +165,28 @@ void build_world()
 
 	master = clone_object("~/obj/object");
 	master->set_property("id", "shack");
-	master->set_property("painter",
+	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/shack");
 	masters["shack"] = master;
 
 	master = clone_object("~/obj/object");
 	master->set_property("id", "human");
-	master->set_property("painter",
+	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	masters["human"] = master;
 
 	master = clone_object("~/obj/object");
 	master->set_property("id", "tree");
-	master->set_property("painter",
+	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/tree");
-	master->set_property("timer",
+	master->set_property("event:timer",
 		USR_DIR + "/Game/sys/handler/timer/tree");
 	masters["tree"] = master;
 
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
 	world->set_density(6.5);
-	world->set_property("painter",
+	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/world");
 }
 

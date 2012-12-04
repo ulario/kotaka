@@ -75,7 +75,7 @@ static void tick()
 		return;
 	}
 
-	handler = query_property("timer");
+	handler = query_property("event:timer");
 
 	if (handler) {
 		handler->on_timer(this_object());

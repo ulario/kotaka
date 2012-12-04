@@ -231,7 +231,7 @@ private void draw_environment(object gc, object living)
 			env = stack->get_back();
 			stack->pop_back();
 
-			if (painter = env->query_property("painter")) {
+			if (painter = env->query_property("event:paint")) {
 				painter->on_paint_text(gc, env, living);
 			} else {
 				gc->set_color(0x0F);
@@ -280,7 +280,7 @@ private void draw_neighbors(object gc, object living)
 
 			neighbor = contents[i];
 
-			if (painter = neighbor->query_property("painter")) {
+			if (painter = neighbor->query_property("event:paint")) {
 				painter->on_paint_text(gc, neighbor, living);
 			} else {
 				default_painter(gc, neighbor, living);
