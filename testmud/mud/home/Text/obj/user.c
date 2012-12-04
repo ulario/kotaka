@@ -29,6 +29,7 @@
 inherit LIB_KOTAKA_USER;
 
 object mobile;
+object body;
 int keepalive;
 
 string username;
@@ -98,6 +99,18 @@ void set_mobile(object new_mobile)
 object query_mobile()
 {
 	return mobile;
+}
+
+void set_body(object new_body)
+{
+	ACCESS_CHECK(TEXT());
+
+	body = new_body;
+}
+
+object query_body()
+{
+	return body;
 }
 
 void logout(int quit)
