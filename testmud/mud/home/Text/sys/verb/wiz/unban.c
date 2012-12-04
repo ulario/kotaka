@@ -76,5 +76,5 @@ void main(object actor, string args)
 
 	user->message("You unban " + turkey_name + " from the mud.\n");
 
-	TEXT_SUBD->send_to_all_except(kicker_name + " unbanned " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
+	TEXT_SUBD->send_to_all_except(kicker_name + " unbans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
 }

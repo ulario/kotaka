@@ -80,4 +80,17 @@ void main(object actor, string args)
 	}
 
 	BAND->ban_username(args);
+
+	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
+	turkey_name = TEXT_SUBD->titled_name(args, "~/sys/subd"->query_user_class(args));
+
+	user->message("You ban " + turkey_name + " from the mud.\n");
+	turkey = TEXT_USERD->find_user(args);
+
+	TEXT_SUBD->send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
+
+	if (turkey) {
+		turkey->message(kicker_name + " bans you from the mud.\n");
+		turkey->quit();
+	}
 }
