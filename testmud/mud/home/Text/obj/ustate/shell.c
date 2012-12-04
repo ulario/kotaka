@@ -29,8 +29,6 @@ inherit TEXT_LIB_USTATE;
 int stopped;
 int reading;
 
-object body;
-
 static void create(int clone)
 {
 	::create();
@@ -45,6 +43,10 @@ static void destruct(int clone)
 
 private void prompt()
 {
+	object body;
+
+	body = query_user()->query_body();
+
 	if (body) {
 		send_out(body->query_property("id") + "> ");
 	} else {
@@ -150,6 +152,10 @@ private int is_wiztool_command(string command)
 
 private void do_input(string first, string input)
 {
+	object body;
+
+	body = query_user()->query_body();
+
 	if (VERBD->do_action(body, first, input)) {
 		return;
 	}
@@ -164,11 +170,6 @@ private void do_input(string first, string input)
 	} else {
 		send_out("No such command.\n");
 	}
-}
-
-void set_body(object new_body)
-{
-	body = new_body;
 }
 
 void receive_in(string input)
