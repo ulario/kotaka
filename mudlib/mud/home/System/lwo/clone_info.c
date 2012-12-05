@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <status.h>
@@ -39,6 +40,7 @@ void add_clone(object obj)
 	ACCESS_CHECK(previous_program() == CLONED);
 
 	if (clones) {
+		ASSERT(!clones[obj]);
 		if (count == status(ST_ARRAYSIZE)) {
 			clones = nil;
 		} else {
@@ -54,6 +56,7 @@ void remove_clone(object obj)
 	ACCESS_CHECK(previous_program() == CLONED);
 
 	if (clones) {
+		ASSERT(clones[obj]);
 		clones[obj] = nil;
 	}
 
