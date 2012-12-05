@@ -558,10 +558,6 @@ void destruct(string owner, object obj)
 		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
 	}
 
-	if (!pinfo) {
-		return;
-	}
-
 	if (!sscanf(path, "/kernel/%*s")) {
 		obj->_F_sys_destruct();
 	}

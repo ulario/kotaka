@@ -62,10 +62,6 @@ void add_clone(object obj)
 
 	ACCESS_CHECK(previous_program() == OBJECTD || previous_program() == CLONED);
 
-	if (!db) {
-		return;
-	}
-
 	index = status(obj, O_INDEX);
 
 	is_bigstruct = DRIVER->creator(object_name(obj)) == "Bigstruct";
