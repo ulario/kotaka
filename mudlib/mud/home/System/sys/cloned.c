@@ -124,6 +124,7 @@ void remove_clone(object obj)
 	} else {
 		cinfo = db->get_element(index);
 	}
+
 	cinfo->remove_clone(obj);
 
 	if (obj == obj->query_next_clone()) {
@@ -159,6 +160,9 @@ private void discover_clones()
 
 	owners = KERNELD->query_owners();
 	sz = sizeof(owners);
+
+	db->clear();
+	bmap = ([ ]);
 
 	for (i = 0; i < sz; i++) {
 		object first;
