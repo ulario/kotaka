@@ -30,21 +30,27 @@ inherit SECOND_AUTO;
 
 int bigready;	/* if we're using bigstructs */
 mixed progdb;	/* program database */
+mixed inhdb;	/* inherit database */
+mixed incdb;	/* include database */
 
 static void create()
 {
 	progdb = ([ ]);
+	inhdb = ([ ]);
+	incdb = ([ ]);
 }
 
 void convert_database()
 {
-	int *ind;
-	object *val;
+	mixed *ind;
+	mixed *val;
 	mapping old;
 
 	int i, sz;
 
 	ASSERT(!bigready);
+
+	/* first, the program database */
 
 	old = progdb;
 	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
@@ -59,8 +65,67 @@ void convert_database()
 		progdb->set_element(ind[i], val[i]);
 	}
 
-	bigready = 1;
+	/* next, the inherit database */
 
+	old = inhdb;
+	inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	inhdb->set_type(T_INT);
+
+	ind = map_indices(old);
+	val = map_values(old);
+
+	sz = sizeof(ind);
+
+	for (i = 0; i < sz; i++) {
+		int *sub;
+		int j;
+		object submap;
+
+		int ssz;
+
+		sub = map_indices(val[i]);
+		ssz = sizeof(sub);
+
+		submap = new_object(BIGSTRUCT_MAP_LWO);
+		submap->set_type(T_INT);
+		inhdb->set_element(ind[i], submap);
+
+		for (j = 0; j < ssz; j++) {
+			submap->set_element(sub[j], 1);
+		}
+	}
+
+	/* finally, the include database */
+
+	old = incdb;
+	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	incdb->set_type(T_STRING);
+
+	ind = map_indices(old);
+	val = map_values(old);
+
+	sz = sizeof(ind);
+
+	for (i = 0; i < sz; i++) {
+		int *sub;
+		int j;
+		object submap;
+
+		int ssz;
+
+		sub = map_indices(val[i]);
+		ssz = sizeof(sub);
+
+		submap = new_object(BIGSTRUCT_MAP_LWO);
+		submap->set_type(T_INT);
+		incdb->set_element(ind[i], submap);
+
+		for (j = 0; j < ssz; j++) {
+			submap->set_element(sub[j], 1);
+		}
+	}
+
+	bigready = 1;
 	call_out("defragment", 5);
 }
 
@@ -69,6 +134,126 @@ static void defragment()
 	call_out("defragment", 60);
 
 	progdb->reindex();
+}
+
+private void deindex_inherits(int oindex, int *inh)
+{
+	if (bigready) {
+		int sz;
+		int i;
+
+		sz = sizeof(inh);
+
+		for (i = 0; i < sz; i++) {
+			object submap;
+			submap = inhdb->get_element(inh[i]);
+			submap->set_element(oindex, nil);
+		}
+	} else {
+		int sz;
+		int i;
+
+		sz = sizeof(inh);
+
+		for (i = 0; i < sz; i++) {
+			inhdb[inh[i]][oindex] = nil;
+		}
+	}
+}
+
+private void deindex_includes(int oindex, string *inc)
+{
+	if (bigready) {
+		int sz;
+		int i;
+
+		sz = sizeof(inc);
+
+		for (i = 0; i < sz; i++) {
+			object submap;
+			submap = incdb->get_element(inc[i]);
+			submap->set_element(oindex, nil);
+		}
+	} else {
+		int sz;
+		int i;
+
+		sz = sizeof(inc);
+
+		for (i = 0; i < sz; i++) {
+			incdb[inc[i]][oindex] = nil;
+		}
+	}
+}
+
+private void index_inherits(int oindex, int *inh)
+{
+	if (bigready) {
+		int sz;
+		int i;
+
+		sz = sizeof(inh);
+
+		for (i = 0; i < sz; i++) {
+			object submap;
+			submap = inhdb->get_element(inh[i]);
+
+			if (!submap) {
+				inhdb->set_element(inh[i], submap = new_object(BIGSTRUCT_MAP_LWO));
+				submap->set_type(T_INT);
+			}
+
+			submap->set_element(oindex, 1);
+		}
+	} else {
+		int sz;
+		int i;
+
+		sz = sizeof(inh);
+
+		for (i = 0; i < sz; i++) {
+			if (!inhdb[inh[i]]) {
+				inhdb[inh[i]] = ([ ]);
+			}
+
+			inhdb[inh[i]][oindex] = 1;
+		}
+	}
+}
+
+private void index_includes(int oindex, string *inc)
+{
+	if (bigready) {
+		int sz;
+		int i;
+
+		sz = sizeof(inc);
+
+		for (i = 0; i < sz; i++) {
+			object submap;
+			submap = incdb->get_element(inc[i]);
+
+			if (!submap) {
+				incdb->set_element(inc[i], submap = new_object(BIGSTRUCT_MAP_LWO));
+				submap->set_type(T_INT);
+			}
+
+			submap->set_element(oindex, 1);
+		}
+	} else {
+		int sz;
+		int i;
+
+		sz = sizeof(inc);
+
+		for (i = 0; i < sz; i++) {
+			if (!incdb[inc[i]]) {
+				incdb[inc[i]] = ([ ]);
+			}
+
+			incdb[inc[i]][oindex] = 1;
+		}
+	}
 }
 
 void register_program(string path, string *inherits,
@@ -121,7 +306,10 @@ void register_program(string path, string *inherits,
 		pinfo = progdb[oindex];
 	}
 
-	if (!pinfo) {
+	if (pinfo) {
+		deindex_inherits(oindex, pinfo->query_inherits());
+		deindex_includes(oindex, pinfo->query_includes());
+	} else {
 		pinfo = new_object(PROGRAM_INFO);
 		pinfo->set_path(path);
 
@@ -138,6 +326,9 @@ void register_program(string path, string *inherits,
 	pinfo->set_constructor(constructor);
 	pinfo->set_inherited_destructors(dtors);
 	pinfo->set_destructor(destructor);
+
+	index_inherits(oindex, oindices);
+	index_includes(oindex, includes);
 }
 
 object query_program_indices()
@@ -145,6 +336,17 @@ object query_program_indices()
 	object indices;
 
 	indices = progdb->get_indices();
+
+	indices->grant_access(previous_object(), FULL_ACCESS);
+
+	return indices;
+}
+
+object query_includer_indices()
+{
+	object indices;
+
+	indices = incdb->get_indices();
 
 	indices->grant_access(previous_object(), FULL_ACCESS);
 
@@ -162,56 +364,32 @@ object query_program_info(int oindex)
 
 object query_inheriters(int oindex)
 {
-	object inheriters;
-	object indices;
-	int i, sz;
+	object list;
 
-	indices = progdb->get_indices();
-	inheriters = new_object(BIGSTRUCT_ARRAY_LWO);
-	inheriters->grant_access(previous_object(), READ_ACCESS);
+	ASSERT(bigready);
 
-	sz = indices->get_size();
+	list = inhdb->get_element(oindex);
 
-	for (i = 0; i < sz; i++) {
-		object pinfo;
-		int suboindex;
-
-		suboindex = indices->get_element(i);
-		pinfo = progdb->get_element(suboindex);
-
-		if (sizeof(pinfo->query_inherits() & ({ oindex }))) {
-			inheriters->push_back(suboindex);
-		}
+	if (list) {
+		list = list->get_indices();
+		list->grant_access(previous_object(), FULL_ACCESS);
+		return list;
 	}
-
-	return inheriters;
 }
 
 object query_includers(string path)
 {
-	object includers;
-	object indices;
-	int i, sz;
+	object list;
 
-	indices = progdb->get_indices();
-	includers = new_object(BIGSTRUCT_ARRAY_LWO);
-	includers->grant_access(previous_object(), READ_ACCESS);
+	ASSERT(bigready);
 
-	sz = indices->get_size();
+	list = incdb->get_element(path);
 
-	for (i = 0; i < sz; i++) {
-		object pinfo;
-		int suboindex;
-
-		suboindex = indices->get_element(i);
-		pinfo = progdb->get_element(suboindex);
-
-		if (sizeof(pinfo->query_includes() & ({ path }))) {
-			includers->push_back(suboindex);
-		}
+	if (list) {
+		list = list->get_indices();
+		list->grant_access(previous_object(), FULL_ACCESS);
+		return list;
 	}
-
-	return includers;
 }
 
 void remove_program(int index)
