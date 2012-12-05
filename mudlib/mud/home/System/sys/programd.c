@@ -394,7 +394,16 @@ object query_includers(string path)
 
 void remove_program(int index)
 {
+	object pinfo;
+
 	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	pinfo = query_program_info(index);
+
+	if (pinfo) {
+		deindex_inherits(index, pinfo->query_inherits());
+		deindex_includes(index, pinfo->query_includes());
+	}
 
 	if (bigready) {
 		progdb->set_element(index, nil);
@@ -408,7 +417,14 @@ void reset_program_database()
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	destruct_object(progdb);
-
 	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	progdb->set_type(T_INT);
+
+	destruct_object(inhdb);
+	inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	inhdb->set_type(T_INT);
+
+	destruct_object(incdb);
+	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	incdb->set_type(T_STRING);
 }
