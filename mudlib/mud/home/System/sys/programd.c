@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/access.h>
+#include <kotaka/assert.h>
 #include <kotaka/bigstruct.h>
 #include <kotaka/log.h>
 #include <kotaka/paths.h>
@@ -27,35 +28,38 @@
 
 inherit SECOND_AUTO;
 
-mapping map;
-object db;	/* program database */
+int bigready;	/* if we're using bigstructs */
+mixed progdb;	/* program database */
 
 static void create()
 {
-	map = ([ ]);
-
+	progdb = ([ ]);
 }
 
 void convert_database()
 {
 	int *ind;
 	object *val;
+	mapping old;
 
 	int i, sz;
 
-	db = clone_object(BIGSTRUCT_MAP_OBJ);
-	db->set_type(T_INT);
+	ASSERT(!bigready);
 
-	ind = map_indices(map);
-	val = map_values(map);
+	old = progdb;
+	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	progdb->set_type(T_INT);
+
+	ind = map_indices(old);
+	val = map_values(old);
 
 	sz = sizeof(ind);
 
 	for (i = 0; i < sz; i++) {
-		db->set_element(ind[i], val[i]);
+		progdb->set_element(ind[i], val[i]);
 	}
 
-	map = nil;
+	bigready = 1;
 
 	call_out("defragment", 5);
 }
@@ -64,7 +68,7 @@ static void defragment()
 {
 	call_out("defragment", 60);
 
-	db->reindex();
+	progdb->reindex();
 }
 
 void register_program(string path, string *inherits,
@@ -94,10 +98,10 @@ void register_program(string path, string *inherits,
 		suboindex = status(inherits[i])[O_INDEX];
 		oindices[i] = suboindex;
 
-		if (db) {
-			subpinfo = db->get_element(suboindex);
+		if (bigready) {
+			subpinfo = progdb->get_element(suboindex);
 		} else {
-			subpinfo = map[suboindex];
+			subpinfo = progdb[suboindex];
 		}
 
 		if (subpinfo) {
@@ -111,20 +115,20 @@ void register_program(string path, string *inherits,
 	ctors -= ({ nil });
 	dtors -= ({ nil });
 
-	if (db) {
-		pinfo = db->get_element(oindex);
+	if (bigready) {
+		pinfo = progdb->get_element(oindex);
 	} else {
-		pinfo = map[oindex];
+		pinfo = progdb[oindex];
 	}
 
 	if (!pinfo) {
 		pinfo = new_object(PROGRAM_INFO);
 		pinfo->set_path(path);
 
-		if (db) {
-			db->set_element(oindex, pinfo);
+		if (bigready) {
+			progdb->set_element(oindex, pinfo);
 		} else {
-			map[oindex] = pinfo;
+			progdb[oindex] = pinfo;
 		}
 	}
 
@@ -140,7 +144,7 @@ object query_program_indices()
 {
 	object indices;
 
-	indices = db->get_indices();
+	indices = progdb->get_indices();
 
 	indices->grant_access(previous_object(), FULL_ACCESS);
 
@@ -149,10 +153,10 @@ object query_program_indices()
 
 object query_program_info(int oindex)
 {
-	if (db) {
-		return db->get_element(oindex);
+	if (bigready) {
+		return progdb->get_element(oindex);
 	} else {
-		return map[oindex];
+		return progdb[oindex];
 	}
 }
 
@@ -162,7 +166,7 @@ object query_inheriters(int oindex)
 	object indices;
 	int i, sz;
 
-	indices = db->get_indices();
+	indices = progdb->get_indices();
 	inheriters = new_object(BIGSTRUCT_ARRAY_LWO);
 	inheriters->grant_access(previous_object(), READ_ACCESS);
 
@@ -173,7 +177,7 @@ object query_inheriters(int oindex)
 		int suboindex;
 
 		suboindex = indices->get_element(i);
-		pinfo = db->get_element(suboindex);
+		pinfo = progdb->get_element(suboindex);
 
 		if (sizeof(pinfo->query_inherits() & ({ oindex }))) {
 			inheriters->push_back(suboindex);
@@ -189,7 +193,7 @@ object query_includers(string path)
 	object indices;
 	int i, sz;
 
-	indices = db->get_indices();
+	indices = progdb->get_indices();
 	includers = new_object(BIGSTRUCT_ARRAY_LWO);
 	includers->grant_access(previous_object(), READ_ACCESS);
 
@@ -200,7 +204,7 @@ object query_includers(string path)
 		int suboindex;
 
 		suboindex = indices->get_element(i);
-		pinfo = db->get_element(suboindex);
+		pinfo = progdb->get_element(suboindex);
 
 		if (sizeof(pinfo->query_includes() & ({ path }))) {
 			includers->push_back(suboindex);
@@ -214,15 +218,19 @@ void remove_program(int index)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	db->set_element(index, nil);
+	if (bigready) {
+		progdb->set_element(index, nil);
+	} else {
+		progdb[index] = nil;
+	}
 }
 
 void reset_program_database()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	destruct_object(db);
+	destruct_object(progdb);
 
-	db = clone_object(BIGSTRUCT_MAP_OBJ);
-	db->set_type(T_INT);
+	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	progdb->set_type(T_INT);
 }
