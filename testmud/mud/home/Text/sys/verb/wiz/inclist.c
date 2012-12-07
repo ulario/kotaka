@@ -19,20 +19,34 @@
  */
 #include <kotaka/paths.h>
 #include <text/paths.h>
+#include <status.h>
 
-inherit LIB_VERB;
+inherit LIB_WIZVERB;
 
 void main(object actor, string args)
 {
-	object user;
+	object ilist;
+	int i, sz;
 
-	user = query_user();
-
-	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to reset the object manager.\n");
+	if (query_user()->query_class() < 2) {
+		send_out("You do not have sufficient access rights to do an inclusion check.\n");
 		return;
 	}
 
-	OBJECTD->full_reset();
-	CLONED->discover_clones();
+	ilist = PROGRAMD->query_includers(args);
+
+	if (!ilist) {
+		send_out("No programs include that file.\n");
+		return;
+	}
+
+	sz = ilist->get_size();
+	send_out("There are " + ilist->get_size() + " programs including that file:\n");
+
+	for (i = 0; i < sz; i++) {
+		object pinfo;
+
+		pinfo = PROGRAMD->query_program_info(ilist->get_element(i));
+		send_out((pinfo ? pinfo->query_path() : "wtf#") + "\n");
+	}
 }
