@@ -31,7 +31,7 @@ inherit SECOND_AUTO;
 mapping bmap;	/* keeping track of bigstruct clones */
 object db;
 
-private void discover_clones();
+void discover_clones();
 
 static void create()
 {
@@ -152,11 +152,13 @@ void remove_clone(object obj)
 	next->set_prev_clone(prev);
 }
 
-private void discover_clones()
+void discover_clones()
 {
 	string *owners;
 	int i, sz;
 	int count;
+
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
 	owners = KERNELD->query_owners();
 	sz = sizeof(owners);
