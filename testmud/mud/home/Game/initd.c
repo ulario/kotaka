@@ -81,12 +81,9 @@ static void create()
 	load_dir("open", 1);
 	load_dir("sys", 1);
 
-	PROXYD->get_proxy("Game")->set_global_access("~", 1);
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:timer", T_STRING, PROP_INHERIT);
-	SECRETD->make_dir(".");
-	SECRETD->make_dir("log");
 	KERNELD->set_global_access("Game", 1);
 
 	"sys/testd"->test();
