@@ -239,16 +239,16 @@ void swapout()
 	::swapout();
 }
 
-void dump_state()
+void dump_state(varargs int incr)
 {
 	ACCESS_CHECK(PRIVILEGED());
 
-	::dump_state();
+	::dump_state(incr);
 }
 
-void shutdown()
+void shutdown(varargs int hotboot)
 {
 	ACCESS_CHECK(PRIVILEGED());
 
-	::shutdown();
+	::shutdown(hotboot);
 }
