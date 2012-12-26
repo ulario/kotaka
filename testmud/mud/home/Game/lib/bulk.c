@@ -37,7 +37,6 @@ float max_mass;		/* kg */
 
 /* caching */
 int bulk_dirty;			/* if cache is invalid */
-int bulk_queued;		/* if we are in the bulkd queue */
 
 float cached_content_mass;	/* cached mass of our contents */
 float cached_content_volume;	/* cached volume of our contents */
@@ -63,10 +62,6 @@ void set_mass(float new_mass)
 
 	if (env = query_environment()) {
 		env->bulk_invalidate();
-
-		if (!env->query_bulk_queued()) {
-			env->bulk_queue();
-		}
 	}
 
 	mass = new_mass;
@@ -107,10 +102,6 @@ void set_density(float new_density)
 
 	if (env = query_environment()) {
 		env->bulk_invalidate();
-
-		if (!env->query_bulk_queued()) {
-			env->bulk_queue();
-		}
 	}
 
 	density = new_density;
@@ -161,10 +152,6 @@ void set_capacity(float new_capacity)
 	/* rigid objects change size when they change capacity */
 	if (!flexible && (env = query_environment())) {
 		env->bulk_invalidate();
-
-		if (!env->query_bulk_queued()) {
-			env->bulk_queue();
-		}
 	}
 }
 
@@ -219,11 +206,6 @@ int query_bulk_dirty()
 	return bulk_dirty;
 }
 
-int query_bulk_queued()
-{
-	return bulk_queued;
-}
-
 void bulk_sync(varargs int force)
 {
 	int i;
@@ -266,23 +248,6 @@ void bulk_invalidate(varargs int force)
 	}
 }
 
-void bulk_dequeued()
-{
-	bulk_queued = 0;
-}
-
-void bulk_queue(varargs int force)
-{
-	if (!force) {
-		ASSERT(bulk_dirty);
-		ASSERT(!bulk_queued);
-	}
-
-	bulk_queued = 1;
-
-	BULKD->enqueue(this_object());
-}
-
 /* hooks */
 
 static void move_notify(object old_env)
@@ -295,17 +260,9 @@ static void move_notify(object old_env)
 
 	if (env = query_environment()) {
 		env->bulk_invalidate(); /* recursive */
-
-		if (!env->query_bulk_queued()) {
-			env->bulk_queue();
-		}
 	}
 
 	if (old_env) {
 		old_env->bulk_invalidate(); /* recursive */
-
-		if (!old_env->query_bulk_queued()) {
-			old_env->bulk_queue();
-		}
 	}
 }
