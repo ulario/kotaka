@@ -72,26 +72,4 @@ void on_paint_text(object gc, object obj, object viewer)
 			}
 		}
 	}
-
-	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
-
-	mx = (int)dx;
-	my = (int)dy;
-
-	gc->set_color(0x89);
-
-	for (i = 1; i <= 2; i++) {
-		gc->move_pen(mx - i, my - i);
-		gc->draw("\\");
-		gc->move_pen(mx + i, my + i);
-		gc->draw("\\");
-		gc->move_pen(mx - i, my + i);
-		gc->draw("/");
-		gc->move_pen(mx + i, my - i);
-		gc->draw("/");
-	}
-
-	gc->move_pen(mx, my);
-	gc->set_color(0x8F);
-	gc->draw("X");
 }
