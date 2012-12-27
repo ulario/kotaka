@@ -283,6 +283,10 @@ void boot_subsystem(string subsystem)
 {
 	ACCESS_CHECK(SYSTEM() || GAME());
 
+	if (find_object(USR_DIR + "/" + subsystem + "/initd")) {
+		return;
+	}
+
 	subsystems += ({ subsystem });
 
 	KERNELD->add_user(subsystem);
