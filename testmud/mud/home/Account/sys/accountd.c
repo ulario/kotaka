@@ -127,7 +127,8 @@ private void save()
 {
 	string buf;
 
-	buf = STRINGD->hybrid_sprint( ({ properties, passwords }) );
+	buf = STRINGD->hybrid_sprint( ([ "properties" : properties,
+		"passwords" : passwords ]) );
 
 	SECRETD->remove_file("accounts-tmp");
 	SECRETD->write_file("accounts-tmp", buf + "\n");
@@ -137,6 +138,7 @@ private void save()
 
 private void restore()
 {
+	mapping map;
 	string buf;
 
 	buf = SECRETD->read_file("accounts");
@@ -145,7 +147,10 @@ private void restore()
 		return;
 	}
 
-	({ properties, passwords }) = "~Kotaka/sys/parse/value"->parse(buf);
+	map = "~Kotaka/sys/parse/value"->parse(buf);
+
+	properties = map["properties"];
+	passwords = map["passwords"];
 }
 
 mixed query_account_property(string name, string property)
