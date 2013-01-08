@@ -790,7 +790,7 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 			for (index = 0; index < map_sizeof(data); index++) {
 				parts[index] =
 					"  " + mixed_sprint(indices[index], seen) +
-					" : " + (is_simple(data[indices[index]]) ? "" : "\n" + ind + "    ") +
+					" :" + (is_simple(data[indices[index]]) ? " " : "\n" + ind + "    ") +
 						hybrid_sprint(data[indices[index]],
 					indent + 4, seen);
 			}
