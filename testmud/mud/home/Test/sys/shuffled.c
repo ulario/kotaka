@@ -154,7 +154,7 @@ object pick_room()
 
 	room = pow(SUBD->rnd(), power) * (float)rooms->get_size();
 
-	return rooms->get_element((int)room);
+	return rooms->get_element((int)floor(room));
 }
 
 float query_jump_delay()
