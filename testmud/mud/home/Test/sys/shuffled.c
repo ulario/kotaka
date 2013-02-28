@@ -38,12 +38,10 @@ static void create()
 
 	power = 1.0;
 
-	room_goal = 1000;
-	mob_goal = 500;
+	room_goal = 0;
+	mob_goal = 0;
 
-	delay = 0.001 * (float)room_goal;
-
-	handle = call_out("process", 0);
+	delay = 0.1;
 }
 
 static void destruct()
