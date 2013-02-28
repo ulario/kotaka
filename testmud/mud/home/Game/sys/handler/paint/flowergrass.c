@@ -40,13 +40,13 @@ void on_paint_text(object gc, object obj, object viewer)
 			if (SUBD->rnd() < 0.1) {
 				/* flower */
 				switch(random(3)) {
-				case 0: // white
+				case 0: /* white */
 					gc->set_color(0x2F);
 					break;
-				case 1: // yellow
+				case 1: /* yellow */
 					gc->set_color(0x28 | GREEN | RED);
 					break;
-				case 2: // magenta
+				case 2: /* magenta */
 					gc->set_color(0x28 | BLUE | RED);
 					break;
 				}

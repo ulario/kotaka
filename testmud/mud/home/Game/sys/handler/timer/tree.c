@@ -83,7 +83,7 @@ void on_timer(object obj)
 			}
 		}
 
-		return; // starving trees don't grow
+		return; /* starving trees don't grow */
 	}
 
 	if (mass > 100.0) {
