@@ -36,9 +36,14 @@ static void create()
 	rooms = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	mobs = clone_object(BIGSTRUCT_ARRAY_OBJ);
 
+	power = 1.0;
+
+	room_goal = 1000;
+	mob_goal = 500;
+
 	delay = 0.001 * (float)room_goal;
 
-	power = 1.0;
+	handle = call_out("process", 0);
 }
 
 static void destruct()
