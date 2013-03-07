@@ -363,7 +363,7 @@ void discover_objects()
 	}
 }
 
-void full_reset()
+atomic void full_reset()
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
