@@ -154,37 +154,50 @@ void remove_clone(object obj)
 
 void discover_clones()
 {
-	string *owners;
-	int i, sz;
-	int count;
-
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
-	owners = KERNELD->query_owners();
-	sz = sizeof(owners);
+	rlimits (0; -1) {
+		string *owners;
+		int i, sz;
+		int count;
+		object queue;
 
-	db->clear();
-	bmap = ([ ]);
+		owners = KERNELD->query_owners();
+		sz = sizeof(owners);
+		queue = new_object(BIGSTRUCT_DEQUE_LWO);
 
-	for (i = 0; i < sz; i++) {
-		object first;
+		db->clear();
+		bmap = ([ ]);
 
-		first = KERNELD->first_link(owners[i]);
+		for (i = 0; i < sz; i++) {
+			object first;
 
-		if (first) {
+			first = KERNELD->first_link(owners[i]);
+
+			if (first) {
+				object obj;
+				string name;
+
+				obj = first;
+
+				do {
+					name = object_name(obj);
+
+					if (sscanf(name, "%*s#%*d")) {
+						queue->push_back(obj);
+					}
+
+					obj = KERNELD->next_link(obj);
+				} while (obj != first);
+			}
+		}
+
+		while (!queue->empty()) {
 			object obj;
-			string name;
 
-			obj = first;
-
-			do {
-				name = object_name(obj);
-
-				if (sscanf(name, "%*s#%*d")) {
-					add_clone(obj);
-				}
-				obj = KERNELD->next_link(obj);
-			} while (obj != first);
+			obj = queue->get_front();
+			queue->pop_front();
+			add_clone(obj);
 		}
 	}
 }
