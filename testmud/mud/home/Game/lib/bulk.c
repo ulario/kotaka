@@ -30,7 +30,6 @@ float mass;		/* kg */
 float density;		/* kg/l */
 
 int flexible;		/* flexible container */
-int virtual;		/* for areas, zones, etc */
 
 float capacity;		/* m^3 */
 float max_mass;		/* kg */
@@ -130,7 +129,7 @@ float query_total_volume()
 		bulk_sync();
 	}
 
-	if (flexible || virtual) {
+	if (flexible) {
 		return query_volume() + cached_content_volume;
 	} else {
 		return query_volume() + capacity;
@@ -180,21 +179,6 @@ void set_flexible(int new_flexible)
 int query_flexible()
 {
 	return flexible;
-}
-
-/* virtual */
-
-/* a virtual object is organizational */
-/* things like rooms, countries, cities, and so on */
-
-void set_virtual(int new_virtual)
-{
-	virtual = new_virtual;
-}
-
-int query_virtual()
-{
-	return virtual;
 }
 
 /***********/

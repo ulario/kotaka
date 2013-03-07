@@ -156,7 +156,6 @@ void build_world()
 
 	world = clone_object("~/obj/object");
 	world->set_property("id", "world");
-	world->set_virtual(1);
 
 	masters = ([ ]);
 
