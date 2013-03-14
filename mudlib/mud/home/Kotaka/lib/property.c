@@ -198,7 +198,7 @@ nomask mixed query_property(string name)
 			if (info[1] == PROP_DROPDOWN) {
 				arch = ({ query_environment() }) - ({ nil });
 			} else {
-				arch = query_archetypes();
+				arch = kotaka_query_archetypes();
 			}
 
 			for (index = 0; index < sizeof(arch); index++) {
@@ -245,7 +245,7 @@ nomask mixed query_property(string name)
 			if (info[1] == PROP_MIXDOWN) {
 				arch = ({ query_environment() }) - ({ nil });
 			} else {
-				arch = query_archetypes();
+				arch = kotaka_query_archetypes();
 			}
 
 			local = SUBD->deep_copy(properties[lname]);
