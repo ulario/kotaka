@@ -213,25 +213,6 @@ nomask object *query_inventory()
 	return inventory[..];
 }
 
-nomask void kotaka_add_inventory(object arriving)
-{
-	ASSERT(arriving);
-	ASSERT(!sizeof( ({ arriving }) & inventory ));
-
-	ACCESS_CHECK(KOTAKA());
-
-	inventory = ({ arriving }) + (inventory - ({ nil }));
-}
-
-nomask void kotaka_del_inventory(object departing)
-{
-	ASSERT(departing);
-
-	ACCESS_CHECK(KOTAKA());
-
-	inventory -= ({ departing });
-}
-
 nomask int is_container_of(object test)
 {
 	object env;
