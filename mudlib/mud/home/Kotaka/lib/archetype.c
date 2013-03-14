@@ -79,7 +79,7 @@ nomask void kotaka_set_archetypes(object *new_archs)
 		if (!check[i] <- LIB_OBJECT) {
 			error("Bad argument 1 for function set_archetypes (found non LIB_OBJECT)");
 		}
-		if (is_archetype_of(check[i])) {
+		if (kotaka_is_archetype_of(check[i])) {
 			error("Circular reference");
 		}
 	}
