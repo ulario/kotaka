@@ -46,7 +46,7 @@ nomask int kotaka_is_archetype_of(object test)
 	}
 
 	for(index = 0; index < sz; index++) {
-		if (is_archetype_of(arch[index])) {
+		if (kotaka_is_archetype_of(arch[index])) {
 			return 1;
 		}
 	}
