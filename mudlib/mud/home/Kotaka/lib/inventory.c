@@ -201,19 +201,19 @@ nomask void kotaka_move(object new_env)
 
 /* untrusted */
 
-nomask object query_environment()
+object query_environment()
 {
 	return environment;
 }
 
-nomask object *query_inventory()
+object *query_inventory()
 {
 	inventory -= ({ nil });
 
 	return inventory[..];
 }
 
-nomask int is_container_of(object test)
+int is_container_of(object test)
 {
 	object env;
 	object this;
@@ -239,20 +239,9 @@ nomask int is_container_of(object test)
 	return 0;
 }
 
-nomask int query_depth()
+int query_depth()
 {
-	object obj;
-	int depth;
-
-	obj = environment;
-
-	while (obj) {
-		depth++;
-
-		obj = obj->query_environment();
-	}
-
-	return depth;
+	return kotaka_query_depth();
 }
 
 void move(object new_env)
@@ -288,15 +277,7 @@ void move(object new_env)
 		}
 	}
 
-	if (environment) {
-		environment->kotaka_del_inventory(this_object());
-	}
-
-	environment = new_env;
-
-	if (environment) {
-		environment->kotaka_add_inventory(this_object());
-	}
+	kotaka_move(new_env);
 
 	if (old_env) {
 		old_env->remove_notify(this);
