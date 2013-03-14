@@ -82,7 +82,7 @@ float query_total_mass()
 
 void figure_mass(float volume)
 {
-	set_mass(density / volume / 1000.0);
+	set_mass(volume / density * 1000.0);
 }
 
 /* density */
