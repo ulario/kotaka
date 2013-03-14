@@ -215,28 +215,7 @@ object *query_inventory()
 
 int is_container_of(object test)
 {
-	object env;
-	object this;
-	int steps;
-
-	this = this_object();
-	env = test->query_environment();
-
-	while (env) {
-		if (env == this) {
-			return 1;
-		}
-
-		steps++;
-
-		if (steps > 100) {
-			error("Nested too deeply");
-		}
-
-		env = env->query_environment();
-	}
-
-	return 0;
+	return kotaka_is_container_of(test);
 }
 
 int query_depth()
