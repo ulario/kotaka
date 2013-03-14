@@ -132,24 +132,7 @@ nomask void kotaka_del_archetype(object old_arch)
 
 int is_archetype_of(object test)
 {
-	int index;
-	int sz;
-	object *arch;
-
-	arch = test->query_archetypes();
-	sz = sizeof(arch);
-
-	if (sizeof(arch & ({ this_object() }))) {
-		return 1;
-	}
-
-	for(index = 0; index < sz; index++) {
-		if (is_archetype_of(arch[index])) {
-			return 1;
-		}
-	}
-
-	return 0;
+	return kotaka_is_archetype_of(test);
 }
 
 object *query_archetypes()
@@ -177,7 +160,8 @@ void set_archetypes(object *new_archs)
 		if (!check[i] <- LIB_OBJECT) {
 			error("Bad argument 1 for function set_archetypes (found non LIB_OBJECT)");
 		}
-		if (is_archetype_of(check[i])) {
+
+		if (kotaka_is_archetype_of(check[i])) {
 			error("Circular reference");
 		}
 	}
@@ -195,7 +179,7 @@ void add_archetype(object new_arch)
 	CHECKARG(new_arch, 1, "add_archetype");
 	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype");
 
-	if (is_archetype_of(new_arch)) {
+	if (kotaka_is_archetype_of(new_arch)) {
 		error("Circular reference");
 	}
 
@@ -210,6 +194,10 @@ void add_archetype_at(object new_arch, int position)
 
 	CHECKARG(position >= -1, 2, "add_archetype_at");
 	CHECKARG(position <= sizeof(archetypes), 2, "add_archetype_at");
+
+	if (kotaka_is_archetype_of(new_arch)) {
+		error("Circular reference");
+	}
 
 	archetypes -= ({ nil });
 
