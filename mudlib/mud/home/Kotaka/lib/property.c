@@ -25,7 +25,7 @@
 #include <type.h>
 
 nomask object query_environment();
-nomask object *query_archetypes();
+nomask object *kotaka_query_archetypes();
 
 private mapping properties;
 private string *removed_properties;
