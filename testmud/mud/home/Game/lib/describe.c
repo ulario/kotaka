@@ -23,6 +23,8 @@ string *pnouns;
 string *adjectives;
 mapping descriptions;
 
+/* brief, examine */
+
 string *query_snouns()
 {
 	return snouns ? snouns[..] : ({ });
@@ -36,6 +38,11 @@ string *query_pnouns()
 string *query_adjectives()
 {
 	return adjectives ? adjectives[..] : ({ });
+}
+
+string *query_descriptions()
+{
+	return map_indices(descriptions);
 }
 
 string query_description(string type)
