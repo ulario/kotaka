@@ -97,7 +97,7 @@ nomask void kotaka_add_archetype(object new_arch)
 	CHECKARG(new_arch, 1, "add_archetype");
 	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype");
 
-	if (is_archetype_of(new_arch)) {
+	if (kotaka_is_archetype_of(new_arch)) {
 		error("Circular reference");
 	}
 
