@@ -22,9 +22,10 @@
 
 inherit base LIB_OBJECT;
 
+inherit describe "describe";
 inherit position "position";
 inherit bulk "bulk";
-inherit "timer";
+inherit timer "timer";
 
 int destructing;
 
