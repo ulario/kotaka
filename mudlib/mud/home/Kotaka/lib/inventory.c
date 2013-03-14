@@ -146,37 +146,7 @@ nomask int kotaka_query_depth()
 
 nomask void kotaka_move(object new_env)
 {
-	object old_env;
-	object this;
-
 	ACCESS_CHECK(KOTAKA());
-	CHECKARG(!new_env || new_env <- LIB_OBJECT, 1, "move");
-
-	old_env = environment;
-
-	this = this_object();
-
-	PERMISSION_CHECK(!old_env || !old_env->forbid_remove(this));
-	PERMISSION_CHECK(!forbid_move(new_env));
-	PERMISSION_CHECK(!new_env || !new_env->forbid_insert(this));
-
-	if (new_env == environment) {
-		return;
-	}
-
-	if (new_env) {
-		if (new_env == this) {
-			error("Self containment");
-		}
-
-		if (is_container_of(new_env)) {
-			error("Recursive containment");
-		}
-
-		if (new_env->query_depth() >= 50) {
-			error("Nested too deeply");
-		}
-	}
 
 	if (environment) {
 		environment->kotaka_del_inventory(this_object());
@@ -186,16 +156,6 @@ nomask void kotaka_move(object new_env)
 
 	if (environment) {
 		environment->kotaka_add_inventory(this_object());
-	}
-
-	if (old_env) {
-		old_env->remove_notify(this);
-	}
-
-	move_notify(old_env);
-
-	if (new_env) {
-		new_env->insert_notify(this);
 	}
 }
 
