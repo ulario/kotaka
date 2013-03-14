@@ -65,11 +65,15 @@ void remove_notify(object obj)
 
 nomask object kotaka_query_environment()
 {
+	ACCESS_CHECK(KOTAKA());
+
 	return environment;
 }
 
 nomask object *kotaka_query_inventory()
 {
+	ACCESS_CHECK(KOTAKA());
+
 	inventory -= ({ nil });
 
 	return inventory[..];
@@ -100,6 +104,8 @@ nomask int kotaka_is_container_of(object test)
 	object this;
 	int steps;
 
+	ACCESS_CHECK(KOTAKA());
+
 	this = this_object();
 	env = test->query_environment();
 
@@ -125,6 +131,8 @@ nomask int kotaka_query_depth()
 	object obj;
 	int depth;
 
+	ACCESS_CHECK(KOTAKA());
+
 	obj = environment;
 
 	while (obj) {
@@ -141,6 +149,7 @@ nomask void kotaka_move(object new_env)
 	object old_env;
 	object this;
 
+	ACCESS_CHECK(KOTAKA());
 	CHECKARG(!new_env || new_env <- LIB_OBJECT, 1, "move");
 
 	old_env = environment;
