@@ -32,7 +32,7 @@ nomask static void initialize_archetype()
 	}
 }
 
-nomask int is_archetype_of(object test)
+nomask int kotaka_is_archetype_of(object test)
 {
 	int index;
 	int sz;
@@ -54,14 +54,14 @@ nomask int is_archetype_of(object test)
 	return 0;
 }
 
-nomask object *query_archetypes()
+nomask object *kotaka_query_archetypes()
 {
 	archetypes -= ({ nil });
 
 	return archetypes[..];
 }
 
-nomask void set_archetypes(object *new_archs)
+nomask void kotaka_set_archetypes(object *new_archs)
 {
 	int i;
 	int sz;
@@ -87,12 +87,12 @@ nomask void set_archetypes(object *new_archs)
 	archetypes = new_archs;
 }
 
-nomask void clear_archetypes()
+nomask void kotaka_clear_archetypes()
 {
 	archetypes = ({ });
 }
 
-nomask void add_archetype(object new_arch)
+nomask void kotaka_add_archetype(object new_arch)
 {
 	CHECKARG(new_arch, 1, "add_archetype");
 	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype");
@@ -105,7 +105,7 @@ nomask void add_archetype(object new_arch)
 	archetypes += ({ new_arch });
 }
 
-nomask void add_archetype_at(object new_arch, int position)
+nomask void kotaka_add_archetype_at(object new_arch, int position)
 {
 	CHECKARG(new_arch, 1, "add_archetype_at");
 	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype_at");
@@ -123,7 +123,105 @@ nomask void add_archetype_at(object new_arch, int position)
 	}
 }
 
-nomask void del_archetype(object old_arch)
+nomask void kotaka_del_archetype(object old_arch)
+{
+	archetypes -= ({ nil, old_arch });
+}
+
+/* untrusted */
+
+int is_archetype_of(object test)
+{
+	int index;
+	int sz;
+	object *arch;
+
+	arch = test->query_archetypes();
+	sz = sizeof(arch);
+
+	if (sizeof(arch & ({ this_object() }))) {
+		return 1;
+	}
+
+	for(index = 0; index < sz; index++) {
+		if (is_archetype_of(arch[index])) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+object *query_archetypes()
+{
+	archetypes -= ({ nil });
+
+	return archetypes[..];
+}
+
+void set_archetypes(object *new_archs)
+{
+	int i;
+	int sz;
+
+	object *old_archs;
+	object *check;
+
+	archetypes -= ({ nil });
+	new_archs = new_archs -= ({ nil });
+	check = new_archs - ({ archetypes });
+
+	sz = sizeof(check);
+
+	for (i = 0; i < sz; i++) {
+		if (!check[i] <- LIB_OBJECT) {
+			error("Bad argument 1 for function set_archetypes (found non LIB_OBJECT)");
+		}
+		if (is_archetype_of(check[i])) {
+			error("Circular reference");
+		}
+	}
+
+	archetypes = new_archs;
+}
+
+void clear_archetypes()
+{
+	archetypes = ({ });
+}
+
+void add_archetype(object new_arch)
+{
+	CHECKARG(new_arch, 1, "add_archetype");
+	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype");
+
+	if (is_archetype_of(new_arch)) {
+		error("Circular reference");
+	}
+
+	archetypes -= ({ nil });
+	archetypes += ({ new_arch });
+}
+
+void add_archetype_at(object new_arch, int position)
+{
+	CHECKARG(new_arch, 1, "add_archetype_at");
+	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype_at");
+
+	CHECKARG(position >= -1, 2, "add_archetype_at");
+	CHECKARG(position <= sizeof(archetypes), 2, "add_archetype_at");
+
+	archetypes -= ({ nil });
+
+	if (position == -1) {
+		archetypes += ({ new_arch });
+	} else {
+		archetypes = archetypes[0 .. position - 1]
+			+ ({ new_arch }) + archetypes[position ..];
+	}
+}
+
+void del_archetype(object old_arch)
 {
 	archetypes -= ({ nil, old_arch });
 }
