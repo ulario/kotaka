@@ -38,6 +38,8 @@ nomask int kotaka_is_archetype_of(object test)
 	int sz;
 	object *arch;
 
+	ACCESS_CHECK(KOTAKA());
+
 	arch = test->query_archetypes();
 	sz = sizeof(arch);
 
@@ -56,6 +58,8 @@ nomask int kotaka_is_archetype_of(object test)
 
 nomask object *kotaka_query_archetypes()
 {
+	ACCESS_CHECK(KOTAKA());
+
 	archetypes -= ({ nil });
 
 	return archetypes[..];
@@ -68,6 +72,8 @@ nomask void kotaka_set_archetypes(object *new_archs)
 
 	object *old_archs;
 	object *check;
+
+	ACCESS_CHECK(KOTAKA());
 
 	archetypes -= ({ nil });
 	new_archs = new_archs -= ({ nil });
@@ -89,6 +95,8 @@ nomask void kotaka_set_archetypes(object *new_archs)
 
 nomask void kotaka_clear_archetypes()
 {
+	ACCESS_CHECK(KOTAKA());
+
 	archetypes = ({ });
 }
 
@@ -96,6 +104,8 @@ nomask void kotaka_add_archetype(object new_arch)
 {
 	CHECKARG(new_arch, 1, "add_archetype");
 	CHECKARG(new_arch <- LIB_OBJECT, 1, "add_archetype");
+
+	ACCESS_CHECK(KOTAKA());
 
 	if (kotaka_is_archetype_of(new_arch)) {
 		error("Circular reference");
@@ -113,6 +123,8 @@ nomask void kotaka_add_archetype_at(object new_arch, int position)
 	CHECKARG(position >= -1, 2, "add_archetype_at");
 	CHECKARG(position <= sizeof(archetypes), 2, "add_archetype_at");
 
+	ACCESS_CHECK(KOTAKA());
+
 	archetypes -= ({ nil });
 
 	if (position == -1) {
@@ -125,6 +137,8 @@ nomask void kotaka_add_archetype_at(object new_arch, int position)
 
 nomask void kotaka_del_archetype(object old_arch)
 {
+	ACCESS_CHECK(KOTAKA());
+
 	archetypes -= ({ nil, old_arch });
 }
 
