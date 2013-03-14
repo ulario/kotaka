@@ -23,9 +23,8 @@
 
 inherit LIB_OBJECT;
 
-float interval;
-
-int handle;
+private float interval;
+private int handle;
 
 void clear_timer()
 {
@@ -84,7 +83,7 @@ static void tick()
 	}
 
 	if (handle) {
-		/* changed in handler */
+		/* changed/restarted in handler */
 		return;
 	}
 
