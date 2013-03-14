@@ -24,7 +24,7 @@
 
 #include <type.h>
 
-nomask object query_environment();
+nomask object kotaka_query_environment();
 nomask object *kotaka_query_archetypes();
 
 private mapping properties;
@@ -196,7 +196,7 @@ nomask mixed query_property(string name)
 			object *arch;
 
 			if (info[1] == PROP_DROPDOWN) {
-				arch = ({ query_environment() }) - ({ nil });
+				arch = ({ kotaka_query_environment() }) - ({ nil });
 			} else {
 				arch = kotaka_query_archetypes();
 			}
@@ -243,7 +243,7 @@ nomask mixed query_property(string name)
 			rname = extra[1];
 
 			if (info[1] == PROP_MIXDOWN) {
-				arch = ({ query_environment() }) - ({ nil });
+				arch = ({ kotaka_query_environment() }) - ({ nil });
 			} else {
 				arch = kotaka_query_archetypes();
 			}
