@@ -57,7 +57,13 @@ void main(object actor, string args)
 			}
 
 			for (j = 0; j < sz; j++) {
-				send_out(STRINGD->to_title(list[j]) + "\n");
+				string name;
+
+				name = list[j];
+
+				send_out(TEXT_SUBD->titled_name(
+					name, TEXT_SUBD->query_user_class(name)
+				) + "\n");
 			}
 
 			send_out("\n");
