@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths.h>
 
-inherit "~Game/lib/object";
+inherit LIB_OBJECT;
 
 static void create(int clone)
 {
