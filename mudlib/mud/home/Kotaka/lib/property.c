@@ -42,42 +42,100 @@ nomask static void initialize_property()
 	}
 }
 
-nomask mapping query_local_properties()
+nomask mapping kotaka_query_properties()
+{
+	KOTAKA();
+
+	return SUBD->deep_copy(properties);
+}
+
+nomask void kotaka_set_properties(mapping prop)
+{
+	KOTAKA();
+
+	properties = SUBD->deep_copy(prop);
+}
+
+nomask void kotaka_clear_properties()
+{
+	KOTAKA();
+
+	properties = ([ ]);
+}
+
+nomask void kotaka_set_removed_properties(string *remove)
+{
+	KOTAKA();
+
+	removed_properties = remove - ({ nil });
+}
+
+nomask string *kotaka_query_removed_properties()
+{
+	KOTAKA();
+
+	return removed_properties[..];
+}
+
+nomask void kotaka_clear_removed_properties()
+{
+	KOTAKA();
+
+	removed_properties = ({ });
+}
+
+nomask void kotaka_set_property(string name, mixed value, varargs int nosignal)
+{
+	KOTAKA();
+
+	properties[name] = SUBD->deep_copy(value);
+}
+
+nomask mixed kotaka_query_property(string name)
+{
+	KOTAKA();
+
+	return SUBD->deep_copy(properties[name]);
+}
+
+/* untrusted */
+
+mapping query_local_properties()
 {
 	return SUBD->deep_copy(properties);
 }
 
-nomask void set_local_properties(mapping prop)
+void set_local_properties(mapping prop)
 {
 	properties = SUBD->deep_copy(prop);
 }
 
-nomask void clear_local_properties()
+void clear_local_properties()
 {
 	properties = ([ ]);
 }
 
-nomask void set_removed_properties(string *remove)
+void set_removed_properties(string *remove)
 {
 	removed_properties = remove - ({ nil });
 }
 
-nomask string *query_removed_properties()
+string *query_removed_properties()
 {
 	return removed_properties[..];
 }
 
-nomask void clear_removed_properties()
+void clear_removed_properties()
 {
 	removed_properties = ({ });
 }
 
-nomask void set_local_property(string name, mixed value, varargs int nosignal)
+void set_local_property(string name, mixed value, varargs int nosignal)
 {
 	properties[name] = SUBD->deep_copy(value);
 }
 
-nomask void set_property(string name, mixed value)
+void set_property(string name, mixed value)
 {
 	mixed *info;
 	mixed old;
@@ -131,12 +189,12 @@ nomask void set_property(string name, mixed value)
 	set_local_property(name, value);
 }
 
-nomask mixed query_local_property(string name)
+mixed query_local_property(string name)
 {
 	return SUBD->deep_copy(properties[name]);
 }
 
-nomask mixed query_property(string name)
+mixed query_property(string name)
 {
 	mixed *info;
 	object propkey;
