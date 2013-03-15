@@ -65,10 +65,6 @@ private void prompt()
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
-
-	if (!query_user()->query_username()) {
-		send_out(read_file("~/data/doc/guest_welcome"));
-	}
 }
 
 void stop()
@@ -142,8 +138,6 @@ private int is_wiztool_command(string command)
 	case "statedump":
 	case "shutdown":
 	case "reboot":
-	case "hotboot":
-	case "fulldump":
 		return 1;
 	default:
 		return 0;
@@ -160,9 +154,11 @@ private void do_input(string first, string input)
 		return;
 	}
 
-	if (is_wiztool_command(first)) {
-		query_user()->dispatch_wiztool(first + " " + input);
-		return;
+	if (query_user()->query_class() >= 2) {
+		if (is_wiztool_command(first)) {
+			query_user()->dispatch_wiztool(first + " " + input);
+			return;
+		}
 	}
 
 	if (body) {
