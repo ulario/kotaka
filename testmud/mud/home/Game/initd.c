@@ -92,6 +92,7 @@ static void create()
 	INITD->boot_subsystem("Help");
 	INITD->boot_subsystem("Text");
 	INITD->boot_subsystem("Account");
+	INITD->boot_subsystem("Directory");
 
 	load_help();
 	build_world();
@@ -114,7 +115,7 @@ static void place_object(string base, int remainder)
 	rnd1 = SUBD->rnd() * SUBD->pi() * 2.0;
 	rnd2 = SUBD->rnd() * 30.0;
 
-	obj = clone_object("~/obj/object");
+	obj = clone_object(THING);
 	obj->set_property("id", base);
 
 	obj->set_mass(SUBD->rnd() * 2.0 + 2.0);
@@ -154,24 +155,24 @@ void build_world()
 {
 	object master;
 
-	world = clone_object("~/obj/object");
+	world = clone_object(THING);
 	world->set_property("id", "world");
 
 	masters = ([ ]);
 
-	master = clone_object("~/obj/object");
+	master = clone_object(THING);
 	master->set_property("id", "shack");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/shack");
 	masters["shack"] = master;
 
-	master = clone_object("~/obj/object");
+	master = clone_object(THING);
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	masters["human"] = master;
 
-	master = clone_object("~/obj/object");
+	master = clone_object(THING);
 	master->set_property("id", "tree");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/tree");
@@ -188,7 +189,7 @@ void build_world()
 
 object create_object()
 {
-	return clone_object("~/obj/object");
+	return clone_object(THING);
 }
 
 void destroy_object(object obj)
