@@ -3,6 +3,7 @@
 #define LIB_ACTION		(USR_DIR + "/Game/lib/action")
 #define LIB_BULK		(USR_DIR + "/Game/lib/bulk")
 #define GAME_LIB_OBJECT		(USR_DIR + "/Game/lib/object")
+#define THING			(USR_DIR + "/Game/obj/thing")
 
 #define BULKD			(USR_DIR + "/Game/sys/bulkd")
 #define SNOOPD			(USR_DIR + "/Game/sys/snoopd")
