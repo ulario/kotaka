@@ -135,17 +135,7 @@ static void process(string str)
 
 static void cmd_statedump(object user, string cmd, string str)
 {
-    switch(str) {
-    case nil:
-	dump_state();
-	break;
-    case "-p":
-	dump_state(1);
-	break;
-    default:
-	message("Usage: " + cmd + "\n");
-	message("Options:\n\t-p  Partial snapshot\n");
-    }
+    dump_state(1);
 }
 
 static void cmd_hotboot(object user, string cmd, string str)
