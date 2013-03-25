@@ -31,7 +31,7 @@ void on_paint_text(object gc, object obj, object viewer)
 
 	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
 
-	if (fabs(dx) > 10.0 || fabs(dy) > 10.0) {
+	if (fabs(dx) > 20.0 || fabs(dy) > 20.0) {
 		/* out of bounds */
 		return;
 	}
