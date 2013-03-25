@@ -37,12 +37,15 @@ void on_paint_text(object gc, object obj, object viewer)
 		for (mx = -8; mx <= 8; mx++) {
 			gc->move_pen(mx, my);
 
-			switch(random(2)) {
+			switch(random(3)) {
 			case 0:
 				gc->set_color(0x20);
 				break;
 			case 1:
 				gc->set_color(0x2A);
+				break;
+			case 2:
+				gc->set_color(0x23);
 				break;
 			}
 			switch(random(2)) {
