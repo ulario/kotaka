@@ -371,8 +371,11 @@ int query_timeout(object LIB_CONN connection)
 object select(string str)
 {
 	object userd;
+	object connection;
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
+
+	connection = previous_object(1);
 
 	userd = get_manager(connection);
 
