@@ -186,6 +186,7 @@ mapping list_directory(string name)
 		if (dir->query_entry_type(path[i]) != 2) {
 			error("Not a directory");
 		}
+
 		return dir->query_key();
 	} else {
 		return root->query_key();
