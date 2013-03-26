@@ -1,0 +1,1 @@
+#define CATALOGD	(USR_DIR + "/Catalog/sys/catalogd")
