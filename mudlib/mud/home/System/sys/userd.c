@@ -342,12 +342,7 @@ string query_banner(object LIB_CONN connection)
 {
 	object userd;
 
-	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
-
-	if (stacking || !(connection <- LIB_USER)) {
-		/* either busy stacking or this is the first level, ignore */
-		return nil;
-	}
+	ACCESS_CHECK(SYSTEM() || KERNEL());
 
 	userd = get_manager(connection);
 
@@ -355,78 +350,37 @@ string query_banner(object LIB_CONN connection)
 		return "Internal error: no connection manager";
 	}
 
-	if (blocked) {
-		return userd->query_blocked_banner(connection);
-	} else if (free_users() < reserve) {
-		return userd->query_overload_banner(connection);
-	} else {
-		/* stack built and we're not naked */
-		/* it is safe to call the lieutenant */
-		return userd->query_banner(connection);
-	}
+	return userd->query_banner(connection);
 }
 
 int query_timeout(object LIB_CONN connection)
 {
-	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
+	object userd;
 
-	if (stacking) {
-		/* stacking in progress */
-		return 0;
-	} else if (!(connection <- LIB_USER)) {
-		/* first level, ignore */
-		stacking = 1;
-		connection(connection);
-		redirect(clone_object("~/obj/filter/rlimits"), nil);
-		return 0;
-	}
+	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	if (blocked || free_users() < reserve) {
+	userd = get_manager(connection);
+
+	if (!userd) {
 		return -1;
-	} else {
-		/* stack built and we're not naked */
-		/* it is safe to call the lieutenant */
-		object userd;
-
-		userd = get_manager(connection);
-
-		if (!userd) {
-			return -1;
-		}
-
-		return userd->query_timeout(connection);
 	}
+
+	return userd->query_timeout(connection);
 }
 
 object select(string str)
 {
-	object connection;
-	/* do not call to lieutenant until after */
-	/* connection stack is built */
+	object userd;
 
-	ACCESS_CHECK(previous_program() == USERD || SYSTEM());
-	connection = previous_object(1);
+	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	if (stacking) {
-		/* stacking in progress */
-		ASSERT(str == nil);
+	userd = get_manager(connection);
+
+	if (!userd) {
 		return this_object();
-	} else if (!(connection <- LIB_USER)) {
-		/* first level, ignore */
-		return this_object();
-	} else {
-		/* stack built and we're not naked */
-		/* it is safe to call the lieutenant */
-		object userd;
-
-		userd = get_manager(connection);
-
-		if (!userd) {
-			return this_object();
-		}
-
-		return userd->select(str);
 	}
+
+	return userd->select(str);
 }
 
 /* connection hooks */
@@ -435,57 +389,14 @@ int login(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	if (stacking) {
-		object conn;
-		object base;
-		object user;
-		string banner;
-		mapping managers;
-		int port;
-		int timeout;
-
-		conn = previous_object();
-
-		stacking = 0;
-
-		catch {
-			banner = query_banner(conn);
-		} : {
-			banner = "Connection manager fault.\n";
-			timeout = -1;
-		}
-
-		if (banner) {
-			previous_object()->message(banner);
-		}
-
-		catch {
-			if (!timeout) {
-				timeout = query_timeout(conn);
-			}
-		} : {
-			timeout = -1;
-		}
-
-		if (timeout < 0) {
-			return MODE_DISCONNECT;
-		}
-
-		call_out("timeout", timeout, conn);
-
-		return MODE_NOCHANGE;
-	} else {
-		previous_object()->message("Internal error: connection manager fault\n");
-		return MODE_DISCONNECT;
-	}
+	previous_object()->message("Internal error: connection manager fault\n");
+	return MODE_DISCONNECT;
 }
 
 int receive_message(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	connection(previous_object());
-	redirect(this_object()->select(str), str);
-
-	return MODE_NOCHANGE;
+	previous_object()->message("Internal error: connection manager fault\n");
+	return MODE_DISCONNECT;
 }
