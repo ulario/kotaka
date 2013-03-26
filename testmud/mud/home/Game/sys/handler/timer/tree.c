@@ -114,8 +114,8 @@ void on_timer(object obj)
 			return;
 		}
 
-		sprout = clone_object("~/obj/object");
-		sprout->add_archetype(GAME_INITD->query_master("tree"));
+		sprout = clone_object(THING);
+		sprout->add_archetype(CATALOGD->lookup_object("tree"));
 		sprout->set_property("id", "tree");
 		sprout->move(obj->query_environment());
 		sprout->set_x_position(sx);
