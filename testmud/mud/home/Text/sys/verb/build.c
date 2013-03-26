@@ -36,7 +36,7 @@ void main(object actor, string args)
 
 	shack = GAME_INITD->create_object();
 	shack->set_property("id", "shack");
-	shack->add_archetype(GAME_INITD->query_master("shack"));
+	shack->add_archetype(CATALOGD->lookup_object("shack"));
 	shack->move(env);
 
 	shack->set_x_position(actor->query_x_position());
