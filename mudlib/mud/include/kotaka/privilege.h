@@ -2,13 +2,13 @@
 #include <kernel/kernel.h>
 #include <kernel/user.h>
 
-#define BIGSTRUCT()	(sscanf(previous_program(), USR_DIR + "/Bigstruct/%*s"))
-#define KOTAKA()	(sscanf(previous_program(), USR_DIR + "/Kotaka/%*s"))
-#define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
-#define CATALOG()	(sscanf(previous_program(), USR_DIR + "/Catalog/%*s"))
-#define TEXT()		(sscanf(previous_program(), USR_DIR + "/Text/%*s"))
-#define GAME()		(sscanf(previous_program(), USR_DIR + "/Game/%*s"))
 #define ACCOUNT()	(sscanf(previous_program(), USR_DIR + "/Account/%*s"))
+#define BIGSTRUCT()	(sscanf(previous_program(), USR_DIR + "/Bigstruct/%*s"))
+#define CATALOG()	(sscanf(previous_program(), USR_DIR + "/Catalog/%*s"))
+#define GAME()		(sscanf(previous_program(), USR_DIR + "/Game/%*s"))
+#define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
+#define KOTAKA()	(sscanf(previous_program(), USR_DIR + "/Kotaka/%*s"))
+#define TEXT()		(sscanf(previous_program(), USR_DIR + "/Text/%*s"))
 
 #define KADMIN()	(previous_program(1) == LIB_WIZTOOL && \
 			previous_program() == USR_DIR + "/admin/_code")
