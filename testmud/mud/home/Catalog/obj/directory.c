@@ -118,6 +118,8 @@ void dump(int level)
 	object *values;
 	int sz, i;
 
+	ACCESS_CHECK(CATALOG());
+
 	names = map_indices(key);
 	types = map_values(key);
 	values = map_values(map);
@@ -149,5 +151,14 @@ void dump(int level)
 
 int mass()
 {
+	ACCESS_CHECK(CATALOG());
+
 	return map_sizeof(key);
+}
+
+mapping query_key()
+{
+	ACCESS_CHECK(CATALOG());
+
+	return key[..];
 }
