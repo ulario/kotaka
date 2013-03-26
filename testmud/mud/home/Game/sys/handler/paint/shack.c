@@ -70,18 +70,5 @@ void on_paint_text(object gc, object obj, object viewer)
 		gc->draw("|  |");
 		gc->move_pen(x, y + 3);
 		gc->draw("|__|");
-		gc->set_color(0x8F);
-		gc->move_pen(x + 2, y + 3);
-		switch(random(3)) {
-		case 0:
-			gc->draw(".");
-			break;
-		case 1:
-			gc->draw("+");
-			break;
-		case 2:
-			gc->draw("x");
-			break;
-		}
 	}
 }
