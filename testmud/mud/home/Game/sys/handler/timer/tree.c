@@ -21,6 +21,7 @@
 #include <kotaka/log.h>
 #include <kotaka/paths.h>
 #include <game/paths.h>
+#include <catalog/paths.h>
 
 int crowded(object world, object self, float tx, float ty)
 {
