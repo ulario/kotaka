@@ -49,8 +49,6 @@ inherit UTILITY_COMPILE;
 
 object world;
 
-mapping masters;
-
 int save_pending;
 int wsave_pending;
 
@@ -162,13 +160,10 @@ void build_world()
 
 	CATALOGD->add_object("world", world);
 
-	masters = ([ ]);
-
 	master = clone_object(THING);
 	master->set_property("id", "shack");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/shack");
-	masters["shack"] = master;
 
 	CATALOGD->add_object("shack", master);
 
@@ -176,7 +171,6 @@ void build_world()
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
-	masters["human"] = master;
 
 	CATALOGD->add_object("human", master);
 
@@ -186,7 +180,6 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/tree");
 	master->set_property("event:timer",
 		USR_DIR + "/Game/sys/handler/timer/tree");
-	masters["tree"] = master;
 
 	CATALOGD->add_object("tree", master);
 
