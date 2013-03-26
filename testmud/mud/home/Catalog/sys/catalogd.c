@@ -34,6 +34,10 @@ void add_object(string name, object obj)
 	int sz;
 	int i;
 
+	if (obj<-"../obj/directory") {
+		error("Reserved object type");
+	}
+
 	path = explode(name, ":");
 
 	if (sizeof(path & ({ "" }) )) {
