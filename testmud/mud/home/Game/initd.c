@@ -31,6 +31,8 @@
 
 #include <game/paths.h>
 
+#include <catalog/paths.h>
+
 #include <status.h>
 #include <type.h>
 
@@ -158,6 +160,8 @@ void build_world()
 	world = clone_object(THING);
 	world->set_property("id", "world");
 
+	CATALOGD->add_object("world", world);
+
 	masters = ([ ]);
 
 	master = clone_object(THING);
@@ -166,11 +170,15 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/shack");
 	masters["shack"] = master;
 
+	CATALOGD->add_object("shack", master);
+
 	master = clone_object(THING);
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	masters["human"] = master;
+
+	CATALOGD->add_object("human", master);
 
 	master = clone_object(THING);
 	master->set_property("id", "tree");
@@ -180,11 +188,15 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/timer/tree");
 	masters["tree"] = master;
 
+	CATALOGD->add_object("tree", master);
+
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
 	world->set_density(6.5);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/grass");
+
+	CATALOGD->dump();
 }
 
 object create_object()
