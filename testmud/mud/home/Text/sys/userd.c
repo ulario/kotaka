@@ -66,15 +66,25 @@ object select(string str)
 
 	switch(basename) {
 	case BINARY_CONN:
-		if (previous_object(2) <- "~/obj/filter/telnet") {
-			user = clone_object("~/obj/user");
-			return user;
-		} else {
+		switch(level + 1) {
+		case 0:
+			return clone_object("~System/obj/filter/atomic");
+		case 1:
+			return clone_object("~System/obj/filter/rlimits");
+		case 2:
 			return clone_object("~/obj/filter/telnet");
+		case 3:
+			return clone_object("~/obj/user");
 		}
 	case TELNET_CONN:
-		user = clone_object("~/obj/user");
-		return user;
+		switch(level + 1) {
+		case 0:
+			return clone_object("~System/obj/filter/atomic");
+		case 1:
+			return clone_object("~System/obj/filter/rlimits");
+		case 2:
+			return clone_object("~/obj/user");
+		}
 	}
 }
 
@@ -139,7 +149,7 @@ string query_banner(object LIB_CONN connection)
 		return "";
 	}
 
-	if (level == 1) {
+	if (level == 0) {
 		int rnd;
 
 		files = get_dir("~/data/splash/telnet_banners/chars/*")[0];
@@ -187,14 +197,14 @@ int query_timeout(object LIB_CONN connection)
 		return -1;
 	}
 
-	if (level == 1) {
+	if (level == 0) {
 		connections[connection] = 1;
 		connection(connection);
 		::set_mode(MODE_RAW);
 		redirect(select(nil), nil);
 	}
 
-	return 1;
+	return 5;
 }
 
 void upgrade()
