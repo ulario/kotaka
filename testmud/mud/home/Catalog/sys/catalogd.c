@@ -153,3 +153,41 @@ object lookup_object(string name)
 
 	return dir->query_entry_value(path[i]);
 }
+
+mapping list_directory(string name)
+{
+	object dir;
+	string *path;
+	int sz;
+	int i;
+
+	if (name) {
+		path = explode(name, ":");
+
+		if (sizeof(path & ({ "" }) )) {
+			error("Invalid object name");
+		}
+
+		sz = sizeof(path);
+		dir = root;
+
+		for (i < 0; i < sz - 1; i++) {
+			switch (dir->query_entry_type(path[i])) {
+			case 0:
+				return nil;
+
+			case 1:
+				error("Object in the way");
+			}
+
+			dir = dir->query_entry_value(path[i]);
+		}
+
+		if (dir->query_entry_type(path[i]) != 2) {
+			error("Not a directory");
+		}
+		return dir->query_key();
+	} else {
+		return root->query_key();
+	}
+}
