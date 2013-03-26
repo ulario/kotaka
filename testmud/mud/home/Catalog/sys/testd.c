@@ -17,17 +17,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths.h>
-
-inherit LIB_INITD;
-inherit UTILITY_COMPILE;
-
 static void create()
 {
-	KERNELD->set_global_access("Catalog", 1);
+}
 
-	load_dir("obj", 1);
-	load_dir("sys", 1);
+void test()
+{
+	"catalogd"->add_object("Test:foo:baR", this_object());
+	"catalogd"->add_object("Test:foo:bar", this_object());
+	"catalogd"->add_object("Test:foo:bR", this_object());
+	"catalogd"->add_object("Test:foo:R", this_object());
+	"catalogd"->dump();
 
-	"sys/testd"->test();
+	"catalogd"->remove_object("Test:foo:R");
+	"catalogd"->dump();
+
+	"catalogd"->remove_object("Test:foo:bR");
+	"catalogd"->dump();
+
+	"catalogd"->remove_object("Test:foo:bar");
+	"catalogd"->dump();
+
+	"catalogd"->remove_object("Test:foo:baR");
+	"catalogd"->dump();
 }
