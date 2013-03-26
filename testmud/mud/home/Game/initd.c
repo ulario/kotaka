@@ -188,8 +188,6 @@ void build_world()
 	world->set_density(6.5);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/grass");
-
-	CATALOGD->dump();
 }
 
 object create_object()
@@ -200,11 +198,6 @@ object create_object()
 void destroy_object(object obj)
 {
 	destruct_object(obj);
-}
-
-object query_master(string name)
-{
-	return masters[name];
 }
 
 /****************/
