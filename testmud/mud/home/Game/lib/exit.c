@@ -18,35 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-mapping dest;
+string direction;
+object destination;
 
-static void create()
+void set_direction(string new_direction)
 {
-	dest = ([ ]);
+	direction = new_direction;
 }
 
-void add_exit(string direction, object destination)
+void set_destination(object new_destination)
 {
-	if (dest[direction]) {
-		error("Duplicate direction");
-	}
-
-	dest[direction] = destination;
+	destination = new_destination;
 }
 
-void remove_exit(string direction)
+string query_direction()
 {
-	if (!dest[direction]) {
-		error("No such exit");
-	}
+	return direction;
 }
 
-object query_destination(string direction)
+object query_destination()
 {
-	return dest[direction];
-}
-
-string *query_directions()
-{
-	return map_indices(dest);
+	return destination;
 }
