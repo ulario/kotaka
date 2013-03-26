@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
+
 static void create()
 {
 }
@@ -38,6 +40,8 @@ void test()
 	"catalogd"->remove_object("Test:foo:bar");
 	"catalogd"->dump();
 
+	ASSERT("catalogd"->lookup_object("Test:foo:baR") == this_object());
 	"catalogd"->remove_object("Test:foo:baR");
 	"catalogd"->dump();
+	ASSERT("catalogd"->lookup_object("Test:foo:baR") == nil);
 }
