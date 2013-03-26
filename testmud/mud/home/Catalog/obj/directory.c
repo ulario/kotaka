@@ -101,3 +101,8 @@ object query_entry_value(string name)
 
 	return map[name];
 }
+
+int empty()
+{
+	return !map_sizeof(key);
+}
