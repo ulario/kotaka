@@ -26,6 +26,7 @@ inherit describe "describe";
 inherit position "position";
 inherit bulk "bulk";
 inherit timer "timer";
+inherit exit "exit";
 
 int destructing;
 
