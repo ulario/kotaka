@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths.h>
+#include <kotaka/log.h>
 #include <kotaka/privilege.h>
 
 mapping key;
@@ -39,7 +41,7 @@ void add_subdirectory(string name)
 	}
 
 	key[name] = 2;
-	map[name] = clone_object("dirnode");
+	map[name] = clone_object("directory");
 }
 
 void remove_subdirectory(string name)
@@ -104,5 +106,48 @@ object query_entry_value(string name)
 
 int empty()
 {
+	ACCESS_CHECK(CATALOG());
+
 	return !map_sizeof(key);
+}
+
+void dump(int level)
+{
+	string *names;
+	int *types;
+	object *values;
+	int sz, i;
+
+	names = map_indices(key);
+	types = map_values(key);
+	values = map_values(map);
+
+	sz = sizeof(names);
+
+	if (!sz) {
+		LOGD->post_message("catalog", LOG_DEBUG,
+			STRINGD->spaces(level * 2) + "(empty)");
+		return;
+	}
+
+	for (i = 0; i < sz; i++) {
+		LOGD->post_message("catalog", LOG_DEBUG,
+			STRINGD->spaces(level * 2) + names[i] + ":");
+
+		switch(types[i]) {
+		case 1:
+			LOGD->post_message("catalog", LOG_DEBUG,
+				STRINGD->spaces(level * 2 + 1) + "<" +
+				object_name(values[i]) + ">");
+			break;
+		case 2:
+			values[i]->dump(level + 1);
+			break;
+		}
+	}
+}
+
+int mass()
+{
+	return map_sizeof(key);
 }
