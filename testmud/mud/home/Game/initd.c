@@ -82,8 +82,11 @@ static void create()
 	load_dir("sys", 1);
 
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
+	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("event:destroy", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:timer", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("data", T_MAPPING, PROP_SIMPLE);
 	KERNELD->set_global_access("Game", 1);
 
 	"sys/testd"->test();
@@ -109,6 +112,7 @@ int t3;
 static void place_object(string base, int remainder)
 {
 	object obj;
+
 	float rnd1;
 	float rnd2;
 
@@ -162,6 +166,10 @@ void build_world()
 
 	master = clone_object(THING);
 	master->set_property("id", "shack");
+	master->set_property("event:create",
+		USR_DIR + "/Game/sys/handler/create/shack");
+	master->set_property("event:destroy",
+		USR_DIR + "/Game/sys/handler/destroy/shack");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/shack");
 
@@ -176,12 +184,21 @@ void build_world()
 
 	master = clone_object(THING);
 	master->set_property("id", "tree");
+	master->set_property("event:create",
+		USR_DIR + "/Game/sys/handler/create/tree");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/tree");
 	master->set_property("event:timer",
 		USR_DIR + "/Game/sys/handler/timer/tree");
 
 	CATALOGD->add_object("tree", master);
+
+	master = clone_object(THING);
+	master->set_property("id", "door");
+	master->set_property("event:paint",
+		USR_DIR + "/Game/sys/handler/paint/door");
+
+	CATALOGD->add_object("door", master);
 
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
