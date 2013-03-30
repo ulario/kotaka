@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 #include <game/paths.h>
+#include <catalog/paths.h>
 
 inherit LIB_VERB;
 
@@ -36,13 +37,13 @@ void main(object actor, string args)
 
 	tree = GAME_INITD->create_object();
 	tree->set_property("id", "tree");
-	tree->add_archetype(GAME_INITD->query_master("tree"));
+	tree->add_archetype(CATALOGD->lookup_object("tree"));
 	tree->move(env);
 
 	tree->set_x_position(actor->query_x_position());
 	tree->set_y_position(actor->query_y_position());
 	tree->set_z_position(actor->query_z_position());
-	"~Game/sys/handler/create/tree"->on_create(tree);
+	tree->query_property("event:create")->on_create(tree);
 
 	send_out("You plant a tree.\n");
 }

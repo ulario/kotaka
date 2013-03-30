@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 #include <game/paths.h>
+#include <catalog/paths.h>
 
 inherit LIB_VERB;
 
@@ -42,6 +43,8 @@ void main(object actor, string args)
 	shack->set_x_position(actor->query_x_position());
 	shack->set_y_position(actor->query_y_position());
 	shack->set_z_position(actor->query_z_position());
+
+	shack->query_property("event:create")->on_create(shack);
 
 	send_out("You build a shack.\n");
 }

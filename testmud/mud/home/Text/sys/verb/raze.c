@@ -87,6 +87,7 @@ void main(object actor, string args)
 		break;
 	case 1:
 		send_out("You raze the shack.\n");
+		shacks[0]->query_property("event:destroy")->on_destroy(shacks[0]);
 		GAME_INITD->destroy_object(shacks[0]);
 		break;
 	case 2:

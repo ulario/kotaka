@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 #include <game/paths.h>
+#include <catalog/paths.h>
 
 inherit LIB_VERB;
 
@@ -44,7 +45,7 @@ void main(object actor, string args)
 		body = GAME_INITD->create_object();
 
 		body->set_property("id", "human");
-		body->add_archetype(GAME_INITD->query_master("human"));
+		body->add_archetype(CATALOGD->lookup_object("human"));
 		body->move(world);
 	}
 
