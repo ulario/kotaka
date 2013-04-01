@@ -30,7 +30,7 @@ void on_create(object obj)
 
 	mapping data;
 
-	doormaster = CATALOGD->lookup_object("door");
+	doormaster = CATALOGD->lookup_object("building:parts:door");
 
 	door1 = clone_object(THING);
 	door1->add_archetype(doormaster);
