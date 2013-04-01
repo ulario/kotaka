@@ -133,17 +133,22 @@ void dump(int level)
 	}
 
 	for (i = 0; i < sz; i++) {
-		LOGD->post_message("catalog", LOG_DEBUG,
-			STRINGD->spaces(level * 2) + names[i] + ":");
-
 		switch(types[i]) {
 		case 1:
 			LOGD->post_message("catalog", LOG_DEBUG,
-				STRINGD->spaces(level * 2 + 1) + "<" +
-				object_name(values[i]) + ">");
+				STRINGD->spaces(level * 4) + names[i] + ";");
 			break;
 		case 2:
-			values[i]->dump(level + 1);
+			if (values[i]->mass()) {
+				LOGD->post_message("catalog", LOG_DEBUG,
+					STRINGD->spaces(level * 4) + names[i] + " {");
+				values[i]->dump(level + 1);
+				LOGD->post_message("catalog", LOG_DEBUG,
+					STRINGD->spaces(level * 4) + "}");
+			} else {
+				LOGD->post_message("catalog", LOG_DEBUG,
+					STRINGD->spaces(level * 4) + names[i] + " { }");
+			}
 			break;
 		}
 	}
