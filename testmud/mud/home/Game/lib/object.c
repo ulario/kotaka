@@ -80,4 +80,6 @@ static nomask void game_object_destruct()
 	for (index = 0; index < sz; index++) {
 		children[index]->move(env);
 	}
+
+	env->bulk_invalidate();
 }
