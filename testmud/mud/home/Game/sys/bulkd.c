@@ -17,8 +17,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
+#include <game/paths.h>
+#include <kotaka/bigstruct.h>
+
+int handle;
 object queue;
 
 static void create()
 {
+	queue = new_object(BIGSTRUCT_DEQUE_LWO);
+}
+
+void bulk_queue(object obj)
+{
+	ACCESS_CHECK(previous_program() == LIB_BULK);
+
+	queue->push_back(obj);
+
+	if (!handle) {
+		handle = call_out("process", 0);
+	}
+}
+
+static void process()
+{
+	object obj;
+
+	handle = 0;
+
+	obj = queue->query_front();
+	queue->pop_front();
+
+	if (!queue->empty()) {
+		handle = call_out("process", 0);
+	}
+
+	obj->bulk_sync();
 }

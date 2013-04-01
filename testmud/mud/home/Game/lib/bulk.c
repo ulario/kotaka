@@ -36,6 +36,7 @@ float max_mass;		/* kg */
 
 /* caching */
 int bulk_dirty;			/* if cache is invalid */
+int bulk_queued;		/* if we're in the bulk sync queue */
 
 float cached_content_mass;	/* cached mass of our contents */
 float cached_content_volume;	/* cached volume of our contents */
@@ -214,6 +215,7 @@ void bulk_sync(varargs int force)
 	cached_content_volume = volume_sum;
 
 	bulk_dirty = 0;
+	bulk_queued = 0;
 }
 
 void bulk_invalidate(varargs int force)
@@ -226,6 +228,11 @@ void bulk_invalidate(varargs int force)
 	}
 
 	bulk_dirty = 1;
+
+	if (!bulk_queued) {
+		BULKD->bulk_queue(this_object());
+		bulk_queued = 1;
+	}
 
 	if (env = query_environment()) {
 		env->bulk_invalidate(force);
