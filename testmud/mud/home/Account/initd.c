@@ -28,6 +28,4 @@ static void create()
 	KERNELD->set_global_access("Account", 1);
 
 	load_dir("sys");
-
-	LOGD->post_message("account", LOG_DEBUG, "Hello world from the account subsystem");
 }
