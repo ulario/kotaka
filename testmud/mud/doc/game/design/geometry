@@ -15,12 +15,12 @@ Our children
 
 	If we no longer contain them, we transfer them to our current parent
 	and run a containment check on them versus our siblings.
-	
+
 	Our children need only be checked against our siblings.
-	
+
 	Since they are inside us, they are already guaranteed to be
 	indirectly inside our parent.
-	
+
 Our siblings (exclude any evicted ex-children)
 
 	If we wind up completely containing any of them, we absorb them,
@@ -38,7 +38,7 @@ Our parent
 Our siblings
 
 	We have new neighbors, one of which might now be containing us.
-	
+
 	If we find one, we reparent and then recheck against our current
 	siblings.  Repeat until we dig down enough so that our siblings
 	no longer contain us.
