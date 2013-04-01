@@ -80,8 +80,8 @@ private void initialize()
 	load_object(KERNELD);
 	configure_klib();
 
-	LOGD->post_message("boot", LOG_INFO, "Loading bigstruct");
 	boot_subsystem("Bigstruct");
+	LOGD->post_message("boot", LOG_INFO, "Switching program database to bigstruct");
 	PROGRAMD->convert_database();
 
 	LOGD->post_message("boot", LOG_INFO, "Loading clone manager");
