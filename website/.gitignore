@@ -1,0 +1,4 @@
+pageindex.full
+pageindex.local
+*.html
+!*.base.html
