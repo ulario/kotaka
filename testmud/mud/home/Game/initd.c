@@ -122,19 +122,21 @@ static void place_object(string base, int remainder)
 	obj = clone_object(THING);
 	obj->set_property("id", base);
 
-	obj->set_mass(SUBD->rnd() * 2.0 + 2.0);
-
 	switch(base) {
 	case "deer":
+		obj->set_mass(50.0 + SUBD->rnd() * 7.5);
 		obj->set_density(1.1);
 		break;
 	case "wolf":
+		obj->set_mass(35.0 + SUBD->rnd() * 5.0);
 		obj->set_density(0.9);
 		break;
 	case "soil":
+		obj->set_mass(10.0 + SUBD->rnd() * 2.0);
 		obj->set_density(1.5);
 		break;
 	case "rock":
+		obj->set_mass(1.0 + SUBD->rnd() * 0.2);
 		obj->set_density(6.3);
 		break;
 	}
