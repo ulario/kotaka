@@ -131,7 +131,7 @@ void convert_database()
 
 static void defragment()
 {
-	call_out("defragment", 60);
+	call_out("defragment", 3600 + random(1800));
 
 	progdb->reindex();
 }
