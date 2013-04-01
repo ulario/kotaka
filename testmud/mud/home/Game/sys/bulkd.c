@@ -17,9 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/log.h>
+#include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <game/paths.h>
 #include <kotaka/bigstruct.h>
+#include <status.h>
 
 int handle;
 object queue;
@@ -31,7 +34,7 @@ static void create()
 
 void bulk_queue(object obj)
 {
-	ACCESS_CHECK(previous_program() == LIB_BULK);
+	ACCESS_CHECK(previous_program() == LIB_BULK || INTERFACE());
 
 	queue->push_back(obj);
 
@@ -46,12 +49,34 @@ static void process()
 
 	handle = 0;
 
-	obj = queue->query_front();
+	obj = queue->get_front();
 	queue->pop_front();
 
 	if (!queue->empty()) {
+		LOGD->post_message("bulk", LOG_DEBUG, queue->size() + " objects left to sync.");
 		handle = call_out("process", 0);
 	}
 
 	obj->bulk_sync();
+}
+
+void reset()
+{
+	mixed *co;
+	int sz, i;
+
+	ACCESS_CHECK(INTERFACE());
+
+	handle = 0;
+
+	queue = new_object(BIGSTRUCT_DEQUE_LWO);
+
+	co = status(this_object(), O_CALLOUTS);
+	sz = sizeof(co);
+
+	for (i = 0; i < sz; i++) {
+		if (co[i][CO_FUNCTION] == "process") {
+			remove_call_out(co[i][CO_HANDLE]);
+		}
+	}
 }
