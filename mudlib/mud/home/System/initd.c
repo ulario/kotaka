@@ -287,6 +287,8 @@ void boot_subsystem(string subsystem)
 		return;
 	}
 
+	LOGD->post_message("boot", LOG_NOTICE, "Booting subsystem: " + subsystem);
+
 	subsystems += ({ subsystem });
 
 	KERNELD->add_user(subsystem);
@@ -299,6 +301,8 @@ void boot_subsystem(string subsystem)
 	if (!sizeof(KERNELD->query_global_access() & ({ subsystem }))) {
 		error("Failure to grant global access by " + subsystem);
 	}
+
+	LOGD->post_message("boot", LOG_NOTICE, "Booted subsystem: " + subsystem);
 }
 
 private void configure_klib()
