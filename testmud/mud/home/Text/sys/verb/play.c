@@ -44,6 +44,9 @@ void main(object actor, string args)
 	} else {
 		body = GAME_INITD->create_object();
 
+		body->set_density(1.0);
+		body->set_mass(100.0 + SUBD->rnd() * 10.0);
+
 		body->set_property("id", "human");
 		body->add_archetype(CATALOGD->lookup_object("human"));
 		body->move(world);

@@ -38,6 +38,8 @@ void main(object actor, string args)
 	shack = GAME_INITD->create_object();
 	shack->set_property("id", "shack");
 	shack->add_archetype(CATALOGD->lookup_object("shack"));
+	shack->set_mass(500.0);
+	shack->set_density(0.5);
 	shack->move(env);
 
 	shack->set_x_position(actor->query_x_position());
