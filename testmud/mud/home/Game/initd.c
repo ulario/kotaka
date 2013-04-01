@@ -175,7 +175,7 @@ void build_world()
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/shack");
 
-	CATALOGD->add_object("shack", master);
+	CATALOGD->add_object("buildings:master:shack", master);
 
 	master = clone_object(THING);
 	master->set_property("id", "human");
@@ -200,7 +200,7 @@ void build_world()
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/door");
 
-	CATALOGD->add_object("door", master);
+	CATALOGD->add_object("buildings:parts:door", master);
 
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
