@@ -179,7 +179,7 @@ void move(object new_env)
 	object old_env;
 	object this;
 
-	CHECKARG(!new_env || new_env <- "object", 1, "move");
+	CHECKARG(!new_env || new_env <- "inventory", 1, "move");
 
 	old_env = environment;
 
