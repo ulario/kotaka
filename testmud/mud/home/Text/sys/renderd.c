@@ -168,77 +168,52 @@ private void draw_banner(object gc)
 	gc->draw("Ularian Forest");
 }
 
-private void draw_environment(object gc, object living)
+private void draw_void(object gc)
 {
-	object env;
+	int x, y;
+
+	gc->set_color(0x7);
+
+	for (y = -8; y <= 8; y += 1) {
+		for (x = -8; x <= 8; x += 1) {
+			gc->move_pen(x, y);
+			gc->set_color(random(2) * 4);
+			gc->draw(":");
+		}
+	}
+
+	gc->set_color(0x0C);
+
+	for (y = -6; y <= 6; y += 4) {
+		for (x = -6; x <= 6; x += 4) {
+			gc->move_pen(x, y);
+			gc->draw("+");
+		}
+	}
+
+	for (y = -8; y <= 8; y += 4) {
+		for (x = -8; x <= 8; x += 4) {
+			gc->move_pen(x, y);
+			gc->draw("+");
+		}
+	}
+}
+
+private void draw_environment(object gc, object living, object env)
+{
+	string painter;
+
 	int x, y;
 
 	gc->set_clip(-8, -8, 8, 8);
 	gc->set_offset(70, 10);
 
-	if (!living) {
-		gc->set_color(0x47);
-
-		for (y = -8; y <= 8; y++) {
-			gc->move_pen(-8, y);
-			gc->draw(STRINGD->chars(' ', 17));
-		}
-
-		gc->move_pen(-3, -1);
-		gc->set_color(0x74);
-		gc->draw(" Error ");
-		gc->set_color(0x47);
-		gc->move_pen(-3, 1);
-		gc->draw("No body");
-	} else if (!(env = living->query_environment())) {
-		gc->set_color(0x7);
-
-		for (y = -8; y <= 8; y += 1) {
-			for (x = -8; x <= 8; x += 1) {
-				gc->move_pen(x, y);
-				gc->set_color(random(2) * 4);
-				gc->draw(":");
-			}
-		}
-
-		gc->set_color(0x0C);
-
-		for (y = -6; y <= 6; y += 4) {
-			for (x = -6; x <= 6; x += 4) {
-				gc->move_pen(x, y);
-				gc->draw("+");
-			}
-		}
-
-		for (y = -8; y <= 8; y += 4) {
-			for (x = -8; x <= 8; x += 4) {
-				gc->move_pen(x, y);
-				gc->draw("+");
-			}
-		}
+	if (painter = env->query_property("event:paint")) {
+		painter->on_paint_text(gc, env, living);
 	} else {
-		object stack;
-		string painter;
-
-		stack = new_object(BIGSTRUCT_DEQUE_LWO);
-
-		while (env) {
-			stack->push_back(env);
-			env = env->query_environment();
-		}
-
-		while (!stack->empty()) {
-			env = stack->get_back();
-			stack->pop_back();
-
-			if (painter = env->query_property("event:paint")) {
-				painter->on_paint_text(gc, env, living);
-			} else {
-				gc->set_color(0x0F);
-				gc->move_pen(0, 0);
-				gc->draw("?");
-			}
-		}
+		gc->set_color(0x0F);
+		gc->move_pen(0, 0);
+		gc->draw("?");
 	}
 }
 
@@ -251,50 +226,61 @@ int position_sort(object a, object b)
 	return 1;
 }
 
-private void draw_neighbors(object gc, object living)
+private void draw_neighbors(object gc, object living, object *neighbors)
 {
-	object environment;
+	float ox, oy;
+	int sz, i;
 
-	if (living) {
-		environment = living->query_environment();
-	}
+	sz = sizeof(neighbors);
 
-	if (environment) {
-		float ox, oy;
-		int sz, i;
-		object *contents;
+	SUBD->qsort(neighbors, 0, sz, "position_sort");
 
-		contents = environment->query_inventory() - ({ living });
-		sz = sizeof(contents);
+	gc->set_clip(-8, -8, 8, 8);
 
-		SUBD->qsort(contents, 0, sz, "position_sort");
+	for (i = 0; i < sz; i++) {
+		float dx, dy;
+		float vx, vy;
 
-		gc->set_clip(-8, -8, 8, 8);
+		object neighbor;
+		string painter;
 
-		for (i = 0; i < sz; i++) {
-			float dx, dy;
-			float vx, vy;
+		neighbor = neighbors[i];
 
-			object neighbor;
-			string painter;
-
-			neighbor = contents[i];
-
-			if (painter = neighbor->query_property("event:paint")) {
-				painter->on_paint_text(gc, neighbor, living);
-			} else {
-				default_painter(gc, neighbor, living);
-			}
+		if (painter = neighbor->query_property("event:paint")) {
+			painter->on_paint_text(gc, neighbor, living);
+		} else {
+			default_painter(gc, neighbor, living);
 		}
 	}
 }
 
+private void draw_bsod(object gc)
+{
+	int x, y;
+
+	gc->set_clip(-8, -8, 8, 8);
+	gc->set_offset(70, 10);
+	gc->set_color(0x47);
+
+	for (y = -8; y <= 8; y++) {
+		gc->move_pen(-8, y);
+		gc->draw(STRINGD->chars(' ', 17));
+	}
+
+	gc->move_pen(-3, -1);
+	gc->set_color(0x74);
+	gc->draw(" Error ");
+
+	gc->set_color(0x47);
+	gc->move_pen(-3, 1);
+	gc->draw("No body");
+}
+
 string draw_look(object living, varargs int facing)
 {
-	int x, y, i;
+	int x, y, sz, i;
 	object painter;
-	object environment;
-	object *contents;
+	object *envstack;
 	object gc;
 
 	ACCESS_CHECK(TEXT());
@@ -303,10 +289,6 @@ string draw_look(object living, varargs int facing)
 	painter->set_size(80, 20);
 	gc = painter->create_gc();
 
-	if (living) {
-		environment = living->query_environment();
-	}
-
 	draw_frame(gc);
 	draw_background(gc);
 	draw_banner(gc);
@@ -314,13 +296,38 @@ string draw_look(object living, varargs int facing)
 	draw_prose(gc, living);
 
 	draw_tickmarks(gc);
-	draw_environment(gc, living);
-	draw_neighbors(gc, living);
 
 	if (living) {
+		object environment;
+
+		envstack = ({ });
+
+		environment = living->query_environment();
+
+		if (environment) {
+			while (environment) {
+				envstack = ({ environment }) + envstack;
+				environment = environment->query_environment();
+			}
+
+			sz = sizeof(envstack);
+			envstack += ({ living });
+
+			for (i = 0; i < sz; i++) {
+				object *contents;
+
+				draw_environment(gc, living, envstack[i]);
+				draw_neighbors(gc, living, envstack[i]->query_inventory() - ({ envstack[i + 1] }));
+			}
+		} else {
+			draw_void(gc);
+		}
+
 		gc->move_pen(0, 0);
 		gc->set_color(0x0F);
 		gc->draw("@");
+	} else {
+		draw_bsod(gc);
 	}
 
 	return implode(painter->render_color(), "\n") + "\n";
