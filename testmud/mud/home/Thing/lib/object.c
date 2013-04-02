@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012-2013  Raymond Jennings
+ * Copyright (C) 2012  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,68 +17,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
+#include <kotaka/checkarg.h>
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
 
-inherit base LIB_OBJECT;
+inherit "archetype";
+inherit "inventory";
+inherit "property";
 
-inherit position "position";
-inherit bulk "bulk";
-inherit timer "timer";
-inherit exit "exit";
-
-int destructing;
-
-/*****************/
-/* General stuff */
-/*****************/
+private void initialize()
+{
+	initialize_archetype();
+	initialize_inventory();
+	initialize_property();
+}
 
 static void create()
 {
-	string name;
-	string *parts;
-	int sz;
-
-	base::create();
-	bulk::create();
-	position::create();
-
-	name = object_name(this_object());
-
-	sscanf(name, "%s#%*d", name);
-
-	parts = explode(name, "/");
-	sz = sizeof(parts);
-
-	set_property("id", parts[sz - 1]);
+	initialize();
 }
 
-int forbid_insert(object obj)
+nomask void kotaka_object_constructor()
 {
-	return destructing;
+	ACCESS_CHECK(previous_program() == SECOND_AUTO);
+
+	initialize();
 }
 
-static void move_notify(object old_env)
+nomask void kotaka_object_destructor()
 {
-	bulk::move_notify(old_env);
-	position::move_notify(old_env);
-}
-
-static nomask void game_object_destruct()
-{
-	int sz;
-	int index;
-	object env;
-	object *children;
-
-	destructing = 1;
-
-	children = query_inventory();
-	env = query_environment();
-	sz = sizeof(children);
-
-	for (index = 0; index < sz; index++) {
-		children[index]->move(env);
-	}
-
-	env->bulk_invalidate();
+	ACCESS_CHECK(previous_program() == SECOND_AUTO);
 }

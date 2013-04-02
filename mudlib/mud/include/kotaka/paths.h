@@ -60,7 +60,6 @@
 
 /* libs */
 
-#define LIB_OBJECT		(USR_DIR + "/Kotaka/lib/object")
 #define LIB_KOTAKA_USER		(USR_DIR + "/Kotaka/lib/user")
 #define LIB_USTATE		(USR_DIR + "/Kotaka/lib/ustate")
 #define LIB_DRIVER		(USR_DIR + "/Kotaka/lib/driver")
