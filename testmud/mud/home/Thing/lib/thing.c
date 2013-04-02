@@ -62,7 +62,7 @@ static void move_notify(object old_env)
 	position::move_notify(old_env);
 }
 
-static nomask void game_object_destruct()
+static nomask void thing_object_destruct()
 {
 	int sz;
 	int index;
