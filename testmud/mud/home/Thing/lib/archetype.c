@@ -23,13 +23,9 @@
 
 private object *archetypes;
 
-nomask static void initialize_archetype()
+static void create()
 {
-	ACCESS_CHECK(THING());
-
-	if (!archetypes) {
-		archetypes = ({ });
-	}
+	archetypes = ({ });
 }
 
 nomask int thing_is_archetype_of(object test)
@@ -137,9 +133,7 @@ void set_archetypes(object *new_archs)
 	sz = sizeof(check);
 
 	for (i = 0; i < sz; i++) {
-		if (!check[i] <- "object") {
-			error("Bad argument 1 for function set_archetypes (found non LIB_OBJECT)");
-		}
+		CHECKARG(check[i] <- "archetype", 1, "add_archetype");
 
 		if (thing_is_archetype_of(check[i])) {
 			error("Circular reference");
@@ -157,7 +151,7 @@ void clear_archetypes()
 void add_archetype(object new_arch)
 {
 	CHECKARG(new_arch, 1, "add_archetype");
-	CHECKARG(new_arch <- "object", 1, "add_archetype");
+	CHECKARG(new_arch <- "archetype", 1, "add_archetype");
 
 	if (thing_is_archetype_of(new_arch)) {
 		error("Circular reference");
@@ -170,7 +164,7 @@ void add_archetype(object new_arch)
 void add_archetype_at(object new_arch, int position)
 {
 	CHECKARG(new_arch, 1, "add_archetype_at");
-	CHECKARG(new_arch <- "object", 1, "add_archetype_at");
+	CHECKARG(new_arch <- "archetype", 1, "add_archetype_at");
 
 	CHECKARG(position >= -1, 2, "add_archetype_at");
 	CHECKARG(position <= sizeof(archetypes), 2, "add_archetype_at");

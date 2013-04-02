@@ -32,14 +32,10 @@ private string *removed_properties;
 
 mixed query_property(string name);
 
-nomask static void initialize_property()
+static void create()
 {
-	ACCESS_CHECK(THING());
-
-	if (!properties) {
-		properties = ([ ]);
-		removed_properties = ({ });
-	}
+	properties = ([ ]);
+	removed_properties = ({ });
 }
 
 nomask mapping thing_query_properties()

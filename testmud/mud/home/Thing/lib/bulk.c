@@ -23,7 +23,7 @@
 #include <kotaka/assert.h>
 #include <thing/paths.h>
 
-inherit "object";
+inherit "inventory";
 
 /* bulk */
 float mass;		/* kg */

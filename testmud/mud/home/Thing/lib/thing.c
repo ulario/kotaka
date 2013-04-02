@@ -19,7 +19,9 @@
  */
 #include <kotaka/paths.h>
 
-inherit base "object";
+inherit arch "archetype";
+inherit inv "inventory";
+inherit prop "property";
 inherit position "position";
 inherit bulk "bulk";
 inherit timer "timer";
@@ -33,22 +35,11 @@ int destructing;
 
 static void create()
 {
-	string name;
-	string *parts;
-	int sz;
-
-	base::create();
+	arch::create();
+	inv::create();
+	prop::create();
 	bulk::create();
 	position::create();
-
-	name = object_name(this_object());
-
-	sscanf(name, "%s#%*d", name);
-
-	parts = explode(name, "/");
-	sz = sizeof(parts);
-
-	set_property("id", parts[sz - 1]);
 }
 
 int forbid_insert(object obj)

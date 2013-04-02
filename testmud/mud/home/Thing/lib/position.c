@@ -20,7 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-inherit "object";
+inherit "inventory";
 
 float xpos, ypos, zpos;
 

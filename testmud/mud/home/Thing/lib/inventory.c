@@ -25,13 +25,9 @@
 private object environment;
 private object *inventory;
 
-nomask static void initialize_inventory()
+static void create()
 {
-	ACCESS_CHECK(THING());
-
-	if (!inventory) {
-		inventory = ({ });
-	}
+	inventory = ({ });
 }
 
 int forbid_move(object new_env)
