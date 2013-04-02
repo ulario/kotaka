@@ -30,6 +30,10 @@ static void create()
 	load_dir("sys", 1);
 }
 
+string query_constructor(string path)
+{
+}
+
 string query_destructor(string path)
 {
 	switch(path) {
