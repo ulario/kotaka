@@ -29,3 +29,11 @@ static void create()
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 }
+
+string query_destructor(string path)
+{
+	switch(path) {
+	case USR_DIR + "/Thing/lib/object":
+		return "thing_object_destruct";
+	}
+}

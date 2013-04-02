@@ -221,18 +221,6 @@ void destroy_object(object obj)
 	destruct_object(obj);
 }
 
-/****************/
-/* System hooks */
-/****************/
-
-string query_destructor(string path)
-{
-	switch(path) {
-	case USR_DIR + "/Game/lib/object":
-		return "game_object_destruct";
-	}
-}
-
 /********/
 /* Help */
 /********/

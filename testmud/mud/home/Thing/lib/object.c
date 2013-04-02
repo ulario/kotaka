@@ -38,14 +38,14 @@ static void create()
 	initialize();
 }
 
-nomask void kotaka_object_constructor()
+nomask void thing_object_constructor()
 {
 	ACCESS_CHECK(previous_program() == SECOND_AUTO);
 
 	initialize();
 }
 
-nomask void kotaka_object_destructor()
+nomask void thing_object_destructor()
 {
 	ACCESS_CHECK(previous_program() == SECOND_AUTO);
 }
