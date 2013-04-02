@@ -21,7 +21,7 @@
 #include <kotaka/privilege.h>
 #include <kotaka/checkarg.h>
 #include <kotaka/assert.h>
-#include <game/paths.h>
+#include <thing/paths.h>
 
 inherit LIB_OBJECT;
 

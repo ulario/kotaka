@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012-2013  Raymond Jennings
+ * Copyright (C) 2013  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,35 +17,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/assert.h>
 #include <kotaka/paths.h>
-#include <game/paths.h>
-#include <catalog/paths.h>
-#include <thing/paths.h>
 
-void on_create(object obj)
+inherit LIB_INITD;
+inherit UTILITY_COMPILE;
+
+static void create()
 {
-	object door1;
-	object door2;
-	object doormaster;
+	KERNELD->set_global_access("Thing", 1);
 
-	mapping data;
-
-	doormaster = CATALOGD->lookup_object("building:parts:door");
-
-	door1 = clone_object(THING);
-	door1->add_archetype(doormaster);
-	door1->move(obj->query_environment());
-	door1->set_x_position(2.0);
-	door1->set_y_position(3.0);
-
-	door2 = clone_object(THING);
-	door2->add_archetype(doormaster);
-	door2->move(obj);
-	door2->set_x_position(2.0);
-	door2->set_y_position(4.0);
-
-	data = obj->query_property("data");
-	data["doors"] = ({ door1, door2 });
-	obj->set_property("data", data);
+	load_dir("obj", 1);
+	load_dir("sys", 1);
 }

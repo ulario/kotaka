@@ -20,8 +20,8 @@
 #include <kotaka/log.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
-#include <game/paths.h>
 #include <kotaka/bigstruct.h>
+#include <thing/paths.h>
 #include <status.h>
 
 int handle;

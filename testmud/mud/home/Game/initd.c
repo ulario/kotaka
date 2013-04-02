@@ -30,6 +30,7 @@
 #include <kotaka/bigstruct.h>
 
 #include <game/paths.h>
+#include <thing/paths.h>
 
 #include <catalog/paths.h>
 
@@ -95,6 +96,7 @@ static void create()
 	INITD->boot_subsystem("Help");
 	INITD->boot_subsystem("Text");
 	INITD->boot_subsystem("Account");
+	INITD->boot_subsystem("Thing");
 	INITD->boot_subsystem("Catalog");
 
 	load_help();

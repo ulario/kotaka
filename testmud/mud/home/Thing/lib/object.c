@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
-#include <game/paths.h>
 
 inherit base LIB_OBJECT;
 
