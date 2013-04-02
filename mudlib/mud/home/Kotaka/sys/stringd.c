@@ -538,26 +538,6 @@ string mixed_sprint(mixed data, varargs mapping seen)
 	case T_OBJECT:
 		if (function_object("sprint_object", previous_object())) {
 			return previous_object()->sprint_object(data);
-		} else if (data <- LIB_OBJECT) {
-			string *parts;
-			string path;
-			object env, root;
-
-			parts = ({ });
-
-			env = data;
-
-			while (env) {
-				root = env;
-				parts = ({ env->query_id() }) + parts;
-				env = env->query_environment();
-			}
-
-			if (root) {
-				return "<" + implode(parts, ":") + ">";
-			} else {
-				return "<" + object_name(data) + ">";
-			}
 		} else {
 			return "<" + object_name(data) + ">";
 		}
@@ -1013,26 +993,6 @@ string dump_sprint(mixed data, varargs mapping seen)
 			return "(<" + path + "|" + dump_sprint(save_value, seen) + ">)";
 		} else if (function_object("sprint_object", previous_object())) {
 			return previous_object()->sprint_object(data);
-		} else if (data <- LIB_OBJECT) {
-			string *parts;
-			string path;
-			object env, root;
-
-			parts = ({ });
-
-			env = data;
-
-			while (env) {
-				root = env;
-				parts = ({ env->query_id() }) + parts;
-				env = env->query_environment();
-			}
-
-			if (root) {
-				return "<" + implode(parts, ":") + ">";
-			} else {
-				return "<" + object_name(data) + ">";
-			}
 		} else {
 			return "<" + object_name(data) + ">";
 		}
