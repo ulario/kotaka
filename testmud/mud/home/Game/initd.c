@@ -121,7 +121,7 @@ static void place_object(string base, int remainder)
 	rnd1 = SUBD->rnd() * SUBD->pi() * 2.0;
 	rnd2 = SUBD->rnd() * 30.0;
 
-	obj = clone_object(THING);
+	obj = clone_object(OBJ_THING);
 	obj->set_property("id", base);
 
 	switch(base) {
@@ -163,12 +163,12 @@ void build_world()
 {
 	object master;
 
-	world = clone_object(THING);
+	world = clone_object(OBJ_THING);
 	world->set_property("id", "world");
 
 	CATALOGD->add_object("world", world);
 
-	master = clone_object(THING);
+	master = clone_object(OBJ_THING);
 	master->set_property("id", "shack");
 	master->set_property("event:create",
 		USR_DIR + "/Game/sys/handler/create/shack");
@@ -179,14 +179,14 @@ void build_world()
 
 	CATALOGD->add_object("buildings:master:shack", master);
 
-	master = clone_object(THING);
+	master = clone_object(OBJ_THING);
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 
 	CATALOGD->add_object("human", master);
 
-	master = clone_object(THING);
+	master = clone_object(OBJ_THING);
 	master->set_property("id", "tree");
 	master->set_property("event:create",
 		USR_DIR + "/Game/sys/handler/create/tree");
@@ -197,7 +197,7 @@ void build_world()
 
 	CATALOGD->add_object("tree", master);
 
-	master = clone_object(THING);
+	master = clone_object(OBJ_THING);
 	master->set_property("id", "door");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/door");
@@ -213,7 +213,7 @@ void build_world()
 
 object create_object()
 {
-	return clone_object(THING);
+	return clone_object(OBJ_THING);
 }
 
 void destroy_object(object obj)

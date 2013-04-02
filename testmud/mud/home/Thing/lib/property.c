@@ -24,8 +24,8 @@
 
 #include <type.h>
 
-nomask object kotaka_query_environment();
-nomask object *kotaka_query_archetypes();
+nomask object thing_query_environment();
+nomask object *thing_query_archetypes();
 
 private mapping properties;
 private string *removed_properties;
@@ -34,7 +34,7 @@ mixed query_property(string name);
 
 nomask static void initialize_property()
 {
-	ACCESS_CHECK(previous_program() == LIB_OBJECT);
+	ACCESS_CHECK(THING());
 
 	if (!properties) {
 		properties = ([ ]);
@@ -42,58 +42,58 @@ nomask static void initialize_property()
 	}
 }
 
-nomask mapping kotaka_query_properties()
+nomask mapping thing_query_properties()
 {
-	KOTAKA();
+	THING();
 
 	return SUBD->deep_copy(properties);
 }
 
-nomask void kotaka_set_properties(mapping prop)
+nomask void thing_set_properties(mapping prop)
 {
-	KOTAKA();
+	THING();
 
 	properties = SUBD->deep_copy(prop);
 }
 
-nomask void kotaka_clear_properties()
+nomask void thing_clear_properties()
 {
-	KOTAKA();
+	THING();
 
 	properties = ([ ]);
 }
 
-nomask void kotaka_set_removed_properties(string *remove)
+nomask void thing_set_removed_properties(string *remove)
 {
-	KOTAKA();
+	THING();
 
 	removed_properties = remove - ({ nil });
 }
 
-nomask string *kotaka_query_removed_properties()
+nomask string *thing_query_removed_properties()
 {
-	KOTAKA();
+	THING();
 
 	return removed_properties[..];
 }
 
-nomask void kotaka_clear_removed_properties()
+nomask void thing_clear_removed_properties()
 {
-	KOTAKA();
+	THING();
 
 	removed_properties = ({ });
 }
 
-nomask void kotaka_set_property(string name, mixed value, varargs int nosignal)
+nomask void thing_set_property(string name, mixed value, varargs int nosignal)
 {
-	KOTAKA();
+	THING();
 
 	properties[name] = SUBD->deep_copy(value);
 }
 
-nomask mixed kotaka_query_property(string name)
+nomask mixed thing_query_property(string name)
 {
-	KOTAKA();
+	THING();
 
 	return SUBD->deep_copy(properties[name]);
 }
@@ -254,9 +254,9 @@ mixed query_property(string name)
 			object *arch;
 
 			if (info[1] == PROP_DROPDOWN) {
-				arch = ({ kotaka_query_environment() }) - ({ nil });
+				arch = ({ thing_query_environment() }) - ({ nil });
 			} else {
-				arch = kotaka_query_archetypes();
+				arch = thing_query_archetypes();
 			}
 
 			for (index = 0; index < sizeof(arch); index++) {
@@ -301,9 +301,9 @@ mixed query_property(string name)
 			rname = extra[1];
 
 			if (info[1] == PROP_MIXDOWN) {
-				arch = ({ kotaka_query_environment() }) - ({ nil });
+				arch = ({ thing_query_environment() }) - ({ nil });
 			} else {
-				arch = kotaka_query_archetypes();
+				arch = thing_query_archetypes();
 			}
 
 			local = SUBD->deep_copy(properties[lname]);

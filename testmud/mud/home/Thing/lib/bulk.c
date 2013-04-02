@@ -23,7 +23,7 @@
 #include <kotaka/assert.h>
 #include <thing/paths.h>
 
-inherit LIB_OBJECT;
+inherit "object";
 
 /* bulk */
 float mass;		/* kg */

@@ -27,7 +27,7 @@ private object *inventory;
 
 nomask static void initialize_inventory()
 {
-	ACCESS_CHECK(previous_program() == LIB_OBJECT);
+	ACCESS_CHECK(THING());
 
 	if (!inventory) {
 		inventory = ({ });
@@ -63,43 +63,43 @@ void remove_notify(object obj)
 
 /* trusted */
 
-nomask object kotaka_query_environment()
+nomask object thing_query_environment()
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(THING());
 
 	return environment;
 }
 
-nomask object *kotaka_query_inventory()
+nomask object *thing_query_inventory()
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(THING());
 
 	inventory -= ({ nil });
 
 	return inventory[..];
 }
 
-nomask void kotaka_add_inventory(object arriving)
+nomask void thing_add_inventory(object arriving)
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(THING());
 
 	inventory = ({ arriving }) + (inventory - ({ nil }));
 }
 
-nomask void kotaka_del_inventory(object departing)
+nomask void thing_del_inventory(object departing)
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(THING());
 
 	inventory -= ({ departing });
 }
 
-nomask int kotaka_is_container_of(object test)
+nomask int thing_is_container_of(object test)
 {
 	object env;
 	object this;
 	int steps;
 
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(THING());
 
 	this = this_object();
 	env = test->query_environment();
@@ -121,12 +121,12 @@ nomask int kotaka_is_container_of(object test)
 	return 0;
 }
 
-nomask int kotaka_query_depth()
+nomask int thing_query_depth()
 {
 	object obj;
 	int depth;
 
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(THING());
 
 	obj = environment;
 
@@ -139,18 +139,18 @@ nomask int kotaka_query_depth()
 	return depth;
 }
 
-nomask void kotaka_move(object new_env)
+nomask void thing_move(object new_env)
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(THING());
 
 	if (environment) {
-		environment->kotaka_del_inventory(this_object());
+		environment->thing_del_inventory(this_object());
 	}
 
 	environment = new_env;
 
 	if (environment) {
-		environment->kotaka_add_inventory(this_object());
+		environment->thing_add_inventory(this_object());
 	}
 }
 
@@ -170,12 +170,12 @@ object *query_inventory()
 
 int is_container_of(object test)
 {
-	return kotaka_is_container_of(test);
+	return thing_is_container_of(test);
 }
 
 int query_depth()
 {
-	return kotaka_query_depth();
+	return thing_query_depth();
 }
 
 void move(object new_env)
@@ -183,7 +183,7 @@ void move(object new_env)
 	object old_env;
 	object this;
 
-	CHECKARG(!new_env || new_env <- LIB_OBJECT, 1, "move");
+	CHECKARG(!new_env || new_env <- "object", 1, "move");
 
 	old_env = environment;
 
@@ -211,7 +211,7 @@ void move(object new_env)
 		}
 	}
 
-	kotaka_move(new_env);
+	thing_move(new_env);
 
 	if (old_env) {
 		old_env->remove_notify(this);

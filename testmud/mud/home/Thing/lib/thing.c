@@ -19,8 +19,7 @@
  */
 #include <kotaka/paths.h>
 
-inherit base LIB_OBJECT;
-
+inherit base "object";
 inherit position "position";
 inherit bulk "bulk";
 inherit timer "timer";

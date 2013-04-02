@@ -20,7 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
-inherit base "~/lib/object";
+inherit base "~/lib/thing";
 
 static void create(int clone)
 {

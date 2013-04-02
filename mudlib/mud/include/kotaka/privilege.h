@@ -9,6 +9,7 @@
 #define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
 #define KOTAKA()	(sscanf(previous_program(), USR_DIR + "/Kotaka/%*s"))
 #define TEXT()		(sscanf(previous_program(), USR_DIR + "/Text/%*s"))
+#define THING()		(sscanf(previous_program(), USR_DIR + "/Thing/%*s"))
 
 #define KADMIN()	(previous_program(1) == LIB_WIZTOOL && \
 			previous_program() == USR_DIR + "/admin/_code")

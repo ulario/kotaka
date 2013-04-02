@@ -116,7 +116,7 @@ void on_timer(object obj)
 			return;
 		}
 
-		sprout = clone_object(THING);
+		sprout = clone_object(OBJ_THING);
 		sprout->add_archetype(CATALOGD->lookup_object("tree"));
 		sprout->set_property("id", "tree");
 		sprout->move(obj->query_environment());

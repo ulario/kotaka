@@ -21,7 +21,7 @@
 #include <kotaka/log.h>
 #include <status.h>
 
-inherit LIB_OBJECT;
+inherit "object";
 
 private float interval;
 private int handle;
