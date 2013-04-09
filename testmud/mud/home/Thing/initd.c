@@ -30,14 +30,22 @@ static void create()
 	load_dir("sys", 1);
 }
 
-string query_constructor(string path)
+int forbid_inherit(string from, string path, int priv)
 {
+	switch(path) {
+	case USR_DIR + "/Thing/lib/thing":
+		/* no private inheritance allowed */
+		return priv;
+	default:
+		/* no partial inheritance allowed */
+		return 1;
+	}
 }
 
 string query_destructor(string path)
 {
 	switch(path) {
-	case USR_DIR + "/Thing/lib/object":
-		return "thing_object_destruct";
+	case USR_DIR + "/Thing/lib/thing":
+		return "thing_destruct";
 	}
 }
