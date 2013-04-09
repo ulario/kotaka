@@ -124,7 +124,7 @@ void on_timer(object obj)
 		sprout->set_y_position(sy);
 		sprout->set_mass(1.0);
 
-		"../create/tree"->on_create(sprout);
+		sprout->query_property("event:create")->on_create(sprout);
 	}
 
 	obj->set_mass(mass + 1.0);
