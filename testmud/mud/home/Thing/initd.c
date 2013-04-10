@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kernel/kernel.h>
 #include <kotaka/paths.h>
 
 inherit LIB_INITD;
@@ -38,7 +39,7 @@ int forbid_inherit(string from, string path, int priv)
 		return priv;
 	default:
 		/* no partial inheritance allowed */
-		return 1;
+		return !(DRIVER->creator(from) == "Thing");
 	}
 }
 
