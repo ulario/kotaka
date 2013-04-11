@@ -78,10 +78,10 @@ private void do_particles(object paint, float diff)
 		particle = particles[i];
 		particle[1] += diff * 50.0;
 
-		if (particle[1] > 100.0) {
+		if (particle[1] / particle[2] > 15.0) {
 			particle[2] = SUBD->rnd() * 10.0 + 1.0;
 			particle[0] = (SUBD->rnd() * 80.0 - 40.0) * particle[2];
-			particle[1] = (SUBD->rnd() * 20.0 - 40.0) * particle[2];
+			particle[1] = (SUBD->rnd() * 25.0 - 40.0) * particle[2];
 		}
 	}
 
@@ -122,10 +122,10 @@ static void do_frame(float diff)
 	object gc;
 
 	paint = new_object(LWO_PAINTER);
-	paint->set_size(80, 20);
+	paint->set_size(80, 25);
 
 	gc = paint->create_gc();
-	gc->set_clip(0, 0, 79, 19);
+	gc->set_clip(0, 0, 79, 24);
 	gc->set_color(0xF);
 
 	do_particles(gc, diff);

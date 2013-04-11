@@ -51,7 +51,7 @@ void begin()
 
 	for (i = 0; i < NPARTICLES; i++) {
 		particles[i] = allocate_float(4);
-		particles[i][1] = 20.0;
+		particles[i][1] = 25.0;
 	}
 }
 
@@ -72,9 +72,9 @@ private void do_particles(object paint, float diff)
 		particle[1] += (ovy + nvy) * 0.5 * diff;
 		particle[3] = nvy;
 
-		if (particle[1] >= 20.0) {
+		if (particle[1] >= 25.0) {
 			particle[0] = 20.0;
-			particle[1] = 20.0;
+			particle[1] = 25.0;
 
 			particle[2] = (float)random(1000) / 1000.0 * 40.0 - 10.0;
 			particle[3] = (float)random(1000) / 1000.0 * 20.0 - 30.0;
@@ -103,10 +103,10 @@ static void do_frame(float diff)
 	object gc;
 
 	paint = new_object(LWO_PAINTER);
-	paint->set_size(80, 20);
+	paint->set_size(80, 25);
 
 	gc = paint->create_gc();
-	gc->set_clip(0, 0, 79, 19);
+	gc->set_clip(0, 0, 79, 24);
 
 	do_particles(gc, diff);
 
