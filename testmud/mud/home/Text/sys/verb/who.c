@@ -69,4 +69,16 @@ void main(object actor, string args)
 			send_out("\n");
 		}
 	}
+
+	users = TEXT_USERD->query_guests();
+
+	switch (sizeof(users)) {
+	case 1:
+		send_out("There is " + sizeof(users) + " guest connected.\n\n");
+		break;
+	case 0:
+		break;
+	default:
+		send_out("There are " + sizeof(users) + " guests connected.\n\n");
+	}
 }
