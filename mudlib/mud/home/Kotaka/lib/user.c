@@ -88,7 +88,8 @@ nomask object query_root()
 
 nomask void force_quit()
 {
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || KOTAKA());
+
 	disconnect();
 }
 
