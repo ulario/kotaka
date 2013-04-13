@@ -35,6 +35,8 @@ void main(object actor, string args)
 		return;
 	}
 
+	/* Bad Things will happen if we destruct users without */
+	/* logging them out first */
 	users = TEXT_USERD->query_users() + TEXT_USERD->query_guests();
 	sz = sizeof(users);
 
