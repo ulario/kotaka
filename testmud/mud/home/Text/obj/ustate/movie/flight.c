@@ -77,8 +77,8 @@ private void do_particles(object paint, float diff)
 		particle[2] -= diff * 5.0;
 
 		if (particle[2] < 1.0) {
-			particle[0] = SUBD->rnd() * 400.0 - 200.0;
-			particle[1] = SUBD->rnd() * 125.0 - 62.5;
+			particle[0] = SUBD->rnd() * 800.0 - 400.0;
+			particle[1] = SUBD->rnd() * 250.0 - 125.0;
 			particle[2] = SUBD->rnd() * 1.0 + 10.0;
 			sortflag = 1;
 		}
