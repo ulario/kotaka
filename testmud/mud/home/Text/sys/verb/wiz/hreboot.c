@@ -34,4 +34,5 @@ void main(object actor, string args)
 	}
 
 	"~Help/initd"->full_reset();
+	"~Game/initd"->load_help();
 }
