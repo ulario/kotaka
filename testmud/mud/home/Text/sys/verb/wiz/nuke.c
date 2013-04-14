@@ -62,7 +62,7 @@ void main(object actor, string args)
 	turkey = TEXT_USERD->find_user(args);
 	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
 
-	user->message("You nuked " + args + " from the mud.\n");
+	user->message("You nuke " + args + " from the mud.\n");
 
 	TEXT_SUBD->send_to_all_except(args + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
 
