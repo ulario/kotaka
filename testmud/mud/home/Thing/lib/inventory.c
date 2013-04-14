@@ -57,24 +57,6 @@ void remove_notify(object obj)
 {
 }
 
-/* trusted */
-
-nomask object thing_query_environment()
-{
-	ACCESS_CHECK(THING());
-
-	return environment;
-}
-
-nomask object *thing_query_inventory()
-{
-	ACCESS_CHECK(THING());
-
-	inventory -= ({ nil });
-
-	return inventory[..];
-}
-
 nomask void thing_add_inventory(object arriving)
 {
 	ACCESS_CHECK(THING());
@@ -89,13 +71,11 @@ nomask void thing_del_inventory(object departing)
 	inventory -= ({ departing });
 }
 
-nomask int thing_is_container_of(object test)
+int is_container_of(object test)
 {
 	object env;
 	object this;
 	int steps;
-
-	ACCESS_CHECK(THING());
 
 	this = this_object();
 	env = test->query_environment();
@@ -117,12 +97,10 @@ nomask int thing_is_container_of(object test)
 	return 0;
 }
 
-nomask int thing_query_depth()
+int query_depth()
 {
 	object obj;
 	int depth;
-
-	ACCESS_CHECK(THING());
 
 	obj = environment;
 
@@ -135,23 +113,6 @@ nomask int thing_query_depth()
 	return depth;
 }
 
-nomask void thing_move(object new_env)
-{
-	ACCESS_CHECK(THING());
-
-	if (environment) {
-		environment->thing_del_inventory(this_object());
-	}
-
-	environment = new_env;
-
-	if (environment) {
-		environment->thing_add_inventory(this_object());
-	}
-}
-
-/* untrusted */
-
 object query_environment()
 {
 	return environment;
@@ -162,16 +123,6 @@ object *query_inventory()
 	inventory -= ({ nil });
 
 	return inventory[..];
-}
-
-int is_container_of(object test)
-{
-	return thing_is_container_of(test);
-}
-
-int query_depth()
-{
-	return thing_query_depth();
 }
 
 void move(object new_env)
@@ -207,7 +158,15 @@ void move(object new_env)
 		}
 	}
 
-	thing_move(new_env);
+	if (environment) {
+		environment->thing_del_inventory(this_object());
+	}
+
+	environment = new_env;
+
+	if (environment) {
+		environment->thing_add_inventory(this_object());
+	}
 
 	if (old_env) {
 		old_env->remove_notify(this);

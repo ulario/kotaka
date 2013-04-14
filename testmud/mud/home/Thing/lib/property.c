@@ -24,8 +24,8 @@
 
 #include <type.h>
 
-nomask object thing_query_environment();
-nomask object *thing_query_archetypes();
+object query_environment();
+object *query_archetypes();
 
 private mapping properties;
 private string *removed_properties;
@@ -36,62 +36,6 @@ static void create()
 {
 	properties = ([ ]);
 	removed_properties = ({ });
-}
-
-nomask mapping thing_query_properties()
-{
-	THING();
-
-	return SUBD->deep_copy(properties);
-}
-
-nomask void thing_set_properties(mapping prop)
-{
-	THING();
-
-	properties = SUBD->deep_copy(prop);
-}
-
-nomask void thing_clear_properties()
-{
-	THING();
-
-	properties = ([ ]);
-}
-
-nomask void thing_set_removed_properties(string *remove)
-{
-	THING();
-
-	removed_properties = remove - ({ nil });
-}
-
-nomask string *thing_query_removed_properties()
-{
-	THING();
-
-	return removed_properties[..];
-}
-
-nomask void thing_clear_removed_properties()
-{
-	THING();
-
-	removed_properties = ({ });
-}
-
-nomask void thing_set_property(string name, mixed value, varargs int nosignal)
-{
-	THING();
-
-	properties[name] = SUBD->deep_copy(value);
-}
-
-nomask mixed thing_query_property(string name)
-{
-	THING();
-
-	return SUBD->deep_copy(properties[name]);
 }
 
 /* untrusted */
@@ -250,9 +194,9 @@ mixed query_property(string name)
 			object *arch;
 
 			if (info[1] == PROP_DROPDOWN) {
-				arch = ({ thing_query_environment() }) - ({ nil });
+				arch = ({ query_environment() }) - ({ nil });
 			} else {
-				arch = thing_query_archetypes();
+				arch = query_archetypes();
 			}
 
 			for (index = 0; index < sizeof(arch); index++) {
@@ -297,9 +241,9 @@ mixed query_property(string name)
 			rname = extra[1];
 
 			if (info[1] == PROP_MIXDOWN) {
-				arch = ({ thing_query_environment() }) - ({ nil });
+				arch = ({ query_environment() }) - ({ nil });
 			} else {
-				arch = thing_query_archetypes();
+				arch = query_archetypes();
 			}
 
 			local = SUBD->deep_copy(properties[lname]);

@@ -28,13 +28,11 @@ static void create()
 	archetypes = ({ });
 }
 
-nomask int thing_is_archetype_of(object test)
+int is_archetype_of(object test)
 {
 	int index;
 	int sz;
 	object *arch;
-
-	ACCESS_CHECK(THING());
 
 	arch = test->query_archetypes();
 	sz = sizeof(arch);
@@ -44,71 +42,12 @@ nomask int thing_is_archetype_of(object test)
 	}
 
 	for(index = 0; index < sz; index++) {
-		if (thing_is_archetype_of(arch[index])) {
+		if (is_archetype_of(arch[index])) {
 			return 1;
 		}
 	}
 
 	return 0;
-}
-
-nomask object *thing_query_archetypes()
-{
-	ACCESS_CHECK(THING());
-
-	archetypes -= ({ nil });
-
-	return archetypes[..];
-}
-
-nomask void thing_set_archetypes(object *new_archs)
-{
-	ACCESS_CHECK(THING());
-
-	archetypes = new_archs - ({ nil });
-}
-
-nomask void thing_clear_archetypes()
-{
-	ACCESS_CHECK(THING());
-
-	archetypes = ({ });
-}
-
-nomask void thing_add_archetype(object new_arch)
-{
-	ACCESS_CHECK(THING());
-
-	archetypes -= ({ nil });
-	archetypes += ({ new_arch });
-}
-
-nomask void thing_add_archetype_at(object new_arch, int position)
-{
-	ACCESS_CHECK(THING());
-
-	archetypes -= ({ nil });
-
-	if (position == -1) {
-		archetypes += ({ new_arch });
-	} else {
-		archetypes = archetypes[0 .. position - 1]
-			+ ({ new_arch }) + archetypes[position ..];
-	}
-}
-
-nomask void thing_del_archetype(object old_arch)
-{
-	ACCESS_CHECK(THING());
-
-	archetypes -= ({ nil, old_arch });
-}
-
-/* untrusted */
-
-int is_archetype_of(object test)
-{
-	return thing_is_archetype_of(test);
 }
 
 object *query_archetypes()
@@ -127,7 +66,7 @@ void set_archetypes(object *new_archs)
 	object *check;
 
 	archetypes -= ({ nil });
-	new_archs = new_archs -= ({ nil });
+	new_archs -= ({ nil });
 	check = new_archs - ({ archetypes });
 
 	sz = sizeof(check);
@@ -135,7 +74,7 @@ void set_archetypes(object *new_archs)
 	for (i = 0; i < sz; i++) {
 		CHECKARG(check[i] <- "archetype", 1, "add_archetype");
 
-		if (thing_is_archetype_of(check[i])) {
+		if (is_archetype_of(check[i])) {
 			error("Circular reference");
 		}
 	}
@@ -153,7 +92,7 @@ void add_archetype(object new_arch)
 	CHECKARG(new_arch, 1, "add_archetype");
 	CHECKARG(new_arch <- "archetype", 1, "add_archetype");
 
-	if (thing_is_archetype_of(new_arch)) {
+	if (is_archetype_of(new_arch)) {
 		error("Circular reference");
 	}
 
@@ -169,7 +108,7 @@ void add_archetype_at(object new_arch, int position)
 	CHECKARG(position >= -1, 2, "add_archetype_at");
 	CHECKARG(position <= sizeof(archetypes), 2, "add_archetype_at");
 
-	if (thing_is_archetype_of(new_arch)) {
+	if (is_archetype_of(new_arch)) {
 		error("Circular reference");
 	}
 
