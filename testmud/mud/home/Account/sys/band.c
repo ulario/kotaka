@@ -62,7 +62,7 @@ void unban_site(string site)
 	ACCESS_CHECK(INTERFACE() || KADMIN());
 
 	if (!sitebans[site]) {
-		error("Username not banned");
+		error("Site not banned");
 	}
 
 	sitebans[site] = nil;
