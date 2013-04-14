@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kernel/user.h>
 #include <kotaka/paths.h>
 #include <text/paths.h>
 
@@ -24,11 +25,19 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
+	object user;
 	object *users;
 	string **lists;
 	int sz, i;
+	int is_wiz;
 
 	lists = ({ ({ }), ({ }), ({ }) });
+
+	user = query_user();
+
+	if (user->query_class() >= 2) {
+		is_wiz = 1;
+	}
 
 	send_out("User list\n");
 	send_out("---------\n");
@@ -37,8 +46,26 @@ void main(object actor, string args)
 	sz = sizeof(users);
 
 	for (i = 0; i < sz; i++) {
-		lists[3 - users[i]->query_class()]
-			+= ({ users[i]->query_username() });
+		object user;
+		string name;
+		int class;
+		string buf;
+
+		user = users[i];
+		name = user->query_username();
+		class = user->query_class();
+
+		buf = TEXT_SUBD->titled_name(name, class);
+
+		if (is_wiz) {
+			while (user <- LIB_USER) {
+				user = user->query_conn();
+			}
+
+			buf += " (" + query_ip_number(user) + ")";
+		}
+
+		lists[3 - class] += ({ buf });
 	}
 
 	for (i = 0; i < 3; i++) {
@@ -57,13 +84,7 @@ void main(object actor, string args)
 			}
 
 			for (j = 0; j < sz; j++) {
-				string name;
-
-				name = list[j];
-
-				send_out(TEXT_SUBD->titled_name(
-					name, TEXT_SUBD->query_user_class(name)
-				) + "\n");
+				send_out(list[j] + "\n");
 			}
 
 			send_out("\n");
@@ -80,5 +101,22 @@ void main(object actor, string args)
 		break;
 	default:
 		send_out("There are " + sizeof(users) + " guests connected.\n\n");
+	}
+
+	if (is_wiz && (sz = sizeof(users))) {
+		string *list;
+		list = allocate(sz);
+
+		for (i = 0; i < sz; i++) {
+			user = users[i];
+
+			while (user <- LIB_USER) {
+				user = user->query_conn();
+			}
+
+			list[i] = query_ip_number(user);
+		}
+
+		send_out("Guest IPs: " + implode(list, ", ") + "\n\n");
 	}
 }
