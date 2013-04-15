@@ -57,7 +57,7 @@ void begin()
 
 		particle[2] = (1.0 - pow(SUBD->rnd(), 2.0)) * 10.0 + 1.0;
 		particle[0] = (SUBD->rnd() * 80.0 - 40.0) * particle[2];
-		particle[1] = (SUBD->rnd() * 35.0 - 15.0) * particle[2];
+		particle[1] = (SUBD->rnd() * 27.5 - 15.0) * particle[2];
 	}
 }
 
@@ -81,7 +81,7 @@ private void do_particles(object paint, float diff)
 		if (particle[1] / particle[2] > 15.0) {
 			particle[2] = SUBD->rnd() * 10.0 + 1.0;
 			particle[0] = (SUBD->rnd() * 80.0 - 40.0) * particle[2];
-			particle[1] = (SUBD->rnd() * 25.0 - 40.0) * particle[2];
+			particle[1] = -(12.5 + SUBD->rnd()) * particle[2];
 		}
 	}
 
