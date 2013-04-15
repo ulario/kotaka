@@ -55,9 +55,9 @@ void begin()
 		float *particle;
 		particle = particles[i] = allocate_float(3);
 
-		particle[2] = SUBD->rnd() * 10.0 + 1.0;
+		particle[2] = (1.0 - pow(SUBD->rnd(), 2.0)) * 10.0 + 1.0;
 		particle[0] = (SUBD->rnd() * 80.0 - 40.0) * particle[2];
-		particle[1] = (SUBD->rnd() * 400.0 - 80.0) * particle[2];
+		particle[1] = (SUBD->rnd() * 35.0 - 15.0) * particle[2];
 	}
 }
 
