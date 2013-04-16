@@ -28,7 +28,7 @@ inherit "~/lib/animate";
 float **particles;
 float speed;
 
-#define NPARTICLES 50
+#define NPARTICLES 150
 
 static void create(int clone)
 {
@@ -53,8 +53,8 @@ void begin()
 
 	for (i = 0; i < NPARTICLES; i++) {
 		particles[i] = allocate_float(3);
-		particles[i][0] = SUBD->rnd() * 400.0 - 200.0;
-		particles[i][1] = SUBD->rnd() * 125.0 - 62.5;
+		particle[0] = SUBD->rnd() * 800.0 - 400.0;
+		particle[1] = SUBD->rnd() * 250.0 - 125.0;
 		particles[i][2] = SUBD->rnd() * 10.0 + 1.0;
 	}
 }
