@@ -57,7 +57,8 @@ void begin()
 
 		do {
 			particle[2] = (1.0 - pow(SUBD->rnd(), 2.0)) * 11.0;
-		} while (particle[2] > 1.0)
+		} while (particle[2] < 1.0);
+
 		particle[0] = (SUBD->rnd() * 80.0 - 40.0) * particle[2];
 		particle[1] = (SUBD->rnd() * 27.5 - 15.0) * particle[2];
 	}
