@@ -107,10 +107,9 @@ private void initialize()
 
 	/* Booted up */
 
-	LOGD->post_message("boot", LOG_INFO, "Booting kotaka");
-	boot_subsystem("Kotaka");
+	LOGD->post_message("boot", LOG_INFO, "System ready");
 
-	LOGD->post_message("boot", LOG_INFO, "Booting game");
+	boot_subsystem("Kotaka");
 	boot_subsystem("Game");
 }
 
@@ -286,8 +285,6 @@ void boot_subsystem(string subsystem)
 	if (find_object(USR_DIR + "/" + subsystem + "/initd")) {
 		return;
 	}
-
-	LOGD->post_message("boot", LOG_NOTICE, "Booting subsystem: " + subsystem);
 
 	subsystems += ({ subsystem });
 
