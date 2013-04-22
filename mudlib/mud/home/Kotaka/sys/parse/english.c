@@ -67,62 +67,50 @@ mixed parse(string input)
 	return parse_string(grammar, input);
 }
 
-mixed *vp_verb(mixed *input)
+mixed *iclause_verb(mixed *input)
 {
-	return ({ ({ "V", input[0], nil }) });
+	return ({ ({ "I", input[0], nil, nil }) });
 }
 
-mixed *vp_verb_np(mixed *input)
+mixed *iclause_verb_np(mixed *input)
 {
-	return ({ ({ "V", input[0], input[1] }) });
+	return ({ ({ "I", input[0], input[1], nil }) });
 }
 
-mixed *pp_prep(mixed *input)
+mixed *iclause_verb_np_pp(mixed *input)
 {
-	return ({ ({ "P", input[0], nil }) });
+	return ({ ({ "I", input[0], input[1], input[2] }) });
 }
 
+/*
+iclause: verb ? iclause_verb
+iclause: verb np ? iclause_verb_np
+iclause: verb np pp ? iclause_verb_np_pp
+
+pp: prep np ? pp_prep_np
+
+np: adjl noun ? np_adjl_noun
+np: art adjl noun ? np_art_adjl_noun
+*/
 mixed *pp_prep_np(mixed *input)
 {
 	return ({ ({ "P", input[0], input[1] }) });
 }
 
-mixed *np_oart_oadjc_noun(mixed *input)
+mixed *np_adjl_noun(mixed *input)
 {
-	return ({ ({ "N", input[0], input[1], input[2] }) });
+	int sz;
+
+	sz = sizeof(input);
+
+	return ({ ({ "N", nil, input[0 .. sz - 2], input[sz - 1] }) });
 }
 
-mixed *oart(mixed *input)
+mixed *np_art_adjl_noun(mixed *input)
 {
-	return ({ nil });
-}
+	int sz;
 
-mixed *oart_art(mixed *input)
-{
-	return ({ input[0] });
-}
+	sz = sizeof(input);
 
-mixed *oadjc(mixed *input)
-{
-	return ({ ({ }) });
-}
-
-mixed *oadjc_adjl(mixed *input)
-{
-	return ({ input });
-}
-
-mixed *noun_word(mixed *input)
-{
-	return ({ input });
-}
-
-mixed *verb_word(mixed *input)
-{
-	return ({ input });
-}
-
-mixed *prep_word(mixed *input)
-{
-	return ({ input });
+	return ({ ({ "N", input[0], input[1 .. sz - 2], input[sz - 1] }) });
 }

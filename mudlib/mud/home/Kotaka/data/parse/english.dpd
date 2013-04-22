@@ -3,27 +3,16 @@ prep = /at|in|on|from|by|with|of|for|to/
 art = /a|an|the/
 word = /[^ ]+/
 
-iclause: vp
-iclause: vp ppl
+iclause: verb ? iclause_verb
+iclause: verb np ? iclause_verb_np
+iclause: verb np pp ? iclause_verb_np_pp
 
-vp: verb ? vp_verb
-vp: verb np ? vp_verb_np
-
-pp: prep ? pp_prep
 pp: prep np ? pp_prep_np
 
-np: oart oadjc noun ? np_oart_oadjc_noun
+np: adjl noun ? np_adjl_noun
+np: art adjl noun ? np_art_adjl_noun
 
-oart: ? oart
-oart: art ? oart_art
-
-oadjc: ? oadjc
-oadjc: adjl ? oadjc_adjl
-
-ppl: pp
-ppl: ppl pp
-
-adjl: adj
+adjl:
 adjl: adjl adj
 
 verb: word
