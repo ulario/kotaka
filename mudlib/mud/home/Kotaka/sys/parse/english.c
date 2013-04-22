@@ -114,12 +114,15 @@ mixed *oadjc_adjl(mixed *input)
 
 mixed *noun_word(mixed *input)
 {
+	return ({ input });
 }
 
 mixed *verb_word(mixed *input)
 {
+	return ({ input });
 }
 
 mixed *prep_word(mixed *input)
 {
+	return ({ input });
 }
