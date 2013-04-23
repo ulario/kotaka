@@ -19,8 +19,6 @@
  */
 #include <kotaka/paths.h>
 
-#define CONFIGD "foo"
-
 string grammar;
 
 static void create()
