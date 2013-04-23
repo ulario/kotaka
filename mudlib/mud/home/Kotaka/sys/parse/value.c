@@ -83,35 +83,10 @@ static object *parse_obj(string *input)
 	oname = input[0];
 	oname = oname[1 .. strlen(oname) - 2];	/* strip off angle brackets */
 
-	if (function_object("parse_object", previous_object(1))) {
-		return ({ previous_object(1)->parse_object(oname) });
-	}
-
-	parts = explode(oname, ":") - ({ "" });
-
-	if (sizeof(parts) == 0) {
-		error("Badly formatted object designation: <" + oname + ">");
-	}
-
-	if (parts[0][0] == '/') {
-		string osubname;
-
-		root = find_object(parts[0]);
-
-		if (!root)
-			error(parts[0] + ": no such object");
-	} else if (parts[0] != "ROOT") {
-		error("Unspecified base for object");
-	} else {
-		root = CONFIGD->query_object_root();
-	}
-
-	if (sizeof(parts) > 1) {
-		osubname = implode(parts[1 ..], ":");
-		obj = root->locate_object(osubname);
+	if (obj = find_object(oname)) {
 		return ({ obj });
 	} else {
-		return ({ root });
+		error("No such object");
 	}
 }
 
