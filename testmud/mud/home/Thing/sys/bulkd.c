@@ -57,7 +57,9 @@ static void process()
 		handle = call_out("process", 0);
 	}
 
-	obj->bulk_sync();
+	if (obj) {
+		obj->bulk_sync();
+	}
 }
 
 void reset()
