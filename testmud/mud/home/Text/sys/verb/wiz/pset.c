@@ -49,6 +49,10 @@ void main(object actor, string args)
 	obj = find_object(oname);
 
 	if (!obj) {
+		obj = CATALOGD->lookup_object(oname);
+	}
+
+	if (!obj) {
 		send_out(oname + ": No such object.\n");
 		return;
 	}
@@ -56,4 +60,6 @@ void main(object actor, string args)
 	pvalue = PARSE_VALUE->parse(pvalue);
 
 	obj->set_property(pname, pvalue);
+
+	send_out("Done.\n");
 }
