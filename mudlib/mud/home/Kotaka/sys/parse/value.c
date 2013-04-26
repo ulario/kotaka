@@ -82,7 +82,7 @@ static object *parse_obj(string *input)
 	oname = input[0];
 	oname = oname[1 .. strlen(oname) - 2];	/* strip off angle brackets */
 
-	obj = find_object(oname));
+	obj = find_object(oname);
 
 	if (!obj) {
 		obj = CATALOGD->lookup_object(oname);
