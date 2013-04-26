@@ -84,11 +84,13 @@ static void create()
 
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("nouns", T_ARRAY, PROP_INHERIT);
-	PROPERTYD->add_property("environment", T_ARRAY, PROP_MAGIC, ({ "query_environment", "move" }) );
+	PROPERTYD->add_property("environment", T_OBJECT, PROP_MAGIC, ({ "query_environment", "move" }) );
 	PROPERTYD->add_property("inventory", T_ARRAY, PROP_MAGIC, ({ "query_inventory", nil }) );
 
 	PROPERTYD->add_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
 	PROPERTYD->add_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
+
+	PROPERTYD->add_property("archetypes", T_ARRAY, PROP_MAGIC, ({ "query_archetypes", "set_archetypes" }) );
 
 	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_INHERIT);
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
