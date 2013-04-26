@@ -83,6 +83,8 @@ static void create()
 	load_dir("sys", 1);
 
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
+	PROPERTYD->add_property("nouns", T_ARRAY, PROP_INHERIT);
+	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_INHERIT);
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:destroy", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
@@ -176,6 +178,8 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/destroy/shack");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/shack");
+	master->set_property("nouns", ({ "shack" }) );
+	master->set_property("adjectives", ({ "wooden" }) );
 
 	CATALOGD->add_object("buildings:master:shack", master);
 
@@ -183,6 +187,7 @@ void build_world()
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
+	master->set_property("nouns", ({ "human", "man" }) );
 
 	CATALOGD->add_object("human", master);
 
@@ -194,6 +199,7 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/tree");
 	master->set_property("event:timer",
 		USR_DIR + "/Game/sys/handler/timer/tree");
+	master->set_property("nouns", ({ "tree" }) );
 
 	CATALOGD->add_object("tree", master);
 
@@ -201,6 +207,8 @@ void build_world()
 	master->set_property("id", "door");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/door");
+	master->set_property("nouns", ({ "door" }) );
+	master->set_property("adjectives", ({ "wooden" }) );
 
 	CATALOGD->add_object("buildings:parts:door", master);
 
