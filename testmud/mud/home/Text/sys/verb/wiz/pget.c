@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths.h>
 
+#include <catalog/paths.h>
 #include <account/paths.h>
 #include <game/paths.h>
 #include <text/paths.h>
@@ -40,7 +41,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (sscanf(args, "%s %s", oname, pname, pvalue) != 2) {
+	if (sscanf(args, "%s %s", oname, pname) != 2) {
 		send_out("Usage: pget <object> <property name>\n");
 		return;
 	}

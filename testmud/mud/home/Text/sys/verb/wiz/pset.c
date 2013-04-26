@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths.h>
 
+#include <catalog/paths.h>
 #include <account/paths.h>
 #include <game/paths.h>
 #include <text/paths.h>
