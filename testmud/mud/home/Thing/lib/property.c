@@ -90,8 +90,8 @@ void set_property(string name, mixed value)
 	} else {
 		if (info[0] != -1 && value != nil && info[0] !=
 			typeof(value)) {
-			error("Type mismatch, " + typeof(value) +
-				" versus " + info[0] + " on " + name);
+			error("Type mismatch, got " + typeof(value) +
+				", expected " + info[0] + " on " + name);
 		}
 	}
 
