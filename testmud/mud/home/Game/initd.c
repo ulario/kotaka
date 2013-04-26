@@ -65,22 +65,9 @@ void build_world();
 /* Constructors */
 /****************/
 
-static void create()
+void configure_properties()
 {
-	object proxy;
-	string world;
-	string dump;
-	int index;
-	object clone;
-	object shape;
-	string *bad_bins;
-	string *bins;
-	string test;
-
-	load_dir("lwo", 1);
-	load_dir("obj", 1);
-	load_dir("open", 1);
-	load_dir("sys", 1);
+	PROPERTYD->clear_properties();
 
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("nouns", T_ARRAY, PROP_INHERIT);
@@ -98,6 +85,27 @@ static void create()
 	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:timer", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("data", T_MAPPING, PROP_SIMPLE);
+}
+
+static void create()
+{
+	object proxy;
+	string world;
+	string dump;
+	int index;
+	object clone;
+	object shape;
+	string *bad_bins;
+	string *bins;
+	string test;
+
+	load_dir("lwo", 1);
+	load_dir("obj", 1);
+	load_dir("open", 1);
+	load_dir("sys", 1);
+
+	configure_properties();
+
 	KERNELD->set_global_access("Game", 1);
 
 	"sys/testd"->test();
