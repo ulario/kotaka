@@ -88,7 +88,7 @@ static object *parse_obj(string *input)
 		obj = CATALOGD->lookup_object(oname);
 	}
 
-	if (!obj) {
+	if (obj) {
 		return ({ obj });
 	} else {
 		error("No such object");
