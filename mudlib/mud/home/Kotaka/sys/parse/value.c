@@ -90,7 +90,7 @@ static object *parse_obj(string *input)
 
 	if (!obj) {
 		return ({ obj });
-	} else if (obj {
+	} else {
 		error("No such object");
 	}
 }
