@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <catalog/paths.h>
 
 string grammar;
 
@@ -81,9 +82,15 @@ static object *parse_obj(string *input)
 	oname = input[0];
 	oname = oname[1 .. strlen(oname) - 2];	/* strip off angle brackets */
 
-	if (obj = find_object(oname)) {
+	obj = find_object(oname));
+
+	if (!obj) {
+		obj = CATALOGD->lookup_object(oname);
+	}
+
+	if (!obj) {
 		return ({ obj });
-	} else {
+	} else if (obj {
 		error("No such object");
 	}
 }
