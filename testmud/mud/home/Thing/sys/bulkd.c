@@ -53,7 +53,6 @@ static void process()
 	queue->pop_front();
 
 	if (!queue->empty()) {
-		LOGD->post_message("bulk", LOG_DEBUG, queue->get_size() + " objects left to sync.");
 		handle = call_out("process", 0);
 	}
 
