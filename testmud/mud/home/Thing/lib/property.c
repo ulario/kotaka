@@ -118,8 +118,6 @@ void set_property(string name, mixed value)
 
 				creator = DRIVER->creator(lib);
 
-				ACCESS_CHECK(creator == "Game");
-
 				call_other(this_object(), func, value);
 			}
 			return;
@@ -311,8 +309,6 @@ mixed query_property(string name)
 			}
 
 			creator = DRIVER->creator(lib);
-
-			ACCESS_CHECK(creator == "Game");
 
 			return call_other(this_object(), func);
 		}
