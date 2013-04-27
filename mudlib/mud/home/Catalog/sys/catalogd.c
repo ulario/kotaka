@@ -19,6 +19,8 @@
  */
 #include <kotaka/log.h>
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
+#include <catalog/paths.h>
 
 object root;
 
@@ -34,7 +36,9 @@ void add_object(string name, object obj)
 	int sz;
 	int i;
 
-	if (obj<-"../obj/directory") {
+	ACCESS_CHECK(previous_program() == LIB_CATALOG);
+
+	if (obj <- "../obj/directory") {
 		error("Reserved object type");
 	}
 
@@ -74,6 +78,8 @@ void remove_object(string name)
 	object *dirs;
 	int sz;
 	int i;
+
+	ACCESS_CHECK(previous_program() == LIB_CATALOG);
 
 	path = explode(name, ":");
 
