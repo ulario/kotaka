@@ -162,8 +162,10 @@ private void draw_frame(object gc)
 	}
 }
 
-private void draw_banner(object gc)
+private void draw_banner(object gc, object env)
 {
+	string brief;
+
 	gc->set_clip(0, 0, 59, 3);
 	gc->set_offset(0, 1);
 
@@ -172,7 +174,10 @@ private void draw_banner(object gc)
 	gc->draw(STRINGD->chars('-', 60));
 	gc->set_color(0x07);
 	gc->move_pen(3, 0);
-	gc->draw("Ularian Forest");
+
+	brief = env ? env->query_property("brief") : nil;
+
+	gc->draw(brief ? brief : "an unnamed location");
 }
 
 private void draw_void(object gc)
@@ -298,7 +303,7 @@ string draw_look(object living, varargs int facing)
 
 	draw_frame(gc);
 	draw_background(gc);
-	draw_banner(gc);
+	draw_banner(gc, living ? living->query_environment() : nil);
 
 	draw_prose(gc, living);
 
