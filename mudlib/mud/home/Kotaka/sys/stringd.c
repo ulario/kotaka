@@ -21,6 +21,7 @@
 #include <kotaka/privilege.h>
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
+#include <catalog/paths.h>
 
 #include <type.h>
 #include <limits.h>
@@ -536,10 +537,14 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		return tmp + " ])";
 
 	case T_OBJECT:
-		if (function_object("sprint_object", previous_object())) {
-			return previous_object()->sprint_object(data);
-		} else {
-			return "<" + object_name(data) + ">";
+		{
+			string name;
+
+			if (data <- LIB_CATALOG && (name = data->query_object_name())) {
+				return "<" + name + ">";
+			} else {
+				return "<" + object_name(data) + ">";
+			}
 		}
 		break;
 	default:
@@ -893,113 +898,6 @@ string ip_to_string(int ip)
 	d = (ip) & 0xFF;
 
 	return a + "." + b + "." + c + "." + d;
-}
-
-/* FIXME:  do ints and floats in hex to preserve bits */
-string dump_sprint(mixed data, varargs mapping seen)
-{
-	int iter;
-	string tmp;
-	mixed *arr;
-	string path;
-
-	if (!seen)
-		seen = ([ ]);
-
-	switch (typeof(data)) {
-	case T_NIL:
-		return "nil";
-
-	case T_STRING:
-		return "\"" + quote_escape(data) + "\"";
-
-	case T_INT:
-		return (string)data;
-
-	case T_FLOAT:
-		/* decimal point is required */
-		{
-			string mantissa;
-			string exponent;
-			string str;
-
-			str = (string)data;
-
-			if (!sscanf(str, "%se%s", mantissa, exponent)) {
-				mantissa = str;
-				exponent = "";
-			} else {
-				exponent = "e" + exponent;
-			}
-
-			if (!sscanf(mantissa, "%*s.")) {
-				mantissa += ".0";
-			}
-
-			return mantissa + exponent;
-		}
-
-	case T_ARRAY:
-		if (seen[data] != nil) {
-			return "#" + seen[data];
-		}
-
-		seen[data] = map_sizeof(seen);
-
-		if (sizeof(data) == 0)
-			return "({ })";
-
-		tmp = "({ ";
-		for (iter = 0; iter < sizeof(data); iter++) {
-			tmp += dump_sprint(data[iter], seen);
-			if (iter < sizeof(data) - 1) {
-				tmp += ", ";
-			}
-		}
-		return tmp + " })";
-
-	case T_MAPPING:
-		if (seen[data] != nil) {
-			return "#" + seen[data];
-		}
-
-		seen[data] = map_sizeof(seen);
-
-		if (map_sizeof(data) == 0)
-			return "([ ])";
-
-		arr = map_indices(data);
-		tmp = "([ ";
-		for (iter = 0; iter < sizeof(arr); iter++) {
-			tmp += dump_sprint(arr[iter], seen) + " : " +
-				dump_sprint(data[arr[iter]], seen);
-			if (iter != sizeof(arr) - 1)
-				tmp += ", ";
-		}
-		return tmp + " ])";
-
-	case T_OBJECT:
-		if (sscanf(object_name(data), "%s#-1", path)) {
-			mixed save_value;
-
-			if (seen[data] != nil) {
-				return "#" + seen[data];
-			}
-
-			seen[data] = map_sizeof(seen);
-
-			save_value = data->save();
-
-			return "(<" + path + "|" + dump_sprint(save_value, seen) + ">)";
-		} else if (function_object("sprint_object", previous_object())) {
-			return previous_object()->sprint_object(data);
-		} else {
-			return "<" + object_name(data) + ">";
-		}
-		break;
-	default:
-		error("Unrecognized DGD type in mixed_sprint");
-	}
 }
 
 string string_truncate(string line, int bits)
