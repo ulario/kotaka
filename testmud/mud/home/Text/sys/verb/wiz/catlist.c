@@ -31,7 +31,6 @@ private void list_directory(string dir, int level)
 	string *names;
 	int i, sz;
 
-	send_out("fetching list for " + (dir ? dir : "(nil)") + "\n");
 	list = CATALOGD->list_directory(dir);
 
 	names = map_indices(list);
