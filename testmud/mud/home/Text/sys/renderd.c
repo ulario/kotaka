@@ -176,7 +176,11 @@ private void draw_banner(object gc, object env)
 	gc->move_pen(3, 0);
 
 	if (env) {
-		brief = env ? env->query_property("brief") : "an unnamed location";
+		brief = env->query_property("brief");
+
+		if (!brief) {
+			brief = "an unnamed location";
+		}
 	} else {
 		brief = "nowhere";
 	}
