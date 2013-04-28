@@ -25,28 +25,29 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
+	string name;
 	object world;
 	object body;
 
 	object *inv;
 
-	if (!query_user()->query_name()) {
+	if (!(name = query_user()->query_name())) {
 		send_out("You aren't logged in.\n");
 		return;
 	}
 
-	world = GAME_INITD->query_world();
-	inv = world->query_inventory();
+	body = CATALOGD->lookup_object("players:" + name);
 
-	if (sizeof(inv)) {
-		body = inv[random(sizeof(inv))];
-	} else {
+	if (!body) {
+		world = GAME_INITD->query_world();
+
 		body = GAME_INITD->create_object();
 
 		body->set_density(1.0);
 		body->set_mass(100.0 + SUBD->rnd() * 10.0);
 
-		body->set_property("id", "human");
+		body->set_property("id", name);
+		body->set_property("nouns", ({ name, "human" }) );
 		body->add_archetype(CATALOGD->lookup_object("human"));
 		body->move(world);
 	}
