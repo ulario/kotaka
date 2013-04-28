@@ -71,6 +71,11 @@ void configure_properties()
 
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("nouns", T_ARRAY, PROP_INHERIT);
+
+	PROPERTYD->add_property("brief", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("look", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("examine", T_STRING, PROP_INHERIT);
+
 	PROPERTYD->add_property("environment", T_OBJECT, PROP_MAGIC, ({ "query_environment", "move" }) );
 	PROPERTYD->add_property("inventory", T_ARRAY, PROP_MAGIC, ({ "query_inventory", nil }) );
 
@@ -78,6 +83,7 @@ void configure_properties()
 	PROPERTYD->add_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
 
 	PROPERTYD->add_property("archetypes", T_ARRAY, PROP_MAGIC, ({ "query_archetypes", "set_archetypes" }) );
+	PROPERTYD->add_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
 
 	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_INHERIT);
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
@@ -183,8 +189,7 @@ void build_world()
 
 	world = clone_object(OBJ_THING);
 	world->set_property("id", "world");
-
-	CATALOGD->add_object("world", world);
+	world->set_object_name("world");
 
 	master = clone_object(OBJ_THING);
 	master->set_property("id", "shack");
@@ -196,16 +201,14 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/shack");
 	master->set_property("nouns", ({ "shack" }) );
 	master->set_property("adjectives", ({ "wooden" }) );
-
-	CATALOGD->add_object("buildings:master:shack", master);
+	master->set_object_name("buildings:master:shack");
 
 	master = clone_object(OBJ_THING);
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	master->set_property("nouns", ({ "human", "man" }) );
-
-	CATALOGD->add_object("human", master);
+	master->set_object_name("human");
 
 	master = clone_object(OBJ_THING);
 	master->set_property("id", "tree");
@@ -216,8 +219,7 @@ void build_world()
 	master->set_property("event:timer",
 		USR_DIR + "/Game/sys/handler/timer/tree");
 	master->set_property("nouns", ({ "tree" }) );
-
-	CATALOGD->add_object("tree", master);
+	master->set_object_name("tree");
 
 	master = clone_object(OBJ_THING);
 	master->set_property("id", "door");
@@ -225,8 +227,7 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/door");
 	master->set_property("nouns", ({ "door" }) );
 	master->set_property("adjectives", ({ "wooden" }) );
-
-	CATALOGD->add_object("buildings:parts:door", master);
+	master->set_object_name("buildings:parts:door");
 
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
