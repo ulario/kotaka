@@ -113,49 +113,6 @@ int empty()
 	return !map_sizeof(key);
 }
 
-void dump(int level)
-{
-	string *names;
-	int *types;
-	object *values;
-	int sz, i;
-
-	ACCESS_CHECK(CATALOG());
-
-	names = map_indices(key);
-	types = map_values(key);
-	values = map_values(map);
-
-	sz = sizeof(names);
-
-	if (!sz) {
-		LOGD->post_message("catalog", LOG_DEBUG,
-			STRINGD->spaces(level * 2) + "(empty)");
-		return;
-	}
-
-	for (i = 0; i < sz; i++) {
-		switch(types[i]) {
-		case 1:
-			LOGD->post_message("catalog", LOG_DEBUG,
-				STRINGD->spaces(level * 4) + names[i] + ";");
-			break;
-		case 2:
-			if (values[i]->mass()) {
-				LOGD->post_message("catalog", LOG_DEBUG,
-					STRINGD->spaces(level * 4) + names[i] + " {");
-				values[i]->dump(level + 1);
-				LOGD->post_message("catalog", LOG_DEBUG,
-					STRINGD->spaces(level * 4) + "}");
-			} else {
-				LOGD->post_message("catalog", LOG_DEBUG,
-					STRINGD->spaces(level * 4) + names[i] + " { }");
-			}
-			break;
-		}
-	}
-}
-
 int mass()
 {
 	ACCESS_CHECK(previous_program() == CATALOGD);
