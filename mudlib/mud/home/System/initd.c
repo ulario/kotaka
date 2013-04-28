@@ -280,8 +280,6 @@ void message(string str)
 
 void boot_subsystem(string subsystem)
 {
-	ACCESS_CHECK(SYSTEM() || GAME());
-
 	if (find_object(USR_DIR + "/" + subsystem + "/initd")) {
 		return;
 	}
