@@ -117,14 +117,10 @@ private void draw_prose(object gc, object actor)
 
 	if (!actor) {
 		gc->move_pen(0, 0);
-		gc->draw("How strange, you don't even exist.");
-		gc->move_pen(0, 2);
-		gc->draw("Your neighbors are undefined.");
+		gc->draw("You don't exist.");
 	} else if (!env) {
 		gc->move_pen(0, 0);
-		gc->draw("You are in the void.");
-		gc->move_pen(0, 2);
-		gc->draw("You have no neighbors at all.");
+		gc->draw("You are in the formless void.");
 	} else {
 		string *lines;
 		string desc;
@@ -135,7 +131,7 @@ private void draw_prose(object gc, object actor)
 			desc = "This place is boring.";
 		}
 
-		lines = explode(STRINGD->wordwrap(desc, 60), "\n");
+		lines = explode(STRINGD->wordwrap(desc, 55), "\n");
 		sz = sizeof(lines);
 
 		for (i = 0; i < sz; i++) {
@@ -197,26 +193,15 @@ private void draw_void(object gc)
 	for (y = -8; y <= 8; y += 1) {
 		for (x = -8; x <= 8; x += 1) {
 			gc->move_pen(x, y);
-			gc->set_color(random(2) * 4);
-			gc->draw(":");
+
+			if (random(2)) {
+				gc->set_color(7 ^ (1 << random(3)));
+				gc->draw(":");
+			}
 		}
 	}
 
 	gc->set_color(0x0C);
-
-	for (y = -6; y <= 6; y += 4) {
-		for (x = -6; x <= 6; x += 4) {
-			gc->move_pen(x, y);
-			gc->draw("+");
-		}
-	}
-
-	for (y = -8; y <= 8; y += 4) {
-		for (x = -8; x <= 8; x += 4) {
-			gc->move_pen(x, y);
-			gc->draw("+");
-		}
-	}
 }
 
 private void draw_environment(object gc, object living, object env)
@@ -322,6 +307,8 @@ string draw_look(object living, varargs int facing)
 
 		envstack = ({ });
 
+		draw_void(gc);
+
 		environment = living->query_environment();
 
 		if (environment) {
@@ -339,8 +326,6 @@ string draw_look(object living, varargs int facing)
 				draw_environment(gc, living, envstack[i]);
 				draw_neighbors(gc, living, envstack[i]->query_inventory() - ({ envstack[i + 1] }));
 			}
-		} else {
-			draw_void(gc);
 		}
 
 		gc->move_pen(0, 0);
