@@ -27,6 +27,8 @@ static void create()
 {
 	KERNELD->set_global_access("Thing", 1);
 
+	INITD->boot_subsystem("Catalog");
+
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 }
