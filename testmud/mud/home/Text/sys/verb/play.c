@@ -49,6 +49,7 @@ void main(object actor, string args)
 		body->set_property("id", name);
 		body->set_property("nouns", ({ name, "human" }) );
 		body->add_archetype(CATALOGD->lookup_object("human"));
+		body->set_object_name("players:" + name);
 		body->move(world);
 	}
 
