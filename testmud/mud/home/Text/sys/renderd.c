@@ -126,15 +126,22 @@ private void draw_prose(object gc, object actor)
 		gc->move_pen(0, 2);
 		gc->draw("You have no neighbors at all.");
 	} else {
-		gc->move_pen(0, 0);
-		gc->draw("A boring room description.");
-		gc->move_pen(0, 2);
-		gc->draw("A boring inventory list.");
-		gc->move_pen(0, 4);
-		gc->draw("Your location is "
-			+ actor->query_x_position() + ", "
-			+ actor->query_y_position()
-		);
+		string *lines;
+		string desc;
+		int i;
+		int sz;
+
+		if (!(desc = env->query_property("look"))) {
+			desc = "This place is boring.";
+		}
+
+		lines = explode(STRINGD->wordwrap(desc, 60), "\n");
+		sz = sizeof(lines);
+
+		for (i = 0; i < sz; i++) {
+			gc->move_pen(0, i);
+			gc->draw(lines[i]);
+		}
 	}
 }
 
