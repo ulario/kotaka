@@ -198,7 +198,7 @@ mapping list_directory(string name)
 			error("Not a directory");
 		}
 
-		return dir->query_key();
+		return dir->query_entry_value(path[i])->query_key();
 	} else {
 		return root->query_key();
 	}
