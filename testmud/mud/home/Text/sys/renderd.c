@@ -175,9 +175,13 @@ private void draw_banner(object gc, object env)
 	gc->set_color(0x07);
 	gc->move_pen(3, 0);
 
-	brief = env ? env->query_property("brief") : nil;
+	if (env) {
+		brief = env ? env->query_property("brief") : "an unnamed location";
+	} else {
+		brief = "nowhere";
+	}
 
-	gc->draw(brief ? brief : "an unnamed location");
+	gc->draw(brief);
 }
 
 private void draw_void(object gc)
