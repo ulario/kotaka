@@ -18,18 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <kernel/user.h>
 #include <account/paths.h>
 #include <game/paths.h>
 #include <text/paths.h>
+#include <kotaka/log.h>
 
 inherit LIB_VERB;
 
 void main(object actor, string args)
 {
-	object turkey;
-	object user;
+	object user, *users;
 	string kicker_name;
-	string turkey_name;
+	int i, sz;
 
 	user = query_user();
 
@@ -54,6 +55,40 @@ void main(object actor, string args)
 	}
 
 	BAND->ban_site(args);
+	users = TEXT_USERD->query_users();
+	sz = sizeof(users);
 
 	/* kick turkeys */
+
+	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
+
+	for (i = 0; i < sz; i++) {
+		object conn;
+		object turkey;
+		string turkey_name;
+
+		turkey = users[i];
+		conn = turkey;
+
+		while (conn && conn <- LIB_USER) {
+			conn = conn->query_conn();
+		}
+
+		if (!conn) {
+			continue;
+		}
+
+		if (!TEXT_USERD->is_sitebanned(query_ip_number(conn))) {
+			continue;
+		}
+
+		turkey_name = TEXT_SUBD->titled_name(turkey->query_name(), "~/sys/subd"->query_user_class(turkey->query_name()));
+
+		user->message("You siteban " + turkey_name + " from the mud.\n");
+
+		TEXT_SUBD->send_to_all_except(kicker_name + " sitebans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
+
+		turkey->message(kicker_name + " sitebans you from the mud.\n");
+		turkey->quit();
+	}
 }

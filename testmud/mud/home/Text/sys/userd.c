@@ -98,7 +98,7 @@ string query_overload_banner(object LIB_CONN connection)
 	return "There are too many connections to this mud.\n";
 }
 
-private int is_sitebanned(string ip)
+int is_sitebanned(string ip)
 {
 	string o1, o2, o3, o4;
 
