@@ -22,6 +22,7 @@
 #include <status.h>
 
 inherit "call_guard";
+inherit "catalog";
 
 static int free_objects()
 {
@@ -110,12 +111,16 @@ nomask void _F_sys_destruct()
 	programd = find_object(PROGRAMD);
 
 	if (!programd) {
+		set_object_name(nil);
+
 		return;
 	}
 
 	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
 
 	if (!pinfo) {
+		set_object_name(nil);
+
 		return;
 	}
 
@@ -126,6 +131,8 @@ nomask void _F_sys_destruct()
 	for (index = sz - 1; index >= 0; index--) {
 		call_other(this_object(), dtors[index]);
 	}
+
+	set_object_name(nil);
 }
 
 void upgrading()

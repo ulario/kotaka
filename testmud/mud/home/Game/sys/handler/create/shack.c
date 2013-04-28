@@ -20,7 +20,6 @@
 #include <kotaka/assert.h>
 #include <kotaka/paths.h>
 #include <game/paths.h>
-#include <catalog/paths.h>
 #include <thing/paths.h>
 
 void on_create(object obj)

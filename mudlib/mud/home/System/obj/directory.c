@@ -21,6 +21,8 @@
 #include <kotaka/log.h>
 #include <kotaka/privilege.h>
 
+inherit SECOND_AUTO;
+
 mapping key;
 mapping map;
 
@@ -34,7 +36,7 @@ static void create(int clone)
 
 void add_subdirectory(string name)
 {
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	if (key[name]) {
 		error("Duplicate entry");
@@ -48,7 +50,7 @@ void remove_subdirectory(string name)
 {
 	object subdir;
 
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	if (key[name] != 2) {
 		error("Not a directory");
@@ -64,7 +66,7 @@ void remove_subdirectory(string name)
 
 void add_entry(string name, object obj)
 {
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	if (key[name]) {
 		error("Duplicate entry");
@@ -76,7 +78,7 @@ void add_entry(string name, object obj)
 
 void remove_entry(string name)
 {
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	if (key[name] != 1) {
 		error("Not an object");
@@ -88,7 +90,7 @@ void remove_entry(string name)
 
 int query_entry_type(string name)
 {
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	if (!key[name]) {
 		return 0;
@@ -99,14 +101,14 @@ int query_entry_type(string name)
 
 object query_entry_value(string name)
 {
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	return map[name];
 }
 
 int empty()
 {
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	return !map_sizeof(key);
 }
@@ -156,14 +158,14 @@ void dump(int level)
 
 int mass()
 {
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	return map_sizeof(key);
 }
 
 mapping query_key()
 {
-	ACCESS_CHECK(CATALOG());
+	ACCESS_CHECK(previous_program() == CATALOGD);
 
 	return key[..];
 }

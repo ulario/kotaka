@@ -20,7 +20,8 @@
 #include <kotaka/log.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
-#include <catalog/paths.h>
+
+inherit SECOND_AUTO;
 
 object root;
 
@@ -36,7 +37,7 @@ void add_object(string name, object obj)
 	int sz;
 	int i;
 
-	ACCESS_CHECK(previous_program() == LIB_CATALOG);
+	ACCESS_CHECK(SYSTEM());
 
 	if (obj <- "../obj/directory") {
 		error("Reserved object type");
@@ -79,7 +80,7 @@ void remove_object(string name)
 	int sz;
 	int i;
 
-	ACCESS_CHECK(previous_program() == LIB_CATALOG);
+	ACCESS_CHECK(SYSTEM());
 
 	path = explode(name, ":");
 

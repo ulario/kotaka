@@ -20,7 +20,6 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 #include <game/paths.h>
-#include <catalog/paths.h>
 
 inherit LIB_VERB;
 

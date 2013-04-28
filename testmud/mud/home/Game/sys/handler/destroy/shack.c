@@ -20,7 +20,6 @@
 #include <kotaka/assert.h>
 #include <kotaka/paths.h>
 #include <game/paths.h>
-#include <catalog/paths.h>
 
 void on_destroy(object obj)
 {

@@ -30,6 +30,7 @@ inherit "callout_guard";
 inherit "clone";
 inherit "object";
 inherit "touch";
+inherit "catalog";
 
 /**********/
 /* status */

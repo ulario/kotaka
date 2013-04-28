@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <text/paths.h>
-#include <catalog/paths.h>
+#include <kotaka/paths.h>
 
 inherit LIB_VERB;
 

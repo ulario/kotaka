@@ -6,6 +6,7 @@
 
 /* daemons */
 
+#define CATALOGD	(USR_DIR + "/System/sys/catalogd")
 #define CALLOUTD	(USR_DIR + "/System/sys/calloutd")
 #define CLONED		(USR_DIR + "/System/sys/cloned")
 #define ERRORD		(USR_DIR + "/System/sys/errord")

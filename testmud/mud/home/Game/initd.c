@@ -32,8 +32,6 @@
 #include <game/paths.h>
 #include <thing/paths.h>
 
-#include <catalog/paths.h>
-
 #include <status.h>
 #include <type.h>
 
@@ -121,7 +119,6 @@ static void create()
 	INITD->boot_subsystem("Text");
 	INITD->boot_subsystem("Account");
 	INITD->boot_subsystem("Thing");
-	INITD->boot_subsystem("Catalog");
 
 	load_help();
 	build_world();

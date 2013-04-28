@@ -21,7 +21,6 @@
 #include <kotaka/privilege.h>
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
-#include <catalog/paths.h>
 
 #include <type.h>
 #include <limits.h>
@@ -540,7 +539,7 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		{
 			string name;
 
-			if (data <- LIB_CATALOG && (name = data->query_object_name())) {
+			if (name = data->query_object_name()) {
 				return "<" + name + ">";
 			} else {
 				return "<" + object_name(data) + ">";

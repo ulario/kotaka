@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
-#include <catalog/paths.h>
 
 inherit arch "archetype";
 inherit inv "inventory";
@@ -27,7 +26,6 @@ inherit position "position";
 inherit bulk "bulk";
 inherit timer "timer";
 inherit exit "exit";
-inherit LIB_CATALOG;
 
 int destructing;
 
