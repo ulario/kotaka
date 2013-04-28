@@ -158,7 +158,9 @@ object lookup_object(string name)
 		dir = dir->query_entry_value(path[i]);
 	}
 
-	if (dir->query_entry_type(path[i]) != 1) {
+	LOGD->post_message("catalog", LOG_DEBUG, "Checking final component " + path[i]);
+
+	if (dir->query_entry_type(path[i]) == 2) {
 		error("Not an object");
 	}
 
