@@ -35,9 +35,10 @@ void on_create(object obj)
 
 	door1 = clone_object(OBJ_THING);
 	door1->add_archetype(doormaster);
-	door1->move(obj->query_environment());
+	door1->move(obj);
 	door1->set_x_position(2.0);
 	door1->set_y_position(3.0);
+	door1->move(obj->query_environment());
 
 	door2 = clone_object(OBJ_THING);
 	door2->add_archetype(doormaster);
