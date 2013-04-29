@@ -90,8 +90,13 @@ void main(object actor, string args)
 		shacks[0]->query_property("event:destroy")->on_destroy(shacks[0]);
 		GAME_INITD->destroy_object(shacks[0]);
 		break;
-	case 2:
-		send_out("There is more than one shack in range.\n");
+	default:
+		send_out("There is more than one shack in range.  Randomly razing one.\n");
+
+		shacks[0] = shacks[random(sizeof(shacks))];
+
+		shacks[0]->query_property("event:destroy")->on_destroy(shacks[0]);
+		GAME_INITD->destroy_object(shacks[0]);
 		break;
 	}
 }

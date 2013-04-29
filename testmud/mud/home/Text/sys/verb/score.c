@@ -28,7 +28,10 @@ void main(object actor, string args)
 {
 	object user;
 	object body;
+	object painter;
 	object gc;
+
+	int i, j;
 
 	user = query_user();
 	body = user->query_body();
@@ -37,4 +40,58 @@ void main(object actor, string args)
 		send_out("You don't have a body to score.\n");
 		return;
 	}
+
+	painter = new_object(LWO_PAINTER);
+	painter->set_size(40, 12);
+
+	gc = painter->create_gc();
+	gc->set_color(0x03);
+	gc->set_clip(0, 0, 39, 11);
+
+	for (i = 0; i < 12; i++) {
+		gc->move_pen(0, i);
+		gc->draw(STRINGD->chars(':', 40));
+	}
+
+	gc->set_color(0x0F);
+	gc->move_pen(2, 1);
+	gc->draw(STRINGD->spaces(36));
+
+	gc->move_pen(3, 1);
+	gc->draw(implode(body->query_property("nouns"), ", "));
+
+	for (i = 3; i < 6; i++) {
+		gc->move_pen(2, i);
+		gc->draw(STRINGD->spaces(36));
+	}
+
+	gc->move_pen(3, 3);
+	gc->draw("HP:  " + random(10) + "/" + random(10));
+	gc->move_pen(3, 4);
+	gc->draw("MP:  " + random(10) + "/" + random(10));
+	gc->move_pen(3, 5);
+	gc->draw("END: " + random(10) + "/" + random(10));
+
+	for (j = 5; j <= 27; j += 11) {
+		gc->move_pen(j, 7);
+		gc->draw(STRINGD->spaces(9));
+		gc->move_pen(j, 7);
+		switch (j) {
+		case 5:
+			gc->draw("Physical");
+			break;
+		case 16:
+			gc->draw("Mental");
+			break;
+		case 27:
+			gc->draw("Social");
+			break;
+		}
+		for (i = 8; i < 11; i++) {
+			gc->move_pen(j, i);
+			gc->draw(STRINGD->spaces(9));
+		}
+	}
+
+	send_out(implode(painter->render_color(), "\n") + "\n");
 }

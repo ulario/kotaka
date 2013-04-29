@@ -90,8 +90,11 @@ void main(object actor, string args)
 		send_out("You enter the shack.\n");
 		actor->move(shacks[0]);
 		break;
-	case 2:
-		send_out("There is more than one shack in range.\n");
+	default:
+		send_out("There is more than one shack in range.  Randomly entering one.\n");
+
+		shacks[0] = shacks[random(sizeof(shacks))];
+
 		break;
 	}
 }
