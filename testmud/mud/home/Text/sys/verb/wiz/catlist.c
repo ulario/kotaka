@@ -40,13 +40,15 @@ private void list_directory(string dir, int level)
 
 	for (i = 0; i < sz; i++) {
 		if (keys[i] == 2) {
-			send_out(STRINGD->spaces(level * 4) + names[i] + ":\n");
+			send_out(STRINGD->spaces(level * 4) + names[i] + " {\n");
 
 			if (dir) {
 				list_directory(dir + ":" + names[i], level + 1);
 			} else {
 				list_directory(names[i], level + 1);
 			}
+
+			send_out(STRINGD->spaces(level * 4) + "}\n");
 		} else {
 			send_out(STRINGD->spaces(level * 4) + names[i] + "\n");
 		}
