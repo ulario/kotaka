@@ -98,7 +98,6 @@ static void create()
 
 	binary_managers = ([ ]);
 	telnet_managers = ([ ]);
-	fixed_managers = ([ ]);
 
 	reblocked = ([ ]);
 }
