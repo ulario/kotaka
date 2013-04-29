@@ -69,8 +69,14 @@ void configure_properties()
 
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
 
-	PROPERTYD->add_property("nouns", T_ARRAY, PROP_COMBO, ({ "nouns", "removed_nouns" }) );
-	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_COMBO, ({ "adjectives", "removed_adjectives" }) );
+	PROPERTYD->add_property("nouns", T_ARRAY, PROP_COMBO, ({ "local_nouns", "removed_nouns" }) );
+	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_COMBO, ({ "local_adjectives", "removed_adjectives" }) );
+
+	PROPERTYD->add_property("local_nouns", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("local_adjectives", T_ARRAY, PROP_SIMPLE);
+
+	PROPERTYD->add_property("removed_nouns", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("removed_adjectives", T_ARRAY, PROP_SIMPLE);
 
 	PROPERTYD->add_property("brief", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("look", T_STRING, PROP_INHERIT);
@@ -148,18 +154,22 @@ static void place_object(string base, int remainder)
 
 	switch(base) {
 	case "deer":
+		obj->add_archetypes(CATALOGD->lookup_object("animal:deer"));
 		obj->set_mass(50.0 + SUBD->rnd() * 7.5);
 		obj->set_density(1.1);
 		break;
 	case "wolf":
+		obj->add_archetypes(CATALOGD->lookup_object("animal:wolf"));
 		obj->set_mass(35.0 + SUBD->rnd() * 5.0);
 		obj->set_density(0.9);
 		break;
 	case "soil":
+		obj->add_archetypes(CATALOGD->lookup_object("scenery:soil"));
 		obj->set_mass(10.0 + SUBD->rnd() * 2.0);
 		obj->set_density(1.5);
 		break;
 	case "rock":
+		obj->add_archetypes(CATALOGD->lookup_object("scenery:rock"));
 		obj->set_mass(1.0 + SUBD->rnd() * 0.2);
 		obj->set_density(6.3);
 		break;
@@ -197,16 +207,16 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/destroy/shack");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/shack");
-	master->set_property("nouns", ({ "shack" }) );
-	master->set_property("adjectives", ({ "wooden" }) );
+	master->set_local_property("nouns", ({ "shack" }) );
+	master->set_local_property("adjectives", ({ "wooden" }) );
 	master->set_object_name("buildings:master:shack");
 
 	master = clone_object(OBJ_THING);
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
-	master->set_property("nouns", ({ "human", "man" }) );
-	master->set_object_name("human");
+	master->set_local_property("nouns", ({ "human", "man" }) );
+	master->set_object_name("animal:human");
 
 	master = clone_object(OBJ_THING);
 	master->set_property("id", "tree");
@@ -216,16 +226,36 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/tree");
 	master->set_property("event:timer",
 		USR_DIR + "/Game/sys/handler/timer/tree");
-	master->set_property("nouns", ({ "tree" }) );
-	master->set_object_name("tree");
+	master->set_local_property("nouns", ({ "tree" }) );
+	master->set_object_name("scenery:tree");
 
 	master = clone_object(OBJ_THING);
 	master->set_property("id", "door");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/door");
-	master->set_property("nouns", ({ "door" }) );
-	master->set_property("adjectives", ({ "wooden" }) );
+	master->set_local_property("nouns", ({ "door" }) );
+	master->set_local_property("adjectives", ({ "wooden" }) );
 	master->set_object_name("buildings:parts:door");
+
+	master = clone_object(OBJ_THING);
+	master->set_property("id", "wolf");
+	master->set_local_property("nouns", ({ "wolf" }) );
+	master->set_object_name("animal:wolf");
+
+	master = clone_object(OBJ_THING);
+	master->set_property("id", "deer");
+	master->set_local_property("nouns", ({ "deer" }) );
+	master->set_object_name("animal:deer");
+
+	master = clone_object(OBJ_THING);
+	master->set_property("id", "soil");
+	master->set_local_property("nouns", ({ "soil" }) );
+	master->set_object_name("scenery:soil");
+
+	master = clone_object(OBJ_THING);
+	master->set_property("id", "rock");
+	master->set_local_property("nouns", ({ "rock" }) );
+	master->set_object_name("scenery:rock");
 
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
