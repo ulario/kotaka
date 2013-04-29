@@ -33,6 +33,31 @@ object last;
 
 void dump();
 
+private void trim_first()
+{
+	if (first->get_mass() == 0 && first != last) {
+		object old;
+
+		old = first;
+		first = first->get_next();
+		old->set_next(nil);
+
+		discard_node(old);
+	}
+}
+
+private void trim_last()
+{
+	if (last->get_mass() == 0 && first != last) {
+		object old;
+
+		old = last;
+		last = last->get_prev();
+
+		discard_node(old);
+	}
+}
+
 atomic static void create()
 {
 	::create();
@@ -92,6 +117,7 @@ atomic void push_front(mixed value)
 		first = new;
 	}
 
+	trim_last();
 	first->push_front(value);
 }
 
@@ -110,6 +136,7 @@ atomic void push_back(mixed value)
 	}
 
 	last->push_back(value);
+	trim_first();
 }
 
 atomic void pop_front()
@@ -117,16 +144,7 @@ atomic void pop_front()
 	check_caller(WRITE_ACCESS);
 
 	first->pop_front();
-
-	if (first->get_mass() == 0 && first != last) {
-		object old;
-
-		old = first;
-		first = first->get_next();
-		old->set_next(nil);
-
-		discard_node(old);
-	}
+	trim_first();
 }
 
 atomic void pop_back()
@@ -134,15 +152,7 @@ atomic void pop_back()
 	check_caller(WRITE_ACCESS);
 
 	last->pop_back();
-
-	if (last->get_mass() == 0 && first != last) {
-		object old;
-
-		old = last;
-		last = last->get_prev();
-
-		discard_node(old);
-	}
+	trim_last();
 }
 
 int empty()
