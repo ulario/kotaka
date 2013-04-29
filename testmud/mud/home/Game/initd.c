@@ -91,6 +91,10 @@ void configure_properties()
 	PROPERTYD->add_property("archetypes", T_ARRAY, PROP_MAGIC, ({ "query_archetypes", "set_archetypes" }) );
 	PROPERTYD->add_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
 
+	PROPERTYD->add_property("position:x", T_FLOAT, PROP_MAGIC, ({ "query_x_position", "set_x_position" }) );
+	PROPERTYD->add_property("position:y", T_FLOAT, PROP_MAGIC, ({ "query_y_position", "set_y_position" }) );
+	PROPERTYD->add_property("position:z", T_FLOAT, PROP_MAGIC, ({ "query_z_position", "set_z_position" }) );
+
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:destroy", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
@@ -121,7 +125,6 @@ static void create()
 
 	"sys/testd"->test();
 
-	INITD->boot_subsystem("Test");
 	INITD->boot_subsystem("Help");
 	INITD->boot_subsystem("Text");
 	INITD->boot_subsystem("Account");
