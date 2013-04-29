@@ -85,6 +85,11 @@ mixed *query_property(string name)
 	return pinfo[name][..];
 }
 
+string *list_properties()
+{
+	return map_indices(pinfo);
+}
+
 atomic void load_property_type_file(string text)
 {
 	int lineno;
