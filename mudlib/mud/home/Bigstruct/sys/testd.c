@@ -102,7 +102,13 @@ private void test_bigstruct_deque()
 	for (x = 0; x < 3000; x++) {
 		deque->push_back(x);
 		deque->pop_front();
-		ASSERT(!deque->empty());
+		ASSERT(deque->empty());
+	}
+
+	for (x = 0; x < 3000; x++) {
+		deque->push_front(x);
+		deque->pop_back();
+		ASSERT(deque->empty());
 	}
 
 	for (x = 0; x < 3000; x++) {
