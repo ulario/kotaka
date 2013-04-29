@@ -47,14 +47,12 @@ int reserve;
 
 mapping telnet_managers;	/* managers assigned to logical telnet ports */
 mapping binary_managers;	/* managers assigned to logical binary ports */
-mapping fixed_managers;		/* managers assigned to physical ports */
 
 int enabled;		/* active or not */
 int binary_port_count;	/* number of ports currently registered */
 int telnet_port_count;	/* number of ports currently registered */
 int blocked;		/* connection blocking is active */
 mapping reblocked;	/* objects that were already manually blocked */
-int stacking;		/* if we are currently building the connection stack */
 
 /****************/
 /* Declarations */
@@ -350,6 +348,14 @@ string query_banner(object LIB_CONN connection)
 		return "Internal error: no connection manager";
 	}
 
+	if (free_users() < reserve) {
+		return userd->query_overload_banner();
+	}
+
+	if (blocked) {
+		return userd->query_blocked_banner();
+	}
+
 	return userd->query_banner(connection);
 }
 
@@ -361,7 +367,7 @@ int query_timeout(object LIB_CONN connection)
 
 	userd = get_manager(connection);
 
-	if (!userd) {
+	if (!userd || blocked || free_users() < reserve) {
 		return -1;
 	}
 
