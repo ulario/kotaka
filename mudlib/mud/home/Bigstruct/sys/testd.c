@@ -101,6 +101,13 @@ private void test_bigstruct_deque()
 
 	for (x = 0; x < 3000; x++) {
 		deque->push_back(x);
+		deque->pop_front();
+		ASSERT(!deque->empty());
+	}
+
+	for (x = 0; x < 3000; x++) {
+		deque->push_back(x);
+		ASSERT(!deque->empty());
 	}
 
 	ASSERT(deque->get_size() == 3000);
@@ -115,6 +122,7 @@ private void test_bigstruct_deque()
 
 	for (x = 0; x < 3000; x++) {
 		deque->push_front(x);
+		ASSERT(!deque->empty());
 	}
 
 	ASSERT(deque->get_size() == 3000);
@@ -129,6 +137,7 @@ private void test_bigstruct_deque()
 
 	for (x = 0; x < 3000; x++) {
 		deque->push_front(x);
+		ASSERT(!deque->empty());
 	}
 
 	ASSERT(deque->get_size() == 3000);
@@ -143,6 +152,7 @@ private void test_bigstruct_deque()
 
 	for (x = 0; x < 3000; x++) {
 		deque->push_back(x);
+		ASSERT(!deque->empty());
 	}
 
 	ASSERT(deque->get_size() == 3000);
