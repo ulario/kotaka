@@ -179,7 +179,7 @@ private object get_manager(object conn)
 
 int free_users()
 {
-	return status()[ST_UTABSIZE] - sizeof(userd::query_connections());
+	return status(ST_UTABSIZE) - sizeof(userd::query_connections());
 }
 
 void enable()
@@ -297,13 +297,6 @@ void set_telnet_manager(int port, object LIB_USERD manager)
 	ACCESS_CHECK(INTERFACE());
 
 	telnet_managers[port] = manager;
-}
-
-void set_fixed_manager(int port, object LIB_USERD manager)
-{
-	ACCESS_CHECK(INTERFACE());
-
-	fixed_managers[port] = manager;
 }
 
 void set_reserve(int new_reserve)
