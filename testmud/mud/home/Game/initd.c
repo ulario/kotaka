@@ -68,7 +68,9 @@ void configure_properties()
 	PROPERTYD->clear_properties();
 
 	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
-	PROPERTYD->add_property("nouns", T_ARRAY, PROP_INHERIT);
+
+	PROPERTYD->add_property("nouns", T_ARRAY, PROP_COMBO, ({ "nouns", "removed_nouns" }) );
+	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_COMBO, ({ "adjectives", "removed_adjectives" }) );
 
 	PROPERTYD->add_property("brief", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("look", T_STRING, PROP_INHERIT);
@@ -83,7 +85,6 @@ void configure_properties()
 	PROPERTYD->add_property("archetypes", T_ARRAY, PROP_MAGIC, ({ "query_archetypes", "set_archetypes" }) );
 	PROPERTYD->add_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
 
-	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_INHERIT);
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:destroy", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
