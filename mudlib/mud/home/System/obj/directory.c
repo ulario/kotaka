@@ -108,7 +108,7 @@ object query_entry_value(string name)
 
 int empty()
 {
-	ACCESS_CHECK(previous_program() == CATALOGD);
+	ACCESS_CHECK(SYSTEM());
 
 	return !map_sizeof(key);
 }
