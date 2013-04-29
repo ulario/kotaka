@@ -60,6 +60,8 @@ private void initialize()
 	load_object(ERRORD);
 	ERRORD->enable();
 
+	load_object(STRINGD);
+
 	load_object(LOGD);
 	configure_logging();
 
