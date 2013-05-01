@@ -20,8 +20,9 @@
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
 #include <status.h>
+#include <thing/paths.h>
 
-inherit "property";
+inherit "~Thing/lib/thing";
 
 private float interval;
 private int handle;

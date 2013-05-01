@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012-2013  Raymond Jennings
+ * Copyright (C) 2013  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,54 +17,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths.h>
+#include <thing/paths.h>
 
-inherit arch "archetype";
-inherit inv "inventory";
-inherit prop "property";
-inherit bulk "bulk";
-inherit exit "exit";
-
-int destructing;
-
-/*****************/
-/* General stuff */
-/*****************/
+inherit thing "~Thing/lib/thing";
+inherit position "position";
+inherit timer "timer";
 
 static void create()
 {
-	arch::create();
-	inv::create();
-	prop::create();
-	bulk::create();
-}
-
-int forbid_insert(object obj)
-{
-	return destructing;
+	thing::create();
 }
 
 static void move_notify(object old_env)
 {
-	bulk::move_notify(old_env);
-}
-
-static nomask void thing_destruct()
-{
-	int sz;
-	int index;
-	object env;
-	object *children;
-
-	destructing = 1;
-
-	children = query_inventory();
-	env = query_environment();
-	sz = sizeof(children);
-
-	for (index = 0; index < sz; index++) {
-		children[index]->move(env);
-	}
-
-	env->bulk_invalidate();
+	thing::move_notify(old_env);
+	position::move_notify(old_env);
 }
