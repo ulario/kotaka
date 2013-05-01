@@ -104,15 +104,10 @@ void configure_properties()
 
 static void create()
 {
-	object proxy;
-	string world;
-	string dump;
-	int index;
-	object clone;
-	object shape;
-	string *bad_bins;
-	string *bins;
-	string test;
+	INITD->boot_subsystem("Help");
+	INITD->boot_subsystem("Text");
+	INITD->boot_subsystem("Account");
+	INITD->boot_subsystem("Thing");
 
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
@@ -124,11 +119,6 @@ static void create()
 	KERNELD->set_global_access("Game", 1);
 
 	"sys/testd"->test();
-
-	INITD->boot_subsystem("Help");
-	INITD->boot_subsystem("Text");
-	INITD->boot_subsystem("Account");
-	INITD->boot_subsystem("Thing");
 
 	load_help();
 	build_world();
@@ -269,7 +259,7 @@ void build_world()
 
 object create_object()
 {
-	return clone_object(OBJ_THING);
+	return clone_object("~/obj/thing");
 }
 
 void destroy_object(object obj)
