@@ -83,7 +83,6 @@ private void initialize()
 	configure_klib();
 
 	boot_subsystem("Bigstruct");
-	"~Bigstruct/sys/testd"->test();
 	LOGD->post_message("boot", LOG_INFO, "Switching program database to bigstruct");
 	PROGRAMD->convert_database();
 
