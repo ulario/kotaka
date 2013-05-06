@@ -1,6 +1,6 @@
 #include <config.h>
 
-#define LIB_ACTION		(USR_DIR + "/Game/lib/action")
+#define LIB_HANDLER		(USR_DIR + "/Game/lib/handler")
 
 #define SNOOPD			(USR_DIR + "/Game/sys/snoopd")
 #define GAME_INITD		(USR_DIR + "/Game/initd")
