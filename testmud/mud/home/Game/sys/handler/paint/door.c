@@ -20,6 +20,8 @@
 #include <kotaka/assert.h>
 #include <game/paths.h>
 
+inherit LIB_HANDLER;
+
 void on_paint_text(object gc, object obj, object viewer)
 {
 	float dx, dy, dz;

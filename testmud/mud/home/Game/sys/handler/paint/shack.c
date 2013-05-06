@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/assert.h>
-
 #include <game/paths.h>
+
+inherit LIB_HANDLER;
 
 void on_paint_text(object gc, object obj, object viewer)
 {

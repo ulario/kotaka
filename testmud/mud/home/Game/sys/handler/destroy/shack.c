@@ -21,6 +21,8 @@
 #include <kotaka/paths.h>
 #include <game/paths.h>
 
+inherit LIB_HANDLER;
+
 void on_destroy(object obj)
 {
 	mapping data;
