@@ -124,6 +124,16 @@ static void create()
 	build_world();
 }
 
+object create_object()
+{
+	return clone_object("~/obj/thing");
+}
+
+void destroy_object(object obj)
+{
+	destruct_object(obj);
+}
+
 void reboot()
 {
 }
@@ -142,7 +152,7 @@ static void place_object(string base, int remainder)
 	rnd1 = SUBD->rnd() * SUBD->pi() * 2.0;
 	rnd2 = SUBD->rnd() * 30.0;
 
-	obj = clone_object(OBJ_THING);
+	obj = create_object();
 	obj->set_property("id", base);
 
 	switch(base) {
@@ -188,11 +198,11 @@ void build_world()
 {
 	object master;
 
-	world = clone_object(OBJ_THING);
+	world = create_object();
 	world->set_property("id", "world");
 	world->set_object_name("world");
 
-	master = clone_object(OBJ_THING);
+	master = create_object();
 	master->set_property("id", "shack");
 	master->set_property("event:create",
 		USR_DIR + "/Game/sys/handler/create/shack");
@@ -204,14 +214,14 @@ void build_world()
 	master->set_local_property("adjectives", ({ "wooden" }) );
 	master->set_object_name("buildings:master:shack");
 
-	master = clone_object(OBJ_THING);
+	master = create_object();
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	master->set_local_property("nouns", ({ "human", "man" }) );
 	master->set_object_name("animal:human");
 
-	master = clone_object(OBJ_THING);
+	master = create_object();
 	master->set_property("id", "tree");
 	master->set_property("event:create",
 		USR_DIR + "/Game/sys/handler/create/tree");
@@ -222,7 +232,7 @@ void build_world()
 	master->set_local_property("nouns", ({ "tree" }) );
 	master->set_object_name("scenery:tree");
 
-	master = clone_object(OBJ_THING);
+	master = create_object();
 	master->set_property("id", "door");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/door");
@@ -230,22 +240,22 @@ void build_world()
 	master->set_local_property("adjectives", ({ "wooden" }) );
 	master->set_object_name("buildings:parts:door");
 
-	master = clone_object(OBJ_THING);
+	master = create_object();
 	master->set_property("id", "wolf");
 	master->set_local_property("nouns", ({ "wolf" }) );
 	master->set_object_name("animal:wolf");
 
-	master = clone_object(OBJ_THING);
+	master = create_object();
 	master->set_property("id", "deer");
 	master->set_local_property("nouns", ({ "deer" }) );
 	master->set_object_name("animal:deer");
 
-	master = clone_object(OBJ_THING);
+	master = create_object();
 	master->set_property("id", "soil");
 	master->set_local_property("nouns", ({ "soil" }) );
 	master->set_object_name("scenery:soil");
 
-	master = clone_object(OBJ_THING);
+	master = create_object();
 	master->set_property("id", "rock");
 	master->set_local_property("nouns", ({ "rock" }) );
 	master->set_object_name("scenery:rock");
@@ -255,16 +265,6 @@ void build_world()
 	world->set_density(6.5);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/grass");
-}
-
-object create_object()
-{
-	return clone_object("~/obj/thing");
-}
-
-void destroy_object(object obj)
-{
-	destruct_object(obj);
 }
 
 /********/
