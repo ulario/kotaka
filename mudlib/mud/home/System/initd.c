@@ -82,6 +82,8 @@ private void initialize()
 	load_object(KERNELD);
 	configure_klib();
 
+	KERNELD->set_global_access("System", 1);
+
 	boot_subsystem("Bigstruct");
 	LOGD->post_message("boot", LOG_INFO, "Switching program database to bigstruct");
 	PROGRAMD->convert_database();
@@ -104,8 +106,6 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_INFO, "Starting watchdog");
 	WATCHDOGD->enable();
-
-	KERNELD->set_global_access("System", 1);
 
 	/* Booted up */
 
