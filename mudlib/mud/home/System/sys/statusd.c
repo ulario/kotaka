@@ -190,7 +190,7 @@ int receive_message(string str)
 		conn->message("\033c");
 		return MODE_DISCONNECT;
 	case "interval":
-		if (sizeof(params) < 1) {
+		if (sizeof(params) < 2) {
 			conn->message("Usage: interval <interval>\n");
 			break;
 		} else {
