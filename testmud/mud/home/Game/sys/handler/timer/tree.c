@@ -23,6 +23,8 @@
 #include <game/paths.h>
 #include <thing/paths.h>
 
+inherit LIB_HANDLER;
+
 int crowded(object world, object self, float tx, float ty)
 {
 	/* no trees allowed within a radius of 4 meters */
@@ -115,7 +117,7 @@ void on_timer(object obj)
 			return;
 		}
 
-		sprout = clone_object(OBJ_THING);
+		sprout = create_object();
 		sprout->add_archetype(CATALOGD->lookup_object("scenery:tree"));
 		sprout->set_property("id", "tree");
 		sprout->move(obj->query_environment());

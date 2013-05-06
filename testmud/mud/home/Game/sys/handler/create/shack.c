@@ -22,6 +22,8 @@
 #include <game/paths.h>
 #include <thing/paths.h>
 
+inherit LIB_HANDLER;
+
 void on_create(object obj)
 {
 	object door1;
@@ -33,14 +35,14 @@ void on_create(object obj)
 	doormaster = CATALOGD->lookup_object("buildings:parts:door");
 	ASSERT(doormaster);
 
-	door1 = clone_object(OBJ_THING);
+	door1 = create_object();
 	door1->add_archetype(doormaster);
 	door1->move(obj);
 	door1->set_x_position(2.0);
 	door1->set_y_position(3.0);
 	door1->move(obj->query_environment());
 
-	door2 = clone_object(OBJ_THING);
+	door2 = create_object();
 	door2->add_archetype(doormaster);
 	door2->move(obj);
 	door2->set_x_position(2.0);
