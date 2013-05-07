@@ -108,7 +108,7 @@ nomask object query_top()
 
 nomask void _F_set_user(object new_user)
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 
 	ASSERT(!!user != !!new_user);
 	user = new_user;
@@ -116,7 +116,7 @@ nomask void _F_set_user(object new_user)
 
 nomask void _F_set_current(object state)
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 
 	ASSERT(!state || user == state->query_user());
 	ASSERT(state != (object)this_object());
@@ -125,7 +125,7 @@ nomask void _F_set_current(object state)
 
 nomask void _F_set_parent(object state)
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 
 	ASSERT(!state || user == state->query_user());
 	ASSERT(state != (object)this_object());
@@ -134,7 +134,7 @@ nomask void _F_set_parent(object state)
 
 nomask void _F_add_child(object state)
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 
 	ASSERT(user == state->query_user());
 	ASSERT(state != (object)this_object());
@@ -144,7 +144,7 @@ nomask void _F_add_child(object state)
 
 nomask void _F_del_child(object state)
 {
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 
 	ASSERT(state);
 	ASSERT(user == state->query_user());
