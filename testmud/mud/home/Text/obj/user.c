@@ -26,7 +26,7 @@
 
 #include <text/paths.h>
 
-inherit LIB_KOTAKA_USER;
+inherit "~/lib/user";
 
 object mobile;
 object body;
