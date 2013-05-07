@@ -88,21 +88,21 @@ nomask object query_root()
 
 nomask void force_quit()
 {
-	ACCESS_CHECK(INTERFACE() || KOTAKA());
+	ACCESS_CHECK(INTERFACE());
 
 	disconnect();
 }
 
 void send_out(string str)
 {
-	ACCESS_CHECK(INTERFACE() || LOCAL() || KOTAKA());
+	ACCESS_CHECK(INTERFACE() || LOCAL());
 
 	::message(str);
 }
 
 void send_in(string str)
 {
-	ACCESS_CHECK(INTERFACE() || LOCAL() || KOTAKA());
+	ACCESS_CHECK(INTERFACE() || LOCAL());
 
 	error("Stack underflow");
 }
@@ -221,7 +221,7 @@ private void do_escape(string str)
 
 int receive_message(string str)
 {
-	ACCESS_CHECK(INTERFACE() || LOCAL() || KOTAKA());
+	ACCESS_CHECK(INTERFACE() || LOCAL());
 
 	if (str && strlen(str) > 0 && str[0] == '!') {
 		do_escape(str[1 ..]);
@@ -235,7 +235,7 @@ int receive_message(string str)
 
 void set_mode(int new_mode)
 {
-	ACCESS_CHECK(INTERFACE() || LOCAL() || KOTAKA());
+	ACCESS_CHECK(INTERFACE() || LOCAL());
 
 	::set_mode(new_mode);
 }
@@ -261,7 +261,7 @@ void push_state(object state, object parent)
 	object oldtop;
 	object newtop;
 
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 	ASSERT(parent);
 
 	if (!root) {
@@ -307,7 +307,7 @@ void pop_state(object state)
 	object newtop;
 	object parent;
 
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 	ASSERT(state);
 	parent = state->query_parent();
 	ASSERT(parent);
@@ -361,7 +361,7 @@ void switch_state(object parent, object new)
 	object oldtop;
 	object newtop;
 
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 	ASSERT(parent);
 
 	if (parent->query_current() == new) {
@@ -393,7 +393,7 @@ void swap_state(object old, object new)
 	/* the old ustate is being replaced */
 	object parent;
 
-	ACCESS_CHECK(KOTAKA());
+	ACCESS_CHECK(TEXT());
 
 	ASSERT(old);
 	ASSERT(new);

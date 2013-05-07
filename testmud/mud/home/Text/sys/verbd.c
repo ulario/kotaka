@@ -68,7 +68,7 @@ int do_action(object actor, string command, string args)
 	object ustate;
 	object verb;
 
-	ACCESS_CHECK((ustate = previous_object())<-LIB_USTATE);
+	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
 
 	verb = find_verb(command);
 
