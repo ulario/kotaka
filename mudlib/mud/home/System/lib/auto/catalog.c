@@ -22,13 +22,6 @@
 
 private string name;
 
-static void destruct()
-{
-	if (name) {
-		CATALOGD->remove_object(name);
-	}
-}
-
 atomic void set_object_name(string new_name)
 {
 	if (name) {
