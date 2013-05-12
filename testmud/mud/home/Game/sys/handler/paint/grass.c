@@ -30,8 +30,6 @@ inherit LIB_HANDLER;
 
 void on_paint_text(object gc, object obj, object viewer)
 {
-	float dx, dy, dz;
-
 	int mx, my;
 	int i;
 

@@ -24,40 +24,24 @@ inherit LIB_HANDLER;
 
 void on_paint_text(object gc, object obj, object viewer)
 {
-	float dx, dy, dz;
-
+	int dx, dy, dz;
 	int row;
 
 	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
 
 	if (obj->is_container_of(viewer)) {
-		int x, y;
-
-		x = (int)dx - 1;
-		y = (int)dy - 1;
-
 		gc->set_color(0x1F);
 
-		gc->move_pen(x, y);
+		gc->move_pen(dx - 1, dy - 1);
 		gc->draw("+-+");
-		gc->move_pen(x, y + 1);
+		gc->move_pen(dx - 1, dy);
 		gc->draw("| |");
-		gc->move_pen(x, y + 2);
+		gc->move_pen(dx - 1, dy + 1);
 		gc->draw("+-+");
 	} else {
-		int x, y;
-
-		if (fabs(dx) > 10.0 || fabs(dy) > 10.0) {
-			/* out of bounds */
-			return;
-		}
-
-		x = (int)(dx);
-		y = (int)(dy);
-
 		gc->set_color(0x09);
 
-		gc->move_pen(x, y);
+		gc->move_pen(dx, dy);
 		gc->draw("h");
 	}
 }

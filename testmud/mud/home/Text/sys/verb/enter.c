@@ -28,7 +28,7 @@ void main(object actor, string args)
 	object env;
 	object *shacks;
 
-	float ax, ay;
+	int ax, ay;
 
 	int i, sz;
 
@@ -70,12 +70,12 @@ void main(object actor, string args)
 	ay = actor->query_y_position();
 
 	for (i = 0; i < sz; i++) {
-		float dx, dy;
+		int dx, dy;
 
 		dx = shacks[i]->query_x_position() - ax;
 		dy = shacks[i]->query_y_position() - ay;
 
-		if (dx < -4.0 || dx > 0.0 || dy < 0.0 || dy > 4.0) {
+		if (dx < -3 || dx > 0 || dy < 0 || dy > 3) {
 			shacks[i] = nil;
 		}
 	}

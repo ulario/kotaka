@@ -24,22 +24,12 @@ inherit LIB_HANDLER;
 
 void on_paint_text(object gc, object obj, object viewer)
 {
-	float dx, dy, dz;
-
-	int x, y;
+	int dx, dy, dz;
 
 	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
 
-	if (fabs(dx) > 10.0 || fabs(dy) > 10.0) {
-		/* out of bounds */
-		return;
-	}
-
-	x = (int)(dx);
-	y = (int)(dy);
-
 	gc->set_color(0x8F);
 
-	gc->move_pen(x, y);
+	gc->move_pen(dx, dy);
 	gc->draw(".");
 }

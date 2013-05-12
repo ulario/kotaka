@@ -24,53 +24,38 @@ inherit LIB_HANDLER;
 
 void on_paint_text(object gc, object obj, object viewer)
 {
-	float dx, dy, dz;
+	int dx, dy, dz;
 
 	int row;
 
 	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
 
 	if (obj->is_container_of(viewer)) {
-		int x, y;
-
-		x = (int)dx;
-		y = (int)dy;
-
 		gc->set_color(0x03);
 
-		gc->move_pen(x - 1, y - 4);		gc->draw("+----+");
-		gc->move_pen(x - 1, y - 3);		gc->draw("|    |");
-		gc->move_pen(x - 1, y - 2);		gc->draw("|    |");
-		gc->move_pen(x - 1, y - 1);		gc->draw("|    |");
-		gc->move_pen(x - 1, y);		gc->draw("|    |");
-		gc->move_pen(x - 1, y + 1);		gc->draw("+----+");
+		gc->move_pen(dx - 1, dy - 4);	gc->draw("+----+");
+		gc->move_pen(dx - 1, dy - 3);	gc->draw("|    |");
+		gc->move_pen(dx - 1, dy - 2);	gc->draw("|    |");
+		gc->move_pen(dx - 1, dy - 1);	gc->draw("|    |");
+		gc->move_pen(dx - 1, dy);	gc->draw("|    |");
+		gc->move_pen(dx - 1, dy + 1);	gc->draw("+----+");
 
 		gc->set_color(0x30);
 
-		gc->move_pen(x, y - 3);		gc->draw("|___");
-		gc->move_pen(x, y - 2);		gc->draw("__|_");
-		gc->move_pen(x, y - 1);		gc->draw("_|__");
-		gc->move_pen(x, y);		gc->draw("___|");
+		gc->move_pen(dx, dy - 3);	gc->draw("|___");
+		gc->move_pen(dx, dy - 2);	gc->draw("__|_");
+		gc->move_pen(dx, dy - 1);	gc->draw("_|__");
+		gc->move_pen(dx, dy);		gc->draw("___|");
 	} else {
-		int x, y;
-
-		if (fabs(dx) > 10.0 || fabs(dy) > 10.0) {
-			/* out of bounds */
-			return;
-		}
-
-		x = (int)(dx);
-		y = (int)(dy);
-
 		gc->set_color(0x30);
 
-		gc->move_pen(x, y - 3);
+		gc->move_pen(dx, dy - 3);
 		gc->draw("/--\\");
-		gc->move_pen(x, y - 2);
+		gc->move_pen(dx, dy - 2);
 		gc->draw("|  |");
-		gc->move_pen(x, y - 1);
+		gc->move_pen(dx, dy - 1);
 		gc->draw("|  |");
-		gc->move_pen(x, y - 0);
+		gc->move_pen(dx, dy - 0);
 		gc->draw("|__|");
 	}
 }

@@ -38,12 +38,12 @@ void main(object actor, string args)
 		genv = env->query_environment();
 
 		if (genv) {
-			float ax, ay;
+			int ax, ay;
 
 			ax = actor->query_x_position();
 			ay = actor->query_y_position();
 
-			if (ax < 0.0 || ax > 4.0 || ay < -4.0 || ay > 0.0) {
+			if (ax < 0 || ax > 3 || ay < -3 || ay > 0) {
 				send_out("Don't know how you escaped, but you need to be in bounds of the shack to exit it.\n");
 			} else {
 				actor->move(genv);
@@ -51,9 +51,9 @@ void main(object actor, string args)
 			}
 		} else {
 			actor->move(genv);
-			actor->set_x_position(0.0);
-			actor->set_y_position(0.0);
-			actor->set_z_position(0.0);
+			actor->set_x_position(0);
+			actor->set_y_position(0);
+			actor->set_z_position(0);
 			send_out("You create a wormhole and enter the Great Chaos\n");
 		}
 	} else {

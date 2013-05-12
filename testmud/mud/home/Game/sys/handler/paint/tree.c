@@ -24,18 +24,13 @@ inherit LIB_HANDLER;
 
 void on_paint_text(object gc, object obj, object viewer)
 {
-	float dx, dy, dz;
+	int dx, dy, dz;
 	int x, y;
 	float mass;
 
 	int row;
 
 	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
-
-	if (fabs(dx) > 20.0 || fabs(dy) > 20.0) {
-		/* out of bounds */
-		return;
-	}
 
 	x = (int)(dx);
 	y = (int)(dy);

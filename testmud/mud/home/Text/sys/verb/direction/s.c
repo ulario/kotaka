@@ -29,5 +29,5 @@ void main(object actor, string args)
 		return;
 	}
 
-	actor->set_y_position(actor->query_y_position() + 1.0);
+	actor->set_y_position(actor->query_y_position() + 1);
 }

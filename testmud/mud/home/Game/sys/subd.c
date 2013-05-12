@@ -20,11 +20,11 @@
 
 #include <kotaka/paths.h>
 
-float *query_position_difference(object a, object b)
+int *query_position_difference(object a, object b)
 {
 	object cc;
 
-	float dx, dy, dz;
+	int dx, dy, dz;
 
 	cc = SUBD->query_common_container(a, b);
 
