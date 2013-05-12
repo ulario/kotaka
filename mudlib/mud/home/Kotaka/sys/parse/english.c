@@ -77,7 +77,17 @@ mixed *iclause_verb_np(mixed *input)
 	return ({ ({ "I", input[0], input[1], nil }) });
 }
 
+mixed *iclause_verb_pp(mixed *input)
+{
+	return ({ ({ "I", input[0], input[1], nil }) });
+}
+
 mixed *iclause_verb_np_pp(mixed *input)
+{
+	return ({ ({ "I", input[0], input[1], input[2] }) });
+}
+
+mixed *iclause_verb_pp_pp(mixed *input)
 {
 	return ({ ({ "I", input[0], input[1], input[2] }) });
 }
