@@ -129,5 +129,5 @@ void on_timer(object obj)
 	}
 
 	obj->set_mass(mass + 1.0);
-	obj->set_timer(SUBD->rnd() * 30.0, 15.0);
+	obj->set_timer(SUBD->rnd() * 300.0, 150.0);
 }

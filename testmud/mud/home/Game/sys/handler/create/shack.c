@@ -37,16 +37,15 @@ void on_create(object obj)
 
 	door1 = create_object();
 	door1->add_archetype(doormaster);
-	door1->move(obj);
-	door1->set_x_position(2.0);
-	door1->set_y_position(3.0);
 	door1->move(obj->query_environment());
+	door1->set_x_position(obj->query_x_position() + 2.0);
+	door1->set_y_position(obj->query_y_position() + 0.0);
 
 	door2 = create_object();
 	door2->add_archetype(doormaster);
 	door2->move(obj);
 	door2->set_x_position(2.0);
-	door2->set_y_position(4.0);
+	door2->set_y_position(0.0);
 
 	data = obj->query_property("data");
 	data["doors"] = ({ door1, door2 });

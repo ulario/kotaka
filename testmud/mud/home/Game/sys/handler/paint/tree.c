@@ -46,7 +46,7 @@ void on_paint_text(object gc, object obj, object viewer)
 		gc->move_pen(x, y);
 		gc->set_color(0x8A);
 		gc->draw("^");
-	} else if (mass < 2.5) {
+	} else if (mass < 10.0) {
 		gc->move_pen(x, y);
 		gc->set_color(0x83);
 		gc->draw("|");
