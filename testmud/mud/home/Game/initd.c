@@ -210,8 +210,8 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/destroy/shack");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/shack");
-	master->set_local_property("nouns", ({ "shack" }) );
-	master->set_local_property("adjectives", ({ "wooden" }) );
+	master->set_local_property("local_nouns", ({ "shack" }) );
+	master->set_local_property("local_adjectives", ({ "wooden" }) );
 	master->set_object_name("buildings:master:shack");
 
 	master = create_object();
@@ -229,35 +229,35 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/tree");
 	master->set_property("event:timer",
 		USR_DIR + "/Game/sys/handler/timer/tree");
-	master->set_local_property("nouns", ({ "tree" }) );
+	master->set_local_property("local_nouns", ({ "tree" }) );
 	master->set_object_name("scenery:tree");
 
 	master = create_object();
 	master->set_property("id", "door");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/door");
-	master->set_local_property("nouns", ({ "door" }) );
-	master->set_local_property("adjectives", ({ "wooden" }) );
+	master->set_local_property("local_nouns", ({ "door" }) );
+	master->set_local_property("local_adjectives", ({ "wooden" }) );
 	master->set_object_name("buildings:parts:door");
 
 	master = create_object();
 	master->set_property("id", "wolf");
-	master->set_local_property("nouns", ({ "wolf" }) );
+	master->set_local_property("local_nouns", ({ "wolf" }) );
 	master->set_object_name("animal:wolf");
 
 	master = create_object();
 	master->set_property("id", "deer");
-	master->set_local_property("nouns", ({ "deer" }) );
+	master->set_local_property("local_nouns", ({ "deer" }) );
 	master->set_object_name("animal:deer");
 
 	master = create_object();
 	master->set_property("id", "soil");
-	master->set_local_property("nouns", ({ "soil" }) );
+	master->set_local_property("local_nouns", ({ "soil" }) );
 	master->set_object_name("scenery:soil");
 
 	master = create_object();
 	master->set_property("id", "rock");
-	master->set_local_property("nouns", ({ "rock" }) );
+	master->set_local_property("local_nouns", ({ "rock" }) );
 	master->set_object_name("scenery:rock");
 
 	world->set_capacity(1000000.0);
