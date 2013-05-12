@@ -25,7 +25,7 @@
 
 inherit LIB_HANDLER;
 
-int crowded(object world, object self, float tx, float ty)
+int crowded(object world, object self, int tx, int ty)
 {
 	/* no trees allowed within a radius of 4 meters */
 	object *inv;
@@ -39,8 +39,8 @@ int crowded(object world, object self, float tx, float ty)
 	sz = sizeof(inv);
 
 	for (i = 0; i < sz; i++) {
-		float cx, cy;
-		float dx, dy;
+		int cx, cy;
+		int dx, dy;
 		object obj;
 
 		obj = inv[i];
@@ -55,7 +55,7 @@ int crowded(object world, object self, float tx, float ty)
 		dx = cx - tx;
 		dy = cy - ty;
 
-		if (dx * dx + dy * dy < 16.0) {
+		if (dx * dx + dy * dy < 16) {
 			return 1;
 		}
 	}
@@ -91,11 +91,10 @@ void on_timer(object obj)
 
 	if (mass > 100.0) {
 		/* bloom! */
-		float lx, ly;
-		float px, py, pa;
-		float dx, dy;
-		float sx, sy;
-		float pr;
+		int lx, ly;
+		int px, py;
+		int sx, sy;
+		float pa, pr;
 
 		object sprout;
 
@@ -104,8 +103,8 @@ void on_timer(object obj)
 		pa = SUBD->rnd() * SUBD->pi() * 2.0;
 		pr = SUBD->rnd() * 16.0 + 3.0;
 
-		px = pr * sin(pa);
-		py = pr * cos(pa);
+		px = (int)(pr * sin(pa));
+		py = (int)(pr * cos(pa));
 
 		lx = obj->query_x_position();
 		ly = obj->query_y_position();
