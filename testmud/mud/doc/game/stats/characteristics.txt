@@ -1,0 +1,11 @@
+Strength
+
+Dexterity
+
+Constitution
+
+Charisma
+
+Intelligence
+
+Wisdom
