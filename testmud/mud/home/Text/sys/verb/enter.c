@@ -75,7 +75,7 @@ void main(object actor, string args)
 		dx = shacks[i]->query_x_position() - ax;
 		dy = shacks[i]->query_y_position() - ay;
 
-		if (dx < -4.0 || dx > 0.0 || dy < -4.0 || dy > 0.0) {
+		if (dx < -4.0 || dx > 0.0 || dy < 0.0 || dy > 4.0) {
 			shacks[i] = nil;
 		}
 	}
