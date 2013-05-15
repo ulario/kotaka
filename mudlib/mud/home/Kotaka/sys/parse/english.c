@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
 string grammar;
@@ -54,8 +55,10 @@ static void create()
 	decomment();
 }
 
-void upgrade()
+void upgrading()
 {
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
 	LOGD->post_message("parse", LOG_INFO, "Reloading grammar");
 	grammar = read_file("~/data/parse/english.dpd");
 

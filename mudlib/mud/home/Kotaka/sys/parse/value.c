@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
 #include <kotaka/paths.h>
 
 string grammar;
@@ -28,8 +29,10 @@ static void create()
 	grammar = read_file("~/data/parse/value.dpd");
 }
 
-static void upgraded()
+void upgrading()
 {
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
 	::create();
 
 	grammar = read_file("~/data/parse/value.dpd");
@@ -41,8 +44,9 @@ mixed parse(string input)
 
 	ret = parse_string(grammar, input);
 
-	if (!ret)
+	if (!ret) {
 		error("Parse failure");
+	}
 
 	return ret[0];
 }
