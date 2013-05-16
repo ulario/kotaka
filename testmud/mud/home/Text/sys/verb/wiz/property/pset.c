@@ -32,6 +32,7 @@ void main(object actor, string args)
 	string oname;
 	string pname;
 	mixed pvalue;
+	mixed *pinfo;
 
 	user = query_user();
 
@@ -56,9 +57,15 @@ void main(object actor, string args)
 		return;
 	}
 
+	pinfo = PROPERTYD->query_property(pname);
+
+	if (!pinfo) {
+		send_out(pname + ": No such property.\n");
+		return;
+	}
+
 	pvalue = PARSE_VALUE->parse(pvalue);
 
 	obj->set_property(pname, pvalue);
-
 	send_out("Done.\n");
 }

@@ -26,42 +26,15 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
-	string *users;
 	object user;
-	object obj;
-	string oname;
-	string pname;
-	mixed *pinfo;
 
 	user = query_user();
 
 	if (user->query_class() < 2) {
-		send_out("You do not have sufficient access rights to get object properties.\n");
+		send_out("You do not have sufficient access rights to list properties.\n");
 		return;
 	}
 
-	if (sscanf(args, "%s %s", oname, pname) != 2) {
-		send_out("Usage: pget <object> <property name>\n");
-		return;
-	}
-
-	obj = find_object(oname);
-
-	if (!obj) {
-		obj = CATALOGD->lookup_object(oname);
-	}
-
-	if (!obj) {
-		send_out(oname + ": No such object.\n");
-		return;
-	}
-
-	pinfo = PROPERTYD->query_property(pname);
-
-	if (!pinfo) {
-		send_out(pname + ": No such property.\n");
-		return;
-	}
-
-	send_out(STRINGD->hybrid_sprint(obj->query_property(pname)) + "\n");
+	send_out("Properties:\n");
+	send_out(implode(PROPERTYD->list_properties(), "\n") + "\n\n");
 }
