@@ -24,10 +24,5 @@ inherit LIB_VERB;
 
 void main(object actor, string args)
 {
-	if (!actor) {
-		send_out("Odd...without a body you have no legs.\nPlease inhabit an object first.\n");
-		return;
-	}
-
-	actor->set_x_position(actor->query_x_position() - 1);
+	actor->set_y_position(actor->query_y_position() + 1);
 }
