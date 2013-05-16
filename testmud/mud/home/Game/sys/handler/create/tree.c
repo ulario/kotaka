@@ -26,5 +26,5 @@ inherit LIB_HANDLER;
 void on_create(object obj)
 {
 	obj->set_mass(1.0);
-	obj->set_timer(300.0 + SUBD->rnd() * 300, -1.0);
+	obj->set_timer(300.0 + SUBD->rnd() * 300.0, -1.0);
 }

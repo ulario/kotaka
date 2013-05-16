@@ -111,7 +111,7 @@ static void dequeue()
 		return;
 	}
 
-	tree->set_timer(300.0 + SUBD->rnd() * 300, -1.0);
+	tree->set_timer(300.0 + SUBD->rnd() * 300.0, -1.0);
 
 	mass = tree->query_mass();
 
