@@ -77,6 +77,13 @@ int do_action(object actor, string command, string args)
 		return FALSE;
 	}
 
+	if (sscanf(object_name(verb), "%*s/ic/%*s")) {
+		if (!actor) {
+			ustate->send_out("You must be in character to use that verb.\n");
+			return TRUE;
+		}
+	}
+
 	TLSD->set_tls_value("Text", "ustate", ustate);
 
 	verb->main(actor, args);
