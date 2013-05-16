@@ -228,6 +228,18 @@ int position_sort(object a, object b)
 		return -1;
 	}
 
+	if (a->query_y_position() > b->query_y_position()) {
+		return 1;
+	}
+
+	if (a->query_x_position() < b->query_x_position()) {
+		return -1;
+	}
+
+	if (a->query_x_position() > b->query_x_position()) {
+		return 1;
+	}
+
 	return 1;
 }
 
