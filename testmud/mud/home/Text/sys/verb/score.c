@@ -24,6 +24,43 @@
 
 inherit LIB_VERB;
 
+string make_bar(int cur, int max, int len)
+{
+	int pips;
+	string buf;
+
+	pips = (cur * len / max);
+
+	if (cur * 3 < max) {
+		buf = "\033[1;31m";
+	} else if (cur * 3 < max * 2) {
+		buf = "\033[1;33m";
+	} else {
+		buf = "\033[1;32m";
+	}
+
+	buf += STRINGD->chars('=', pips);
+	buf += "\033[0m";
+	buf += STRINGD->spaces(len - pips);
+
+	return buf;
+}
+
+string make_xp_bar(int cur, int max, int len)
+{
+	int pips;
+	string buf;
+
+	pips = (cur * len / max);
+
+	buf = "\033[1;36m";
+	buf += STRINGD->chars('=', pips);
+	buf += "\033[0m";
+	buf += STRINGD->spaces(len - pips);
+
+	return buf;
+}
+
 void main(object actor, string args)
 {
 	object user;
@@ -31,6 +68,9 @@ void main(object actor, string args)
 	object painter;
 	object gc;
 
+	string hps, mps, eps, xps;
+
+	int hp, mp, ep, xp;
 	int i, j;
 
 	user = query_user();
@@ -41,13 +81,18 @@ void main(object actor, string args)
 		return;
 	}
 
+	hp = random(21);
+	mp = random(21);
+	ep = random(21);
+	xp = random(21);
+
 	painter = new_object(LWO_PAINTER);
 
 	send_out("Str ---/--- Cha ---/---\n");
 	send_out("Dex ---/--- Int ---/---\n");
 	send_out("Con ---/--- Wis ---/---\n\n");
-	send_out("HP [====================]\n");
-	send_out("MP [====================]\n");
-	send_out("EP [====================]\n");
-	send_out("XP [====================]\n\n");
+	send_out("HP [" + make_bar(hp, 20, 20) + "]\n");
+	send_out("MP [" + make_bar(mp, 20, 20) + "]\n");
+	send_out("EP [" + make_bar(ep, 20, 20) + "]\n");
+	send_out("XP [" + make_xp_bar(hp, 20, 20) + "]\n\n");
 }
