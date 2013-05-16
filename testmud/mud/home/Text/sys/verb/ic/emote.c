@@ -28,12 +28,6 @@ void main(object actor, string args)
 	string name;
 
 	user = query_user();
-
-	if (user->query_class() < 1) {
-		send_out("You do not have sufficient access rights to emote.\n");
-		return;
-	}
-
 	args = STRINGD->trim_whitespace(args);
 
 	if (args == "") {

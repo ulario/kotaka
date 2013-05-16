@@ -76,11 +76,6 @@ void main(object actor, string args)
 	user = query_user();
 	body = user->query_body();
 
-	if (!body) {
-		send_out("You don't have a body to score.\n");
-		return;
-	}
-
 	hp = random(21);
 	mp = random(21);
 	ep = random(21);

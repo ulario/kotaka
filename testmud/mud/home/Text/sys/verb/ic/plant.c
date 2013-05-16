@@ -27,11 +27,6 @@ void main(object actor, string args)
 {
 	object tree, env;
 
-	if (!actor) {
-		send_out("Odd...without a body you have no hands.\nPlease inhabit an object first.\n");
-		return;
-	}
-
 	env = actor->query_environment();
 
 	tree = GAME_INITD->create_object();
