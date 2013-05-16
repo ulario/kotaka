@@ -194,10 +194,8 @@ private void draw_void(object gc)
 		for (x = -8; x <= 8; x += 1) {
 			gc->move_pen(x, y);
 
-			if (random(2)) {
-				gc->set_color(7 ^ (1 << random(3)));
-				gc->draw(":");
-			}
+			gc->set_color(random(15) + 1);
+			gc->draw(":");
 		}
 	}
 
