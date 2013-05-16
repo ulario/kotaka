@@ -66,5 +66,7 @@ static nomask void thing_destruct()
 		children[index]->move(env);
 	}
 
-	env->bulk_invalidate();
+	if (env) {
+		env->bulk_invalidate();
+	}
 }
