@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012  Raymond Jennings
+ * Copyright (C) 2013  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -49,17 +49,17 @@ void main(object actor, mixed *tree)
 	}
 
 	if (!actor->query_environment()) {
-		send_out("The gods would frown on littering in the void.\n");
+		send_out("In the formless void of space?  You're kidding, right?\n");
 		return;
 	}
 
-	candidates = bind_objects(actor->query_inventory(), np);
+	candidates = bind_objects(actor->query_environment()->query_inventory(), np);
 
 	if (!sizeof(candidates)) {
-		send_out("You have no such thing to drop.\n");
+		send_out("No such thing is here for you to take.\n");
 		return;
 	}
 
-	send_out("You drop " + candidates[0]->query_property("brief") + ".\n");
-	candidates[0]->move(actor->query_environment());
+	send_out("You take " + candidates[0]->query_property("brief") + ".\n");
+	candidates[0]->move(actor);
 }
