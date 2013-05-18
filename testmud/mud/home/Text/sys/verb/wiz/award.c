@@ -30,7 +30,7 @@ int query_raw()
 	return 1;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
 	string user;
 	int amount;

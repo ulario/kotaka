@@ -27,7 +27,7 @@ int query_raw()
 	return 0;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
 	object user;
 	string name;

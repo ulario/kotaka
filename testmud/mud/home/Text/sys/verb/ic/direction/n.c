@@ -27,7 +27,7 @@ int query_raw()
 	return 0;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
 	actor->set_y_position(actor->query_y_position() - 1);
 }

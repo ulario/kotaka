@@ -24,26 +24,10 @@ inherit LIB_VERB;
 
 int query_raw()
 {
-	return 1;
+	return 0;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
-	object user;
-	string args;
-
-	args = fetch_raw(tree);
-
-	user = query_user();
-
-	args = STRINGD->trim_whitespace(args);
-
-	if (args == "") {
-		send_out("Cat got your tongue?\n");
-		return;
-	}
-
-	send_out(STRINGD->hybrid_sprint(
-			"~/sys/englishd"->parse(args)
-	) + "\n");
+	send_out(STRINGD->hybrid_sprint(tree));
 }

@@ -63,10 +63,10 @@ string make_xp_bar(int cur, int max, int len)
 
 int query_raw()
 {
-	return 0;
+	return 1;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
 	object user;
 	object body;
@@ -92,6 +92,7 @@ void main(object actor, mixed *tree)
 	send_out("Str ---/--- Cha ---/---\n");
 	send_out("Dex ---/--- Int ---/---\n");
 	send_out("Con ---/--- Wis ---/---\n\n");
+
 	send_out("HP [" + make_bar(hp, 20, 20) + "]\n");
 	send_out("MP [" + make_bar(mp, 20, 20) + "]\n");
 	send_out("EP [" + make_bar(ep, 20, 20) + "]\n");

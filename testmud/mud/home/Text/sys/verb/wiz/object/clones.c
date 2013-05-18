@@ -28,15 +28,12 @@ int query_raw()
 	return 1;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
 	mixed *st;
 	object cinfo;
 	int oindex;
 	int count;
-	string args;
-
-	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do a clone check.\n");

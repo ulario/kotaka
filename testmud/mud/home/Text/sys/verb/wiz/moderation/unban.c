@@ -29,15 +29,12 @@ int query_raw()
 	return 1;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
 	string kicker_name;
 	string turkey_name;
-	string args;
-
-	args = fetch_raw(tree);
 
 	user = query_user();
 

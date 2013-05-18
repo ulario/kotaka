@@ -24,42 +24,10 @@ inherit LIB_VERB;
 
 int query_raw()
 {
-	return 0;
+	return 1;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
-	object genv;
-	object env;
-	string args;
-
-	args = fetch_raw(tree);
-
-	env = actor->query_environment();
-
-	if (env) {
-		genv = env->query_environment();
-
-		if (genv) {
-			int ax, ay;
-
-			ax = actor->query_x_position();
-			ay = actor->query_y_position();
-
-			if (ax < 0 || ax > 3 || ay < -3 || ay > 0) {
-				send_out("Don't know how you escaped, but you need to be in bounds of the shack to exit it.\n");
-			} else {
-				actor->move(genv);
-				send_out("You exit.\n");
-			}
-		} else {
-			actor->move(genv);
-			actor->set_x_position(0);
-			actor->set_y_position(0);
-			actor->set_z_position(0);
-			send_out("You create a wormhole and enter the Great Chaos\n");
-		}
-	} else {
-		send_out("You are already nowhere.\n");
-	}
+	send_out(STRINGD->hybrid_sprint(tree));
 }

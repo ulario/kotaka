@@ -22,12 +22,15 @@
 
 inherit LIB_VERB;
 
-int query_raw()
+mixed *query_roles()
 {
-	return 0;
+	return ({
+		"dob", ({ "at", 1, 0 }),
+		"dob", ({ "in", 1, 0 })
+	});
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
 	send_out(RENDERD->draw_look(actor, 0));
 }

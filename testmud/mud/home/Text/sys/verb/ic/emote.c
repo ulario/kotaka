@@ -27,24 +27,6 @@ int query_raw()
 	return 0;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
-	object user;
-	string name;
-	string args;
-
-	args = fetch_evoke(tree);
-	args = STRINGD->trim_whitespace(args);
-
-	user = query_user();
-
-	if (args == "") {
-		send_out("Cat got your tongue?\n");
-		return;
-	}
-
-	name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-
-	send_out("You " + args + "\n");
-	TEXT_SUBD->send_to_all_except(name + " " + args + "\n", ({ user }) );
 }

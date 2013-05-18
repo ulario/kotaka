@@ -27,10 +27,7 @@ int query_raw()
 	return 1;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mapping roles)
 {
-	string args;
-
-	args = fetch_raw(tree);
 	query_ustate()->push_state(clone_object("~/obj/ustate/movie/fireworks"));
 }
