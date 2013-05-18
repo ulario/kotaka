@@ -24,7 +24,7 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	string *users;
 	object user;
@@ -32,6 +32,9 @@ void main(object actor, string args)
 	string oname;
 	string pname;
 	mixed pvalue;
+	string args;
+
+	args = fetch_raw(tree);
 
 	user = query_user();
 

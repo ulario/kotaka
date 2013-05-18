@@ -25,9 +25,12 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	object proxy;
+	string args;
+
+	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 3) {
 		send_out("Only an administrator can hotboot the mud.\n");

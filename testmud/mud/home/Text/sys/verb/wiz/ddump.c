@@ -22,9 +22,12 @@
 
 inherit LIB_WIZVERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	int count;
+	string args;
+
+	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 3) {
 		send_out("You do not have sufficient access rights to delay-dump the mud.\n");

@@ -38,3 +38,36 @@ static void send_out(string str)
 {
 	query_ustate()->send_out(str);
 }
+
+int query_raw()
+{
+	return 1;
+}
+
+void main(mixed *tree)
+{
+}
+
+static string fetch_raw(mixed *tree)
+{
+	mixed *iclause;
+	mixed *raw;
+
+	if (tree[0] != "S") {
+		error("Expected: statement");
+	}
+
+	iclause = tree[1];
+
+	if (iclause[0] != "V") {
+		error("Expected: verb");
+	}
+
+	raw = iclause[2];
+
+	if (raw[0] != "R") {
+		error("Expected: raw role");
+	}
+
+	return raw[1];
+}

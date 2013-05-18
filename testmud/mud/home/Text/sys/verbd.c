@@ -21,7 +21,7 @@
 #include <text/paths.h>
 #include <kotaka/privilege.h>
 
-string *gather_dirs(string dir)
+private string *gather_dirs(string dir)
 {
 	string *buf;
 
@@ -48,7 +48,7 @@ string *gather_dirs(string dir)
 	return buf;
 }
 
-object find_verb(string command)
+private object find_verb(string command)
 {
 	object verb;
 	string *dirs;
@@ -77,6 +77,10 @@ int do_action(object actor, string command, string args)
 		return FALSE;
 	}
 
+	if (!(verb <- LIB_VERB)) {
+		error(command + ": verb does not inherit proper library");
+	}
+
 	if (sscanf(object_name(verb), "%*s/ic/%*s")) {
 		if (!actor) {
 			ustate->send_out("You must be in character to use that verb.\n");
@@ -86,7 +90,24 @@ int do_action(object actor, string command, string args)
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
 
-	verb->main(actor, args);
+	if (verb->query_raw()) {
+		verb->main(actor, ({ "S", ({ "V", command, ({ "R", args }) }) }) );
+	} else {
+		string statement;
+		mixed *parse;
+
+		statement = command + " " + args;
+
+		parse = ENGLISHD->parse(statement);
+
+		if (parse) {
+			verb->main(actor, ENGLISHD->parse(statement) );
+		} else {
+			ustate->send_out("Huh?\n");
+		}
+
+		return TRUE;
+	}
 
 	if (this_object()) {
 		TLSD->set_tls_value("Text", "ustate", nil);

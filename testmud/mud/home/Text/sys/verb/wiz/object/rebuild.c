@@ -22,14 +22,22 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	object user;
+	string args;
+
+	args = fetch_raw(tree);
 
 	user = query_user();
 
 	if (user->query_class() < 1) {
 		send_out("You do not have sufficient access rights to rebuild.\n");
+		return;
+	}
+
+	if (args != "") {
+		send_out("No arguments please!\n");
 		return;
 	}
 

@@ -22,10 +22,13 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	object arr;
 	int sz, i;
+	string args;
+
+	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to list orphans.\n");

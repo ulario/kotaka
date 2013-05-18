@@ -61,17 +61,18 @@ string make_xp_bar(int cur, int max, int len)
 	return buf;
 }
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	object user;
 	object body;
 	object painter;
 	object gc;
-
 	string hps, mps, eps, xps;
-
 	int hp, mp, ep, xp;
 	int i, j;
+	string args;
+
+	args = fetch_raw(tree);
 
 	user = query_user();
 	body = user->query_body();

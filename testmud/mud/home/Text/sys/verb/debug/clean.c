@@ -38,7 +38,10 @@ static void mop()
 	}
 }
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
+	string args;
+
+	args = fetch_raw(tree);
 	call_out("mop", 0);
 }

@@ -23,13 +23,16 @@
 
 inherit LIB_WIZVERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	mixed *st;
 	object cinfo;
 	object first;
 	object clone;
 	int oindex;
+	string args;
+
+	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do a clone check.\n");

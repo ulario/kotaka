@@ -22,7 +22,10 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
+	string args;
+
+	args = fetch_raw(tree);
 	send_out(RENDERD->draw_look(actor, 0));
 }

@@ -23,10 +23,13 @@
 
 inherit LIB_WIZVERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	object ilist;
 	int i, sz;
+	string args;
+
+	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do an inclusion check.\n");

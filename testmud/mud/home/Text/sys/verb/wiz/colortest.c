@@ -22,11 +22,14 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
 	object user;
 	object painter;
 	object gc;
+	string args;
+
+	args = fetch_raw(tree);
 
 	int x, y, b;
 

@@ -22,7 +22,10 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
+	string args;
+
+	args = fetch_raw(tree);
 	query_ustate()->push_state(clone_object("~/obj/ustate/movie/clock"));
 }

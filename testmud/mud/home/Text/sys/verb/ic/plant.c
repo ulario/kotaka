@@ -23,21 +23,24 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mixed *tree)
 {
-	object tree, env;
+	object gtree, env;
+	string args;
+
+	args = fetch_raw(tree);
 
 	env = actor->query_environment();
 
-	tree = GAME_INITD->create_object();
-	tree->set_property("id", "tree");
-	tree->add_archetype(CATALOGD->lookup_object("scenery:tree"));
-	tree->move(env);
+	gtree = GAME_INITD->create_object();
+	gtree->set_property("id", "tree");
+	gtree->add_archetype(CATALOGD->lookup_object("scenery:tree"));
+	gtree->move(env);
 
-	tree->set_x_position(actor->query_x_position());
-	tree->set_y_position(actor->query_y_position());
-	tree->set_z_position(actor->query_z_position());
-	tree->query_property("event:create")->on_create(tree);
+	gtree->set_x_position(actor->query_x_position());
+	gtree->set_y_position(actor->query_y_position());
+	gtree->set_z_position(actor->query_z_position());
+	gtree->query_property("event:create")->on_create(gtree);
 
 	send_out("You plant a tree.\n");
 }

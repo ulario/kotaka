@@ -37,6 +37,6 @@ void main(object actor, string args)
 	}
 
 	send_out(STRINGD->hybrid_sprint(
-			"~Kotaka/sys/parse/english"->parse(args)
+			"~/sys/englishd"->parse(args)
 	) + "\n");
 }
