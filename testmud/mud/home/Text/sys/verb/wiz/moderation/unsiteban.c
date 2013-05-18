@@ -28,6 +28,7 @@ void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
+	string args;
 	string kicker_name;
 	string turkey_name;
 

@@ -32,6 +32,7 @@ void main(object actor, mapping roles)
 	string oname;
 	string pname;
 	mixed *pinfo;
+	string args;
 
 	user = query_user();
 

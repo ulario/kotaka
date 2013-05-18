@@ -31,6 +31,7 @@ void main(object actor, mapping roles)
 	object obj;
 	string oname;
 	string pname;
+	string args;
 
 	user = query_user();
 

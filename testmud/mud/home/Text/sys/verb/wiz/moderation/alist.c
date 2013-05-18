@@ -28,6 +28,7 @@ inherit LIB_VERB;
 void main(object actor, mapping roles)
 {
 	object user;
+	string *users;
 
 	user = query_user();
 

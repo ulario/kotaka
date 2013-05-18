@@ -30,6 +30,7 @@ void main(object actor, mapping roles)
 {
 	object user, *users;
 	string kicker_name;
+	string args;
 	int i, sz;
 
 	user = query_user();

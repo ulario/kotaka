@@ -27,6 +27,7 @@ void main(object actor, mapping roles)
 {
 	object ilist;
 	int i, sz;
+	string args;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do an inclusion check.\n");

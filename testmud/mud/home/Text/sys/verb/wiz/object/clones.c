@@ -27,6 +27,7 @@ void main(object actor, mapping roles)
 {
 	mixed *st;
 	object cinfo;
+	string args;
 	int oindex;
 	int count;
 

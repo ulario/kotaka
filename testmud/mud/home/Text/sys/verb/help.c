@@ -182,6 +182,7 @@ void main(object actor, mapping roles)
 	string topic;
 	string header;
 	string text;
+	string args;
 	int sz, i;
 
 	args = STRINGD->trim_whitespace(args);

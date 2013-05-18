@@ -30,6 +30,7 @@ void main(object actor, mapping roles)
 	string user;
 	int amount;
 	mixed total;
+	string args;
 
 	if (query_user()->query_class() < 2) {
 		send_out("Only a wizard can award XP.\n");

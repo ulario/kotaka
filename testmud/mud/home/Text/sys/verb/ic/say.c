@@ -26,6 +26,7 @@ void main(object actor, mapping roles)
 {
 	object user;
 	string name;
+	string args;
 
 	if (user->query_class() < 1) {
 		send_out("You do not have sufficient access rights to speak.\n");

@@ -22,7 +22,7 @@
 
 inherit LIB_VERB;
 
-void main(object actor, mixed junk ...)
+void main(object actor, mapping roles)
 {
 	object arr;
 	int sz, i;

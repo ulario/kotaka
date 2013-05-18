@@ -24,10 +24,20 @@
 
 inherit LIB_VERB;
 
+/* name, prepositions, raw */
+
+mixed *query_roles()
+{
+	return ({
+		({ "gender", ({ nil }), 1 })
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	string name;
 	string gender;
+	string args;
 
 	name = query_user()->query_name();
 

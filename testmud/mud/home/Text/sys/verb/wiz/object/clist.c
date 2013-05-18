@@ -29,6 +29,7 @@ void main(object actor, mapping roles)
 	object cinfo;
 	object first;
 	object clone;
+	string args;
 	int oindex;
 
 	if (query_user()->query_class() < 2) {
