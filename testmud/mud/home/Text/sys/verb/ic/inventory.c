@@ -30,36 +30,21 @@ int query_raw()
 
 void main(object actor, mixed *tree)
 {
-	mixed *vp;
-	mixed *np;
-	string evoke;
-	object *candidates;
+	object *inv;
+	int sz;
 
-	vp = tree[1];
+	inv = actor->query_inventory();
+	sz = sizeof(inv);
 
-	ASSERT(vp[0] == "V");
-	ASSERT(vp[1] == "drop");
-	np = vp[2];
-	ASSERT(sizeof(vp) == 3);
-	evoke = fetch_evoke(tree);
+	if (sz) {
+		int i;
 
-	if (np[0] == "P") {
-		send_out("Your grammar stinks.\n");
-		return;
+		send_out("Your inventory:\n\n");
+
+		for (i = 0; i < sz; i++) {
+			send_out(generate_brief_indefinite(inv[i]) + "\n");
+		}
+	} else {
+		send_out("You have nothing.\n");
 	}
-
-	if (!actor->query_environment()) {
-		send_out("The gods would frown on littering in the void.\n");
-		return;
-	}
-
-	candidates = bind_objects(actor->query_inventory(), np);
-
-	if (!sizeof(candidates)) {
-		send_out("You have no such thing to drop.\n");
-		return;
-	}
-
-	send_out("You drop " + candidates[0]->query_property("brief") + ".\n");
-	candidates[0]->move(actor->query_environment());
 }
