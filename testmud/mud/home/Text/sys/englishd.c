@@ -25,6 +25,10 @@ string grammar;
 
 private void decomment();
 
+/* verb phrase: ({ "V", NP }) */
+/* prep phrase: ({ "P", NP }) */
+/* evoke phrase: ({ "E", phrase }) */
+
 static void create()
 {
 	grammar = read_file("~/data/english.dpd");
@@ -67,56 +71,33 @@ mixed *parse(string input)
 	return parse_string(grammar, input);
 }
 
-/*
-statement: iclause ? statement_iclause
-statement: iclause ',' evoke ? statement_iclause_evoke
-statement: iclause evoke ? statement_iclause_evoke
-*/
-mixed *statement_iclause(mixed *input)
-{
-	return ({ "S", input[0], nil });
-}
-
-mixed *statement_iclause_evoke(mixed *input)
+mixed *statement_vp_ppl_evoke(mixed *input)
 {
 	string evoke;
+	int sz;
 
-	evoke = input[sizeof(input) - 1];
+	sz = sizeof(input);
 
-	return ({ "S", input[0], evoke[1 .. strlen(evoke) - 2] });
+	if (sz > 2 && input[sz - 2] == ",") {
+		input = input[0 .. sz - 3] + ({ input[sz - 1] });
+		sz--;
+	}
+
+	evoke = input[sz - 1];
+
+	return ({ input[0 .. sz - 2], ({ "E", evoke[1 .. strlen(evoke) - 2] }) });
 }
 
-/*
-iclause: verb ? iclause_verb
-iclause: verb np ? iclause_verb_np
-iclause: verb pp ? iclause_verb_pp
-iclause: verb np pp ? iclause_verb_np_pp
-*/
-mixed *iclause_verb(mixed *input)
+mixed *vp_verb(mixed *input)
 {
-	return ({ ({ "V", input[0] }) });
+	return ({ ({ "V", input[0], nil }) });
 }
 
-mixed *iclause_verb_np(mixed *input)
-{
-	return ({ ({ "V", input[0], input[1] }) });
-}
-
-mixed *iclause_verb_pp(mixed *input)
+mixed *vp_verb_np(mixed *input)
 {
 	return ({ ({ "V", input[0], input[1] }) });
 }
 
-mixed *iclause_verb_np_pp(mixed *input)
-{
-	return ({ ({ "V", input[0], input[1], input[2] }) });
-}
-
-/*
-pp: prep np ? pp_prep_np
-np: adj noun ? np_adjl_noun
-np: article adj noun ? np_article_adjl_noun
-*/
 mixed *pp_prep_np(mixed *input)
 {
 	return ({ ({ "P", input[0], input[1] }) });
@@ -124,18 +105,5 @@ mixed *pp_prep_np(mixed *input)
 
 mixed *np_adjl_noun(mixed *input)
 {
-	int sz;
-
-	sz = sizeof(input);
-
-	return ({ ({ "N", input[sz - 1], nil, input[0 .. sz - 2] }) });
-}
-
-mixed *np_article_adjl_noun(mixed *input)
-{
-	int sz;
-
-	sz = sizeof(input);
-
-	return ({ ({ "N", input[sz - 1], input[0], input[1 .. sz - 2] }) });
+	return ({ ({ "N", input[..] }) });
 }
