@@ -21,6 +21,7 @@ ppl:
 ppl: ppl pp
 
 pp: prep np ? pp_prep_np
+pp: prep ? pp_prep
 
 np: adjl noun ? np_adjl_noun
 

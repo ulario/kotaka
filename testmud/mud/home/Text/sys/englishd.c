@@ -103,6 +103,11 @@ mixed *pp_prep_np(mixed *input)
 	return ({ ({ "P", input[0], input[1] }) });
 }
 
+mixed *pp_prep(mixed *input)
+{
+	return ({ ({ "P", input[0], nil }) });
+}
+
 mixed *np_adjl_noun(mixed *input)
 {
 	return ({ ({ "N", input[..] }) });
