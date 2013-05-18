@@ -68,6 +68,15 @@ int do_action(object actor, string command, string args)
 {
 	object ustate;
 	object verb;
+	string statement;
+	mapping roles;
+	mapping raw;
+	mapping prepkey;
+	mixed **rules;
+	mixed *parse;
+	string evoke;
+	int sz;
+	int i;
 
 	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
 
@@ -77,10 +86,6 @@ int do_action(object actor, string command, string args)
 		return FALSE;
 	}
 
-	if (!(verb <- LIB_VERB)) {
-		error(command + ": verb does not inherit proper library");
-	}
-
 	if (sscanf(object_name(verb), "%*s/ic/%*s")) {
 		if (!actor) {
 			ustate->send_out("You must be in character to use that verb.\n");
@@ -88,25 +93,102 @@ int do_action(object actor, string command, string args)
 		}
 	}
 
-	TLSD->set_tls_value("Text", "ustate", ustate);
+	statement = command + " " + args;
+	parse = ENGLISHD->parse(statement);
+	rules = verb->query_roles();
 
-	if (verb->query_raw()) {
-		verb->main(actor, ({ "S", ({ "V", command, ({ "R", args }) }) }) );
-	} else {
-		string statement;
-		mixed *parse;
+	sz = sizeof(rules);
 
-		statement = command + " " + args;
+	/* ({ role, prepositions, raw }) */
+	raw = ([ ]);
 
-		parse = ENGLISHD->parse(statement);
+	for (i = 0; i < sz; i++) {
+		int j;
+		int sz2;
 
-		if (parse) {
-			verb->main(actor, ENGLISHD->parse(statement) );
-		} else {
-			ustate->send_out("Huh?\n");
+		string role;
+		string *preps;
+		mixed *rule;
+
+		rule = rules[i];
+
+		role = rule[0];
+		preps = rule[1];
+		raw[role] = rule[2];
+
+		sz2 = sizeof(preps);
+
+		for (j = 0; j < sz2; j++) {
+			if (!prepkey[preps[j]]) {
+				prepkey[preps[j]] = ({ });
+			}
+
+			prepkey[preps[j]] += ({ role });
+		}
+	}
+
+	sz = sizeof(parse);
+
+	for (i = 0; i < sz; i++) {
+		string prep;
+		string np;
+		string crole;
+		string *rcand;
+
+		switch(parse[i][0]) {
+		case "V":
+			np = parse[i][2];
+			break;
+
+		case "P":
+			prep = parse[i][1];
+			np = parse[i][2];
+			break;
+
+		case "E":
+			if (evoke) {
+				error("Duplicate evoke");
+			}
+
+			evoke = parse[i][1];
+			continue;
 		}
 
-		return TRUE;
+		if (!raw[crole]) {
+			rcand = prepkey[prep];
+
+			if (rcand) {
+				int j;
+				int sz2;
+
+				sz2 = sizeof(rcand);
+
+				for (j = 0; j < sz2; j++) {
+					if (!roles[rcand[j]]) {
+						crole = role;
+						break;
+					}
+				}
+			} else if (!crole) {
+				error("No direct role");
+			}
+		}
+
+		if (!roles[crole]) {
+			roles[crole] = ({ });
+		}
+
+		roles[crole] += ({ parse[i] });
+	}
+
+	TLSD->set_tls_value("Text", "ustate", ustate);
+
+	ustate->send_out("Debug: " + STRINGD->hybrid_sprint(roles) + "\n");
+
+	if (parse) {
+		verb->main(actor, parse);
+	} else {
+		ustate->send_out("Huh?\n");
 	}
 
 	if (this_object()) {
