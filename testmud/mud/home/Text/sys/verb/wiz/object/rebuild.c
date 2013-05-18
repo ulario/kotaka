@@ -27,22 +27,14 @@ int query_raw()
 	return 1;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mixed junk ...)
 {
 	object user;
-	string args;
-
-	args = fetch_raw(tree);
 
 	user = query_user();
 
 	if (user->query_class() < 1) {
 		send_out("You do not have sufficient access rights to rebuild.\n");
-		return;
-	}
-
-	if (args != "") {
-		send_out("No arguments please!\n");
 		return;
 	}
 

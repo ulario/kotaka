@@ -27,13 +27,10 @@ int query_raw()
 	return 1;
 }
 
-void main(object actor, mixed *tree)
+void main(object actor, mixed junk ...)
 {
 	object arr;
 	int sz, i;
-	string args;
-
-	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to list dormants.\n");
