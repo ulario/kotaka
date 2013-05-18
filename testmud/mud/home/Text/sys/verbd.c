@@ -69,6 +69,7 @@ int do_action(object actor, string command, string args)
 	object ustate;
 	object verb;
 	string statement;
+	string crole;
 	mapping roles;
 	mapping raw;
 	mapping prepkey;
@@ -101,6 +102,8 @@ int do_action(object actor, string command, string args)
 
 	/* ({ role, prepositions, raw }) */
 	raw = ([ ]);
+	prepkey = ([ ]);
+	roles = ([ ]);
 
 	for (i = 0; i < sz; i++) {
 		int j;
@@ -127,20 +130,23 @@ int do_action(object actor, string command, string args)
 		}
 	}
 
+	ustate->send_out("Debug: " + STRINGD->hybrid_sprint(rules) + "\n");
+
 	sz = sizeof(parse);
 
 	for (i = 0; i < sz; i++) {
 		string prep;
-		string np;
-		string crole;
+		string *np;
 		string *rcand;
 
 		switch(parse[i][0]) {
 		case "V":
+			ustate->send_out("Debug: Found verb phrase: " + STRINGD->mixed_sprint(parse[i]) + "\n");
 			np = parse[i][2];
 			break;
 
 		case "P":
+			ustate->send_out("Debug: Found prep phrase: " + STRINGD->mixed_sprint(parse[i]) + "\n");
 			prep = parse[i][1];
 			np = parse[i][2];
 			break;
@@ -165,20 +171,26 @@ int do_action(object actor, string command, string args)
 
 				for (j = 0; j < sz2; j++) {
 					if (!roles[rcand[j]]) {
-						crole = role;
+						crole = rcand[j];
 						break;
 					}
 				}
 			} else if (!crole) {
-				error("No direct role");
+				if (np) {
+					error("No direct role");
+				}
 			}
 		}
 
-		if (!roles[crole]) {
-			roles[crole] = ({ });
-		}
+		if (crole) {
+			if (!roles[crole]) {
+				roles[crole] = ({ });
+			}
 
-		roles[crole] += ({ parse[i] });
+			roles[crole] += ({ parse[i] });
+		} else {
+			ustate->send_out("Debug: Discarding: " + STRINGD->mixed_sprint(parse[i]) + "\n");
+		}
 	}
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
@@ -186,7 +198,7 @@ int do_action(object actor, string command, string args)
 	ustate->send_out("Debug: " + STRINGD->hybrid_sprint(roles) + "\n");
 
 	if (parse) {
-		verb->main(actor, parse);
+		verb->main(actor, roles);
 	} else {
 		ustate->send_out("Huh?\n");
 	}
