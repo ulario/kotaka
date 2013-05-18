@@ -22,14 +22,6 @@
 
 inherit LIB_VERB;
 
-mixed *query_roles()
-{
-	return ({
-		"dob", ({ "at", 1, 0 }),
-		"dob", ({ "in", 1, 0 })
-	});
-}
-
 void main(object actor, mapping roles)
 {
 	send_out(RENDERD->draw_look(actor, 0));

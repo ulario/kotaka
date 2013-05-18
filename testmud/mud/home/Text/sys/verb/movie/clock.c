@@ -22,11 +22,6 @@
 
 inherit LIB_VERB;
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	query_ustate()->push_state(clone_object("~/obj/ustate/movie/clock"));

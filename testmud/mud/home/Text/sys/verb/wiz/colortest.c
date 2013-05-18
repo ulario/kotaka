@@ -22,20 +22,13 @@
 
 inherit LIB_VERB;
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	object user;
 	object painter;
 	object gc;
 	int x, y, b;
-	string args;
 
-	args = fetch_raw(tree);
 	user = query_user();
 
 	painter = new_object(LWO_PAINTER);

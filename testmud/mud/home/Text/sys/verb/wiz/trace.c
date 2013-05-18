@@ -23,17 +23,9 @@
 
 inherit LIB_VERB;
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	object conn;
-	string args;
-
-	args = fetch_raw(tree);
 
 	send_out("Connection chain trace:\n");
 

@@ -173,11 +173,6 @@ private string list_category(string category)
 	return buf;
 }
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	mapping index;
@@ -188,9 +183,6 @@ void main(object actor, mapping roles)
 	string header;
 	string text;
 	int sz, i;
-	string args;
-
-	args = fetch_raw(tree);
 
 	args = STRINGD->trim_whitespace(args);
 	args = STRINGD->replace(args, " ", "_");

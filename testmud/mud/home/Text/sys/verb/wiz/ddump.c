@@ -22,17 +22,9 @@
 
 inherit LIB_WIZVERB;
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	int count;
-	string args;
-
-	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 3) {
 		send_out("You do not have sufficient access rights to delay-dump the mud.\n");

@@ -61,11 +61,6 @@ string make_xp_bar(int cur, int max, int len)
 	return buf;
 }
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	object user;
@@ -75,9 +70,6 @@ void main(object actor, mapping roles)
 	string hps, mps, eps, xps;
 	int hp, mp, ep, xp;
 	int i, j;
-	string args;
-
-	args = fetch_raw(tree);
 
 	user = query_user();
 	body = user->query_body();

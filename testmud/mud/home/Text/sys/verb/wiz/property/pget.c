@@ -24,11 +24,6 @@
 
 inherit LIB_VERB;
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	string *users;
@@ -37,9 +32,6 @@ void main(object actor, mapping roles)
 	string oname;
 	string pname;
 	mixed *pinfo;
-	string args;
-
-	args = fetch_raw(tree);
 
 	user = query_user();
 

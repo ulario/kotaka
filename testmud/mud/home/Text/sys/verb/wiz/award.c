@@ -25,19 +25,11 @@
 
 inherit LIB_VERB;
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	string user;
 	int amount;
 	mixed total;
-	string args;
-
-	args = fetch_raw(tree);
 
 	if (query_user()->query_class() < 2) {
 		send_out("Only a wizard can award XP.\n");

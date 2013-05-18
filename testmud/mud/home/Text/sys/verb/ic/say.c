@@ -22,25 +22,16 @@
 
 inherit LIB_VERB;
 
-int query_raw()
-{
-	return 0;
-}
-
 void main(object actor, mapping roles)
 {
 	object user;
 	string name;
-	string args;
-
-	user = query_user();
 
 	if (user->query_class() < 1) {
 		send_out("You do not have sufficient access rights to speak.\n");
 		return;
 	}
 
-	args = fetch_evoke(tree);
 	args = STRINGD->trim_whitespace(args);
 
 	if (!args || args == "") {

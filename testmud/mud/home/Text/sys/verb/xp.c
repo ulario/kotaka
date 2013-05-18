@@ -24,18 +24,10 @@
 
 inherit LIB_VERB;
 
-int query_raw()
-{
-	return 1;
-}
-
 void main(object actor, mapping roles)
 {
 	string name;
 	mixed total;
-	string args;
-
-	args = fetch_raw(tree);
 
 	name = query_user()->query_name();
 

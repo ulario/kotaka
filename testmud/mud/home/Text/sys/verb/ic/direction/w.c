@@ -22,11 +22,6 @@
 
 inherit LIB_VERB;
 
-int query_raw()
-{
-	return 0;
-}
-
 void main(object actor, mapping roles)
 {
 	actor->set_x_position(actor->query_x_position() - 1);
