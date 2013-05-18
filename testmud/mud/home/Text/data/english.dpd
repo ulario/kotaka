@@ -1,0 +1,32 @@
+# verbs
+# nouns
+# prepositions
+# evokes
+# adverbs
+
+article = /a|an|the/
+whitespace = / +/
+prep = /in|on|from/
+word = /[^ ,"]+/
+evoke = /"[^"]*"/
+
+statement: iclause ? statement_iclause
+statement: iclause ',' evoke ? statement_iclause_evoke
+statement: iclause evoke ? statement_iclause_evoke
+
+iclause: verb ? iclause_verb
+iclause: verb np ? iclause_verb_np
+iclause: verb pp ? iclause_verb_pp
+iclause: verb np pp ? iclause_verb_np_pp
+
+pp: prep np ? pp_prep_np
+
+np: adjl noun ? np_adjl_noun
+np: article adjl noun ? np_article_adjl_noun
+
+adjl:
+adjl: adjl adjective
+
+verb: word
+noun: word
+adjective: word
