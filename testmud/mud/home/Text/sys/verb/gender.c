@@ -24,14 +24,19 @@
 
 inherit LIB_VERB;
 
+int query_raw()
+{
+	return 1;
+}
+
 void main(object actor, mixed *tree)
 {
 	string name;
 	string gender;
 	string args;
 
-	name = query_user()->query_name();
 	args = fetch_raw(tree);
+	name = query_user()->query_name();
 
 	if (!name) {
 		send_out("You aren't logged in.\n");

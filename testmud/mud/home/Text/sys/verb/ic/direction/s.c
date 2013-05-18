@@ -22,10 +22,12 @@
 
 inherit LIB_VERB;
 
+int query_raw()
+{
+	return 0;
+}
+
 void main(object actor, mixed *tree)
 {
-	string args;
-
-	args = fetch_raw(tree);
 	actor->set_y_position(actor->query_y_position() + 1);
 }

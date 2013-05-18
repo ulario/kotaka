@@ -38,10 +38,21 @@ static void mop()
 	}
 }
 
+int query_raw()
+{
+	return 1;
+}
+
 void main(object actor, mixed *tree)
 {
 	string args;
 
 	args = fetch_raw(tree);
+
+	if (args != "") {
+		send_out("No arguments please.\n");
+		return;
+	}
+
 	call_out("mop", 0);
 }

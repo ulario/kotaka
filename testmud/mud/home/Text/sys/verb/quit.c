@@ -22,8 +22,16 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+int query_raw()
 {
+	return 1;
+}
+
+void main(object actor, mixed *tree)
+{
+	string args;
+
+	args = fetch_raw(tree);
 	if (query_user()->query_body()) {
 		query_user()->set_body(nil);
 	} else {

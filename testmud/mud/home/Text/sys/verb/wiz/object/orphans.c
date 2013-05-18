@@ -22,6 +22,11 @@
 
 inherit LIB_VERB;
 
+int query_raw()
+{
+	return 1;
+}
+
 void main(object actor, mixed *tree)
 {
 	object arr;

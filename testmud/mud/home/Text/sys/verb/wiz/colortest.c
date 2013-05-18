@@ -22,17 +22,20 @@
 
 inherit LIB_VERB;
 
+int query_raw()
+{
+	return 1;
+}
+
 void main(object actor, mixed *tree)
 {
 	object user;
 	object painter;
 	object gc;
+	int x, y, b;
 	string args;
 
 	args = fetch_raw(tree);
-
-	int x, y, b;
-
 	user = query_user();
 
 	painter = new_object(LWO_PAINTER);

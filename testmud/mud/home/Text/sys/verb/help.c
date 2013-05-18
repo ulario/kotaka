@@ -173,7 +173,12 @@ private string list_category(string category)
 	return buf;
 }
 
-void main(object actor, string args)
+int query_raw()
+{
+	return 1;
+}
+
+void main(object actor, mixed *tree)
 {
 	mapping index;
 	mapping list;
@@ -183,6 +188,9 @@ void main(object actor, string args)
 	string header;
 	string text;
 	int sz, i;
+	string args;
+
+	args = fetch_raw(tree);
 
 	args = STRINGD->trim_whitespace(args);
 	args = STRINGD->replace(args, " ", "_");

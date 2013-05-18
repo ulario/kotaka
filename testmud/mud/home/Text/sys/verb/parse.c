@@ -22,10 +22,17 @@
 
 inherit LIB_VERB;
 
-void main(object actor, string args)
+int query_raw()
+{
+	return 1;
+}
+
+void main(object actor, mixed *tree)
 {
 	object user;
-	string name;
+	string args;
+
+	args = fetch_raw(tree);
 
 	user = query_user();
 

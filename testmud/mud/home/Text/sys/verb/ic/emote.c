@@ -22,15 +22,21 @@
 
 inherit LIB_VERB;
 
+int query_raw()
+{
+	return 0;
+}
+
 void main(object actor, mixed *tree)
 {
 	object user;
 	string name;
 	string args;
 
-	args = fetch_raw(tree);
-	user = query_user();
+	args = fetch_evoke(tree);
 	args = STRINGD->trim_whitespace(args);
+
+	user = query_user();
 
 	if (args == "") {
 		send_out("Cat got your tongue?\n");

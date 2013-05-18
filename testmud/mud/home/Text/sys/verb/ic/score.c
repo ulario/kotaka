@@ -61,6 +61,11 @@ string make_xp_bar(int cur, int max, int len)
 	return buf;
 }
 
+int query_raw()
+{
+	return 0;
+}
+
 void main(object actor, mixed *tree)
 {
 	object user;
