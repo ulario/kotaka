@@ -24,6 +24,11 @@
 
 inherit LIB_VERB;
 
+mixed **query_roles()
+{
+	return ({ });
+}
+
 private void list_directory(string dir, int level)
 {
 	mapping list;

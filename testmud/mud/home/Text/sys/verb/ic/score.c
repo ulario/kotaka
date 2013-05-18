@@ -61,6 +61,11 @@ string make_xp_bar(int cur, int max, int len)
 	return buf;
 }
 
+mixed **query_roles()
+{
+	return ({ });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

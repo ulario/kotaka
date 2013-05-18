@@ -23,6 +23,11 @@
 
 inherit LIB_WIZVERB;
 
+mixed **query_roles()
+{
+	return ({ "master", ({ nil }), 1 });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed *st;

@@ -22,6 +22,11 @@
 
 inherit LIB_VERB;
 
+mixed **query_roles()
+{
+	return ({ "iob", ({ "to" }), 0 });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

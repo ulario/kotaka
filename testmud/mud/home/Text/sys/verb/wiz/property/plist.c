@@ -24,6 +24,11 @@
 
 inherit LIB_VERB;
 
+mixed **query_roles()
+{
+	return ({ "args", ({ nil }), 1 });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

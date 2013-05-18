@@ -22,6 +22,15 @@
 
 inherit LIB_VERB;
 
+/* ({ role, prepositions, raw }) */
+mixed **query_roles()
+{
+	return ({
+		({ "emote", ({ nil }), 1 })
+	});
+}
+
 void main(object actor, mapping roles)
 {
+	send_out("Emoting: " + STRINGD->mixed_sprint(roles["emote"]) + "\n");
 }

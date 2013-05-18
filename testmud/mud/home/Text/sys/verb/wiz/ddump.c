@@ -22,6 +22,11 @@
 
 inherit LIB_WIZVERB;
 
+mixed **query_roles()
+{
+	return ({ });
+}
+
 void main(object actor, mapping roles)
 {
 	int count;

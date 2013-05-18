@@ -24,6 +24,11 @@
 
 inherit LIB_VERB;
 
+mixed **query_roles()
+{
+	return ({ });
+}
+
 static void mop()
 {
 	object world;

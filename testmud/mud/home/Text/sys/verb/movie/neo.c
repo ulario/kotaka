@@ -22,6 +22,11 @@
 
 inherit LIB_VERB;
 
+mixed **query_roles()
+{
+	return ({ });
+}
+
 void main(object actor, mapping roles)
 {
 	query_ustate()->push_state(clone_object("~/obj/ustate/movie/matrix"));
