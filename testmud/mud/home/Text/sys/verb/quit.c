@@ -22,6 +22,11 @@
 
 inherit LIB_VERB;
 
+mixed **query_roles()
+{
+	return ({ });
+}
+
 void main(object actor, mapping roles)
 {
 	if (query_user()->query_body()) {

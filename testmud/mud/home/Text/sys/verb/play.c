@@ -26,9 +26,7 @@ inherit LIB_VERB;
 /* ({ role, prepositions, raw }) */
 mixed **query_roles()
 {
-	return ({
-		({ "dob", ({ nil }), 0 })
-	});
+	return ({ });
 }
 
 void main(object actor, mapping roles)
