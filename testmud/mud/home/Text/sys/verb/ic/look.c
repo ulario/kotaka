@@ -25,13 +25,23 @@ inherit LIB_VERB;
 /* ({ role, prepositions, raw }) */
 mixed **query_roles()
 {
-	return ({
-		({ "dob", ({ nil, "at" }), 0 }),
-		({ "iob", ({ "in" }), 0 })
-	});
+	return ({ });
 }
 
 void main(object actor, mapping roles)
 {
-	send_out(RENDERD->draw_look(actor, 0));
+	object dob;
+	string look;
+
+	dob = roles["dob"];
+
+	if (!dob) {
+		send_out(RENDERD->draw_look(actor, 0));
+		return;
+	}
+
+	look = dob->query_property("look");
+
+	send_out(look ? look : "a bland object");
+	send_out("\n");
 }
