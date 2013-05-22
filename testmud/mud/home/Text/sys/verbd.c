@@ -108,24 +108,41 @@ private string raw_convert(mixed **role)
 private mapping raw_bind(mapping raw)
 {
 	mapping bind;
-	string *roles;
+	string *rlist;
 	int sz;
 	int i;
 
 	bind = ([ ]);
-	roles = map_indices(raw);
+	rlist = map_indices(raw);
 	sz = sizeof(roles);
 
 	for (i = 0; i < sz; i++) {
-		bind[roles[i]] = raw_convert(raw[roles[i]]);
+		bind[rlist[i]] = raw_convert(raw[rlist[i]]);
 	}
 
 	return bind;
 }
 
+private mixed role_convert(mixed **role, object *candidates)
+{
+}
+
 private mapping role_bind(mapping roles)
 {
-	return ([ ]);
+	mapping bind;
+	string *rlist;
+	int sz;
+	int i;
+
+	bind = ([ ]);
+	rlist = map_indices(raw);
+	sz = sizeof(roles);
+
+	for (i = 0; i < sz; i++) {
+		bind[rlist[i]] = role_convert(roles[rlist[i]]);
+	}
+
+	return bind;
 }
 
 int do_action(object actor, string command, string args)
@@ -165,7 +182,7 @@ int do_action(object actor, string command, string args)
 
 	if (!parse) {
 		/* choked on bad grammar */
-		ustate->send_out("Huh?\n");
+		ustate->send_out("Your grammar stinks.\n");
 		return TRUE;
 	}
 
@@ -225,7 +242,8 @@ int do_action(object actor, string command, string args)
 
 		case "E":
 			if (evoke) {
-				error("Duplicate evoke");
+				ustate->send_out("Too many evokes!\n");
+				return TRUE;
 			}
 
 			evoke = parse[i][1];
@@ -268,9 +286,6 @@ int do_action(object actor, string command, string args)
 	roles = roles - rlist;
 	raw = raw_bind(raw);
 	roles = role_bind(roles);
-
-	ustate->send_out("Debug:\n" + STRINGD->hybrid_sprint(roles) + "\n");
-	ustate->send_out("Debug:\n" + STRINGD->hybrid_sprint(raw) + "\n");
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
 
