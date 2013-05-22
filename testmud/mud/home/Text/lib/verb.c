@@ -44,8 +44,6 @@ nomask int query_raw()
 	error("Deprecated function");
 }
 
-void main(object actor, mapping roles);
-
 nomask mixed fetch_raw(mixed junk ...)
 {
 	error("Deprecated function");
