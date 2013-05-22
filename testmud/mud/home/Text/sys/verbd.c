@@ -76,6 +76,7 @@ int do_action(object actor, string command, string args)
 	mixed **rules;
 	mixed *parse;
 	string evoke;
+	string *rlist;
 	int sz;
 	int i;
 
@@ -95,7 +96,15 @@ int do_action(object actor, string command, string args)
 	}
 
 	statement = command + " " + args;
+
 	parse = ENGLISHD->parse(statement);
+
+	if (!parse) {
+		/* choked on bad grammar */
+		ustate->send_out("Huh?\n");
+		return TRUE;
+	}
+
 	rules = verb->query_roles();
 
 	sz = sizeof(rules);
@@ -130,8 +139,6 @@ int do_action(object actor, string command, string args)
 		}
 	}
 
-	ustate->send_out("Debug: " + STRINGD->hybrid_sprint(rules) + "\n");
-
 	sz = sizeof(parse);
 
 	for (i = 0; i < sz; i++) {
@@ -141,12 +148,10 @@ int do_action(object actor, string command, string args)
 
 		switch(parse[i][0]) {
 		case "V":
-			ustate->send_out("Debug: Found verb phrase: " + STRINGD->mixed_sprint(parse[i]) + "\n");
 			np = parse[i][2];
 			break;
 
 		case "P":
-			ustate->send_out("Debug: Found prep phrase: " + STRINGD->mixed_sprint(parse[i]) + "\n");
 			prep = parse[i][1];
 			np = parse[i][2];
 			break;
@@ -158,6 +163,12 @@ int do_action(object actor, string command, string args)
 
 			evoke = parse[i][1];
 			continue;
+		default:
+			error("Unrecognized parse element");
+		}
+
+		if (!crole) {
+			crole = "dob";
 		}
 
 		if (!raw[crole]) {
@@ -175,33 +186,21 @@ int do_action(object actor, string command, string args)
 						break;
 					}
 				}
-			} else if (!crole) {
-				if (np) {
-					error("No direct role");
-				}
 			}
 		}
 
-		if (crole) {
-			if (!roles[crole]) {
-				roles[crole] = ({ });
-			}
-
-			roles[crole] += ({ parse[i] });
-		} else {
-			ustate->send_out("Debug: Discarding: " + STRINGD->mixed_sprint(parse[i]) + "\n");
+		if (!roles[crole]) {
+			roles[crole] = ({ });
 		}
+
+		roles[crole] += ({ parse[i] });
 	}
+
+	ustate->send_out("Debug:\n" + STRINGD->hybrid_sprint(roles) + "\n");
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
 
-	ustate->send_out("Debug: " + STRINGD->hybrid_sprint(roles) + "\n");
-
-	if (parse) {
-		verb->main(actor, roles);
-	} else {
-		ustate->send_out("Huh?\n");
-	}
+	verb->main(actor, roles);
 
 	if (this_object()) {
 		TLSD->set_tls_value("Text", "ustate", nil);
