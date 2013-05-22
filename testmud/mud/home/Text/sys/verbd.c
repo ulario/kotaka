@@ -287,15 +287,17 @@ int do_action(object actor, string command, string args)
 	roles = roles - rlist;
 	raw = raw_bind(raw);
 
-	candidates = actor->query_inventory();
-	{
+	if (actor) {
 		object environment;
 
+		candidates = actor->query_inventory();
 		environment = actor->query_environment();
 
 		if (environment) {
 			candidates += environment->query_inventory();
 		}
+	} else {
+		candidates = ({ });
 	}
 
 	roles = role_bind(roles, candidates);
