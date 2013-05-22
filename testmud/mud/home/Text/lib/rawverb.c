@@ -37,4 +37,4 @@ nomask mixed **query_roles()
 	error("This function does not belong in a raw verb");
 }
 
-void main(string args);
+void main(object actor, string args);
