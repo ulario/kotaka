@@ -173,6 +173,13 @@ private string list_category(string category)
 	return buf;
 }
 
+mixed **query_roles()
+{
+	return ({
+		({ "args", ({ nil }), 1 })
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	mapping index;
@@ -184,6 +191,8 @@ void main(object actor, mapping roles)
 	string text;
 	string args;
 	int sz, i;
+
+	args = roles["args"];
 
 	args = STRINGD->trim_whitespace(args);
 	args = STRINGD->replace(args, " ", "_");
