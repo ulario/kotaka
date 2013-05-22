@@ -22,7 +22,12 @@
 
 inherit LIB_VERB;
 
+mixed **query_roles()
+{
+	return ({ });
+}
+
 void main(object actor, mapping roles)
 {
-	send_out(STRINGD->hybrid_sprint(roles));
+	send_out(STRINGD->hybrid_sprint(roles) + "\n");
 }
