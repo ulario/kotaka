@@ -123,6 +123,11 @@ private mapping raw_bind(mapping raw)
 	return bind;
 }
 
+private mapping role_bind(mapping roles)
+{
+	return ([ ]);
+}
+
 int do_action(object actor, string command, string args)
 {
 	object ustate;
@@ -262,6 +267,7 @@ int do_action(object actor, string command, string args)
 	raw = roles & rlist;
 	roles = roles - rlist;
 	raw = raw_bind(raw);
+	roles = role_bind(roles);
 
 	ustate->send_out("Debug:\n" + STRINGD->hybrid_sprint(roles) + "\n");
 	ustate->send_out("Debug:\n" + STRINGD->hybrid_sprint(raw) + "\n");
