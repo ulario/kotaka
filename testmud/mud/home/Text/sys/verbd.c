@@ -114,7 +114,7 @@ private mapping raw_bind(mapping raw)
 
 	bind = ([ ]);
 	rlist = map_indices(raw);
-	sz = sizeof(roles);
+	sz = sizeof(rlist);
 
 	for (i = 0; i < sz; i++) {
 		bind[rlist[i]] = raw_convert(raw[rlist[i]]);
