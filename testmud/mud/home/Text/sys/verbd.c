@@ -127,7 +127,7 @@ private mixed role_convert(mixed **role, object *candidates)
 {
 }
 
-private mapping role_bind(mapping roles)
+private mapping role_bind(mapping roles, object *candidates)
 {
 	mapping bind;
 	string *rlist;
@@ -135,11 +135,11 @@ private mapping role_bind(mapping roles)
 	int i;
 
 	bind = ([ ]);
-	rlist = map_indices(raw);
-	sz = sizeof(roles);
+	rlist = map_indices(roles);
+	sz = sizeof(rlist);
 
 	for (i = 0; i < sz; i++) {
-		bind[rlist[i]] = role_convert(roles[rlist[i]]);
+		bind[rlist[i]] = role_convert(roles[rlist[i]], candidates);
 	}
 
 	return bind;
@@ -149,6 +149,7 @@ int do_action(object actor, string command, string args)
 {
 	object ustate;
 	object verb;
+	object *candidates;
 	string statement;
 	string crole;
 	mapping roles;
@@ -285,7 +286,19 @@ int do_action(object actor, string command, string args)
 	raw = roles & rlist;
 	roles = roles - rlist;
 	raw = raw_bind(raw);
-	roles = role_bind(roles);
+
+	candidates = actor->query_inventory();
+	{
+		object environment;
+
+		environment = actor->query_environment();
+
+		if (environment) {
+			candidates += environment->query_inventory();
+		}
+	}
+
+	roles = role_bind(roles, candidates);
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
 
