@@ -24,7 +24,9 @@ inherit LIB_VERB;
 
 mixed **query_roles()
 {
-	return ({ "iob", ({ "to" }), 0 });
+	return ({
+		({ "iob", ({ "to" }), 0 })
+	});
 }
 
 void main(object actor, mapping roles)
@@ -32,6 +34,8 @@ void main(object actor, mapping roles)
 	object user;
 	string name;
 	string args;
+
+	user = query_user();
 
 	if (user->query_class() < 1) {
 		send_out("You do not have sufficient access rights to speak.\n");
