@@ -62,8 +62,6 @@ private void decomment()
 	lines -= ({ nil });
 
 	grammar = implode(lines, "\n");
-
-	LOGD->post_message("english", LOG_DEBUG, "Grammar:\n" + grammar);
 }
 
 mixed *parse(string input)
@@ -85,7 +83,7 @@ mixed *statement_vp_ppl_evoke(mixed *input)
 
 	evoke = input[sz - 1];
 
-	return ({ input[0 .. sz - 2], ({ "E", evoke[1 .. strlen(evoke) - 2] }) });
+	return input[0 .. sz - 2] + ({ ({ "E", evoke[1 .. strlen(evoke) - 2] }) });
 }
 
 mixed *vp_verb(mixed *input)
