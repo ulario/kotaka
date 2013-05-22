@@ -56,7 +56,6 @@
 #define DUMPD		(USR_DIR + "/Kotaka/sys/dumpd")
 #define PROPERTYD	(USR_DIR + "/Kotaka/sys/propertyd")
 #define PARSE_DUMP	(USR_DIR + "/Kotaka/sys/parse/dump")
-#define PARSE_ENGLISH	(USR_DIR + "/Kotaka/sys/parse/english")
 #define PARSE_VALUE	(USR_DIR + "/Kotaka/sys/parse/value")
 
 /* libs */
