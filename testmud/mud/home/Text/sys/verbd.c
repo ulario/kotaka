@@ -64,6 +64,65 @@ private object find_verb(string command)
 	}
 }
 
+private string raw_convert(mixed **role)
+{
+	string *build;
+	int sz;
+	int i;
+
+	build = ({ });
+
+	sz = sizeof(role);
+
+	for (i = 0; i < sz; i++) {
+		mixed *phrase;
+		mixed *np;
+
+		phrase = role[i];
+
+		switch(phrase[0]) {
+		case "V":
+			np = phrase[2];
+
+			if (np) {
+				build += np[1];
+			}
+
+			break;
+
+		case "P":
+			build += ({ phrase[1] });
+			np = phrase[2];
+
+			if (np) {
+				build += np[1];
+			}
+
+			break;
+		}
+	}
+
+	return implode(build, " ");
+}
+
+private mapping raw_bind(mapping raw)
+{
+	mapping bind;
+	string *roles;
+	int sz;
+	int i;
+
+	bind = ([ ]);
+	roles = map_indices(raw);
+	sz = sizeof(roles);
+
+	for (i = 0; i < sz; i++) {
+		bind[roles[i]] = raw_convert(raw[roles[i]]);
+	}
+
+	return bind;
+}
+
 int do_action(object actor, string command, string args)
 {
 	object ustate;
@@ -126,7 +185,10 @@ int do_action(object actor, string command, string args)
 
 		role = rule[0];
 		preps = rule[1];
-		raw[role] = rule[2];
+
+		if (rule[2]) {
+			raw[role] = 1;
+		}
 
 		sz2 = sizeof(preps);
 
@@ -196,11 +258,17 @@ int do_action(object actor, string command, string args)
 		roles[crole] += ({ parse[i] });
 	}
 
+	rlist = map_indices(raw);
+	raw = roles & rlist;
+	roles = roles - rlist;
+	raw = raw_bind(raw);
+
 	ustate->send_out("Debug:\n" + STRINGD->hybrid_sprint(roles) + "\n");
+	ustate->send_out("Debug:\n" + STRINGD->hybrid_sprint(raw) + "\n");
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
 
-	verb->main(actor, roles);
+	verb->main(actor, roles + raw);
 
 	if (this_object()) {
 		TLSD->set_tls_value("Text", "ustate", nil);
