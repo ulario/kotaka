@@ -39,35 +39,53 @@ static void send_out(string str)
 	query_ustate()->send_out(str);
 }
 
-int query_raw()
+nomask int query_raw()
 {
-	return 1;
+	error("Deprecated function");
 }
 
-void main(mixed *tree)
+void main(object actor, mapping roles);
+
+nomask mixed fetch_raw(mixed junk ...)
 {
+	error("Deprecated function");
 }
 
-static string fetch_raw(mixed *tree)
+nomask mixed fetch_evoke(mixed junk ...)
 {
-	mixed *iclause;
-	mixed *raw;
+	error("Deprecated function");
+}
 
-	if (tree[0] != "S") {
-		error("Expected: statement");
+static string generate_brief_definite(object thing)
+{
+	string brief;
+
+	brief = thing->query_property("brief");
+
+	if (brief) {
+		return "the " + brief;
 	}
 
-	iclause = tree[1];
+	brief = thing->query_property("id");
 
-	if (iclause[0] != "V") {
-		error("Expected: verb");
+	if (brief) {
+		return "the " + brief;
+	}
+}
+
+static string generate_brief_indefinite(object thing)
+{
+	string brief;
+
+	brief = thing->query_property("brief");
+
+	if (brief) {
+		return "a " + brief;
 	}
 
-	raw = iclause[2];
+	brief = thing->query_property("id");
 
-	if (raw[0] != "R") {
-		error("Expected: raw role");
+	if (brief) {
+		return "a " + brief;
 	}
-
-	return raw[1];
 }
