@@ -4,15 +4,14 @@
 # evokes
 # adverbs
 
-whitespace = / +/
-prep = /in|on|from|at|with/
+whitespace = /[ ,]+/
+prep = /in|on|from|at|with|to/
 word = /[^ ,"]+/
 evoke = /"[^"]*"/
 junk = nomatch
 
 statement: vp ppl
 statement: vp ppl evoke ? statement_vp_ppl_evoke
-statement: vp ppl ',' evoke ? statement_vp_ppl_evoke
 
 vp: verb ? vp_verb
 vp: verb np ? vp_verb_np
@@ -20,8 +19,8 @@ vp: verb np ? vp_verb_np
 ppl:
 ppl: ppl pp
 
-pp: prep np ? pp_prep_np
 pp: prep ? pp_prep
+pp: prep np ? pp_prep_np
 
 np: adjl noun ? np_adjl_noun
 
