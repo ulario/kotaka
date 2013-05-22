@@ -20,14 +20,9 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
-mixed **query_roles()
-{
-	return ({ });
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	query_ustate()->push_state(clone_object("~/obj/ustate/movie/matrix"));
 }

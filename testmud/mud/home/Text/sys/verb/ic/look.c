@@ -20,7 +20,7 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 
-inherit LIB_VERB;
+inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */
 mixed **query_roles()
@@ -28,7 +28,7 @@ mixed **query_roles()
 	return ({ });
 }
 
-void main(object actor, mapping roles)
+void do_action(object actor, mapping roles)
 {
 	object dob;
 	string look;

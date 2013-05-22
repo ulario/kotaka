@@ -24,18 +24,12 @@
 #include <text/paths.h>
 #include <kotaka/log.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
-mixed **query_roles()
-{
-	return ({ "turkey", ({ nil }), 1 });
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	object user, *users;
 	string kicker_name;
-	string args;
 	int i, sz;
 
 	user = query_user();

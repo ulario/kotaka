@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
-#include <text/paths.h>
 #include <kotaka/privilege.h>
+#include <text/parse.h>
+#include <text/paths.h>
 
 private string *gather_dirs(string dir)
 {
@@ -145,22 +146,15 @@ private mapping role_bind(mapping roles, object *candidates)
 	return bind;
 }
 
-int do_action(object actor, string command, string args)
+int do_verb(string command, string args)
 {
-	object ustate;
-	object verb;
+	object verb, actor, ustate;
+	string statement, crole, evoke;
+	mixed **parse, **rules;
+	int sz, i;
+	mapping raw, roles, prepkey;
 	object *candidates;
-	string statement;
-	string crole;
-	mapping roles;
-	mapping raw;
-	mapping prepkey;
-	mixed **rules;
-	mixed *parse;
-	string evoke;
 	string *rlist;
-	int sz;
-	int i;
 
 	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
 
@@ -170,15 +164,24 @@ int do_action(object actor, string command, string args)
 		return FALSE;
 	}
 
-	if (sscanf(object_name(verb), "%*s/ic/%*s")) {
-		if (!actor) {
-			ustate->send_out("You must be in character to use that verb.\n");
-			return TRUE;
+	actor = ustate->query_user()->query_body();
+
+	switch(verb->query_parse_method()) {
+	case PARSE_RAW:
+		TLSD->set_tls_value("Text", "ustate", ustate);
+		verb->main(actor, args);
+		if (this_object()) {
+			TLSD->set_tls_value("Text", "ustate", nil);
 		}
+		return TRUE;
+
+	case PARSE_ENGLISH:
+		break;
 	}
 
-	statement = command + " " + args;
+	TLSD->set_tls_value("Text", "ustate", ustate);
 
+	statement = command + " " + args;
 	parse = ENGLISHD->parse(statement);
 
 	if (!parse) {
@@ -302,9 +305,7 @@ int do_action(object actor, string command, string args)
 
 	roles = role_bind(roles, candidates);
 
-	TLSD->set_tls_value("Text", "ustate", ustate);
-
-	verb->main(actor, roles + raw);
+	verb->do_action(actor, roles + raw);
 
 	if (this_object()) {
 		TLSD->set_tls_value("Text", "ustate", nil);

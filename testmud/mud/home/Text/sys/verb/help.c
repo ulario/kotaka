@@ -21,7 +21,7 @@
 #include <text/paths.h>
 #include <kotaka/assert.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
 int topic_compare(string lhs, string rhs)
 {
@@ -173,14 +173,7 @@ private string list_category(string category)
 	return buf;
 }
 
-mixed **query_roles()
-{
-	return ({
-		({ "args", ({ nil }), 1 })
-	});
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	mapping index;
 	mapping list;
@@ -189,10 +182,7 @@ void main(object actor, mapping roles)
 	string topic;
 	string header;
 	string text;
-	string args;
 	int sz, i;
-
-	args = roles["args"];
 
 	args = STRINGD->trim_whitespace(args);
 	args = STRINGD->replace(args, " ", "_");

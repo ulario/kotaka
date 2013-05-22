@@ -23,23 +23,13 @@
 #include <text/paths.h>
 #include <game/paths.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
-mixed **query_roles()
-{
-	return ({
-		({ "args", ({ nil }), 1 })
-	});
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	string user;
 	int amount;
 	mixed total;
-	string args;
-
-	args = roles["args"];
 
 	if (query_user()->query_class() < 2) {
 		send_out("Only a wizard can award XP.\n");

@@ -22,14 +22,9 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
-mixed **query_roles()
-{
-	return ({ "args", ({ nil }), 1 });
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	string *users;
 	object user;
@@ -37,7 +32,6 @@ void main(object actor, mapping roles)
 	string oname;
 	string pname;
 	mixed pvalue;
-	string args;
 
 	user = query_user();
 

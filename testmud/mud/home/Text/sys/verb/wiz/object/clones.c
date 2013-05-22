@@ -21,18 +21,12 @@
 #include <text/paths.h>
 #include <status.h>
 
-inherit LIB_WIZVERB;
+inherit LIB_RAWVERB;
 
-mixed **query_roles()
-{
-	return ({ "master", ({ nil }), 1 });
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	mixed *st;
 	object cinfo;
-	string args;
 	int oindex;
 	int count;
 

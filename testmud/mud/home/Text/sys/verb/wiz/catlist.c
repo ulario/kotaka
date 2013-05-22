@@ -22,12 +22,7 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
-inherit LIB_VERB;
-
-mixed **query_roles()
-{
-	return ({ });
-}
+inherit LIB_RAWVERB;
 
 private void list_directory(string dir, int level)
 {
@@ -60,7 +55,7 @@ private void list_directory(string dir, int level)
 	}
 }
 
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	string *users;
 	object user;

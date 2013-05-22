@@ -20,17 +20,9 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
-/* ({ role, prepositions, raw }) */
-mixed **query_roles()
+void main(object actor, string args)
 {
-	return ({
-		({ "emote", ({ nil }), 1 })
-	});
-}
-
-void main(object actor, mapping roles)
-{
-	send_out("Emoting: " + STRINGD->mixed_sprint(roles["emote"]) + "\n");
+	send_out("Emoting: " + args + "\n");
 }

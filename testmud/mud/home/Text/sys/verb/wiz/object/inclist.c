@@ -21,18 +21,12 @@
 #include <text/paths.h>
 #include <status.h>
 
-inherit LIB_WIZVERB;
+inherit LIB_RAWVERB;
 
-mixed **query_roles()
-{
-	return ({ "file", ({ nil }), 1 });
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	object ilist;
 	int i, sz;
-	string args;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do an inclusion check.\n");

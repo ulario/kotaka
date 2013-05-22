@@ -22,7 +22,7 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
 string make_bar(int cur, int max, int len)
 {
@@ -61,12 +61,7 @@ string make_xp_bar(int cur, int max, int len)
 	return buf;
 }
 
-mixed **query_roles()
-{
-	return ({ });
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	object user;
 	object body;

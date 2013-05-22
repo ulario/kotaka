@@ -21,24 +21,14 @@
 #include <account/paths.h>
 #include <game/paths.h>
 #include <text/paths.h>
+#include <text/parse.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
-/* name, prepositions, raw */
-mixed **query_roles()
-{
-	return ({
-		({ "args", ({ nil }), 1 })
-	});
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	string name;
-	string gender;
-	string args;
 
-	args = roles["args"];
 	name = query_user()->query_name();
 
 	if (!name) {

@@ -22,12 +22,7 @@
 #include <game/paths.h>
 #include <kotaka/log.h>
 
-inherit LIB_VERB;
-
-mixed **query_roles()
-{
-	return ({ });
-}
+inherit LIB_RAWVERB;
 
 static void mop()
 {
@@ -43,7 +38,7 @@ static void mop()
 	}
 }
 
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	call_out("mop", 0);
 }

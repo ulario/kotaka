@@ -21,20 +21,14 @@
 #include <text/paths.h>
 #include <status.h>
 
-inherit LIB_WIZVERB;
+inherit LIB_RAWVERB;
 
-mixed **query_roles()
-{
-	return ({ });
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	mixed *st;
 	object cinfo;
 	object first;
 	object clone;
-	string args;
 	int oindex;
 
 	if (query_user()->query_class() < 2) {

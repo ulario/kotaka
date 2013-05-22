@@ -21,15 +21,9 @@
 #include <text/paths.h>
 #include <game/paths.h>
 
-inherit LIB_VERB;
+inherit LIB_RAWVERB;
 
-/* ({ role, prepositions, raw }) */
-mixed **query_roles()
-{
-	return ({ });
-}
-
-void main(object actor, mapping roles)
+void main(object actor, string args)
 {
 	string name;
 	object world;
