@@ -526,7 +526,7 @@ int do_verb(string command, string args)
 		return TRUE;
 	}
 
-	verb->do_action(actor, roles + raw);
+	verb->do_action(actor, roles + raw, evoke);
 
 	if (this_object()) {
 		TLSD->set_tls_value("Text", "ustate", nil);
