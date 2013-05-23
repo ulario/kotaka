@@ -197,6 +197,7 @@ static void place_object(string base, int remainder)
 void build_world()
 {
 	object master;
+	object trinket;
 
 	world = create_object();
 	world->set_property("id", "world");
@@ -265,6 +266,15 @@ void build_world()
 	world->set_density(6.5);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/grass");
+
+	trinket = create_object();
+	trinket->set_density(1.0);
+	trinket->set_mass(0.1);
+	trinket->set_property("local_nouns", ({ "crown" }) );
+	trinket->set_property("local_adjectives", ({ "golden", "gold" }) );
+	trinket->set_property("brief", "golden crown");
+	trinket->set_property("look", "A simple golden crown.  It is round, and has twelve peaks, each studded with a humble pearl.");
+	trinket->move(world);
 }
 
 /********/
