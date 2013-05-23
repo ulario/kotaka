@@ -204,3 +204,20 @@ string generate_brief_indefinite(object thing)
 		return "a " + brief;
 	}
 }
+
+string generate_list(string *phrases)
+{
+	int sz;
+
+	switch(sizeof(phrases)) {
+	case 0:
+		return nil;
+	case 1:
+		return phrases[0];
+	case 2:
+		return phrases[0] + " and " + phrases[1];
+	default:
+		sz = sizeof(phrases);
+		return implode(phrases[0 .. sz - 2], ", ") + ", and " + phrases[sz - 1];
+	}
+}

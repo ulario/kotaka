@@ -114,7 +114,7 @@ private string inventory_list(object *inv)
 		desc += ({ TEXT_SUBD->generate_brief_indefinite(inv[i]) });
 	}
 
-	return implode(desc, ", ");
+	return TEXT_SUBD->generate_list(desc);
 }
 
 private void draw_prose(object gc, object actor)
