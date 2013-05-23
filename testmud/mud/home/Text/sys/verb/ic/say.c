@@ -33,7 +33,6 @@ void do_action(object actor, mapping roles, string evoke)
 {
 	object user;
 	string name;
-	string args;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
@@ -47,15 +46,13 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
-	args = STRINGD->trim_whitespace(args);
-
-	if (!args || args == "") {
+	if (!evoke) {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
 
 	name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
 
-	send_out("You say: " + args + "\n");
-	TEXT_SUBD->send_to_all_except(name + " says: " + args + "\n", ({ user }) );
+	send_out("You say \"" + evoke + "\"\n");
+	TEXT_SUBD->send_to_all_except(name + " says \"" + evoke + "\"\n", ({ user }) );
 }
