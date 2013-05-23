@@ -23,6 +23,20 @@
 #include <text/parse.h>
 #include <text/paths.h>
 
+string *verbdirs;
+
+static void create()
+{
+	verbdirs = ({ USR_DIR + "/Text/sys/verb" });
+}
+
+void upgrading()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	create();
+}
+
 private string *gather_dirs(string dir)
 {
 	string *buf;
@@ -56,7 +70,13 @@ private object find_verb(string command)
 	string *dirs;
 	int i, sz;
 
-	dirs = gather_dirs("~/sys/verb");
+	sz = sizeof(verbdirs);
+	dirs = ({ });
+
+	for (i = 0; i < sz; i++) {
+		dirs += gather_dirs(verbdirs[i]);
+	}
+
 	sz = sizeof(dirs);
 
 	for (i = 0; i < sz; i++) {
@@ -64,6 +84,13 @@ private object find_verb(string command)
 			return verb;
 		}
 	}
+}
+
+void add_verb_directory(string directory)
+{
+	ACCESS_CHECK(GAME() || TEXT());
+
+	verbdirs |= ({ directory });
 }
 
 private string raw_convert(mixed **role)
