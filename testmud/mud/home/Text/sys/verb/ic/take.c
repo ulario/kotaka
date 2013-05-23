@@ -56,16 +56,11 @@ void do_action(object actor, mapping roles)
 		return;
 	}
 
-	if (dob->query_environment() == actor->query_environment()) {
-		send_out("You take " + generate_brief_definite(dob) + ".\n");
-		dob->move(actor);
-		return;
-	}
-
 	if (dob->query_environment() == actor) {
 		send_out("You already have it!\n");
 		return;
 	}
 
-	send_out("It is out of reach.\n");
+	send_out("You take " + generate_brief_definite(dob) + ".\n");
+	dob->move(actor);
 }
