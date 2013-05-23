@@ -323,7 +323,7 @@ string draw_look(object living, varargs int facing)
 	object *envstack;
 	object gc;
 
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || GAME());
 
 	painter = new_object(LWO_PAINTER);
 	painter->set_size(80, 20);

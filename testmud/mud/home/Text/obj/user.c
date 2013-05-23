@@ -91,7 +91,7 @@ void set_uid(int new_uid)
 
 void set_mobile(object new_mobile)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || GAME());
 
 	mobile = new_mobile;
 }
@@ -103,7 +103,7 @@ object query_mobile()
 
 void set_body(object new_body)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || GAME());
 
 	body = new_body;
 }
