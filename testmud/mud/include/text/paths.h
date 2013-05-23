@@ -3,7 +3,8 @@
 /* lib */
 
 #define LIB_VERB		(USR_DIR + "/Text/lib/verb")
-#define LIB_WIZVERB		(USR_DIR + "/Text/lib/wizverb")
+#define LIB_RAWVERB		(USR_DIR + "/Text/lib/rawverb")
+#define LIB_ENGVERB		(USR_DIR + "/Text/lib/engverb")
 #define TEXT_LIB_USTATE		(USR_DIR + "/Text/lib/ustate")
 
 /* sys */
