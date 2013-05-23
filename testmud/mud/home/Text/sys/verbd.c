@@ -344,20 +344,18 @@ int do_verb(string command, string args)
 			crole = "dob";
 		}
 
-		if (!raw[crole]) {
-			rcand = prepkey[prep];
+		rcand = prepkey[prep];
 
-			if (rcand) {
-				int j;
-				int sz2;
+		if (rcand) {
+			int j;
+			int sz2;
 
-				sz2 = sizeof(rcand);
+			sz2 = sizeof(rcand);
 
-				for (j = 0; j < sz2; j++) {
-					if (!roles[rcand[j]]) {
-						crole = rcand[j];
-						break;
-					}
+			for (j = 0; j < sz2; j++) {
+				if (!roles[rcand[j]]) {
+					crole = rcand[j];
+					break;
 				}
 			}
 		}
