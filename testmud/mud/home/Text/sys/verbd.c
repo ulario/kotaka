@@ -149,6 +149,17 @@ private object *filter_objects(object *candidates, string noun, string *adjectiv
 	return contenders;
 }
 
+private object *gather_relation(string prep, object source)
+{
+	switch(prep) {
+	case "from":
+	case "in":
+		return source->query_inventory();
+	default:
+		return nil;
+	}
+}
+
 private mixed role_convert(mixed **role, object *initial)
 {
 	int sz, i;
@@ -166,6 +177,11 @@ private mixed role_convert(mixed **role, object *initial)
 		/* 2.  build new candidates using the preposition */
 
 		phrase = role[i];
+
+		if (!phrase[1]) {
+			return "Your grammar stinks.";
+		}
+
 		np = phrase[1][1];
 
 		noun = np[sizeof(np) - 1];
@@ -174,15 +190,16 @@ private mixed role_convert(mixed **role, object *initial)
 		candidates = filter_objects(candidates, noun, adj);
 
 		if (sizeof(candidates) == 0) {
-			return "No such object";
+			return "There is no " + implode(adj, " ") + noun + ".";
 		} else if (sizeof(candidates) > 1) {
-			return "Ambiguous";
+			return "There is more than one " + implode(adj, " ") + noun + ".";
 		}
 
 		if (i > 0) {
-			switch(phrase[0]) {
-			default:
-				return "I don't know how to look " + phrase[0] + " something.";
+			candidates = gather_relation(phrase[0], candidates[0]);
+
+			if (!candidates) {
+				return "Sorry, I don't know how to handle \"" + phrase[0] + "\".";
 			}
 		}
 	}
@@ -379,11 +396,7 @@ int do_verb(string command, string args)
 		candidates[rlist[i]] = def_candidates[..];
 	}
 
-	LOGD->post_message("parse", LOG_DEBUG, "Debug:\n" + STRINGD->hybrid_sprint(roles) + "\n");
-
 	roles = role_bind(roles, candidates);
-
-	LOGD->post_message("parse", LOG_DEBUG, "Debug (bind):\n" + STRINGD->hybrid_sprint(roles) + "\n");
 
 	verb->do_action(actor, roles + raw);
 
