@@ -31,7 +31,7 @@ mixed **query_roles()
 	});
 }
 
-void do_action(object actor, mapping roles)
+void do_action(object actor, mapping roles, string evoke)
 {
 	mixed dob;
 	mixed iob;

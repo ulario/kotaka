@@ -29,7 +29,7 @@ mixed **query_roles()
 	return ({ });
 }
 
-void do_action(object actor, mapping roles)
+void do_action(object actor, mapping roles, string evoke)
 {
 	mixed dob;
 	string look;
