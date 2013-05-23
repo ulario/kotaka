@@ -49,8 +49,8 @@ private void draw_tickmarks(object gc)
 
 private void default_painter(object gc, object neighbor, object living)
 {
-	float dx, dy;
-	float ox, oy;
+	int dx, dy;
+	int ox, oy;
 
 	int x, y;
 
