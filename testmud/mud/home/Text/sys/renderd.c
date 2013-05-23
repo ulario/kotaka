@@ -102,6 +102,21 @@ private void draw_background(object gc)
 	gc->set_color(0x04);
 }
 
+private string inventory_list(object *inv)
+{
+	string *desc;
+	int i, sz;
+
+	desc = ({ });
+	sz = sizeof(inv);
+
+	for (i = 0; i < sz; i++) {
+		desc += ({ TEXT_SUBD->generate_brief_indefinite(inv[i]) });
+	}
+
+	return implode(desc, ", ");
+}
+
 private void draw_prose(object gc, object actor)
 {
 	object env;
@@ -124,6 +139,7 @@ private void draw_prose(object gc, object actor)
 	} else {
 		string *lines;
 		string desc;
+		object *inv;
 		int i;
 		int sz;
 
@@ -132,6 +148,15 @@ private void draw_prose(object gc, object actor)
 		}
 
 		lines = explode(STRINGD->wordwrap(desc, 55), "\n");
+
+		inv = env->query_inventory() - ({ actor });
+
+		if (sizeof(inv)) {
+			lines += ({ "" });
+
+			lines += explode(STRINGD->wordwrap("You see " + inventory_list(inv), 55) + ".", "\n");
+		}
+
 		sz = sizeof(lines);
 
 		for (i = 0; i < sz; i++) {
