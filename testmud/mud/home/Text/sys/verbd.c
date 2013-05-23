@@ -522,7 +522,7 @@ int do_verb(string command, string args)
 	roles = role_bind(roles, candidates);
 
 	if (TLSD->query_tls_value("Text", "parse_error")) {
-		ustate->send_out(TLSD->query_tls_value("Text", "parse_error"));
+		ustate->send_out(TLSD->query_tls_value("Text", "parse_error") + "\n");
 		return TRUE;
 	}
 
