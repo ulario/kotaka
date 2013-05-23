@@ -27,14 +27,7 @@ string *verbdirs;
 
 static void create()
 {
-	verbdirs = ({ USR_DIR + "/Text/sys/verb" });
-}
-
-void upgrading()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	create();
+	verbdirs = ({ USR_DIR + "/Text/sys/verb", USR_DIR + "/Game/sys/verb" });
 }
 
 private string *gather_dirs(string dir)
@@ -88,8 +81,6 @@ private object find_verb(string command)
 
 void add_verb_directory(string directory)
 {
-	ACCESS_CHECK(GAME() || TEXT());
-
 	verbdirs |= ({ directory });
 }
 
