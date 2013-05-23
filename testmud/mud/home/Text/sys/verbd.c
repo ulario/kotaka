@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012  Raymond Jennings
+ * Copyright (C) 2013  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/log.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <text/parse.h>
@@ -124,11 +125,72 @@ private mapping raw_bind(mapping raw)
 	return bind;
 }
 
-private mixed role_convert(mixed **role, object *candidates)
+private object *filter_objects(object *candidates, string noun, string *adjectives)
 {
+	object *contenders;
+	int sz;
+	int i;
+
+	sz = sizeof(candidates);
+	contenders = ({ });
+
+	for (i = 0; i < sz; i++) {
+		if (!sizeof(({ noun }) & candidates[i]->query_property("nouns"))) {
+			continue;
+		}
+
+		if (sizeof(adjectives  - candidates[i]->query_property("adjectives"))) {
+			continue;
+		}
+
+		contenders += ({ candidates[i] });
+	}
+
+	return contenders;
 }
 
-private mapping role_bind(mapping roles, object *candidates)
+private mixed role_convert(mixed **role, object *initial)
+{
+	int sz, i;
+	object *candidates;
+	string *adj;
+	string noun;
+
+	sz = sizeof(role);
+	candidates = initial;
+
+	for (i = sz - 1; i >= 0; i--) {
+		mixed *phrase;
+		string *np;
+		/* 1.  find np in candidates */
+		/* 2.  build new candidates using the preposition */
+
+		phrase = role[i];
+		np = phrase[1][1];
+
+		noun = np[sizeof(np) - 1];
+		adj = np[0 .. sizeof(np) - 2];
+
+		candidates = filter_objects(candidates, noun, adj);
+
+		if (sizeof(candidates) == 0) {
+			return "No such object";
+		} else if (sizeof(candidates) > 1) {
+			return "Ambiguous";
+		}
+
+		if (i > 0) {
+			switch(phrase[0]) {
+			default:
+				return "I don't know how to look " + phrase[0] + " something.";
+			}
+		}
+	}
+
+	return candidates[0];
+}
+
+private mapping role_bind(mapping roles, mapping initial)
 {
 	mapping bind;
 	string *rlist;
@@ -140,7 +202,7 @@ private mapping role_bind(mapping roles, object *candidates)
 	sz = sizeof(rlist);
 
 	for (i = 0; i < sz; i++) {
-		bind[rlist[i]] = role_convert(roles[rlist[i]], candidates);
+		bind[rlist[i]] = role_convert(roles[rlist[i]], initial[rlist[i]]);
 	}
 
 	return bind;
@@ -149,11 +211,11 @@ private mapping role_bind(mapping roles, object *candidates)
 int do_verb(string command, string args)
 {
 	object verb, actor, ustate;
+	object *def_candidates;
 	string statement, crole, evoke;
 	mixed **parse, **rules;
 	int sz, i;
-	mapping raw, roles, prepkey;
-	object *candidates;
+	mapping raw, roles, prepkey, candidates;
 	string *rlist;
 
 	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
@@ -237,6 +299,11 @@ int do_verb(string command, string args)
 		switch(parse[i][0]) {
 		case "V":
 			np = parse[i][2];
+
+			if (!np) {
+				continue;
+			}
+
 			break;
 
 		case "P":
@@ -282,7 +349,7 @@ int do_verb(string command, string args)
 			roles[crole] = ({ });
 		}
 
-		roles[crole] += ({ parse[i] });
+		roles[crole] += ({ ({ prep, np }) });
 	}
 
 	rlist = map_indices(raw);
@@ -293,17 +360,30 @@ int do_verb(string command, string args)
 	if (actor) {
 		object environment;
 
-		candidates = actor->query_inventory();
+		def_candidates = actor->query_inventory();
 		environment = actor->query_environment();
 
 		if (environment) {
-			candidates += environment->query_inventory();
+			def_candidates += environment->query_inventory();
 		}
 	} else {
-		candidates = ({ });
+		def_candidates = ({ });
 	}
 
+	rlist = map_indices(roles);
+	candidates = ([ ]);
+	sz = sizeof(rlist);
+
+	/* todo: query verb for candidates for each role */
+	for (i = 0; i < sz; i++) {
+		candidates[rlist[i]] = def_candidates[..];
+	}
+
+	LOGD->post_message("parse", LOG_DEBUG, "Debug:\n" + STRINGD->hybrid_sprint(roles) + "\n");
+
 	roles = role_bind(roles, candidates);
+
+	LOGD->post_message("parse", LOG_DEBUG, "Debug (bind):\n" + STRINGD->hybrid_sprint(roles) + "\n");
 
 	verb->do_action(actor, roles + raw);
 
