@@ -53,37 +53,3 @@ nomask mixed fetch_evoke(mixed junk ...)
 {
 	error("Deprecated function");
 }
-
-static string generate_brief_definite(object thing)
-{
-	string brief;
-
-	brief = thing->query_property("brief");
-
-	if (brief) {
-		return "the " + brief;
-	}
-
-	brief = thing->query_property("id");
-
-	if (brief) {
-		return "the " + brief;
-	}
-}
-
-static string generate_brief_indefinite(object thing)
-{
-	string brief;
-
-	brief = thing->query_property("brief");
-
-	if (brief) {
-		return "a " + brief;
-	}
-
-	brief = thing->query_property("id");
-
-	if (brief) {
-		return "a " + brief;
-	}
-}

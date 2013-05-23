@@ -86,7 +86,7 @@ void do_action(object actor, mapping roles)
 			return;
 		}
 
-		send_out("You put " + generate_brief_definite(dob) + " in " + generate_brief_definite(iob) + ".\n");
+		send_out("You put " + TEXT_SUBD->generate_brief_definite(dob) + " in " + TEXT_SUBD->generate_brief_definite(iob) + ".\n");
 		dob->move(iob);
 		dob->set_x_position(0);
 		dob->set_y_position(0);

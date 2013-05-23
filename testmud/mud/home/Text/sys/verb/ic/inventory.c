@@ -42,7 +42,7 @@ void main(object actor, string args)
 		send_out("Your inventory:\n\n");
 
 		for (i = 0; i < sz; i++) {
-			send_out(generate_brief_indefinite(inv[i]) + "\n");
+			send_out(TEXT_SUBD->generate_brief_indefinite(inv[i]) + "\n");
 		}
 	} else {
 		send_out("You have nothing.\n");

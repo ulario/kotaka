@@ -27,7 +27,7 @@ inherit LIB_ENGVERB;
 mixed **query_roles()
 {
 	return ({
-		({ "iob", ({ "in" }), 0 })
+		({ "iob", ({ "to" }), 0 })
 	});
 }
 
@@ -86,7 +86,7 @@ void do_action(object actor, mapping roles)
 			return;
 		}
 
-		send_out("You give " + generate_brief_definite(dob) + " to " + generate_brief_definite(iob) + ".\n");
+		send_out("You give " + TEXT_SUBD->generate_brief_definite(dob) + " to " + TEXT_SUBD->generate_brief_definite(iob) + ".\n");
 		dob->move(iob);
 		dob->set_x_position(0);
 		dob->set_y_position(0);

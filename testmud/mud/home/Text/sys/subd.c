@@ -170,3 +170,37 @@ object mega_inventory(object root)
 
 	return list;
 }
+
+string generate_brief_definite(object thing)
+{
+	string brief;
+
+	brief = thing->query_property("brief");
+
+	if (brief) {
+		return "the " + brief;
+	}
+
+	brief = thing->query_property("id");
+
+	if (brief) {
+		return "the " + brief;
+	}
+}
+
+string generate_brief_indefinite(object thing)
+{
+	string brief;
+
+	brief = thing->query_property("brief");
+
+	if (brief) {
+		return "a " + brief;
+	}
+
+	brief = thing->query_property("id");
+
+	if (brief) {
+		return "a " + brief;
+	}
+}

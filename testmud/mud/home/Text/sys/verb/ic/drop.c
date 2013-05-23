@@ -67,7 +67,7 @@ void do_action(object actor, mapping roles)
 	}
 
 	if (dob->query_environment() == actor) {
-		send_out("You drop " + generate_brief_definite(dob) + ".\n");
+		send_out("You drop " + TEXT_SUBD->generate_brief_definite(dob) + ".\n");
 		dob->move(actor->query_environment());
 		dob->set_x_position(actor->query_x_position());
 		dob->set_y_position(actor->query_y_position());

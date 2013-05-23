@@ -18,49 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <account/paths.h>
+#include <game/paths.h>
 #include <text/paths.h>
-#include <type.h>
 
-inherit LIB_ENGVERB;
+inherit LIB_RAWVERB;
 
-/* ({ role, prepositions, raw }) */
-mixed **query_roles()
+void main(object actor, string args)
 {
-	return ({ });
-}
-
-void do_action(object actor, mapping roles)
-{
-	mixed dob;
-	string look;
-
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
 		return;
 	}
 
-	dob = roles["dob"];
-
-	if (dob == actor) {
-		send_out("Try as you might, you cannot lift yourself.\n");
-		return;
-	}
-
-	if (!dob) {
-		send_out("Take what?\n");
-		return;
-	}
-
-	if (typeof(dob) == T_STRING) {
-		send_out(dob + "\n");
-		return;
-	}
-
-	if (dob->query_environment() == actor) {
-		send_out("You already have it!\n");
-		return;
-	}
-
-	send_out("You take " + TEXT_SUBD->generate_brief_definite(dob) + ".\n");
-	dob->move(actor);
+	actor->set_x_position(random(9) - 4);
+	actor->set_y_position(random(9) - 4);
 }
