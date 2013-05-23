@@ -53,6 +53,6 @@ void do_action(object actor, mapping roles)
 
 	look = dob->query_property("look");
 
-	send_out(look ? look : "a bland object");
+	send_out(look ? STRINGD->wordwrap(look, 60) : "a bland object");
 	send_out("\n");
 }
