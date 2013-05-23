@@ -125,7 +125,7 @@ private mapping raw_bind(mapping raw)
 	return bind;
 }
 
-private object *filter_objects(object *candidates, string noun, string *adjectives)
+private object *filter_noun(object *candidates, string noun)
 {
 	object *contenders;
 	int sz;
@@ -135,15 +135,27 @@ private object *filter_objects(object *candidates, string noun, string *adjectiv
 	contenders = ({ });
 
 	for (i = 0; i < sz; i++) {
-		if (!sizeof(({ noun }) & candidates[i]->query_property("nouns"))) {
-			continue;
+		if (sizeof(({ noun }) & candidates[i]->query_property("nouns"))) {
+			contenders += ({ candidates[i] });
 		}
+	}
 
-		if (sizeof(adjectives  - candidates[i]->query_property("adjectives"))) {
-			continue;
+	return contenders;
+}
+
+private object *filter_adjectives(object *candidates, string *adjectives)
+{
+	object *contenders;
+	int sz;
+	int i;
+
+	sz = sizeof(candidates);
+	contenders = ({ });
+
+	for (i = 0; i < sz; i++) {
+		if (!sizeof(adjectives - candidates[i]->query_property("adjectives"))) {
+			contenders += ({ candidates[i] });
 		}
-
-		contenders += ({ candidates[i] });
 	}
 
 	return contenders;
@@ -156,8 +168,108 @@ private object *gather_relation(string prep, object source)
 	case "in":
 		return source->query_inventory();
 	default:
+		TLSD->set_tls_value("Text", "parse_error", "Cannot handle relation: " + prep);
 		return nil;
 	}
+}
+
+private string *select_ordinals(string *adjectives)
+{
+	int sz;
+	int i;
+	string *ordinals;
+
+	sz = sizeof(adjectives);
+	ordinals = ({ });
+
+	for (i = 0; i < sz; i++) {
+		string adjective;
+
+		adjective = adjectives[i];
+
+		switch(adjective) {
+		case "first":
+		case "second":
+		case "third":
+		case "fourth":
+		case "fifth":
+		case "sixth":
+		case "seventh":
+		case "eighth":
+		case "ninth":
+		case "tenth":
+			ordinals += ({ adjective });
+			break;
+		default:
+			if (sscanf(adjective, "%*dst")) {
+				ordinals += ({ adjective });
+				break;
+			}
+			if (sscanf(adjective, "%*dnd")) {
+				ordinals += ({ adjective });
+				break;
+			}
+			if (sscanf(adjective, "%*drd")) {
+				ordinals += ({ adjective });
+				break;
+			}
+			if (sscanf(adjective, "%*dth")) {
+				ordinals += ({ adjective });
+				break;
+			}
+		}
+	}
+
+	return ordinals;
+}
+
+private int resolve_ordinal_number(string ordinal)
+{
+	switch(ordinal) {
+	case "first":
+		return 1;
+	case "second":
+		return 2;
+	case "third":
+		return 3;
+	case "fourth":
+		return 4;
+	case "fifth":
+		return 5;
+	case "sixth":
+		return 6;
+	case "seventh":
+		return 7;
+	case "eighth":
+		return 8;
+	case "ninth":
+		return 9;
+	case "tenth":
+		return 10;
+	}
+}
+
+private object *filter_ordinals(object *candidates, string *ordinals)
+{
+	int number;
+
+	if (sizeof(ordinals) > 1) {
+		TLSD->set_tls_value("Text", "parse_error", "Too many ordinals");
+		return ({ });
+	}
+
+	if (sizeof(ordinals) == 0) {
+		return candidates;
+	}
+
+	number = resolve_ordinal_number(ordinals[0]);
+
+	if (number > sizeof(candidates)) {
+		TLSD->set_tls_value("Text", "parse_error", "There aren't that many");
+		return ({ });
+	}
+
+	return ({ candidates[number - 1] });
 }
 
 private mixed role_convert(mixed **role, object *initial)
@@ -173,13 +285,15 @@ private mixed role_convert(mixed **role, object *initial)
 	for (i = sz - 1; i >= 0; i--) {
 		mixed *phrase;
 		string *np;
+		string *ordinals;
 		/* 1.  find np in candidates */
 		/* 2.  build new candidates using the preposition */
 
 		phrase = role[i];
 
 		if (!phrase[1]) {
-			return "Your grammar stinks.";
+			TLSD->set_tls_value("Text", "parse_error", "Bad grammar");
+			return nil;
 		}
 
 		np = phrase[1][1];
@@ -187,20 +301,27 @@ private mixed role_convert(mixed **role, object *initial)
 		noun = np[sizeof(np) - 1];
 		adj = np[0 .. sizeof(np) - 2];
 
-		candidates = filter_objects(candidates, noun, adj);
+		ordinals = select_ordinals(adj);
+		adj -= ordinals;
+
+		candidates = filter_noun(candidates, noun);
+		candidates = filter_adjectives(candidates, adj);
+		candidates = filter_ordinals(candidates, ordinals);
 
 		if (sizeof(candidates) == 0) {
-			return "There is no " + implode(adj, " ") + noun + ".";
+			TLSD->set_tls_value("Text", "parse_error", "There is no " + implode(adj + ({ noun }), " ") + ".");
+			return nil;
 		} else if (sizeof(candidates) > 1) {
-			return "There is more than one " + implode(adj, " ") + noun + ".";
+			TLSD->set_tls_value("Text", "parse_error", "There is more than one " + implode(adj + ({ noun }), " ") + noun + ".");
+			return nil;
 		}
 
 		if (i > 0) {
 			candidates = gather_relation(phrase[0], candidates[0]);
+		}
 
-			if (!candidates) {
-				return "Sorry, I don't know how to handle \"" + phrase[0] + "\".";
-			}
+		if (TLSD->query_tls_value("Text", "parse_error")) {
+			return nil;
 		}
 	}
 
@@ -220,6 +341,10 @@ private mapping role_bind(mapping roles, mapping initial)
 
 	for (i = 0; i < sz; i++) {
 		bind[rlist[i]] = role_convert(roles[rlist[i]], initial[rlist[i]]);
+
+		if (TLSD->query_tls_value("Text", "parse_error")) {
+			return ([ ]);
+		}
 	}
 
 	return bind;
@@ -395,6 +520,11 @@ int do_verb(string command, string args)
 	}
 
 	roles = role_bind(roles, candidates);
+
+	if (TLSD->query_tls_value("Text", "parse_error")) {
+		ustate->send_out(TLSD->query_tls_value("Text", "parse_error"));
+		return TRUE;
+	}
 
 	verb->do_action(actor, roles + raw);
 
