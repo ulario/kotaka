@@ -24,5 +24,10 @@ inherit LIB_RAWVERB;
 
 void main(object actor, string args)
 {
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	send_out("Emoting: " + args + "\n");
 }

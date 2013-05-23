@@ -71,6 +71,11 @@ void main(object actor, string args)
 	int hp, mp, ep, xp;
 	int i, j;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	user = query_user();
 	body = user->query_body();
 

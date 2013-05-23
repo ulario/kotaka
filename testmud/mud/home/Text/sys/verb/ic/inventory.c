@@ -28,6 +28,11 @@ void main(object actor, string args)
 	object *inv;
 	int sz;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	inv = actor->query_inventory();
 	sz = sizeof(inv);
 

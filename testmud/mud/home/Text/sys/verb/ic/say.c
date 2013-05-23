@@ -35,6 +35,11 @@ void do_action(object actor, mapping roles)
 	string name;
 	string args;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	user = query_user();
 
 	if (user->query_class() < 1) {

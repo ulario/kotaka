@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths.h>
 #include <text/paths.h>
+#include <type.h>
 
 inherit LIB_ENGVERB;
 
@@ -30,13 +31,23 @@ mixed **query_roles()
 
 void do_action(object actor, mapping roles)
 {
-	object dob;
+	mixed dob;
 	string look;
+
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
 
 	dob = roles["dob"];
 
 	if (!dob) {
 		send_out(RENDERD->draw_look(actor, 0));
+		return;
+	}
+
+	if (typeof(dob) == T_STRING) {
+		send_out(dob + "\n");
 		return;
 	}
 
