@@ -146,14 +146,6 @@ private int is_wiztool_command(string command)
 
 private void do_input(string first, string input)
 {
-	object body;
-
-	body = query_user()->query_body();
-
-	if (VERBD->do_action(body, first, input)) {
-		return;
-	}
-
 	if (query_user()->query_class() >= 2) {
 		if (is_wiztool_command(first)) {
 			query_user()->dispatch_wiztool(first + " " + input);
@@ -161,11 +153,11 @@ private void do_input(string first, string input)
 		}
 	}
 
-	if (body) {
-		send_out("No such command or verb.\n");
-	} else {
-		send_out("No such command.\n");
+	if (VERBD->do_verb(first, input)) {
+		return;
 	}
+
+	send_out("No such command.\n");
 }
 
 void receive_in(string input)
