@@ -330,7 +330,7 @@ private mixed role_convert(mixed **role, object *initial)
 			TLSD->set_tls_value("Text", "parse_error", "There is no " + implode(adj + ({ noun }), " ") + ".");
 			return nil;
 		} else if (sizeof(candidates) > 1) {
-			TLSD->set_tls_value("Text", "parse_error", "There is more than one " + implode(adj + ({ noun }), " ") + noun + ".");
+			TLSD->set_tls_value("Text", "parse_error", "There is more than one " + implode(adj + ({ noun }), " ") + ".");
 			return nil;
 		}
 
