@@ -32,6 +32,8 @@ mixed **query_roles()
 void do_action(object actor, mapping roles, string evoke)
 {
 	mixed dob;
+	object obj;
+	string prep;
 	string look;
 
 	if (!actor) {
@@ -46,13 +48,42 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
-	if (typeof(dob) == T_STRING) {
-		send_out(dob + "\n");
-		return;
+	prep = dob[0];
+	obj = dob[1];
+
+	switch(prep) {
+	case nil:
+	case "at":
+		look = obj->query_property("look");
+		send_out(look ? STRINGD->wordwrap(look, 60) : "a bland object");
+		send_out("\n");
+		break;
+
+	case "in":
+		{
+			object *inv;
+			int sz;
+
+			inv = obj->query_inventory();
+			sz = sizeof(inv);
+
+			if (sz) {
+				int i;
+
+				send_out("Contents:\n\n");
+
+				for (i = 0; i < sz; i++) {
+					send_out(TEXT_SUBD->generate_brief_indefinite(inv[i]) + "\n");
+				}
+
+				send_out("\n");
+			} else {
+				send_out("There is nothing inside.\n");
+			}
+		}
+		break;
+	default:
+		send_out("todo: handle preposition " + prep + "\n");
 	}
 
-	look = dob->query_property("look");
-
-	send_out(look ? STRINGD->wordwrap(look, 60) : "a bland object");
-	send_out("\n");
 }
