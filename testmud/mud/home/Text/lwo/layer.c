@@ -22,6 +22,7 @@
 
 string *chars;
 string *colors;
+string *mask;
 
 int pos_x, pos_y;
 int size_x, size_y;
@@ -49,6 +50,7 @@ void set_size(int dx, int dy)
 	for (i = 0; i < size_y; i++) {
 		chars[i] = STRINGD->spaces(size_x);
 		colors[i] = STRINGD->chars(0x87, size_x);
+		mask[i] = STRINGD->nulls((size_x + 7) >> 3);
 	}
 }
 
@@ -87,6 +89,7 @@ void draw(string brush, int pen_x, int pen_y, int color)
 		}
 
 		colors[pen_y][pen_x] = new_color;
+		mask[pen_y][pen_x >> 3] |= 1 << (pen_x & 7);
 
 		pen_x++;
 	}
@@ -100,4 +103,9 @@ string *query_colors()
 string *query_chars()
 {
 	return chars[..];
+}
+
+string *query_mask()
+{
+	return mask[..];
 }
