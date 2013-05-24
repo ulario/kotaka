@@ -221,3 +221,25 @@ string generate_list(string *phrases)
 		return implode(phrases[0 .. sz - 2], ", ") + ", and " + phrases[sz - 1];
 	}
 }
+
+string print_dollars(int cents)
+{
+	string centspart;
+	int dollars;
+
+	if (cents == 1) {
+		return "one cent";
+	}
+	if (cents < 100) {
+		return cents + " cents";
+	}
+
+	dollars = cents / 100;
+	cents = cents % 100;
+
+	centspart = "0" + cents;
+
+	centspart = centspart[(strlen(centspart) - 2) ..];
+
+	return "$" + dollars + "." + centspart;
+}
