@@ -83,7 +83,6 @@ private void load_verbs(string directory, object proxy)
 
 		name = name[ .. strlen(name) - 3];
 
-		send_out("Compiling " + directory + "/" + name + "\n");
 		proxy->compile_object(directory + "/" + name);
 	}
 }
