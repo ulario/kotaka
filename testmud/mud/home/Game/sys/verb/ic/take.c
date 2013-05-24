@@ -56,6 +56,13 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
+	if (dob[0]) {
+		send_out("Your grammar stinks.\n");
+		return;
+	}
+
+	dob = dob[1];
+
 	if (dob->query_environment() == actor) {
 		send_out("You already have it!\n");
 		return;

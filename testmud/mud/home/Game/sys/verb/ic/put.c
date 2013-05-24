@@ -70,10 +70,19 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
+	if (dob[0]) {
+		send_out("Your grammar stinks.\n");
+		return;
+	}
+
+	dob = dob[1];
+
 	if (dob->query_environment() != actor) {
 		send_out("It doesn't appear to be in your hands.\n");
 		return;
 	}
+
+	iob = iob[1];
 
 	if (dob->query_environment() == actor) {
 		if (dob->is_container_of(iob)) {
