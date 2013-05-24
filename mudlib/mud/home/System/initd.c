@@ -318,15 +318,6 @@ private void configure_klib()
 	KERNELD->set_rsrc("ticks", 100000000, 0, 0);
 }
 
-mapping read_init_file(string subsystem)
-{
-	string buf;
-
-	if (!file_info(USR_DIR + "/" + subsystem + "/boot.ini")) {
-		return nil;
-	}
-}
-
 private void configure_logging()
 {
 	load_object(LOGD);
@@ -335,7 +326,6 @@ private void configure_logging()
 	LOGD->set_target("*", 255, "driver");
 	LOGD->set_target("*", 255, "file:/log/general.log");
 	LOGD->set_target("*", 255, "file:/log/session.log");
-	LOGD->set_target("*", 255, "user");
 }
 
 int forbid_inherit(string from, string path, int priv)
