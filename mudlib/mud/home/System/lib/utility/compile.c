@@ -59,10 +59,18 @@ static void load_dir(string dir, varargs int flags)
 
 		if (flags & 2) {
 			catch {
-				load_object(dir + "/" + name);
+				if (flags & 4) {
+					compile_object(dir + "/" + name);
+				} else {
+					load_object(dir + "/" + name);
+				}
 			}
 		} else {
-			load_object(dir + "/" + name);
+			if (flags & 4) {
+				compile_object(dir + "/" + name);
+			} else {
+				load_object(dir + "/" + name);
+			}
 		}
 	}
 }
