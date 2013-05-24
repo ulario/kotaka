@@ -95,6 +95,35 @@ void draw(string brush, int pen_x, int pen_y, int color)
 	}
 }
 
+void erase(int length, int pen_x, int pen_y, int color)
+{
+	int i;
+	int sz;
+
+	sz = length;
+
+	if (pen_y < 0 || pen_y >= size_y || pen_x >= size_x || pen_x + sz < 0) {
+		/* completely out of bounds */
+		return;
+	}
+
+	if (pen_x < 0) {
+		/* head truncated */
+		sz += pen_x;
+		pen_x = 0;
+	} else if (pen_x + sz > size_x) {
+		/* tail truncated */
+		sz = size_x - pen_x;
+	}
+
+	while (i < sz) {
+		mask[pen_y][pen_x >> 3] &= ~(1 << (pen_x & 7));
+
+		pen_x++;
+		i++;
+	}
+}
+
 string *query_colors()
 {
 	return colors[..];

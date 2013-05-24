@@ -95,3 +95,10 @@ void draw(string brush)
 
 	pen_x += sz;
 }
+
+void erase(int length)
+{
+	layer->erase(length, pen_x + off_x, pen_y + off_y);
+
+	pen_x += length;
+}
