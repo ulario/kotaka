@@ -58,7 +58,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	switch("~/sys/subd"->query_user_class(args)) {
+	switch(TEXT_SUBD->query_user_class(args)) {
 	case 3: /* administrator.  Only the mud owner can ban them */
 		if (user->query_username() != "admin") {
 			send_out("Only the mud owner can ban an administrator.");
@@ -82,7 +82,7 @@ void main(object actor, string args)
 	BAND->ban_username(args);
 
 	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-	turkey_name = TEXT_SUBD->titled_name(args, "~/sys/subd"->query_user_class(args));
+	turkey_name = TEXT_SUBD->titled_name(args, TEXT_SUBD->query_user_class(args));
 
 	user->message("You ban " + turkey_name + " from the mud.\n");
 	turkey = TEXT_USERD->find_user(args);

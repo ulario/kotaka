@@ -92,7 +92,7 @@ void send_to_all(string phrase)
 	int sz;
 	object *users;
 
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || GAME());
 
 	users = TEXT_USERD->query_users();
 	users += TEXT_USERD->query_guests();
@@ -107,7 +107,7 @@ void send_to_all_except(string phrase, object *exceptions)
 	int sz;
 	object *users;
 
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || GAME());
 
 	users = TEXT_USERD->query_users();
 	users += TEXT_USERD->query_guests();

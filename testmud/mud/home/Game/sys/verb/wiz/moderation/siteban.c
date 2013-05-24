@@ -82,7 +82,7 @@ void main(object actor, string args)
 			continue;
 		}
 
-		turkey_name = TEXT_SUBD->titled_name(turkey->query_name(), "~/sys/subd"->query_user_class(turkey->query_name()));
+		turkey_name = TEXT_SUBD->titled_name(turkey->query_name(), TEXT_SUBD->query_user_class(turkey->query_name()));
 
 		user->message("You siteban " + turkey_name + " from the mud.\n");
 
