@@ -46,6 +46,7 @@ void set_size(int dx, int dy)
 
 	chars = allocate(size_y);
 	colors = allocate(size_y);
+	mask = allocate(size_y);
 
 	for (i = 0; i < size_y; i++) {
 		chars[i] = STRINGD->spaces(size_x);
