@@ -38,11 +38,20 @@ void main(object actor, string args)
 
 	if (sz) {
 		int i;
+		int value;
 
 		send_out("Your inventory:\n\n");
 
 		for (i = 0; i < sz; i++) {
 			send_out(TEXT_SUBD->generate_brief_indefinite(inv[i]) + "\n");
+
+			if (inv[i]->query_property("value")) {
+				value += inv[i]->query_property("value");
+			}
+		}
+
+		if (value) {
+			send_out("\n\nValue held: " + TEXT_SUBD->print_dollars(value) + "\n");
 		}
 	} else {
 		send_out("You have nothing.\n");
