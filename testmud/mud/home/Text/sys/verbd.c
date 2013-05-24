@@ -343,7 +343,7 @@ private mixed role_convert(mixed **role, object *initial)
 		}
 	}
 
-	return candidates[0];
+	return ({ role[0][0], candidates[0] });
 }
 
 private mapping role_bind(mapping roles, mapping initial)
