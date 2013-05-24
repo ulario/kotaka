@@ -43,7 +43,7 @@ static void create()
 
 void ban_site(string site)
 {
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || GAME());
 
 	if (sscanf(site, "127.%*s") || site == "::1") {
 		error("Cannot ban localhost");
@@ -59,7 +59,7 @@ void ban_site(string site)
 
 void unban_site(string site)
 {
-	ACCESS_CHECK(INTERFACE() || KADMIN());
+	ACCESS_CHECK(INTERFACE() || KADMIN() || GAME());
 
 	if (!sitebans[site]) {
 		error("Site not banned");
@@ -71,7 +71,7 @@ void unban_site(string site)
 
 void ban_username(string username)
 {
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || GAME());
 
 	if (username == "admin") {
 		error("Cannot ban admin");
@@ -87,7 +87,7 @@ void ban_username(string username)
 
 void unban_username(string username)
 {
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || GAME());
 
 	if (!bans[username]) {
 		error("Username not banned");
