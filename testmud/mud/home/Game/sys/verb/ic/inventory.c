@@ -39,20 +39,30 @@ void main(object actor, string args)
 	if (sz) {
 		int i;
 		int value;
+		string *sections;
+		string section;
+		string *pieces;
 
-		send_out("Your inventory:\n\n");
+		sections = ({ "Your inventory:" });
+		pieces = ({ });
 
 		for (i = 0; i < sz; i++) {
-			send_out(TEXT_SUBD->generate_brief_indefinite(inv[i]) + "\n");
+			pieces += ({ TEXT_SUBD->generate_brief_indefinite(inv[i]) });
 
 			if (inv[i]->query_property("value")) {
 				value += inv[i]->query_property("value");
 			}
 		}
 
+		section = implode(pieces, "\n");
+		sections += ({ section });
+
 		if (value) {
-			send_out("\n\nValue held: " + TEXT_SUBD->print_dollars(value) + "\n");
+			section = "Value held: " + TEXT_SUBD->print_dollars(value);
+			sections += ({ section });
 		}
+
+		send_out(implode(sections, "\n\n") + "\n\n");
 	} else {
 		send_out("You have nothing.\n");
 	}
