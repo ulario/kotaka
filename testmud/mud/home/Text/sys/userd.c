@@ -263,7 +263,7 @@ int query_is_guest(object user)
 
 void promote_guest(string name, object user)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || GAME());
 
 	if (!guests[user]) {
 		error("No such guest");
@@ -279,7 +279,7 @@ void promote_guest(string name, object user)
 
 void rename_user(string oldname, string newname)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || GAME());
 
 	if (!users[oldname]) {
 		error("No such user");
@@ -295,7 +295,7 @@ void rename_user(string oldname, string newname)
 
 object find_user(string name)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || GAME());
 
 	return users[name];
 }
