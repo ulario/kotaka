@@ -195,6 +195,17 @@ string generate_brief_indefinite(object thing)
 	brief = thing->query_property("brief");
 
 	if (brief) {
+		if (strlen(brief) > 0) {
+			switch(brief[0]) {
+			case 'a':
+			case 'e':
+			case 'i':
+			case 'o':
+			case 'u':
+				return "an " + brief;
+			}
+		}
+
 		return "a " + brief;
 	}
 
