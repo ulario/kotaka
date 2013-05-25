@@ -41,11 +41,6 @@ void do_action(object actor, mapping roles, string evoke)
 
 	dob = roles["dob"];
 
-	if (dob == actor) {
-		send_out("Try as you might, you cannot lift yourself.\n");
-		return;
-	}
-
 	if (!dob) {
 		send_out("Take what?\n");
 		return;
@@ -62,6 +57,11 @@ void do_action(object actor, mapping roles, string evoke)
 	}
 
 	dob = dob[1];
+
+	if (dob == actor) {
+		send_out("Try as you might, you cannot lift yourself.\n");
+		return;
+	}
 
 	if (!actor->query_environment()) {
 		send_out("It isn't polite to litter in the void.\n");
