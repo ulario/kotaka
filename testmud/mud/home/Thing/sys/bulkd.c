@@ -57,7 +57,7 @@ static void process()
 	}
 
 	if (obj) {
-		obj->bulk_sync();
+		obj->bulk_dequeue();
 	}
 }
 

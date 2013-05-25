@@ -194,7 +194,11 @@ int query_bulk_dirty()
 
 void bulk_dequeue()
 {
-	if (--bulk_queued == 0) {
+	if (bulk_queued) {
+		bulk_queued--;
+	}
+
+	if (!bulk_queued) {
 		bulk_sync();
 	}
 }
@@ -206,7 +210,6 @@ void bulk_sync(varargs int force)
 	object *inv;
 	float mass_sum;
 	float volume_sum;
-	int unclean;
 
 	if (!bulk_dirty && !force) {
 		return;
@@ -227,32 +230,28 @@ void bulk_sync(varargs int force)
 	cached_content_mass = mass_sum;
 	cached_content_volume = volume_sum;
 
-	if (unclean) {
-		LOGD->post_message("bulk", LOG_DEBUG, "Unclean sync");
-	}
-
 	bulk_dirty = 0;
+}
+
+void bulk_queue_reset()
+{
+	bulk_queued = 0;
+	bulk_sync();
 }
 
 void bulk_invalidate(varargs int force)
 {
 	object env;
 
-	if (bulk_dirty && !force) {
-		/* if we're already dirty, our containers should be too */
-		return;
-	}
-
 	bulk_dirty = 1;
 
 	BULKD->bulk_queue(this_object());
 
-	bulk_queued++;
-
-	/* our environment depends on us, so do it after */
 	if (env = query_environment()) {
 		env->bulk_invalidate(force);
 	}
+
+	bulk_queued++;
 }
 
 /* hooks */
