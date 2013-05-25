@@ -219,10 +219,6 @@ void bulk_sync(varargs int force)
 	sz = sizeof(inv);
 
 	for (i = 0; i < sz; i++) {
-		if (inv[i]->query_bulk_dirty()) {
-			unclean = 1;
-		}
-
 		mass_sum += inv[i]->query_total_mass();
 		volume_sum += inv[i]->query_total_volume();
 	}
