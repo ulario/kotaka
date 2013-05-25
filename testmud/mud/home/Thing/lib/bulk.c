@@ -191,6 +191,13 @@ int query_bulk_dirty()
 	return bulk_dirty;
 }
 
+void bulk_dequeue()
+{
+	if (--bulk_queued == 0) {
+		bulk_sync();
+	}
+}
+
 void bulk_sync(varargs int force)
 {
 	int i;
@@ -215,7 +222,6 @@ void bulk_sync(varargs int force)
 	cached_content_volume = volume_sum;
 
 	bulk_dirty = 0;
-	bulk_queued = 0;
 }
 
 void bulk_invalidate(varargs int force)
@@ -229,18 +235,17 @@ void bulk_invalidate(varargs int force)
 
 	bulk_dirty = 1;
 
-	if (!bulk_queued) {
-		BULKD->bulk_queue(this_object());
-		bulk_queued = 1;
-	}
+	BULKD->bulk_queue(this_object());
 
+	bulk_queued++;
+
+	/* our environment depends on us, so do it after */
 	if (env = query_environment()) {
 		env->bulk_invalidate(force);
 	}
 }
 
 /* hooks */
-
 static void move_notify(object old_env)
 {
 	object env;
