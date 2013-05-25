@@ -112,6 +112,21 @@ void configure_properties()
 
 	/* catch all */
 	PROPERTYD->add_property("data", T_MAPPING, PROP_SIMPLE);
+
+	/* combat */
+	PROPERTYD->add_property("is_wielded", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("is_armor", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("is_worn", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("is_weapon", T_INT, PROP_SIMPLE);
+
+	/* stats */
+	PROPERTYD->add_property("pa", T_INT, PROP_SIMPLE);	/* physical attack */
+	PROPERTYD->add_property("pd", T_INT, PROP_SIMPLE);	/* physical defense */
+	PROPERTYD->add_property("hp", T_INT, PROP_SIMPLE);	/* hit points */
+	PROPERTYD->add_property("hpmax", T_INT, PROP_SIMPLE);	/* hit points */
+	PROPERTYD->add_property("dx", T_INT, PROP_SIMPLE);	/* dexterity */
+	PROPERTYD->add_property("sp", T_INT, PROP_SIMPLE);	/* speed */
+	PROPERTYD->add_property("cp", T_INT, PROP_SIMPLE);	/* charge points */
 }
 
 static void create()
