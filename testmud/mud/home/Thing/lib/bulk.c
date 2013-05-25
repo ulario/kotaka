@@ -17,10 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
+#include <kotaka/checkarg.h>
+#include <kotaka/log.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
-#include <kotaka/checkarg.h>
-#include <kotaka/assert.h>
 #include <thing/paths.h>
 
 inherit "inventory";
@@ -205,6 +206,7 @@ void bulk_sync(varargs int force)
 	object *inv;
 	float mass_sum;
 	float volume_sum;
+	int unclean;
 
 	if (!bulk_dirty && !force) {
 		return;
@@ -214,12 +216,20 @@ void bulk_sync(varargs int force)
 	sz = sizeof(inv);
 
 	for (i = 0; i < sz; i++) {
+		if (inv[i]->query_bulk_dirty()) {
+			unclean = 1;
+		}
+
 		mass_sum += inv[i]->query_total_mass();
 		volume_sum += inv[i]->query_total_volume();
 	}
 
 	cached_content_mass = mass_sum;
 	cached_content_volume = volume_sum;
+
+	if (unclean) {
+		LOGD->post_message("bulk", LOG_DEBUG, "Unclean sync");
+	}
 
 	bulk_dirty = 0;
 }
