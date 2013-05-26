@@ -165,62 +165,6 @@ void reboot()
 {
 }
 
-int t1;
-int t2;
-int t3;
-
-static void place_object(string base, int remainder)
-{
-	object obj;
-
-	float rnd1;
-	float rnd2;
-
-	rnd1 = SUBD->rnd() * SUBD->pi() * 2.0;
-	rnd2 = SUBD->rnd() * 30.0;
-
-	obj = create_object();
-	obj->set_property("id", base);
-
-	switch(base) {
-	case "deer":
-		obj->add_archetypes(CATALOGD->lookup_object("animal:deer"));
-		obj->set_mass(50.0 + SUBD->rnd() * 7.5);
-		obj->set_density(1.1);
-		break;
-	case "wolf":
-		obj->add_archetypes(CATALOGD->lookup_object("animal:wolf"));
-		obj->set_mass(35.0 + SUBD->rnd() * 5.0);
-		obj->set_density(0.9);
-		break;
-	case "soil":
-		obj->add_archetypes(CATALOGD->lookup_object("scenery:soil"));
-		obj->set_mass(10.0 + SUBD->rnd() * 2.0);
-		obj->set_density(1.5);
-		break;
-	case "rock":
-		obj->add_archetypes(CATALOGD->lookup_object("scenery:rock"));
-		obj->set_mass(1.0 + SUBD->rnd() * 0.2);
-		obj->set_density(6.3);
-		break;
-	}
-
-	obj->set_property("event:paint",
-		find_object("~/sys/handler/paint/room")
-	);
-
-	obj->move(world);
-
-	obj->set_x_position(sin(rnd1) * rnd2);
-	obj->set_y_position(cos(rnd1) * rnd2);
-
-	if (remainder) {
-		call_out("place_object", 0, base, remainder - 1);
-	} else {
-		LOGD->post_message("world", LOG_NOTICE, "Finished placing " + base);
-	}
-}
-
 void build_world()
 {
 	object master;
@@ -231,77 +175,17 @@ void build_world()
 	world->set_object_name("world");
 
 	master = create_object();
-	master->set_property("id", "shack");
-	master->set_property("event:create",
-		USR_DIR + "/Game/sys/handler/create/shack");
-	master->set_property("event:destroy",
-		USR_DIR + "/Game/sys/handler/destroy/shack");
-	master->set_property("event:paint",
-		USR_DIR + "/Game/sys/handler/paint/shack");
-	master->set_local_property("local_nouns", ({ "shack" }) );
-	master->set_local_property("local_adjectives", ({ "wooden" }) );
-	master->set_object_name("buildings:master:shack");
-
-	master = create_object();
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	master->set_local_property("nouns", ({ "human", "man" }) );
 	master->set_object_name("animal:human");
 
-	master = create_object();
-	master->set_property("id", "tree");
-	master->set_property("event:create",
-		USR_DIR + "/Game/sys/handler/create/tree");
-	master->set_property("event:paint",
-		USR_DIR + "/Game/sys/handler/paint/tree");
-	master->set_property("event:timer",
-		USR_DIR + "/Game/sys/handler/timer/tree");
-	master->set_local_property("local_nouns", ({ "tree" }) );
-	master->set_object_name("scenery:tree");
-
-	master = create_object();
-	master->set_property("id", "door");
-	master->set_property("event:paint",
-		USR_DIR + "/Game/sys/handler/paint/door");
-	master->set_local_property("local_nouns", ({ "door" }) );
-	master->set_local_property("local_adjectives", ({ "wooden" }) );
-	master->set_object_name("buildings:parts:door");
-
-	master = create_object();
-	master->set_property("id", "wolf");
-	master->set_local_property("local_nouns", ({ "wolf" }) );
-	master->set_object_name("animal:wolf");
-
-	master = create_object();
-	master->set_property("id", "deer");
-	master->set_local_property("local_nouns", ({ "deer" }) );
-	master->set_object_name("animal:deer");
-
-	master = create_object();
-	master->set_property("id", "soil");
-	master->set_local_property("local_nouns", ({ "soil" }) );
-	master->set_object_name("scenery:soil");
-
-	master = create_object();
-	master->set_property("id", "rock");
-	master->set_local_property("local_nouns", ({ "rock" }) );
-	master->set_object_name("scenery:rock");
-
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
 	world->set_density(6.5);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/grass");
-
-	trinket = create_object();
-	trinket->set_density(1.0);
-	trinket->set_mass(0.1);
-	trinket->set_property("local_nouns", ({ "crown" }) );
-	trinket->set_property("local_adjectives", ({ "golden", "gold" }) );
-	trinket->set_property("brief", "golden crown");
-	trinket->set_property("look", "A simple golden crown.  It is round, and has twelve peaks, each studded with a humble pearl.");
-	trinket->move(world);
 }
 
 /********/
