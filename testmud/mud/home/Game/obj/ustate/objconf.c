@@ -130,8 +130,20 @@ void receive_in(string input)
 	case "quit":
 		pop_state();
 		return;
+
 	case "pset":
 		do_pset(args);
+		break;
+
+	case "lplist":
+		{
+			string *props;
+
+			props = obj->list_local_properties();
+
+			send_out(STRINGD->wordwrap(implode(props, ", "), 60) + "\n");
+		}
+
 		break;
 	}
 
