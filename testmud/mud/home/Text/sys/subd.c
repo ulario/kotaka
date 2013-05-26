@@ -274,19 +274,19 @@ string print_fantasy(int copper)
 	stack = ({ });
 
 	if (platinum) {
-		stack += platinum + " Pp";
+		stack += ({ platinum + " Pp" });
 	}
 
 	if (gold) {
-		stack += gold + " Gp";
+		stack += ({ gold + " Gp" });
 	}
 
 	if (silver) {
-		stack += silver + " Sp";
+		stack += ({ silver + " Sp" });
 	}
 
 	if (copper) {
-		stack += copper + " Cp";
+		stack += ({ copper + " Cp" });
 	}
 
 	return implode(stack, ", ");
