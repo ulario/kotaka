@@ -388,17 +388,13 @@ int do_verb(string command, string args)
 
 	actor = ustate->query_user()->query_body();
 
-	switch(verb->query_parse_method()) {
-	case PARSE_RAW:
+	if (verb->query_parse_method() == PARSE_RAW) {
 		TLSD->set_tls_value("Text", "ustate", ustate);
 		verb->main(actor, args);
 		if (this_object()) {
 			TLSD->set_tls_value("Text", "ustate", nil);
 		}
 		return TRUE;
-
-	case PARSE_ENGLISH:
-		break;
 	}
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
