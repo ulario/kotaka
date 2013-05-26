@@ -23,6 +23,35 @@
 
 inherit LIB_RAWVERB;
 
+private string print_values(mapping values)
+{
+	string buf;
+	string *bits;
+	string *c;
+	int *v;
+	int sz, i;
+
+	c = map_indices(values);
+	v = map_values(values);
+	sz = sizeof(c);
+
+	buf = "Value held: ";
+	bits = ({ });
+
+	for (i = 0; i < sz; i++) {
+		switch(c[i]) {
+		case "dollar":
+			bits += ({ TEXT_SUBD->print_dollars(v[i]) });
+			break;
+		case "fantasy":
+			bits += ({ TEXT_SUBD->print_fantasy(v[i]) });
+			break;
+		}
+	}
+
+	return buf + implode(bits, ", ");
+}
+
 void main(object actor, string args)
 {
 	object *inv;
@@ -42,24 +71,34 @@ void main(object actor, string args)
 		string *sections;
 		string section;
 		string *pieces;
+		string currency;
+		mapping values;
 
 		sections = ({ "Your inventory:" });
 		pieces = ({ });
+		values = ([ ]);
 
 		for (i = 0; i < sz; i++) {
 			pieces += ({ TEXT_SUBD->generate_brief_indefinite(inv[i]) });
 
 			if (inv[i]->query_property("value")) {
-				value += inv[i]->query_property("value");
+				value = inv[i]->query_property("value");
+
+				if (currency = inv[i]->query_property("currency")) {
+					if (!values[currency]) {
+						values[currency] = value;
+					} else {
+						values[currency] += value;
+					}
+				}
 			}
 		}
 
 		section = implode(pieces, "\n");
 		sections += ({ section });
 
-		if (value) {
-			section = "Value held: " + TEXT_SUBD->print_dollars(value);
-			sections += ({ section });
+		if (map_sizeof(values)) {
+			sections += ({ print_values(values) });
 		}
 
 		send_out(implode(sections, "\n\n") + "\n\n");
