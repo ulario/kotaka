@@ -254,3 +254,40 @@ string print_dollars(int cents)
 
 	return "$" + dollars + "." + centspart;
 }
+
+string print_fantasy(int copper)
+{
+	int platinum;
+	int gold;
+	int silver;
+	string *stack;
+
+	platinum = copper / 1000;
+	copper -= platinum * 1000;
+
+	gold = copper / 100;
+	copper -= gold * 100;
+
+	silver = copper / 10;
+	copper -= silver * 10;
+
+	stack = ({ });
+
+	if (platinum) {
+		stack += platinum + " Pp";
+	}
+
+	if (gold) {
+		stack += gold + " Gp";
+	}
+
+	if (silver) {
+		stack += silver + " Sp";
+	}
+
+	if (copper) {
+		stack += copper + " Cp";
+	}
+
+	return implode(stack, ", ");
+}
