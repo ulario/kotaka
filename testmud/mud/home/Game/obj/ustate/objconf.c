@@ -135,6 +135,14 @@ void receive_in(string input)
 		do_pset(args);
 		break;
 
+	case "pget":
+		if (args) {
+			send_out(STRINGD->mixed_sprint(obj->query_property(args)) + "\n");
+		} else {
+			send_out("What property?\n");
+		}
+		break;
+
 	case "lplist":
 		{
 			string *props;
