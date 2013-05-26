@@ -99,10 +99,14 @@ void configure_properties()
 	/* economics */
 	PROPERTYD->add_property("value", T_INT, PROP_SIMPLE);
 
-	/* position */
-	PROPERTYD->add_property("position:x", T_INT, PROP_MAGIC, ({ "query_x_position", "set_x_position" }) );
-	PROPERTYD->add_property("position:y", T_INT, PROP_MAGIC, ({ "query_y_position", "set_y_position" }) );
-	PROPERTYD->add_property("position:z", T_INT, PROP_MAGIC, ({ "query_z_position", "set_z_position" }) );
+	/* geometry */
+	PROPERTYD->add_property("pos_x", T_INT, PROP_MAGIC, ({ "query_x_position", "set_x_position" }) );
+	PROPERTYD->add_property("pos_y", T_INT, PROP_MAGIC, ({ "query_y_position", "set_y_position" }) );
+	PROPERTYD->add_property("pos_z", T_INT, PROP_MAGIC, ({ "query_z_position", "set_z_position" }) );
+
+	PROPERTYD->add_property("size_x", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("size_y", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("size_z", T_INT, PROP_SIMPLE);
 
 	/* event handling */
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
