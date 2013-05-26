@@ -97,7 +97,8 @@ void configure_properties()
 	PROPERTYD->add_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
 
 	/* economics */
-	PROPERTYD->add_property("value", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("value", T_INT, PROP_INHERIT);
+	PROPERTYD->add_property("currency", T_STRING, PROP_INHERIT);
 
 	/* geometry */
 	PROPERTYD->add_property("pos_x", T_INT, PROP_MAGIC, ({ "query_x_position", "set_x_position" }) );
