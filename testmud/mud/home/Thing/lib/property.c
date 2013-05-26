@@ -40,6 +40,11 @@ static void create()
 
 /* untrusted */
 
+string *list_local_properties()
+{
+	return map_indices(properties);
+}
+
 mapping query_local_properties()
 {
 	return SUBD->deep_copy(properties);
