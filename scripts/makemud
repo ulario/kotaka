@@ -30,9 +30,9 @@ do
 	ln -s ../../../../../git/kernellib/doc/kernel/$d dgd/kotaka/mud/doc/kernel
 done
 
-for d in git/kernellib/kernel/*
+for d in lib obj sys
 do
-	ln -s ../../../../$d dgd/kotaka/mud/kernel
+	ln -s ../../../../git/kernellib/kernel/$d dgd/kotaka/mud/kernel
 done
 
 ln -s ../../../../git/kernellib/include/kernel dgd/kotaka/mud/include
