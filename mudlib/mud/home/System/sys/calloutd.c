@@ -182,10 +182,9 @@ void remove_callouts(object obj)
 
 	cmap->set_element(oindex, nil);
 
-	handles = map_indices(map);
 	qindices = map_values(map);
 
-	osz = sizeof(handles);
+	osz = sizeof(qindices);
 
 	for (sz = osz; --sz >= 0; ) {
 		cqueue->set_element(qindices[sz], nil);
