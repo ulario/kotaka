@@ -53,6 +53,8 @@ do
 	ln -s ../../../../$d dgd/kotaka/mud/doc
 done
 
+cp git/kotaka/mudlib/kotaka.dgd dgd/kotaka
+
 # ulario
 for d in git/kotaka/testmud/mud/home/*
 do
