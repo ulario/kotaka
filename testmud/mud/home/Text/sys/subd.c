@@ -70,16 +70,20 @@ string titled_name(string name, int class)
 		}
 		break;
 	case 3:
-		switch(ACCOUNTD->query_account_property(username, "gender")) {
-		case nil:
-			name = "\033[1;31m" + name + "\033[0m";
-			break;
-		case "male":
-			name = "\033[1;31mLord " + name + "\033[0m";
-			break;
-		case "female":
-			name = "\033[1;31mLady " + name + "\033[0m";
-			break;
+		if (name == "admin") {
+			name = "\033[1;37mThe Great Light\0m";
+		} else {
+			switch(ACCOUNTD->query_account_property(username, "gender")) {
+			case nil:
+				name = "\033[1;31m" + name + "\033[0m";
+				break;
+			case "male":
+				name = "\033[1;31mLord " + name + "\033[0m";
+				break;
+			case "female":
+				name = "\033[1;31mLady " + name + "\033[0m";
+				break;
+			}
 		}
 		break;
 	}
