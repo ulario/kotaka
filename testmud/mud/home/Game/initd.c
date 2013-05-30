@@ -133,7 +133,7 @@ void configure_properties()
 	PROPERTYD->add_property("hpmax", T_INT, PROP_SIMPLE);	/* hit points */
 	PROPERTYD->add_property("dx", T_INT, PROP_SIMPLE);	/* dexterity */
 	PROPERTYD->add_property("sp", T_INT, PROP_SIMPLE);	/* speed */
-	PROPERTYD->add_property("cp", T_INT, PROP_SIMPLE);	/* charge points */
+	PROPERTYD->add_property("ep", T_INT, PROP_SIMPLE);	/* energy points */
 }
 
 static void create()
