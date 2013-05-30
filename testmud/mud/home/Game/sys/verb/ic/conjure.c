@@ -28,6 +28,11 @@ void main(object actor, string args)
 {
 	object thing;
 
+	if (query_user()->query_class() < 2) {
+		send_out("You must be a wizard to use this command.\n");
+		return;
+	}
+
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
 		return;
