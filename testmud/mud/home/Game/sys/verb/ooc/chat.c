@@ -41,5 +41,5 @@ void main(object actor, string args)
 
 	name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
 
-	TEXT_SUBD->send_to_all("[chat] " + name + ": " + args + "\n");
+	TEXT_SUBD->send_to_all("[\033[1;32mchat\033[0m] " + name + ": " + args + "\n");
 }
