@@ -49,6 +49,8 @@ void main(object actor, string args)
 
 		body->set_property("id", name);
 		body->set_property("local_nouns", ({ name }) );
+		body->set_property("is_definite", 1);
+		body->set_property("brief", STRINGD->to_title(name));
 		body->add_archetype(CATALOGD->lookup_object("class:animal:human"));
 		body->set_object_name("players:" + name);
 		body->move(world);
