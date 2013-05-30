@@ -177,6 +177,10 @@ string generate_brief_definite(object thing)
 
 	brief = thing->query_property("brief");
 
+	if (thing->query_property("is_definite")) {
+		return brief;
+	}
+
 	if (brief) {
 		return "the " + brief;
 	}
