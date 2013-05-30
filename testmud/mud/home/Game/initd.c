@@ -88,6 +88,8 @@ void configure_properties()
 	PROPERTYD->add_property("look", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("examine", T_STRING, PROP_INHERIT);
 
+	PROPERTYD->add_property("is_definite", T_INT, PROP_INHERIT);
+
 	/* inventory */
 	PROPERTYD->add_property("environment", T_OBJECT, PROP_MAGIC, ({ "query_environment", "move" }) );
 	PROPERTYD->add_property("inventory", T_ARRAY, PROP_MAGIC, ({ "query_inventory", nil }) );
@@ -184,7 +186,7 @@ void build_world()
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	master->set_local_property("nouns", ({ "human", "man" }) );
-	master->set_object_name("class:animal:human");
+	master->set_object_name("animal:human");
 
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);

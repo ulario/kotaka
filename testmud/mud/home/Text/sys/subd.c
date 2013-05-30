@@ -195,6 +195,10 @@ string generate_brief_indefinite(object thing)
 	brief = thing->query_property("brief");
 
 	if (brief) {
+		if (thing->query_property("is_definite")) {
+			return brief;
+		}
+
 		if (strlen(brief) > 0) {
 			switch(brief[0]) {
 			case 'a':
