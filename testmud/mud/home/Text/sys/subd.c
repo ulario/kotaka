@@ -70,8 +70,8 @@ string titled_name(string name, int class)
 		}
 		break;
 	case 3:
-		if (name == "admin") {
-			name = "\033[1;37mThe Great Light\0m";
+		if (name == "Admin") {
+			name = "\033[1;37mThe Great Spirit\0m";
 		} else {
 			switch(ACCOUNTD->query_account_property(username, "gender")) {
 			case nil:
