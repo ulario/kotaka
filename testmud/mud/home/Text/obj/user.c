@@ -231,3 +231,10 @@ void quit()
 {
 	disconnect();
 }
+
+void channel_message(string channel, string sender, string message)
+{
+	ACCESS_CHECK(previous_program() == CHANNELD);
+
+	send_out("[" + channel + "] " + sender + ": " + message + "\n");
+}
