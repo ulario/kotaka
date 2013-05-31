@@ -39,7 +39,5 @@ void main(object actor, string args)
 		return;
 	}
 
-	name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-
-	TEXT_SUBD->send_to_all("[\033[1;36mchat\033[0m] " + name + ": " + args + "\n");
+	CHANNELD->post_message("chat", user->query_name, args);
 }
