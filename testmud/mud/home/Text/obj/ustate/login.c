@@ -219,6 +219,8 @@ void receive_in(string input)
 			user->set_username(name);
 			user->set_mode(MODE_ECHO);
 
+			CHANNELD->subscribe_channel("chat", user);
+
 			TEXT_SUBD->send_to_all_except(
 				TEXT_SUBD->titled_name(
 					user->query_username(),
