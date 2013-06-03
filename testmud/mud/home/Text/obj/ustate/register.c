@@ -188,6 +188,8 @@ void receive_in(string input)
 					user->query_class())
 				+ " registers.\n", ({ user }));
 
+			CHANNELD->subscribe_channel("chat", user);
+
 			terminate_account_state();
 			return;
 		}

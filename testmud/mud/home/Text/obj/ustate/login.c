@@ -227,6 +227,8 @@ void receive_in(string input)
 					user->query_class())
 				+ " logs in.\n", ({ user }));
 
+			CHANNELD->subscribe_channel("chat", user);
+
 			terminate_account_state();
 			return;
 		} else {
