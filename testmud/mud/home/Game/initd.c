@@ -63,6 +63,17 @@ void build_world();
 /* Constructors */
 /****************/
 
+private void create_channels()
+{
+	CHANNELD->add_channel("chat");
+}
+
+void configure_channels()
+{
+	CHANNELD->set_channel_config("chat", "channel_color", GREEN | BRIGHT);
+	CHANNELD->set_channel_config("chat", "text_color", nil);
+}
+
 void configure_properties()
 {
 	PROPERTYD->clear_properties();
@@ -149,6 +160,8 @@ static void create()
 	load_dir("sys", 1);
 
 	configure_properties();
+	create_channels();
+	configure_channels();
 
 	KERNELD->set_global_access("Game", 1);
 
