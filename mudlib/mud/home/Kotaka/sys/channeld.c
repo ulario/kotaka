@@ -284,7 +284,11 @@ void post_message(string channel, string sender, string message)
 {
 	object *send_list;
 
-	send_list = subscribers[channel];
+	if (subscribers[channel]) {
+		send_list = map_indices(subscribers[channel]);
+	} else {
+		return;
+	}
 
 	if (send_list) {
 		int sz;
