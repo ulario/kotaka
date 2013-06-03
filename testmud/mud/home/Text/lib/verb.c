@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <text/paths.h>
 
 static object query_ustate()
 {
@@ -52,4 +53,49 @@ nomask mixed fetch_raw(mixed junk ...)
 nomask mixed fetch_evoke(mixed junk ...)
 {
 	error("Deprecated function");
+}
+
+private object *convert_mobiles(object *bodies)
+{
+	object *mobiles;
+	int sz, i;
+
+	sz = sizeof(bodies);
+	mobiles = ({ });
+
+	for (i = 0; i < sz; i++) {
+		mobiles |= bodies[i]->query_property("mobiles") - ({ nil });
+	}
+
+	return mobiles;
+}
+
+static void generic_emit(object actor, string *verb, object target, string preposition)
+{
+	object env;
+	object *mobiles;
+	int sz, i;
+
+	env = actor->query_environment();
+
+	if (!env) {
+		return;
+	}
+
+	mobiles = env->query_inventory();
+	mobiles = convert_mobiles(mobiles);
+
+	sz = sizeof(mobiles);
+
+	for (i = 0; i < sz; i++) {
+		object body;
+
+		body = mobiles[i]->query_body();
+
+		mobiles[i]->message(
+			TEXT_SUBD->build_verb_report(
+				body, actor, verb, target, preposition
+			)
+		+ ".\n");
+	}
 }

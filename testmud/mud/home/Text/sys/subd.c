@@ -314,7 +314,7 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 		message = ({ generate_brief_indefinite(actor), vforms[1] });
 	}
 
-	if (target && preposition) {
+	if (preposition) {
 		message += ({ preposition });
 	}
 
