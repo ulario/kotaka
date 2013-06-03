@@ -148,7 +148,7 @@ void configure_properties()
 	PROPERTYD->add_property("ep", T_INT, PROP_SIMPLE);	/* energy points */
 
 	/* body/mobile handling */
-	PROPERTYD->add_property("mobile", T_OBJECT, PROP_SIMPLE);
+	PROPERTYD->add_property("mobiles", T_ARRAY, PROP_SIMPLE);
 }
 
 static void create()
