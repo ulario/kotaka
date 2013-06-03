@@ -232,9 +232,54 @@ void quit()
 	disconnect();
 }
 
+/*
+Config keys:
+
+Used by ChannelD
+
+int channel_color
+	ANSI color for channel name
+int prefix_color
+	ANSI color for prefix
+int text_color
+	ANSI color for text
+
+Standard with significance
+
+string join_access
+	guest, player, wizard, admin, system
+string post_access
+	guest, player, wizard, admin, system
+mapping bans
+	username : 1
+*/
+
 void channel_message(string channel, string sender, string message)
 {
+	mixed ccolor;
+	mixed ucolor;
+	mixed tcolor;
+
 	ACCESS_CHECK(previous_program() == CHANNELD);
 
-	send_out("[" + channel + "] " + sender + ": " + message + "\n");
+	ccolor = CHANNELD->query_channel_config(channel, "channel_color");
+	ucolor = CHANNELD->query_channel_config(channel, "user_color");
+	tcolor = CHANNELD->query_channel_config(channel, "text_color");
+
+	if (ccolor == nil) {
+		ccolor = -1;
+	}
+	if (ucolor == nil) {
+		ucolor = -1;
+	}
+	if (tcolor == nil) {
+		tcolor = -1;
+	}
+
+	ccolor = CHANNELD->set_color(ccolor);
+	ucolor = CHANNELD->set_color(ucolor);
+	tcolor = CHANNELD->set_color(tcolor);
+
+	send_out("[" + ccolor + channel + "\033[0m] "
+		+ ucolor + sender + tcolor + ": " + message + "\n");
 }
