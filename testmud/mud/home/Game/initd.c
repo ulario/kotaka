@@ -70,8 +70,7 @@ private void create_channels()
 
 void configure_channels()
 {
-	CHANNELD->set_channel_config("chat", "channel_color", GREEN | BRIGHT);
-	CHANNELD->set_channel_config("chat", "text_color", nil);
+	CHANNELD->set_channel_config("chat", "channel_color", 0x0e);
 }
 
 void configure_properties()
