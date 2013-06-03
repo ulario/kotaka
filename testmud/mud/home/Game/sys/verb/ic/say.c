@@ -29,10 +29,42 @@ mixed **query_roles()
 	});
 }
 
+private object *filter_mobiles(object *bodies)
+{
+	object *mobiles;
+	int sz, i;
+
+	sz = sizeof(bodies);
+	mobiles = ({ });
+
+	for (i = 0; i < sz; i++) {
+		mobiles |= bodies[i]->query_property("mobiles");
+	}
+
+	return mobiles;
+}
+
+void emit_say(object actor, object target, object listener, string evoke)
+{
+	string message;
+	object body;
+
+	body = listener->query_body();
+
+	listener->message(evoke);
+}
+
 void do_action(object actor, mapping roles, string evoke)
 {
 	object user;
+	object target;
 	string name;
+
+	int sz, i;
+
+	object env;
+	object *listeners;
+	object *mobiles;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
@@ -41,18 +73,28 @@ void do_action(object actor, mapping roles, string evoke)
 
 	user = query_user();
 
-	if (user->query_class() < 1) {
-		send_out("You do not have sufficient access rights to speak.\n");
-		return;
-	}
-
 	if (!evoke) {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
 
-	name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
+	env = actor->query_environment();
 
-	send_out("You say \"" + evoke + "\"\n");
-	TEXT_SUBD->send_to_all_except(name + " says \"" + evoke + "\"\n", ({ user }) );
+	if (!env) {
+		send_out("You open your mouth to speak\nbut the emptiness around you muffles your words.\n");
+		return;
+	}
+
+	listeners = env->query_inventory();
+	mobiles = filter_mobiles(listeners);
+
+	if (roles["iob"]) {
+		target = roles["iob"][1];
+	}
+
+	sz = sizeof(mobiles);
+
+	for (i = 0; i < sz; i++) {
+		emit_say(actor, target, mobiles[i], evoke);
+	}
 }
