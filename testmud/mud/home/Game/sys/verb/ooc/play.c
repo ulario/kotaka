@@ -40,6 +40,8 @@ void main(object actor, string args)
 	body = CATALOGD->lookup_object("players:" + name);
 
 	if (!body) {
+		object *mobiles;
+
 		world = GAME_INITD->query_world();
 
 		body = GAME_INITD->create_object();
@@ -54,6 +56,10 @@ void main(object actor, string args)
 		body->add_archetype(CATALOGD->lookup_object("class:animal:human"));
 		body->set_object_name("players:" + name);
 		body->move(world);
+
+		mobiles = body->query_property("mobiles");
+		mobiles += ({ query_user() });
+		body->set_property("mobiles", mobiles);
 	}
 
 	query_user()->set_body(body);
