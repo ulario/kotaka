@@ -257,29 +257,23 @@ mapping bans
 void channel_message(string channel, string sender, string message)
 {
 	mixed ccolor;
-	mixed ucolor;
 	mixed tcolor;
 
 	ACCESS_CHECK(previous_program() == CHANNELD);
 
 	ccolor = CHANNELD->query_channel_config(channel, "channel_color");
-	ucolor = CHANNELD->query_channel_config(channel, "user_color");
 	tcolor = CHANNELD->query_channel_config(channel, "text_color");
 
 	if (ccolor == nil) {
 		ccolor = -1;
-	}
-	if (ucolor == nil) {
-		ucolor = -1;
 	}
 	if (tcolor == nil) {
 		tcolor = -1;
 	}
 
 	ccolor = CHANNELD->setcolor(ccolor);
-	ucolor = CHANNELD->setcolor(ucolor);
 	tcolor = CHANNELD->setcolor(tcolor);
 
 	send_out("[" + ccolor + channel + "\033[0m] "
-		+ ucolor + sender + tcolor + ": " + message + "\n");
+		+ sender + tcolor + ": " + message + "\n");
 }
