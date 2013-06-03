@@ -33,4 +33,6 @@ void main(object actor, string args)
 
 	actor->set_x_position(random(9) - 4);
 	actor->set_y_position(random(9) - 4);
+
+	generic_emit(actor, ({ "jump", "jumps" }), nil, nil);
 }

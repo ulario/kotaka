@@ -68,6 +68,6 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
-	send_out("You take " + TEXT_SUBD->generate_brief_definite(dob) + ".\n");
 	dob->move(actor);
+	generic_emit(actor, ({ "take", "takes" }), dob, nil);
 }
