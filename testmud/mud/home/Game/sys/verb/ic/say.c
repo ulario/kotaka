@@ -38,7 +38,7 @@ private object *filter_mobiles(object *bodies)
 	mobiles = ({ });
 
 	for (i = 0; i < sz; i++) {
-		mobiles |= bodies[i]->query_property("mobiles");
+		mobiles |= bodies[i]->query_property("mobiles") - ({ nil });
 	}
 
 	return mobiles;
