@@ -51,7 +51,11 @@ void emit_say(object actor, object target, object listener, string evoke)
 
 	body = listener->query_body();
 
-	listener->message(evoke);
+	listener->message(
+		TEXT_SUBD->build_verb_report(
+			body, actor, ({ "say", "says" }), target, "to"
+		) + ", \"" + evoke + "\"\n"
+	);
 }
 
 void do_action(object actor, mapping roles, string evoke)
