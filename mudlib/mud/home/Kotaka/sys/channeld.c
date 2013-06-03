@@ -47,7 +47,7 @@ string join_access
 string post_access
 	guest, player, wizard, admin, system
 mapping bans
-	username to expiry (-1 is permanent)
+	username : 1
 */
 
 /**********************/
