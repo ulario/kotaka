@@ -37,6 +37,7 @@ void main(object actor, string args)
 
 		mobiles = body->query_property("mobiles");
 		body->set_property("mobiles", mobiles - ({ nil, user }));
+		user->set_body(nil);
 	} else {
 		query_user()->quit();
 	}
