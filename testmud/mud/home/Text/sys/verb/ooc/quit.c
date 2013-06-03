@@ -19,13 +19,24 @@
  */
 #include <kotaka/paths.h>
 #include <text/paths.h>
+#include <kotaka/assert.h>
 
 inherit LIB_RAWVERB;
 
 void main(object actor, string args)
 {
-	if (query_user()->query_body()) {
-		query_user()->set_body(nil);
+	object body;
+	object user;
+
+	user = query_user();
+	body = user->query_body();
+
+	if (body) {
+		object *mobiles;
+		ASSERT(actor == body);
+
+		mobiles = body->query_property("mobiles");
+		body->set_property("mobiles", mobiles - ({ nil, user }));
 	} else {
 		query_user()->quit();
 	}
