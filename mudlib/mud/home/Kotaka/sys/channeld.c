@@ -184,8 +184,8 @@ void subscribe_channel(string channel, object subscriber)
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
-	CHECKARG(channel, 1, "subscribed_user");
-	CHECKARG(subscriber, 1, "subscribe_user");
+	CHECKARG(channel, 1, "subscribe_channel");
+	CHECKARG(subscriber, 1, "subscribe_channel");
 
 	if (!channels[channel]) {
 		error("No such channel");
@@ -199,12 +199,12 @@ void subscribe_channel(string channel, object subscriber)
 }
 
 /** unsubscribe a user from a channel */
-void unsubscribe_user(string channel, object subscriber)
+void unsubscribe_channel(string channel, object subscriber)
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
-	CHECKARG(channel, 1, "unsubscribe_user");
-	CHECKARG(subscriber, 1, "unsubscribe_user");
+	CHECKARG(channel, 1, "unsubscribe_channel");
+	CHECKARG(subscriber, 1, "unsubscribe_channel");
 
 	if (!channels[channel]) {
 		error("No such channel");
