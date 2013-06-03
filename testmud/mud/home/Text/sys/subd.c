@@ -303,3 +303,36 @@ string print_fantasy(int copper)
 
 	return implode(stack, ", ");
 }
+
+string build_verb_report(object observer, object actor, string *vforms, object target, string preposition)
+{
+	string *message;
+
+	if (observer == actor) {
+		message = ({ "You", vforms[0] });
+	} else {
+		message = ({ generate_brief_indefinite(actor), vforms[1] });
+	}
+
+	if (target && preposition) {
+		message += ({ preposition });
+	}
+
+	if (target) {
+		if (observer == target) {
+			if (observer == actor) {
+				message += ({ "yourself" });
+			} else {
+				message += ({ "you" });
+			}
+		} else {
+			if (target == actor) {
+				message += ({ "himself" });
+			} else {
+				message += ({ generate_brief_indefinite(target) });
+			}
+		}
+	}
+
+	return implode(message, " ");
+}
