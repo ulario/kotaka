@@ -39,5 +39,5 @@ void main(object actor, string args)
 		return;
 	}
 
-	CHANNELD->post_message("chat", TEXT_SUBD->titled_name(user->query_name()), args);
+	CHANNELD->post_message("chat", TEXT_SUBD->titled_name(user->query_name(), user->query_class()), args);
 }
