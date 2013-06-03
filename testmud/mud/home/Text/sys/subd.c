@@ -311,7 +311,7 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 	if (observer == actor) {
 		message = ({ "You", vforms[0] });
 	} else {
-		message = ({ generate_brief_indefinite(actor), vforms[1] });
+		message = ({ generate_brief_definite(actor), vforms[1] });
 	}
 
 	if (preposition) {
@@ -329,7 +329,7 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 			if (target == actor) {
 				message += ({ "himself" });
 			} else {
-				message += ({ generate_brief_indefinite(target) });
+				message += ({ generate_brief_definite(target) });
 			}
 		}
 	}
