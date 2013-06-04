@@ -48,7 +48,7 @@ private void prompt()
 	body = query_user()->query_body();
 
 	if (body) {
-		send_out(body->query_property("id") + "> ");
+		send_out(TEXT_SUBD->generate_brief_indefinite(body) + "> ");
 	} else {
 		string name;
 
