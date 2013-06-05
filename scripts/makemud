@@ -70,3 +70,5 @@ for d in git/kotaka/testmud/mud/doc/*
 do
 	ln -s ../../../../$d dgd/kotaka/mud/doc
 done
+
+echo "Completed."
