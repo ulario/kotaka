@@ -1,11 +1,17 @@
 #!/bin/bash
 
 # purge
+
+echo "Purging old layout..."
+
 cd ~
 rm -rf dgd/kotaka/mud
 rm -rf dgd/kotaka/tmp
 
 # skeleton
+
+echo "Building directory skeleton..."
+
 mkdir -p dgd
 mkdir -p dgd/kotaka
 mkdir -p dgd/kotaka/mud
@@ -19,12 +25,18 @@ mkdir -p dgd/kotaka/mud/log
 mkdir -p dgd/kotaka/tmp
 
 # dgd
+
+echo "Setting up dgd links..."
+
 for d in kfun net editor parser
 do
 	ln -s ../../../../git/dgd-osr/doc/$d dgd/kotaka/mud/doc
 done
 
 # kernel-lib
+
+echo "setting up kernel library links..."
+
 for d in efun hook lfun
 do
 	ln -s ../../../../../git/kernellib/doc/kernel/$d dgd/kotaka/mud/doc/kernel
@@ -38,6 +50,9 @@ done
 ln -s ../../../../git/kernellib/include/kernel dgd/kotaka/mud/include
 
 # kotaka
+
+echo "setting up kotaka links..."
+
 for d in git/kotaka/mudlib/mud/home/*
 do
 	ln -s ../../../../$d dgd/kotaka/mud/home
@@ -53,9 +68,14 @@ do
 	ln -s ../../../../$d dgd/kotaka/mud/doc
 done
 
+echo "copying configuration file..."
+
 cp git/kotaka/mudlib/kotaka.dgd dgd/kotaka
 
 # ulario
+
+echo "setting up ulario links..."
+
 for d in git/kotaka/testmud/mud/home/*
 do
 	ln -s ../../../../$d dgd/kotaka/mud/home
@@ -71,4 +91,4 @@ do
 	ln -s ../../../../$d dgd/kotaka/mud/doc
 done
 
-echo "Completed."
+echo "completed."
