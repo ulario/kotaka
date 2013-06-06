@@ -82,6 +82,15 @@ float query_total_mass()
 	return mass + cached_content_mass;
 }
 
+float query_contained_mass()
+{
+	if (bulk_dirty) {
+		bulk_sync();
+	}
+
+	return cached_content_mass;
+}
+
 void figure_mass(float volume)
 {
 	set_mass(volume / density * 1000.0);
@@ -136,6 +145,15 @@ float query_total_volume()
 	} else {
 		return query_volume() + capacity;
 	}
+}
+
+float query_contained_volume()
+{
+	if (bulk_dirty) {
+		bulk_sync();
+	}
+
+	return cached_content_volume;
 }
 
 /* capacity */
