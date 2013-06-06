@@ -106,6 +106,7 @@ void configure_properties()
 
 	/* bulk */
 	PROPERTYD->add_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
+	PROPERTYD->add_property("total_mass", T_FLOAT, PROP_MAGIC, ({ "query_total_mass", nil }) );
 	PROPERTYD->add_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
 
 	/* economics */
