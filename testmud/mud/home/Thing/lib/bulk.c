@@ -193,7 +193,19 @@ float query_max_mass()
 
 void set_flexible(int new_flexible)
 {
+	object env;
+
+	new_flexible = !!new_flexible;
+
+	if (flexible == new_flexible) {
+		return;
+	}
+
 	flexible = new_flexible;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
 }
 
 int query_flexible()
