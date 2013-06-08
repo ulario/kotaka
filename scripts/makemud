@@ -30,7 +30,7 @@ echo "Setting up dgd links..."
 
 for d in kfun net editor parser
 do
-	ln -s ../../../../git/dgd-osr/doc/$d dgd/kotaka/mud/doc
+	ln -s ../../../../git/dgd/doc/$d dgd/kotaka/mud/doc
 done
 
 # kernel-lib
