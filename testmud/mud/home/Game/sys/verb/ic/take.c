@@ -68,6 +68,6 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
-	dob->move(actor);
 	generic_emit(actor, ({ "take", "takes" }), dob, nil);
+	dob->move(actor);
 }
