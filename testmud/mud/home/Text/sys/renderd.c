@@ -211,20 +211,6 @@ private void draw_banner(object gc, object env)
 
 private void draw_void(object gc)
 {
-	int x, y;
-
-	gc->set_color(0x7);
-
-	for (y = -8; y <= 8; y += 1) {
-		for (x = -8; x <= 8; x += 1) {
-			gc->move_pen(x, y);
-
-			gc->set_color(random(15) + 1);
-			gc->draw(":");
-		}
-	}
-
-	gc->set_color(0x0C);
 }
 
 private void draw_environment(object gc, object living, object env)
