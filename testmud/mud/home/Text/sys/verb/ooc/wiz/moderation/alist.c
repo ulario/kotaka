@@ -30,6 +30,10 @@ void main(object actor, string args)
 	object user;
 	string *users;
 
+	string *players;
+	string *wizards;
+	string *admins;
+
 	user = query_user();
 
 	if (user->query_class() < 2) {
@@ -39,5 +43,5 @@ void main(object actor, string args)
 
 	users = ACCOUNTD->query_accounts();
 
-	send_out("Users: " + implode(users, ", ") + "\n");
+	send_out("Users:\n" + STRINGD->wordwrap(implode(users, ", "), 60) + "\n");
 }
