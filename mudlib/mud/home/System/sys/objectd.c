@@ -390,7 +390,7 @@ object query_orphans()
 
 		pinfo = PROGRAMD->query_program_info(indices->get_element(i));
 
-		if (!file_info(path = pinfo->query_path() + ".c")) {
+		if (!file_info((path = pinfo->query_path()) + ".c")) {
 			orphans->push_back(path);
 		}
 	}
