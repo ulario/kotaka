@@ -1,0 +1,39 @@
+XP Pools
+--------
+
+Invested
+
+	Invested XP is XP spent during character creation.
+
+	Once your character is created, Invested XP is locked inside
+	your character's soul, and will be forfeited if your character
+	is retired.
+
+Recovered
+
+	Recovered XP is gradually recovered from Invested XP, and is
+	refunded when your character is retired.
+
+	Recovered XP is always refunded when your character is removed
+	from the game.
+
+Acquired
+
+	Acquired XP is XP you gather from slaying monsters, practicing
+	your skills, and other in game actions.
+
+	Until they have been absorbed into Earned XP, they stay in your
+	body.  If you die, it's left behind, and decays slowly with your
+	body.  If your body is destroyed, Acquired XP is destroyed with
+	it.
+
+Earned
+
+	Earned XP is outside XP that has been held long enough to be
+	eligible for retention when your character is retired.
+
+	Unlike Recovered XP, your character must be retired with its
+	soul intact for Earned XP to be awarded.  If your character's soul
+	is destroyed, Earned XP is forfeited.
+
+	Earned XP can also be applied to in character perks.
