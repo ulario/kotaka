@@ -39,6 +39,8 @@ void main(object actor, string args)
 		return;
 	}
 
+	send_out("These objects have no LPC file:\n");
+
 	for (i = 0; i < sz; i++) {
 		send_out(arr->get_element(i) + "\n");
 	}
