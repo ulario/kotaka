@@ -44,7 +44,7 @@ void main(object actor, string args)
 		int ssz, j;
 
 		pindex = indices->get_element(i);
-		pinfo = PROGRAMD->query_program_info(pindex)
+		pinfo = PROGRAMD->query_program_info(pindex);
 		libs = pinfo->get_inherits();
 
 		ssz = sizeof(libs);
