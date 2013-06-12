@@ -169,7 +169,7 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 
 			if (!status) {
 				if (notqueue) {
-					notqueue->push_back(opath);
+					notqueue->push_back(opath + ".c");
 				}
 				continue;
 			}
