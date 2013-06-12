@@ -35,7 +35,7 @@ done
 
 # kernel-lib
 
-echo "setting up kernel library links..."
+echo "Setting up kernel library symlinks..."
 
 for d in efun hook lfun
 do
@@ -51,7 +51,7 @@ ln -s ../../../../git/kernellib/include/kernel dgd/kotaka/mud/include
 
 # kotaka
 
-echo "setting up kotaka links..."
+echo "Setting up kotaka symlinks..."
 
 for d in git/kotaka/mudlib/mud/home/*
 do
@@ -68,27 +68,8 @@ do
 	ln -s ../../../../$d dgd/kotaka/mud/doc
 done
 
-echo "copying configuration file..."
+echo "Copying configuration file..."
 
 cp git/kotaka/mudlib/kotaka.dgd dgd/kotaka
 
-# ulario
-
-echo "setting up ulario links..."
-
-for d in git/kotaka/testmud/mud/home/*
-do
-	ln -s ../../../../$d dgd/kotaka/mud/home
-done
-
-for d in git/kotaka/testmud/mud/include/*
-do
-	ln -s ../../../../$d dgd/kotaka/mud/include
-done
-
-for d in git/kotaka/testmud/mud/doc/*
-do
-	ln -s ../../../../$d dgd/kotaka/mud/doc
-done
-
-echo "completed."
+echo "Completed."
