@@ -21,8 +21,6 @@
 #include <kotaka/assert.h>
 #include <game/paths.h>
 
-inherit LIB_HANDLER;
-
 #define RED	1
 #define GREEN	2
 #define BLUE	4
