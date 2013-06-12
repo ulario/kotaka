@@ -45,8 +45,12 @@ void main(object actor, string args)
 
 		pindex = indices->get_element(i);
 		pinfo = PROGRAMD->query_program_info(pindex);
-		libs = pinfo->query_inherits();
 
+		if (pinfo->query_destructed()) {
+			continue;
+		}
+
+		libs = pinfo->query_inherits();
 		ssz = sizeof(libs);
 
 		for (j = 0; j < ssz; j++) {
