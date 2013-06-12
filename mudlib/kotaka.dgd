@@ -1,7 +1,8 @@
-telnet_port	= 50000;		/* telnet port number */
+telnet_port	= ([ "*": 50000,
+	"*": 50001
+]);		/* telnet port number */
 binary_port	= ([
-	"localhost": 50001,
-	"*": 50002
+	"localhost": 50010
 ]);		/* binary port number */
 directory	= "Please read INSTALL";/* base directory (MUST be absolute) */
 users		= 40;			/* max # of users */
