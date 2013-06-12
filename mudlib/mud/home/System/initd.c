@@ -324,8 +324,13 @@ private void configure_logging()
 	remove_file("/log/session.log");
 
 	LOGD->set_target("*", 255, "driver");
+	LOGD->set_target("debug", 0, "driver");
+
 	LOGD->set_target("*", 255, "file:/log/general.log");
 	LOGD->set_target("*", 255, "file:/log/session.log");
+	LOGD->set_target("debug", 0, "file:/log/session.log");
+
+	LOGD->set_target("debug", 255, "file:/log/debug.log");
 }
 
 int forbid_inherit(string from, string path, int priv)
