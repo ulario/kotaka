@@ -437,6 +437,8 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 	path = object_name(obj);
 
+	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
+
 	if (sscanf(path, USR_DIR + "/%s/_code")) {
 		/* klib wiztool "code" command, ignore */
 		return;
@@ -486,6 +488,8 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	int is_auto;
 
 	ACCESS_CHECK(KERNEL());
+
+	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
 
 	if (path != AUTO) {
 		inherited |= ({ AUTO });
