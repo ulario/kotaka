@@ -37,7 +37,7 @@ static void create()
 {
 	tls::create();
 
-	call_out("verify", 1);
+	call_out("verify_objregd", 1);
 }
 
 static void tls_test()
@@ -166,16 +166,20 @@ private void verify_objregd_owner(string owner)
 	} while (!seen[obj]);
 }
 
-void verify_objregd()
+static void verify_objregd()
 {
-	string *owners;
-	int i, sz;
+	rlimits (0; -1) {
+		string *owners;
+		int i, sz;
 
-	owners = KERNELD->query_owners();
+		owners = KERNELD->query_owners();
 
-	sz = sizeof(owners);
+		sz = sizeof(owners);
 
-	for (i = 0; i < sz; i++) {
-		verify_objregd_owner(owners[i]);
+		for (i = 0; i < sz; i++) {
+			verify_objregd_owner(owners[i]);
+		}
+
+		call_out("verify_objregd", 1);
 	}
 }
