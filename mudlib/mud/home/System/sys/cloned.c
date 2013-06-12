@@ -214,7 +214,12 @@ object query_clone_info(int index)
 void reset()
 {
 	if (db) {
-		destruct_object(db);
+		object turkey;
+
+		turkey = db;
+		db = nil;
+
+		destruct_object(turkey);
 	}
 
 	bmap = ([ ]);
