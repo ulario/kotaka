@@ -323,13 +323,14 @@ private void configure_logging()
 	load_object(LOGD);
 	remove_file("/log/session.log");
 
-	LOGD->set_target("*", 255, "driver");
+	LOGD->set_target("*", 240, "driver");
 	LOGD->set_target("debug", 0, "driver");
 
 	LOGD->set_target("*", 255, "file:/log/general.log");
-	LOGD->set_target("*", 255, "file:/log/session.log");
+	LOGD->set_target("*", 240, "file:/log/session.log");
 	LOGD->set_target("debug", 0, "file:/log/session.log");
 
+	LOGD->set_target("*", 128, "file:/log/debug.log");
 	LOGD->set_target("debug", 255, "file:/log/debug.log");
 }
 
