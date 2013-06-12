@@ -34,9 +34,11 @@ private void destruct_verbs(object proxy)
 	sz = proglist->get_size();
 
 	for (i = 0; i < sz; i++) {
+		object pinfo;
 		string path;
 
-		path = PROGRAMD->query_program_info(proglist->get_element(i))->query_path();
+		pinfo = PROGRAMD->query_program_info(proglist->get_element(i));
+		path = pinfo->query_path();
 
 		if (path == object_name(this_object())) {
 			continue;
