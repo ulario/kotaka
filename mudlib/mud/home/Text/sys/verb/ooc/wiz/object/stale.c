@@ -50,9 +50,12 @@ void main(object actor, string args)
 		ssz = sizeof(libs);
 
 		for (j = 0; j < ssz; j++) {
-			if (PROGRAMD->query_program_info(libs[j])->query_destructed()) {
-				send_out(pinfo->query_path() + "\n");
-				continue;
+			object pinfo2;
+
+			pinfo2 = PROGRAMD->query_program_info(libs[j]);
+
+			if (pinfo2->query_destructed()) {
+				send_out(pinfo->query_path() + " inherits " + pinfo2->query_path() + "\n");
 			}
 		}
 	}
