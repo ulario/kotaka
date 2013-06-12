@@ -29,7 +29,7 @@
 inherit SECOND_AUTO;
 
 mapping bmap;	/* keeping track of bigstruct clones */
-object db;
+object db;	/* keeping track of other clones */
 
 void discover_clones();
 
@@ -209,4 +209,16 @@ object query_clone_info(int index)
 	}
 
 	return db->get_element(index);
+}
+
+void reset()
+{
+	if (db) {
+		destruct_object(db);
+	}
+
+	bmap = ([ ]);
+
+	db = clone_object(BIGSTRUCT_MAP_OBJ);
+	db->set_type(T_INT);
 }
