@@ -437,6 +437,11 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 	path = object_name(obj);
 
+	if (sscanf(path, USR_DIR + "/%s/_code")) {
+		/* klib wiztool "code" command, ignore */
+		return;
+	}
+
 	if (path != DRIVER) {
 		inherited |= ({ AUTO });
 	}
@@ -547,6 +552,11 @@ void destruct(string owner, object obj)
 	ACCESS_CHECK(KERNEL());
 
 	name = object_name(obj);
+
+	if (sscanf(name, USR_DIR + "/%s/_code")) {
+		/* klib wiztool "code" command, ignore */
+		return;
+	}
 
 	is_clone = sscanf(name, "%s#%*d", path);
 
