@@ -159,8 +159,7 @@ private void verify_objregd_owner(string owner)
 
 		if (!obj) {
 			shutdown();
-			LOGD->post_message("system", LOG_EMERG, "Fatal error:  Corrupted ObjRegD database for owner " + owner);
-			send_out("nil\n");
+			LOGD->post_message("system", LOG_EMERG, "Fatal error:  Corrupted ObjRegD database for " + owner);
 			break;
 		}
 	} while (!seen[obj]);
