@@ -321,15 +321,27 @@ private void configure_klib()
 
 void configure_logging()
 {
+	/* log to console by default */
 	LOGD->set_target("*", 127, "driver");
+
+	/* don't log these to the console */
 	LOGD->set_target("debug", 0, "driver");
 	LOGD->set_target("compile", 0, "driver");
 	LOGD->set_target("trace", 0, "driver");
 
+	/* prevent default logging */
+	LOGD->set_target("debug", 255, "null");
+	LOGD->set_target("compile", 255, "null");
+	LOGD->set_target("trace", 255, "null");
+
+	/* general log gets everything */
 	LOGD->set_target("*", 255, "file:/log/general.log");
+
+	/* session log gets only non debug */
 	LOGD->set_target("*", 127, "file:/log/session.log");
 	LOGD->set_target("debug", 0, "file:/log/session.log");
 
+	/* debug log gets only debug */
 	LOGD->set_target("*", 128, "file:/log/debug.log");
 	LOGD->set_target("debug", 255, "file:/log/debug.log");
 }
