@@ -32,16 +32,7 @@ static void discard_node(object node);
 
 static void create()
 {
-	object pobj;
-
-	grants = ([ ]);
-	pobj = previous_object();
-
-	if (pobj <- "root") {
-		grants = pobj->query_grants()[..];
-	} else {
-		grants[pobj] = FULL_ACCESS;
-	}
+	grants = ([ previous_object() : FULL_ACCESS ]);
 }
 
 private int access_of(object obj)
@@ -98,4 +89,12 @@ void grant_global_access(int access)
 	check_caller(FULL_ACCESS);
 
 	global_access = access;
+}
+
+void copy_access(object "root" source)
+{
+	check_caller(FULL_ACCESS);
+
+	grants = source->query_grants()[..];
+	global_access = source->query_global_access();
 }
