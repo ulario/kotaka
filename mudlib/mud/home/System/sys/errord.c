@@ -207,7 +207,7 @@ void runtime_error(string error, int caught, mixed **trace)
 
 		if (find_object(LOGD)) {
 			if (compstr) {
-				LOGD->post_message("compile", LOG_INFO, compstr);
+				LOGD->post_message("compile", caught ? LOG_NOTICE : LOG_ERR, compstr);
 			}
 
 			LOGD->post_message("error", caught ? LOG_NOTICE : LOG_ERR, errstr);
