@@ -395,6 +395,11 @@ int do_verb(string command, string args)
 			TLSD->set_tls_value("Text", "ustate", nil);
 		}
 		return TRUE;
+	} else {
+		if (!actor) {
+			send_out("You must be in character to use this command.\n");
+			return TRUE;
+		}
 	}
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
