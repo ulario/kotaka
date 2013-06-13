@@ -90,11 +90,3 @@ void grant_global_access(int access)
 
 	global_access = access;
 }
-
-void copy_access(object "root" source)
-{
-	check_caller(FULL_ACCESS);
-
-	grants = source->query_grants()[..];
-	global_access = source->query_global_access();
-}

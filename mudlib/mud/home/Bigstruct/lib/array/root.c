@@ -366,5 +366,8 @@ object slice(int lowindex, int highindex)
 		);
 	}
 
+	slice->grant_access(previous_object(), FULL_ACCESS);
+	slice->grant_access(this_object(), 0);
+
 	return slice;
 }

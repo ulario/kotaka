@@ -336,6 +336,9 @@ object get_indices()
 		node = next_node(node);
 	}
 
+	array->grant_access(previous_object(), FULL_ACCESS);
+	array->grant_access(this_object(), 0);
+
 	return array;
 }
 
@@ -348,7 +351,7 @@ object get_values()
 
 	check_caller(READ_ACCESS);
 
-	array = new_object("~/lwo/bigstruct/array/root");
+	array = new_object(BIGSTRUCT_ARRAY_LWO);
 
 	node = leftest(top);
 
@@ -370,6 +373,9 @@ object get_values()
 		index += sz;
 		node = next_node(node);
 	}
+
+	array->grant_access(previous_object(), FULL_ACCESS);
+	array->grant_access(this_object(), 0);
 
 	return array;
 }
