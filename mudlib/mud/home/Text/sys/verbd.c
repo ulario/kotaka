@@ -397,7 +397,7 @@ int do_verb(string command, string args)
 		return TRUE;
 	} else {
 		if (!actor) {
-			send_out("You must be in character to use this command.\n");
+			ustate->send_out("You must be in character to use this command.\n");
 			return TRUE;
 		}
 	}
