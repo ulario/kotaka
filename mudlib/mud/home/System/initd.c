@@ -326,7 +326,7 @@ void configure_logging()
 
 	/* don't log these to the console */
 	LOGD->set_target("debug", 0, "driver");
-	LOGD->set_target("compile", 0, "driver");
+	LOGD->set_target("compile", 63, "driver");
 	LOGD->set_target("trace", 0, "driver");
 
 	/* prevent default logging */
