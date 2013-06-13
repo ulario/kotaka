@@ -55,6 +55,7 @@ void main(object actor, string args)
 		body->add_archetype(CATALOGD->lookup_object("class:animal:human"));
 		body->set_object_name("players:" + name);
 		body->move(world);
+		send_out("You create " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	}
 
 	mobiles = body->query_property("mobiles");
