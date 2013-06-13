@@ -62,5 +62,5 @@ void main(object actor, string args)
 	body->set_property("mobiles", mobiles);
 
 	query_user()->set_body(body);
-	send_out("You inhabit " + TEXT_SUBD->generate_brief_definite(body) + "\n");
+	send_out("You inhabit " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 }

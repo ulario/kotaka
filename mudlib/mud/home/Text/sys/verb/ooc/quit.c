@@ -38,7 +38,7 @@ void main(object actor, string args)
 		mobiles = body->query_property("mobiles");
 		body->set_property("mobiles", mobiles - ({ nil, user }));
 		user->set_body(nil);
-		send_out("You leave " + TEXT_SUBD->generate_brief_definite(body) + "\n");
+		send_out("You leave " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	} else {
 		query_user()->quit();
 	}
