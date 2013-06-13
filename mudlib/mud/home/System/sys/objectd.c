@@ -439,7 +439,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
 
-	if (sscanf(path, USR_DIR + "/%s/_code")) {
+	if (sscanf(path, USR_DIR + "/%*s/_code")) {
 		/* klib wiztool "code" command, ignore */
 		return;
 	}
@@ -557,7 +557,7 @@ void destruct(string owner, object obj)
 
 	name = object_name(obj);
 
-	if (sscanf(name, USR_DIR + "/%s/_code")) {
+	if (sscanf(name, USR_DIR + "/%*s/_code")) {
 		/* klib wiztool "code" command, ignore */
 		return;
 	}
