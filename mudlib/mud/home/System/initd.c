@@ -49,7 +49,7 @@ void message(string str);
 void boot_subsystem(string subsystem);
 
 private void configure_klib();
-private void configure_logging();
+void configure_logging();
 private void check_config();
 private void check_versions();
 
@@ -61,8 +61,9 @@ private void initialize()
 	ERRORD->enable();
 
 	load_object(STRINGD);
-
 	load_object(LOGD);
+
+	remove_file("/log/session.log");
 	configure_logging();
 
 	LOGD->post_message("boot", LOG_INFO, "Logging initialized");
@@ -318,11 +319,8 @@ private void configure_klib()
 	KERNELD->set_rsrc("ticks", 100000000, 0, 0);
 }
 
-private void configure_logging()
+void configure_logging()
 {
-	load_object(LOGD);
-	remove_file("/log/session.log");
-
 	LOGD->set_target("*", 127, "driver");
 	LOGD->set_target("debug", 0, "driver");
 
