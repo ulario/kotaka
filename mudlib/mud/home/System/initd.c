@@ -323,6 +323,8 @@ void configure_logging()
 {
 	LOGD->set_target("*", 127, "driver");
 	LOGD->set_target("debug", 0, "driver");
+	LOGD->set_target("compile", 0, "driver");
+	LOGD->set_target("trace", 0, "driver");
 
 	LOGD->set_target("*", 255, "file:/log/general.log");
 	LOGD->set_target("*", 127, "file:/log/session.log");
