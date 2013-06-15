@@ -42,6 +42,5 @@ void main(object actor, string args)
 
 	thing = GAME_INITD->create_object();
 	thing->move(actor);
-	thing->set_property("id", "thing");
 	thing->set_property("local_nouns", ({ "thing" }) );
 }
