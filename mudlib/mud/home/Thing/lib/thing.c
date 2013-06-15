@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 
 inherit arch "archetype";
+inherit id "id";
 inherit inv "inventory";
 inherit prop "property";
 inherit bulk "bulk";
@@ -34,6 +35,7 @@ int destructing;
 static void create()
 {
 	arch::create();
+	id::create();
 	inv::create();
 	prop::create();
 	bulk::create();
@@ -46,6 +48,7 @@ int forbid_insert(object obj)
 
 static void move_notify(object old_env)
 {
+	id::move_notify(old_env);
 	bulk::move_notify(old_env);
 }
 

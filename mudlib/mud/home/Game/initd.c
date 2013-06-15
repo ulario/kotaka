@@ -78,7 +78,7 @@ void configure_properties()
 	PROPERTYD->clear_properties();
 
 	/* identification */
-	PROPERTYD->add_property("id", T_STRING, PROP_SIMPLE);
+	PROPERTYD->add_property("id", T_STRING, PROP_MAGIC, ({ "query_id", "set_id" }) );
 	PROPERTYD->add_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
 
 	/* inheritance */
