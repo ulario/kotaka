@@ -209,7 +209,7 @@ void build_world()
 	world->set_mass(1e+9);
 	world->set_density(6.5);
 	world->set_property("event:paint",
-		USR_DIR + "/Game/sys/handler/paint/grass");
+		USR_DIR + "/Game/sys/handler/paint/fill/grass");
 }
 
 /********/
