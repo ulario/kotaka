@@ -41,11 +41,6 @@ void do_action(object actor, mapping roles, string evoke)
 
 	dob = roles["dob"];
 
-	if (dob == actor) {
-		send_out("Are you trying to create a singularity?\n");
-		return;
-	}
-
 	if (!dob) {
 		send_out("Enter what?\n");
 		return;
@@ -63,8 +58,8 @@ void do_action(object actor, mapping roles, string evoke)
 
 	dob = dob[1];
 
-	if (dob->query_environment() == actor) {
-		send_out("You already have it!\n");
+	if (dob == actor || actor->is_container_of(dob)) {
+		send_out("Are you trying to create a singularity?\n");
 		return;
 	}
 
