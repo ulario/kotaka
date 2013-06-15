@@ -31,7 +31,7 @@ void on_paint_text(object gc, object obj, object viewer)
 	int mx, my;
 	int i;
 
-	if (!obj->is_container(viewer)) {
+	if (!obj->is_container_of(viewer)) {
 		return;
 	}
 
