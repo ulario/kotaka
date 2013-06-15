@@ -46,6 +46,7 @@ void on_paint_text(object gc, object obj, object viewer)
 				gc->set_color(0x23);
 				break;
 			}
+
 			switch(random(2)) {
 			case 0:
 				gc->draw(",");
