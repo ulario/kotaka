@@ -194,6 +194,8 @@ string generate_brief_definite(object thing)
 	if (brief) {
 		return "the " + brief;
 	}
+
+	return "the nondescript thing";
 }
 
 string generate_brief_indefinite(object thing)
@@ -226,6 +228,8 @@ string generate_brief_indefinite(object thing)
 	if (brief) {
 		return "a " + brief;
 	}
+
+	return "a nondescript thing";
 }
 
 string generate_list(string *phrases)
