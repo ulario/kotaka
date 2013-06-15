@@ -143,38 +143,6 @@ int query_user_class(string username)
 	return 1;
 }
 
-object mega_inventory(object root)
-{
-	object obj;
-	object *inv;
-	int sz, i;
-	object list;
-	object queue;
-
-	list = new_object(BIGSTRUCT_ARRAY_LWO);
-	list->grant_access(previous_object(), FULL_ACCESS);
-	queue = new_object(BIGSTRUCT_DEQUE_LWO);
-	queue->push_back(root);
-
-	while (!queue->empty()) {
-		object obj;
-
-		obj = queue->get_front();
-		queue->pop_front();
-
-		list->push_back(obj);
-
-		inv = obj->query_inventory();
-		sz = sizeof(inv);
-
-		for (i = 0; i < sz; i++) {
-			queue->push_back(inv[i]);
-		}
-	}
-
-	return list;
-}
-
 string generate_brief_definite(object thing)
 {
 	string brief;
