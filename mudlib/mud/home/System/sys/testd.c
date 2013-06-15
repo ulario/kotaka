@@ -163,8 +163,6 @@ private void verify_objregd_owner(string owner)
 			break;
 		}
 	} while (!seen[obj]);
-
-	LOGD->post_message("system", LOG_DEBUG, "ObjRegD check passed for " + owner);
 }
 
 static void verify_objregd()
