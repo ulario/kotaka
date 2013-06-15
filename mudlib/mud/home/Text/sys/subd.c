@@ -208,7 +208,7 @@ string generate_brief_indefinite(object thing)
 		}
 
 		if (strlen(brief) > 0) {
-			switch(brief[0]) {
+			switch(STRINGD->to_lower(brief)[0]) {
 			case 'a':
 			case 'e':
 			case 'i':
