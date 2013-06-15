@@ -28,8 +28,6 @@ private int id_number;
 
 static void create()
 {
-	id_base = "anonymous";
-	id_number = 1;
 }
 
 static void validate_base_id(string new_base)
@@ -82,6 +80,10 @@ int query_lowest_free(string trial, object exclude)
 
 string query_id()
 {
+	if (!id_base) {
+		return nil;
+	}
+
 	return ID(id_base, id_number);
 }
 
@@ -101,6 +103,12 @@ void set_id(string new_id)
 	string new_base;
 	int new_number;
 	string old_id;
+
+	if (!new_id) {
+		id_base = nil;
+		id_number = 0;
+		return;
+	}
 
 	if (!sscanf(new_id, "%s#%d", new_base, new_number)) {
 		new_base = new_id;
@@ -139,6 +147,12 @@ void set_id_base(string new_base)
 	string old_id;
 	string new_id;
 
+	if (!new_base) {
+		id_base = nil;
+		id_number = 0;
+		return;
+	}
+
 	validate_base_id(new_base);
 
 	env = query_environment();
@@ -160,6 +174,10 @@ void set_id_number(int new_number)
 	object env;
 	object other;
 	string old_id;
+
+	if (!id_base) {
+		error("Invalid ID (number requires base)");
+	}
 
 	env = query_environment();
 
@@ -183,6 +201,10 @@ static void move_notify(object old_env)
 {
 	object new_env;
 	int new_number;
+
+	if (!id_base) {
+		return;
+	}
 
 	new_env = query_environment();
 
