@@ -28,12 +28,16 @@ void main(object actor, string args)
 	string name;
 	object world;
 	object body;
+	object user;
+	object oldbody;
 	object *inv;
 	object *mobiles;
 
-	name = query_user()->query_name();
+	user = query_user();
 
-	if (!(name = query_user()->query_name())) {
+	name = user->query_name();
+
+	if (!(name = user->query_name())) {
 		send_out("You aren't logged in.\n");
 		return;
 	}
@@ -64,10 +68,20 @@ void main(object actor, string args)
 		send_out("You create " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	}
 
+	oldbody = user->query_body();
+
+	if (oldbody) {
+		send_out("You leave " + TEXT_SUBD->generate_brief_definite(oldbody) + ".\n");
+
+		mobiles = oldbody->query_property("mobiles");
+		mobiles -= ({ user });
+		oldbody->set_property("mobiles", mobiles);
+	}
+
 	mobiles = body->query_property("mobiles");
-	mobiles |= ({ query_user() });
+	mobiles |= ({ user });
 	body->set_property("mobiles", mobiles);
 
-	query_user()->set_body(body);
+	user->set_body(body);
 	send_out("You inhabit " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 }
