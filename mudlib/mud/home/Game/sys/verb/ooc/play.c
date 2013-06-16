@@ -38,7 +38,9 @@ void main(object actor, string args)
 		return;
 	}
 
-	body = CATALOGD->lookup_object(args);
+	if (args != "") {
+		body = CATALOGD->lookup_object(args);
+	}
 
 	if (!body) {
 		body = CATALOGD->lookup_object("players:" + name);
@@ -63,7 +65,7 @@ void main(object actor, string args)
 	}
 
 	mobiles = body->query_property("mobiles");
-	mobiles += ({ query_user() });
+	mobiles |= ({ query_user() });
 	body->set_property("mobiles", mobiles);
 
 	query_user()->set_body(body);
