@@ -141,7 +141,7 @@ object lookup_object(string name)
 		error("Invalid object name");
 	}
 
-	if (name) {
+	if (name == "") {
 		error("Invalid object name");
 	}
 
