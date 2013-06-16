@@ -137,6 +137,10 @@ object lookup_object(string name)
 	int sz;
 	int i;
 
+	if (!name || name == "") {
+		error("Invalid name");
+	}
+
 	path = explode(name, ":");
 
 	if (sizeof(path & ({ "" }) )) {
