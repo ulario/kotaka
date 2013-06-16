@@ -38,7 +38,11 @@ void main(object actor, string args)
 		return;
 	}
 
-	body = CATALOGD->lookup_object("players:" + name);
+	body = CATALOGD->lookup_object(args);
+
+	if (!body) {
+		body = CATALOGD->lookup_object("players:" + name);
+	}
 
 	if (!body) {
 		world = GAME_INITD->query_world();
