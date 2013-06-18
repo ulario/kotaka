@@ -153,7 +153,7 @@ private object *filter_noun(object *candidates, string noun)
 	contenders = ({ });
 
 	for (i = 0; i < sz; i++) {
-		if (sizeof(({ noun }) & candidates[i]->query_property("nouns"))) {
+		if (sizeof(({ noun }) & candidates[i]->query_property("snouns"))) {
 			contenders += ({ candidates[i] });
 		}
 	}
