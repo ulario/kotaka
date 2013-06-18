@@ -85,13 +85,16 @@ void configure_properties()
 	PROPERTYD->add_property("archetypes", T_ARRAY, PROP_MAGIC, ({ "query_archetypes", "set_archetypes" }) );
 
 	/* descriptions */
-	PROPERTYD->add_property("nouns", T_ARRAY, PROP_COMBO, ({ "local_nouns", "removed_nouns" }) );
+	PROPERTYD->add_property("snouns", T_ARRAY, PROP_COMBO, ({ "local_snouns", "removed_snouns" }) );
+	PROPERTYD->add_property("pnouns", T_ARRAY, PROP_COMBO, ({ "local_pnouns", "removed_pnouns" }) );
 	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_COMBO, ({ "local_adjectives", "removed_adjectives" }) );
 
-	PROPERTYD->add_property("local_nouns", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("local_snouns", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("local_pnouns", T_ARRAY, PROP_SIMPLE);
 	PROPERTYD->add_property("local_adjectives", T_ARRAY, PROP_SIMPLE);
 
-	PROPERTYD->add_property("removed_nouns", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("removed_snouns", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("removed_pnouns", T_ARRAY, PROP_SIMPLE);
 	PROPERTYD->add_property("removed_adjectives", T_ARRAY, PROP_SIMPLE);
 
 	PROPERTYD->add_property("brief", T_STRING, PROP_INHERIT);
