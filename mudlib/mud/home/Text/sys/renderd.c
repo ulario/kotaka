@@ -49,6 +49,8 @@ private void draw_tickmarks(object gc)
 
 private void default_painter(object gc, object neighbor, object living)
 {
+	string s;
+
 	int dx, dy;
 	int ox, oy;
 
@@ -90,7 +92,14 @@ private void default_painter(object gc, object neighbor, object living)
 		break;
 	default:
 		gc->set_color(0x0D);
-		gc->draw("?");
+		s = neighbor->query_property("brief");
+
+		if (s && strlen(s) > 0) {
+			gc->draw(s[0 .. 0]);
+		} else {
+			gc->draw("?");
+		}
+
 		break;
 	}
 }
