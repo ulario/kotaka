@@ -56,6 +56,7 @@ void main(object actor, string args)
 
 	BAND->ban_site(args);
 	users = TEXT_USERD->query_users();
+	users += TEXT_USERD->query_guests();
 	sz = sizeof(users);
 
 	/* kick turkeys */
