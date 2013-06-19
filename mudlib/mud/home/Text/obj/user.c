@@ -131,6 +131,8 @@ int login(string str)
 
 	set_root_state(clone_object("~/obj/ustate/start"));
 
+	TEXT_USERD->add_guest(this_object());
+
 	return MODE_NOCHANGE;
 }
 
