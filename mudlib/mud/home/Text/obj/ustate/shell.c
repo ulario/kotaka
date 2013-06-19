@@ -168,6 +168,8 @@ void receive_in(string input)
 
 	reading = 1;
 
+	input = STRINGD->trim_whitespace(input);
+
 	if (strlen(input) > 0) {
 		switch(input[0]) {
 		case '\'':
