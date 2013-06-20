@@ -40,6 +40,9 @@ private string print_values(mapping values)
 
 	for (i = 0; i < sz; i++) {
 		switch(c[i]) {
+		case "dragon":
+			bits += ({ TEXT_SUBD->print_gems(v[i]) });
+			break;
 		case "dollar":
 			bits += ({ TEXT_SUBD->print_dollars(v[i]) });
 			break;

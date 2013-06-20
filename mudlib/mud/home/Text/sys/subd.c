@@ -239,6 +239,19 @@ string print_dollars(int cents)
 	return "$" + dollars + "." + centspart;
 }
 
+string print_gems(int gems)
+{
+	if (gems == 0) {
+		return "no gems";
+	}
+
+	if (gems == 1) {
+		return "a humble gem";
+	}
+
+	return "G" + gems;
+}
+
 string print_fantasy(int copper)
 {
 	int platinum;
