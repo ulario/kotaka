@@ -5,7 +5,7 @@
 echo "Purging old layout..."
 
 cd ~
-rm -rf dgd/kotaka/mud
+rm -rf dgd/kotaka/mud/*
 rm -rf dgd/kotaka/tmp
 
 # skeleton
