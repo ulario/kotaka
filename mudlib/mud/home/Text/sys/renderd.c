@@ -72,35 +72,13 @@ private void default_painter(object gc, object neighbor, object living)
 	}
 
 	gc->move_pen(x, y);
+	gc->set_color(0x0D);
+	s = neighbor->query_property("brief");
 
-	switch(neighbor->query_property("id")) {
-	case "wolf":
-		gc->set_color(0x08);
-		gc->draw("w");
-		break;
-	case "deer":
-		gc->set_color(0x03);
-		gc->draw("d");
-		break;
-	case "rock":
-		gc->set_color(0x07);
-		gc->draw("@");
-		break;
-	case "soil":
-		gc->set_color(0x23);
-		gc->draw(":");
-		break;
-	default:
-		gc->set_color(0x0D);
-		s = neighbor->query_property("brief");
-
-		if (s && strlen(s) > 0) {
-			gc->draw(s[0 .. 0]);
-		} else {
-			gc->draw("?");
-		}
-
-		break;
+	if (s && strlen(s) > 0) {
+		gc->draw(s[0 .. 0]);
+	} else {
+		gc->draw("?");
 	}
 }
 
