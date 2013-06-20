@@ -216,52 +216,6 @@ float rnd()
 	return ldexp((float)random(1 << 30), -30);
 }
 
-/* object */
-
-object query_common_container(object a, object b)
-{
-	mapping la, ra;
-	object le, re;
-
-	le = a;
-	re = b;
-
-	la = ([ ]);
-	ra = ([ ]);
-
-	while (le && re) {
-		la[le] = 1;
-		ra[re] = 1;
-
-		if (la[re]) {
-			return re;
-		}
-
-		if (ra[le]) {
-			return le;
-		}
-
-		le = le->query_environment();
-		re = re->query_environment();
-	}
-
-	while (le) {
-		if (ra[le]) {
-			return le;
-		}
-
-		le = le->query_environment();
-	}
-
-	while (re) {
-		if (la[re]) {
-			return re;
-		}
-
-		re = re->query_environment();
-	}
-}
-
 float pi()
 {
 	return atan(1.0) * 4.0;

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012  Raymond Jennings
+ * Copyright (C) 2013  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,33 +18,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <thing/paths.h>
-
-int *query_position_difference(object a, object b)
+object query_common_container(object a, object b)
 {
-	object cc;
+	mapping la, ra;
+	object le, re;
 
-	int dx, dy, dz;
+	le = a;
+	re = b;
 
-	cc = THING_SUBD->query_common_container(a, b);
+	la = ([ ]);
+	ra = ([ ]);
 
-	if (!cc) {
-		error("Objects not on same plane of existence");
+	while (le && re) {
+		la[le] = 1;
+		ra[re] = 1;
+
+		if (la[re]) {
+			return re;
+		}
+
+		if (ra[le]) {
+			return le;
+		}
+
+		le = le->query_environment();
+		re = re->query_environment();
 	}
 
-	while (b != cc) {
-		dx += b->query_x_position();
-		dy += b->query_y_position();
-		dz += b->query_z_position();
-		b = b->query_environment();
+	while (le) {
+		if (ra[le]) {
+			return le;
+		}
+
+		le = le->query_environment();
 	}
 
-	while (a != cc) {
-		dx -= a->query_x_position();
-		dy -= a->query_y_position();
-		dz -= a->query_z_position();
-		a = a->query_environment();
-	}
+	while (re) {
+		if (la[re]) {
+			return re;
+		}
 
-	return ({ dx, dy, dz });
+		re = re->query_environment();
+	}
 }

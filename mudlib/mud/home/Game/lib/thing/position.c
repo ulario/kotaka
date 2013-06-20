@@ -40,7 +40,7 @@ static void move_notify(object old_env)
 		return;
 	}
 
-	common = SUBD->query_common_container(old_env, new_env);
+	common = THING_SUBD->query_common_container(old_env, new_env);
 
 	if (!common) {
 		return;

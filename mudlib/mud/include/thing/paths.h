@@ -6,3 +6,4 @@
 
 #define BULKD			(USR_DIR + "/Thing/sys/bulkd")
 #define TIMED			(USR_DIR + "/Thing/sys/timed")
+#define THING_SUBD		(USR_DIR + "/Thing/sys/subd")
