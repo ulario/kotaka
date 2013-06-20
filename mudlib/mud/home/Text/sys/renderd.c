@@ -21,6 +21,7 @@
 #include <kotaka/bigstruct.h>
 #include <kotaka/privilege.h>
 #include <text/paths.h>
+#include <game/paths.h>
 
 private void draw_tickmarks(object gc)
 {
