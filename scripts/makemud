@@ -17,6 +17,7 @@ mkdir -p dgd/kotaka
 mkdir -p dgd/kotaka/mud
 mkdir -p dgd/kotaka/mud/doc
 mkdir -p dgd/kotaka/mud/doc/kernel
+mkdir -p dgd/kotaka/mud/doc/kfun
 mkdir -p dgd/kotaka/mud/home
 mkdir -p dgd/kotaka/mud/include
 mkdir -p dgd/kotaka/mud/kernel
@@ -28,9 +29,30 @@ mkdir -p dgd/kotaka/tmp
 
 echo "Setting up dgd links..."
 
-for d in kfun net editor parser
+for d in net builtin
 do
 	ln -s ../../../../git/dgd/doc/$d dgd/kotaka/mud/doc
+done
+
+echo "Setting up lpc-doc links..."
+
+for d in editor ed-quickref Introduction parser
+do
+	ln -s ../../../../git/lpc-doc/$d dgd/kotaka/mud/doc
+done
+
+echo "Copying kfun documents..."
+
+# defaults are in lpc-doc
+for d in git/lpc-doc/kfun/*
+do
+	cp $d dgd/kotaka/mud/doc/kfun
+done
+
+# overwrite with any dgd specific docs
+for d in git/dgd/doc/kfun/*
+do
+	cp $d dgd/kotaka/mud/doc/kfun
 done
 
 # kernel-lib
