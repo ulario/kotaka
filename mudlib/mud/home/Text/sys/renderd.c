@@ -51,13 +51,12 @@ private void default_painter(object gc, object neighbor, object living)
 {
 	string s;
 
-	int dx, dy;
+	int dx, dy, dz;
 	int ox, oy;
 
 	int x, y;
 
-	dx = neighbor->query_x_position() - living->query_x_position();
-	dy = neighbor->query_y_position() - living->query_y_position();
+	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(living, neighbor);
 
 	/*
 	vy = cos * dy - sin * dx;
