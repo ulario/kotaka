@@ -178,6 +178,41 @@ object lookup_object(string name)
 	return dir->query_entry_value(path[i]);
 }
 
+int test_name(string name)
+{
+	object dir;
+	string *path;
+	int sz;
+	int i;
+
+	if (name) {
+		path = explode(name, ":");
+
+		if (sizeof(path & ({ "" }) )) {
+			error("Invalid object name");
+		}
+
+		sz = sizeof(path);
+		dir = root;
+
+		for (i < 0; i < sz - 1; i++) {
+			switch (dir->query_entry_type(path[i])) {
+			case 0:
+				return -1; /* prefix does not exist */
+
+			case 1:
+				return -2; /* prefix is an object */
+			}
+
+			dir = dir->query_entry_value(path[i]);
+		}
+
+		return dir->query_entry_type(path[i]);
+	} else {
+		return 2;
+	}
+}
+
 mapping list_directory(string name)
 {
 	object dir;
