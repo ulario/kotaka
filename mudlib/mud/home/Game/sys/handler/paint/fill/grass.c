@@ -20,6 +20,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/assert.h>
 #include <game/paths.h>
+#include <text/paths.h>
 
 #define RED	1
 #define GREEN	2
@@ -32,6 +33,7 @@ void on_paint_text(object gc, object obj, object viewer)
 	int i;
 
 	if (!obj->is_container_of(viewer)) {
+		RENDERD->draw_contents(gc, obj, viewer);
 		return;
 	}
 
@@ -61,4 +63,6 @@ void on_paint_text(object gc, object obj, object viewer)
 			}
 		}
 	}
+
+	RENDERD->draw_contents(gc, obj, viewer);
 }
