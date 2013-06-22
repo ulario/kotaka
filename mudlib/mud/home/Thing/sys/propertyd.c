@@ -30,7 +30,7 @@ private mapping pinfo;
 /*
 For combo/mixdown properties, extra is ({ local, remove })
 For magic properties, extra is ({ reader, writer })
-For other inheritance codes, extra has no meaning
+For other inheritance codes, extra is the default value
 */
 
 static void create()
