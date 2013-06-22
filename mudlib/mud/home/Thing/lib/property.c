@@ -162,25 +162,7 @@ mixed query_property(string name)
 				return SUBD->deep_copy(value);
 			}
 
-			switch(info[0]) {
-			case T_INT:
-				return 0;
-
-			case T_FLOAT:
-				return 0.0;
-
-			case T_ARRAY:
-				return ({ });
-
-			case T_MAPPING:
-				return ([ ]);
-
-			case T_STRING:
-				return "";
-
-			default:
-				return nil;
-			}
+			return info[2];
 		}
 
 	case PROP_INHERIT:
@@ -188,9 +170,11 @@ mixed query_property(string name)
 		if (properties[name] != nil)  {
 			return SUBD->deep_copy(properties[name]);
 		}
+
 		if (sizeof(removed_properties & ({ name }) )) {
-			return nil;
+			return info[2];
 		}
+
 		{
 			int index;
 			mixed value;
@@ -211,16 +195,7 @@ mixed query_property(string name)
 				}
 			}
 
-			switch(info[0]) {
-			case T_INT:
-				return 0;
-
-			case T_FLOAT:
-				return 0.0;
-
-			default:
-				return nil;
-			}
+			return info[2];
 		}
 
 	case PROP_COMBO:
@@ -283,10 +258,6 @@ mixed query_property(string name)
 
 			if (rname) {
 				remove = query_property(rname);
-
-				if (!remove) {
-					remove = ({ });
-				}
 				gather -= remove;
 			}
 
