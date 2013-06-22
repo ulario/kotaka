@@ -36,8 +36,6 @@ private inherit tls API_TLS;
 static void create()
 {
 	tls::create();
-
-	call_out("verify_objregd", 1);
 }
 
 static void tls_test()
@@ -136,49 +134,4 @@ void test()
 	dump_progdb();
 
 	call_out("tls_test", 0);
-}
-
-private void verify_objregd_owner(string owner)
-{
-	mapping seen;
-	object first;
-	object obj;
-
-	seen = ([ ]);
-	first = KERNELD->first_link(owner);
-
-	if (!first) {
-		return;
-	}
-
-	obj = first;
-
-	do {
-		seen[obj] = 1;
-		obj = KERNELD->next_link(obj);
-
-		if (!obj) {
-			shutdown();
-			LOGD->post_message("system", LOG_EMERG, "Fatal error:  Corrupted ObjRegD database for " + owner);
-			break;
-		}
-	} while (!seen[obj]);
-}
-
-static void verify_objregd()
-{
-	rlimits (0; -1) {
-		string *owners;
-		int i, sz;
-
-		owners = KERNELD->query_owners();
-
-		sz = sizeof(owners);
-
-		for (i = 0; i < sz; i++) {
-			verify_objregd_owner(owners[i]);
-		}
-
-		call_out("verify_objregd", 1);
-	}
 }
