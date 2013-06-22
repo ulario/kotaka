@@ -288,10 +288,12 @@ private string look_object(object gc, object living, object obj, mapping exclude
 
 	exclude[obj] = 1;
 
-	env = obj->query_environment();
+	if (obj->query_property("is_transparent")) {
+		env = obj->query_environment();
 
-	if (env && exclude[env] == nil) {
-		look_object(gc, living, env, exclude);
+		if (env && exclude[env] == nil) {
+			look_object(gc, living, env, exclude);
+		}
 	}
 
 	inv = obj->query_inventory();
@@ -316,9 +318,11 @@ private string look_object(object gc, object living, object obj, mapping exclude
 		/* skip contents if container is not transparent */
 		int i;
 
-		for (i = 0; i < sz; i++) {
-			if (!exclude[inv[i]]) {
-				look_object(gc, living, inv[i], exclude);
+		if (obj->query_property("is_transparent")) {
+			for (i = 0; i < sz; i++) {
+				if (!exclude[inv[i]]) {
+					look_object(gc, living, inv[i], exclude);
+				}
 			}
 		}
 
