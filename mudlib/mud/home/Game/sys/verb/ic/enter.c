@@ -64,5 +64,9 @@ void do_action(object actor, mapping roles, string evoke)
 	}
 
 	generic_emit(actor, ({ "enter", "enters" }), dob, nil);
+
 	actor->move(dob);
+	actor->set_x_position(0);
+	actor->set_y_position(0);
+	actor->set_z_position(0);
 }

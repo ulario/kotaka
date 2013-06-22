@@ -47,4 +47,7 @@ void main(object actor, string args)
 
 	generic_emit(actor, ({ "leave", "leaves" }), env, nil);
 	actor->move(env->query_environment());
+	actor->set_x_position(0);
+	actor->set_y_position(0);
+	actor->set_z_position(0);
 }
