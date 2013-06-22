@@ -344,6 +344,11 @@ void configure_logging()
 	LOGD->set_target("compile", 255, "file:/log/general.log");
 	LOGD->set_target("trace", 255, "file:/log/general.log");
 
+	/* error log gets errors and traces */
+	LOGD->set_target("error", 255, "file:/log/error.log");
+	LOGD->set_target("trace", 255, "file:/log/error.log");
+	LOGD->set_target("compile", 63, "file:/log/error.log");
+
 	/* session log gets only non debug */
 	LOGD->set_target("*", 127, "file:/log/session.log");
 	LOGD->set_target("debug", 0, "file:/log/session.log");
