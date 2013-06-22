@@ -108,5 +108,4 @@ atomic void main(object actor, string args)
 	destruct_verbs(proxy);
 	load_verbs(USR_DIR + "/Game/sys/verb", proxy);
 	load_verbs(USR_DIR + "/Text/sys/verb", proxy);
-	compile_object(object_name(this_object()));
 }
