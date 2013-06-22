@@ -21,7 +21,7 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 #include <kotaka/property.h>
-
+#include <thing/paths.h>
 #include <type.h>
 
 object query_environment();

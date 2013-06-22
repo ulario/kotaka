@@ -21,6 +21,7 @@
 #include <account/paths.h>
 #include <game/paths.h>
 #include <text/paths.h>
+#include <thing/paths.h>
 
 inherit LIB_RAWVERB;
 
