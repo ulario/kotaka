@@ -247,30 +247,6 @@ int position_sort(object a, object b)
 	return 1;
 }
 
-private void draw_neighbors(object gc, object living, object *neighbors)
-{
-	float ox, oy;
-	int sz, i;
-
-	sz = sizeof(neighbors);
-
-	for (i = 0; i < sz; i++) {
-		float dx, dy;
-		float vx, vy;
-
-		object neighbor;
-		string painter;
-
-		neighbor = neighbors[i];
-
-		if (painter = neighbor->query_property("event:paint")) {
-			painter->on_paint_text(gc, neighbor, living);
-		} else {
-			default_painter(gc, neighbor, living);
-		}
-	}
-}
-
 private void draw_bsod(object gc)
 {
 	int x, y;
