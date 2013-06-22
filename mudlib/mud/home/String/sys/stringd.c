@@ -1557,9 +1557,3 @@ string wordwrap(string text, int width)
 
 	return buffer;
 }
-
-static void destruct()
-{
-	/* we're too important to just be deleted willy nilly */
-	error("Permission denied");
-}
