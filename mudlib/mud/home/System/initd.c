@@ -60,7 +60,8 @@ private void initialize()
 	load_object(ERRORD);
 	ERRORD->enable();
 
-	load_object(STRINGD);
+	boot_subsystem("String");
+
 	load_object(LOGD);
 
 	remove_file("/log/session.log");
