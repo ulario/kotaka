@@ -48,7 +48,7 @@ private void draw_tickmarks(object gc)
 	}
 }
 
-private void default_painter(object gc, object neighbor, object living)
+private void default_painter(object gc, object neighbor, object viewer)
 {
 	string s;
 
@@ -57,7 +57,7 @@ private void default_painter(object gc, object neighbor, object living)
 
 	int x, y;
 
-	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(living, neighbor);
+	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, neighbor);
 
 	/*
 	vy = cos * dy - sin * dx;
@@ -200,7 +200,7 @@ private void draw_void(object gc)
 {
 }
 
-private void draw_environment(object gc, object living, object env)
+private void draw_environment(object gc, object viewer, object env)
 {
 	string painter;
 
@@ -210,7 +210,7 @@ private void draw_environment(object gc, object living, object env)
 	gc->set_offset(70, 10);
 
 	if (painter = env->query_property("event:paint")) {
-		painter->on_paint_text(gc, env, living);
+		painter->on_paint_text(gc, env, viewer);
 	} else {
 		gc->set_color(0x0F);
 		gc->move_pen(0, 0);
@@ -269,32 +269,38 @@ private void draw_bsod(object gc)
 	gc->draw("No body");
 }
 
-private string draw_object(object gc, object living, object obj)
+private string draw_object(object gc, object viewer, object obj)
 {
 	mixed painter;
 
 	if (painter = obj->query_property("event:paint")) {
-		painter->on_paint_text(gc, obj, living);
+		painter->on_paint_text(gc, obj, viewer);
 	} else {
-		default_painter(gc, obj, living);
+		default_painter(gc, obj, viewer);
 	}
 }
 
-private string look_object(object gc, object living, object obj, mapping exclude)
+private string look_object(object gc, object viewer, object obj)
 {
 	object env;
 	object *inv;
 	int sz;
 
-	exclude[obj] = 1;
-
 	if (obj->query_property("is_transparent")) {
 		env = obj->query_environment();
 
-		if (env && exclude[env] == nil) {
-			look_object(gc, living, env, exclude);
+		if (env) {
+			look_object(gc, viewer, env);
 		}
 	}
+
+	draw_object(gc, viewer, obj);
+}
+
+void draw_contents(object gc, object obj, object viewer)
+{
+	int sz, i;
+	object *inv;
 
 	inv = obj->query_inventory();
 	inv -= ({ nil });
@@ -302,35 +308,21 @@ private string look_object(object gc, object living, object obj, mapping exclude
 
 	SUBD->qsort(inv, 0, sizeof(inv), "position_sort");
 
-	if (obj->is_container_of(living)) {
-		/* we are inside, draw contents last */
-		int i;
-
-		draw_object(gc, living, obj);
-
-		for (i = 0; i < sz; i++) {
-			if (!exclude[inv[i]]) {
-				look_object(gc, living, inv[i], exclude);
-			}
-		}
-	} else {
-		/* we are outside, draw container last */
-		/* skip contents if container is not transparent */
-		int i;
-
-		if (obj->query_property("is_transparent")) {
-			for (i = 0; i < sz; i++) {
-				if (!exclude[inv[i]]) {
-					look_object(gc, living, inv[i], exclude);
-				}
-			}
+	for (i = 0; i < sz; i++) {
+		if (inv[i] == viewer) {
+			continue;
 		}
 
-		draw_object(gc, living, obj);
+		if (inv[i]->is_container_of(viewer)) {
+			/* we will draw this on the next layer */
+			continue;
+		}
+
+		draw_object(gc, viewer, inv[i]);
 	}
 }
 
-string draw_look(object living)
+string draw_look(object viewer)
 {
 	int x, y, sz, i;
 	object painter;
@@ -345,21 +337,21 @@ string draw_look(object living)
 
 	draw_frame(gc);
 	draw_background(gc);
-	draw_banner(gc, living ? living->query_environment() : nil);
+	draw_banner(gc, viewer ? viewer->query_environment() : nil);
 
-	draw_prose(gc, living);
+	draw_prose(gc, viewer);
 
 	draw_tickmarks(gc);
 
-	if (living) {
+	if (viewer) {
 		object env;
 
 		gc->set_clip(-8, -8, 8, 8);
 
-		env = living->query_environment();
+		env = viewer->query_environment();
 
 		if (env) {
-			look_object(gc, living, env, ([ living: 1 ]) );
+			look_object(gc, viewer, env);
 		}
 
 		gc->move_pen(0, 0);
