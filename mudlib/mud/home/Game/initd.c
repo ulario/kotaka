@@ -89,19 +89,19 @@ void configure_properties()
 	PROPERTYD->add_property("pnouns", T_ARRAY, PROP_COMBO, ({ "local_pnouns", "removed_pnouns" }) );
 	PROPERTYD->add_property("adjectives", T_ARRAY, PROP_COMBO, ({ "local_adjectives", "removed_adjectives" }) );
 
-	PROPERTYD->add_property("local_snouns", T_ARRAY, PROP_SIMPLE);
-	PROPERTYD->add_property("local_pnouns", T_ARRAY, PROP_SIMPLE);
-	PROPERTYD->add_property("local_adjectives", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("local_snouns", T_ARRAY, PROP_SIMPLE, ({ }));
+	PROPERTYD->add_property("local_pnouns", T_ARRAY, PROP_SIMPLE, ({ }));
+	PROPERTYD->add_property("local_adjectives", T_ARRAY, PROP_SIMPLE, ({ }));
 
-	PROPERTYD->add_property("removed_snouns", T_ARRAY, PROP_SIMPLE);
-	PROPERTYD->add_property("removed_pnouns", T_ARRAY, PROP_SIMPLE);
-	PROPERTYD->add_property("removed_adjectives", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("removed_snouns", T_ARRAY, PROP_SIMPLE, ({ }));
+	PROPERTYD->add_property("removed_pnouns", T_ARRAY, PROP_SIMPLE, ({ }));
+	PROPERTYD->add_property("removed_adjectives", T_ARRAY, PROP_SIMPLE, ({ }));
 
-	PROPERTYD->add_property("brief", T_STRING, PROP_INHERIT);
-	PROPERTYD->add_property("look", T_STRING, PROP_INHERIT);
-	PROPERTYD->add_property("examine", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("brief", T_STRING, PROP_INHERIT, "nondescript object");
+	PROPERTYD->add_property("look", T_STRING, PROP_INHERIT, "A nondescript object.");
+	PROPERTYD->add_property("examine", T_STRING, PROP_INHERIT, "A nondescript object with no detail.");
 
-	PROPERTYD->add_property("is_definite", T_INT, PROP_INHERIT);
+	PROPERTYD->add_property("is_definite", T_INT, PROP_INHERIT, 0);
 
 	/* inventory */
 	PROPERTYD->add_property("environment", T_OBJECT, PROP_MAGIC, ({ "query_environment", "move" }) );
@@ -113,7 +113,7 @@ void configure_properties()
 	PROPERTYD->add_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
 
 	/* economics */
-	PROPERTYD->add_property("value", T_INT, PROP_INHERIT);
+	PROPERTYD->add_property("value", T_INT, PROP_INHERIT, 0);
 	PROPERTYD->add_property("currency", T_STRING, PROP_INHERIT);
 
 	/* geometry */
@@ -121,9 +121,9 @@ void configure_properties()
 	PROPERTYD->add_property("pos_y", T_INT, PROP_MAGIC, ({ "query_y_position", "set_y_position" }) );
 	PROPERTYD->add_property("pos_z", T_INT, PROP_MAGIC, ({ "query_z_position", "set_z_position" }) );
 
-	PROPERTYD->add_property("size_x", T_INT, PROP_SIMPLE);
-	PROPERTYD->add_property("size_y", T_INT, PROP_SIMPLE);
-	PROPERTYD->add_property("size_z", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("size_x", T_INT, PROP_SIMPLE, 0);
+	PROPERTYD->add_property("size_y", T_INT, PROP_SIMPLE, 0);
+	PROPERTYD->add_property("size_z", T_INT, PROP_SIMPLE, 0);
 
 	/* event handling */
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
@@ -132,26 +132,26 @@ void configure_properties()
 	PROPERTYD->add_property("event:timer", T_STRING, PROP_INHERIT);
 
 	/* catch all */
-	PROPERTYD->add_property("data", T_MAPPING, PROP_SIMPLE);
+	PROPERTYD->add_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );
 
 	/* combat */
-	PROPERTYD->add_property("is_weapon", T_INT, PROP_SIMPLE);
-	PROPERTYD->add_property("is_wielded", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("is_weapon", T_INT, PROP_SIMPLE, 0);
+	PROPERTYD->add_property("is_wielded", T_INT, PROP_SIMPLE, 0);
 
-	PROPERTYD->add_property("is_armor", T_INT, PROP_SIMPLE);
-	PROPERTYD->add_property("is_worn", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("is_armor", T_INT, PROP_SIMPLE, 0);
+	PROPERTYD->add_property("is_worn", T_INT, PROP_SIMPLE, 0);
 
 	/* stats */
-	PROPERTYD->add_property("pa", T_INT, PROP_SIMPLE);	/* physical attack */
-	PROPERTYD->add_property("pd", T_INT, PROP_SIMPLE);	/* physical defense */
-	PROPERTYD->add_property("hp", T_INT, PROP_SIMPLE);	/* hit points */
-	PROPERTYD->add_property("hpmax", T_INT, PROP_SIMPLE);	/* hit points */
-	PROPERTYD->add_property("dx", T_INT, PROP_SIMPLE);	/* dexterity */
-	PROPERTYD->add_property("sp", T_INT, PROP_SIMPLE);	/* speed */
-	PROPERTYD->add_property("ep", T_INT, PROP_SIMPLE);	/* energy points */
+	PROPERTYD->add_property("pa", T_INT, PROP_SIMPLE, 0);	/* physical attack */
+	PROPERTYD->add_property("pd", T_INT, PROP_SIMPLE, 0);	/* physical defense */
+	PROPERTYD->add_property("hp", T_INT, PROP_SIMPLE, 0);	/* hit points */
+	PROPERTYD->add_property("hpmax", T_INT, PROP_SIMPLE, 0);	/* hit points */
+	PROPERTYD->add_property("dx", T_INT, PROP_SIMPLE, 0);	/* dexterity */
+	PROPERTYD->add_property("sp", T_INT, PROP_SIMPLE, 0);	/* speed */
+	PROPERTYD->add_property("ep", T_INT, PROP_SIMPLE, 0);	/* energy points */
 
 	/* body/mobile handling */
-	PROPERTYD->add_property("mobiles", T_ARRAY, PROP_SIMPLE);
+	PROPERTYD->add_property("mobiles", T_ARRAY, PROP_SIMPLE, ({ }) );
 }
 
 static void create()
