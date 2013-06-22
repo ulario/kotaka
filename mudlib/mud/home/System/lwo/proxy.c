@@ -30,8 +30,8 @@
 do {\
 	if (!client || client != previous_object())\
 		error("Unauthorized caller: expected " +\
-			STRINGD->mixed_sprint(client) + ", got " +\
-			STRINGD->mixed_sprint(previous_object()));\
+			object_name(client) + ", got " +\
+			object_name(previous_object()));\
 } while (0)
 
 inherit sa SECOND_AUTO;
