@@ -65,6 +65,13 @@ private void schedule()
 	}
 }
 
+void clear_targets()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
+	facilities = ([ ]);
+}
+
 void set_target(string facility, int mask, string target_info)
 {
 	ACCESS_CHECK(SYSTEM() || KADMIN());
