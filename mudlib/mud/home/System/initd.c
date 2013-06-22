@@ -322,6 +322,9 @@ private void configure_klib()
 
 void configure_logging()
 {
+	/* wipe the slate clean */
+	LOGD->clear_targets();
+
 	/* log to console by default */
 	LOGD->set_target("*", 127, "driver");
 
