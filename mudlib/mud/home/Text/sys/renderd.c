@@ -246,10 +246,6 @@ private void draw_neighbors(object gc, object living, object *neighbors)
 
 	sz = sizeof(neighbors);
 
-	SUBD->qsort(neighbors, 0, sz, "position_sort");
-
-	gc->set_clip(-8, -8, 8, 8);
-
 	for (i = 0; i < sz; i++) {
 		float dx, dy;
 		float vx, vy;
@@ -289,7 +285,64 @@ private void draw_bsod(object gc)
 	gc->draw("No body");
 }
 
-string draw_look(object living, varargs int facing)
+private string draw_object(object gc, object living, object obj)
+{
+	mixed painter;
+
+	if (painter = obj->query_property("event:paint")) {
+		painter->on_paint_text(gc, obj, living);
+	} else {
+		default_painter(gc, obj, living);
+	}
+}
+
+private string look_object(object gc, object living, object obj, mapping exclude)
+{
+	object env;
+	object *inv;
+	int sz;
+
+	exclude[obj] = 1;
+
+	env = obj->query_environment();
+
+	if (env && exclude[env] == nil) {
+		look_object(gc, living, env, exclude);
+	}
+
+	inv = obj->query_inventory();
+	inv -= ({ nil });
+	sz = sizeof(inv);
+
+	SUBD->qsort(inv, 0, sizeof(inv), "position_sort");
+
+	if (obj->is_container_of(living)) {
+		/* we are inside, draw contents last */
+		int i;
+
+		draw_object(gc, living, obj);
+
+		for (i = 0; i < sz; i++) {
+			if (!exclude[inv[i]]) {
+				look_object(gc, living, inv[i], exclude);
+			}
+		}
+	} else {
+		/* we are outside, draw container last */
+		/* skip contents if container is not transparent */
+		int i;
+
+		for (i = 0; i < sz; i++) {
+			if (!exclude[inv[i]]) {
+				look_object(gc, living, inv[i], exclude);
+			}
+		}
+
+		draw_object(gc, living, obj);
+	}
+}
+
+string draw_look(object living)
 {
 	int x, y, sz, i;
 	object painter;
@@ -311,29 +364,14 @@ string draw_look(object living, varargs int facing)
 	draw_tickmarks(gc);
 
 	if (living) {
-		object environment;
+		object env;
 
-		envstack = ({ });
+		gc->set_clip(-8, -8, 8, 8);
 
-		draw_void(gc);
+		env = living->query_environment();
 
-		environment = living->query_environment();
-
-		if (environment) {
-			while (environment) {
-				envstack = ({ environment }) + envstack;
-				environment = environment->query_environment();
-			}
-
-			sz = sizeof(envstack);
-			envstack += ({ living });
-
-			for (i = 0; i < sz; i++) {
-				object *contents;
-
-				draw_environment(gc, living, envstack[i]);
-				draw_neighbors(gc, living, envstack[i]->query_inventory() - ({ envstack[i + 1] }));
-			}
+		if (env) {
+			look_object(gc, living, env, ([ living: 1 ]) );
 		}
 
 		gc->move_pen(0, 0);
