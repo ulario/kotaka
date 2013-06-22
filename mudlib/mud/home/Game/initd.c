@@ -206,7 +206,7 @@ void build_world()
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
 	master->set_local_property("nouns", ({ "human", "man" }) );
-	master->set_object_name("class:animal:human");
+	master->set_object_name("class:race:humanoid:human");
 
 	world->set_capacity(1000000.0);
 	world->set_mass(1e+9);
