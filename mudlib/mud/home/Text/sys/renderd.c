@@ -220,6 +220,14 @@ private void draw_environment(object gc, object living, object env)
 
 int position_sort(object a, object b)
 {
+	if (a->query_z_position() < b->query_z_position()) {
+		return -1;
+	}
+
+	if (a->query_z_position() > b->query_z_position()) {
+		return 1;
+	}
+
 	if (a->query_y_position() < b->query_y_position()) {
 		return -1;
 	}
