@@ -44,7 +44,7 @@ void do_action(object actor, mapping roles, string evoke)
 	dob = roles["dob"];
 
 	if (!dob) {
-		send_out(RENDERD->draw_look(actor, 0));
+		send_out(RENDERD->draw_look(actor));
 		return;
 	}
 
