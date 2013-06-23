@@ -369,9 +369,11 @@ int stricmp(string s1, string s2)
 	if (len1 == len2) {
 		return 0;
 	}
+
 	if (len1 > len2) {
 		return 1;
 	}
+
 	return -1;
 }
 
@@ -399,9 +401,11 @@ int strcmp(string s1, string s2)
 	if (len1 == len2) {
 		return 0;
 	}
+
 	if (len1 > len2) {
 		return 1;
 	}
+
 	return -1;
 }
 
@@ -412,17 +416,6 @@ string replace(string input, string from, string to)
 	arr = explode(from + input + from, from);
 
 	return implode(arr, to);
-}
-
-string quote_escape(string input)
-{
-	input = replace(input, "\\", "\\\\");
-	input = replace(input, "\"", "\\\"");
-	input = replace(input, "\n", "\\n");
-	input = replace(input, "\r", "\\r");
-	input = replace(input, "\t", "\\t");
-
-	return input;
 }
 
 string quote_unescape(string input)
@@ -436,25 +429,16 @@ string quote_unescape(string input)
 	return input;
 }
 
-string object_escape(string input)
+string quote_escape(string input)
 {
 	input = replace(input, "\\", "\\\\");
-	input = replace(input, ">", "\\>");
+	input = replace(input, "\"", "\\\"");
+	input = replace(input, "\n", "\\n");
+	input = replace(input, "\r", "\\r");
+	input = replace(input, "\t", "\\t");
 
 	return input;
 }
-
-string object_unescape(string input)
-{
-	input = replace(input, "\\>", ">");
-	input = replace(input, "\\\\", "\\");
-
-	return input;
-}
-
-/**************/
-/* LPC values */
-/**************/
 
 string mixed_sprint(mixed data, varargs mapping seen)
 {
@@ -548,10 +532,28 @@ string mixed_sprint(mixed data, varargs mapping seen)
 			}
 		}
 		break;
-	default:
-		error("Unrecognized DGD type in mixed_sprint");
 	}
 }
+
+string object_escape(string input)
+{
+	input = replace(input, "\\", "\\\\");
+	input = replace(input, ">", "\\>");
+
+	return input;
+}
+
+string object_unescape(string input)
+{
+	input = replace(input, "\\>", ">");
+	input = replace(input, "\\\\", "\\");
+
+	return input;
+}
+
+/**************/
+/* LPC values */
+/**************/
 
 string tree_sprint(mixed data, varargs int indent, mapping seen)
 {
