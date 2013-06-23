@@ -60,8 +60,6 @@ private void initialize()
 	load_object(ERRORD);
 	ERRORD->enable();
 
-	boot_subsystem("String");
-
 	load_object(LOGD);
 
 	remove_file("/log/session.log");
@@ -69,6 +67,12 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_INFO, "Logging initialized");
 	LOGD->post_message("boot", LOG_INFO, "Welcome to Kotaka " + KOTAKA_VERSION);
+
+	LOGD->post_message("boot", LOG_INFO, "Loading kernel manager");
+	load_object(KERNELD);
+	configure_klib();
+
+	boot_subsystem("String");
 
 	LOGD->post_message("boot", LOG_INFO, "Loading object manager");
 	load_object(OBJECTD);
@@ -79,10 +83,6 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
 	OBJECTD->discover_objects();
-
-	LOGD->post_message("boot", LOG_INFO, "Loading kernel manager");
-	load_object(KERNELD);
-	configure_klib();
 
 	KERNELD->set_global_access("System", 1);
 
