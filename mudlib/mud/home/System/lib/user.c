@@ -19,7 +19,6 @@
  */
 #include <kernel/kernel.h>
 #include <kernel/user.h>
-
 #include <kotaka/paths.h>
 
 inherit SECOND_AUTO;
