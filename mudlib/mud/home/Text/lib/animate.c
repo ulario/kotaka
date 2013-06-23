@@ -161,6 +161,7 @@ void receive_in(string input)
 		break;
 
 	case "quit":
+		send_out("\n");
 		pop_state();
 		return;
 
