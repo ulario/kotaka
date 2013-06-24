@@ -55,11 +55,10 @@ void main(object actor, string args)
 			target = exit->query_destination();
 
 			if (target) {
+				actor->move(target);
 				generic_emit(actor, ({ "go", "goes" }), exit, "through");
 				return;
 			}
-
-			actor->move(target);
 		}
 	}
 
