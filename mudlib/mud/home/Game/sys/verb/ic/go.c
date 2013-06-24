@@ -58,6 +58,8 @@ void main(object actor, string args)
 				generic_emit(actor, ({ "go", "goes" }), exit, "through");
 				return;
 			}
+
+			actor->move(target);
 		}
 	}
 
