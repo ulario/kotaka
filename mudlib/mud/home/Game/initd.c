@@ -130,7 +130,6 @@ void configure_properties()
 	/* event handling */
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:destroy", T_STRING, PROP_INHERIT);
-	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("event:timer", T_STRING, PROP_INHERIT);
 
 	/* catch all */
@@ -158,6 +157,11 @@ void configure_properties()
 	/* geometry */
 	PROPERTYD->add_property("exit_destination", T_OBJECT, PROP_MAGIC, ({ "query_destination", "set_destination" }) );
 	PROPERTYD->add_property("exit_direction", T_STRING, PROP_MAGIC, ({ "query_direction", "set_direction" }) );
+
+	/* text painting */
+	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("paint_color", T_INT, PROP_INHERIT);
+	PROPERTYD->add_property("paint_character", T_STRING, PROP_INHERIT);
 }
 
 static void create()
