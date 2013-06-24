@@ -55,7 +55,7 @@ void main(object actor, string args)
 			target = exit->query_destination();
 
 			if (target) {
-				generic_emit(actor, ({ "go", "goes" }), dob, "through");
+				generic_emit(actor, ({ "go", "goes" }), exit, "through");
 				return;
 			}
 		}
