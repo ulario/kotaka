@@ -49,7 +49,7 @@ void main(object actor, string args)
 
 		exit = inv[i];
 
-		if (args == exit) {
+		if (args == exit->query_direction()) {
 			object target;
 
 			target = exit->query_destination();
