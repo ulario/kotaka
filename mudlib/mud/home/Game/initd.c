@@ -154,9 +154,11 @@ void configure_properties()
 	/* body/mobile handling */
 	PROPERTYD->add_property("mobiles", T_ARRAY, PROP_SIMPLE, ({ }) );
 
-	/* geometry */
+	/* exits */
 	PROPERTYD->add_property("exit_destination", T_OBJECT, PROP_MAGIC, ({ "query_destination", "set_destination" }) );
 	PROPERTYD->add_property("exit_direction", T_STRING, PROP_MAGIC, ({ "query_direction", "set_direction" }) );
+	PROPERTYD->add_property("default_exit", T_OBJECT, PROP_INHERIT);
+	PROPERTYD->add_property("default_entrance", T_OBJECT, PROP_INHERIT);
 
 	/* text painting */
 	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
