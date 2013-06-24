@@ -55,6 +55,10 @@ void main(object actor, string args)
 			target = exit->query_destination();
 
 			if (target) {
+				/* todo: walk to target */
+				actor->set_x_position(exit->query_x_position());
+				actor->set_y_position(exit->query_y_position());
+				actor->set_z_position(exit->query_z_position());
 				actor->move(target);
 				generic_emit(actor, ({ "go", "goes" }), exit, "through");
 				return;
@@ -62,5 +66,5 @@ void main(object actor, string args)
 		}
 	}
 
-	send_out("No such exit.");
+	send_out("No such exit.\n");
 }

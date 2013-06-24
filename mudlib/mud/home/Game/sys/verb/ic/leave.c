@@ -45,6 +45,9 @@ void main(object actor, string args)
 		return;
 	}
 
+	/* todo:  use default exit if present */
+	/* show ambig. error if no default and multiple exits */
+
 	generic_emit(actor, ({ "leave", "leaves" }), env, nil);
 	actor->move(env->query_environment());
 	actor->set_x_position(0);

@@ -39,6 +39,9 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
+	/* todo:  if object has a default entrance */
+	/* then use it as an exit */
+
 	dob = roles["dob"];
 
 	if (!dob) {
