@@ -156,7 +156,7 @@ void configure_properties()
 
 	/* geometry */
 	PROPERTYD->add_property("exit_destination", T_OBJECT, PROP_MAGIC, ({ "query_destination", "set_destination" }) );
-	PROPERTYD->add_property("exit_direction", T_OBJECT, PROP_MAGIC, ({ "query_direction", "set_direction" }) );
+	PROPERTYD->add_property("exit_direction", T_STRING, PROP_MAGIC, ({ "query_direction", "set_direction" }) );
 }
 
 static void create()
