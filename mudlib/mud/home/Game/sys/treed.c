@@ -50,8 +50,6 @@ void enqueue(object tree)
 	if (!handle) {
 		handle = call_out("dequeue", 0);
 	}
-
-	LOGD->post_message("tree", LOG_DEBUG, queue->get_size() + "");
 }
 
 private int crowded(object world, object self, int tx, int ty)
@@ -105,8 +103,6 @@ static void dequeue()
 
 	tree = queue->get_front();
 	queue->pop_front();
-
-	LOGD->post_message("tree", LOG_DEBUG, queue->get_size() + "");
 
 	if (!queue->empty()) {
 		handle = call_out("dequeue", 0);
