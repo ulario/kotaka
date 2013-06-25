@@ -25,8 +25,18 @@ private object *archetypes;
 
 static void create()
 {
+}
+
+void clean_archetypes()
+{
 	if (!archetypes) {
-		archetypes = ({ });
+		return;
+	}
+
+	archetypes -= ({ nil });
+
+	if (!sizeof(archetypes)) {
+		archetypes = nil;
 	}
 }
 
@@ -54,9 +64,13 @@ int is_archetype_of(object test)
 
 object *query_archetypes()
 {
-	archetypes -= ({ nil });
+	clean_archetypes();
 
-	return archetypes[..];
+	if (archetypes) {
+		return archetypes[..];
+	} else {
+		return ({ });
+	}
 }
 
 void set_archetypes(object *new_archs)
@@ -67,9 +81,7 @@ void set_archetypes(object *new_archs)
 	object *old_archs;
 	object *check;
 
-	archetypes -= ({ nil });
-	new_archs -= ({ nil });
-	check = new_archs - ({ archetypes });
+	check = new_archs - ({ archetypes, nil });
 
 	sz = sizeof(check);
 
@@ -82,11 +94,13 @@ void set_archetypes(object *new_archs)
 	}
 
 	archetypes = new_archs;
+
+	clean_archetypes();
 }
 
 void clear_archetypes()
 {
-	archetypes = ({ });
+	archetypes = nil;
 }
 
 void add_archetype(object new_arch)
@@ -98,7 +112,8 @@ void add_archetype(object new_arch)
 		error("Circular reference");
 	}
 
-	archetypes -= ({ nil });
+	clean_archetypes();
+
 	archetypes += ({ new_arch });
 }
 
@@ -114,7 +129,7 @@ void add_archetype_at(object new_arch, int position)
 		error("Circular reference");
 	}
 
-	archetypes -= ({ nil });
+	clean_archetypes();
 
 	if (position == -1) {
 		archetypes += ({ new_arch });
@@ -126,5 +141,7 @@ void add_archetype_at(object new_arch, int position)
 
 void del_archetype(object old_arch)
 {
-	archetypes -= ({ nil, old_arch });
+	archetypes -= ({ old_arch });
+
+	clean_archetypes();
 }
