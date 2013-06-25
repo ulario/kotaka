@@ -48,8 +48,6 @@ static void create()
 
 int access(string user, string file, int access)
 {
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
 	return ::access(user, file, access);
 }
 
@@ -69,8 +67,6 @@ void remove_user(string user)
 
 string *query_users()
 {
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
 	return ::query_users();
 }
 
@@ -83,15 +79,11 @@ void set_access(string user, string file, int type)
 
 mapping query_user_access(string user)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::query_user_access(user);
 }
 
 mapping query_file_access(string path)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::query_file_access(path);
 }
 
@@ -112,8 +104,6 @@ void set_global_access(string dir, int flag)
 
 string *query_global_access()
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::query_global_access();
 }
 
@@ -156,8 +146,6 @@ void remove_owner(string owner)
 
 string *query_owners()
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::query_owners();
 }
 
@@ -177,15 +165,11 @@ void remove_rsrc(string name)
 
 mixed *query_rsrc(string name)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::query_rsrc(name);
 }
 
 string *query_resources()
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::query_resources();
 }
 
@@ -198,8 +182,6 @@ void rsrc_set_limit(string owner, string name, int max)
 
 mixed *rsrc_get(string owner, string name)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::rsrc_get(owner, name);
 }
 
@@ -216,15 +198,11 @@ int rsrc_incr(string owner, string name, mixed index, int incr, varargs int forc
 
 object *query_connections()
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::query_connections();
 }
 
 object find_user(string name)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return ::find_user(name);
 }
 
