@@ -110,6 +110,10 @@ void clear_removed_properties()
 
 void set_local_property(string name, mixed value, varargs int nosignal)
 {
+	if (!properties) {
+		properties = ([ ]);
+	}
+
 	properties[name] = SUBD->deep_copy(value);
 
 	clean_properties();
