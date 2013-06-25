@@ -145,7 +145,7 @@ object *query_inventory()
 	}
 }
 
-void move(object new_env)
+atomic void move(object new_env)
 {
 	object old_env;
 	object this;
