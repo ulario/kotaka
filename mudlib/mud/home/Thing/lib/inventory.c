@@ -73,7 +73,11 @@ nomask void thing_add_inventory(object arriving)
 {
 	ACCESS_CHECK(THING());
 
-	inventory = ({ arriving }) + inventory;
+	if (!inventory) {
+		inventory = ({ arriving });
+	} else {
+		inventory = ({ arriving }) + inventory;
+	}
 
 	clean_inventory();
 }
@@ -82,6 +86,7 @@ nomask void thing_del_inventory(object departing)
 {
 	ACCESS_CHECK(THING());
 
+	ASSERT(inventory);
 	inventory -= ({ departing });
 
 	clean_inventory();
