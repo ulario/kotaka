@@ -26,9 +26,14 @@
 object queue;
 int handle;
 
-void create()
+static void create()
 {
 	queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
+}
+
+static void destruct()
+{
+	destruct_object(queue);
 }
 
 private object create_object()
