@@ -43,14 +43,6 @@ int forbid_inherit(string from, string path, int priv)
 	}
 }
 
-string query_constructor(string path)
-{
-	switch(path) {
-	case USR_DIR + "/Thing/lib/thing":
-		return "thing_create";
-	}
-}
-
 string query_destructor(string path)
 {
 	switch(path) {
