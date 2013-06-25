@@ -34,8 +34,12 @@ mixed query_property(string name);
 
 static void create()
 {
-	properties = ([ ]);
-	removed_properties = ({ });
+	if (!properties) {
+		properties = ([ ]);
+	}
+	if (!removed_properties) {
+		removed_properties = ({ });
+	}
 }
 
 /* untrusted */

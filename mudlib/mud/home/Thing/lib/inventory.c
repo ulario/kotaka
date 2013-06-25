@@ -27,7 +27,9 @@ private object *inventory;
 
 static void create()
 {
-	inventory = ({ });
+	if (!inventory) {
+		inventory = ({ });
+	}
 }
 
 int forbid_move(object new_env)

@@ -25,7 +25,9 @@ private object *archetypes;
 
 static void create()
 {
-	archetypes = ({ });
+	if (!archetypes) {
+		archetypes = ({ });
+	}
 }
 
 int is_archetype_of(object test)
