@@ -164,7 +164,6 @@ static void dequeue()
 		}
 
 		sprout = create_object();
-		sprout->set_property("id", "tree");
 		sprout->add_archetype(CATALOGD->lookup_object("scenery:tree"));
 		sprout->move(tree->query_environment());
 		sprout->set_x_position(sx);
