@@ -73,3 +73,10 @@ static nomask void thing_destruct()
 		env->bulk_invalidate();
 	}
 }
+
+void clean()
+{
+	clean_archetypes();
+	clean_inventory();
+	clean_properties();
+}

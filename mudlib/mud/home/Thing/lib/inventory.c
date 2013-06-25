@@ -56,7 +56,7 @@ void remove_notify(object obj)
 {
 }
 
-private void clean_inventory()
+void clean_inventory()
 {
 	if (!inventory) {
 		return;
