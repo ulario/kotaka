@@ -19,6 +19,7 @@
  */
 #include <kernel/kernel.h>
 #include <kotaka/paths.h>
+#include <kernel/rsrc.h>
 
 string owner;
 object cursor;
@@ -46,11 +47,15 @@ void activate(object first)
 
 static void check()
 {
+	int count;
+
 	if (!master || !owner) {
 		destruct_object(this_object());
 
 		return;
 	}
+
+	count = KERNELD->rsrc_get(owner, "objects")[RSRC_USAGE];
 
 	if (!cursor) {
 		cursor = KERNELD->first_link(owner);
@@ -62,7 +67,7 @@ static void check()
 		}
 	}
 
-	call_out("check", 0.1);
+	call_out("check", SUBD->rnd() * 0.5 + (10.0 / (float)count));
 
 	cursor = KERNELD->next_link(cursor);
 
