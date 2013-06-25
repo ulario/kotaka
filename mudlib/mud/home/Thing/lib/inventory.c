@@ -27,9 +27,6 @@ private object *inventory;
 
 static void create()
 {
-	if (!inventory) {
-		inventory = ({ });
-	}
 }
 
 int forbid_move(object new_env)
@@ -59,11 +56,26 @@ void remove_notify(object obj)
 {
 }
 
+private void clean_inventory()
+{
+	if (!inventory) {
+		return;
+	}
+
+	inventory -= ({ nil });
+
+	if (!sizeof(inventory)) {
+		inventory = nil;
+	}
+}
+
 nomask void thing_add_inventory(object arriving)
 {
 	ACCESS_CHECK(THING());
 
-	inventory = ({ arriving }) + (inventory - ({ nil }));
+	inventory = ({ arriving }) + inventory;
+
+	clean_inventory();
 }
 
 nomask void thing_del_inventory(object departing)
@@ -71,6 +83,8 @@ nomask void thing_del_inventory(object departing)
 	ACCESS_CHECK(THING());
 
 	inventory -= ({ departing });
+
+	clean_inventory();
 }
 
 int is_container_of(object test)
@@ -122,9 +136,13 @@ object query_environment()
 
 object *query_inventory()
 {
-	inventory -= ({ nil });
+	clean_inventory();
 
-	return inventory[..];
+	if (inventory) {
+		return inventory[..];
+	} else {
+		return ({ });
+	}
 }
 
 void move(object new_env)
