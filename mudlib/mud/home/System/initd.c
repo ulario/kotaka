@@ -115,6 +115,9 @@ private void initialize()
 
 	boot_subsystem("Kotaka");
 	boot_subsystem("Game");
+
+	LOGD->post_message("boot", LOG_INFO, "Launching integrity checker");
+	boot_subsystem("Test");
 }
 
 static void create()
