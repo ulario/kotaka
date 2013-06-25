@@ -24,7 +24,6 @@
 #include <kotaka/privilege.h>
 
 object queue;
-int handle;
 
 static void create()
 {
