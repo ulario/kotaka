@@ -114,7 +114,11 @@ void add_archetype(object new_arch)
 
 	clean_archetypes();
 
-	archetypes += ({ new_arch });
+	if (!archetypes) {
+		archetypes = ({ new_arch });
+	} else {
+		archetypes += ({ new_arch });
+	}
 }
 
 void add_archetype_at(object new_arch, int position)
