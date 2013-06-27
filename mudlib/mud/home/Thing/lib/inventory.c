@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/assert.h>
-#include <kotaka/checkarg.h>
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
@@ -155,7 +154,9 @@ atomic void move(object new_env)
 	object old_env;
 	object this;
 
-	CHECKARG(!new_env || new_env <- "inventory", 1, "move");
+	if (new_env && !(new_env <- "thing")) {
+		error("Invalid archetype");
+	}
 
 	old_env = environment;
 
