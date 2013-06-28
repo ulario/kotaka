@@ -31,7 +31,9 @@ mixed **query_roles()
 
 void do_action(object actor, mapping roles, string evoke)
 {
+	object user;
 	mixed dob;
+	object def;
 	string look;
 
 	if (!actor) {
@@ -61,15 +63,45 @@ void do_action(object actor, mapping roles, string evoke)
 
 	dob = dob[1];
 
-	if (dob == actor || actor->is_container_of(dob)) {
-		send_out("Are you trying to create a singularity?\n");
-		return;
+	def = dob->query_property("default_entrance");
+
+	if (def) {
+		object target;
+
+		target = def->query_destination();
+
+		if (target) {
+			/* todo: walk to target */
+			actor->set_x_position(def->query_x_position());
+			actor->set_y_position(def->query_y_position());
+			actor->set_z_position(def->query_z_position());
+			actor->move(target);
+			generic_emit(actor, ({ "go", "goes" }), def, "through");
+			return;
+		} else {
+			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(def)
+				+ " doesn't seem to have a destination.\n"
+				+ "Yell at a wizard.\n");
+			return;
+		}
+	} else {
+		user = query_user();
+
+		if (user->query_class() < 2) {
+			send_out("Strange, it doesn't appear to have a main entrance.\n");
+			return;
+		}
+
+		if (dob == actor || actor->is_container_of(dob)) {
+			send_out("Are you trying to create a singularity?\n");
+			return;
+		}
+
+		generic_emit(actor, ({ "enter", "enters" }), dob, nil);
+
+		actor->move(dob);
+		actor->set_x_position(0);
+		actor->set_y_position(0);
+		actor->set_z_position(0);
 	}
-
-	generic_emit(actor, ({ "enter", "enters" }), dob, nil);
-
-	actor->move(dob);
-	actor->set_x_position(0);
-	actor->set_y_position(0);
-	actor->set_z_position(0);
 }

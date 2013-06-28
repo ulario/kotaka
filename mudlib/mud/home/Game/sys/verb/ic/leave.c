@@ -27,6 +27,8 @@ inherit LIB_RAWVERB;
 void main(object actor, string args)
 {
 	object env;
+	object user;
+	object def;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
@@ -45,12 +47,39 @@ void main(object actor, string args)
 		return;
 	}
 
-	/* todo:  use default exit if present */
-	/* show ambig. error if no default and multiple exits */
+	def = env->query_property("default_exit");
 
-	generic_emit(actor, ({ "leave", "leaves" }), env, nil);
-	actor->move(env->query_environment());
-	actor->set_x_position(0);
-	actor->set_y_position(0);
-	actor->set_z_position(0);
+	if (def) {
+		object target;
+
+		target = def->query_destination();
+
+		if (target) {
+			/* todo: walk to target */
+			actor->set_x_position(def->query_x_position());
+			actor->set_y_position(def->query_y_position());
+			actor->set_z_position(def->query_z_position());
+			actor->move(target);
+			generic_emit(actor, ({ "go", "goes" }), def, "through");
+			return;
+		} else {
+			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(def)
+				+ " doesn't seem to have a destination.\n"
+				+ "Yell at a wizard.\n");
+			return;
+		}
+	} else {
+		user = query_user();
+
+		if (user->query_class() < 2) {
+			send_out("There doesn't appear to be an exit you could \"leave\" through.\n");
+			return;
+		}
+
+		generic_emit(actor, ({ "leave", "leaves" }), env, nil);
+		actor->move(env->query_environment());
+		actor->set_x_position(0);
+		actor->set_y_position(0);
+		actor->set_z_position(0);
+	}
 }
