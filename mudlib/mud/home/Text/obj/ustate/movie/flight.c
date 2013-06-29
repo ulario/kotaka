@@ -121,8 +121,11 @@ static void do_frame(float diff)
 
 	paint = new_object(LWO_PAINTER);
 	paint->set_size(80, 25);
+	paint->add_layer("default");
+	paint->set_layer_size("default", 80, 25);
 
 	gc = paint->create_gc();
+	gc->set_layer("default");
 	gc->set_clip(0, 0, 79, 24);
 	gc->set_color(0xF);
 

@@ -138,9 +138,12 @@ static void do_frame(float diff)
 	mixed *time;
 
 	paint = new_object(LWO_PAINTER);
-	paint->set_size(80, 20);
+	paint->set_size(80, 25);
+	paint->add_layer("default");
+	paint->set_layer_size("default", 80, 25);
 
 	gc = paint->create_gc();
+	gc->set_layer("default");
 	gc->set_clip(0, 0, 79, 19);
 	gc->set_color(0xC);
 
