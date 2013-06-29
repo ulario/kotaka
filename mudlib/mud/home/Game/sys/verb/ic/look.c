@@ -64,6 +64,7 @@ void do_action(object actor, mapping roles, string evoke)
 		break;
 
 	case "in":
+		emit_from(actor, ({ "look", "looks" }), "in", obj);
 		{
 			object *inv;
 			int sz;
