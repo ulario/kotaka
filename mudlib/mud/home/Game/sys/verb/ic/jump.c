@@ -23,7 +23,7 @@
 #include <text/paths.h>
 
 inherit LIB_RAWVERB;
-inherit LIB_ACTION;
+inherit "~/lib/emit";
 
 void main(object actor, string args)
 {

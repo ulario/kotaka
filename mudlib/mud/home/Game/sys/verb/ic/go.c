@@ -21,7 +21,7 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
-inherit LIB_ACTION;
+inherit "~/lib/emit";
 inherit LIB_RAWVERB;
 
 void main(object actor, string args)

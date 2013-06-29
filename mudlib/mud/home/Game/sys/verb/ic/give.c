@@ -22,7 +22,7 @@
 #include <text/paths.h>
 #include <type.h>
 
-inherit LIB_ACTION;
+inherit "~/lib/emit";
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */

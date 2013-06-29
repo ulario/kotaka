@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012  Raymond Jennings
+ * Copyright (C) 2013  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,40 +17,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/assert.h>
 #include <kotaka/paths.h>
-#include <game/paths.h>
-#include <text/paths.h>
-#include <game/paths.h>
 
-inherit "~/lib/emit";
-inherit LIB_RAWVERB;
-
-void main(object actor, string args)
+static object query_ustate()
 {
-	object master;
-	object thing;
+	return TLSD->query_tls_value("Text", "ustate");
+}
 
-	if (query_user()->query_class() < 2) {
-		send_out("You must be a wizard to use this command.\n");
-		return;
-	}
+static object query_user()
+{
+	return query_ustate()->query_user();
+}
 
-	if (!actor) {
-		send_out("You must be in character to use this command.\n");
-		return;
-	}
+static void send_in(string str)
+{
+	query_ustate()->send_in(str);
+}
 
-	master = CATALOGD->lookup_object(args);
-
-	if (!master) {
-		send_out("No such object: " + args + ".\n");
-		return;
-	}
-
-	thing = GAME_INITD->create_object();
-	thing->add_archetype(master);
-	thing->move(actor);
-
-	emit_from(actor, ({ "spawn", "spawns" }), thing);
+static void send_out(string str)
+{
+	query_ustate()->send_out(str);
 }
