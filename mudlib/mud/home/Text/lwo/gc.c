@@ -17,20 +17,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
+
+object painter;
 object layer;
 
 int color;
-int pen_x, pen_y;
-int off_x, off_y;
-int clip_lx, clip_ly, clip_hx, clip_hy;
+int pen_x, pen_y;	/* relative to origin */
+int off_x, off_y;	/* location of origin on layer */
+int clip_lx, clip_ly, clip_hx, clip_hy;	/* relative to origin */
 
-void set_layer(object new_layer)
+void set_painter(object new_painter)
 {
-	if (layer) {
-		error("Layer already set");
-	}
+	ASSERT(!painter);
 
-	layer = new_layer;
+	painter = new_painter;
+}
+
+void set_layer(string name)
+{
+	layer = painter->get_layer(name);
 }
 
 void set_offset(int x, int y)
@@ -98,6 +104,21 @@ void draw(string brush)
 
 void erase(int length)
 {
+	if (pen_y < clip_ly || pen_y > clip_hy || pen_x > clip_hx || pen_x + length < clip_lx) {
+		/* completely out of bounds */
+		pen_x += length;
+		return;
+	}
+
+	if (pen_x < clip_lx) {
+		/* head truncated */
+		length -= clip_lx - pen_x;
+		pen_x = clip_lx;
+	} else if (pen_x + length > clip_hx) {
+		/* tail truncated */
+		length = clip_hx - pen_x + 1;
+	}
+
 	layer->erase(length, pen_x + off_x, pen_y + off_y);
 
 	pen_x += length;

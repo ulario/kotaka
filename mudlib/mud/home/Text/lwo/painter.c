@@ -19,24 +19,50 @@
  */
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
+#include <kotaka/privilege.h>
 
-object layer;
+string *stack;
+mapping layers;
 
 int size_x, size_y;
 
 static void create(int clone)
 {
 	if (clone) {
-		layer = new_object("layer");
+		stack = ({ });
+		layers = ([ ]);
 	}
 }
 
 void set_size(int dx, int dy)
 {
+	object *obj;
+	int i, sz;
+
 	size_x = dx;
 	size_y = dy;
 
-	layer->set_size(dx, dy);
+	obj = map_values(layers);
+
+	sz = sizeof(obj);
+
+	for (i = 0; i < sz; i++) {
+		obj[i]->set_size(dx, dy);
+	}
+}
+
+void add_layer(string name)
+{
+	stack += ({ name });
+	layers[name] = new_object("layer");
+	layers[name]->set_size(size_x, size_y);
+}
+
+object get_layer(string name)
+{
+	ACCESS_CHECK(TEXT());
+
+	return layers[name];
 }
 
 object create_gc()
@@ -44,40 +70,105 @@ object create_gc()
 	object gc;
 
 	gc = new_object("gc");
-	gc->set_layer(layer);
+	gc->set_painter(this_object());
 
 	return gc;
 }
 
 string *render()
 {
-	return layer->query_chars();
+	int i, sz;
+	int x, y;
+
+	string *chars;
+
+	string **lchars;
+	string **lmask;
+
+	sz = sizeof(stack);
+
+	chars = allocate(size_y);
+	lchars = allocate(sz);
+	lmask = allocate(sz);
+
+	for (i = sz - 1; i >= 0; i--) {
+		lchars[i] = layers[stack[i]]->query_chars();
+		lmask[i] = layers[stack[i]]->query_mask();
+	}
+
+	for (y = 0; y < size_y; y++) {
+		chars[y] = STRINGD->spaces(size_x);
+
+		for (x = 0; i < size_x; x++) {
+			for (i = sz - 1; i >= 0; i--) {
+				if (lmask[i][y][x >> 3] & (1 << (x & 7))) {
+					/* hit */
+					chars[y][x] = lchars[i][y][x];
+
+					break;
+				}
+			}
+		}
+	}
+
+	return chars;
 }
 
 string *render_color()
 {
-	int i, j;
-	int color, delta;
+	int i, sz;
+	int x, y;
+	int delta;
+	int color;
 
-	string *colors;
 	string *chars;
+	string *colors;
 	string *buffers;
 
-	colors = layer->query_colors();
-	chars = layer->query_chars();
+	string **lchars;
+	string **lcolors;
+	string **lmask;
 
+	sz = sizeof(stack);
+
+	chars = allocate(size_y);
+	colors = allocate(size_y);
 	buffers = allocate(size_y);
-	color = 0x7;
+	lchars = allocate(sz);
+	lcolors = allocate(sz);
+	lmask = allocate(sz);
 
-	for (i = 0; i < size_y; i++) {
+	for (i = 0; i < sz; i++) {
+		lchars[i] = layers[stack[i]]->query_chars();
+		lcolors[i] = layers[stack[i]]->query_colors();
+		lmask[i] = layers[stack[i]]->query_mask();
+	}
+
+	for (y = 0; y < size_y; y++) {
+		chars[y] = STRINGD->spaces(size_x);
+		colors[y] = STRINGD->chars(0x80, size_x);
+
+		for (x = 0; x < size_x; x++) {
+			for (i = 0; i < sz; i++) {
+
+				if (lmask[i][y][x >> 3] & (1 << (x & 7))) {
+					/* hit */
+					chars[y][x] = lchars[i][y][x];
+					colors[y][x] = lcolors[i][y][x];
+				}
+			}
+		}
+	}
+
+	for (y = 0; y < size_y; y++) {
 		string buffer;
 		buffer = "";
 
-		for (j = 0; j < size_x; j++) {
+		for (x = 0; x < size_x; x++) {
 			int new_color;
 			int dirty;
 
-			new_color = colors[i][j];
+			new_color = colors[y][x];
 			delta = color ^ new_color;
 			color = new_color;
 
@@ -108,7 +199,7 @@ string *render_color()
 				buffer += "m";
 			}
 
-			buffer += chars[i][j .. j];
+			buffer += chars[y][x .. x];
 		}
 
 		if (color != 0x07) {
@@ -116,7 +207,7 @@ string *render_color()
 			color = 0x07;
 		}
 
-		buffers[i] = buffer;
+		buffers[y] = buffer;
 	}
 
 	return buffers;

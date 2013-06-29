@@ -27,10 +27,6 @@ string *mask;
 int pos_x, pos_y;
 int size_x, size_y;
 
-static void create(int clone)
-{
-}
-
 void set_pos(int x, int y)
 {
 	pos_x = x;
