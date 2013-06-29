@@ -27,6 +27,7 @@ private void draw_tickmarks(object gc)
 {
 	int i;
 
+	gc->set_layer("canvas");
 	gc->set_offset(70, 10);
 	gc->set_clip(-9, -9, 9, 9);
 
@@ -84,6 +85,7 @@ private void default_painter(object gc, object neighbor, object viewer)
 
 private void draw_background(object gc)
 {
+	gc->set_layer("canvas");
 	gc->set_clip(0, 0, 79, 19);
 	gc->set_offset(0, 3);
 	gc->set_color(0x04);
@@ -112,6 +114,7 @@ private void draw_prose(object gc, object actor)
 		env = actor->query_environment();
 	}
 
+	gc->set_layer("canvas");
 	gc->set_clip(0, 0, 60, 15);
 	gc->set_offset(0, 4);
 
@@ -157,6 +160,7 @@ private void draw_frame(object gc)
 {
 	int y;
 
+	gc->set_layer("canvas");
 	gc->set_clip(0, 0, 79, 19);
 	gc->set_offset(0, 0);
 
@@ -174,6 +178,7 @@ private void draw_banner(object gc, object env)
 {
 	string brief;
 
+	gc->set_layer("canvas");
 	gc->set_clip(0, 0, 59, 3);
 	gc->set_offset(0, 1);
 
@@ -194,28 +199,6 @@ private void draw_banner(object gc, object env)
 	}
 
 	gc->draw(brief);
-}
-
-private void draw_void(object gc)
-{
-}
-
-private void draw_environment(object gc, object viewer, object env)
-{
-	string painter;
-
-	int x, y;
-
-	gc->set_clip(-8, -8, 8, 8);
-	gc->set_offset(70, 10);
-
-	if (painter = env->query_property("event:paint")) {
-		painter->on_paint_text(gc, env, viewer);
-	} else {
-		gc->set_color(0x0F);
-		gc->move_pen(0, 0);
-		gc->draw("?");
-	}
 }
 
 int position_sort(object a, object b)
@@ -333,11 +316,26 @@ string draw_look(object viewer)
 
 	painter = new_object(LWO_PAINTER);
 	painter->set_size(80, 20);
-	painter->add_layer("default");
+
+	painter->add_layer("canvas");
+	painter->set_layer_size("canvas", 80, 20);
+	painter->set_layer_position("canvas", 0, 0);
+
+	painter->add_layer("view");
+	painter->set_layer_size("view", 17, 17);
+	painter->set_layer_position("view", 62, 2);
+
 	painter->add_layer("exits");
+	painter->set_layer_size("exits", 17, 17);
+	painter->set_layer_position("exits", 62, 2);
+
 	painter->add_layer("sprites");
+	painter->set_layer_size("sprites", 17, 17);
+	painter->set_layer_position("sprites", 62, 2);
+
 	gc = painter->create_gc();
-	gc->set_layer("default");
+
+	gc->set_layer("canvas");
 
 	draw_frame(gc);
 	draw_background(gc);
@@ -347,10 +345,13 @@ string draw_look(object viewer)
 
 	draw_tickmarks(gc);
 
+	gc->set_layer("view");
+
 	if (viewer) {
 		object env;
 
 		gc->set_clip(-8, -8, 8, 8);
+		gc->set_offset(8, 8);
 
 		env = viewer->query_environment();
 
@@ -358,6 +359,7 @@ string draw_look(object viewer)
 			look_object(gc, viewer, env);
 		}
 
+		gc->set_layer("sprites");
 		gc->move_pen(0, 0);
 		gc->set_color(0x0F);
 		gc->draw("@");

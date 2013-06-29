@@ -28,7 +28,7 @@ string *mask;
 int pos_x, pos_y;
 int size_x, size_y;
 
-void set_pos(int x, int y)
+void set_position(int x, int y)
 {
 	ACCESS_CHECK(TEXT());
 
@@ -36,7 +36,7 @@ void set_pos(int x, int y)
 	pos_y = y;
 }
 
-int *query_pos()
+int *query_position()
 {
 	ACCESS_CHECK(TEXT());
 
@@ -61,6 +61,13 @@ void set_size(int dx, int dy)
 		colors[i] = STRINGD->chars(0x87, size_x);
 		mask[i] = STRINGD->nulls((size_x + 7) >> 3);
 	}
+}
+
+int *query_size()
+{
+	ACCESS_CHECK(TEXT());
+
+	return ({ size_x, size_y });
 }
 
 void draw(string brush, int pen_x, int pen_y, int color)

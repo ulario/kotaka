@@ -55,14 +55,27 @@ void add_layer(string name)
 {
 	stack += ({ name });
 	layers[name] = new_object("layer");
-	layers[name]->set_size(size_x, size_y);
+}
+
+void set_layer_size(string name, int sx, int sy)
+{
+	layers[name]->set_size(sx, sy);
+}
+
+void set_layer_position(string name, int px, int py)
+{
+	layers[name]->set_position(px, py);
 }
 
 object get_layer(string name)
 {
 	ACCESS_CHECK(TEXT());
 
-	return layers[name];
+	if (layers[name]) {
+		return layers[name];
+	} else {
+		error("No such layer");
+	}
 }
 
 object create_gc()
@@ -82,42 +95,40 @@ string *render()
 
 	string *chars;
 
-	string **lchars;
-	string **lmask;
-
 	sz = sizeof(stack);
 
-	chars = allocate(size_y);
-	lchars = allocate(sz);
-	lmask = allocate(sz);
+	for (i = 0; i < sz; i++) {
+		int sx, sy;
+		int px, py;
 
-	for (i = sz - 1; i >= 0; i--) {
-		lchars[i] = layers[stack[i]]->query_chars();
-		lmask[i] = layers[stack[i]]->query_mask();
-	}
+		string *lmask;
+		string *lchars;
 
-	for (y = 0; y < size_y; y++) {
-		chars[y] = STRINGD->spaces(size_x);
+		object layer;
 
-		for (x = 0; i < size_x; x++) {
-			for (i = sz - 1; i >= 0; i--) {
-				if (lmask[i][y][x >> 3] & (1 << (x & 7))) {
-					/* hit */
-					chars[y][x] = lchars[i][y][x];
+		layer = layers[stack[i]];
 
-					break;
+		({ sx, sy }) = layer->query_size();
+		({ px, py }) = layer->query_position();
+
+		lmask = layer->query_mask();
+		lchars = layer->query_chars();
+
+		for (y = 0; y < sy; y++) {
+			for (x = 0; x < sx; x++) {
+				if (lmask[y][x >> 3] & (1 << (x & 7))) {
+					chars[y + py][x + px] = lchars[y][x];
 				}
 			}
 		}
 	}
-
-	return chars;
 }
 
 string *render_color()
 {
 	int i, sz;
 	int x, y;
+
 	int delta;
 	int color;
 
@@ -125,40 +136,51 @@ string *render_color()
 	string *colors;
 	string *buffers;
 
-	string **lchars;
-	string **lcolors;
-	string **lmask;
-
-	sz = sizeof(stack);
-
 	chars = allocate(size_y);
 	colors = allocate(size_y);
-	buffers = allocate(size_y);
-	lchars = allocate(sz);
-	lcolors = allocate(sz);
-	lmask = allocate(sz);
-
-	for (i = 0; i < sz; i++) {
-		lchars[i] = layers[stack[i]]->query_chars();
-		lcolors[i] = layers[stack[i]]->query_colors();
-		lmask[i] = layers[stack[i]]->query_mask();
-	}
 
 	for (y = 0; y < size_y; y++) {
 		chars[y] = STRINGD->spaces(size_x);
-		colors[y] = STRINGD->chars(0x80, size_x);
+		colors[y] = STRINGD->chars(0x07, size_x);
+	}
 
-		for (x = 0; x < size_x; x++) {
-			for (i = 0; i < sz; i++) {
+	sz = sizeof(stack);
 
-				if (lmask[i][y][x >> 3] & (1 << (x & 7))) {
-					/* hit */
-					chars[y][x] = lchars[i][y][x];
-					colors[y][x] = lcolors[i][y][x];
+	for (i = 0; i < sz; i++) {
+		int sx, sy;
+		int px, py;
+
+		string *lmask;
+		string *lchars;
+		string *lcolors;
+
+		object layer;
+
+		layer = layers[stack[i]];
+
+		({ sx, sy }) = layer->query_size();
+		({ px, py }) = layer->query_position();
+
+		lmask = layer->query_mask();
+		lchars = layer->query_chars();
+		lcolors = layer->query_colors();
+
+		for (y = 0; y < sy; y++) {
+			for (x = 0; x < sx; x++) {
+				if (lmask[y][x >> 3] & (1 << (x & 7))) {
+					chars[y + py][x + px] = lchars[y][x];
+
+					if (lcolors[y][x] & 0x80) {
+						colors[y + py][x + px] = (0x0f & lcolors[y][x]) | (0xf0 & colors[y + py][x + px]);
+					} else {
+						colors[y + py][x + px] = lcolors[y][x];
+					}
 				}
 			}
 		}
 	}
+
+	buffers = allocate(size_y);
 
 	for (y = 0; y < size_y; y++) {
 		string buffer;
