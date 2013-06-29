@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
 
@@ -29,13 +30,24 @@ int size_x, size_y;
 
 void set_pos(int x, int y)
 {
+	ACCESS_CHECK(TEXT());
+
 	pos_x = x;
 	pos_y = y;
+}
+
+int *query_pos()
+{
+	ACCESS_CHECK(TEXT());
+
+	return ({ pos_x, pos_y });
 }
 
 void set_size(int dx, int dy)
 {
 	int i;
+
+	ACCESS_CHECK(TEXT());
 
 	size_x = dx;
 	size_y = dy;
@@ -55,6 +67,8 @@ void draw(string brush, int pen_x, int pen_y, int color)
 {
 	int i;
 	int sz;
+
+	ACCESS_CHECK(TEXT());
 
 	sz = strlen(brush);
 
@@ -97,6 +111,8 @@ void erase(int length, int pen_x, int pen_y, int color)
 	int i;
 	int sz;
 
+	ACCESS_CHECK(TEXT());
+
 	sz = length;
 
 	if (pen_y < 0 || pen_y >= size_y || pen_x >= size_x || pen_x + sz < 0) {
@@ -123,15 +139,21 @@ void erase(int length, int pen_x, int pen_y, int color)
 
 string *query_colors()
 {
-	return colors[..];
+	ACCESS_CHECK(TEXT());
+
+	return colors;
 }
 
 string *query_chars()
 {
-	return chars[..];
+	ACCESS_CHECK(TEXT());
+
+	return chars;
 }
 
 string *query_mask()
 {
-	return mask[..];
+	ACCESS_CHECK(TEXT());
+
+	return mask;
 }
