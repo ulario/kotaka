@@ -99,7 +99,7 @@ void emit_from(object actor, string *verbs, mixed chain ...)
 		cand |= ({ env });
 	}
 
-	cand |= ({ actor->query_inventory() });
+	cand |= actor->query_inventory();
 
 	sz = sizeof(cand);
 
