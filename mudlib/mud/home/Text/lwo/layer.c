@@ -101,7 +101,7 @@ void draw(string brush, int pen_x, int pen_y, int color)
 
 		if (color & 0x80) {
 			/* transparent background */
-			new_color = (colors[pen_y][pen_x] & 0x70) | (color & 0xF);
+			new_color = (colors[pen_y][pen_x] & 0xf0) | (color & 0xf);
 		} else {
 			new_color = color;
 		}
