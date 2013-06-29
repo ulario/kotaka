@@ -78,7 +78,7 @@ void emit_to(object actor, object viewer, string *verbs, mixed chain ...)
 
 	mobiles = viewer->query_property("mobiles");
 
-	sz = sizeof(mobiles);
+	sz = sizeof(mobiles -= ({ nil }) );
 
 	for (i = 0; i < sz; i++) {
 		mobiles[i]->message(phrase + "\n");
