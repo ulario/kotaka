@@ -58,13 +58,13 @@ void emit_to(object actor, object viewer, string *verbs, mixed chain ...)
 
 		case T_OBJECT:
 			if (seen[item]) {
-				if (item == actor) {
+				if (item == viewer) {
 					buffer += ({ "yourself" });
 				} else {
 					buffer += ({ "itself" });
 				}
 			} else {
-				if (item == actor) {
+				if (item == viewer) {
 					buffer += ({ "you" });
 				} else {
 					buffer += ({ TEXT_SUBD->generate_brief_definite(item) });
