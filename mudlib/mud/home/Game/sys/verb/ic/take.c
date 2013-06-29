@@ -65,6 +65,16 @@ void do_action(object actor, mapping roles, string evoke)
 
 	dob = dob[1];
 
+	if (dob == actor) {
+		send_out("Find a yoga instructor for that.\n");
+		return;
+	}
+
+	if (dob->is_container_of(actor)) {
+		send_out("Find a yoga instructor for that.\n");
+		return;
+	}
+
 	if (dob->query_environment() == actor) {
 		send_out("You already have it!\n");
 		return;
