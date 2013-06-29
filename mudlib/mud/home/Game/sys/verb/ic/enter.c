@@ -106,6 +106,6 @@ void do_action(object actor, mapping roles, string evoke)
 		actor->set_y_position(0);
 		actor->set_z_position(0);
 
-		emit_from(actor, ({ "arrive", "arrives" }), dob);
+		emit_from(actor, ({ "arrive", "arrives" }));
 	}
 }
