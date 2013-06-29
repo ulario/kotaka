@@ -72,8 +72,9 @@ private void default_painter(object gc, object neighbor, object viewer)
 		return;
 	}
 
+	gc->set_layer("sprites");
 	gc->move_pen(x, y);
-	gc->set_color(0x8D);
+	gc->set_color(0x8f);
 	s = neighbor->query_property("brief");
 
 	if (s && strlen(s) > 0) {
