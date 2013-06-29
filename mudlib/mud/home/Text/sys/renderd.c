@@ -28,7 +28,7 @@ private void draw_tickmarks(object gc)
 	int i;
 
 	gc->set_layer("canvas");
-	gc->set_offset(70, 10);
+	gc->set_offset(69, 10);
 	gc->set_clip(-9, -9, 9, 9);
 
 	for (i = -8; i <= 8; i += 1) {
@@ -85,10 +85,24 @@ private void default_painter(object gc, object neighbor, object viewer)
 
 private void draw_background(object gc)
 {
+	int x, y;
+
 	gc->set_layer("canvas");
-	gc->set_clip(0, 0, 79, 19);
-	gc->set_offset(0, 3);
+	gc->set_clip(0, 0, 79, 21);
+	gc->set_offset(0, 0);
 	gc->set_color(0x04);
+
+	for (y = 0; y < 20; y++) {
+		int lx, hx;
+
+		lx = (y & 1) * 2;
+		hx = 80 - lx;
+
+		for (x = lx; x <= hx; x += 4) {
+			gc->move_pen(x, y);
+			gc->draw("+");
+		}
+	}
 }
 
 private string inventory_list(object *inv)
@@ -116,7 +130,7 @@ private void draw_prose(object gc, object actor)
 
 	gc->set_layer("canvas");
 	gc->set_clip(0, 0, 60, 15);
-	gc->set_offset(0, 4);
+	gc->set_offset(2, 4);
 
 	gc->set_color(0x07);
 
@@ -158,20 +172,44 @@ private void draw_prose(object gc, object actor)
 
 private void draw_frame(object gc)
 {
-	int y;
+	int x, y;
 
 	gc->set_layer("canvas");
-	gc->set_clip(0, 0, 79, 19);
+	gc->set_clip(0, 0, 79, 21);
 	gc->set_offset(0, 0);
 
 	gc->set_color(0x07);
-	gc->move_pen(0, 0);
-	gc->draw(STRINGD->chars('-', 80));
+
+	gc->move_pen(1, 0);
+	gc->draw(STRINGD->chars('-', 78));
+
+	gc->move_pen(1, 20);
+	gc->draw(STRINGD->chars('-', 78));
 
 	for (y = 1; y < 20; y++) {
-		gc->move_pen(60, y);
+		gc->move_pen(0, y);
+		gc->draw("|");
+		gc->move_pen(59, y);
+		gc->draw("|");
+		gc->move_pen(79, y);
 		gc->draw("|");
 	}
+
+	gc->set_color(0x07);
+
+	gc->move_pen(0, 0);
+	gc->draw("+");
+	gc->move_pen(59, 0);
+	gc->draw("+");
+	gc->move_pen(79, 0);
+	gc->draw("+");
+
+	gc->move_pen(0, 20);
+	gc->draw("+");
+	gc->move_pen(59, 20);
+	gc->draw("+");
+	gc->move_pen(79, 20);
+	gc->draw("+");
 }
 
 private void draw_banner(object gc, object env)
@@ -183,10 +221,10 @@ private void draw_banner(object gc, object env)
 	gc->set_offset(0, 1);
 
 	gc->set_color(0x08);
-	gc->move_pen(0, 1);
-	gc->draw(STRINGD->chars('-', 60));
+	gc->move_pen(1, 1);
+	gc->draw(STRINGD->chars('-', 58));
 	gc->set_color(0x07);
-	gc->move_pen(3, 0);
+	gc->move_pen(2, 0);
 
 	if (env) {
 		brief = env->query_property("brief");
@@ -315,30 +353,32 @@ string draw_look(object viewer)
 	ACCESS_CHECK(TEXT() || GAME());
 
 	painter = new_object(LWO_PAINTER);
-	painter->set_size(80, 20);
+	painter->set_size(80, 21);
 
 	painter->add_layer("canvas");
-	painter->set_layer_size("canvas", 80, 20);
+	painter->set_layer_size("canvas", 80, 21);
 	painter->set_layer_position("canvas", 0, 0);
 
 	painter->add_layer("view");
 	painter->set_layer_size("view", 17, 17);
-	painter->set_layer_position("view", 62, 2);
+	painter->set_layer_position("view", 61, 2);
 
 	painter->add_layer("exits");
 	painter->set_layer_size("exits", 17, 17);
-	painter->set_layer_position("exits", 62, 2);
+	painter->set_layer_position("exits", 61, 2);
 
 	painter->add_layer("sprites");
 	painter->set_layer_size("sprites", 17, 17);
-	painter->set_layer_position("sprites", 62, 2);
+	painter->set_layer_position("sprites", 61, 2);
 
 	gc = painter->create_gc();
 
 	gc->set_layer("canvas");
+	gc->set_clip(0, 0, 79, 21);
+	gc->set_offset(0, 0);
 
-	draw_frame(gc);
 	draw_background(gc);
+	draw_frame(gc);
 	draw_banner(gc, viewer ? viewer->query_environment() : nil);
 
 	draw_prose(gc, viewer);
