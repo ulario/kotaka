@@ -87,20 +87,23 @@ void emit_to(object actor, object viewer, string *verbs, mixed chain ...)
 void emit_from(object actor, string *verbs, mixed chain ...)
 {
 	object env;
-	object *inv;
+	object *cand;
 	int i, sz;
+
+	cand = ({ actor });
 
 	env = actor->query_environment();
 
-	if (!env) {
-		return;
+	if (env) {
+		cand |= env->query_inventory();
+		cand |= env;
 	}
 
-	inv = env->query_inventory();
+	cand |= ({ actor->query_inventory() });
 
-	sz = sizeof(inv);
+	sz = sizeof(cand);
 
 	for (i = 0; i < sz; i++) {
-		emit_to(actor, inv[i], verbs, chain ...);
+		emit_to(actor, cand[i], verbs, chain ...);
 	}
 }
