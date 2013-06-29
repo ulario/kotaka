@@ -334,6 +334,8 @@ string draw_look(object viewer)
 	painter = new_object(LWO_PAINTER);
 	painter->set_size(80, 20);
 	painter->add_layer("default");
+	painter->add_layer("exits");
+	painter->add_layer("sprites");
 	gc = painter->create_gc();
 	gc->set_layer("default");
 
