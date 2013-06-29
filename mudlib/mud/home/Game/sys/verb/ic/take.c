@@ -80,6 +80,11 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
-	emit_from(actor, ({ "take", "takes" }), dob);
+	if (dob->query_environment() == actor->query_environment()) {
+		emit_from(actor, ({ "take", "takes" }), dob);
+	} else {
+		emit_from(actor, ({ "take", "takes" }), dob, "from", dob->query_environment());
+	}
+
 	dob->move(actor);
 }
