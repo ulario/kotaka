@@ -26,7 +26,9 @@ int size_x, size_y;
 
 static void create(int clone)
 {
-	layer = new_object("layer");
+	if (clone) {
+		layer = new_object("layer");
+	}
 }
 
 void set_size(int dx, int dy)
