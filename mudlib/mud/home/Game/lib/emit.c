@@ -96,7 +96,7 @@ void emit_from(object actor, string *verbs, mixed chain ...)
 
 	if (env) {
 		cand |= env->query_inventory();
-		cand |= env;
+		cand |= ({ env });
 	}
 
 	cand |= ({ actor->query_inventory() });
