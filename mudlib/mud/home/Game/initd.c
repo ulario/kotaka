@@ -107,6 +107,7 @@ void configure_properties()
 	/* inventory */
 	PROPERTYD->add_property("environment", T_OBJECT, PROP_MAGIC, ({ "query_environment", "move" }) );
 	PROPERTYD->add_property("inventory", T_ARRAY, PROP_MAGIC, ({ "query_inventory", nil }) );
+	PROPERTYD->add_property("is_immobile", T_INT, PROP_INHERIT, 0);
 
 	/* bulk */
 	PROPERTYD->add_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
