@@ -32,6 +32,8 @@ void on_paint_text(object gc, object obj, object viewer)
 	int mx, my;
 	int i;
 
+	gc->set_layer("view");
+
 	if (!obj->is_container_of(viewer)) {
 		RENDERD->draw_contents(gc, obj, viewer);
 		return;
