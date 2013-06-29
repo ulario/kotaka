@@ -56,16 +56,12 @@ void main(object actor, string args)
 		target = def->query_destination();
 
 		if (target) {
-			emit_from(actor, ({ "leave", "leaves" }), "through", def);
-
-			/* todo: walk to target */
-			actor->set_x_position(def->query_x_position());
-			actor->set_y_position(def->query_y_position());
-			actor->set_z_position(def->query_z_position());
-			actor->move(target);
-
-			emit_from(actor, ({ "arrive", "arrives" }));
-
+			"~/sys/action/exit"->action(
+				([
+					"actor": actor,
+					"dob": def
+				])
+			);
 			return;
 		} else {
 			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(def)

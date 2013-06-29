@@ -57,14 +57,17 @@ void main(object actor, string args)
 			target = exit->query_destination();
 
 			if (target) {
-				/* todo: walk to target */
-				emit_from(actor, ({ "leave", "leaves" }), "through", exit);
-				actor->set_x_position(exit->query_x_position());
-				actor->set_y_position(exit->query_y_position());
-				actor->set_z_position(exit->query_z_position());
-				actor->move(target);
-				emit_from(actor, ({ "arrive", "arrives" }), "through", exit);
+				"~/sys/action/exit"->action(
+					([
+						"actor": actor,
+						"dob": exit
+					])
+				);
 				return;
+			} else {
+				send_out("Oops, " + TEXT_SUBD->generate_brief_definite(exit)
+					+ " doesn't seem to have a destination.\n"
+					+ "Yell at a wizard.\n");
 			}
 		}
 	}
