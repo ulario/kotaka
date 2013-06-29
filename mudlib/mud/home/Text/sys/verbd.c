@@ -152,6 +152,8 @@ private object *filter_noun(object *candidates, string noun)
 	sz = sizeof(candidates);
 	contenders = ({ });
 
+	noun = STRINGD->to_lower(noun);
+
 	for (i = 0; i < sz; i++) {
 		if (sizeof(({ noun }) & candidates[i]->query_property("snouns"))) {
 			contenders += ({ candidates[i] });
