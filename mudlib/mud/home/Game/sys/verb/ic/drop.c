@@ -18,9 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <game/paths.h>
 #include <text/paths.h>
 #include <type.h>
 
+inherit LIB_ACTION;
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */

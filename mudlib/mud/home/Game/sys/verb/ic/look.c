@@ -18,9 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <game/paths.h>
 #include <text/paths.h>
 #include <type.h>
 
+inherit LIB_ACTION;
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */
@@ -44,6 +46,7 @@ void do_action(object actor, mapping roles, string evoke)
 	dob = roles["dob"];
 
 	if (!dob) {
+		emit_from(actor, ({ "look", "looks" }), "around");
 		send_out(RENDERD->draw_look(actor));
 		return;
 	}
@@ -54,6 +57,7 @@ void do_action(object actor, mapping roles, string evoke)
 	switch(prep) {
 	case nil:
 	case "at":
+		emit_from(actor, ({ "look", "looks" }), "at", obj);
 		look = obj->query_property("look");
 		send_out(look ? STRINGD->wordwrap(look, 60) : "a bland object");
 		send_out("\n");

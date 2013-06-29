@@ -19,9 +19,11 @@
  */
 #include <kotaka/assert.h>
 #include <kotaka/paths.h>
+#include <game/paths.h>
 #include <text/paths.h>
 #include <game/paths.h>
 
+inherit LIB_ACTION;
 inherit LIB_RAWVERB;
 
 void main(object actor, string args)
@@ -46,9 +48,9 @@ void main(object actor, string args)
 		return;
 	}
 
-	send_out("You spawn " + TEXT_SUBD->generate_brief_indefinite(master) + ".\n");
-
 	thing = GAME_INITD->create_object();
 	thing->add_archetype(master);
 	thing->move(actor);
+
+	emit_from(actor, ({ "spawn", "spawns" }), thing);
 }

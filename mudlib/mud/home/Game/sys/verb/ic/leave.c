@@ -22,6 +22,7 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
+inherit LIB_ACTION;
 inherit LIB_RAWVERB;
 
 void main(object actor, string args)
@@ -55,12 +56,16 @@ void main(object actor, string args)
 		target = def->query_destination();
 
 		if (target) {
+			emit_from(actor, ({ "leave", "leaves" }), "through", def);
+
 			/* todo: walk to target */
 			actor->set_x_position(def->query_x_position());
 			actor->set_y_position(def->query_y_position());
 			actor->set_z_position(def->query_z_position());
 			actor->move(target);
-			generic_emit(actor, ({ "go", "goes" }), def, "through");
+
+			emit_from(actor, ({ "arrive", "arrives" }));
+
 			return;
 		} else {
 			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(def)
@@ -76,10 +81,13 @@ void main(object actor, string args)
 			return;
 		}
 
-		generic_emit(actor, ({ "leave", "leaves" }), env, nil);
+		emit_from(actor, ({ "leave", "leaves" }), "through thin air");
+
 		actor->move(env->query_environment());
 		actor->set_x_position(0);
 		actor->set_y_position(0);
 		actor->set_z_position(0);
+
+		emit_from(actor, ({ "arrive", "arrives" }));
 	}
 }

@@ -18,9 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <game/paths.h>
 #include <text/paths.h>
 #include <type.h>
 
+inherit LIB_ACTION;
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */
@@ -71,12 +73,15 @@ void do_action(object actor, mapping roles, string evoke)
 		target = def->query_destination();
 
 		if (target) {
-			/* todo: walk to target */
+			emit_from(actor, ({ "enter", "enters" }), target);
+
 			actor->set_x_position(def->query_x_position());
 			actor->set_y_position(def->query_y_position());
 			actor->set_z_position(def->query_z_position());
 			actor->move(target);
-			generic_emit(actor, ({ "go", "goes" }), def, "through");
+
+			emit_from(actor, ({ "arrive", "arrives" }));
+
 			return;
 		} else {
 			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(def)
@@ -97,11 +102,13 @@ void do_action(object actor, mapping roles, string evoke)
 			return;
 		}
 
-		generic_emit(actor, ({ "enter", "enters" }), dob, nil);
+		emit_from(actor, ({ "leave", "leaves" }), dob);
 
 		actor->move(dob);
 		actor->set_x_position(0);
 		actor->set_y_position(0);
 		actor->set_z_position(0);
+
+		emit_from(actor, ({ "arrive", "arrives" }), dob);
 	}
 }

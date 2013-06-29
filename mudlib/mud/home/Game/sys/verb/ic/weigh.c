@@ -18,9 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <game/paths.h>
 #include <text/paths.h>
 #include <type.h>
 
+inherit LIB_ACTION;
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */
@@ -64,6 +66,7 @@ void do_action(object actor, mapping roles, string evoke)
 	}
 
 	if (dob->query_environment() == actor) {
+		emit_from(actor, ({ "weigh", "weighs" }), dob);
 		send_out("You weigh " + TEXT_SUBD->generate_brief_definite(dob) + ", and it appears to be " + dob->query_total_mass() + " kilograms in mass.\n");
 		return;
 	}

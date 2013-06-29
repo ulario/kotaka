@@ -19,8 +19,10 @@
  */
 #include <kotaka/paths.h>
 #include <text/paths.h>
+#include <game/paths.h>
 #include <type.h>
 
+inherit LIB_ACTION;
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */
@@ -95,7 +97,7 @@ void do_action(object actor, mapping roles, string evoke)
 			return;
 		}
 
-		send_out("You put " + TEXT_SUBD->generate_brief_definite(dob) + " in " + TEXT_SUBD->generate_brief_definite(iob) + ".\n");
+		emit_from(actor, ({ "put", "puts" }), dob, "in", iob);
 		dob->move(iob);
 		dob->set_x_position(0);
 		dob->set_y_position(0);

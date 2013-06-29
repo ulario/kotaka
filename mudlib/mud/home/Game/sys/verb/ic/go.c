@@ -18,8 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <game/paths.h>
 #include <text/paths.h>
 
+inherit LIB_ACTION;
 inherit LIB_RAWVERB;
 
 void main(object actor, string args)
@@ -56,11 +58,12 @@ void main(object actor, string args)
 
 			if (target) {
 				/* todo: walk to target */
+				emit_from(actor, ({ "leave", "leaves" }), "through", exit);
 				actor->set_x_position(exit->query_x_position());
 				actor->set_y_position(exit->query_y_position());
 				actor->set_z_position(exit->query_z_position());
 				actor->move(target);
-				generic_emit(actor, ({ "go", "goes" }), exit, "through");
+				emit_from(actor, ({ "arrive", "arrives" }), "through", exit);
 				return;
 			}
 		}

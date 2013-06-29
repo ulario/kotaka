@@ -18,9 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths.h>
+#include <game/paths.h>
 #include <text/paths.h>
 #include <type.h>
 
+inherit LIB_ACTION;
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */
@@ -94,11 +96,11 @@ void do_action(object actor, mapping roles, string evoke)
 			return;
 		}
 
-		send_out("You give " + TEXT_SUBD->generate_brief_definite(dob) + " to " + TEXT_SUBD->generate_brief_definite(iob) + ".\n");
 		dob->move(iob);
 		dob->set_x_position(0);
 		dob->set_y_position(0);
 		dob->set_z_position(0);
+		emit_from(actor, ({ "give", "givess" }), dob, "to", iob);
 		return;
 	}
 }

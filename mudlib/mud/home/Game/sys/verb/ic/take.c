@@ -19,8 +19,10 @@
  */
 #include <kotaka/paths.h>
 #include <text/paths.h>
+#include <game/paths.h>
 #include <type.h>
 
+inherit LIB_ACTION;
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */
@@ -68,6 +70,6 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
-	generic_emit(actor, ({ "take", "takes" }), dob, nil);
+	emit_from(actor, ({ "take", "takes" }), dob);
 	dob->move(actor);
 }
