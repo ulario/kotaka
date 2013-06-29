@@ -96,6 +96,11 @@ void do_action(object actor, mapping roles, string evoke)
 			return;
 		}
 
+		if (dob->query_property("is_immobile")) {
+			send_out("It is stuck like glue and cannot be given away.\n");
+			return;
+		}
+
 		dob->move(iob);
 		dob->set_x_position(0);
 		dob->set_y_position(0);

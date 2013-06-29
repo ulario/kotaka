@@ -80,6 +80,11 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
+	if (dob->query_property("is_immobile")) {
+		send_out("It is stuck like glue and cannot be taken.\n");
+		return;
+	}
+
 	if (dob->query_environment() == actor->query_environment()) {
 		emit_from(actor, ({ "take", "takes" }), dob);
 	} else {
