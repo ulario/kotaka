@@ -105,3 +105,23 @@ void emit_from(object actor, string *verbs, mixed chain ...)
 		emit_to(actor, inv[i], verbs, chain ...);
 	}
 }
+
+static object query_ustate()
+{
+	return TLSD->query_tls_value("Text", "ustate");
+}
+
+static object query_user()
+{
+	return query_ustate()->query_user();
+}
+
+static void send_in(string str)
+{
+	query_ustate()->send_in(str);
+}
+
+static void send_out(string str)
+{
+	query_ustate()->send_out(str);
+}
