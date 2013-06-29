@@ -168,13 +168,14 @@ string *render_color()
 		for (y = 0; y < sy; y++) {
 			for (x = 0; x < sx; x++) {
 				if (lmask[y][x >> 3] & (1 << (x & 7))) {
-					chars[y + py][x + px] = lchars[y][x];
-
 					if (lcolors[y][x] & 0x80) {
-						colors[y + py][x + px] = (0x0f & lcolors[y][x]) | (0xf0 & colors[y + py][x + px]);
+						colors[y + py][x + px] =
+							(0x0f & lcolors[y][x])
+							| (0xf0 & colors[y + py][x + px]);
 					} else {
 						colors[y + py][x + px] = lcolors[y][x];
 					}
+					chars[y + py][x + px] = lchars[y][x];
 				}
 			}
 		}
