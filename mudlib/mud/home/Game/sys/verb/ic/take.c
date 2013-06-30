@@ -22,7 +22,7 @@
 #include <game/paths.h>
 #include <type.h>
 
-inherit "~/lib/emit";
+inherit LIB_EMIT;
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */

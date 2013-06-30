@@ -20,7 +20,7 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 
-inherit "~/lib/emit";
+inherit LIB_EMIT;
 inherit LIB_ENGVERB;
 
 mixed **query_roles()

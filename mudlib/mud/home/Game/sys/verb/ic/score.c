@@ -22,6 +22,7 @@
 #include <game/paths.h>
 #include <text/paths.h>
 
+inherit LIB_EMIT;
 inherit LIB_RAWVERB;
 
 string make_bar(int cur, int max, int len)

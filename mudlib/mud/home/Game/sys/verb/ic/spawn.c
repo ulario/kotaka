@@ -21,9 +21,8 @@
 #include <kotaka/paths.h>
 #include <game/paths.h>
 #include <text/paths.h>
-#include <game/paths.h>
 
-inherit "~/lib/emit";
+inherit LIB_EMIT;
 inherit LIB_RAWVERB;
 
 void main(object actor, string args)

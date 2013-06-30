@@ -21,7 +21,8 @@
 #include <kotaka/paths.h>
 #include <text/paths.h>
 
-inherit "~/lib/userio";
+inherit LIB_USERIO;
+inherit LIB_EMIT;
 inherit LIB_ACTION;
 
 void action(mapping roles)
