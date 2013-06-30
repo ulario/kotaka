@@ -21,6 +21,7 @@
 #include <text/paths.h>
 #include <type.h>
 
+inherit "~/lib/emit";
 inherit LIB_ENGVERB;
 
 /* ({ role, prepositions, raw }) */
@@ -68,5 +69,6 @@ void do_action(object actor, mapping roles, string evoke)
 		return;
 	}
 
+	emit_from(actor, ({ "destroy", "destroys" }), dob);
 	destruct_object(dob);
 }
