@@ -57,6 +57,7 @@ private void default_painter(object gc, object neighbor, object viewer)
 	int ox, oy;
 
 	int x, y;
+	mixed color;
 
 	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, neighbor);
 
@@ -74,13 +75,39 @@ private void default_painter(object gc, object neighbor, object viewer)
 
 	gc->set_layer("sprites");
 	gc->move_pen(x, y);
-	gc->set_color(0x8f);
-	s = neighbor->query_property("brief");
 
-	if (s && strlen(s) > 0) {
-		gc->draw(s[0 .. 0]);
+	color = neighbor->query_property("paint_color");
+
+	if (color == nil) {
+		gc->set_color(0x8f);
 	} else {
-		gc->draw("?");
+		if (color != color & 0xff) {
+			gc->set_color(0x0d);
+			gc->draw("E");
+			return;
+		} else {
+			gc->set_color(color);
+		}
+	}
+
+	s = neighbor->query_property("paint_character");
+
+	if (s) {
+		if (strlen(s) == 1) {
+			gc->draw(s[0 .. 0]);
+		} else {
+			gc->set_color(0x0d);
+			gc->draw("E");
+			return;
+		}
+	} else {
+		s = neighbor->query_property("brief");
+
+		if (s && strlen(s) > 0) {
+			gc->draw(s[0 .. 0]);
+		} else {
+			gc->draw("?");
+		}
 	}
 }
 
