@@ -276,6 +276,11 @@ void channel_message(string channel, string sender, string message)
 	ccolor = CHANNELD->setcolor(ccolor);
 	tcolor = CHANNELD->setcolor(tcolor);
 
-	send_out("[" + ccolor + channel + "\033[0m] "
-		+ sender + tcolor + ": " + message + "\n");
+	if (sender) {
+		send_out("[" + ccolor + channel + "\033[0m] "
+			+ sender + tcolor + ": " + message + "\n");
+	} else {
+		send_out("[" + ccolor + channel + "\033[0m] "
+			+ message + "\n");
+	}
 }
