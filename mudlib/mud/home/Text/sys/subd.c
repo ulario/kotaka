@@ -81,8 +81,9 @@ string titled_name(string name, int class)
 			name = "\033[1;31mLady " + name + "\033[0m";
 			break;
 		}
+		break;
 	case 4:
-		name = "\033[1;31mThe Ethereal Presence\033[0m";
+		name = "\033[1;37mThe Ethereal Presence\033[0m";
 		break;
 	}
 
