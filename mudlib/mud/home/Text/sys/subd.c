@@ -70,21 +70,19 @@ string titled_name(string name, int class)
 		}
 		break;
 	case 3:
-		if (name == "Admin") {
-			name = "\033[1;37mThe Ethereal Presence\033[m";
-		} else {
-			switch(ACCOUNTD->query_account_property(username, "gender")) {
-			case nil:
-				name = "\033[1;31m" + name + "\033[0m";
-				break;
-			case "male":
-				name = "\033[1;31mLord " + name + "\033[0m";
-				break;
-			case "female":
-				name = "\033[1;31mLady " + name + "\033[0m";
-				break;
-			}
+		switch(ACCOUNTD->query_account_property(username, "gender")) {
+		case nil:
+			name = "\033[1;31m" + name + "\033[0m";
+			break;
+		case "male":
+			name = "\033[1;31mLord " + name + "\033[0m";
+			break;
+		case "female":
+			name = "\033[1;31mLady " + name + "\033[0m";
+			break;
 		}
+	case 4:
+		name = "\033[1;31mThe Ethereal Presence\033[0m";
 		break;
 	}
 
@@ -126,6 +124,10 @@ int query_user_class(string username)
 {
 	if (!username) {
 		return 0;
+	}
+
+	if (username == "admin") {
+		return 4;
 	}
 
 	if (!ACCOUNTD->query_is_registered(username)) {
