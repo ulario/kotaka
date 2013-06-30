@@ -153,7 +153,13 @@ private void do_input(string first, string input)
 		}
 	}
 
-	if (VERBD->do_verb(first, input)) {
+	catch {
+		if (VERBD->do_verb(first, input)) {
+			return;
+		}
+	} : {
+		send_out("Error.\n");
+
 		return;
 	}
 
