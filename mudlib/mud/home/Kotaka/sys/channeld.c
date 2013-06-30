@@ -264,6 +264,19 @@ string *query_subscriptions(object subscriber)
 	return names - ({ nil });
 }
 
+object *query_subscribers(string channel)
+{
+	if (!channels[channel]) {
+		error("No such channel");
+	}
+
+	if (subscribers[channel]) {
+		return map_indices(subscribers[channel]);
+	} else {
+		return ({ });
+	}
+}
+
 /**********************/
 /* message management */
 /**********************/
