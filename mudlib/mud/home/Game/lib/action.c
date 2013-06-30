@@ -22,5 +22,3 @@
 #include <text/paths.h>
 #include <thing/paths.h>
 #include <type.h>
-
-inherit "emit";
