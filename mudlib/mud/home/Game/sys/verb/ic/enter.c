@@ -99,7 +99,7 @@ void do_action(object actor, mapping roles, string evoke)
 			return;
 		}
 
-		emit_from(actor, ({ "leave", "leaves" }), dob);
+		emit_from(actor, ({ "enter", "enters" }), dob);
 
 		actor->move(dob);
 		actor->set_x_position(0);
