@@ -46,7 +46,7 @@ private void prompt()
 
 void set_object(object o)
 {
-	ACCESS_CHECK(GAME());
+	ACCESS_CHECK(INTERFACE());
 
 	obj = o;
 }
