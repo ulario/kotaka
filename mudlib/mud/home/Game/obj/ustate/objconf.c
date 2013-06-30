@@ -107,20 +107,10 @@ private void do_pset(string input)
 	obj->set_property(pname, PARSE_VALUE->parse(pvalue));
 }
 
-void receive_in(string input)
+private void do_input(string input)
 {
 	string args;
 	string first;
-
-	ACCESS_CHECK(previous_object() == query_user());
-
-	if (!obj) {
-		send_out("The object you were configuring no longer exists.\n");
-		pop_state();
-		return;
-	}
-
-	reading = 1;
 
 	if (!sscanf(input, "%s %s", first, args)) {
 		first = input;
@@ -128,6 +118,7 @@ void receive_in(string input)
 
 	switch(first) {
 	case "quit":
+		stopped = 1;
 		pop_state();
 		return;
 
@@ -153,6 +144,25 @@ void receive_in(string input)
 		}
 
 		break;
+	}
+}
+
+void receive_in(string input)
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
+	if (!obj) {
+		send_out("The object you were configuring no longer exists.\n");
+		pop_state();
+		return;
+	}
+
+	reading = 1;
+
+	catch {
+		do_input(input);
+	} : {
+		send_out("Error.\n");
 	}
 
 	reading = 0;
