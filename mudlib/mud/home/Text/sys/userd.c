@@ -142,7 +142,7 @@ string query_banner(object LIB_CONN connection)
 	}
 
 	if (is_sitebanned(query_ip_number(base_conn))) {
-		return "You are banned.\n";
+		return "You are sitebanned.\n";
 	}
 
 	if (!base_conn) {
