@@ -179,6 +179,12 @@ void receive_in(string input)
 
 			CHANNELD->subscribe_channel("chat", user);
 
+			if (user->query_class() >= 2) {
+				CHANNELD->subscribe_channel("error", user);
+				CHANNELD->subscribe_channel("trace", user);
+				CHANNELD->subscribe_channel("compile", user);
+			}
+
 			terminate_account_state();
 			return;
 		}
