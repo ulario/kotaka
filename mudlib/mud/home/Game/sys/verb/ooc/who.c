@@ -25,19 +25,22 @@ inherit LIB_RAWVERB;
 
 void main(object actor, string args)
 {
+	int class;
 	object user;
 	object *users;
-	string **lists;
+	mapping lists;
 	int sz, i;
 	int is_wiz;
 
-	lists = ({ ({ }), ({ }), ({ }) });
+	lists = ([
+		4: ({ }),
+		3: ({ }),
+		2: ({ }),
+		1: ({ })
+	]);
 
 	user = query_user();
-
-	if (user->query_class() >= 2) {
-		is_wiz = 1;
-	}
+	class = user->query_class();
 
 	send_out("User list\n");
 	send_out("---------\n");
@@ -48,16 +51,17 @@ void main(object actor, string args)
 	for (i = 0; i < sz; i++) {
 		object user;
 		string name;
-		int class;
+		int uclass;
 		string buf;
 
 		user = users[i];
 		name = user->query_username();
-		class = user->query_class();
 
-		buf = TEXT_SUBD->titled_name(name, class);
+		uclass = user->query_class();
 
-		if (is_wiz) {
+		buf = TEXT_SUBD->titled_name(name, uclass);
+
+		if (class > 2 && class >= uclass) {
 			while (user <- LIB_USER) {
 				user = user->query_conn();
 			}
@@ -65,10 +69,10 @@ void main(object actor, string args)
 			buf += " (" + query_ip_number(user) + ")";
 		}
 
-		lists[3 - class] += ({ buf });
+		lists[uclass] += ({ buf });
 	}
 
-	for (i = 0; i < 3; i++) {
+	for (i = 4; i > 0; i--) {
 		if (sizeof(lists[i])) {
 			int j;
 			string *list;
@@ -78,9 +82,10 @@ void main(object actor, string args)
 			SUBD->qsort(list, 0, sz);
 
 			switch(i) {
-			case 0: send_out("Administrators:\n"); break;
-			case 1: send_out("Wizards:\n"); break;
-			case 2: send_out("Players:\n"); break;
+			case 4: send_out("Owners:\n"); break;
+			case 3: send_out("Administrators:\n"); break;
+			case 2: send_out("Wizards:\n"); break;
+			case 1: send_out("Players:\n"); break;
 			}
 
 			for (j = 0; j < sz; j++) {
@@ -103,7 +108,7 @@ void main(object actor, string args)
 		send_out("There are " + sizeof(users) + " guests connected.\n\n");
 	}
 
-	if (is_wiz && (sz = sizeof(users))) {
+	if (class >= 2 && (sz = sizeof(users))) {
 		string *list;
 		list = allocate(sz);
 
