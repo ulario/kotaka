@@ -39,6 +39,11 @@ void action(mapping roles)
 		return;
 	}
 
+	if (actor->query_property("is_immobile")) {
+		send_out("You're stuck like glue and can't move.\n");
+		return;
+	}
+
 	emit_from(actor, ({ "leave", "leaves" }), "through", exit);
 	actor->set_x_position(exit->query_x_position());
 	actor->set_y_position(exit->query_y_position());
