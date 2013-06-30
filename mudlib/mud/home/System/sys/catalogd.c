@@ -30,6 +30,39 @@ static void create()
 	root = clone_object("../obj/directory");
 }
 
+void validate_name(string name)
+{
+	string *path;
+	int sz;
+	int i;
+
+	if (name == nil) {
+		return;
+	}
+
+	path = explode(name, ":");
+
+	if (sizeof(path & ({ "" }) )) {
+		error("Invalid object name");
+	}
+
+	sz = sizeof(path);
+
+	for (i = 0; i < sz; i++) {
+		string part;
+
+		part = path[i];
+
+		if (strlen(part) == 0) {
+			error("Invalid object name");
+		}
+
+		if (sscanf(part, "%*s %*s")) {
+			error("Invalid object name");
+		}
+	}
+}
+
 void add_object(string name, object obj)
 {
 	object dir;
@@ -44,10 +77,6 @@ void add_object(string name, object obj)
 	}
 
 	path = explode(name, ":");
-
-	if (sizeof(path & ({ "" }) )) {
-		error("Invalid object name");
-	}
 
 	sz = sizeof(path);
 	dir = root;
