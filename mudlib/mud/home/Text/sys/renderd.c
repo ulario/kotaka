@@ -91,15 +91,18 @@ private void draw_background(object gc)
 	gc->set_layer("canvas");
 	gc->set_clip(0, 0, 79, 21);
 	gc->set_offset(0, 0);
+
 	gc->set_color(0x04);
 
-	for (y = 0; y < 20; y++) {
-		int lx, hx;
+	for (y = 0; y <= 20; y += 2) {
+		for (x = 0; x <= 80; x += 6) {
+			gc->move_pen(x, y);
+			gc->draw("+");
+		}
+	}
 
-		lx = (y & 1) * 2;
-		hx = 80 - lx;
-
-		for (x = lx; x <= hx; x += 4) {
+	for (y = 1; y <= 19; y += 2) {
+		for (x = 3; x <= 80; x += 6) {
 			gc->move_pen(x, y);
 			gc->draw("+");
 		}
@@ -200,14 +203,10 @@ private void draw_frame(object gc)
 
 	gc->move_pen(0, 0);
 	gc->draw("+");
-	gc->move_pen(59, 0);
-	gc->draw("+");
 	gc->move_pen(79, 0);
 	gc->draw("+");
 
 	gc->move_pen(0, 20);
-	gc->draw("+");
-	gc->move_pen(59, 20);
 	gc->draw("+");
 	gc->move_pen(79, 20);
 	gc->draw("+");
@@ -410,3 +409,5 @@ string draw_look(object viewer)
 
 	return implode(painter->render_color(), "\n") + "\n";
 }
+
+/* draw */
