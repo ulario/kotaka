@@ -29,15 +29,18 @@
 inherit SECOND_AUTO;
 
 int bigready;	/* if we're using bigstructs */
-mixed progdb;	/* program database */
-mixed inhdb;	/* inherit database */
-mixed incdb;	/* include database */
+
+mixed progdb;	/* program database, index -> program_info */
+mixed pathdb;	/* path database, name -> latest index */
+mixed inhdb;	/* inherit database, index -> inherited indices */
+mixed incdb;	/* include database, index -> included files */
 
 static void create()
 {
 	progdb = ([ ]);
 	inhdb = ([ ]);
 	incdb = ([ ]);
+	pathdb = ([ ]);
 }
 
 void convert_database()
@@ -50,7 +53,7 @@ void convert_database()
 
 	ASSERT(!bigready);
 
-	/* first, the program database */
+	/* program database */
 
 	old = progdb;
 	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
@@ -65,7 +68,7 @@ void convert_database()
 		progdb->set_element(ind[i], val[i]);
 	}
 
-	/* next, the inherit database */
+	/* inherit database */
 
 	old = inhdb;
 	inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
@@ -95,7 +98,7 @@ void convert_database()
 		}
 	}
 
-	/* finally, the include database */
+	/* include database */
 
 	old = incdb;
 	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
@@ -123,6 +126,21 @@ void convert_database()
 		for (j = 0; j < ssz; j++) {
 			submap->set_element(sub[j], 1);
 		}
+	}
+
+	/* path database */
+
+	old = pathdb;
+	pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	pathdb->set_type(T_STRING);
+
+	ind = map_indices(old);
+	val = map_values(old);
+
+	sz = sizeof(ind);
+
+	for (i = 0; i < sz; i++) {
+		pathdb->set_element(ind[i], val[i]);
 	}
 
 	bigready = 1;
@@ -302,8 +320,14 @@ void register_program(string path, string *inherits,
 
 	if (bigready) {
 		pinfo = progdb->get_element(oindex);
+
+		if (pathdb)
+			pathdb->set_element(path, oindex);
 	} else {
 		pinfo = progdb[oindex];
+
+		if (pathdb)
+			pathdb[path] = oindex;
 	}
 
 	if (pinfo) {
@@ -362,6 +386,15 @@ object query_program_info(int oindex)
 	}
 }
 
+int query_program_index(string path)
+{
+	if (bigready) {
+		return pathdb->get_element(path);
+	} else {
+		return pathdb[path];
+	}
+}
+
 object query_inheriters(int oindex)
 {
 	object list;
@@ -395,19 +428,30 @@ object query_includers(string path)
 void remove_program(int index)
 {
 	object pinfo;
+	string path;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	pinfo = query_program_info(index);
 
 	if (pinfo) {
+		path = pinfo->query_path();
+
 		deindex_inherits(index, pinfo->query_inherits());
 		deindex_includes(index, pinfo->query_includes());
 	}
 
 	if (bigready) {
+		if (path && pathdb->query_element(path) == index) {
+			pathdb->set_element(path, nil);
+		}
+
 		progdb->set_element(index, nil);
 	} else {
+		if (path && pathdb[path] == index) {
+			pathdb[path] = nil;
+		}
+
 		progdb[index] = nil;
 	}
 }
@@ -427,4 +471,18 @@ void reset_program_database()
 	destruct_object(incdb);
 	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	incdb->set_type(T_STRING);
+
+	destruct_object(incdb);
+	pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	pathdb->set_type(T_STRING);
+}
+
+void upgrading()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (!pathdb) {
+		pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		pathdb->set_type(T_STRING);
+	}
 }
