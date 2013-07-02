@@ -117,6 +117,9 @@ private void do_input(string input)
 	}
 
 	switch(first) {
+	case "":
+		break;
+
 	case "quit":
 		stopped = 1;
 		pop_state();
