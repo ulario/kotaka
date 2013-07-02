@@ -24,11 +24,6 @@
 inherit "call_guard";
 inherit "catalog";
 
-static int free_objects()
-{
-	return status(ST_OTABSIZE) - status(ST_NOBJECTS);
-}
-
 nomask void _F_sys_create(int clone)
 {
 	int index;

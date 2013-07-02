@@ -21,6 +21,11 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
+static int free_objects()
+{
+	return status(ST_OTABSIZE) - status(ST_NOBJECTS);
+}
+
 static object compile_object(mixed args ...)
 {
 	object obj;
