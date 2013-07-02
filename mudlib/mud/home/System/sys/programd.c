@@ -480,7 +480,7 @@ void reset_program_database()
 	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	incdb->set_type(T_STRING);
 
-	destruct_object(incdb);
+	destruct_object(pathdb);
 	pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	pathdb->set_type(T_STRING);
 }
