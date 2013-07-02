@@ -274,8 +274,8 @@ private void index_includes(int oindex, string *inc)
 	}
 }
 
-void register_program(string path, string *inherits,
-	string *includes, string constructor, string destructor)
+object register_program(string path, string *inherits,
+	string *includes)
 {
 	int i;
 	int sz;
@@ -347,12 +347,12 @@ void register_program(string path, string *inherits,
 	pinfo->set_inherits(oindices);
 	pinfo->set_includes(includes);
 	pinfo->set_inherited_constructors(ctors);
-	pinfo->set_constructor(constructor);
 	pinfo->set_inherited_destructors(dtors);
-	pinfo->set_destructor(destructor);
 
 	index_inherits(oindex, oindices);
 	index_includes(oindex, includes);
+
+	return pinfo;
 }
 
 object query_program_indices()

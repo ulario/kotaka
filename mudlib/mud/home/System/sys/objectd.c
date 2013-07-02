@@ -432,6 +432,7 @@ void compiling(string path)
 private void compile_common(string owner, string path, string *source, string *inherited)
 {
 	object initd;
+	object pinfo;
 
 	string constructor;
 	string destructor;
@@ -440,6 +441,8 @@ private void compile_common(string owner, string path, string *source, string *i
 	int is_kernel;
 
 	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
+
+	pinfo = PROGRAMD->register_program(path, inherited, includes);
 
 	is_kernel = sscanf(path, "/kernel/%*s");
 
@@ -463,8 +466,6 @@ private void compile_common(string owner, string path, string *source, string *i
 			destructor = ret[2];
 		}
 	}
-
-	PROGRAMD->register_program(path, inherited, includes, constructor, destructor);
 
 	includes = nil;
 }
