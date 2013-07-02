@@ -29,6 +29,7 @@
 
 inherit SECOND_AUTO;
 
+string err;		/* cached error string for initd hooks */
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
@@ -48,6 +49,8 @@ private string *fetch_from_initd(object initd, string path)
 	string ctor;
 	string dtor;
 	string err;
+
+	err = nil;
 
 	err = catch(ctor = initd->query_constructor(path));
 
@@ -426,6 +429,46 @@ void compiling(string path)
 	}
 }
 
+private void compile_common(string owner, string path, string *source, string inherited)
+{
+	object initd;
+
+	string constructor;
+	string destructor;
+
+	int is_auto;
+	int is_kernel;
+
+	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
+
+	is_kernel = sscanf(path, "/kernel/%*s");
+
+	if (!is_kernel) {
+		is_auto = sscanf(path, USR_DIR + "/System"
+			+ INHERITABLE_SUBDIR + "auto/%*s");
+
+		if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
+			error("Failure to inherit SECOND_AUTO: " + path);
+		}
+
+		initd = find_object(USR_DIR + "/" + owner + "/initd");
+
+		if (initd) {
+			string *ret;
+
+			ret = fetch_from_initd(initd, path);
+
+			err = ret[0];
+			constructor = ret[1];
+			destructor = ret[2];
+		}
+	}
+
+	PROGRAMD->register_program(path, inherited, includes, constructor, destructor);
+
+	includes = nil;
+}
+
 void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
@@ -437,35 +480,16 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 	path = object_name(obj);
 
-	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
+	if (path != DRIVER) {
+		inherited |= ({ AUTO });
+	}
 
 	if (sscanf(path, USR_DIR + "/%*s/_code")) {
 		/* klib wiztool "code" command, ignore */
 		return;
 	}
 
-	if (path != DRIVER) {
-		inherited |= ({ AUTO });
-	}
-
-	if (find_object(PROGRAMD)) {
-		PROGRAMD->register_program(path, inherited, includes, nil, nil);
-	}
-
-	includes = nil;
-
-	is_kernel = sscanf(path, "/kernel/%*s");
-
-	if (is_kernel) {
-		return;
-	}
-
-	is_auto = sscanf(path, USR_DIR + "/System"
-		+ INHERITABLE_SUBDIR + "auto/%*s");
-
-	if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
-		error("Failure to inherit SECOND_AUTO: " + path);
-	}
+	compile_common(owner, path, source, inherited);
 
 	if (path == USR_DIR + "/" + owner + "/initd" && !sizeof(({ LIB_INITD }) & inherited)) {
 		error("Failure to inherit LIB_INITD: " + path);
@@ -476,11 +500,19 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 		obj->upgrading();
 	}
+
+	if (err) {
+		string msg;
+
+		msg = err;
+		err = nil;
+
+		error(msg);
+	}
 }
 
 void compile_lib(string owner, string path, string *source, string inherited ...)
 {
-	string err;
 	string ctor;
 	string dtor;
 	object initd;
@@ -489,43 +521,19 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 
 	ACCESS_CHECK(KERNEL());
 
-	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
-
 	if (path != AUTO) {
 		inherited |= ({ AUTO });
 	}
 
-	is_kernel = sscanf(path, "/kernel/%*s");
-
-	is_auto = sscanf(path, USR_DIR + "/System"
-		+ INHERITABLE_SUBDIR + "auto/%*s");
-
-	if (!is_kernel && !is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
-		error("Failure to inherit SECOND_AUTO: " + path);
-	}
-
-	if (!is_kernel) {
-		initd = find_object(USR_DIR + "/" + owner + "/initd");
-	}
-
-	if (initd) {
-		string *ret;
-
-		ret = fetch_from_initd(initd, path);
-
-		err = ret[0];
-		ctor = ret[1];
-		dtor = ret[2];
-	}
-
-	if (find_object(PROGRAMD)) {
-		PROGRAMD->register_program(path, inherited, includes, ctor, dtor);
-	}
-
-	includes = nil;
+	compile_common(owner, path, source, inherited);
 
 	if (err) {
-		error(err);
+		string msg;
+
+		msg = err;
+		err = nil;
+
+		error(msg);
 	}
 }
 
