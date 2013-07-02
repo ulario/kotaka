@@ -388,10 +388,18 @@ object query_program_info(int oindex)
 
 int query_program_index(string path)
 {
+	mixed index;
+
 	if (bigready) {
-		return pathdb->get_element(path);
+		index = pathdb->get_element(path);
 	} else {
-		return pathdb[path];
+		index = pathdb[path];
+	}
+
+	if (index != nil) {
+		return index;
+	} else {
+		return -1;
 	}
 }
 
