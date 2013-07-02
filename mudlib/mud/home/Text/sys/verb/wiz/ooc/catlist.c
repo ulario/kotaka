@@ -67,5 +67,9 @@ void main(object actor, string args)
 		return;
 	}
 
-	list_directory(nil, 0);
+	if (args != "") {
+		list_directory(args, 0);
+	} else {
+		list_directory(nil, 0);
+	}
 }
