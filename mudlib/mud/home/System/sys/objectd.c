@@ -434,12 +434,6 @@ private void compile_common(string owner, string path, string *source, string *i
 	object initd;
 	object pinfo;
 
-	string constructor;
-	string destructor;
-
-	int is_auto;
-	int is_kernel;
-
 	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
 
 	pinfo = PROGRAMD->register_program(path, inherited, includes);
@@ -462,8 +456,9 @@ private void compile_common(string owner, string path, string *source, string *i
 			ret = fetch_from_initd(initd, path);
 
 			err = ret[0];
-			constructor = ret[1];
-			destructor = ret[2];
+
+			pinfo->set_constructor(ret[1]);
+			pinfo->set_destructor(ret[2]);
 		}
 	}
 
