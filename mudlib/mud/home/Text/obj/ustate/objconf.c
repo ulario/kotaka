@@ -144,6 +144,9 @@ private void do_input(string input)
 		}
 
 		break;
+
+	default:
+		send_out("No such command.\n");
 	}
 }
 
