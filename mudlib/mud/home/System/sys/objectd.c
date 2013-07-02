@@ -33,6 +33,8 @@ string err;		/* cached error string for initd hooks */
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
+int is_kernel;		/* current compilation is for a kernel object */
+int is_auto;		/* current compilation is for a second auto support library */
 
 static void create()
 {
@@ -469,8 +471,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
 	string err;
-	int is_kernel;
-	int is_auto;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -494,7 +494,10 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	if (upgrading) {
 		upgrading = 0;
 
-		obj->upgrading();
+		if (!is_kernel) {
+			LOGD->post_message("compile", LOG_INFO, "Upgrading " + path);
+			obj->upgrading();
+		}
 	}
 
 	if (err) {
@@ -512,8 +515,6 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	string ctor;
 	string dtor;
 	object initd;
-	int is_kernel;
-	int is_auto;
 
 	ACCESS_CHECK(KERNEL());
 
