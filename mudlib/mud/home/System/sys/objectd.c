@@ -429,7 +429,7 @@ void compiling(string path)
 	}
 }
 
-private void compile_common(string owner, string path, string *source, string inherited ...)
+private void compile_common(string owner, string path, string *source, string *inherited)
 {
 	object initd;
 
