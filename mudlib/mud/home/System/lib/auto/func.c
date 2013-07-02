@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012  Raymond Jennings
+ * Copyright (C) 2013  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,45 +17,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/privilege.h>
 #include <kotaka/paths.h>
-#include <kotaka/log.h>
-
-#include <trace.h>
-#include <type.h>
+#include <kotaka/privilege.h>
 #include <status.h>
 
-inherit "call_guard";
-inherit "callout_guard";
-inherit "clone";
-inherit "func";
-inherit "object";
-inherit "touch";
-inherit "catalog";
-
-/**********/
-/* status */
-/**********/
-
-nomask void _F_dummy()
+static object compile_object(mixed args ...)
 {
+	object obj;
+
+	obj = find_object(args[0]);
+
+	if (!SYSTEM() && DRIVER->creator(args[0]) != "System" && !obj && free_objects() < 50) {
+		error("Too many objects");
+	}
+
+	return ::compile_object(args ...);
 }
 
-nomask mixed _F_status(mixed args ...)
+static object load_object(mixed args ...)
 {
-	ACCESS_CHECK(SYSTEM());
+	object obj;
 
-	return status(this_object(), args ...);
+	obj = find_object(args[0]);
+
+	if (obj) {
+		return obj;
+	}
+
+	if (!SYSTEM() && DRIVER->creator(args[0]) != "System" && !obj && free_objects() < 50) {
+		error("Too many objects");
+	}
+
+	return ::compile_object(args ...);
 }
 
-#if 0
-nomask void save_object(string filename)
+static object clone_object(mixed args ...)
 {
-	error("save_object is disabled");
-}
+	if (!SYSTEM() && query_owner() != "System" && free_objects() < 100) {
+		error("Too many objects");
+	}
 
-nomask void restore_object(string filename)
-{
-	error("restore_object is disabled");
+	return ::clone_object(args ...);
 }
-#endif
