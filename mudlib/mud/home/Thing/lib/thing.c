@@ -80,3 +80,8 @@ void clean()
 	clean_inventory();
 	clean_properties();
 }
+
+void self_destruct()
+{
+	destruct_object(this_object());
+}

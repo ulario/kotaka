@@ -70,5 +70,5 @@ void do_action(object actor, mapping roles, string evoke)
 	}
 
 	emit_from(actor, ({ "destroy", "destroys" }), dob);
-	destruct_object(dob);
+	dob->self_destruct();
 }
