@@ -72,6 +72,8 @@ static nomask void thing_destruct()
 	if (env) {
 		env->bulk_invalidate();
 	}
+
+	clear_archetypes();
 }
 
 void clean()

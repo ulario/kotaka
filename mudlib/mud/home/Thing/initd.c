@@ -50,3 +50,11 @@ string query_destructor(string path)
 		return "thing_destruct";
 	}
 }
+
+string query_toucher(string path)
+{
+	switch(path) {
+	case USR_DIR + "/Thing/lib/archetype":
+		return "touch_archetype";
+	}
+}
