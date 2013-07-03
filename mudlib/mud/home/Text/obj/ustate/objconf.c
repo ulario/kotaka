@@ -21,6 +21,16 @@
 #include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
+#define POP_SET		0
+#define POP_ADD		1
+#define POP_AND		2
+#define POP_DIV		3
+#define POP_MUL		4
+#define POP_OR		5
+#define POP_RADD	6
+#define POP_SUB		7
+#define POP_XOR		8
+
 inherit TEXT_LIB_USTATE;
 
 int reading;
@@ -88,7 +98,7 @@ void end()
 	destruct_object(this_object());
 }
 
-private void do_pset(string input)
+private void do_pop(string input, int op)
 {
 	string pname;
 	string pvalue;
@@ -104,7 +114,51 @@ private void do_pset(string input)
 		return;
 	}
 
-	obj->set_property(pname, PARSE_VALUE->parse(pvalue));
+	value = PARSE_VALUE->parse(pvalue);
+
+	if (op == POP_SET) {
+		obj->set_property(pname, value);
+	} else {
+		mixed ovalue;
+
+		ovalue = obj->query_property(pname);
+
+		switch(op) {
+		case POP_ADD:
+			value = ovalue + value;
+			break;
+
+		case POP_AND:
+			value = ovalue & value;
+			break;
+
+		case POP_DIV:
+			value = ovalue / value;
+			break;
+
+		case POP_MUL:
+			value = ovalue * value;
+			break;
+
+		case POP_OR:
+			value = ovalue | value;
+			break;
+
+		case POP_RADD:
+			value = value + ovalue;
+			break;
+
+		case POP_SUB:
+			value = ovalue - value;
+			break;
+
+		case POP_XOR:
+			value = ovalue ^ value;
+			break;
+		}
+
+		obj->set_property(pname, value);
+	}
 }
 
 private void do_input(string input)
@@ -126,7 +180,39 @@ private void do_input(string input)
 		return;
 
 	case "pset":
-		do_pset(args);
+		do_pop(args, POP_SET);
+		break;
+
+	case "padd":
+		do_pop(args, POP_ADD);
+		break;
+
+	case "pand":
+		do_pop(args, POP_AND);
+		break;
+
+	case "pdiv":
+		do_pop(args, POP_DIV);
+		break;
+
+	case "pmul":
+		do_pop(args, POP_MUL);
+		break;
+
+	case "por":
+		do_pop(args, POP_OR);
+		break;
+
+	case "pradd":
+		do_pop(args, POP_RADD);
+		break;
+
+	case "psub":
+		do_pop(args, POP_SUB);
+		break;
+
+	case "pxor":
+		do_pop(args, POP_XOR);
 		break;
 
 	case "pget":
