@@ -77,17 +77,23 @@ nomask void set_archetypes(object *new_archs)
 	int i;
 	int sz;
 
-	object *old_archs;
+	object *new, *old, *arch;
 	object *check;
 
-	check = new_archs - ({ archetypes, nil });
+	arch = query_archetypes();
 
-	sz = sizeof(check);
+	old = arch - new_archs;
+	new = new_archs - arch;
+
+	old -= ({ nil });
+	new -= ({ nil });
+
+	sz = sizeof(new);
 
 	for (i = 0; i < sz; i++) {
 		object arch;
 
-		arch = check[i];
+		arch = new[i];
 
 		if (!(arch <- "thing")) {
 			error("Invalid archetype");
@@ -99,8 +105,6 @@ nomask void set_archetypes(object *new_archs)
 	}
 
 	archetypes = new_archs;
-
-	clean_archetypes();
 }
 
 nomask void clear_archetypes()
