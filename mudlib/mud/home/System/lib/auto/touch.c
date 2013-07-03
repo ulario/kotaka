@@ -31,6 +31,8 @@ static void call_touch(object obj)
 {
 	if (previous_program() == OBJECTD) {
 		::call_touch(obj);
+
+		TOUCHD->queue_touch(obj);
 	} else {
 		OBJECTD->call_touch(obj);
 	}
