@@ -48,19 +48,24 @@ void reboot()
 
 private string *fetch_from_initd(object initd, string path)
 {
-	string ctor;
-	string dtor;
+	string constructor;
+	string destructor;
+	string toucher;
 	string err;
 
 	err = nil;
 
-	err = catch(ctor = initd->query_constructor(path));
+	err = catch(constructor = initd->query_constructor(path));
 
 	if (!err) {
-		err = catch(dtor = initd->query_destructor(path));
+		err = catch(destructor = initd->query_destructor(path));
 	}
 
-	return ({ err, ctor, dtor });
+	if (!err) {
+		err = catch(toucher = initd->query_toucher(path));
+	}
+
+	return ({ err, constructor, destructor, toucher });
 }
 
 private mixed query_include_file(string compiled, string from, string path)
@@ -463,6 +468,7 @@ private void compile_common(string owner, string path, string *source, string *i
 
 			pinfo->set_constructor(ret[1]);
 			pinfo->set_destructor(ret[2]);
+			pinfo->set_toucher(ret[3]);
 		}
 	}
 
