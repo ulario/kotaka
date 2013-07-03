@@ -450,7 +450,7 @@ void remove_program(int index)
 	}
 
 	if (bigready) {
-		if (path && pathdb->query_element(path) == index) {
+		if (path && pathdb->get_element(path) == index) {
 			pathdb->set_element(path, nil);
 		}
 
