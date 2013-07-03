@@ -26,7 +26,7 @@ static void create()
 {
 }
 
-void clean_archetypes()
+nomask void clean_archetypes()
 {
 	if (!archetypes) {
 		return;
@@ -39,7 +39,7 @@ void clean_archetypes()
 	}
 }
 
-int is_archetype_of(object test)
+nomask int is_archetype_of(object test)
 {
 	int index;
 	int sz;
@@ -61,7 +61,7 @@ int is_archetype_of(object test)
 	return 0;
 }
 
-object *query_archetypes()
+nomask object *query_archetypes()
 {
 	clean_archetypes();
 
@@ -72,7 +72,7 @@ object *query_archetypes()
 	}
 }
 
-void set_archetypes(object *new_archs)
+nomask void set_archetypes(object *new_archs)
 {
 	int i;
 	int sz;
@@ -103,12 +103,12 @@ void set_archetypes(object *new_archs)
 	clean_archetypes();
 }
 
-void clear_archetypes()
+nomask void clear_archetypes()
 {
 	archetypes = nil;
 }
 
-void add_archetype(object new_arch)
+nomask void add_archetype(object new_arch)
 {
 	if (!new_arch || !(new_arch <- "thing")) {
 		error("Invalid archetype");
@@ -127,7 +127,7 @@ void add_archetype(object new_arch)
 	}
 }
 
-void add_archetype_at(object new_arch, int position)
+nomask void add_archetype_at(object new_arch, int position)
 {
 	if (!new_arch || !(new_arch <- "thing")) {
 		error("Invalid archetype");

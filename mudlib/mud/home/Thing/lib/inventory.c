@@ -55,7 +55,7 @@ void remove_notify(object obj)
 {
 }
 
-void clean_inventory()
+nomask void clean_inventory()
 {
 	if (!inventory) {
 		return;
@@ -91,7 +91,7 @@ nomask void thing_del_inventory(object departing)
 	clean_inventory();
 }
 
-int is_container_of(object test)
+nomask int is_container_of(object test)
 {
 	object env;
 	object this;
@@ -117,7 +117,7 @@ int is_container_of(object test)
 	return 0;
 }
 
-int query_depth()
+nomask int query_depth()
 {
 	object obj;
 	int depth;
@@ -133,12 +133,12 @@ int query_depth()
 	return depth;
 }
 
-object query_environment()
+nomask object query_environment()
 {
 	return environment;
 }
 
-object *query_inventory()
+nomask object *query_inventory()
 {
 	clean_inventory();
 
@@ -149,7 +149,7 @@ object *query_inventory()
 	}
 }
 
-atomic void move(object new_env)
+nomask atomic void move(object new_env)
 {
 	object old_env;
 	object this;

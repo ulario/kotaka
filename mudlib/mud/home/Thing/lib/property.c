@@ -35,7 +35,7 @@ static void create()
 {
 }
 
-void clean_properties()
+nomask void clean_properties()
 {
 	if (!map_sizeof(properties)) {
 		properties = nil;
@@ -50,7 +50,7 @@ void clean_properties()
 	}
 }
 
-string *list_local_properties()
+nomask string *list_local_properties()
 {
 	if (properties) {
 		return map_indices(properties);
@@ -59,7 +59,7 @@ string *list_local_properties()
 	}
 }
 
-mapping query_local_properties()
+nomask mapping query_local_properties()
 {
 	if (properties) {
 		return SUBD->deep_copy(properties);
@@ -68,19 +68,19 @@ mapping query_local_properties()
 	}
 }
 
-void set_local_properties(mapping prop)
+nomask void set_local_properties(mapping prop)
 {
 	properties = SUBD->deep_copy(prop);
 
 	clean_properties();
 }
 
-void clear_local_properties()
+nomask void clear_local_properties()
 {
 	properties = nil;
 }
 
-void set_removed_properties(string *remove)
+nomask void set_removed_properties(string *remove)
 {
 	if (sizeof(remove & ({ nil }) )) {
 		error("Invalid removed property");
@@ -93,7 +93,7 @@ void set_removed_properties(string *remove)
 	}
 }
 
-string *query_removed_properties()
+nomask string *query_removed_properties()
 {
 	if (removed_properties) {
 		return removed_properties[..];
@@ -102,12 +102,12 @@ string *query_removed_properties()
 	}
 }
 
-void clear_removed_properties()
+nomask void clear_removed_properties()
 {
 	removed_properties = nil;
 }
 
-void set_local_property(string name, mixed value, varargs int nosignal)
+nomask void set_local_property(string name, mixed value, varargs int nosignal)
 {
 	if (!properties) {
 		properties = ([ ]);
@@ -170,7 +170,7 @@ void set_property(string name, mixed value)
 	set_local_property(name, value);
 }
 
-mixed query_local_property(string name)
+nomask mixed query_local_property(string name)
 {
 	if (properties) {
 		return SUBD->deep_copy(properties[name]);
