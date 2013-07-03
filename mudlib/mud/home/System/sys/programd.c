@@ -310,11 +310,30 @@ object register_program(string path, string *inherits,
 		}
 
 		if (subpinfo) {
-			ctors |= subpinfo->query_inherited_constructors();
+			mixed inh;
+
+			inh = subpinfo->query_inherited_constructors();
+
+			if (inh) {
+				ctors |= inh;
+			}
+
 			ctors |= ({ subpinfo->query_constructor() });
-			dtors |= subpinfo->query_inherited_destructors();
+
+			inh = subpinfo->query_inherited_destructors();
+
+			if (inh) {
+				dtors |= inh;
+			}
+
 			dtors |= ({ subpinfo->query_destructor() });
-			touchers |= subpinfo->query_inherited_touchers();
+
+			inh = subpinfo->query_inherited_touchers();
+
+			if (inh) {
+				touchers |= inh;
+			}
+
 			touchers |= ({ subpinfo->query_toucher() });
 		}
 	}
