@@ -209,14 +209,14 @@ private int is_protected(string path)
 
 void enable()
 {
-	ACCESS_CHECK(SYSTEM() || KADMIN());
+	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
 
 	DRIVER->set_object_manager(this_object());
 }
 
 void disable()
 {
-	ACCESS_CHECK(SYSTEM() || KADMIN());
+	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
 
 	DRIVER->set_object_manager(nil);
 }
