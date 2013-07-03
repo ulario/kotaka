@@ -450,7 +450,9 @@ private void compile_common(string owner, string path, string *source, string *i
 			error("Failure to inherit SECOND_AUTO: " + path);
 		}
 
-		initd = find_object(USR_DIR + "/" + owner + "/initd");
+		if (pinfo) {
+			initd = find_object(USR_DIR + "/" + owner + "/initd");
+		}
 
 		if (initd) {
 			string *ret;
