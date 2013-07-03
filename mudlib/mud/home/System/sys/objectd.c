@@ -638,6 +638,8 @@ mixed include_file(string compiled, string from, string path)
 int touch(object obj, string function)
 {
 	ACCESS_CHECK(KERNEL());
+
+	obj->_F_touch(function);
 }
 
 int forbid_call(string path)
