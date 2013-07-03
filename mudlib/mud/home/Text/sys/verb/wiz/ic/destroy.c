@@ -66,6 +66,7 @@ void do_action(object actor, mapping roles, string evoke)
 
 	if (dob->query_first_instance()) {
 		send_out(TEXT_SUBD->generate_brief_definite(dob) + " has outstanding instances.\n");
+		return;
 	}
 
 	if (sizeof(dob->query_inventory())) {
