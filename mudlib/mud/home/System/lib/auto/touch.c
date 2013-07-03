@@ -22,20 +22,20 @@
 #include <kotaka/paths.h>
 #include <kotaka/log.h>
 
+inherit "call_guard";
+
 mapping touches;
 
 static void call_touch(object obj)
 {
 	if (previous_program() == OBJECTD) {
 		::call_touch(obj);
+	} else {
+		OBJECTD->call_touch(obj);
 	}
-
-	OBJECTD->call_touch(obj);
 }
 
 nomask void _F_touch(string function)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	LOGD->post_message("touch", LOG_INFO, "Object " + object_name(this_object()) + " has been touched!");
 }
