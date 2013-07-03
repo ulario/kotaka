@@ -165,6 +165,11 @@ void configure_properties()
 	PROPERTYD->add_property("event:paint", T_STRING, PROP_INHERIT);
 	PROPERTYD->add_property("paint_color", T_INT, PROP_INHERIT);
 	PROPERTYD->add_property("paint_character", T_STRING, PROP_INHERIT);
+
+	/* inheritance */
+	PROPERTYD->add_property("first_instance", T_OBJECT, PROP_MAGIC, ({ "query_first_instance", nil }) );
+	PROPERTYD->add_property("prev_instances", T_MAPPING, PROP_MAGIC, ({ "query_next_instances", nil }) );
+	PROPERTYD->add_property("next_instances", T_MAPPING, PROP_MAGIC, ({ "query_prev_instances", nil }) );
 }
 
 static void create()
