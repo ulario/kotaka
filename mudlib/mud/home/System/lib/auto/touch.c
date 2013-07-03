@@ -28,17 +28,3 @@ static void call_touch(object obj)
 {
 	OBJECTD->call_touch(obj);
 }
-
-static int touch(string function)
-{
-	if (sscanf(object_name(this_object()), USR_DIR + "/System/%*s")) {
-		return 1;
-	}
-}
-
-nomask int _F_call_touch(string function)
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	return touch(function);
-}
