@@ -67,7 +67,7 @@ static void check()
 		}
 	}
 
-	call_out("check", SUBD->rnd() * 0.5 + (10.0 / (float)count));
+	call_out("check", 10.0 / (float)count + SUBD->rnd() * 0.05);
 
 	cursor = KERNELD->next_link(cursor);
 
