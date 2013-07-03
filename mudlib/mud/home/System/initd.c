@@ -74,12 +74,12 @@ private void initialize()
 
 	boot_subsystem("String");
 
-	LOGD->post_message("boot", LOG_INFO, "Loading object manager");
-	load_object(OBJECTD);
-
 	LOGD->post_message("boot", LOG_INFO, "Loading program manager");
 	load_object(PROGRAM_INFO);
 	load_object(PROGRAMD);
+
+	LOGD->post_message("boot", LOG_INFO, "Loading object manager");
+	load_object(OBJECTD);
 
 	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
 	OBJECTD->discover_objects();
