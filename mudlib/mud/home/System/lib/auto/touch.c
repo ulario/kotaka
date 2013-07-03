@@ -26,19 +26,6 @@ mapping touches;
 
 static void call_touch(object obj)
 {
-	string cpath;
-	string opath;
-
-	if (previous_program() == OBJECTD) {
-		::call_touch(obj);
-		return;
-	}
-
-	cpath = object_name(this_object());
-	opath = object_name(obj);
-
-	ACCESS_CHECK(DRIVER->creator(cpath) == DRIVER->creator(opath));
-
 	OBJECTD->call_touch(obj);
 }
 
