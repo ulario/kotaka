@@ -28,3 +28,8 @@ static void call_touch(object obj)
 {
 	OBJECTD->call_touch(obj);
 }
+
+nomask void _F_touch(string function)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+}
