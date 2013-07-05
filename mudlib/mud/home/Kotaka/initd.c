@@ -80,18 +80,3 @@ int forbid_inherit(string from, string path, int priv)
 
 	return 0;
 }
-
-string query_constructor(string path)
-{
-}
-
-string query_destructor(string path)
-{
-}
-
-void reboot()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	STRINGD->reboot();
-}
