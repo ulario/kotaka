@@ -29,3 +29,9 @@ static void create()
 
 	load_dir("sys");
 }
+
+void reboot()
+{
+	ACCOUNTD->force_restore();
+	BAND->force_restore();
+}
