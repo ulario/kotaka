@@ -119,9 +119,16 @@ string *query_site_bans()
 
 void force_save()
 {
-	ACCESS_CHECK(GAME() || KADMIN() || INTERFACE());
+	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN());
 
 	save();
+}
+
+void force_restore()
+{
+	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN());
+
+	restore();
 }
 
 private void save()
