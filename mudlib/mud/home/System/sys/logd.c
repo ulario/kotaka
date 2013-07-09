@@ -378,6 +378,8 @@ void post_message(string facility, int priority, string message)
 	CHECKARG(message, 3, "post_message");
 	CHECKARG(message != "", 3, "post_message");
 
+	catch {
+
 	timestamp = timestamp();
 	hits = ([ ]);
 
@@ -436,5 +438,8 @@ void post_message(string facility, int priority, string message)
 		}
 	} else {
 		DRIVER->message(creator + ": " + facility + ": " + message + "\n");
+	}
+	} : {
+		DRIVER->message("Error logging: " + creator + ": " + facility + ": " + message + "\n");
 	}
 }
