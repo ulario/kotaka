@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <status.h>
-
+#include <type.h>
 #include <kernel/access.h>
 
 #include <kotaka/paths.h>
@@ -136,6 +136,7 @@ private void write_logfile(string file, string message)
 {
 	int i;
 	int sz;
+	string line;
 	string *lines;
 	object deque;
 
@@ -148,11 +149,26 @@ private void write_logfile(string file, string message)
 	}
 
 	if (!filebufs[file]) {
-		filebufs[file] = "";
+		filebufs[file] = new_object("~/lwo/logbuf");
 	}
 
+	line = timestamp + " " + lines[i] + "\n";
+
 	for (i = 0; i < sz; i++) {
-		filebufs[file] += timestamp + " " + lines[i] + "\n";
+		switch(typeof(filebufs[file])) {
+		case T_STRING:
+			{
+				string buf;
+
+				buf = filebufs[file];
+				filebufs[file] = new_object("~/lwo/logbuf");
+				filebufs[file]->push(buf);
+			}
+
+		case T_OBJECT:
+			filebufs[file]->push(line);
+			break;
+		}
 	}
 
 	schedule();
@@ -174,11 +190,29 @@ void flush()
 
 		for (i = sizeof(files) - 1; i >= 0; i--) {
 			catch {
-				if (!write_file(files[i], filebufs[files[i]])) {
-					DRIVER->message("LogD: error writing to " + files[i] + "\n");
+				string text;
+				mixed buf;
+
+				buf = filebufs[files[i]];
+
+				switch(typeof(buf)) {
+				case T_STRING:
+					text = buf;
+					filebufs[files[i]] = nil;
+					break;
+				
+				case T_OBJECT:
+					text = buf->pop();
+
+					if (!text) {
+						filebufs[files[i]] = nil;
+						continue;
+					}
 				}
 
-				filebufs[files[i]] = nil;
+				if (!write_file(files[i], text)) {
+					DRIVER->message("LogD: error writing to " + files[i] + "\n");
+				}
 			}
 		}
 	}
