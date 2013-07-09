@@ -8,6 +8,7 @@
 #define GAME()		(sscanf(previous_program(), USR_DIR + "/Game/%*s"))
 #define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
 #define KOTAKA()	(sscanf(previous_program(), USR_DIR + "/Kotaka/%*s"))
+#define TEST()		(sscanf(previous_program(), USR_DIR + "/Test/%*s"))
 #define TEXT()		(sscanf(previous_program(), USR_DIR + "/Text/%*s"))
 #define THING()		(sscanf(previous_program(), USR_DIR + "/Thing/%*s"))
 
