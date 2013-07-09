@@ -379,7 +379,6 @@ void post_message(string facility, int priority, string message)
 	CHECKARG(message != "", 3, "post_message");
 
 	catch {
-
 	timestamp = timestamp();
 	hits = ([ ]);
 
