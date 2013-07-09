@@ -18,6 +18,6 @@
 #define LOCAL()		(calling_object() == this_object())
 
 #define INTERFACE()	(TEXT() || SYSTEM())
-#define PRIVILEGED()	(KOTAKA() || GAME() || SYSTEM() || KADMIN())
+#define PRIVILEGED()	(KOTAKA() || GAME() || SYSTEM() || KADMIN() || TEST())
 #define ACCESS_CHECK(x)	do { if (!(x)) error("Access denied"); } while (0)
 #define PERMISSION_CHECK(x)	do { if (!(x)) error("Permission denied"); } while (0)
