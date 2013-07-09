@@ -73,6 +73,6 @@ static void check()
 
 	if (!cursor) {
 		DRIVER->message("Fatal error: ObjRegD corruption for " + owner);
-		shutdown();
+		KERNELD->shutdown();
 	}
 }
