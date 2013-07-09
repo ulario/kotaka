@@ -379,65 +379,65 @@ void post_message(string facility, int priority, string message)
 	CHECKARG(message != "", 3, "post_message");
 
 	catch {
-	timestamp = timestamp();
-	hits = ([ ]);
+		timestamp = timestamp();
+		hits = ([ ]);
 
-	if (facilities[facility]) {
-		mapping submap;
-		string *targets;
-		int *masks;
-		int index;
-		int sz;
+		if (facilities[facility]) {
+			mapping submap;
+			string *targets;
+			int *masks;
+			int index;
+			int sz;
 
-		submap = facilities[facility];
-		targets = map_indices(submap);
-		masks = map_values(submap);
+			submap = facilities[facility];
+			targets = map_indices(submap);
+			masks = map_values(submap);
 
-		sz = map_sizeof(submap);
+			sz = map_sizeof(submap);
 
-		for (index = 0; index < sz; index++) {
-			if (masks[index] & (1 << priority)) {
-				hits[targets[index]] = 1;
+			for (index = 0; index < sz; index++) {
+				if (masks[index] & (1 << priority)) {
+					hits[targets[index]] = 1;
+				}
 			}
 		}
-	}
 
-	if (!hits["null"] && facilities["*"]) {
-		mapping submap;
-		string *targets;
-		int *masks;
-		int index;
-		int sz;
+		if (!hits["null"] && facilities["*"]) {
+			mapping submap;
+			string *targets;
+			int *masks;
+			int index;
+			int sz;
 
-		submap = facilities["*"];
-		targets = map_indices(submap);
-		masks = map_values(submap);
+			submap = facilities["*"];
+			targets = map_indices(submap);
+			masks = map_values(submap);
 
-		sz = map_sizeof(submap);
+			sz = map_sizeof(submap);
 
-		for (index = 0; index < sz; index++) {
-			if (masks[index] & (1 << priority)) {
-				hits[targets[index]] = 1;
+			for (index = 0; index < sz; index++) {
+				if (masks[index] & (1 << priority)) {
+					hits[targets[index]] = 1;
+				}
 			}
 		}
-	}
 
-	creator = DRIVER->creator(object_name(previous_object()));
+		creator = DRIVER->creator(object_name(previous_object()));
 
-	if (map_sizeof(hits)) {
-		string *targets;
-		int sz;
-		int index;
+		if (map_sizeof(hits)) {
+			string *targets;
+			int sz;
+			int index;
 
-		targets = map_indices(hits);
-		sz = sizeof(targets);
+			targets = map_indices(hits);
+			sz = sizeof(targets);
 
-		for (index = 0; index < sz; index++) {
-			send_to_target(targets[index], facility, message);
+			for (index = 0; index < sz; index++) {
+				send_to_target(targets[index], facility, message);
+			}
+		} else {
+			DRIVER->message(creator + ": " + facility + ": " + message + "\n");
 		}
-	} else {
-		DRIVER->message(creator + ": " + facility + ": " + message + "\n");
-	}
 	} : {
 		DRIVER->message("Error logging: " + creator + ": " + facility + ": " + message + "\n");
 	}
