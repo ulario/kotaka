@@ -56,5 +56,9 @@ string query_toucher(string path)
 	switch(path) {
 	case USR_DIR + "/Thing/lib/archetype":
 		return "touch_archetype";
+	case USR_DIR + "/Thing/lib/inventory":
+		return "touch_inventory";
+	case USR_DIR + "/Thing/lib/property":
+		return "touch_property";
 	}
 }

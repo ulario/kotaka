@@ -33,20 +33,18 @@ mixed query_property(string name);
 
 static void create()
 {
+	properties = ([ ]);
+	removed_properties = ({ });
 }
 
 nomask void clean_properties()
 {
-	if (!map_sizeof(properties)) {
-		properties = nil;
+	if (!properties) {
+		properties = ([ ]);
 	}
 
 	if (!removed_properties) {
-		return;
-	}
-
-	if (!sizeof(removed_properties)) {
-		removed_properties = nil;
+		removed_properties = ({ });
 	}
 }
 
@@ -336,5 +334,16 @@ mixed query_property(string name)
 		}
 	default:
 		error("Invalid property code of " + info[1]);
+	}
+}
+
+nomask void touch_properties(varargs string function)
+{
+	if (!properties) {
+		properties = ([ ]);
+	}
+
+	if (!removed_properties) {
+		removed_properties = ({ });
 	}
 }

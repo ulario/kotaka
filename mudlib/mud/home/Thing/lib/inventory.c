@@ -26,6 +26,7 @@ private object *inventory;
 
 static void create()
 {
+	inventory = ({ });
 }
 
 int forbid_move(object new_env)
@@ -58,14 +59,11 @@ void remove_notify(object obj)
 nomask void clean_inventory()
 {
 	if (!inventory) {
+		inventory = ({ });
 		return;
 	}
 
 	inventory -= ({ nil });
-
-	if (!sizeof(inventory)) {
-		inventory = nil;
-	}
 }
 
 nomask void thing_add_inventory(object arriving)
@@ -202,5 +200,12 @@ nomask atomic void move(object new_env)
 
 	if (new_env) {
 		new_env->insert_notify(this);
+	}
+}
+
+nomask void touch_inventory(varargs string function)
+{
+	if (!inventory) {
+		inventory = ({ });
 	}
 }

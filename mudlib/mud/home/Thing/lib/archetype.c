@@ -30,19 +30,19 @@ private mapping next_instance;
 
 static void create()
 {
+	archetypes = ({ });
+	prev_instance = ([ ]);
+	next_instance = ([ ]);
 }
 
 nomask void clean_archetypes()
 {
 	if (!archetypes) {
+		archetypes = ({ });
 		return;
 	}
 
 	archetypes -= ({ nil });
-
-	if (!sizeof(archetypes)) {
-		archetypes = nil;
-	}
 }
 
 nomask int is_archetype_of(object test)
@@ -317,10 +317,6 @@ nomask void thing_set_prev_instance(object archetype, object instance)
 		prev_instance[archetype] = instance;
 	} else {
 		prev_instance[archetype] = nil;
-
-		if (!map_sizeof(prev_instance)) {
-			prev_instance = nil;
-		}
 	}
 }
 
@@ -336,10 +332,6 @@ nomask void thing_set_next_instance(object archetype, object instance)
 		next_instance[archetype] = instance;
 	} else {
 		next_instance[archetype] = nil;
-
-		if (!map_sizeof(next_instance)) {
-			next_instance = nil;
-		}
 	}
 }
 
@@ -350,6 +342,14 @@ atomic nomask void touch_archetype(varargs string function)
 	object this;
 
 	missing = query_archetypes();
+
+	if (!prev_instance) {
+		prev_instance = ([ ]);
+	}
+
+	if (!next_instance) {
+		next_instance = ([ ]);
+	}
 
 	missing -= map_indices(query_prev_instances());
 	sz = sizeof(missing);
