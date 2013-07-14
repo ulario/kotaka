@@ -92,13 +92,6 @@ void go()
 	stopped = 0;
 }
 
-void end()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	remove_call_out(callout);
-}
-
 static void frame()
 {
 	string buffer;
@@ -143,7 +136,11 @@ void end()
 
 	query_user()->set_mode(MODE_ECHO);
 
-	destruct_object(this_object());
+	remove_call_out(callout);
+
+	if (!sscanf(object_name(this_object()), "%*s#-1")) {
+		destruct_object(this_object());
+	}
 }
 
 void receive_in(string input)
