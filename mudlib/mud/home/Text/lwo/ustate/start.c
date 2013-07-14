@@ -119,15 +119,15 @@ void receive_in(string input)
 	case STATE_GETCHOICE:
 		switch(input) {
 		case "1": /* login */
-			push_state(clone_object("login"));
+			push_state(new_object("login"));
 			break;
 
 		case "2": /* register */
-			push_state(clone_object("register"));
+			push_state(new_object("register"));
 			break;
 
 		case "3": /* guest */
-			swap_state(clone_object("shell"));
+			swap_state(new_object("shell"));
 			return;
 
 		case "4":

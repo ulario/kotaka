@@ -129,7 +129,7 @@ int login(string str)
 
 	set_mode(MODE_ECHO);
 
-	set_root_state(clone_object("~/obj/ustate/start"));
+	set_root_state(new_object("~/lwo/ustate/start"));
 
 	TEXT_USERD->add_guest(this_object());
 

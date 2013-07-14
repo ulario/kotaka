@@ -247,7 +247,7 @@ static void terminate_account_state()
 	parent = query_parent();
 
 	if (parent <- "~/obj/ustate/start") {
-		parent->swap_state(clone_object("shell"));
+		parent->swap_state(new_object("shell"));
 	} else {
 		pop_state();
 	}
