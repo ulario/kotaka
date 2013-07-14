@@ -31,6 +31,12 @@ static void create()
 	load_dir("sys");
 }
 
+void prepare_reboot()
+{
+	ACCOUNTD->force_save();
+	BAND->force_save();
+}
+
 void reboot()
 {
 	ACCOUNTD->force_restore();
