@@ -24,5 +24,5 @@ inherit LIB_RAWVERB;
 
 void main(object actor, string args)
 {
-	query_ustate()->push_state(clone_object("~/obj/ustate/login"));
+	query_ustate()->push_state(new_object("~/lwo/ustate/login"));
 }
