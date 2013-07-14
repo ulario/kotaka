@@ -62,11 +62,7 @@ void begin()
 
 	framerate = 30;
 
-	reset_frame_info();
-
 	ACCESS_CHECK(previous_object() == query_user());
-
-	callout = call_out("frame", 0);
 }
 
 void stop()
