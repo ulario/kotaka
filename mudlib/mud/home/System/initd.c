@@ -216,6 +216,7 @@ void reboot()
 	remove_call_out(dumped);
 	dumped = 0;
 
+	ACCESSD->restore();
 	OBJECTD->reboot();
 	WATCHDOGD->reboot();
 	SYSTEM_USERD->reboot();
