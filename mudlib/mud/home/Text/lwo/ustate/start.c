@@ -37,6 +37,7 @@ int state;
 int stopped;
 int reading;
 int dead;
+int callout;
 
 static void create(int clone)
 {
@@ -68,7 +69,7 @@ static void timeout()
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
-	call_out("timeout", 120);
+	callout = call_out("timeout", 120);
 	state = STATE_GETCHOICE;
 }
 
@@ -95,6 +96,7 @@ void pre_end()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	dead = 1;
+	remove_call_out(callout);
 }
 
 private void do_help()
