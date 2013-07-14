@@ -119,14 +119,14 @@ string *query_site_bans()
 
 void force_save()
 {
-	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN());
+	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN() || ACCOUNT());
 
 	save();
 }
 
 void force_restore()
 {
-	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN());
+	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN() || ACCOUNT());
 
 	restore();
 }

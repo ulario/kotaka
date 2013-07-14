@@ -118,14 +118,14 @@ int authenticate(string name, string password)
 
 void force_save()
 {
-	ACCESS_CHECK(INTERFACE() || KADMIN());
+	ACCESS_CHECK(INTERFACE() || KADMIN() || ACCOUNT());
 
 	save();
 }
 
 void force_restore()
 {
-	ACCESS_CHECK(INTERFACE() || KADMIN());
+	ACCESS_CHECK(INTERFACE() || KADMIN() || ACCOUNT());
 
 	restore();
 }
