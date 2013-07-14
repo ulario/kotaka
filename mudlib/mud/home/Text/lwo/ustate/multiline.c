@@ -36,11 +36,6 @@ private void prompt()
 	send_out(": ");
 }
 
-static void end()
-{
-	destruct_object(this_object());
-}
-
 static void receive_in(string str)
 {
 	if (str == ".") {

@@ -97,13 +97,6 @@ void pre_end()
 	dead = 1;
 }
 
-void end()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	destruct_object(this_object());
-}
-
 private void do_help()
 {
 	send_out(read_file("~/data/doc/guest_help"));

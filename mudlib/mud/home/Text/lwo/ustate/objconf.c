@@ -91,13 +91,6 @@ void pre_end()
 	dead = 1;
 }
 
-void end()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	destruct_object(this_object());
-}
-
 private void do_pop(string input, int op)
 {
 	string pname;

@@ -104,13 +104,6 @@ void pre_end()
 	send_out("Come back soon.\n");
 }
 
-void end()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	destruct_object(this_object());
-}
-
 private int is_wiztool_command(string command)
 {
 	switch(command) {
