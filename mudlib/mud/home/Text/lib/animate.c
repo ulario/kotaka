@@ -47,15 +47,21 @@ static void destruct()
 
 static void do_frame(float diff);
 
-void begin()
+private void reset_frame_info()
 {
 	oldtime = millitime();
-	framerate = 30;
-
-	query_user()->set_mode(MODE_NOECHO);
 
 	tsec = oldtime[0];
 	tframe = (int)floor(oldtime[1] * (float)framerate);
+}
+
+void begin()
+{
+	query_user()->set_mode(MODE_NOECHO);
+
+	framerate = 30;
+
+	reset_frame_info();
 
 	ACCESS_CHECK(previous_object() == query_user());
 
