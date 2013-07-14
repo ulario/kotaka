@@ -113,15 +113,14 @@ static void frame()
 	if (frametime[0] < time[0] || (frametime[0] == time[0] && frametime[1] < time[1])) {
 		tsec = time[0];
 		tframe = (int)floor(time[1] * (float)framerate);
-		call_out("frame", 0);
 		frametime = nil;
 		diff = 0.0;
 	} else {
 		diff = frametime[1] - time[1];
 		diff += (float)(frametime[0] - time[0]);
-
-		call_out("frame", diff);
 	}
+
+	callout = call_out("frame", diff);
 
 	diff = time[1] - oldtime[1];
 	diff += (float)(time[0] - oldtime[0]);
