@@ -34,6 +34,7 @@ mixed *oldtime;
 int tsec;
 int tframe;
 int framerate;
+int callout;
 
 static void create()
 {
@@ -65,7 +66,7 @@ void begin()
 
 	ACCESS_CHECK(previous_object() == query_user());
 
-	call_out("frame", 0);
+	callout = call_out("frame", 0);
 }
 
 void stop()
@@ -73,6 +74,7 @@ void stop()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	query_user()->set_mode(MODE_ECHO);
+	remove_call_out(callout);
 
 	stopped = 1;
 }
@@ -83,7 +85,18 @@ void go()
 
 	query_user()->set_mode(MODE_NOECHO);
 
+	callout = call_out("frame", 0);
+
+	reset_frame_info();
+
 	stopped = 0;
+}
+
+void end()
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
+	remove_call_out(callout);
 }
 
 static void frame()
