@@ -550,7 +550,7 @@ nomask mixed ustate_remove_call_out(object ustate, int handle)
 	callout = find_call_out(handle);
 
 	if (!callout) {
-		return remove_call_out(-1);
+		error("No such callout");
 	}
 
 	ACCESS_CHECK(callout[CO_FIRSTXARG] == ustate);
