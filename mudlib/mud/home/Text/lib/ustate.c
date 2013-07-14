@@ -246,7 +246,7 @@ static void terminate_account_state()
 
 	parent = query_parent();
 
-	if (parent <- "~/obj/ustate/start") {
+	if (parent <- "~/lwo/ustate/start") {
 		parent->swap_state(new_object("shell"));
 	} else {
 		pop_state();
