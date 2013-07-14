@@ -505,3 +505,55 @@ void quit()
 {
 	disconnect();
 }
+
+nomask int ustate_call_out(object ustate, string function, mixed delay, mixed *args)
+{
+	ACCESS_CHECK(TEXT());
+
+	return call_out("user_callout", delay, ustate, function, args);
+}
+
+nomask void user_callout(object ustate, string function, mixed *args)
+{
+	ACCESS_CHECK(KERNEL());
+
+	if (ustate) {
+		ustate->ustate_callout(function, args);
+	}
+}
+
+private mixed *find_call_out(int handle)
+{
+	mixed **callouts;
+	int i, sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+	sz = sizeof(callouts);
+
+	for (i = 0; i < sz; i++) {
+		mixed *callout;
+
+		callout = callouts[i];
+
+		if (callout[CO_HANDLE] == handle) {
+			return callout;
+		}
+	}
+}
+
+nomask mixed ustate_remove_call_out(object ustate, int handle)
+{
+	mixed *callout;
+
+	ACCESS_CHECK(TEXT());
+
+	callout = find_call_out(handle);
+
+	if (!callout) {
+		return remove_call_out(-1);
+	}
+
+	ACCESS_CHECK(callout[CO_FIRSTXARG] == ustate);
+
+	return remove_call_out(handle);
+}
