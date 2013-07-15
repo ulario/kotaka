@@ -20,6 +20,7 @@
 #include <account/paths.h>
 #include <kotaka/log.h>
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
 
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
@@ -33,12 +34,16 @@ static void create()
 
 void prepare_reboot()
 {
+	ACCESS_CHECK(previous_program() == INITD);
+
 	ACCOUNTD->force_save();
 	BAND->force_save();
 }
 
 void reboot()
 {
+	ACCESS_CHECK(previous_program() == INITD);
+
 	ACCOUNTD->force_restore();
 	BAND->force_restore();
 }
