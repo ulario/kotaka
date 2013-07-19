@@ -23,7 +23,7 @@
 #include <kotaka/log.h>
 
 #include <type.h>
-#include <limits.h>
+#include <status.h>
 
 string *chars;
 
@@ -43,7 +43,7 @@ string chars(int code, int count)
 		error("Invalid character code");
 	}
 
-	if (count > MAX_STRING_SIZE) {
+	if (count > status(ST_STRSIZE)) {
 		error("String too long (" + count + ")");
 	}
 

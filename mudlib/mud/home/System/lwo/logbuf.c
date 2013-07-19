@@ -19,7 +19,7 @@
  */
 #include <kotaka/paths.h>
 #include <kotaka/bigstruct.h>
-#include <limits.h>
+#include <status.h>
 
 inherit SECOND_AUTO;
 
@@ -37,7 +37,7 @@ void push(string text)
 		return;
 	}
 
-	if (strlen(tail) + strlen(text) > MAX_STRING_SIZE) {
+	if (strlen(tail) + strlen(text) > status(ST_STRSIZE)) {
 		if (!deque) {
 			deque = new_object(BIGSTRUCT_DEQUE_LWO);
 		}
