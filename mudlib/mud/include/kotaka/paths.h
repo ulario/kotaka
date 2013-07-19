@@ -19,7 +19,6 @@
 #define PROXYD		(USR_DIR + "/System/sys/proxyd")
 #define SECRETD		(USR_DIR + "/System/sys/secretd")
 #define STATUSD		(USR_DIR + "/System/sys/statusd")
-#define STRINGD		(USR_DIR + "/System/sys/stringd")
 #define SYSTEM_USERD	(USR_DIR + "/System/sys/userd")
 #define TESTD		(USR_DIR + "/System/sys/testd")
 #define TLSD		(USR_DIR + "/System/sys/tlsd")
@@ -69,3 +68,9 @@
 /********/
 
 #define HELPD			(USR_DIR + "/Help/sys/helpd")
+
+/**********/
+/* String */
+/**********/
+
+#define STRINGD		(USR_DIR + "/String/sys/stringd")
