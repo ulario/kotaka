@@ -34,6 +34,7 @@ void main(object actor, string args)
 	string pname;
 	string operatur;
 	mixed pvalue;
+	mixed opvalue;
 	mixed *pinfo;
 
 	user = query_user();
@@ -74,31 +75,32 @@ void main(object actor, string args)
 	}
 
 	pvalue = PARSE_VALUE->parse(pvalue);
+	opvalue = obj->query_property(pname);
 
 	switch(operatur) {
 	case "add":
-		obj->set_property(pname, obj->query_property(pname) + pvalue);
+		obj->set_property(pname, opvalue + pvalue);
 		break;
 	case "and":
-		obj->set_property(pname, obj->query_property(pname) & pvalue);
+		obj->set_property(pname, opvalue & pvalue);
 		break;
 	case "div":
-		obj->set_property(pname, obj->query_property(pname) / pvalue);
+		obj->set_property(pname, opvalue / pvalue);
 		break;
 	case "mul":
-		obj->set_property(pname, obj->query_property(pname) * pvalue);
+		obj->set_property(pname, opvalue * pvalue);
 		break;
 	case "or":
-		obj->set_property(pname, obj->query_property(pname) | pvalue);
+		obj->set_property(pname, opvalue | pvalue);
 		break;
 	case "radd":
-		obj->set_property(pname, pvalue + obj->query_property(pname));
+		obj->set_property(pname, pvalue + opvalue);
 		break;
 	case "sub":
-		obj->set_property(pname, obj->query_property(pname) - pvalue);
+		obj->set_property(pname, opvalue - pvalue);
 		break;
 	case "xor":
-		obj->set_property(pname, obj->query_property(pname) ^ pvalue);
+		obj->set_property(pname, opvalue ^ pvalue);
 		break;
 	}
 
