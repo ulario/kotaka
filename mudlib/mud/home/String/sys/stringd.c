@@ -25,8 +25,6 @@
 #include <type.h>
 #include <limits.h>
 
-inherit SECOND_AUTO;
-
 string *chars;
 
 string hex(int i);
