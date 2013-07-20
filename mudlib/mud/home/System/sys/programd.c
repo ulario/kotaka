@@ -519,3 +519,23 @@ void upgrading()
 		pathdb->set_type(T_STRING);
 	}
 }
+
+static void destruct()
+{
+	if (find_object(OBJECTD)) {
+		error("Cannot destruct program manager if object manager still exists");
+	}
+
+	if (progdb) {
+		destruct_object(progdb);
+	}
+	if (inhdb) {
+		destruct_object(inhdb);
+	}
+	if (incdb) {
+		destruct_object(incdb);
+	}
+	if (pathdb) {
+		destruct_object(pathdb);
+	}
+}

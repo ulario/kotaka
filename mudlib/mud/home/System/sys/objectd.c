@@ -559,12 +559,19 @@ void clone(string owner, object obj)
 	}
 }
 
-void destruct(string owner, object obj)
+void destruct(varargs mixed owner, mixed obj)
 {
 	int is_clone;
 	string name;
 	string path;
 	object pinfo;
+
+	if (!sscanf(previous_program(), "/kernel/%*s")) {
+		ACCESS_CHECK(SYSTEM());
+		/* regular destruct call */
+
+		return;
+	}
 
 	ACCESS_CHECK(KERNEL());
 
