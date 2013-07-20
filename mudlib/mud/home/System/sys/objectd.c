@@ -605,7 +605,7 @@ void destruct_lib(string owner, string path)
 	ACCESS_CHECK(KERNEL());
 
 	if (find_object(PROGRAMD)) {
-		pinfo = PROGRAMD->query_program_info(status(path)[O_INDEX]);
+		pinfo = PROGRAMD->query_program_info(status(path, O_INDEX));
 	}
 
 	if (!pinfo) {

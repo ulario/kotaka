@@ -288,7 +288,7 @@ object register_program(string path, string *inherits,
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	oindex = status(path)[O_INDEX];
+	oindex = status(path, O_INDEX);
 
 	sz = sizeof(inherits);
 	oindices = allocate(sz);
