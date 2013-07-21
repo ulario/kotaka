@@ -35,6 +35,8 @@ nomask void _F_sys_create(int clone)
 	string *ctors;
 	string oname;
 
+	ACCESS_CHECK(KERNEL());
+
 	oname = object_name(this_object());
 	base = oname;
 	sscanf(base, "%s#%*d", base);
