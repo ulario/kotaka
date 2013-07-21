@@ -20,6 +20,7 @@
 #include <kernel/kernel.h>
 #include <kotaka/paths.h>
 #include <kernel/rsrc.h>
+#include <kotaka/log.h>
 
 string owner;
 object cursor;
@@ -72,7 +73,7 @@ static void check()
 	cursor = KERNELD->next_link(cursor);
 
 	if (!cursor) {
-		DRIVER->message("Fatal error: ObjRegD corruption for " + owner);
+		LOGD->post_message("test", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
 		KERNELD->shutdown();
 	}
 }
