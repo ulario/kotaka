@@ -34,16 +34,10 @@ int keepalive;
 
 string username;
 
-mapping aliases;
-string *disabled;
-
 static void create(int clone)
 {
 	if (clone) {
 		::create();
-
-		aliases = ([ ]);
-		disabled = ({ });
 	}
 }
 
@@ -167,53 +161,6 @@ int receive_message(string str)
 	set_mode(ret);
 
 	return ret;
-}
-
-void set_aliases(mapping new_aliases)
-{
-	ACCESS_CHECK(previous_object() == query_root());
-
-	aliases = new_aliases;
-}
-
-void set_disabled_aliases(string *new_disabled)
-{
-	ACCESS_CHECK(previous_object() == query_root());
-
-	disabled = new_disabled;
-}
-
-mapping query_aliases()
-{
-	return aliases[..];
-}
-
-string *query_disabled_aliases()
-{
-	return disabled[..];
-}
-
-void add_alias(string prefix, string output)
-{
-	ACCESS_CHECK(TEXT());
-
-	PERMISSION_CHECK(prefix != "aliases");
-	PERMISSION_CHECK(prefix != "alias");
-	PERMISSION_CHECK(prefix != "unalias");
-
-	aliases[prefix] = output;
-}
-
-void del_alias(string prefix)
-{
-	ACCESS_CHECK(TEXT());
-
-	aliases[prefix] = nil;
-}
-
-string query_alias(string prefix)
-{
-	return aliases[prefix];
 }
 
 void quit()
