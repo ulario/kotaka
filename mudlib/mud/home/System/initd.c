@@ -60,6 +60,7 @@ private void initialize()
 	load_object(ERRORD);
 	ERRORD->enable();
 
+	load_object("~/lwo/logbuf");
 	load_object(LOGD);
 
 	remove_file("/log/session.log");
