@@ -48,7 +48,7 @@ nomask mixed _F_status(mixed args ...)
 	return status(this_object(), args ...);
 }
 
-#if 0
+#if 1
 nomask void save_object(string filename)
 {
 	error("save_object is disabled");
