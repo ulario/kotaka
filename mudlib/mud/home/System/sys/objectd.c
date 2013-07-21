@@ -504,7 +504,10 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 		if (!is_kernel) {
 			LOGD->post_message("compile", LOG_INFO, "Upgrading " + path);
-			obj->upgrading();
+
+			if (function_object("upgrading", obj)) {
+				obj->upgrading();
+			}
 		}
 	}
 
