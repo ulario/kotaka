@@ -26,7 +26,7 @@ static int free_objects()
 	return status(ST_OTABSIZE) - status(ST_NOBJECTS);
 }
 
-static object compile_object(mixed args ...)
+atomic static object compile_object(mixed args ...)
 {
 	object obj;
 
@@ -39,7 +39,7 @@ static object compile_object(mixed args ...)
 	return ::compile_object(args ...);
 }
 
-static object load_object(mixed args ...)
+atomic static object load_object(mixed args ...)
 {
 	object obj;
 
