@@ -76,6 +76,7 @@ object select(string str)
 		case 3:
 			return clone_object("~/obj/user");
 		}
+
 	case TELNET_CONN:
 		switch(level + 1) {
 		case 0:
