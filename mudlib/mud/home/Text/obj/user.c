@@ -169,19 +169,6 @@ int receive_message(string str)
 	return ret;
 }
 
-private string query_brief(object obj)
-{
-	string out;
-
-	out = obj->query_property("bdesc");
-
-	if (out) {
-		return out;
-	} else {
-		return "an undescript item";
-	}
-}
-
 void set_aliases(mapping new_aliases)
 {
 	ACCESS_CHECK(previous_object() == query_root());
