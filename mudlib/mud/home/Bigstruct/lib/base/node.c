@@ -26,15 +26,11 @@ private object root;
 
 static void create()
 {
+	root = previous_object();
 }
 
 static void destruct()
 {
-}
-
-static void create()
-{
-	root = previous_object();
 }
 
 static void check_caller()
