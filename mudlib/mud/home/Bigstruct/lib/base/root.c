@@ -35,6 +35,10 @@ static void create()
 	grants = ([ previous_object() : FULL_ACCESS ]);
 }
 
+static void destruct()
+{
+}
+
 private int access_of(object obj)
 {
 	int highest;

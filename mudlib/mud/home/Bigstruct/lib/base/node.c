@@ -26,6 +26,14 @@ private object root;
 
 static void create()
 {
+}
+
+static void destruct()
+{
+}
+
+static void create()
+{
 	root = previous_object();
 }
 
