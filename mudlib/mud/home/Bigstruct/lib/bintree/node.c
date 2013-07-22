@@ -29,7 +29,13 @@ private object parent;
 private object left;
 private object right;
 
-/* get */
+static void create()
+{
+}
+
+static void destruct()
+{
+}
 
 object get_parent()
 {
@@ -48,8 +54,6 @@ object get_right()
 	check_caller();
 	return right;
 }
-
-/* set */
 
 void set_parent(object new)
 {
