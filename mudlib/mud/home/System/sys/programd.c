@@ -29,7 +29,6 @@
 inherit SECOND_AUTO;
 
 int bigready;	/* if we're using bigstructs */
-
 mixed progdb;	/* program database, index -> program_info */
 mixed pathdb;	/* path database, name -> latest index */
 mixed inhdb;	/* inherit database, index -> inherited indices */
