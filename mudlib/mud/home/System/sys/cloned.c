@@ -37,9 +37,6 @@ static void create()
 {
 	bmap = ([ ]);
 
-	db = clone_object(BIGSTRUCT_MAP_OBJ);
-	db->set_type(T_INT);
-
 	discover_clones();
 
 	call_out("defragment", 5);
@@ -166,7 +163,13 @@ void discover_clones()
 		sz = sizeof(owners);
 		queue = new_object(BIGSTRUCT_DEQUE_LWO);
 
-		db->clear();
+		if (db) {
+			destruct_object(db);
+		}
+
+		db = clone_object(BIGSTRUCT_MAP_OBJ);
+		db->set_type(T_INT);
+
 		bmap = ([ ]);
 
 		for (i = 0; i < sz; i++) {
