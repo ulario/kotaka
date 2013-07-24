@@ -44,7 +44,7 @@ static void create()
 	LOGD->post_message("system", LOG_INFO, "ProgramD loaded");
 }
 
-void convert_database()
+atomic void convert_database()
 {
 	mixed *ind;
 	mixed *val;
