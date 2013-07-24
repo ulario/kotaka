@@ -484,23 +484,48 @@ void remove_program(int index)
 
 void reset_program_database()
 {
+	int i, sz;
+	object *turkeys;
+
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	destruct_object(progdb);
-	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	progdb->set_type(T_INT);
+	bigready = 0;
 
-	destruct_object(inhdb);
-	inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	inhdb->set_type(T_INT);
+	turkeys = ({ });
 
-	destruct_object(incdb);
-	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	incdb->set_type(T_STRING);
+	if (progdb && typeof(progdb) == T_OBJECT) {
+		turkeys += ({ progdb });
+	}
 
-	destruct_object(pathdb);
-	pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	pathdb->set_type(T_STRING);
+	if (inhdb && typeof(inhdb) == T_OBJECT) {
+		turkeys += ({ inhdb });
+	}
+
+	if (incdb && typeof(incdb) == T_OBJECT) {
+		turkeys += ({ incdb });
+	}
+
+	if (pathdb && typeof(pathdb) == T_OBJECT) {
+		turkeys += ({ pathdb });
+	}
+
+	progdb = ([ ]);
+	inhdb = ([ ]);
+	incdb = ([ ]);
+	pathdb = ([ ]);
+
+	sz = sizeof(turkeys);
+
+	for (i = 0; i < sz; i++) {
+		destruct_object(turkeys[i]);
+	}
+
+	convert_database();
+
+	ASSERT(progdb);
+	ASSERT(inhdb);
+	ASSERT(incdb);
+	ASSERT(pathdb);
 }
 
 void upgrading()
@@ -508,27 +533,30 @@ void upgrading()
 	ACCESS_CHECK(SYSTEM());
 
 	if (!pathdb) {
-		pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
-		pathdb->set_type(T_STRING);
+		if (bigready) {
+			pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
+			pathdb->set_type(T_STRING);
+		} else {
+			pathdb = ([ ]);
+		}
 	}
 }
 
 static void destruct()
 {
-	if (find_object(OBJECTD)) {
-		error("Cannot destruct program manager if object manager still exists");
-	}
-
-	if (progdb) {
+	if (progdb && typeof(progdb) == T_OBJECT) {
 		destruct_object(progdb);
 	}
-	if (inhdb) {
+
+	if (inhdb && typeof(inhdb) == T_OBJECT) {
 		destruct_object(inhdb);
 	}
-	if (incdb) {
+
+	if (incdb && typeof(incdb) == T_OBJECT) {
 		destruct_object(incdb);
 	}
-	if (pathdb) {
+
+	if (pathdb && typeof(pathdb) == T_OBJECT) {
 		destruct_object(pathdb);
 	}
 }
