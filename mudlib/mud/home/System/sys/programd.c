@@ -40,6 +40,8 @@ static void create()
 	inhdb = ([ ]);
 	incdb = ([ ]);
 	pathdb = ([ ]);
+
+	LOGD->post_message("system", LOG_INFO, "ProgramD loaded");
 }
 
 void convert_database()
