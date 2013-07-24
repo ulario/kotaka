@@ -145,14 +145,6 @@ atomic void convert_database()
 	}
 
 	bigready = 1;
-	call_out("defragment", 5);
-}
-
-static void defragment()
-{
-	call_out("defragment", 3600 + random(1800));
-
-	progdb->reindex();
 }
 
 private void deindex_inherits(int oindex, int *inh)
