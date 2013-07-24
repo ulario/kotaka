@@ -443,7 +443,9 @@ private void compile_common(string owner, string path, string *source, string *i
 
 	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
 
-	pinfo = PROGRAMD->register_program(path, inherited, includes);
+	if (find_object(PROGRAMD)) {
+		pinfo = PROGRAMD->register_program(path, inherited, includes);
+	}
 
 	is_kernel = sscanf(path, "/kernel/%*s");
 
