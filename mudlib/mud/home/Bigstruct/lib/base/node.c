@@ -35,6 +35,8 @@ static void destruct()
 
 static void check_caller()
 {
+	ASSERT(root);
+
 	ACCESS_CHECK(previous_object() == root);
 }
 
