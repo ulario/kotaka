@@ -377,7 +377,19 @@ object query_program_indices()
 {
 	object indices;
 
-	indices = progdb->get_indices();
+	if (bigready) {
+		indices = progdb->get_indices();
+	} else {
+		int sz, i, *ind;
+		indices = new_object(BIGSTRUCT_ARRAY_LWO);
+
+		ind = map_indices(progdb);
+		sz = sizeof(ind);
+
+		for (i = 0; i < sz; i++) {
+			indices->push_back(ind[i]);
+		}
+	}
 
 	indices->grant_access(previous_object(), FULL_ACCESS);
 
