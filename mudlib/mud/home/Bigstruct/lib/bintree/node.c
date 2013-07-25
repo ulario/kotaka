@@ -31,10 +31,12 @@ private object right;
 
 static void create()
 {
+	::create();
 }
 
 static void destruct()
 {
+	::destruct();
 }
 
 object get_parent()
