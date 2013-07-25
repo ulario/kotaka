@@ -298,6 +298,8 @@ void recompile_everything()
 
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
+	ASSERT(find_object(PROGRAMD));
+
 	libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 
