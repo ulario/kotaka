@@ -26,6 +26,7 @@ private void check_node(object node)
 {
 	if (!node->query_root()) {
 		LOGD->post_message("bigstruct", LOG_WARNING, "Found orphaned bigstruct node: " + object_name(node));
+		node->self_destruct();
 	}
 }
 
@@ -66,6 +67,7 @@ private void check_root(object root)
 
 	if (!sizeof(access & ({ FULL_ACCESS }))) {
 		LOGD->post_message("bigstruct", LOG_WARNING, "Found orphaned bigstruct root: " + object_name(root));
+		root->self_destruct();
 	}
 }
 

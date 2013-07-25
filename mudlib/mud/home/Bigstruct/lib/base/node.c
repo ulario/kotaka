@@ -44,3 +44,10 @@ nomask object query_root()
 {
 	return root;
 }
+
+void self_destruct()
+{
+	ACCESS_CHECK(BIGSTRUCT());
+
+	destruct_object(this_object());
+}

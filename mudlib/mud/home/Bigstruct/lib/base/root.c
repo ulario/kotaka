@@ -94,3 +94,10 @@ void grant_global_access(int access)
 
 	global_access = access;
 }
+
+void self_destruct()
+{
+	ACCESS_CHECK(BIGSTRUCT());
+
+	destruct_object(this_object());
+}
