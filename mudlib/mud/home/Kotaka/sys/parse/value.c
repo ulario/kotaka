@@ -20,6 +20,8 @@
 #include <kotaka/privilege.h>
 #include <kotaka/paths.h>
 
+inherit SECOND_AUTO;
+
 string grammar;
 
 static void create()
