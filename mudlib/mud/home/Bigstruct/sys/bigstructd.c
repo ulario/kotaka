@@ -63,7 +63,7 @@ private void check_root(object root)
 
 	grants = root->query_grants();
 
-	access = map_indices(grants);
+	access = map_values(grants);
 
 	if (!sizeof(access & ({ FULL_ACCESS }))) {
 		LOGD->post_message("bigstruct", LOG_WARNING, "Found orphaned bigstruct root: " + object_name(root));
