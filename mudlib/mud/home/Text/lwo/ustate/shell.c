@@ -161,13 +161,16 @@ private void do_input(string first, string input)
 
 private void fix_verbs();
 
-void receive_in(string input)
+private void handle_input(string input);
+
+atomic private void do_atomic(string args)
+{
+	handle_input(args);
+}
+
+private void handle_input(string input)
 {
 	string first;
-
-	ACCESS_CHECK(previous_object() == query_user());
-
-	reading = 1;
 
 	input = STRINGD->trim_whitespace(input);
 
@@ -193,17 +196,29 @@ void receive_in(string input)
 	case "+fixverbs":
 		fix_verbs();
 		break;
+	case "+atomic":
+		do_atomic(input);
+		break;
 	case "":
 		break;
 	default:
 		do_input(first, input);
 	}
+}
+
+void receive_in(string input)
+{
+	ACCESS_CHECK(previous_object() == query_user());
+
+	reading = 1;
+
+	handle_input(input);
+
+	reading = 0;
 
 	if (!this_object()) {
 		return;
 	}
-
-	reading = 0;
 
 	if (!stopped) {
 		prompt();
