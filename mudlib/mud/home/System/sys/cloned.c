@@ -233,10 +233,6 @@ void reset()
 
 static void destruct()
 {
-	if (find_object(OBJECTD)) {
-		error("Cannot destruct CLONED if OBJECTD still exists");
-	}
-
 	if (db) {
 		destruct_object(db);
 	}
