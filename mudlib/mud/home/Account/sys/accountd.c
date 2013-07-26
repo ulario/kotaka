@@ -189,13 +189,6 @@ void set_account_property(string name, string property, mixed value)
 		error("No such account");
 	}
 
-	switch(typeof(value)) {
-	case T_ARRAY:
-	case T_OBJECT:
-	case T_MAPPING:
-		error("Invalid property value");
-	}
-
 	prop = properties[name];
 
 	if (!prop) {
