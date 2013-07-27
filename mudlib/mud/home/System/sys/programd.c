@@ -556,19 +556,39 @@ void upgrading()
 
 static void destruct()
 {
+	int i, sz;
+	object *turkeys;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	bigready = 0;
+
+	turkeys = ({ });
+
 	if (progdb && typeof(progdb) == T_OBJECT) {
-		destruct_object(progdb);
+		turkeys += ({ progdb });
 	}
 
 	if (inhdb && typeof(inhdb) == T_OBJECT) {
-		destruct_object(inhdb);
+		turkeys += ({ inhdb });
 	}
 
 	if (incdb && typeof(incdb) == T_OBJECT) {
-		destruct_object(incdb);
+		turkeys += ({ incdb });
 	}
 
 	if (pathdb && typeof(pathdb) == T_OBJECT) {
-		destruct_object(pathdb);
+		turkeys += ({ pathdb });
+	}
+
+	progdb = ([ ]);
+	inhdb = ([ ]);
+	incdb = ([ ]);
+	pathdb = ([ ]);
+
+	sz = sizeof(turkeys);
+
+	for (i = 0; i < sz; i++) {
+		destruct_object(turkeys[i]);
 	}
 }
