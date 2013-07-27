@@ -595,10 +595,6 @@ void destruct(varargs mixed owner, mixed obj)
 		path = name;
 	}
 
-	if (find_object(PROGRAMD)) {
-		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
-	}
-
 	if (!sscanf(path, "/kernel/%*s")) {
 		obj->_F_sys_destruct();
 	}
@@ -608,7 +604,13 @@ void destruct(varargs mixed owner, mixed obj)
 			CLONED->remove_clone(obj);
 		}
 	} else {
-		pinfo->set_destructed();
+		if (find_object(PROGRAMD)) {
+			pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
+		}
+
+		if (pinfo) {
+			pinfo->set_destructed();
+		}
 	}
 }
 
