@@ -216,7 +216,7 @@ void receive_in(string input)
 
 	reading = 0;
 
-	if (!this_object()) {
+	if (!this_object() || !query_user()) {
 		return;
 	}
 
