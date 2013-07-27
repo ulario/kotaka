@@ -559,8 +559,6 @@ static void destruct()
 	int i, sz;
 	object *turkeys;
 
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
 	bigready = 0;
 
 	turkeys = ({ });
