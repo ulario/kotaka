@@ -40,10 +40,12 @@ void main(object actor, string args)
 	{
 	case "on":
 		ACCOUNTD->set_account_property(user->query_username(), "invisible", 1);
+		send_out("You are now invisible.\n");
 		break;
 
 	case "off":
 		ACCOUNTD->set_account_property(user->query_username(), "invisible", nil);
+		send_out("You are now not invisible.\n");
 		break;
 
 	default:
