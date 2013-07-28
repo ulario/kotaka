@@ -76,18 +76,15 @@ void add_channel(string channel, varargs int lock)
 	}
 }
 
+void configure_channels();
+
 static void create()
 {
 	channels = ([ ]);
 	subscribers = ([ ]);
 	locks = ([ ]);
 
-	add_channel("error", 1);
-	add_channel("debug", 1);
-	add_channel("trace", 1);
-	add_channel("warning", 1);
-	add_channel("compile", 1);
-	add_channel("connection", 1);
+	configure_channels();
 }
 
 /** lists all the channels */
@@ -318,4 +315,35 @@ void post_message(string channel, string sender, string message)
 int is_locked(string channel)
 {
 	return !!locks[channel];
+}
+
+void configure_channels()
+{
+	string *channels;
+	int i, sz;
+
+	ACCESS_CHECK(INTERFACE());
+
+	// error: errord, used for runtime errors
+	// trace: errord, used for stack traces
+	// debug: system
+	// compile: errord, used for compile errors
+
+	channels = ({ "error", "trace", "debug", "warning", "compile", "connection" });
+
+	sz = sizeof(channels);
+
+	for (i = 0; i < sz; i++) {
+		if (!test_channel(channels[i])) {
+			add_channel(channels[i], 1);
+		}
+	}
+
+	channels = query_channels() - channels;
+
+	sz = sizeof(channels);
+
+	for (i = 0; i < sz; i++) {
+		del_channel(channels[i]);
+	}
 }
