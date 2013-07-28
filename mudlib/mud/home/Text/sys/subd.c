@@ -324,3 +324,39 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 
 	return implode(message, " ");
 }
+
+void login_user(object user)
+{
+	string name;
+
+	ACCESS_CHECK(TEXT());
+
+	name = user->query_name();
+
+	if (TEXT_USERD->query_is_guest(user)) {
+		TEXT_USERD->promote_guest(name, user);
+	} else {
+		TEXT_USERD->add_user(name, user);
+	}
+
+	user->set_mode(MODE_ECHO);
+
+	TEXT_SUBD->send_to_all_except(
+		TEXT_SUBD->titled_name(
+			user->query_username(),
+			user->query_class())
+		+ " logs in.\n", ({ user }));
+
+	CHANNELD->subscribe_channel("chat", user);
+
+	if (user->query_class() >= 2) {
+		CHANNELD->subscribe_channel("error", user);
+		CHANNELD->subscribe_channel("trace", user);
+		CHANNELD->subscribe_channel("compile", user);
+	}
+}
+
+void logout_user(object user)
+{
+	ACCESS_CHECK(TEXT());
+}

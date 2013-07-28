@@ -100,40 +100,6 @@ void pre_end()
 	dead = 1;
 }
 
-private void do_login()
-{
-	object user;
-
-	user = query_user();
-
-	if (TEXT_USERD->query_is_guest(user)) {
-		TEXT_USERD->promote_guest(name, user);
-	} else {
-		TEXT_USERD->add_user(name, user);
-	}
-
-	user->set_username(name);
-	user->set_mode(MODE_ECHO);
-
-	CHANNELD->subscribe_channel("chat", user);
-
-	TEXT_SUBD->send_to_all_except(
-		TEXT_SUBD->titled_name(
-			user->query_username(),
-			user->query_class())
-		+ " logs in.\n", ({ user }));
-
-	CHANNELD->subscribe_channel("chat", user);
-
-	if (user->query_class() >= 2) {
-		CHANNELD->subscribe_channel("error", user);
-		CHANNELD->subscribe_channel("trace", user);
-		CHANNELD->subscribe_channel("compile", user);
-	}
-
-	terminate_account_state();
-}
-
 void receive_in(string input)
 {
 	ACCESS_CHECK(previous_object() == query_user());
@@ -188,7 +154,17 @@ void receive_in(string input)
 				break;
 			}
 
-			do_login();
+			query_user()->set_username(name);
+
+			TEXT_SUBD->send_to_all_except(
+				TEXT_SUBD->titled_name(
+					user->query_username(),
+					user->query_class())
+				+ " logs in.\n", ({ user }));
+
+			TEXT_SUBD->login_user(query_user());
+
+			terminate_account_state();
 
 			return;
 		}

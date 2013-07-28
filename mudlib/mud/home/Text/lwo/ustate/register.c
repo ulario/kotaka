@@ -163,17 +163,9 @@ void receive_in(string input)
 			pop_state();
 			return;
 		} else {
-			object user;
-
-			user = query_user();
 			ACCOUNTD->register_account(name, password);
-			user->set_username(name);
-			if (TEXT_USERD->query_is_guest(user)) {
-				TEXT_USERD->promote_guest(name, user);
-			} else {
-				TEXT_USERD->add_user(name, user);
-			}
-			user->set_mode(MODE_ECHO);
+
+			query_user()->set_username(name);
 
 			TEXT_SUBD->send_to_all_except(
 				TEXT_SUBD->titled_name(
@@ -181,7 +173,9 @@ void receive_in(string input)
 					user->query_class())
 				+ " registers.\n", ({ user }));
 
-			CHANNELD->subscribe_channel("chat", user);
+			ACCOUNTD->set_account_property(name, "channels", ({ "chat" }));
+
+			TEXT_SUBD->login_user(user);
 
 			terminate_account_state();
 			return;
