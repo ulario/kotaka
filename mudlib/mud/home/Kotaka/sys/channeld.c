@@ -326,10 +326,9 @@ void configure_channels()
 
 	// error: errord, used for runtime errors
 	// trace: errord, used for stack traces
-	// debug: system
 	// compile: errord, used for compile errors
 
-	channels = ({ "error", "trace", "debug", "warning", "compile", "connection" });
+	channels = ({ "error", "trace", "compile" });
 
 	sz = sizeof(channels);
 
