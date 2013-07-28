@@ -100,6 +100,40 @@ void pre_end()
 	dead = 1;
 }
 
+private void do_login()
+{
+	object user;
+
+	user = query_user();
+
+	if (TEXT_USERD->query_is_guest(user)) {
+		TEXT_USERD->promote_guest(name, user);
+	} else {
+		TEXT_USERD->add_user(name, user);
+	}
+
+	user->set_username(name);
+	user->set_mode(MODE_ECHO);
+
+	CHANNELD->subscribe_channel("chat", user);
+
+	TEXT_SUBD->send_to_all_except(
+		TEXT_SUBD->titled_name(
+			user->query_username(),
+			user->query_class())
+		+ " logs in.\n", ({ user }));
+
+	CHANNELD->subscribe_channel("chat", user);
+
+	if (user->query_class() >= 2) {
+		CHANNELD->subscribe_channel("error", user);
+		CHANNELD->subscribe_channel("trace", user);
+		CHANNELD->subscribe_channel("compile", user);
+	}
+
+	terminate_account_state();
+}
+
 void receive_in(string input)
 {
 	ACCESS_CHECK(previous_object() == query_user());
@@ -109,6 +143,7 @@ void receive_in(string input)
 	switch(state) {
 	case STATE_GETNAME:
 		input = STRINGD->to_lower(input);
+
 		if (!STRINGD->is_valid_username(input)) {
 			send_out("That is not a valid username.\n");
 			pop_state();
@@ -144,7 +179,6 @@ void receive_in(string input)
 			query_user()->quit();
 			return;
 		} else {
-			object user;
 			/* todo: detect duplicates and prepare to */
 			/* evict a linkdead user */
 
@@ -154,31 +188,8 @@ void receive_in(string input)
 				break;
 			}
 
-			user = query_user();
-			if (TEXT_USERD->query_is_guest(user)) {
-				TEXT_USERD->promote_guest(name, user);
-			} else {
-				TEXT_USERD->add_user(name, user);
-			}
+			do_login();
 
-			user->set_username(name);
-			user->set_mode(MODE_ECHO);
-
-			TEXT_SUBD->send_to_all_except(
-				TEXT_SUBD->titled_name(
-					user->query_username(),
-					user->query_class())
-				+ " logs in.\n", ({ user }));
-
-			CHANNELD->subscribe_channel("chat", user);
-
-			if (user->query_class() >= 2) {
-				CHANNELD->subscribe_channel("error", user);
-				CHANNELD->subscribe_channel("trace", user);
-				CHANNELD->subscribe_channel("compile", user);
-			}
-
-			terminate_account_state();
 			return;
 		}
 		break;
@@ -197,7 +208,6 @@ void receive_in(string input)
 			return;
 		} else if (input == "yes") {
 			object user;
-			int was_guest;
 
 			user = TEXT_USERD->find_user(name);
 
@@ -208,30 +218,6 @@ void receive_in(string input)
 				send_out("Your previous connection went away before I could evict it.\n");
 			}
 
-			user = query_user();
-
-			if (TEXT_USERD->query_is_guest(user)) {
-				was_guest = TRUE;
-				TEXT_USERD->promote_guest(name, user);
-			} else {
-				TEXT_USERD->add_user(name, user);
-			}
-
-			user->set_username(name);
-			user->set_mode(MODE_ECHO);
-
-			CHANNELD->subscribe_channel("chat", user);
-
-			TEXT_SUBD->send_to_all_except(
-				TEXT_SUBD->titled_name(
-					user->query_username(),
-					user->query_class())
-				+ " logs in.\n", ({ user }));
-
-			CHANNELD->subscribe_channel("chat", user);
-
-			terminate_account_state();
-			return;
 		} else {
 			send_out("Ok then.\n");
 			pop_state();
