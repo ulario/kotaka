@@ -20,6 +20,7 @@
 #include <kernel/user.h>
 #include <kotaka/paths.h>
 #include <text/paths.h>
+#include <account/paths.h>
 
 inherit LIB_RAWVERB;
 
@@ -60,6 +61,14 @@ void main(object actor, string args)
 		uclass = user->query_class();
 
 		buf = TEXT_SUBD->titled_name(name, uclass);
+
+		if (ACCOUNTD->query_account_property(name, "invisible")) {
+			if (class > 2 && class >= uclass) {
+				buf += " (invisible)";
+			} else {
+				continue;
+			}
+		}
 
 		if (class > 2 && class >= uclass) {
 			while (user <- LIB_USER) {
