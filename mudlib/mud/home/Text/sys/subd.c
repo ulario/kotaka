@@ -341,12 +341,6 @@ void login_user(object user)
 
 	user->set_mode(MODE_ECHO);
 
-	TEXT_SUBD->send_to_all_except(
-		TEXT_SUBD->titled_name(
-			user->query_username(),
-			user->query_class())
-		+ " logs in.\n", ({ user }));
-
 	CHANNELD->subscribe_channel("chat", user);
 
 	if (user->query_class() >= 2) {
