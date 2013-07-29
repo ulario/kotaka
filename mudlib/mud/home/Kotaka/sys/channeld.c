@@ -328,7 +328,7 @@ void configure_channels()
 	// trace: errord, used for stack traces
 	// compile: errord, used for compile errors
 
-	channels = ({ "chat", "error", "trace", "compile" });
+	channels = ({ "error", "trace", "compile" });
 
 	sz = sizeof(channels);
 
