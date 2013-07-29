@@ -322,7 +322,7 @@ void configure_channels()
 	string *channels;
 	int i, sz;
 
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || KOTAKA());
 
 	// error: errord, used for runtime errors
 	// trace: errord, used for stack traces
