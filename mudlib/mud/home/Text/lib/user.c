@@ -494,10 +494,6 @@ static void nuke_state_tree(varargs object base)
 		if (base) {
 			base->_F_set_user(nil);
 		}
-	} : {
-		CHANNELD->post_message("warning", "Common::user",
-			"Error nuking: "
-			+ object_name(base) + "\n");
 	}
 }
 

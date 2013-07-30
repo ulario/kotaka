@@ -254,7 +254,7 @@ private void send_to_target(string target, string header, string message)
 		ASSERT(info);
 
 		for (i = 0; i < sz; i++) {
-			CHANNELD->post_message(info, header, lines[i]);
+			CHANNELD->post_message(info, nil, header + ": " + lines[i]);
 		}
 
 		break;
