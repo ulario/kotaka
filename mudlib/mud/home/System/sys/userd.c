@@ -280,24 +280,6 @@ int query_blocked()
 	return blocked;
 }
 
-void reboot()
-{
-	int i, sz;
-
-	if (enabled) {
-		unregister_with_klib_userd();
-		register_with_klib_userd();
-	}
-
-	sz = sizeof(connections -= ({ nil }));
-
-	for (i = 0; i < sz; i++) {
-		catch {
-			connections[i]->reboot();
-		}
-	}
-}
-
 void set_binary_manager(int port, object LIB_USERD manager)
 {
 	ACCESS_CHECK(INTERFACE());
@@ -335,6 +317,26 @@ void prepare_reboot()
 	unregister_with_klib_userd();
 
 	connections = userd::query_connections();
+}
+
+void reboot()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	int i, sz;
+
+	if (enabled) {
+		unregister_with_klib_userd();
+		register_with_klib_userd();
+	}
+
+	sz = sizeof(connections -= ({ nil }));
+
+	for (i = 0; i < sz; i++) {
+		catch {
+			connections[i]->reboot();
+		}
+	}
 }
 
 void bogus_reboot()
