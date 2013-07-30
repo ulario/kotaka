@@ -56,7 +56,7 @@ string to_packet(string data)
 	return bigendian + data + "\000";
 }
 
-private string packed_sprint(mixed data)
+private string mudmode_sprint(mixed data)
 {
 	int iter;
 	string tmp;
@@ -101,7 +101,7 @@ private string packed_sprint(mixed data)
 
 		tmp = "({";
 		for (iter = 0; iter < sizeof(data); iter++) {
-			tmp += packed_sprint(data[iter]) + ",";
+			tmp += mudmode_sprint(data[iter]) + ",";
 		}
 		return tmp + "})";
 
@@ -112,8 +112,8 @@ private string packed_sprint(mixed data)
 		arr = map_indices(data);
 		tmp = "([";
 		for (iter = 0; iter < sizeof(arr); iter++) {
-			tmp += packed_sprint(arr[iter]) + ":" +
-				packed_sprint(data[arr[iter]]) + ",";
+			tmp += mudmode_sprint(arr[iter]) + ":" +
+				mudmode_sprint(data[arr[iter]]) + ",";
 		}
 		return tmp + "])";
 	}
@@ -155,7 +155,7 @@ string query_banner(object LIB_CONN connection)
 		([ ])
 	});
 
-	packet = to_packet(packed_sprint(startup));
+	packet = to_packet(mudmode_sprint(startup));
 
 	return packet;
 }
