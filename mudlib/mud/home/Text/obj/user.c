@@ -25,6 +25,7 @@
 #include <kernel/access.h>
 
 #include <text/paths.h>
+#include <kotaka/assert.h>
 
 inherit "~/lib/user";
 
@@ -211,8 +212,20 @@ void channel_message(string channel, string sender, string message)
 	tcolor = CHANNELD->setcolor(tcolor);
 
 	if (sender) {
-		send_out("[" + ccolor + channel + "\033[0m] "
-			+ sender + tcolor + ": " + message + "\n");
+		if (sscanf(sender, "%*s@%*s")) {
+			ASSERT(ccolor);
+			ASSERT(channel);
+			ASSERT(sender);
+			ASSERT(tcolor);
+			ASSERT(message);
+
+			send_out("[" + ccolor + channel + "\033[0m] \033[1;35m"
+				+ sender + tcolor + ": " + message + "\n");
+		} else {
+			send_out("[" + ccolor + channel + "\033[0m] "
+				+ TEXT_SUBD->titled_name(sender,
+					TEXT_SUBD->query_user_class(sender)) + tcolor + ": " + message + "\n");
+		}
 	} else {
 		send_out("[" + ccolor + channel + "\033[0m] "
 			+ message + "\n");
