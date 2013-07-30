@@ -328,6 +328,9 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 void login_user(object user)
 {
 	string name;
+	string *channels;
+
+	int i, sz;
 
 	ACCESS_CHECK(TEXT());
 
@@ -341,12 +344,14 @@ void login_user(object user)
 
 	user->set_mode(MODE_ECHO);
 
-	CHANNELD->subscribe_channel("chat", user);
+	channels = ACCOUNTD->query_account_property(name, "channels");
 
-	if (user->query_class() >= 2) {
-		CHANNELD->subscribe_channel("error", user);
-		CHANNELD->subscribe_channel("trace", user);
-		CHANNELD->subscribe_channel("compile", user);
+	if (channels) {
+		sz = sizeof(channels);
+
+		for (i = 0; i < sz; i++) {
+			CHANNELD->subscribe_channel(channels[i], user);
+		}
 	}
 }
 
