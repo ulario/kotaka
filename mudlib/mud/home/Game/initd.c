@@ -194,6 +194,8 @@ static void create()
 
 	load_help();
 	build_world();
+
+	INITD->boot_subsystem("Intermud");
 }
 
 object create_object()
