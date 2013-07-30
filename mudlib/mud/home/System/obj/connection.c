@@ -104,6 +104,13 @@ static void receive_message(string str)
 	::receive_message(allocate(DRIVER->query_tls_size()), str);
 }
 
+void set_mode(int mode)
+{
+	if (KERNEL() || SYSTEM()) {
+		::set_mode(mode);
+	}
+}
+
 /*
  * NAME:	message_done()
  * DESCRIPTION:	called when output is completed
