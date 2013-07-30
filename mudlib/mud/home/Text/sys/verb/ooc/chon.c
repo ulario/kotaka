@@ -42,6 +42,11 @@ void main(object actor, string args)
 		return;
 	}
 
+	if (!CHANNELD->test_channel(args)) {
+		send_out("That channel does not exist.\n");
+		return;
+	}
+
 	subscriptions = ACCOUNTD->query_account_property(name, "channels");
 
 	if (!subscriptions) {

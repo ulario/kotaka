@@ -57,8 +57,12 @@ void main(object actor, string args)
 
 	ACCOUNTD->set_account_property(name, "channels", subscriptions);
 
-	CHANNELD->unsubscribe_channel(args, user);
+	if (CHANNELD->test_channel(args)) {
+		CHANNELD->unsubscribe_channel(args, user);
+		send_out("Channel unsubscribed.\n");
+	} else {
+		send_out("Removing deleted channel.\n");
+	}
 
-	send_out("Channel unsubscribed.\n");
 	return;
 }
