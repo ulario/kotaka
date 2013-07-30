@@ -41,50 +41,60 @@ string titled_name(string name, int class)
 
 	switch(class) {
 	case 0:
-		name = "\033[1;34m" + name + "\033[0m";
 		break;
+
 	case 1:
 		switch(ACCOUNTD->query_account_property(username, "gender")) {
 		case nil:
-			name = "\033[1;32m" + name + "\033[0m";
+			name = name;
 			break;
+
 		case "male":
-			name = "\033[1;32mMr. " + name + "\033[0m";
+			name = "Mr. " + name;
 			break;
+
 		case "female":
-			name = "\033[1;32mMs. " + name + "\033[0m";
+			name = "Ms. " + name;
 			break;
 		}
 		break;
+
 	case 2:
 		switch(ACCOUNTD->query_account_property(username, "gender")) {
 		case nil:
-			name = "\033[1;33m" + name + "\033[0m";
 			break;
+
 		case "male":
-			name = "\033[1;33mSir " + name + "\033[0m";
+			name = "Sir " + name;
 			break;
+
 		case "female":
-			name = "\033[1;33mDame " + name + "\033[0m";
+			name = "Dame " + name;
 			break;
+
 		}
 		break;
+
 	case 3:
 		switch(ACCOUNTD->query_account_property(username, "gender")) {
 		case nil:
-			name = "\033[1;31m" + name + "\033[0m";
 			break;
+
 		case "male":
-			name = "\033[1;31mLord " + name + "\033[0m";
+			name = "Lord " + name;
 			break;
+
 		case "female":
-			name = "\033[1;31mLady " + name + "\033[0m";
+			name = "Lady " + name;
 			break;
+
 		}
 		break;
+
 	case 4:
-		name = "\033[1;37mThe Ethereal Presence\033[0m";
+		name = "The Ethereal Presence";
 		break;
+
 	}
 
 	return name;
@@ -350,7 +360,11 @@ void login_user(object user)
 		sz = sizeof(channels);
 
 		for (i = 0; i < sz; i++) {
-			CHANNELD->subscribe_channel(channels[i], user);
+			if (CHANNELD->test_channel(channels[i])) {
+				CHANNELD->subscribe_channel(channels[i], user);
+			} else {
+				user->message("Warning: " + channels[i] + " does not exist.\n");
+			}
 		}
 	}
 }
