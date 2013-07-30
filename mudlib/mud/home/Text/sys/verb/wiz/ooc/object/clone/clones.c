@@ -44,6 +44,11 @@ void main(object actor, string args)
 
 	cinfo = CLONED->query_clone_info(st[O_INDEX]);
 
+	if (!cinfo) {
+		send_out("There are no clones.\n");
+		return;
+	}
+
 	send_out("There are " + cinfo->query_clone_count() + " clones.\n");
 
 	if (cinfo->query_clone_count() < 20) {
