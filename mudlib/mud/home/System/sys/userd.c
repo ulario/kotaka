@@ -206,7 +206,6 @@ void disable()
 
 void block_connections()
 {
-	object *conns;
 	int index;
 
 	ACCESS_CHECK(SYSTEM() || KADMIN());
@@ -221,12 +220,12 @@ void block_connections()
 	blocked = 1;
 	reblocked = ([ ]);
 
-	conns = userd::query_connections();
+	connections = userd::query_connections();
 
-	for (index = 0; index < sizeof(conns); index++) {
+	for (index = 0; index < sizeof(connections); index++) {
 		object conn;
 
-		conn = conns[index];
+		conn = connections[index];
 
 		/* don't interfere with the failsafe */
 		if (conn->query_user() <- "/kernel/obj/user") {
@@ -243,7 +242,6 @@ void block_connections()
 
 void unblock_connections()
 {
-	object *conns;
 	int index;
 
 	ACCESS_CHECK(SYSTEM() || KADMIN());
@@ -260,11 +258,12 @@ void unblock_connections()
 	LOGD->post_message("userd", LOG_NOTICE, "Unblocking connections");
 
 	blocked = 0;
-	conns = userd::query_connections();
 
-	for (index = 0; index < sizeof(conns); index++) {
+	connections = userd::query_connections();
+
+	for (index = 0; index < sizeof(connections); index++) {
 		object conn;
-		conn = conns[index];
+		conn = connections[index];
 
 		if (reblocked[conn]) {
 			reblocked[conn] = nil;
