@@ -149,7 +149,9 @@ string query_banner(object LIB_CONN connection)
 		"DGD",
 		"mudlib development",
 		"shentino@gmail.com",
-		([ ]),
+		([
+			"channel":1
+		]),
 		([ ])
 	});
 
