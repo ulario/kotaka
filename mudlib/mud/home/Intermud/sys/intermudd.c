@@ -24,6 +24,7 @@
 #include <kernel/user.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
+#include <text/paths.h>
 #include <status.h>
 #include <type.h>
 
@@ -194,7 +195,7 @@ void send_channel_message(string channel, string sender, string text)
 			0,
 			0,
 			"dgd",
-			sender ? sender : "<system>",
+			sender ? TEXT_SUBD->titled_name(sender, TEXT_SUBD->query_user_class(sender)) : "<system>",
 			text
 		})
 	);
@@ -249,12 +250,8 @@ private void process_packet(string packet)
 		break;
 
 	case "channel-m":
-		if (omud == "Ulario") {
-			break;
-		}
-
 		if (CHANNELD->test_channel(value[6])) {
-			CHANNELD->post_message(value[6], ouser + "@" + omud, value[8], 1);
+			CHANNELD->post_message(value[6], value[7] + "@" + omud, value[8], 1);
 		}
 
 		break;

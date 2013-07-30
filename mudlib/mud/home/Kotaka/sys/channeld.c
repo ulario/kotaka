@@ -314,6 +314,8 @@ void post_message(string channel, string sender, string message, varargs int nor
 	if (!norelay) {
 		if (intermud && intermud[channel]) {
 			INTERMUDD->send_channel_message(channel, sender, message);
+
+			return;
 		}
 	}
 
