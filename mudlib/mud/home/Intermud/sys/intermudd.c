@@ -285,6 +285,8 @@ private void process_packet(string packet)
 		break;
 
 	case "startup-reply":
+		LOGD->post_message("intermud", LOG_INFO, "Received startup reply");
+
 		password = value[7];
 		routers = ({ });
 
@@ -315,8 +317,7 @@ private void process_packet(string packet)
 		break;
 
 	default:
-		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet type: " + value[0]);
-		LOGD->post_message("intermud", LOG_INFO, "Packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
+		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
 	}
 }
 
