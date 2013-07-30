@@ -172,6 +172,12 @@ private object get_manager(object conn)
 	if (base <- BINARY_CONN) {
 		return binary_managers[port];
 	}
+
+	if (base <- SYSTEM_CONN) {
+		return base->query_manager();
+	}
+
+	error("Unrecognized connection");
 }
 
 /* external */

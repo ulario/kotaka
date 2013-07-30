@@ -56,3 +56,12 @@ object select(string str)
 
 	return find_object(SYSTEM_USERD);
 }
+
+void connect(string host, int port)
+{
+	object conn;
+
+	conn = clone_object(SYSTEM_CONN);
+	conn->set_manager(this_object());
+	conn->connect(host, port);
+}
