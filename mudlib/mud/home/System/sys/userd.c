@@ -40,6 +40,7 @@ inherit userd API_USER;
 inherit user LIB_USER;
 
 int reserve;
+object *connections;
 
 /*************/
 /* Variables */
@@ -282,9 +283,19 @@ int query_blocked()
 
 void reboot()
 {
+	int i, sz;
+
 	if (enabled) {
 		unregister_with_klib_userd();
 		register_with_klib_userd();
+	}
+
+	sz = sizeof(connections -= ({ nil }));
+
+	for (i = 0; i < sz; i++) {
+		catch {
+			connections[i]->reboot();
+		}
 	}
 }
 
@@ -323,6 +334,8 @@ void prepare_reboot()
 	ACCESS_CHECK(SYSTEM());
 
 	unregister_with_klib_userd();
+
+	connections = userd::query_connections();
 }
 
 void bogus_reboot()
