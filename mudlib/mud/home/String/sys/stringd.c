@@ -412,6 +412,7 @@ string quote_unescape(string input)
 	input = replace(input, "\\r", "\r");
 	input = replace(input, "\\n", "\n");
 	input = replace(input, "\\\"", "\"");
+	input = replace(input, "\\0", "\000");
 	input = replace(input, "\\\\", "\\");
 
 	return input;
@@ -420,6 +421,7 @@ string quote_unescape(string input)
 string quote_escape(string input)
 {
 	input = replace(input, "\\", "\\\\");
+	input = replace(input, "\000", "\\0");
 	input = replace(input, "\"", "\\\"");
 	input = replace(input, "\n", "\\n");
 	input = replace(input, "\r", "\\r");
