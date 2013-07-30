@@ -154,7 +154,7 @@ private void restore()
 		return;
 	}
 
-	map = "~Kotaka/sys/parse/value"->parse(buf);
+	map = PARSE_VALUE->parse(buf);
 
 	properties = map["properties"];
 	passwords = map["passwords"];

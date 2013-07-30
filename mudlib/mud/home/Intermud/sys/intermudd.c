@@ -176,7 +176,7 @@ private void process_packet(string packet)
 {
 	mixed value;
 
-	value = "~Kotaka/sys/parse/mudmode"->parse(packet);
+	value = PARSE_MUDMODE->parse(packet);
 
 	LOGD->post_message("intermud", LOG_INFO, "Packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
 }

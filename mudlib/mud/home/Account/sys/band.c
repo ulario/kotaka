@@ -152,7 +152,7 @@ private void restore()
 	if (buf) {
 		mapping save;
 
-		save = "~Kotaka/sys/parse/value"->parse(buf);
+		save = PARSE_VALUE->parse(buf);
 
 		bans = save["bans"];
 		sitebans = save["sitebans"];
