@@ -24,9 +24,12 @@
 #include <kotaka/paths.h>
 #include <kotaka/channel.h>
 
+mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
 mapping locks;		/*< configuration locks */
+
+#define INTERMUDD	"~Intermud/sys/intermudd"
 
 /*
 Config keys:
@@ -61,8 +64,6 @@ void add_channel(string channel, varargs int lock)
 
 	program == previous_program();
 
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
 	CHECKARG(1, channel, "add_channel");
 
 	if (channels[channel]) {
@@ -83,6 +84,7 @@ static void create()
 	channels = ([ ]);
 	subscribers = ([ ]);
 	locks = ([ ]);
+	intermud = ([ ]);
 
 	configure_channels();
 }
@@ -145,8 +147,6 @@ void set_channel_config(string channel, string key, mixed value)
 {
 	mapping config;
 
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
 	CHECKARG(channel, 1, "set_channel_config");
 	CHECKARG(key, 2, "set_channel_config");
 
@@ -162,10 +162,27 @@ void set_channel_config(string channel, string key, mixed value)
 /** returns true if the channel exists */
 int test_channel(string channel)
 {
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 	CHECKARG(channel, 1, "test_channel");
 
 	return !!channels[channel];
+}
+
+void set_intermud(string channel, int true)
+{
+	if (!intermud) {
+		intermud = ([ ]);
+	}
+
+	if (true) {
+		intermud[channel] = 1;
+	} else {
+		intermud[channel] = nil;
+	}
+}
+
+int query_intermud(string channel)
+{
+	return !!intermud[channel];
 }
 
 /*******************/
@@ -290,9 +307,15 @@ string setcolor(int color)
 }
 
 /* sends a message to a channel, optionally from a user */
-void post_message(string channel, string sender, string message)
+void post_message(string channel, string sender, string message, varargs int norelay)
 {
 	object *send_list;
+
+	if (!norelay) {
+		if (intermud && intermud[channel]) {
+			INTERMUDD->send_channel_message(channel, sender, message);
+		}
+	}
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);

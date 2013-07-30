@@ -30,13 +30,26 @@
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 
-object routerconn;
-int password;
+int handle;
 string buffer;
+
+string routername;
+
+int password;
+
+int mudlistid;
+int chanlistid;
+
+mapping muds;
+mapping channels;
+mixed *routers;	/* ({ name, ({ ip, port }) }) */
 
 static void create()
 {
 	call_out("connect", 0, "204.209.44.3", 8080);
+
+	muds = ([ ]);
+	channels = ([ ]);
 }
 
 string to_packet(string data)
@@ -126,8 +139,6 @@ string query_banner(object LIB_CONN connection)
 	mixed *startup;
 	string packet;
 
-	ASSERT(!routerconn);
-
 	startup = ({
 		"startup-req-3",
 		5,
@@ -162,8 +173,6 @@ string query_banner(object LIB_CONN connection)
 
 int query_timeout(object LIB_CONN connection)
 {
-	ASSERT(!routerconn);
-
 	return 3;
 }
 
@@ -172,13 +181,146 @@ object select(string input)
 	return this_object();
 }
 
+void send_channel_message(string channel, string sender, string text)
+{
+	string packet;
+
+	packet = mudmode_sprint(
+		({
+			"channel-m",
+			5,
+			"Ulario",
+			sender ? sender : "nobody",
+			0,
+			0,
+			"dgd",
+			sender ? sender : "<system>",
+			text
+		})
+	);
+
+	message(to_packet(packet));
+}
+
 private void process_packet(string packet)
 {
-	mixed value;
+	mixed *value;
+
+	string mtype;
+	int ttl;
+
+	mixed omud;
+	mixed ouser;
+
+	mixed tmud;
+	mixed tuser;
 
 	value = PARSE_MUDMODE->parse(packet);
 
-	LOGD->post_message("intermud", LOG_INFO, "Packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
+	({ mtype, ttl, omud, ouser, tmud, tuser }) = value[0 .. 5];
+
+	switch(mtype) {
+	case "chanlist-reply":
+		chanlistid = value[6];
+
+		{
+			mapping delta;
+			string *names;
+			mixed *values;
+
+			int i, sz;
+
+			delta = value[7];
+
+			names = map_indices(delta);
+			values = map_values(delta);
+
+			sz = sizeof(names);
+
+			for (i = 0; i < sz; i++) {
+				if (values[i] == 0) {
+					channels[names[i]] = nil;
+				} else {
+					channels[names[i]] = values[i];
+				}
+			}
+		}
+
+		break;
+
+	case "channel-m":
+		if (omud == "Ulario") {
+			break;
+		}
+
+		if (CHANNELD->test_channel(value[6])) {
+			CHANNELD->post_message(value[6], ouser + "@" + omud, value[8], 1);
+		}
+
+		break;
+
+	case "mudlist":
+		mudlistid = value[6];
+
+		{
+			mapping delta;
+			string *names;
+			mixed *values;
+
+			int i, sz;
+
+			delta = value[7];
+
+			names = map_indices(delta);
+			values = map_values(delta);
+
+			sz = sizeof(names);
+
+			for (i = 0; i < sz; i++) {
+				if (values[i] == 0) {
+					muds[names[i]] = nil;
+				} else {
+					muds[names[i]] = values[i];
+				}
+			}
+		}
+
+		break;
+
+	case "startup-reply":
+		password = value[7];
+		routers = ({ });
+
+		{
+			mixed *raw;
+			int i, sz;
+
+			raw = value[6];
+			sz = sizeof(raw);
+
+			for (i = 0; i < sz; i++) {
+				string *router;
+				string name;
+				string addr;
+				string ip;
+				int port;
+
+				router = raw[i];
+				name = router[0];
+				addr = router[1];
+
+				sscanf(addr, "%s %d", ip, port);
+
+				routers += ({ name, ({ ip, port }) });
+			}
+		}
+
+		break;
+
+	default:
+		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet type: " + value[0]);
+		LOGD->post_message("intermud", LOG_INFO, "Packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
+	}
 }
 
 static void process()
@@ -186,13 +328,13 @@ static void process()
 	int len;
 	string packet;
 
+	handle = 0;
+
 	if (strlen(buffer) < 4) {
 		return;
 	}
 
 	len = buffer[3] + (buffer[2] << 8) + (buffer[1] << 16) + (buffer[0] << 24);
-
-	LOGD->post_message("intermud", LOG_INFO, "Packet size: " + len);
 
 	if (strlen(buffer) < len + 4) {
 		return;
@@ -204,7 +346,7 @@ static void process()
 
 	process_packet(packet);
 
-	call_out("process", 0);
+	handle = call_out("process", 0);
 }
 
 /* communication */
@@ -217,9 +359,7 @@ int login(string input)
 
 	write_file("i3-in", input);
 
-	LOGD->post_message("intermud", LOG_INFO, "Received input");
-
-	call_out("process", 0);
+	handle = call_out("process", 0);
 
 	return MODE_NOCHANGE;
 }
@@ -228,11 +368,9 @@ int receive_message(string input)
 {
 	buffer += input;
 
-	LOGD->post_message("intermud", LOG_INFO, "Received input");
-
-	write_file("i3-in", input);
-
-	call_out("process", 0);
+	if (!handle) {
+		handle = call_out("process", 0);
+	}
 
 	return MODE_NOCHANGE;
 }
