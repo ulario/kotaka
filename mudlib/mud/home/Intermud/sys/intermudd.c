@@ -380,5 +380,12 @@ int message_done()
 
 void logout(int quit)
 {
+	LOGD->post_message("intermud", LOG_INFO, "Connection lost");
+
+	call_out("connect", 0, "204.209.44.3", 8080);
+
+	muds = ([ ]);
+	channels = ([ ]);
+
 	buffer = nil;
 }
