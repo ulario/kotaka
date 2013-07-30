@@ -168,7 +168,7 @@ void prepare_reboot()
 
 	dumped = call_out("dumped_state", 0);
 
-	LOGD->post_message("system", LOG_NOTICE, "dumping state");
+	LOGD->post_message("system", LOG_NOTICE, "InitD:  Preparing for reboot");
 	CALLOUTD->suspend_callouts();
 	SYSTEM_USERD->block_connections();
 
@@ -176,6 +176,7 @@ void prepare_reboot()
 
 	for (index = sz - 1; index >= 0; index--) {
 		catch {
+			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding prepare_reboot to " + subsystems[index]);
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "prepare_reboot");
 		}
 	}
@@ -226,6 +227,7 @@ void reboot()
 
 	for (index = 0; index < sz; index++) {
 		catch {
+			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding reboot to " + subsystems[index]);
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "reboot");
 		}
 	}
@@ -239,7 +241,7 @@ static void dumped_state()
 	int sz;
 	int index;
 
-	LOGD->post_message("system", LOG_NOTICE, "state dumped");
+	LOGD->post_message("system", LOG_NOTICE, "InitD:  Dumped state");
 	dumped = 0;
 
 	clear_admin();
@@ -248,6 +250,7 @@ static void dumped_state()
 
 	for (index = 0; index < sz; index++) {
 		catch {
+			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding dumped_state to " + subsystems[index]);
 			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "dumped_state");
 		}
 	}

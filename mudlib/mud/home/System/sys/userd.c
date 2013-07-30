@@ -314,6 +314,8 @@ void prepare_reboot()
 {
 	ACCESS_CHECK(SYSTEM());
 
+	LOGD->post_message("system", LOG_NOTICE, "UserD->prepare_reboot");
+
 	unregister_with_klib_userd();
 
 	connections = userd::query_connections();
@@ -321,9 +323,11 @@ void prepare_reboot()
 
 void reboot()
 {
+	int i, sz;
+
 	ACCESS_CHECK(SYSTEM());
 
-	int i, sz;
+	LOGD->post_message("system", LOG_NOTICE, "UserD->reboot");
 
 	if (enabled) {
 		unregister_with_klib_userd();
@@ -339,9 +343,11 @@ void reboot()
 	}
 }
 
-void bogus_reboot()
+void dumped_state()
 {
 	ACCESS_CHECK(SYSTEM());
+
+	LOGD->post_message("system", LOG_NOTICE, "UserD->bogus_reboot");
 
 	register_with_klib_userd();
 }
