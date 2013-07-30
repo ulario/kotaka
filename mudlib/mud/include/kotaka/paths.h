@@ -44,6 +44,10 @@
 #define CLONE_INFO		(USR_DIR + "/System/lwo/clone_info")
 #define PROGRAM_INFO		(USR_DIR + "/System/lwo/program_info")
 
+/* objs */
+
+#define SYSTEM_CONN		(USR_DIR + "/System/obj/connection")
+
 /**********/
 /* Kotaka */
 /**********/
