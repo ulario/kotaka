@@ -1,0 +1,23 @@
+str = /"([^"\\]|\\.)*"/
+int = /\-?[0-9]+/
+flt = /\-?[0-9]+\.[0-9]+([Ee][-\+]?[0-9]+)?/
+whitespace = / +/
+whitespace = /	+/
+whitespace = /
++/
+
+value: int ? parse_int
+value: flt ? parse_flt
+value: str ? parse_str
+value: arr
+value: map
+
+arr: '({' '})' ? make_empty_arr
+map: '([' '])' ? make_empty_map
+arr: '({' arrlist '})' ? pick_middle
+map: '([' pairlist '])' ? pick_middle
+arrlist: value ',' ? make_arr
+arrlist: arrlist value ',' ? build_arr
+pairlist: pair ',' ? make_map
+pairlist: pairlist pair ',' ? build_map
+pair: value ':' value ? strike_middle
