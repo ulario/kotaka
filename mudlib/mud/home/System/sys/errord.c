@@ -164,7 +164,7 @@ void runtime_error(string error, int caught, mixed **trace)
 			mapping thrown;
 			/* gift package thrown by atomic error */
 
-			thrown = "~Kotaka/sys/parse/value"->parse(error);
+			thrown = PARSE_VALUE->parse(error);
 
 			error = thrown["errstr"];
 			atom = thrown["atom"];

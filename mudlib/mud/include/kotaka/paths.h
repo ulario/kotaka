@@ -58,7 +58,6 @@
 #define SUBD		(USR_DIR + "/Kotaka/sys/subd")
 #define DUMPD		(USR_DIR + "/Kotaka/sys/dumpd")
 #define PARSE_DUMP	(USR_DIR + "/Kotaka/sys/parse/dump")
-#define PARSE_VALUE	(USR_DIR + "/Kotaka/sys/parse/value")
 
 /* libs */
 
@@ -78,3 +77,4 @@
 /**********/
 
 #define STRINGD		(USR_DIR + "/String/sys/stringd")
+#define PARSE_VALUE	(USR_DIR + "/String/sys/parse/value")
