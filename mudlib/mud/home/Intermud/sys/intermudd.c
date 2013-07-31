@@ -148,7 +148,7 @@ string query_banner(object LIB_CONN connection)
 		"*i4",
 		0,
 
-		0,
+		password,
 		0,
 		0,
 
