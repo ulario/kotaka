@@ -191,11 +191,11 @@ void send_channel_message(string channel, string sender, string text)
 			"channel-m",
 			5,
 			"Ulario",
-			sender ? sender : "nobody",
+			sender ? sender : "system",
 			0,
 			0,
 			channel,
-			sender ? TEXT_SUBD->titled_name(sender, TEXT_SUBD->query_user_class(sender)) : "<system>",
+			sender ? STRINGD->to_title(sender) : "(system)",
 			text
 		})
 	);
