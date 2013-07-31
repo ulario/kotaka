@@ -256,6 +256,13 @@ private void process_packet(string packet)
 
 		break;
 
+	case "channel-e":
+		if (CHANNELD->test_channel(value[6])) {
+			CHANNELD->post_message(value[6], value[7] + "@" + omud, value[8], 1);
+		}
+
+		break;
+
 	case "mudlist":
 		mudlistid = value[6];
 
