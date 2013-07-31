@@ -92,8 +92,6 @@ static void create()
 /** lists all the channels */
 string *query_channels()
 {
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
 	return map_indices(channels);
 }
 

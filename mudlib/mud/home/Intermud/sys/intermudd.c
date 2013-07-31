@@ -53,6 +53,8 @@ static void create()
 	channels = ([ ]);
 }
 
+void listen_channel(string channel, int on);
+
 string to_packet(string data)
 {
 	int len;
@@ -153,8 +155,8 @@ string query_banner(object LIB_CONN connection)
 		0,
 
 		50000,
-		0,
-		0,
+		mudlistid,
+		chanlistid,
 		"Kotaka",
 		"Kotaka",
 		status(ST_VERSION),
@@ -321,6 +323,20 @@ private void process_packet(string packet)
 			}
 		}
 
+		{
+			string *ch;
+			int i, sz;
+
+			ch = CHANNELD->query_channels();
+			sz = sizeof(ch);
+
+			for (i = 0; i < sz; i++) {
+				if (channels[ch[i]]) {
+					listen_channel(ch[i], CHANNELD->query_intermud(ch[i]));
+				}
+			}
+		}
+
 		break;
 
 	default:
@@ -387,12 +403,11 @@ int message_done()
 
 void logout(int quit)
 {
-	LOGD->post_message("intermud", LOG_INFO, "Connection lost");
+	if (!quit) {
+		LOGD->post_message("intermud", LOG_INFO, "Connection lost");
 
-	call_out("connect", 0, "204.209.44.3", 8080);
-
-	muds = ([ ]);
-	channels = ([ ]);
+		call_out("connect", 0, "204.209.44.3", 8080);
+	}
 
 	buffer = nil;
 }
@@ -407,4 +422,30 @@ void connect_failed(object connection)
 static void destruct()
 {
 	disconnect();
+}
+
+string *query_channels()
+{
+	return map_indices(channels);
+}
+
+string *query_muds()
+{
+	return map_indices(muds);
+}
+
+void listen_channel(string channel, int on)
+{
+	message(to_packet(mudmode_sprint(
+	({
+		"channel-listen",
+		5,
+		"Ulario",
+		0,
+		"*i4",
+		0,
+		channel,
+		on
+	})
+	)));
 }
