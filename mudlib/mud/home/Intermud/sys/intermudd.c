@@ -194,7 +194,7 @@ void send_channel_message(string channel, string sender, string text)
 			sender ? sender : "nobody",
 			0,
 			0,
-			"dgd",
+			channel,
 			sender ? TEXT_SUBD->titled_name(sender, TEXT_SUBD->query_user_class(sender)) : "<system>",
 			text
 		})
@@ -388,4 +388,16 @@ void logout(int quit)
 	channels = ([ ]);
 
 	buffer = nil;
+}
+
+void connect_failed(object connection)
+{
+	LOGD->post_message("intermud", LOG_INFO, "Connection failed");
+
+	call_out("connect", 10, "204.209.44.3", 8080);
+}
+
+static void destruct()
+{
+	disconnect();
 }
