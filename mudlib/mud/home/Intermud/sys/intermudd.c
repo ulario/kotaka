@@ -346,6 +346,24 @@ private void process_packet(string packet)
 
 	default:
 		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
+		LOGD->post_message("intermud", LOG_INFO, "Bouncing back an error to \"" + omud + "\"\n");
+
+		{
+			/* send back an error packet */
+			message(to_packet(mudmode_sprint(
+				({
+					"error",
+					5,
+					"Ulario",
+					0,
+					omud,
+					ouser,
+					"unk-type",
+					"Unhandled packet type: " + mtype,
+					value
+				})
+			)));
+		}
 	}
 }
 
@@ -412,6 +430,10 @@ void logout(int quit)
 		LOGD->post_message("intermud", LOG_INFO, "Connection lost");
 
 		call_out("connect", 0, "204.209.44.3", 8080);
+	}
+
+	if (handle) {
+		remove_call_out(handle);
 	}
 
 	buffer = nil;
