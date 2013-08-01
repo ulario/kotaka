@@ -168,9 +168,94 @@ atomic private void do_atomic(string args)
 	handle_input(args);
 }
 
+private void do_alias(string args)
+{
+	string cmd;
+	string alias;
+
+	if (!sscanf(args, "%s %s", cmd, args)) {
+		cmd = args;
+		args = nil;
+	}
+
+	switch(cmd) {
+	case "help":
+		send_out("Alias help\n");
+		send_out("----------\n");
+		send_out("add - Add an alias\n");
+		send_out("del - Delete an alias\n");
+		send_out("list - List aliases\n");
+		send_out("gadd - Add a global alias\n");
+		send_out("gdel - Delete a global alias\n");
+		send_out("glist - List global aliases\n");
+		break;
+
+	case "add":
+	case "del":
+	case "list":
+		send_out("Not yet implemented.\n");
+		break;
+
+	case "gadd":
+		if (query_user()->query_class() < 3) {
+			send_out("Permission denied.\n");
+			break;
+		}
+
+		if (!sscanf(args, "%s %s", alias, args)) {
+			send_out("Please specify the alias and the expansion.\n");
+			break;
+		}
+
+		ALIASD->set_alias(alias, args);
+		send_out("Done.\n");
+		break;
+
+	case "gdel":
+		if (query_user()->query_class() < 3) {
+			send_out("Permission denied.\n");
+			break;
+		}
+
+		if (sscanf(args, "%s %s", alias, args)) {
+			send_out("Don't specify an expansion when removing an alias\n");
+			break;
+		}
+
+		ALIASD->set_alias(alias, nil);
+		send_out("Done.\n");
+		break;
+
+	case "glist":
+		if (args && sscanf(args, "%s %s", alias, args)) {
+			send_out("Don't specify an expansion when listing aliases\n");
+			break;
+		}
+
+		send_out("Aliases\n");
+		send_out("-------\n");
+
+		{
+			string *aliases;
+			int i, sz;
+
+			aliases = ALIASD->query_aliases();
+
+			sz = sizeof(aliases);
+
+			for (i = 0; i < sz; i++) {
+				alias = aliases[i];
+				send_out(alias + " - " + ALIASD->query_alias(alias) + "\n");
+			}
+		}
+	}
+}
+
 private void handle_input(string input)
 {
 	string first;
+	string alias;
+	mapping dup;
 
 	input = STRINGD->trim_whitespace(input);
 
@@ -195,14 +280,48 @@ private void handle_input(string input)
 	switch(first) {
 	case "+fixverbs":
 		fix_verbs();
-		break;
+		return;
+
 	case "+atomic":
 		do_atomic(input);
-		break;
+		return;
+
+	case "+alias":
+		do_alias(input);
+		return;
+
 	case "":
-		break;
+		return;
+
 	default:
-		do_input(first, input);
+		dup = TLSD->query_tls_value("Text", "aliases");
+
+		if (!dup || !dup[first]) {
+			alias = ALIASD->query_alias(first);
+
+			if (alias) {
+				if (!dup) {
+					dup = ([ ]);
+				}
+
+				dup[first] = 1;
+
+				TLSD->set_tls_value("Text", "aliases", dup);
+
+				send_out("Expanding to: " + alias + " " + input + "\n");
+				handle_input(alias + " " + input);
+
+				dup[first] = nil;
+
+				TLSD->set_tls_value("Text", "aliases", dup);
+
+				return;
+			}
+		}
+
+		if (first) {
+			do_input(first, input);
+		}
 	}
 }
 
