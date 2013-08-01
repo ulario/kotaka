@@ -7,6 +7,7 @@
 #define CATALOG()	(sscanf(previous_program(), USR_DIR + "/Catalog/%*s"))
 #define GAME()		(sscanf(previous_program(), USR_DIR + "/Game/%*s"))
 #define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
+#define INTERMUD()	(sscanf(previous_program(), USR_DIR + "/Intermud/%*s"))
 #define KOTAKA()	(sscanf(previous_program(), USR_DIR + "/Kotaka/%*s"))
 #define TEST()		(sscanf(previous_program(), USR_DIR + "/Test/%*s"))
 #define TEXT()		(sscanf(previous_program(), USR_DIR + "/Text/%*s"))
@@ -18,7 +19,7 @@
 			sscanf(previous_program(), USR_DIR + "/%*s/_code"))
 #define LOCAL()		(calling_object() == this_object())
 
-#define INTERFACE()	(TEXT() || SYSTEM())
+#define INTERFACE()	(TEXT() || SYSTEM() || GAME() || INTERMUD())
 #define PRIVILEGED()	(KOTAKA() || GAME() || SYSTEM() || KADMIN() || TEST())
 #define ACCESS_CHECK(x)	do { if (!(x)) error("Access denied"); } while (0)
 #define PERMISSION_CHECK(x)	do { if (!(x)) error("Permission denied"); } while (0)

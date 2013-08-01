@@ -21,6 +21,7 @@
 /* mud mode */
 /* (big endian 4 byte integer, length of the string) (string) (null) */
 #include <kotaka/paths.h>
+#include <kotaka/privilege.h>
 #include <kernel/user.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
@@ -265,6 +266,10 @@ private void process_packet(string packet)
 
 		break;
 
+	case "error":
+		CHANNELD->post_message("error", nil, "intermud error: " + STRINGD->mixed_sprint(value));
+		break;
+
 	case "mudlist":
 		mudlistid = value[6];
 
@@ -436,6 +441,8 @@ string *query_muds()
 
 void listen_channel(string channel, int on)
 {
+	ACCESS_CHECK(INTERFACE());
+
 	message(to_packet(mudmode_sprint(
 	({
 		"channel-listen",
@@ -448,4 +455,70 @@ void listen_channel(string channel, int on)
 		on
 	})
 	)));
+}
+
+void add_channel(string channel, int type)
+{
+	ACCESS_CHECK(INTERFACE());
+
+	if (channels[channel] && channels[channel][0] != "Ulario") {
+		error("Not our channel");
+	}
+
+	channels[channel] = ({ "Ulario", type });
+
+	message(to_packet(mudmode_sprint(
+	({
+		"channel-add",
+		5,
+		"Ulario",
+		0,
+		"*i4",
+		0,
+		channel,
+		type
+	})
+	)));
+}
+
+void remove_channel(string channel)
+{
+	ACCESS_CHECK(INTERFACE());
+
+	if (!channels[channel]) {
+		error("No such channel");
+	}
+
+	if (channels[channel][0] != "Ulario") {
+		error("Not our channel");
+	}
+
+	channels[channel] = nil;
+
+	message(to_packet(mudmode_sprint(
+	({
+		"channel-remove",
+		5,
+		"Ulario",
+		0,
+		"*i4",
+		0,
+		channel
+	})
+	)));
+}
+
+void reset()
+{
+	disconnect();
+
+	mudlistid = 0;
+	chanlistid = 0;
+
+	muds = ([ ]);
+	channels = ([ ]);
+
+	LOGD->post_message("intermud", LOG_INFO, "Reset");
+
+	call_out("connect", 0, "204.209.44.3", 8080);
 }
