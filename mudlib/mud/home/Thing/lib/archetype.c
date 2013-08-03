@@ -37,11 +37,6 @@ static void create()
 
 nomask void clean_archetypes()
 {
-	if (!archetypes) {
-		archetypes = ({ });
-		return;
-	}
-
 	archetypes -= ({ nil });
 }
 
@@ -71,11 +66,7 @@ nomask object *query_archetypes()
 {
 	clean_archetypes();
 
-	if (archetypes) {
-		return archetypes[..];
-	} else {
-		return ({ });
-	}
+	return archetypes[..];
 }
 
 atomic nomask void set_archetypes(object *new_archs)
@@ -129,20 +120,16 @@ atomic nomask void set_archetypes(object *new_archs)
 
 atomic nomask void clear_archetypes()
 {
-	if (archetypes) {
-		int sz, i;
-		object this;
+	int sz, i;
+	object this;
 
-		sz = sizeof(archetypes);
+	sz = sizeof(archetypes);
 
-		this = this_object();
+	this = this_object();
 
-		for (i = 0; i < sz; i++) {
-			archetypes[i]->thing_remove_instance(this);
-		}
+	for (i = 0; i < sz; i++) {
+		archetypes[i]->thing_remove_instance(this);
 	}
-
-	archetypes = nil;
 }
 
 atomic nomask void add_archetype(object new_arch)
@@ -157,11 +144,7 @@ atomic nomask void add_archetype(object new_arch)
 
 	clean_archetypes();
 
-	if (!archetypes) {
-		archetypes = ({ new_arch });
-	} else {
-		archetypes += ({ new_arch });
-	}
+	archetypes += ({ new_arch });
 
 	new_arch->thing_add_instance(this_object());
 }
@@ -176,14 +159,8 @@ atomic nomask void add_archetype_at(object new_arch, int position)
 		error("Invalid position");
 	}
 
-	if (archetypes) {
-		if (position > sizeof(archetypes)) {
-			error("Invalid position");
-		}
-	} else {
-		if (position > 0) {
-			error("Invalid position");
-		}
+	if (position > sizeof(archetypes)) {
+		error("Invalid position");
 	}
 
 	if (is_archetype_of(new_arch)) {
@@ -218,9 +195,7 @@ nomask object query_first_instance()
 
 nomask object query_prev_instance(object archetype)
 {
-	if (prev_instance) {
-		return prev_instance[archetype];
-	}
+	return prev_instance[archetype];
 }
 
 nomask object query_next_instance(object archetype)
@@ -230,46 +205,30 @@ nomask object query_next_instance(object archetype)
 
 nomask mapping query_prev_instances()
 {
-	if (prev_instance) {
-		return prev_instance[..];
-	} else {
-		return ([ ]);
-	}
+	return prev_instance[..];
 }
 
 nomask mapping query_next_instances()
 {
-	if (next_instance) {
-		return next_instance[..];
-	} else {
-		return ([ ]);
-	}
+	return next_instance[..];
 }
 
 nomask void thing_add_instance(object instance)
 {
 	object this;
+	object prev_instance;
 
 	ACCESS_CHECK(THING());
 
 	this = this_object();
 
-	if (!first_instance) {
-		first_instance = instance;
+	prev_instance = first_instance->query_prev_instance(this);
 
-		instance->thing_set_prev_instance(this, instance);
-		instance->thing_set_next_instance(this, instance);
-	} else {
-		object prev_instance;
+	first_instance->thing_set_prev_instance(this, instance);
+	prev_instance->thing_set_next_instance(this, instance);
 
-		prev_instance = first_instance->query_prev_instance(this);
-
-		first_instance->thing_set_prev_instance(this, instance);
-		prev_instance->thing_set_next_instance(this, instance);
-
-		instance->thing_set_next_instance(this, first_instance);
-		instance->thing_set_prev_instance(this, prev_instance);
-	}
+	instance->thing_set_next_instance(this, first_instance);
+	instance->thing_set_prev_instance(this, prev_instance);
 }
 
 nomask void thing_remove_instance(object instance)
@@ -310,10 +269,6 @@ nomask void thing_set_prev_instance(object archetype, object instance)
 	ACCESS_CHECK(THING());
 
 	if (instance) {
-		if (!prev_instance) {
-			prev_instance = ([ ]);
-		}
-
 		prev_instance[archetype] = instance;
 	} else {
 		prev_instance[archetype] = nil;
@@ -325,10 +280,6 @@ nomask void thing_set_next_instance(object archetype, object instance)
 	ACCESS_CHECK(THING());
 
 	if (instance) {
-		if (!next_instance) {
-			next_instance = ([ ]);
-		}
-
 		next_instance[archetype] = instance;
 	} else {
 		next_instance[archetype] = nil;
