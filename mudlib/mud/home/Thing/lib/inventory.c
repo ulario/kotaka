@@ -58,11 +58,6 @@ void remove_notify(object obj)
 
 nomask void clean_inventory()
 {
-	if (!inventory) {
-		inventory = ({ });
-		return;
-	}
-
 	inventory -= ({ nil });
 }
 
@@ -70,23 +65,23 @@ nomask void thing_add_inventory(object arriving)
 {
 	ACCESS_CHECK(THING());
 
-	if (!inventory) {
-		inventory = ({ arriving });
-	} else {
-		inventory = ({ arriving }) + inventory;
-	}
+	ASSERT(arriving);
+	ASSERT(!sizeof(inventory & ({ arriving })));
 
 	clean_inventory();
+
+	inventory = ({ arriving }) + inventory;
 }
 
 nomask void thing_del_inventory(object departing)
 {
 	ACCESS_CHECK(THING());
 
-	ASSERT(inventory);
-	inventory -= ({ departing });
+	ASSERT(departing);
 
 	clean_inventory();
+
+	inventory -= ({ departing });
 }
 
 nomask int is_container_of(object test)
@@ -140,11 +135,7 @@ nomask object *query_inventory()
 {
 	clean_inventory();
 
-	if (inventory) {
-		return inventory[..];
-	} else {
-		return ({ });
-	}
+	return inventory[..];
 }
 
 nomask atomic void move(object new_env)
