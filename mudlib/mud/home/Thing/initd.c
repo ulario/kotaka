@@ -59,6 +59,6 @@ string query_toucher(string path)
 	case USR_DIR + "/Thing/lib/inventory":
 		return "touch_inventory";
 	case USR_DIR + "/Thing/lib/property":
-		return "touch_property";
+		return "touch_properties";
 	}
 }
