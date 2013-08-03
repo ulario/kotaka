@@ -20,8 +20,8 @@
 #include <thing/paths.h>
 
 inherit thing "~Thing/lib/thing";
-inherit position "position";
-inherit timer "timer";
+inherit position "thing/position";
+inherit timer "thing/timer";
 
 static void create()
 {
