@@ -54,7 +54,7 @@ int query_lowest_free(string trial, object exclude)
 
 	taken = ([ ]);
 
-	inv = query_inventory() - ({ nil, exclude });
+	inv = query_inventory() - ({ exclude });
 
 	for (i = 0; i < sizeof(inv); i++) {
 		object check;
