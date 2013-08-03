@@ -270,7 +270,7 @@ private void process_packet(string packet)
 		{
 			object user;
 
-			if (user = TEXT_USERD->find_user(tname)) {
+			if (user = TEXT_USERD->find_user(tuser)) {
 				user->message(value[6] + "@" + oname + " emotes to you: " + value[7]);
 			} else {
 				message(to_packet(mudmode_sprint(
@@ -371,7 +371,7 @@ private void process_packet(string packet)
 		{
 			object user;
 
-			if (user = TEXT_USERD->find_user(tname)) {
+			if (user = TEXT_USERD->find_user(tuser)) {
 				user->message(value[6] + "@" + oname + " tells you: " + value[7]);
 			} else {
 				message(to_packet(mudmode_sprint(
