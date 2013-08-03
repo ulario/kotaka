@@ -37,45 +37,24 @@ static void create()
 	removed_properties = ({ });
 }
 
-nomask void clean_properties()
-{
-	if (!properties) {
-		properties = ([ ]);
-	}
-
-	if (!removed_properties) {
-		removed_properties = ({ });
-	}
-}
-
 nomask string *list_local_properties()
 {
-	if (properties) {
-		return map_indices(properties);
-	} else {
-		return ({ });
-	}
+	return map_indices(properties);
 }
 
 nomask mapping query_local_properties()
 {
-	if (properties) {
-		return SUBD->deep_copy(properties);
-	} else {
-		return ([ ]);
-	}
+	return SUBD->deep_copy(properties);
 }
 
 nomask void set_local_properties(mapping prop)
 {
 	properties = SUBD->deep_copy(prop);
-
-	clean_properties();
 }
 
 nomask void clear_local_properties()
 {
-	properties = nil;
+	properties = ([ ]);
 }
 
 nomask void set_removed_properties(string *remove)
@@ -84,33 +63,21 @@ nomask void set_removed_properties(string *remove)
 		error("Invalid removed property");
 	}
 
-	if (sizeof(remove)) {
-		removed_properties = remove[..];
-	} else {
-		removed_properties = nil;
-	}
+	removed_properties = remove[..];
 }
 
 nomask string *query_removed_properties()
 {
-	if (removed_properties) {
-		return removed_properties[..];
-	} else {
-		return ({ });
-	}
+	return removed_properties[..];
 }
 
 nomask void clear_removed_properties()
 {
-	removed_properties = nil;
+	removed_properties = ({ });
 }
 
 nomask void set_local_property(string name, mixed value, varargs int nosignal)
 {
-	if (!properties) {
-		properties = ([ ]);
-	}
-
 	properties[name] = SUBD->deep_copy(value);
 
 	clean_properties();
@@ -144,6 +111,7 @@ void set_property(string name, mixed value)
 		case PROP_COMBO:
 		case PROP_MIXDOWN:
 			error("Composite properties are read only");
+
 		case PROP_MAGIC:
 			{
 				string func;
@@ -170,11 +138,7 @@ void set_property(string name, mixed value)
 
 nomask mixed query_local_property(string name)
 {
-	if (properties) {
-		return SUBD->deep_copy(properties[name]);
-	} else {
-		return nil;
-	}
+	return SUBD->deep_copy(properties[name]);
 }
 
 mixed query_property(string name)
@@ -196,9 +160,7 @@ mixed query_property(string name)
 		{
 			mixed value;
 
-			if (properties) {
-				value = properties[name];
-			}
+			value = properties[name];
 
 			if (value != nil) {
 				return SUBD->deep_copy(value);
@@ -209,11 +171,11 @@ mixed query_property(string name)
 
 	case PROP_INHERIT:
 	case PROP_DROPDOWN:
-		if (properties && properties[name] != nil)  {
+		if (properties[name] != nil)  {
 			return SUBD->deep_copy(properties[name]);
 		}
 
-		if (removed_properties && sizeof(removed_properties & ({ name }) )) {
+		if (sizeof(removed_properties & ({ name }) )) {
 			return info[2];
 		}
 
@@ -266,9 +228,7 @@ mixed query_property(string name)
 				arch = query_archetypes();
 			}
 
-			if (properties) {
-				local = SUBD->deep_copy(properties[lname]);
-			}
+			local = SUBD->deep_copy(properties[lname]);
 
 			switch(info[0]) {
 			case T_ARRAY:
