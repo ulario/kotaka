@@ -266,6 +266,29 @@ private void process_packet(string packet)
 
 		break;
 
+	case "emoteto":
+		{
+			object user;
+
+			if (user = TEXT_USERD->find_user(tname)) {
+				user->message(value[6] + "@" + oname + " emotes to you: " + value[7]);
+			} else {
+				message(to_packet(mudmode_sprint(
+				({
+					"error",
+					5,
+					"Ulario",
+					0,
+					omud,
+					ouser,
+					"unk-user",
+					"User not online: " + tuser,
+					value
+				}) )));
+			}
+		}
+
+
 	case "error":
 		CHANNELD->post_message("error", nil, "intermud error: " + STRINGD->mixed_sprint(value));
 		break;
@@ -343,6 +366,28 @@ private void process_packet(string packet)
 		}
 
 		break;
+
+	case "tell":
+		{
+			object user;
+
+			if (user = TEXT_USERD->find_user(tname)) {
+				user->message(value[6] + "@" + oname + " tells you: " + value[7]);
+			} else {
+				message(to_packet(mudmode_sprint(
+				({
+					"error",
+					5,
+					"Ulario",
+					0,
+					omud,
+					ouser,
+					"unk-user",
+					"User not online: " + tuser,
+					value
+				}) )));
+			}
+		}
 
 	default:
 		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
