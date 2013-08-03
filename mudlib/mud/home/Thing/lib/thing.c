@@ -76,13 +76,6 @@ static nomask void thing_destruct()
 	clear_archetypes();
 }
 
-void clean()
-{
-	clean_archetypes();
-	clean_inventory();
-	clean_properties();
-}
-
 void self_destruct()
 {
 	destruct_object(this_object());
