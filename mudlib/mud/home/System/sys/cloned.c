@@ -149,7 +149,7 @@ void remove_clone(object obj)
 	next->set_prev_clone(prev);
 }
 
-void discover_clones()
+atomic void discover_clones()
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
