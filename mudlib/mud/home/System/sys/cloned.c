@@ -38,17 +38,6 @@ static void create()
 	bmap = ([ ]);
 
 	discover_clones();
-
-	call_out("defragment", 5);
-}
-
-void add_clone(object obj);
-
-static void defragment()
-{
-	call_out("defragment", 60);
-
-	db->reindex();
 }
 
 void add_clone(object obj)
