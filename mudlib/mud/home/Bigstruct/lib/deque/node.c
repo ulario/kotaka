@@ -194,16 +194,3 @@ void set_element(int index, mixed data)
 
 	sub[index] = data;
 }
-
-void dump()
-{
-	int index;
-
-	LOGD->post_message("dump", LOG_DEBUG, "[" + begin + ", " + end + ")");
-
-	for (index = begin; index < end; index++) {
-		LOGD->post_message("dump", LOG_DEBUG, index + ": " + sub[index]);
-	}
-
-	LOGD->post_message("dump", LOG_DEBUG, index + ": <end>");
-}

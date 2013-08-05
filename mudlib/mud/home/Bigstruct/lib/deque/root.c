@@ -227,18 +227,3 @@ void set_element(int index, mixed value)
 
 	node->set_element(index, value);
 }
-
-void dump()
-{
-	object node;
-
-	ACCESS_CHECK(SYSTEM());
-
-	node = first;
-
-	while (node) {
-		LOGD->post_message("dump", LOG_DEBUG, "Dumping node " + object_name(node));
-		node->dump();
-		node = node->get_next();
-	}
-}
