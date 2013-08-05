@@ -300,8 +300,8 @@ void recompile_everything()
 
 	ASSERT(find_object(PROGRAMD));
 
-	libqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+	objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
 
 	rlimits(0; -1) {
 		indices = PROGRAMD->query_program_indices();
@@ -326,17 +326,21 @@ void recompile_everything()
 		while (!libqueue->empty()) {
 			string path;
 
-			path = libqueue->get_front();
-			libqueue->pop_front();
+			path = libqueue->get_back();
+			libqueue->pop_back();
 
 			destruct_object(path);
 		}
 
+		objqueue->grant_access(find_object(SUBD), WRITE_ACCESS);
+
+		SUBD->bqsort(objqueue, 0, objqueue->get_size() - 1);
+
 		while (!objqueue->empty()) {
 			string path;
 
-			path = objqueue->get_front();
-			objqueue->pop_front();
+			path = objqueue->get_back();
+			objqueue->pop_back();
 
 			catch {
 				compile_object(path);
