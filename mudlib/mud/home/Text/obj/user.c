@@ -77,13 +77,6 @@ string query_name()
 	return username;
 }
 
-void set_uid(int new_uid)
-{
-	ACCESS_CHECK(TEXT());
-
-	LOGD->post_message("game", LOG_INFO, "User has new UID: " + new_uid);
-}
-
 void set_mobile(object new_mobile)
 {
 	ACCESS_CHECK(TEXT() || GAME());
