@@ -62,9 +62,3 @@
 /* objs */
 
 #define SYSTEM_CONN		(USR_DIR + "/System/obj/connection")
-
-/********/
-/* Help */
-/********/
-
-#define HELPD			(USR_DIR + "/Help/sys/helpd")
