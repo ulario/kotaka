@@ -40,6 +40,8 @@ void begin()
 {
 	int i;
 
+	ACCESS_CHECK(previous_object() == query_user());
+
 	::begin();
 
 	send_out("\033[1;1H\033[2J");

@@ -42,6 +42,8 @@ void begin()
 {
 	int i;
 
+	ACCESS_CHECK(previous_object() == query_user());
+
 	::begin();
 
 	speed = 5.0;
