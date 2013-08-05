@@ -112,17 +112,9 @@ void set_property(string name, mixed value)
 		case PROP_MAGIC:
 			{
 				string func;
-				string lib;
 				string creator;
 
 				func = info[2][1];	/* writer */
-				lib = function_object(func, this_object());
-
-				if (!lib) {
-					error("No such function");
-				}
-
-				creator = DRIVER->creator(lib);
 
 				call_other(this_object(), func, value);
 			}
@@ -275,17 +267,9 @@ mixed query_property(string name)
 	case PROP_MAGIC:
 		{
 			string func;
-			string lib;
 			string creator;
 
 			func = info[2][0];	/* reader */
-			lib = function_object(func, this_object());
-
-			if (!lib) {
-				error("No such function");
-			}
-
-			creator = DRIVER->creator(lib);
 
 			return call_other(this_object(), func);
 		}
