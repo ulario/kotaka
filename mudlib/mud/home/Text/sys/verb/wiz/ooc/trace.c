@@ -18,8 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/user.h>
-#include <kotaka/paths.h>
-#include <text/paths.h>
+#include <kotaka/paths/text.h>
 
 inherit LIB_RAWVERB;
 

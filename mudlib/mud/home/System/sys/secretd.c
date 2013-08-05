@@ -17,10 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kernel/kernel.h>
 #include <config.h>
-
-#include <kotaka/paths.h>
+#include <kernel/kernel.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;

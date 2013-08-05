@@ -18,13 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/kernel.h>
-
-#include <kotaka/paths.h>
-#include <kotaka/privilege.h>
 #include <kotaka/log.h>
-
+#include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 #include <trace.h>
-#include <type.h>
 
 inherit SECOND_AUTO;
 

@@ -18,10 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /** Property typing and inheritance */
+#include <kotaka/paths/thing.h>
 #include <kotaka/privilege.h>
-#include <kotaka/paths.h>
 #include <kotaka/property.h>
-
 #include <type.h>
 
 private mapping pinfo;

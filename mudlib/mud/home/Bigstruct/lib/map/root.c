@@ -18,13 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/access.h>
-
 #include <kotaka/assert.h>
-#include <kotaka/paths.h>
-#include <kotaka/privilege.h>
-#include <kotaka/log.h>
-#include <kotaka/bigstruct.h>
-
+#include <kotaka/paths/bigstruct.h>
 #include <type.h>
 
 inherit "../bintree/root";

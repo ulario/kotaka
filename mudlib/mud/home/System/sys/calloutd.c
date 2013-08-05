@@ -17,15 +17,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <status.h>
-
 #include <kernel/rsrc.h>
-
 #include <kotaka/assert.h>
-#include <kotaka/bigstruct.h>
-#include <kotaka/paths.h>
-#include <kotaka/privilege.h>
 #include <kotaka/log.h>
+#include <kotaka/paths/bigstruct.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
+#include <status.h>
+#include <type.h>
 
 inherit SECOND_AUTO;
 

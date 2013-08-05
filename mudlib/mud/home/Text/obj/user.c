@@ -17,15 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/privilege.h>
 #include <kernel/user.h>
-#include <kotaka/paths.h>
-#include <kotaka/log.h>
 #include <kotaka/assert.h>
-#include <kernel/access.h>
-
-#include <text/paths.h>
-#include <kotaka/assert.h>
+#include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/paths/text.h>
+#include <kotaka/privilege.h>
 
 inherit "~/lib/user";
 

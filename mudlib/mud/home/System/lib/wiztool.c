@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <config.h>
 #include <kernel/kernel.h>
 #include <kernel/user.h>
 #include <kernel/access.h>
-
-#include <kotaka/paths.h>
+#include <kotaka/paths/system.h>
 
 inherit auto SECOND_AUTO;
 inherit user LIB_WIZTOOL;

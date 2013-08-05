@@ -19,9 +19,9 @@
  */
 #include <kernel/access.h>
 #include <kotaka/assert.h>
-#include <kotaka/bigstruct.h>
 #include <kotaka/log.h>
-#include <kotaka/paths.h>
+#include <kotaka/paths/bigstruct.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <status.h>
 #include <type.h>

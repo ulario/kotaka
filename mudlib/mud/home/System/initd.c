@@ -19,21 +19,13 @@
  */
 #include <kernel/access.h>
 #include <kernel/kernel.h>
-#include <kernel/rsrc.h>
-#include <kernel/tls.h>
-#include <kernel/user.h>
 #include <kernel/version.h>
-
-#include <kotaka/assert.h>
-#include <kotaka/privilege.h>
-#include <kotaka/paths.h>
 #include <kotaka/log.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 #include <kotaka/version.h>
-
 #include <status.h>
-#include <limits.h>
 #include <trace.h>
-#include <type.h>
 
 #define CONSOLE_LOGLEVEL 6
 

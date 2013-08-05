@@ -24,8 +24,8 @@ one subsystem to take advantage of grants made by other subsystems.
 
 */
 #include <kernel/kernel.h>
-
-#include <kotaka/paths.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <kotaka/checkarg.h>
 

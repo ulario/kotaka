@@ -20,12 +20,13 @@
 
 /* mud mode */
 /* (big endian 4 byte integer, length of the string) (string) (null) */
-#include <kotaka/paths.h>
-#include <kotaka/privilege.h>
 #include <kernel/user.h>
-#include <kotaka/assert.h>
 #include <kotaka/log.h>
-#include <text/paths.h>
+#include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/paths/text.h>
+#include <kotaka/privilege.h>
 #include <status.h>
 #include <type.h>
 

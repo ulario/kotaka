@@ -18,14 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/access.h>
-
-#include <kotaka/paths.h>
+#include <kotaka/paths/account.h>
+#include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
-#include <kotaka/bigstruct.h>
-
-#include <account/paths.h>
-#include <game/paths.h>
-#include <text/paths.h>
 
 string titled_name(string name, int class)
 {

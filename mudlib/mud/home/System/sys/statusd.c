@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/user.h>
-#include <kotaka/paths.h>
-#include <kotaka/privilege.h>
 #include <kotaka/assert.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 #include <kotaka/log.h>
 #include <status.h>
 

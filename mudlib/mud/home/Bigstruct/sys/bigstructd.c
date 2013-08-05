@@ -17,10 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths.h>
-#include <kotaka/log.h>
-#include <status.h>
+#include <config.h>
 #include <kernel/access.h>
+#include <kotaka/log.h>
+#include <kotaka/paths/bigstruct.h>
+#include <kotaka/paths/system.h>
+#include <status.h>
 
 private void check_node(object node)
 {

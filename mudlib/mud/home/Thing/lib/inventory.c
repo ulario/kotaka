@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/assert.h>
-#include <kotaka/paths.h>
 #include <kotaka/privilege.h>
 
 private object environment;

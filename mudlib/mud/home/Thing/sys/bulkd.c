@@ -17,11 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/log.h>
-#include <kotaka/paths.h>
+#include <kotaka/paths/bigstruct.h>
+#include <kotaka/paths/thing.h>
 #include <kotaka/privilege.h>
-#include <kotaka/bigstruct.h>
-#include <thing/paths.h>
 #include <status.h>
 
 int handle;

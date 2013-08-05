@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <text/paths.h>
-#include <kotaka/paths.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
 #define POP_SET		0

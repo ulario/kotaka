@@ -24,9 +24,7 @@ Enhances TLS by providing access controls and string labels
 #include <kernel/access.h>
 #include <kernel/kernel.h>
 #include <kernel/tls.h>
-
-#include <kotaka/paths.h>
-#include <kotaka/privilege.h>
+#include <kotaka/paths/system.h>
 
 inherit SECOND_AUTO;
 

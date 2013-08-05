@@ -17,12 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <config.h>
 #include <kernel/access.h>
-
-#include <kotaka/paths.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
-
-#include <text/paths.h>
 
 inherit TEXT_LIB_USTATE;
 

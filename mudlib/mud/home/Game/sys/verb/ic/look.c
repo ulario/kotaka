@@ -17,10 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths.h>
-#include <game/paths.h>
-#include <text/paths.h>
-#include <type.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/text.h>
 
 inherit LIB_EMIT;
 inherit LIB_ENGVERB;

@@ -17,16 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kernel/kernel.h>
-#include <kernel/user.h>
 #include <kernel/access.h>
-#include <kotaka/bigstruct.h>
-
-#include <kotaka/paths.h>
-#include <kotaka/privilege.h>
+#include <kernel/user.h>
 #include <kotaka/assert.h>
-#include <kotaka/log.h>
-
+#include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 #include <status.h>
 
 inherit system_user LIB_SYSTEM_USER;
