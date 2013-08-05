@@ -155,20 +155,7 @@ private void write_logfile(string file, string message)
 	for (i = 0; i < sz; i++) {
 		line = timestamp + " " + lines[i] + "\n";
 
-		switch(typeof(filebufs[file])) {
-		case T_STRING:
-			{
-				string buf;
-
-				buf = filebufs[file];
-				filebufs[file] = new_object("~/lwo/logbuf");
-				filebufs[file]->push(buf);
-			}
-
-		case T_OBJECT:
-			filebufs[file]->push(line);
-			break;
-		}
+		filebufs[file]->push(line);
 	}
 
 	schedule();
@@ -194,20 +181,11 @@ void flush()
 				mixed buf;
 
 				buf = filebufs[files[i]];
+				text = buf->pop();
 
-				switch(typeof(buf)) {
-				case T_STRING:
-					text = buf;
+				if (!text) {
 					filebufs[files[i]] = nil;
-					break;
-				
-				case T_OBJECT:
-					text = buf->pop();
-
-					if (!text) {
-						filebufs[files[i]] = nil;
-						continue;
-					}
+					continue;
 				}
 
 				if (!write_file(files[i], text)) {
