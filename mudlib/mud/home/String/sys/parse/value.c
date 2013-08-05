@@ -55,17 +55,7 @@ mixed parse(string input)
 
 static string *parse_str(string *input)
 {
-	string str;
-
-	str = input[0];
-	str = str[1 .. strlen(str) - 2];
-
-	str = STRINGD->replace(str, "\\t", "\t");
-	str = STRINGD->replace(str, "\\n", "\n");
-	str = STRINGD->replace(str, "\\\"", "\"");
-	str = STRINGD->replace(str, "\\\\", "\\");
-
-	return ({ str });
+	return ({ STRINGD->quote_unescape(input[0][1 .. strlen(input[0]) - 2]) });
 }
 
 static int *parse_int(string *input)
