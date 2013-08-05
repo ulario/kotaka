@@ -19,7 +19,7 @@
  */
 #include <account/paths.h>
 #include <kotaka/log.h>
-#include <kotaka/paths.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
 inherit LIB_INITD;
