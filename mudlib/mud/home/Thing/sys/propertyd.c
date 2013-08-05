@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/** Property typing and inheritance */
 #include <kotaka/paths/thing.h>
 #include <kotaka/privilege.h>
 #include <kotaka/property.h>
