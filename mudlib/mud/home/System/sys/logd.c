@@ -152,9 +152,9 @@ private void write_logfile(string file, string message)
 		filebufs[file] = new_object("~/lwo/logbuf");
 	}
 
-	line = timestamp + " " + lines[i] + "\n";
-
 	for (i = 0; i < sz; i++) {
+		line = timestamp + " " + lines[i] + "\n";
+
 		switch(typeof(filebufs[file])) {
 		case T_STRING:
 			{
