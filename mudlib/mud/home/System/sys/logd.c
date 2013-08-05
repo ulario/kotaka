@@ -55,6 +55,8 @@ static void create()
 	facilities = ([ ]);
 	filebufs = ([ ]);
 	callout = 0;
+
+	load_object("~/lwo/logbuf");
 }
 
 private void schedule()
