@@ -313,6 +313,8 @@ void post_message(string channel, string sender, string message, varargs int nor
 		}
 	}
 
+	write_file("log", time() + ": " + channel + ": " + (sender ? sender + ": " : "") + message + "\n");
+
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
 	} else {
