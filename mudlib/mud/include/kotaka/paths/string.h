@@ -19,16 +19,6 @@
  */
 #include <config.h>
 
-/* daemons */
-
-#define CHANNELD	(USR_DIR + "/Kotaka/sys/channeld")
-#define SUBD		(USR_DIR + "/Kotaka/sys/subd")
-#define DUMPD		(USR_DIR + "/Kotaka/sys/dumpd")
-#define PARSE_DUMP	(USR_DIR + "/Kotaka/sys/parse/dump")
-
-/* libs */
-
-#define LIB_KOTAKA_USER		(USR_DIR + "/Kotaka/lib/user")
-#define LIB_USTATE		(USR_DIR + "/Kotaka/lib/ustate")
-#define LIB_DRIVER		(USR_DIR + "/Kotaka/lib/driver")
-#define LIB_DEEP_COPY		(USR_DIR + "/Kotaka/lib/deep_copy")
+#define STRINGD		(USR_DIR + "/String/sys/stringd")
+#define PARSE_VALUE	(USR_DIR + "/String/sys/parse/value")
+#define PARSE_MUDMODE	(USR_DIR + "/String/sys/parse/mudmode")
