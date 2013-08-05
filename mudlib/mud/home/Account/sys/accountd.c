@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/privilege.h>
-#include <kotaka/paths.h>
+#include <kotaka/paths/system.h>
 #include <type.h>
 
 int max_uid;
