@@ -17,9 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/* mud mode */
-/* (big endian 4 byte integer, length of the string) (string) (null) */
 #include <kernel/user.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/kotaka.h>
@@ -29,6 +26,9 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 #include <type.h>
+
+/* mud mode */
+/* (big endian 4 byte integer, length of the string) (string) (null) */
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
