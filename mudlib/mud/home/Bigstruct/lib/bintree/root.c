@@ -451,21 +451,21 @@ static object next_node(object node)
 
 object query_first_node()
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return rightest(top);
 }
 
 object query_prev_node(object node)
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return prev_node(node);
 }
 
 object query_next_node(object node)
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return next_node(node);
 }
