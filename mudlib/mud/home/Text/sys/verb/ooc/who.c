@@ -30,6 +30,7 @@ void main(object actor, string args)
 	object user;
 	object *users;
 	mapping lists;
+	string myname;
 	int sz, i;
 	int is_wiz;
 
@@ -41,6 +42,7 @@ void main(object actor, string args)
 	]);
 
 	user = query_user();
+	myname = user->query_username();
 	class = user->query_class();
 
 	send_out("User list\n");
@@ -50,24 +52,32 @@ void main(object actor, string args)
 	sz = sizeof(users);
 
 	for (i = 0; i < sz; i++) {
-		object user;
+		object ruser;
 		string name;
 		int uclass;
+		int invisible;
 		string buf;
 
-		user = users[i];
-		name = user->query_username();
+		ruser = users[i];
+		name = ruser->query_username();
 
-		uclass = user->query_class();
+		uclass = ruser->query_class();
+
+		if (ACCOUNTD->query_account_property(name, "invisible")) {
+			invisible = 1;
+		}
+
+		/* you can always see yourself */
+		if (invisible && name != myname) {
+			if (SUBD->query_effective_invisible(class, uclass)) {
+				continue;
+			}
+		}
 
 		buf = TEXT_SUBD->titled_name(name, uclass);
 
-		if (ACCOUNTD->query_account_property(name, "invisible")) {
-			if (class > 2 && class >= uclass) {
-				buf += " (invisible)";
-			} else {
-				continue;
-			}
+		if (invisible) {
+			buf += " (invisible)";
 		}
 
 		if (class > 2 && class >= uclass) {
