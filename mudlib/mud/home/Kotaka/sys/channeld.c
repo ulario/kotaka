@@ -27,8 +27,6 @@ mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
 mapping locks;		/*< configuration locks */
 
-#define INTERMUDD	"~Intermud/sys/intermudd"
-
 /*
 Config keys:
 
