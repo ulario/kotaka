@@ -220,6 +220,10 @@ nomask void thing_add_instance(object instance)
 
 	this = this_object();
 
+	if (!first_instance) {
+		first_instance = instance;
+	}
+
 	prev_instance = first_instance->query_prev_instance(this);
 
 	if (prev_instance) {
@@ -289,15 +293,7 @@ atomic nomask void touch_archetype(varargs string function)
 	object this;
 
 	missing = query_archetypes();
-
-	if (!prev_instance) {
-		prev_instance = ([ ]);
-	}
-
-	if (!next_instance) {
-		next_instance = ([ ]);
-	}
-
+	missing -= ({ nil });
 	missing -= map_indices(query_prev_instances());
 	sz = sizeof(missing);
 
