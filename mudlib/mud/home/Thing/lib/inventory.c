@@ -78,21 +78,23 @@ nomask int is_container_of(object test)
 {
 	object env;
 	object this;
-	int steps;
+	mapping seen;
 
 	this = this_object();
 	env = test->query_environment();
 
+	seen = ([ ]);
+
 	while (env) {
+		if (seen[env]) {
+			error("Cyclic containment detected");
+		}
+
 		if (env == this) {
 			return 1;
 		}
 
-		steps++;
-
-		if (steps > 100) {
-			error("Nested too deeply");
-		}
+		seen[env] = 1;
 
 		env = env->query_environment();
 	}
@@ -149,15 +151,11 @@ nomask atomic void move(object new_env)
 
 	if (new_env) {
 		if (new_env == this) {
-			error("Self containment");
+			error("Self containment attempted");
 		}
 
 		if (is_container_of(new_env)) {
-			error("Recursive containment");
-		}
-
-		if (new_env->query_depth() >= 50) {
-			error("Nested too deeply");
+			error("Cyclic containment attempted");
 		}
 	}
 
