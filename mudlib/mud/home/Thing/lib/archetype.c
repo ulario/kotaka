@@ -222,8 +222,11 @@ nomask void thing_add_instance(object instance)
 
 	prev_instance = first_instance->query_prev_instance(this);
 
+	if (prev_instance) {
+		prev_instance->thing_set_next_instance(this, instance);
+	}
+
 	first_instance->thing_set_prev_instance(this, instance);
-	prev_instance->thing_set_next_instance(this, instance);
 
 	instance->thing_set_next_instance(this, first_instance);
 	instance->thing_set_prev_instance(this, prev_instance);
@@ -236,11 +239,6 @@ nomask void thing_remove_instance(object instance)
 	ACCESS_CHECK(THING());
 
 	this = this_object();
-
-	if (!first_instance) {
-		/* no list */
-		return;
-	}
 
 	if (first_instance == instance) {
 		first_instance = instance->query_next_instance(this);
