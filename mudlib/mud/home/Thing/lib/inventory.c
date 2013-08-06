@@ -157,6 +157,10 @@ nomask atomic void move(object new_env)
 		if (is_container_of(new_env)) {
 			error("Cyclic containment attempted");
 		}
+
+		if (new_env->query_depth() > 20) {
+			error("Excessive nesting attempted");
+		}
 	}
 
 	if (environment) {
