@@ -112,7 +112,7 @@ atomic nomask void set_archetypes(object *new_archs)
 	sz = sizeof(new);
 
 	for (i = 0; i < sz; i++) {
-		old[i]->thing_add_instance(this);
+		new[i]->thing_add_instance(this);
 	}
 }
 
