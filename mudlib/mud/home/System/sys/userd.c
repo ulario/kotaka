@@ -44,37 +44,6 @@ int telnet_port_count;	/* number of ports currently registered */
 int blocked;		/* connection blocking is active */
 mapping reblocked;	/* objects that were already manually blocked */
 
-/****************/
-/* Declarations */
-/****************/
-
-/* internal */
-
-static void create();
-int login(string str);
-private void register_with_klib_userd();
-private void unregister_with_klib_userd();
-private object get_manager(object conn);
-
-/* external */
-
-void reboot();
-void clear_ports();
-
-void set_binary_manager(int port, object LIB_USERD manager);
-void set_telnet_manager(int port, object LIB_USERD manager);
-void set_fixed_manager(int port, object LIB_USERD manager);
-
-int free_users();
-void block_connections();
-void unblock_connections();
-int query_blocked();
-int query_connection_count();
-int query_reserve();
-void set_reserve(int new_reserve);
-
-/* initd hooks */
-
 /***************/
 /* Definitions */
 /***************/
