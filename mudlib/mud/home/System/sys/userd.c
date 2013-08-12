@@ -191,7 +191,7 @@ void disable()
 	unregister_with_klib_userd();
 }
 
-void block_connections()
+void block_connections(varargs object except)
 {
 	int index;
 
@@ -208,6 +208,7 @@ void block_connections()
 	reblocked = ([ ]);
 
 	connections = userd::query_connections();
+	connections -= ({ except });
 
 	for (index = 0; index < sizeof(connections); index++) {
 		object conn;
@@ -227,7 +228,7 @@ void block_connections()
 	}
 }
 
-void unblock_connections()
+void unblock_connections(varargs object except)
 {
 	int index;
 
@@ -247,6 +248,7 @@ void unblock_connections()
 	blocked = 0;
 
 	connections = userd::query_connections();
+	connections -= ({ except });
 
 	for (index = 0; index < sizeof(connections); index++) {
 		object conn;
