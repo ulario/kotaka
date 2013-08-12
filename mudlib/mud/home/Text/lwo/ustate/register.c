@@ -161,6 +161,9 @@ void receive_in(string input)
 			pop_state();
 			return;
 		} else {
+			object parent;
+			object pager;
+
 			ACCOUNTD->register_account(name, password);
 
 			query_user()->set_username(name);
@@ -175,7 +178,27 @@ void receive_in(string input)
 
 			TEXT_SUBD->login_user(user);
 
-			terminate_account_state();
+			pager = new_object("~/lwo/ustate/page");
+			pager->set_text(read_file("~/data/quickstartguide"));
+
+			parent = query_parent();
+
+			if (parent <- "~/lwo/ustate/start") {
+				object shell;
+
+				send_out("Starting popup.\n");
+
+				suspend_user();
+				shell = new_object("~/lwo/ustate/shell");
+				push_state(shell);
+				shell->push_state(pager);
+				release_user();
+				parent->collapse_state(this_object());
+				collapse_state(shell);
+			} else {
+				swap_state(pager);
+			}
+
 			return;
 		}
 		break;
