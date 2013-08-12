@@ -50,6 +50,22 @@ private void draw_tickmarks(object gc)
 	}
 }
 
+private void draw_grid(object gc)
+{
+	int x, y;
+
+	gc->set_layer("grid");
+	gc->set_offset(8, 8);
+	gc->set_clip(-4, -4, 4, 4);
+
+	for (y = -4; y <= 4; y += 4) {
+		for (x = -4; x <= 4; x += 4) {
+			gc->move_pen(x, y);
+			gc->draw("+");
+		}
+	}
+}
+
 private void default_painter(object gc, object neighbor, object viewer)
 {
 	string s;
@@ -391,6 +407,10 @@ string draw_look(object viewer)
 	painter->set_layer_size("view", 17, 17);
 	painter->set_layer_position("view", 61, 2);
 
+	painter->add_layer("grid");
+	painter->set_layer_size("grid", 17, 17);
+	painter->set_layer_position("grid", 61, 2);
+
 	painter->add_layer("exits");
 	painter->set_layer_size("exits", 17, 17);
 	painter->set_layer_position("exits", 61, 2);
@@ -412,6 +432,7 @@ string draw_look(object viewer)
 	draw_prose(gc, viewer);
 
 	draw_tickmarks(gc);
+	draw_grid(gc);
 
 	gc->set_layer("view");
 
