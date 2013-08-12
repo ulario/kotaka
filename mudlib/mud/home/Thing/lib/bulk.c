@@ -26,6 +26,7 @@ float mass;		/* kg */
 float density;		/* kg/l */
 
 int flexible;		/* flexible container */
+int virtual;		/* virtual container */
 
 float capacity;		/* m^3 */
 float max_mass;		/* kg */
@@ -51,6 +52,10 @@ static void create()
 void set_mass(float new_mass)
 {
 	object env;
+
+	if (virtual && new_mass != 0.0) {
+		error("Virtual objects must be massless");
+	}
 
 	if (new_mass == mass) {
 		return;
@@ -97,6 +102,10 @@ void set_density(float new_density)
 {
 	object env;
 
+	if (virtual && new_density != 1.0) {
+		error("Virtual objects cannot change density from 1.0");
+	}
+
 	if (new_density == density) {
 		return;
 	}
@@ -135,7 +144,7 @@ float query_total_volume()
 		bulk_sync();
 	}
 
-	if (flexible) {
+	if (flexible || virtual) {
 		return query_volume() + cached_content_volume;
 	} else {
 		return query_volume() + capacity;
@@ -157,6 +166,10 @@ void set_capacity(float new_capacity)
 {
 	object env;
 
+	if (virtual && new_capacity != 0.0) {
+		error("Virtual objects cannot have capacity");
+	}
+
 	if (capacity == new_capacity) {
 		return;
 	}
@@ -176,6 +189,10 @@ float query_capacity()
 
 void set_max_mass(float new_max_mass)
 {
+	if (virtual && new_max_mass != 0.0) {
+		error("Virtual objects cannot have maximum mass");
+	}
+
 	max_mass = new_max_mass;
 }
 
@@ -206,6 +223,40 @@ void set_flexible(int new_flexible)
 int query_flexible()
 {
 	return flexible;
+}
+
+void set_virtual(int new_virtual)
+{
+	object env;
+
+	if (mass != 0.0) {
+		error("Virtual objects cannot have mass");
+	}
+
+	if (density != 1.0) {
+		error("Virtual objects cannot have density different from 1.0");
+	}
+
+	if (capacity != 0.0) {
+		error("Virtual objects cannot have capacity");
+	}
+
+	if (max_mass != 0.0) {
+		error("Virtual objects cannot have maximum mass");
+	}
+
+	new_virtual = !!new_virtual;
+
+	if (virtual == new_virtual) {
+		return;
+	}
+
+	virtual = new_virtual;
+}
+
+int query_virtual()
+{
+	return virtual;
 }
 
 /***********/
