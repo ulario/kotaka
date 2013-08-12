@@ -69,8 +69,16 @@ void main(object actor, string args)
 
 		/* you can always see yourself */
 		if (invisible && name != myname) {
-			if (SUBD->query_effective_invisible(class, uclass)) {
+			switch(class) {
+			case 0:
+			case 1:
 				continue;
+			case 2:
+			case 3:
+			case 4:
+				if (uclass > class) {
+					continue;
+				}
 			}
 		}
 
