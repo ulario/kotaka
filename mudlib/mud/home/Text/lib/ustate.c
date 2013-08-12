@@ -231,6 +231,29 @@ void switch_state(object new)
 	user->switch_state(this_object(), new);
 }
 
+void collapse_state(object new)
+{
+	ASSERT(user);
+
+	ASSERT(sizeof(({ new }) & children));
+
+	user->collapse_state(this_object(), new);
+}
+
+void suspend_user()
+{
+	ASSERT(user);
+
+	user->suspend_user();
+}
+
+void release_user()
+{
+	ASSERT(user);
+
+	user->release_user();
+}
+
 void swap_state(object new)
 {
 	ASSERT(user);

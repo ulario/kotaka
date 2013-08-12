@@ -31,6 +31,7 @@ inherit system_user LIB_SYSTEM_USER;
 /*************/
 
 private object root;
+int suspend;
 
 /****************/
 /* Declarations */
@@ -43,6 +44,8 @@ void pop_state(object state);
 void push_state(object state, object parent);
 void switch_state(object parent, object new);
 void swap_state(object old, object new);
+void suspend_user();
+void resume_user();
 
 static void feed_in(string str);
 static void feed_out(string str);
@@ -290,7 +293,7 @@ void push_state(object state, object parent)
 		parent->push(state);
 	}
 
-	if (state) {
+	if (state && !suspend) {
 		state->go();
 	}
 }
@@ -331,8 +334,6 @@ void pop_state(object state)
 		state->_F_set_parent(nil);
 	}
 
-	newtop = root->query_top();
-
 	if (parent) {
 		parent->pop(state);
 	}
@@ -345,8 +346,12 @@ void pop_state(object state)
 		}
 	}
 
-	if (newtop && oldtop != newtop) {
-		newtop->go();
+	if (!suspend) {
+		newtop = root->query_top();
+
+		if (oldtop != newtop) {
+			newtop->go();
+		}
 	}
 }
 
@@ -373,11 +378,13 @@ void switch_state(object parent, object new)
 
 	newtop = root->query_top();
 
-	if (oldtop != newtop) {
-		oldtop->stop();
+	if (!suspend) {
+		if (oldtop != newtop) {
+			oldtop->stop();
 
-		if (newtop) {
-			newtop->go();
+			if (newtop) {
+				newtop->go();
+			}
 		}
 	}
 }
@@ -419,9 +426,44 @@ void swap_state(object old, object new)
 		new->begin();
 	}
 
-	if (new) {
+	if (new && !suspend) {
 		new->go();
 	}
+}
+
+void collapse_state(object old, object new)
+{
+	/* the old ustate is being replaced */
+	object parent;
+	object newtop;
+
+	ACCESS_CHECK(TEXT());
+
+	ASSERT(old);
+	ASSERT(new);
+
+	parent = old->query_parent();
+
+	if (root == old) {
+		root = new;
+	}
+
+	new->_F_set_parent(parent);
+	new->pre_begin();
+
+	if (parent) {
+		parent->_F_add_child(new);
+		parent->_F_set_current(new);
+		parent->_F_del_child(old);
+	}
+
+	old->_F_del_child(new);
+
+	if (old == root) {
+		root = new;
+	}
+
+	nuke_state_tree(old);
 }
 
 object query_root_state()
@@ -429,6 +471,34 @@ object query_root_state()
 	ACCESS_CHECK(PRIVILEGED() || LOCAL());
 
 	return root;
+}
+
+void suspend_user()
+{
+	ACCESS_CHECK(TEXT());
+
+	if (!suspend) {
+		object top;
+
+		top = root->query_top();
+		top->stop();
+
+		suspend = 1;
+	}
+}
+
+void release_user()
+{
+	ACCESS_CHECK(TEXT());
+
+	if (suspend) {
+		object top;
+
+		top = root->query_top();
+		top->go();
+
+		suspend = 0;
+	}
 }
 
 void set_root_state(object state)
