@@ -50,8 +50,6 @@ static void create()
 	load_dir("sys", 1);
 
 	KERNELD->set_global_access("Kotaka", 1);
-
-	"sys/testd"->test();
 }
 
 int forbid_inherit(string from, string path, int priv)

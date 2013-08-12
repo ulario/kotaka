@@ -27,4 +27,6 @@ static void create()
 	KERNELD->set_global_access("Algorithm", 1);
 
 	load_dir("sys", 1);
+
+	"sys/testd"->test();
 }
