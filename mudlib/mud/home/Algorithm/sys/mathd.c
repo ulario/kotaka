@@ -19,8 +19,13 @@
  */
 float rnd()
 {
-	/* use 30 bits of randomness */
-	return ldexp((float)random(1 << 30), -30);
+	mixed low;
+	mixed high;
+
+	low = random(1 << 18);
+	high = random(1 << 18);
+
+	return ldexp((float)low, -36) + ldexp((float)high, -18);
 }
 
 float bell_rnd(int degree)
