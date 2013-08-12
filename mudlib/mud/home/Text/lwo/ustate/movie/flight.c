@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/algorithm.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
@@ -85,7 +86,7 @@ private void do_particles(object paint, float diff)
 	}
 
 	if (sortflag) {
-		SUBD->qsort(particles, 0, NPARTICLES, "zcomp");
+		SORTD->qsort(particles, 0, NPARTICLES, "zcomp");
 	}
 
 	for (i = NPARTICLES - 1; i >= 0; i--) {

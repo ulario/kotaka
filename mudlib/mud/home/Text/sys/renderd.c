@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/algorithm.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
@@ -354,7 +355,7 @@ void draw_contents(object gc, object obj, object viewer)
 	inv -= ({ nil });
 	sz = sizeof(inv);
 
-	SUBD->qsort(inv, 0, sizeof(inv), "position_sort");
+	SORTD->qsort(inv, 0, sizeof(inv), "position_sort");
 
 	for (i = 0; i < sz; i++) {
 		if (inv[i] == viewer) {

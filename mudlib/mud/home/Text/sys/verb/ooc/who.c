@@ -19,7 +19,7 @@
  */
 #include <kernel/user.h>
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/algorithm.h>
 #include <kotaka/paths/text.h>
 
 inherit LIB_RAWVERB;
@@ -98,7 +98,7 @@ void main(object actor, string args)
 
 			list = lists[i];
 			sz = sizeof(list);
-			SUBD->qsort(list, 0, sz);
+			SORTD->qsort(list, 0, sz);
 
 			switch(i) {
 			case 4: send_out("Owners:\n"); break;

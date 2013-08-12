@@ -21,8 +21,8 @@
 #include <kernel/kernel.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
+#include <kotaka/paths/algorithm.h>
 #include <kotaka/paths/bigstruct.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <status.h>
@@ -332,9 +332,9 @@ void recompile_everything()
 			destruct_object(path);
 		}
 
-		objqueue->grant_access(find_object(SUBD), WRITE_ACCESS);
+		objqueue->grant_access(find_object(SORTD), WRITE_ACCESS);
 
-		SUBD->bqsort(objqueue, 0, objqueue->get_size() - 1);
+		SORTD->bqsort(objqueue, 0, objqueue->get_size() - 1);
 
 		while (!objqueue->empty()) {
 			string path;
