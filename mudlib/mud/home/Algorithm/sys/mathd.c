@@ -23,6 +23,18 @@ float rnd()
 	return ldexp((float)random(1 << 30), -30);
 }
 
+float bell_rnd(int degree)
+{
+	float sum;
+	int i;
+
+	for (i = 0; i < degree; i++) {
+		sum += rnd();
+	}
+
+	return sum / (float)degree;
+}
+
 float pi()
 {
 	return atan(1.0) * 4.0;
