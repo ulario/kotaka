@@ -450,3 +450,20 @@ private void check_versions()
 		error("Kernel library minor version " + major + "." + minor + " too low for this version of kotaka");
 	}
 }
+
+void reboot_subsystem(string subsystem)
+{
+	object cursor;
+
+	ACCESS_CHECK(INTERFACE());
+
+	this = this_object();
+	cursor = ;
+	first = cursor;
+
+	while (cursor = KERNELD->first_link(subsystem)) {
+		destruct_object(cursor);
+	};
+
+	compile_object(USR_DIR + "/" + subsystem + "/initd");
+}
