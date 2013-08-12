@@ -160,7 +160,7 @@ int is_valid_base_id(string str)
 
 int is_valid_id(string str)
 {
-	return regex_match(str, "[-+A-Za-z0-9_]+(#[1-9][0-9]*)?");
+	return regex_match(str, "[A-Za-z][-+A-Za-z0-9_]*(#[1-9][0-9]*)?");
 }
 
 int is_alpha(string str)
@@ -175,7 +175,7 @@ int is_alphanum(string str)
 
 int is_valid_ident(string str)
 {
-	return regex_match(str, "[_a-zA-Z0-9]+");
+	return regex_match(str, "[A-Za-z][_a-zA-Z0-9]*");
 }
 
 int is_valid_username(string str)
