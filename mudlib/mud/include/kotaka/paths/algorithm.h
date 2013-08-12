@@ -21,4 +21,5 @@
 
 /* daemons */
 
+#define MATHD		(USR_DIR + "/Algorithm/sys/mathd")
 #define SORTD		(USR_DIR + "/Algorithm/sys/sortd")
