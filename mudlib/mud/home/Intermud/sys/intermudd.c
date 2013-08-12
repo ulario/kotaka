@@ -158,7 +158,7 @@ string query_banner(object LIB_CONN connection)
 
 		50000,
 		mudlistid,
-		chanlistid,
+		0,
 		"Kotaka",
 		"Kotaka",
 		status(ST_VERSION),
@@ -481,6 +481,8 @@ void logout(int quit)
 	if (handle) {
 		remove_call_out(handle);
 	}
+
+	channels = ([ ]);
 
 	buffer = nil;
 }
