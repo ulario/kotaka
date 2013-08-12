@@ -202,16 +202,3 @@ string pmtime(mixed *mtime)
 	ms = ms[strlen(ms) - 3..];
 	return ptime(mtime[0]) + "." + ms;
 }
-
-/* random number generation */
-
-float rnd()
-{
-	/* use 30 bits of randomness */
-	return ldexp((float)random(1 << 30), -30);
-}
-
-float pi()
-{
-	return atan(1.0) * 4.0;
-}
