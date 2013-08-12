@@ -41,6 +41,9 @@ static void move_notify(object old_env)
 	common = THING_SUBD->query_common_container(old_env, new_env);
 
 	if (!common) {
+		xpos = 0;
+		ypos = 0;
+		zpos = 0;
 		return;
 	}
 
