@@ -27,3 +27,15 @@ float pi()
 {
 	return atan(1.0) * 4.0;
 }
+
+int dice(int faces, int count)
+{
+	int sum;
+
+	while (count) {
+		sum += random(faces) + 1;
+		count--;
+	}
+
+	return sum;
+}
