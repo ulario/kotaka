@@ -57,11 +57,11 @@ void begin()
 		particle = particles[i] = allocate_float(3);
 
 		do {
-			particle[2] = (1.0 - pow(SUBD->rnd(), 2.0)) * 11.0;
+			particle[2] = (1.0 - pow(MATHD->rnd(), 2.0)) * 11.0;
 		} while (particle[2] < 1.0);
 
-		particle[0] = (SUBD->rnd() * 80.0 - 40.0) * particle[2];
-		particle[1] = (SUBD->rnd() * 27.5 - 15.0) * particle[2];
+		particle[0] = (MATHD->rnd() * 80.0 - 40.0) * particle[2];
+		particle[1] = (MATHD->rnd() * 27.5 - 15.0) * particle[2];
 	}
 }
 
@@ -83,9 +83,9 @@ private void do_particles(object paint, float diff)
 		particle[1] += diff * 50.0;
 
 		if (particle[1] / particle[2] > 15.0) {
-			particle[2] = SUBD->rnd() * 10.0 + 1.0;
-			particle[0] = (SUBD->rnd() * 80.0 - 40.0) * particle[2];
-			particle[1] = -(12.5 + SUBD->rnd()) * particle[2];
+			particle[2] = MATHD->rnd() * 10.0 + 1.0;
+			particle[0] = (MATHD->rnd() * 80.0 - 40.0) * particle[2];
+			particle[1] = -(12.5 + MATHD->rnd()) * particle[2];
 		}
 	}
 
