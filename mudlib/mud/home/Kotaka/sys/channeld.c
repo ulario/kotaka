@@ -48,6 +48,17 @@ string post_access
 mapping bans
 	username : 1
 */
+void configure_channels();
+
+static void create()
+{
+	channels = ([ ]);
+	subscribers = ([ ]);
+	locks = ([ ]);
+	intermud = ([ ]);
+
+	configure_channels();
+}
 
 /**********************/
 /* channel management */
@@ -71,18 +82,6 @@ void add_channel(string channel, varargs int lock)
 	if (lock) {
 		locks[channel] = program;
 	}
-}
-
-void configure_channels();
-
-static void create()
-{
-	channels = ([ ]);
-	subscribers = ([ ]);
-	locks = ([ ]);
-	intermud = ([ ]);
-
-	configure_channels();
 }
 
 /** lists all the channels */
