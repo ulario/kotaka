@@ -65,6 +65,7 @@ private void initialize()
 	configure_klib();
 
 	boot_subsystem("String");
+	boot_subsystem("Algorithm");
 
 	LOGD->post_message("boot", LOG_INFO, "Loading program manager");
 	load_object(PROGRAM_INFO);
