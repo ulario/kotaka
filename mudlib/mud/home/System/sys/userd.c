@@ -164,7 +164,7 @@ void block_connections(varargs object except)
 {
 	int index;
 
-	ACCESS_CHECK(SYSTEM() || KADMIN());
+	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
 
 	if (blocked) {
 		blocked++;
@@ -201,7 +201,7 @@ void unblock_connections(varargs object except)
 {
 	int index;
 
-	ACCESS_CHECK(SYSTEM() || KADMIN());
+	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
 
 	if (blocked == 0) {
 		error("Connections not blocked");
