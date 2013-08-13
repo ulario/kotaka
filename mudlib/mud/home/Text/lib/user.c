@@ -32,6 +32,8 @@ inherit system_user LIB_SYSTEM_USER;
 
 private object root;
 int suspend;
+int disconnecting;
+int destructing;
 
 /****************/
 /* Declarations */
@@ -120,9 +122,22 @@ void logout(int quit)
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| LOCAL());
 
+	disconnecting = 1;
+
 	call_limited("nuke_state_tree", root);
 
-	destruct_object(this_object());
+	if (!destructing) {
+		destruct_object(this_object());
+	}
+}
+
+static void destruct()
+{
+	destructing = 1;
+
+	if (!disconnecting) {
+		disconnect();
+	}
 }
 
 private void do_escape(string str)

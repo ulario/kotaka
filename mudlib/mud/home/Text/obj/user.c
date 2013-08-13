@@ -49,6 +49,7 @@ void dispatch_wiztool(string line)
 static void destruct(int clone)
 {
 	if (clone) {
+		::destruct();
 	}
 }
 
