@@ -18,8 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/checkarg.h>
+#include <kotaka/log.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/intermud.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
 mapping intermud;	/*< set of channels to be relayed to intermud */
@@ -303,6 +305,7 @@ string setcolor(int color)
 void post_message(string channel, string sender, string message, varargs int norelay)
 {
 	object *send_list;
+	int time;
 
 	if (!norelay) {
 		if (intermud && intermud[channel]) {
@@ -312,7 +315,9 @@ void post_message(string channel, string sender, string message, varargs int nor
 		}
 	}
 
-	write_file("log", time() + ": " + channel + ": " + (sender ? sender + ": " : "") + message + "\n");
+	time = time();
+
+	write_file("log/log-" + (time - time % 86400), time + ": " + channel + ": " + (sender ? sender + ": " : "") + message + "\n");
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
