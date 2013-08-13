@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/assert.h>
-#include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/algorithm.h>
 #include <status.h>
 
 int *arr;
@@ -33,7 +33,7 @@ private void test_qsort()
 
 	sz = sizeof(arr);
 
-	SUBD->qsort(arr, 0, sz);
+	SORTD->qsort(arr, 0, sz);
 
 	for (i = 0; i < sz - 1; i++) {
 		ASSERT(arr[i] <= arr[i + 1]);
