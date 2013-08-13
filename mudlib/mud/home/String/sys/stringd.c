@@ -344,6 +344,7 @@ int stricmp(string s1, string s2)
 		if (tmp1 > tmp2) {
 			return 1;
 		}
+
 		if (tmp2 > tmp1) {
 			return -1;
 		}
