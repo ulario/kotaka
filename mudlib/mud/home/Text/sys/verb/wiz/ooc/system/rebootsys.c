@@ -56,6 +56,6 @@ void main(object actor, string args)
 	INITD->reboot_subsystem(args);
 
 	if (this_object() && user) {
-		send_out("Subsystem booted.\n");
+		send_out("Subsystem rebooted.\n");
 	}
 }
