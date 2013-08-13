@@ -458,10 +458,6 @@ void reboot_subsystem(string subsystem)
 
 	ACCESS_CHECK(INTERFACE());
 
-	this = this_object();
-	cursor = ;
-	first = cursor;
-
 	while (cursor = KERNELD->first_link(subsystem)) {
 		destruct_object(cursor);
 	};
