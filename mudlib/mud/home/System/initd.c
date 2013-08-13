@@ -464,3 +464,16 @@ void reboot_subsystem(string subsystem)
 
 	compile_object(USR_DIR + "/" + subsystem + "/initd");
 }
+
+void shutdown_subsystem(string subsystem)
+{
+	object cursor;
+
+	ACCESS_CHECK(INTERFACE());
+
+	while (cursor = KERNELD->first_link(subsystem)) {
+		destruct_object(cursor);
+	};
+
+	subsystems -= ({ subsystem });
+}
