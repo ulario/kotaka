@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/bigstruct.h>
+#include <kotaka/paths/system.h>
 #include <type.h>
 
 int binary_search_floor(mixed *arr, mixed value)
@@ -201,4 +202,32 @@ string pmtime(mixed *mtime)
 	ms = "000" + (string) msec;
 	ms = ms[strlen(ms) - 3..];
 	return ptime(mtime[0]) + "." + ms;
+}
+
+void gather_inheriters(int oindex, object hits)
+{
+	object pinfo;
+	object inh;
+
+	int i, sz;
+
+	inh = PROGRAMD->query_inheriters(oindex);
+
+	if (!inh) {
+		return;
+	}
+
+	sz = inh->query_size();
+
+	for (i = 0; i < sz; i++) {
+		int lib;
+
+		lib = inh->get_element(i);
+
+		if (!hits->get_element(lib)) {
+			hits->set_element(lib, 1);
+
+			gather_inheriters(lib, hits);
+		}
+	}
 }

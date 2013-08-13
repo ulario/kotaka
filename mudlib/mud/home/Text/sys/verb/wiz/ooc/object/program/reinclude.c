@@ -17,41 +17,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kernel/access.h>
 #include <kernel/kernel.h>
 #include <kotaka/paths/bigstruct.h>
+#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <type.h>
 
 inherit LIB_RAWVERB;
-
-void gather_inheriters(int oindex, object hits)
-{
-	object pinfo;
-	object inh;
-
-	int i, sz;
-
-	inh = PROGRAMD->query_inheriters(oindex);
-
-	if (!inh) {
-		return;
-	}
-
-	sz = inh->query_size();
-
-	for (i = 0; i < sz; i++) {
-		int lib;
-
-		lib = inh->get_element(i);
-
-		if (!hits->get_element(lib)) {
-			hits->set_element(lib, 1);
-
-			gather_inheriters(lib, hits);
-		}
-	}
-}
 
 void main(object actor, string args)
 {
@@ -82,11 +56,12 @@ void main(object actor, string args)
 
 	hits = new_object(BIGSTRUCT_MAP_LWO);
 	hits->set_type(T_INT);
+	hits->grant_access(find_object(SUBD), WRITE_ACCESS);
 
 	sz = list->get_size();
 
 	for (i = 0; i < sz; i++) {
-		gather_inheriters(list->get_element(i), hits);
+		SUBD->gather_inheriters(list->get_element(i), hits);
 	}
 
 	list = hits->get_indices();
