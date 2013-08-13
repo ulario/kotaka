@@ -22,21 +22,21 @@
 inherit "inventory";
 
 /* bulk */
-float mass;		/* kg */
-float density;		/* kg/l */
+private float mass;		/* kg */
+private float density;		/* kg/l */
 
-int flexible;		/* flexible container */
-int virtual;		/* virtual container */
+private int flexible;		/* flexible container */
+private int virtual;		/* virtual container */
 
-float capacity;		/* m^3 */
-float max_mass;		/* kg */
+private float capacity;		/* m^3 */
+private float max_mass;		/* kg */
 
 /* caching */
-int bulk_dirty;			/* if cache is invalid */
-int bulk_queued;		/* if we're in the bulk sync queue */
+private int bulk_dirty;			/* if cache is invalid */
+private int bulk_queued;		/* if we're in the bulk sync queue */
 
-float cached_content_mass;	/* cached mass of our contents */
-float cached_content_volume;	/* cached volume of our contents */
+private float cached_content_mass;	/* cached mass of our contents */
+private float cached_content_volume;	/* cached volume of our contents */
 
 void bulk_invalidate(varargs int force);	/* invalidate */
 void bulk_sync(varargs int force);		/* synchronize bulk cache */
