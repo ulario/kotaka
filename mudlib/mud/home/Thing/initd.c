@@ -47,7 +47,7 @@ int forbid_inherit(string from, string path, int priv)
 string query_destructor(string path)
 {
 	switch(path) {
-	case USR_DIR + "/Thing/lib/thing":
+	case LIB_THING;
 		return "thing_destruct";
 	}
 }

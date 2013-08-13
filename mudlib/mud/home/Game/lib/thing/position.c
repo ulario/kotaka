@@ -19,7 +19,7 @@
  */
 #include <kotaka/paths/thing.h>
 
-inherit "~Thing/lib/thing";
+inherit LIB_THING;
 
 private int xpos, ypos, zpos;
 

@@ -17,7 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-inherit thing "~Thing/lib/thing";
+#include <kotaka/paths/thing.h>
+
+inherit thing LIB_THING;
 inherit position "thing/position";
 
 static void create()
