@@ -19,6 +19,7 @@
  */
 #include <config.h>
 #include <kernel/kernel.h>
+#include <kotaka/paths/thing.h>
 #include <kotaka/paths/system.h>
 
 inherit LIB_INITD;
@@ -47,7 +48,7 @@ int forbid_inherit(string from, string path, int priv)
 string query_destructor(string path)
 {
 	switch(path) {
-	case LIB_THING;
+	case LIB_THING:
 		return "thing_destruct";
 	}
 }
