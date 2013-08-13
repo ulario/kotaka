@@ -34,6 +34,7 @@ inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
 int dumped;
+
 string *subsystems;
 
 void console_post(string str, int level);
@@ -458,6 +459,10 @@ void reboot_subsystem(string subsystem)
 
 	ACCESS_CHECK(INTERFACE());
 
+	if (subsystem == "System") {
+		error("Cannot reboot System");
+	}
+
 	while (cursor = KERNELD->first_link(subsystem)) {
 		destruct_object(cursor);
 	};
@@ -470,6 +475,10 @@ void shutdown_subsystem(string subsystem)
 	object cursor;
 
 	ACCESS_CHECK(INTERFACE());
+
+	if (subsystem == "System") {
+		error("Cannot shutdown System");
+	}
 
 	while (cursor = KERNELD->first_link(subsystem)) {
 		destruct_object(cursor);
