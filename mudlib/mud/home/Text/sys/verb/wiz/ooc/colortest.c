@@ -32,7 +32,11 @@ void main(object actor, string args)
 
 	painter = new_object(LWO_PAINTER);
 	painter->set_size(16, 8);
+	painter->add_layer("test");
+	painter->set_layer_size("test", 16, 8);
+
 	gc = painter->create_gc();
+	gc->set_layer("test");
 	gc->set_clip(0, 0, 15, 7);
 	b = random(128);
 
