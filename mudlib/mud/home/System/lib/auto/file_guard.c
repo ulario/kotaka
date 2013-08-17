@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012  Raymond Jennings
+ * Copyright (C) 2013  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,44 +17,3 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/privilege.h>
-
-#include <trace.h>
-#include <type.h>
-#include <status.h>
-
-inherit "call_guard";
-inherit "callout_guard";
-inherit "catalog";
-inherit "clone";
-inherit "file_guard";
-inherit "func";
-inherit "object";
-inherit "touch";
-
-/**********/
-/* status */
-/**********/
-
-nomask void _F_dummy()
-{
-}
-
-nomask mixed _F_status(mixed args ...)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	return status(this_object(), args ...);
-}
-
-#if 1
-nomask void save_object(string filename)
-{
-	error("save_object is disabled");
-}
-
-nomask void restore_object(string filename)
-{
-	error("restore_object is disabled");
-}
-#endif
