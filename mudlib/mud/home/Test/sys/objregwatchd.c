@@ -25,7 +25,7 @@ static void create()
 {
 	trackers = ([ ]);
 
-	call_out("check", 0);
+	// call_out("check", 0);
 }
 
 static void check()
