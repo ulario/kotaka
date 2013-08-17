@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/algorithm.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
@@ -75,8 +76,8 @@ private void do_particles(object paint, float diff)
 			particle[0] = 20.0;
 			particle[1] = 25.0;
 
-			particle[2] = (float)random(1000) / 1000.0 * 40.0 - 10.0;
-			particle[3] = (float)random(1000) / 1000.0 * 20.0 - 30.0;
+			particle[2] = MATHD->bell_rnd(15) * 40.0 - 10.0;
+			particle[3] = MATHD->bell_rnd(15) * 20.0 - 30.0;
 		}
 
 		x = (int)floor(particle[0]);
