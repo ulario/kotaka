@@ -24,10 +24,23 @@
 
 int handle;
 object queue;
+float interval;
 
 static void create()
 {
 	queue = new_object(BIGSTRUCT_DEQUE_LWO);
+
+	interval = 0.05;
+}
+
+void set_interval(float new_interval)
+{
+	interval = new_interval;
+}
+
+float query_interval()
+{
+	return interval;
 }
 
 void bulk_queue(object obj)
@@ -37,7 +50,7 @@ void bulk_queue(object obj)
 	queue->push_back(obj);
 
 	if (!handle) {
-		handle = call_out("process", 0);
+		handle = call_out("process", interval);
 	}
 }
 
@@ -51,7 +64,7 @@ static void process()
 	queue->pop_front();
 
 	if (!queue->empty()) {
-		handle = call_out("process", 0);
+		handle = call_out("process", interval);
 	}
 
 	if (obj) {
