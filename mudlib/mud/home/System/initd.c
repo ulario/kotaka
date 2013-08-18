@@ -274,28 +274,6 @@ string query_destructor(string path)
 
 /* Miscellaneous */
 
-void boot_subsystem(string subsystem)
-{
-	if (find_object(USR_DIR + "/" + subsystem + "/initd")) {
-		return;
-	}
-
-	subsystems += ({ subsystem });
-
-	KERNELD->add_user(subsystem);
-	KERNELD->add_owner(subsystem);
-
-	rlimits(100; -1) {
-		load_object(USR_DIR + "/" + subsystem + "/initd");
-	}
-
-	if (!sizeof(KERNELD->query_global_access() & ({ subsystem }))) {
-		error("Failure to grant global access by " + subsystem);
-	}
-
-	LOGD->post_message("boot", LOG_NOTICE, "Booted subsystem: " + subsystem);
-}
-
 private void configure_klib()
 {
 	string *wizards;
@@ -442,6 +420,28 @@ private void check_versions()
 	if (minor < 3) {
 		error("Kernel library minor version " + major + "." + minor + " too low for this version of kotaka");
 	}
+}
+
+void boot_subsystem(string subsystem)
+{
+	if (find_object(USR_DIR + "/" + subsystem + "/initd")) {
+		return;
+	}
+
+	subsystems += ({ subsystem });
+
+	KERNELD->add_user(subsystem);
+	KERNELD->add_owner(subsystem);
+
+	rlimits(100; -1) {
+		load_object(USR_DIR + "/" + subsystem + "/initd");
+	}
+
+	if (!sizeof(KERNELD->query_global_access() & ({ subsystem }))) {
+		error("Failure to grant global access by " + subsystem);
+	}
+
+	LOGD->post_message("boot", LOG_NOTICE, "Booted subsystem: " + subsystem);
 }
 
 void reboot_subsystem(string subsystem)
