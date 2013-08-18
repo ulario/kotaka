@@ -274,15 +274,6 @@ string query_destructor(string path)
 
 /* Miscellaneous */
 
-void message(string str)
-{
-	catch {
-		error(previous_program() + " needs to use the log daemon");
-	}
-
-	LOGD->post_message("misc", LOG_NOTICE, str);
-}
-
 void boot_subsystem(string subsystem)
 {
 	if (find_object(USR_DIR + "/" + subsystem + "/initd")) {
