@@ -77,7 +77,7 @@ string query_name()
 
 void set_mobile(object new_mobile)
 {
-	ACCESS_CHECK(TEXT() || GAME());
+	ACCESS_CHECK(TEXT() || GAME() || VERB());
 
 	mobile = new_mobile;
 }
@@ -89,7 +89,7 @@ object query_mobile()
 
 void set_body(object new_body)
 {
-	ACCESS_CHECK(TEXT() || GAME());
+	ACCESS_CHECK(TEXT() || GAME() || VERB());
 
 	body = new_body;
 }
