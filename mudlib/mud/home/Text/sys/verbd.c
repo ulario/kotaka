@@ -28,7 +28,12 @@ string *verbdirs;
 
 static void create()
 {
-	verbdirs = ({ USR_DIR + "/Text/sys/verb", USR_DIR + "/Game/sys/verb" });
+	verbdirs = ({ USR_DIR + "/Verb/sys/verb" });
+}
+
+static void upgrading()
+{
+	verbdirs = ({ USR_DIR + "/Verb/sys/verb" });
 }
 
 private string *gather_dirs(string dir)

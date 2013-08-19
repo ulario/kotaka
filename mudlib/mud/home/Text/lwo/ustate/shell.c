@@ -427,6 +427,5 @@ private void fix_verbs()
 	proxy = PROXYD->get_proxy(user->query_name());
 
 	destruct_verbs(proxy);
-	load_verbs(USR_DIR + "/Game/sys/verb", proxy);
-	load_verbs(USR_DIR + "/Text/sys/verb", proxy);
+	load_verbs(USR_DIR + "/Verb/sys/verb", proxy);
 }
