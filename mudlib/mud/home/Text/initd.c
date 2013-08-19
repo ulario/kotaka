@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kernel/access.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
@@ -28,8 +29,14 @@ inherit UTILITY_COMPILE;
 static void create()
 {
 	KERNELD->set_global_access("Text", 1);
+	TLSD->set_tls_access("Text", "ustate", "Verb", READ_ACCESS);
 
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("sys", 1);
+}
+
+static void upgrading()
+{
+	TLSD->set_tls_access("Text", "ustate", "Verb", READ_ACCESS);
 }
