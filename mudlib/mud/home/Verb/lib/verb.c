@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
+#include <kotaka/paths/verb.h>
 
 static object query_ustate()
 {
