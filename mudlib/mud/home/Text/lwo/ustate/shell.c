@@ -365,12 +365,7 @@ private void destruct_verbs(object proxy)
 			continue;
 		}
 
-		if (sscanf(path, USR_DIR + "/Game/sys/verb/%*s")) {
-			proxy->destruct_object(path);
-			continue;
-		}
-
-		if (sscanf(path, USR_DIR + "/Text/sys/verb/%*s")) {
+		if (sscanf(path, USR_DIR + "/Verb/sys/verb/%*s")) {
 			proxy->destruct_object(path);
 			continue;
 		}
