@@ -394,7 +394,7 @@ string draw_look(object viewer)
 	object *envstack;
 	object gc;
 
-	ACCESS_CHECK(TEXT() || GAME());
+	ACCESS_CHECK(TEXT() || GAME() || VERB());
 
 	painter = new_object(LWO_PAINTER);
 	painter->set_size(80, 21);
