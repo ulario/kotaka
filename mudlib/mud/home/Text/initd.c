@@ -30,6 +30,7 @@ static void create()
 {
 	KERNELD->set_global_access("Text", 1);
 	TLSD->set_tls_access("Text", "ustate", "Verb", READ_ACCESS);
+	INITD->boot_subsystem("Verb");
 
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
