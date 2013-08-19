@@ -109,8 +109,6 @@ private void initialize()
 
 	boot_subsystem("Kotaka");
 	boot_subsystem("Game");
-
-	LOGD->post_message("boot", LOG_INFO, "Launching integrity checker");
 	boot_subsystem("Test");
 }
 
@@ -301,7 +299,7 @@ void configure_logging()
 	/* don't log these to the console */
 	LOGD->set_target("debug", 0, "driver");
 	LOGD->set_target("compile", 63, "driver");
-	LOGD->set_target("trace", 0, "driver");
+	//	LOGD->set_target("trace", 0, "driver");
 
 	/* prevent default logging */
 	LOGD->set_target("debug", 255, "null");
@@ -490,6 +488,8 @@ void shutdown_subsystem(string subsystem)
 	while (cursor = KERNELD->first_link(subsystem)) {
 		destruct_object(cursor);
 	};
+
+//	KERNELD->remove_user(subsystem);
 
 	subsystems -= ({ subsystem });
 }
