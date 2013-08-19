@@ -48,7 +48,6 @@ int wsave_pending;
 /****************/
 
 void load_help();
-static void do_test();
 void build_world();
 
 /****************/
@@ -185,8 +184,6 @@ static void create()
 	configure_channels();
 
 	KERNELD->set_global_access("Game", 1);
-
-	"sys/testd"->test();
 
 	load_help();
 	build_world();
