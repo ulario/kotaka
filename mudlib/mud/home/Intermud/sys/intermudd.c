@@ -30,6 +30,8 @@
 /* mud mode */
 /* (big endian 4 byte integer, length of the string) (string) (null) */
 
+#define MUDNAME "Ulario"
+
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 
@@ -147,7 +149,7 @@ string query_banner(object LIB_CONN connection)
 	startup = ({
 		"startup-req-3",
 		5,
-		"Ulario",
+		MUDNAME,
 		0,
 		"*i4",
 		0,
@@ -194,7 +196,7 @@ void send_channel_message(string channel, string sender, string text)
 		({
 			"channel-m",
 			5,
-			"Ulario",
+			MUDNAME,
 			sender ? sender : "system",
 			0,
 			0,
@@ -278,7 +280,7 @@ private void process_packet(string packet)
 				({
 					"error",
 					5,
-					"Ulario",
+					MUDNAME,
 					0,
 					omud,
 					ouser,
@@ -379,7 +381,7 @@ private void process_packet(string packet)
 				({
 					"error",
 					5,
-					"Ulario",
+					MUDNAME,
 					0,
 					omud,
 					ouser,
@@ -400,7 +402,7 @@ private void process_packet(string packet)
 				({
 					"error",
 					5,
-					"Ulario",
+					MUDNAME,
 					0,
 					omud,
 					ouser,
@@ -517,7 +519,7 @@ void listen_channel(string channel, int on)
 	({
 		"channel-listen",
 		5,
-		"Ulario",
+		MUDNAME,
 		0,
 		"*i4",
 		0,
@@ -531,17 +533,17 @@ void add_channel(string channel, int type)
 {
 	ACCESS_CHECK(INTERFACE());
 
-	if (channels[channel] && channels[channel][0] != "Ulario") {
+	if (channels[channel] && channels[channel][0] != MUDNAME) {
 		error("Not our channel");
 	}
 
-	channels[channel] = ({ "Ulario", type });
+	channels[channel] = ({ MUDNAME, type });
 
 	message(to_packet(mudmode_sprint(
 	({
 		"channel-add",
 		5,
-		"Ulario",
+		MUDNAME,
 		0,
 		"*i4",
 		0,
@@ -559,7 +561,7 @@ void remove_channel(string channel)
 		error("No such channel");
 	}
 
-	if (channels[channel][0] != "Ulario") {
+	if (channels[channel][0] != MUDNAME) {
 		error("Not our channel");
 	}
 
@@ -569,7 +571,7 @@ void remove_channel(string channel)
 	({
 		"channel-remove",
 		5,
-		"Ulario",
+		MUDNAME,
 		0,
 		"*i4",
 		0,
