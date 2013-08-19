@@ -22,7 +22,7 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/text.h>
+#include <kotaka/paths/verb.h>
 #include <type.h>
 
 inherit LIB_RAWVERB;

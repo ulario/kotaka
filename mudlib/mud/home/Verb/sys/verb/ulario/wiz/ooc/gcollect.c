@@ -19,7 +19,7 @@
  */
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/text.h>
+#include <kotaka/paths/verb.h>
 #include <status.h>
 
 inherit LIB_RAWVERB;

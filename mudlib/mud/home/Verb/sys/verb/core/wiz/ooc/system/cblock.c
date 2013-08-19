@@ -20,7 +20,7 @@
 #include <kernel/user.h>
 #include <kotaka/assert.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/text.h>
+#include <kotaka/paths/verb.h>
 
 inherit LIB_RAWVERB;
 
