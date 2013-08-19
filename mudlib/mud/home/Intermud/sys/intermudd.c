@@ -506,9 +506,19 @@ string *query_channels()
 	return map_indices(channels);
 }
 
+mixed *query_channel(string channel)
+{
+	return SUBD->deep_copy(channels[channel]);
+}
+
 string *query_muds()
 {
 	return map_indices(muds);
+}
+
+mixed *query_mud(string mud)
+{
+	return SUBD->deep_copy(muds[mud]);
 }
 
 void listen_channel(string channel, int on)
