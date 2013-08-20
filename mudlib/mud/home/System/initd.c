@@ -398,7 +398,7 @@ void add_subsystem(object initd)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	subsystems[initd->query_owner()] == initd;
+	subsystems[initd->query_owner()] = initd;
 }
 
 void boot_subsystem(string subsystem)
