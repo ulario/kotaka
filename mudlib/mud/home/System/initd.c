@@ -158,11 +158,7 @@ void prepare_reboot()
 
 	ACCESSD->save();
 
-	dumped = call_out("dumped_state", 0);
-
 	LOGD->post_message("system", LOG_NOTICE, "InitD:  Preparing for reboot");
-	CALLOUTD->suspend_callouts();
-	SYSTEM_USERD->block_connections();
 
 	ind = map_indices(subsystems);
 	sz = sizeof(ind);
@@ -226,32 +222,6 @@ void reboot()
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "reboot");
 		}
 	}
-
-	CALLOUTD->release_callouts();
-	SYSTEM_USERD->unblock_connections();
-}
-
-static void dumped_state()
-{
-	int sz;
-	int index;
-
-	LOGD->post_message("system", LOG_NOTICE, "InitD:  Dumped state");
-	dumped = 0;
-
-	clear_admin();
-
-	sz = sizeof(subsystems);
-
-	for (index = 0; index < sz; index++) {
-		catch {
-			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding dumped_state to " + subsystems[index]);
-			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "dumped_state");
-		}
-	}
-
-	CALLOUTD->release_callouts();
-	SYSTEM_USERD->unblock_connections();
 }
 
 /** Used to output messages to the console */
