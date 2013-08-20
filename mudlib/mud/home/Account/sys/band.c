@@ -42,7 +42,7 @@ static void create()
 	}
 }
 
-void ban_site(string site)
+void ban_site(string site, int expiry)
 {
 	ACCESS_CHECK(INTERFACE() || GAME());
 
@@ -54,7 +54,7 @@ void ban_site(string site)
 		error("Site already banned");
 	}
 
-	sitebans[site] = 1;
+	sitebans[site] = expiry;
 	save();
 }
 
@@ -70,7 +70,7 @@ void unban_site(string site)
 	save();
 }
 
-void ban_username(string username)
+void ban_username(string username, int expiry)
 {
 	ACCESS_CHECK(INTERFACE() || GAME());
 
@@ -82,7 +82,7 @@ void ban_username(string username)
 		error("Username already banned");
 	}
 
-	bans[username] = 1;
+	bans[username] = expiry;
 	save();
 }
 
