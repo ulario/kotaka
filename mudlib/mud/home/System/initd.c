@@ -165,7 +165,7 @@ void prepare_reboot()
 
 	for (index = 0; index < sz; index++) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE, "InitD: Forwarding prepare_reboot to " + ind[index]);
+			LOGD->post_message("system", LOG_NOTICE, "sending prepare_reboot to " + ind[index]);
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "prepare_reboot");
 		}
 	}
@@ -218,7 +218,7 @@ void reboot()
 
 	for (index = 0; index < sz; index++) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding reboot to " + ind[index]);
+			LOGD->post_message("system", LOG_NOTICE, "Sending reboot to " + ind[index]);
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "reboot");
 		}
 	}
