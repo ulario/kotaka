@@ -432,11 +432,6 @@ void reboot_subsystem(string subsystem)
 		error("Cannot shutdown " + subsystem);
 	case "Bigstruct":
 		error("Cannot shutdown active dependency of System");
-	case "Algorithm":
-	case "String":
-		if (!KADMIN()) {
-			error("Shutdown of passive dependency of System is restricted");
-		}
 	}
 
 	while (cursor = KERNELD->first_link(subsystem)) {
