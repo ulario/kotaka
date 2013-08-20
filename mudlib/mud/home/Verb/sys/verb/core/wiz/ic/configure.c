@@ -65,7 +65,7 @@ void do_action(object actor, mapping roles, string evoke)
 
 	send_out("You start to configure " + TEXT_SUBD->generate_brief_definite(dob) + ".\n");
 
-	configure = new_object("~/lwo/ustate/objconf");
+	configure = new_object("~Text/lwo/ustate/objconf");
 	configure->set_object(dob);
 	query_ustate()->push_state(configure);
 }
