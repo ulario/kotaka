@@ -35,7 +35,7 @@ inherit UTILITY_COMPILE;
 
 int dumped;
 
-string *subsystems;
+mapping subsystems;
 
 void console_post(string str, int level);
 void message(string str);
@@ -48,7 +48,7 @@ private void check_versions();
 
 private void initialize()
 {
-	subsystems = ({ });
+	subsystems = ([ ]);
 
 	load_object(ERRORD);
 	ERRORD->enable();
@@ -152,6 +152,7 @@ void prepare_reboot()
 {
 	int sz;
 	int index;
+	string *ind;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -163,12 +164,13 @@ void prepare_reboot()
 	CALLOUTD->suspend_callouts();
 	SYSTEM_USERD->block_connections();
 
-	sz = sizeof(subsystems);
+	ind = map_indices(subsystems);
+	sz = sizeof(ind);
 
 	for (index = sz - 1; index >= 0; index--) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding prepare_reboot to " + subsystems[index]);
-			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "prepare_reboot");
+			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding prepare_reboot to " + ind[index]);
+			call_other(USR_DIR + "/" + ind[index] + "/initd", "prepare_reboot");
 		}
 	}
 }
@@ -197,6 +199,7 @@ void reboot()
 {
 	int index;
 	int sz;
+	string *ind;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -214,12 +217,13 @@ void reboot()
 	WATCHDOGD->reboot();
 	SYSTEM_USERD->reboot();
 
-	sz = sizeof(subsystems);
+	ind = map_indices(subsystems);
+	sz = sizeof(ind);
 
 	for (index = 0; index < sz; index++) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding reboot to " + subsystems[index]);
-			call_other(USR_DIR + "/" + subsystems[index] + "/initd", "reboot");
+			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding reboot to " + ind[index]);
+			call_other(USR_DIR + "/" + ind[index] + "/initd", "reboot");
 		}
 	}
 
@@ -420,13 +424,18 @@ private void check_versions()
 	}
 }
 
+void add_subsystem(object initd)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	subsystems[initd->query_owner()] == initd;
+}
+
 void boot_subsystem(string subsystem)
 {
 	if (find_object(USR_DIR + "/" + subsystem + "/initd")) {
 		return;
 	}
-
-	subsystems += ({ subsystem });
 
 	KERNELD->add_user(subsystem);
 	KERNELD->add_owner(subsystem);
@@ -489,7 +498,5 @@ void shutdown_subsystem(string subsystem)
 		destruct_object(cursor);
 	};
 
-//	KERNELD->remove_user(subsystem);
-
-	subsystems -= ({ subsystem });
+	KERNELD->remove_user(subsystem);
 }
