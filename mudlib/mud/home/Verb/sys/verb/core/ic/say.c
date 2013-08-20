@@ -21,14 +21,16 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
-inherit LIB_ENGVERB;
+inherit LIB_RAWVERB;
 
+/*
 mixed **query_roles()
 {
 	return ({
 		({ "iob", ({ "to" }), 0 })
 	});
 }
+*/
 
 private object *filter_mobiles(object *bodies)
 {
@@ -59,7 +61,7 @@ void emit_say(object actor, object target, object listener, string evoke)
 	);
 }
 
-void do_action(object actor, mapping roles, string evoke)
+void main(object actor, string args)
 {
 	object user;
 	object target;
@@ -78,7 +80,7 @@ void do_action(object actor, mapping roles, string evoke)
 
 	user = query_user();
 
-	if (!evoke) {
+	if (args == "") {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
@@ -93,13 +95,9 @@ void do_action(object actor, mapping roles, string evoke)
 	listeners = env->query_inventory();
 	mobiles = filter_mobiles(listeners);
 
-	if (roles["iob"]) {
-		target = roles["iob"][1];
-	}
-
 	sz = sizeof(mobiles);
 
 	for (i = 0; i < sz; i++) {
-		emit_say(actor, target, mobiles[i], evoke);
+		emit_say(actor, target, mobiles[i], args);
 	}
 }
