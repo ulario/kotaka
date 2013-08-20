@@ -30,13 +30,18 @@ void main(object actor, string args)
 
 	user = query_user();
 
-	if (user->query_class() < 2) {
+	if (user->query_class() < 1) {
 		send_out("You do not have sufficient access rights to post to generic channels.\n");
 		return;
 	}
 
 	if (sscanf(args, "%s %s", channel, text) != 2) {
 		send_out("Usage: chpost <channel> <text\n");
+		return;
+	}
+
+	if (CHANNELD->query_intermud(channel) && user->query_class() < 2) {
+		send_out("Access to intermud channels restricted to wizards.\n");
 		return;
 	}
 
