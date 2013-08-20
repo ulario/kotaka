@@ -158,14 +158,14 @@ void prepare_reboot()
 
 	ACCESSD->save();
 
-	LOGD->post_message("system", LOG_NOTICE, "InitD:  Preparing for reboot");
+	LOGD->post_message("system", LOG_NOTICE, "InitD: Preparing for reboot");
 
-	ind = map_indices(subsystems);
+	ind = map_indices(subsystems - ({ "System" }));
 	sz = sizeof(ind);
 
-	for (index = sz - 1; index >= 0; index--) {
+	for (index = 0; index < sz; index++) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE, "InitD:  Forwarding prepare_reboot to " + ind[index]);
+			LOGD->post_message("system", LOG_NOTICE, "InitD: Forwarding prepare_reboot to " + ind[index]);
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "prepare_reboot");
 		}
 	}
@@ -213,7 +213,7 @@ void reboot()
 	WATCHDOGD->reboot();
 	SYSTEM_USERD->reboot();
 
-	ind = map_indices(subsystems);
+	ind = map_indices(subsystems - ({ "System" }));
 	sz = sizeof(ind);
 
 	for (index = 0; index < sz; index++) {
@@ -469,4 +469,16 @@ void shutdown_subsystem(string subsystem)
 	};
 
 	KERNELD->remove_user(subsystem);
+}
+
+void upgrading()
+{
+	if (!subsystems) {
+		subsystems = ([ ]);
+	}
+}
+
+string *query_subsystems()
+{
+	return map_indices(subsystems);
 }
