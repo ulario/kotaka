@@ -27,6 +27,11 @@ void reboot()
 	ACCESS_CHECK(previous_program() == INITD);
 }
 
+void hotboot()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+}
+
 void prepare_reboot()
 {
 	ACCESS_CHECK(previous_program() == INITD);
