@@ -268,17 +268,6 @@ int query_reserve()
 
 /* initd hooks */
 
-void prepare_reboot()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	LOGD->post_message("system", LOG_NOTICE, "UserD->prepare_reboot");
-
-	unregister_with_klib_userd();
-
-	connections = userd::query_connections();
-}
-
 void reboot()
 {
 	int i, sz;
@@ -291,23 +280,6 @@ void reboot()
 		unregister_with_klib_userd();
 		register_with_klib_userd();
 	}
-
-	sz = sizeof(connections -= ({ nil }));
-
-	for (i = 0; i < sz; i++) {
-		catch {
-			connections[i]->reboot();
-		}
-	}
-}
-
-void dumped_state()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	LOGD->post_message("system", LOG_NOTICE, "UserD->bogus_reboot");
-
-	register_with_klib_userd();
 }
 
 /* userd hooks */
