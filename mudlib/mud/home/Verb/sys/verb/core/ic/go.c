@@ -56,7 +56,7 @@ void main(object actor, string args)
 			target = exit->query_destination();
 
 			if (target) {
-				"~/sys/action/exit"->action(
+				"~Game/sys/action/exit"->action(
 					([
 						"actor": actor,
 						"dob": exit

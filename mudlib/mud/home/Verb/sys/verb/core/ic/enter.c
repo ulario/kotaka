@@ -72,7 +72,7 @@ void do_action(object actor, mapping roles, string evoke)
 		target = def->query_destination();
 
 		if (target) {
-			"~/sys/action/exit"->action(
+			"~Game/sys/action/exit"->action(
 				([
 					"actor": actor,
 					"dob": def

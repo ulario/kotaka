@@ -54,7 +54,7 @@ void main(object actor, string args)
 		target = def->query_destination();
 
 		if (target) {
-			"~/sys/action/exit"->action(
+			"~Game/sys/action/exit"->action(
 				([
 					"actor": actor,
 					"dob": def
