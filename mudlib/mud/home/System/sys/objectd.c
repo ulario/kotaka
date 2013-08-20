@@ -487,6 +487,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
 	string err;
+	int is_initd;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -502,9 +503,14 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 
 	compile_common(owner, path, source, inherited);
+	is_initd = (path == USR_DIR + "/" + owner + "/initd");
 
-	if (path == USR_DIR + "/" + owner + "/initd" && !sizeof(({ LIB_INITD }) & inherited)) {
-		error("Failure to inherit LIB_INITD: " + path);
+	if (is_initd) {
+		INITD->add_subsystem(obj);
+
+		if (!sizeof(({ LIB_INITD }) & inherited)) {
+			error("Failure to inherit LIB_INITD: " + path);
+		}
 	}
 
 	if (upgrading) {
