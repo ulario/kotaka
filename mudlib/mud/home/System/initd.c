@@ -186,11 +186,31 @@ void clear_admin()
 
 void hotboot()
 {
+	int index;
+	int sz;
+	string *ind;
+
 	ACCESS_CHECK(KERNEL());
 
-	LOGD->post_message("system", LOG_NOTICE, "hotbooted!");
-}
+	check_config();
+	check_versions();
 
+	LOGD->post_message("system", LOG_NOTICE, "hotbooted");
+
+	clear_admin();
+	remove_call_out(dumped);
+	dumped = 0;
+
+	ind = map_indices(subsystems - ({ "System" }));
+	sz = sizeof(ind);
+
+	for (index = 0; index < sz; index++) {
+		catch {
+			LOGD->post_message("system", LOG_NOTICE, "Sending hotboot to " + ind[index]);
+			call_other(USR_DIR + "/" + ind[index] + "/initd", "hotboot");
+		}
+	}
+}
 void reboot()
 {
 	int index;
