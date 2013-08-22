@@ -188,7 +188,7 @@ int get_size()
 	return mass;
 }
 
-mixed get_element(int index)
+mixed query_element(int index)
 {
 	object node;
 	int mass;
@@ -205,7 +205,7 @@ mixed get_element(int index)
 		error("Subscript out of range");
 	}
 
-	return node->get_element(index);
+	return node->query_element(index);
 }
 
 void set_element(int index, mixed value)

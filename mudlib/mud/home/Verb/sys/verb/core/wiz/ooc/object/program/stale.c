@@ -42,7 +42,7 @@ void main(object actor, string args)
 		int *libs;
 		int ssz, j;
 
-		pindex = indices->get_element(i);
+		pindex = indices->query_element(i);
 		pinfo = PROGRAMD->query_program_info(pindex);
 
 		if (pinfo->query_destructed()) {

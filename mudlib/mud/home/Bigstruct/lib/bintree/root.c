@@ -518,7 +518,7 @@ static void rebalance_step_scatter(object array, object ceiling)
 	high = array->get_size() - 1;
 	mid = high / 2;
 
-	node = array->get_element(mid);
+	node = array->query_element(mid);
 
 	rotate_up_to(node, ceiling);
 

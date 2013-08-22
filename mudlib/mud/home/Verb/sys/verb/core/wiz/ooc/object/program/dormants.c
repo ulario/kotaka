@@ -42,6 +42,6 @@ void main(object actor, string args)
 	send_out("These LPC files are not compiled:\n");
 
 	for (i = 0; i < sz; i++) {
-		send_out(arr->get_element(i) + "\n");
+		send_out(arr->query_element(i) + "\n");
 	}
 }

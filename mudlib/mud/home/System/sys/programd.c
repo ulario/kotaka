@@ -157,7 +157,7 @@ private void deindex_inherits(int oindex, int *inh)
 
 		for (i = 0; i < sz; i++) {
 			object submap;
-			submap = inhdb->get_element(inh[i]);
+			submap = inhdb->query_element(inh[i]);
 			submap->set_element(oindex, nil);
 		}
 	} else {
@@ -182,7 +182,7 @@ private void deindex_includes(int oindex, string *inc)
 
 		for (i = 0; i < sz; i++) {
 			object submap;
-			submap = incdb->get_element(inc[i]);
+			submap = incdb->query_element(inc[i]);
 			submap->set_element(oindex, nil);
 		}
 	} else {
@@ -207,7 +207,7 @@ private void index_inherits(int oindex, int *inh)
 
 		for (i = 0; i < sz; i++) {
 			object submap;
-			submap = inhdb->get_element(inh[i]);
+			submap = inhdb->query_element(inh[i]);
 
 			if (!submap) {
 				inhdb->set_element(inh[i], submap = new_object(BIGSTRUCT_MAP_LWO));
@@ -242,7 +242,7 @@ private void index_includes(int oindex, string *inc)
 
 		for (i = 0; i < sz; i++) {
 			object submap;
-			submap = incdb->get_element(inc[i]);
+			submap = incdb->query_element(inc[i]);
 
 			if (!submap) {
 				incdb->set_element(inc[i], submap = new_object(BIGSTRUCT_MAP_LWO));
@@ -297,7 +297,7 @@ object register_program(string path, string *inherits,
 		oindices[i] = suboindex;
 
 		if (bigready) {
-			subpinfo = progdb->get_element(suboindex);
+			subpinfo = progdb->query_element(suboindex);
 		} else {
 			subpinfo = progdb[suboindex];
 		}
@@ -336,7 +336,7 @@ object register_program(string path, string *inherits,
 	touchers -= ({ nil });
 
 	if (bigready) {
-		pinfo = progdb->get_element(oindex);
+		pinfo = progdb->query_element(oindex);
 
 		if (pathdb)
 			pathdb->set_element(path, oindex);
@@ -410,7 +410,7 @@ object query_includer_indices()
 object query_program_info(int oindex)
 {
 	if (bigready) {
-		return progdb->get_element(oindex);
+		return progdb->query_element(oindex);
 	} else {
 		return progdb[oindex];
 	}
@@ -421,7 +421,7 @@ int query_program_index(string path)
 	mixed index;
 
 	if (bigready) {
-		index = pathdb->get_element(path);
+		index = pathdb->query_element(path);
 	} else {
 		index = pathdb[path];
 	}
@@ -439,7 +439,7 @@ object query_inheriters(int oindex)
 
 	ASSERT(bigready);
 
-	list = inhdb->get_element(oindex);
+	list = inhdb->query_element(oindex);
 
 	if (list) {
 		list = list->get_indices();
@@ -454,7 +454,7 @@ object query_includers(string path)
 
 	ASSERT(bigready);
 
-	list = incdb->get_element(path);
+	list = incdb->query_element(path);
 
 	if (list) {
 		list = list->get_indices();
@@ -480,7 +480,7 @@ void remove_program(int index)
 	}
 
 	if (bigready) {
-		if (path && pathdb->get_element(path) == index) {
+		if (path && pathdb->query_element(path) == index) {
 			pathdb->set_element(path, nil);
 		}
 

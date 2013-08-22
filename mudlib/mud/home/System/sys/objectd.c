@@ -312,7 +312,7 @@ void recompile_everything()
 			object pinfo;
 			string path;
 
-			oindex = indices->get_element(i);
+			oindex = indices->query_element(i);
 			pinfo = PROGRAMD->query_program_info(oindex);
 			path = pinfo->query_path();
 
@@ -404,7 +404,7 @@ object query_orphans()
 		object pinfo;
 		string path;
 
-		pinfo = PROGRAMD->query_program_info(indices->get_element(i));
+		pinfo = PROGRAMD->query_program_info(indices->query_element(i));
 
 		if (!file_info((path = pinfo->query_path()) + ".c")) {
 			orphans->push_back(path);

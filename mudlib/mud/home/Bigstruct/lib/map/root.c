@@ -273,7 +273,7 @@ atomic void set_element(mixed key, mixed value)
 	}
 }
 
-mixed get_element(mixed key)
+mixed query_element(mixed key)
 {
 	object node;
 

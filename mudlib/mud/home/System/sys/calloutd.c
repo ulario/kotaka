@@ -117,7 +117,7 @@ void suspend(object obj, int handle)
 
 	oindex = object_index(obj);
 
-	map = cmap->get_element(oindex);
+	map = cmap->query_element(oindex);
 
 	if (!map) {
 		map = ([ ]);
@@ -141,7 +141,7 @@ int remove_callout(object obj, int handle)
 
 	oindex = object_index(obj);
 
-	map = cmap->get_element(oindex);
+	map = cmap->query_element(oindex);
 
 	if (!map || map[handle]) {
 		return FALSE;
@@ -173,7 +173,7 @@ void remove_callouts(object obj)
 
 	oindex = object_index(obj);
 
-	map = cmap->get_element(oindex);
+	map = cmap->query_element(oindex);
 
 	if (!map) {
 		return;
@@ -302,7 +302,7 @@ mixed *release()
 		return nil;
 	}
 
-	callout = cqueue->get_element(begin);
+	callout = cqueue->query_element(begin);
 	cqueue->set_element(begin++, nil);
 
 	begin &= 0x0FFFFFFF;
@@ -319,7 +319,7 @@ mixed *release()
 	}
 
 	oindex = object_index(callout[0]);
-	map = cmap->get_element(oindex);
+	map = cmap->query_element(oindex);
 
 	ASSERT(map);
 	ASSERT(map[callout[1]] != nil);

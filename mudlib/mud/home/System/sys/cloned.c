@@ -53,7 +53,7 @@ void add_clone(object obj)
 	if (is_bigstruct) {
 		cinfo = bmap[index];
 	} else {
-		cinfo = db->get_element(index);
+		cinfo = db->query_element(index);
 	}
 
 	if (!cinfo) {
@@ -106,7 +106,7 @@ void remove_clone(object obj)
 	if (is_bigstruct) {
 		cinfo = bmap[index];
 	} else {
-		cinfo = db->get_element(index);
+		cinfo = db->query_element(index);
 	}
 
 	cinfo->remove_clone(obj);
@@ -198,7 +198,7 @@ object query_clone_info(int index)
 		return bmap[index];
 	}
 
-	return db->get_element(index);
+	return db->query_element(index);
 }
 
 void reset()

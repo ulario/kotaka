@@ -56,6 +56,6 @@ void main(object actor, string args)
 	send_out("There are " + sz + " orphans.\n");
 
 	for (i = 0; i < sz; i++) {
-		send_out(object_name(list->get_element(i)) + "\n");
+		send_out(object_name(list->query_element(i)) + "\n");
 	}
 }

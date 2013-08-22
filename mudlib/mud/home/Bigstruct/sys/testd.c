@@ -38,8 +38,8 @@ private void test_bigstruct_array()
 	for (i = 1; i < 0x40000000; i <<= 1) {
 		arr->set_element(i - 1, i - 1);
 		arr->set_element(i, i);
-		ASSERT(arr->get_element(i - 1) == i - 1);
-		ASSERT(arr->get_element(i) == i);
+		ASSERT(arr->query_element(i - 1) == i - 1);
+		ASSERT(arr->query_element(i) == i);
 	}
 
 	for (j = 0x40000000; j > 0; j /= 3, j <<= 1) {
@@ -48,16 +48,16 @@ private void test_bigstruct_array()
 
 		for (i = 1; i < 0x40000000; i <<= 1) {
 			if (i < j) {
-				ASSERT(arr->get_element(i) == i);
+				ASSERT(arr->query_element(i) == i);
 			} else {
-				ASSERT(arr->get_element(i) == nil);
+				ASSERT(arr->query_element(i) == nil);
 			}
 		}
 		for (i = 1; i < 0x40000000; i <<= 1) {
 			if ((i - 1) < j) {
-				ASSERT(arr->get_element(i - 1) == i - 1);
+				ASSERT(arr->query_element(i - 1) == i - 1);
 			} else {
-				ASSERT(arr->get_element(i - 1) == nil);
+				ASSERT(arr->query_element(i - 1) == nil);
 			}
 		}
 	}
@@ -69,8 +69,8 @@ private void test_bigstruct_array()
 
 	arrslice = arr->slice(50, 150);
 	ASSERT(arrslice->get_size() == 101);
-	ASSERT(arrslice->get_element(0) == 2337);
-	ASSERT(arrslice->get_element(100) == 3337);
+	ASSERT(arrslice->query_element(0) == 2337);
+	ASSERT(arrslice->query_element(100) == 3337);
 
 	arr->clear();
 
@@ -184,7 +184,7 @@ private void test_bigstruct_map()
 		string key;
 		key = hash_string("crypt", "" + i);
 		map->set_element(key, i);
-		ASSERT(map->get_element(key) == i);
+		ASSERT(map->query_element(key) == i);
 	}
 
 	map->clear();
@@ -193,7 +193,7 @@ private void test_bigstruct_map()
 
 	for (i = 0; i < 1000; i++) {
 		map->set_element(i, i);
-		ASSERT(map->get_element(i) == i);
+		ASSERT(map->query_element(i) == i);
 	}
 
 	map->clear();
@@ -209,13 +209,13 @@ private void test_bigstruct_map()
 	map->rebalance();
 
 	for (i = 0; i < 50; i++) {
-		ASSERT(map->get_element(i * i) == i);
+		ASSERT(map->query_element(i * i) == i);
 	}
 
 	map->reindex();
 
 	for (i = 0; i < 50; i++) {
-		ASSERT(map->get_element(i * i) == i);
+		ASSERT(map->query_element(i * i) == i);
 	}
 
 	map->clear();

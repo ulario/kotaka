@@ -358,7 +358,7 @@ private void destruct_verbs(object proxy)
 		object pinfo;
 		string path;
 
-		pinfo = PROGRAMD->query_program_info(proglist->get_element(i));
+		pinfo = PROGRAMD->query_program_info(proglist->query_element(i));
 		path = pinfo->query_path();
 
 		if (path == object_name(this_object())) {

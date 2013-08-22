@@ -45,7 +45,7 @@ void main(object actor, string args)
 	for (i = 0; i < sz; i++) {
 		object pinfo;
 
-		pinfo = PROGRAMD->query_program_info(ilist->get_element(i));
+		pinfo = PROGRAMD->query_program_info(ilist->query_element(i));
 		send_out((pinfo ? pinfo->query_path() : "wtf#") + "\n");
 	}
 }

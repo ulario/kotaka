@@ -71,7 +71,7 @@ void main(object actor, string args)
 		object pinfo;
 		string path;
 
-		oindex = list->get_element(i);
+		oindex = list->query_element(i);
 
 		pinfo = PROGRAMD->query_program_info(oindex);
 
@@ -92,12 +92,12 @@ void main(object actor, string args)
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
 	for (i = 0; i < sz; i++) {
-		proxy->destruct_object(libs->get_element(i));
+		proxy->destruct_object(libs->query_element(i));
 	}
 
 	sz = objs->get_size();
 
 	for (i = 0; i < sz; i++) {
-		proxy->compile_object(objs->get_element(i));
+		proxy->compile_object(objs->query_element(i));
 	}
 }

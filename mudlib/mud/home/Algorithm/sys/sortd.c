@@ -75,8 +75,8 @@ private void baswap(object arr, int a, int b)
 {
 	mixed tmp;
 
-	tmp = arr->get_element(a);
-	arr->set_element(a, arr->get_element(b));
+	tmp = arr->query_element(a);
+	arr->set_element(a, arr->query_element(b));
 	arr->set_element(b, tmp);
 }
 
@@ -92,13 +92,13 @@ void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end, varargs str
 		mid = (begin + end) / 2;
 		high = end - 1;
 
-		pivot = arr->get_element(mid);
+		pivot = arr->query_element(mid);
 		baswap(arr, mid, high);
 
 		while (low < high) {
 			if (compfunc) {
-				sign = call_other(previous_object(), compfunc, arr->get_element(low), pivot);
-			} else if (arr->get_element(low) > pivot) {
+				sign = call_other(previous_object(), compfunc, arr->query_element(low), pivot);
+			} else if (arr->query_element(low) > pivot) {
 				sign = 1;
 			} else {
 				sign = 0;

@@ -70,7 +70,7 @@ private int mask(int index, int level)
 	return (index >> bits) & 0xFF;
 }
 
-private mixed sub_get_element(object node, int index)
+private mixed sub_query_element(object node, int index)
 {
 	int level;
 	int masked;
@@ -85,7 +85,7 @@ private mixed sub_get_element(object node, int index)
 		subnode = array[masked];
 
 		if (subnode) {
-			return sub_get_element(subnode, index);
+			return sub_query_element(subnode, index);
 		} else {
 			return nil;
 		}
@@ -238,7 +238,7 @@ atomic void set_size(int new_size)
 	size = new_size;
 }
 
-atomic mixed get_element(int index)
+atomic mixed query_element(int index)
 {
 	int level;
 
@@ -260,7 +260,7 @@ atomic mixed get_element(int index)
 	case 0x01000000 .. 0x7FFFFFFF: level = 3; break;
 	}
 
-	return sub_get_element(top[level], index);
+	return sub_query_element(top[level], index);
 }
 
 atomic void set_element(int index, mixed value)
@@ -309,14 +309,14 @@ mixed get_front()
 {
 	check_caller(READ_ACCESS);
 
-	return get_element(0);
+	return query_element(0);
 }
 
 mixed get_back()
 {
 	check_caller(READ_ACCESS);
 
-	return get_element(size - 1);
+	return query_element(size - 1);
 }
 
 void set_front(mixed value)
@@ -364,7 +364,7 @@ object slice(int lowindex, int highindex)
 
 	for (i = lowindex; i <= highindex; i++) {
 		slice->set_element(
-			i - lowindex, get_element(i)
+			i - lowindex, query_element(i)
 		);
 	}
 

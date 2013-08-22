@@ -173,7 +173,7 @@ void pop_back()
 	sub[--end] = nil;
 }
 
-mixed get_element(int index)
+mixed query_element(int index)
 {
 	check_caller();
 

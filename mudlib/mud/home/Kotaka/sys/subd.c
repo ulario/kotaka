@@ -222,9 +222,9 @@ void gather_inheriters(int oindex, object hits)
 	for (i = 0; i < sz; i++) {
 		int lib;
 
-		lib = inh->get_element(i);
+		lib = inh->query_element(i);
 
-		if (!hits->get_element(lib)) {
+		if (!hits->query_element(lib)) {
 			hits->set_element(lib, 1);
 
 			gather_inheriters(lib, hits);
