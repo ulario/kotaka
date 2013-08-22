@@ -317,7 +317,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	time = time();
 
-	write_file("log/log-" + (time - time % 86400), time + ": " + channel + ": " + (sender ? sender + ": " : "") + message + "\n");
+	write_file("log/log-" + (time - time % 86400) + "-" + channel, time + ": " + channel + ": " + (sender ? sender + ": " : "") + message + "\n");
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
