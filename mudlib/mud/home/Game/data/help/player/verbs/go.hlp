@@ -1,4 +1,10 @@
 Go
 --
 
-Takes an exit.
+Goes through an exit.
+
+Specify the exit by direction or building or whatever.
+
+Many exits are named by compass directions, but not all of them.
+
+In cases of buildings, the exit may be named after the building.
