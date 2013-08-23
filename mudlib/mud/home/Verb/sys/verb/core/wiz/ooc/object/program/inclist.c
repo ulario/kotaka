@@ -20,9 +20,9 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object ilist;
 	int i, sz;
@@ -32,7 +32,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	ilist = PROGRAMD->query_includers(args);
+	ilist = PROGRAMD->query_includers(roles["raw"]);
 
 	if (!ilist) {
 		send_out("No programs include that file.\n");

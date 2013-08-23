@@ -19,14 +19,19 @@
  */
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	if (query_user()->query_class() < 3) {
 		send_out("You have insufficient access to delete i3 channels.\n");
 		return;
 	}
 
-	"~Intermud/sys/intermudd"->remove_channel(args);
+	"~Intermud/sys/intermudd"->remove_channel(roles["raw"]);
 }

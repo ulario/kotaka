@@ -20,9 +20,14 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	string name;
 
@@ -33,7 +38,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		switch(ACCOUNTD->query_account_property(name, "gender")) {
 		case nil:
 			send_out("You have no gender.\n");
@@ -48,7 +53,7 @@ void main(object actor, string args)
 			break;
 		}
 	} else {
-		switch(args) {
+		switch(roles["raw"]) {
 		case "male":
 			ACCOUNTD->set_account_property(name, "gender", "male");
 			send_out("You are now male.\n");

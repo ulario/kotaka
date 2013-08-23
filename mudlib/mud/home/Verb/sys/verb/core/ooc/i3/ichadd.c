@@ -19,9 +19,14 @@
  */
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	string chan;
 	int type;
@@ -32,13 +37,13 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (sscanf(args, "%s %s", chan, rest)) {
-		if (!sscanf(args, "%s %d", chan, type)) {
+	if (sscanf(roles["raw"], "%s %s", chan, rest)) {
+		if (!sscanf(roles["raw"], "%s %d", chan, type)) {
 			send_out("Channel type must be a number, idiot.\n");
 			return;
 		}
 	} else {
-		chan = args;
+		chan = roles["raw"];
 	}
 
 	"~Intermud/sys/intermudd"->add_channel(chan, type);

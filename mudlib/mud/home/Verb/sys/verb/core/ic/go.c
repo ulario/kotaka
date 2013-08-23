@@ -21,9 +21,14 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	object env;
 	object *inv;
@@ -50,7 +55,7 @@ void main(object actor, string args)
 
 		exit = inv[i];
 
-		if (args == exit->query_direction()) {
+		if (roles["raw"] == exit->query_direction()) {
 			object target;
 
 			target = exit->query_destination();

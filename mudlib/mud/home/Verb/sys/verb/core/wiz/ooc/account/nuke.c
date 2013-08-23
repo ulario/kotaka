@@ -21,9 +21,14 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
@@ -36,34 +41,34 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("Who do you wish to nuke?\n");
 		return;
 	}
 
-	if (args == user->query_username()) {
+	if (roles["raw"] == user->query_username()) {
 		send_out("You cannot nuke yourself.\n");
 		return;
 	}
 
-	if (args == "admin") {
+	if (roles["raw"] == "admin") {
 		send_out("You cannot nuke admin.\n");
 		return;
 	}
 
-	if (!ACCOUNTD->query_is_registered(args)) {
+	if (!ACCOUNTD->query_is_registered(roles["raw"])) {
 		send_out("There is no such user.\n");
 		return;
 	}
 
-	ACCOUNTD->unregister_account(args);
+	ACCOUNTD->unregister_account(roles["raw"]);
 
-	turkey = TEXT_USERD->find_user(args);
+	turkey = TEXT_USERD->find_user(roles["raw"]);
 	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
 
-	user->message("You nuke " + args + " from the mud.\n");
+	user->message("You nuke " + roles["raw"] + " from the mud.\n");
 
-	TEXT_SUBD->send_to_all_except(args + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
+	TEXT_SUBD->send_to_all_except(roles["raw"] + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
 
 	if (turkey) {
 		turkey->message("You have been nuked from the mud by " + kicker_name + "!\n");

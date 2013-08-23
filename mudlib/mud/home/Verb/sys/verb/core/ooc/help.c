@@ -22,7 +22,12 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
+
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
 
 int topic_compare(string lhs, string rhs)
 {
@@ -174,7 +179,7 @@ private string list_category(string category)
 	return buf;
 }
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	mapping index;
 	mapping list;
@@ -185,10 +190,10 @@ void main(object actor, string args)
 	string text;
 	int sz, i;
 
-	args = STRINGD->trim_whitespace(args);
-	args = STRINGD->replace(args, " ", "_");
+	roles["raw"] = STRINGD->trim_whitespace(roles["raw"]);
+	roles["raw"] = STRINGD->replace(roles["raw"], " ", "_");
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		/* list root category */
 		header = "Root contents:";
 		text = list_category(nil);
@@ -197,12 +202,12 @@ void main(object actor, string args)
 		index = HELPD->query_index();
 		ASSERT(index);
 
-		if (index[args] == nil) {
+		if (index[roles["raw"]] == nil) {
 			send_out("No such topic or category is available.\n");
 			return;
 		}
 
-		list = index[args];
+		list = index[roles["raw"]];
 		candidates = map_indices(list);
 		sz = sizeof(candidates);
 

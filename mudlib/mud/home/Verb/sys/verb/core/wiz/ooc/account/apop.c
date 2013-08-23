@@ -21,9 +21,14 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	string *users;
 	object user;
@@ -42,7 +47,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (sscanf(args, "%s %s %s %s", operatur, username, pname, pvalue) != 4) {
+	if (sscanf(roles["raw"], "%s %s %s %s", operatur, username, pname, pvalue) != 4) {
 		send_out("Usage: apop <operator> <user name> <property name> <value>\n");
 		return;
 	}

@@ -20,9 +20,9 @@
 #include <kotaka/paths/verb.h>
 #include <status.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	mixed *st;
 	int i, sz;
@@ -33,7 +33,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	st = status(args);
+	st = status(roles["raw"]);
 
 	if (!st) {
 		send_out("No such object.\n");
@@ -45,7 +45,7 @@ void main(object actor, string args)
 	for (i = 0; i < sz; i++) {
 		object obj;
 
-		obj = find_object(args + "#" + i);
+		obj = find_object(roles["raw"] + "#" + i);
 
 		if (obj) {
 			call_touch(obj);

@@ -21,14 +21,19 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
 		return;
 	}
 
-	send_out("Emoting: " + args + "\n");
+	send_out("Emoting: " + roles["raw"] + "\n");
 }

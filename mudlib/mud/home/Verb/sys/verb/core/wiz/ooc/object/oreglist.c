@@ -20,9 +20,9 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	string owner;
 	mapping seen;
@@ -35,16 +35,16 @@ void main(object actor, string args)
 	}
 
 	seen = ([ ]);
-	first = KERNELD->first_link(args);
+	first = KERNELD->first_link(roles["raw"]);
 
 	if (!first) {
-		send_out(args + " owns no objects.\n");
+		send_out(roles["raw"] + " owns no objects.\n");
 		return;
 	}
 
 	obj = first;
 
-	send_out("Objects owned by " + args + ":\n");
+	send_out("Objects owned by " + roles["raw"] + ":\n");
 
 	do {
 		send_out(object_name(obj) + "\n");

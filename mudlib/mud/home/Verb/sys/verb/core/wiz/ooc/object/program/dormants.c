@@ -20,9 +20,9 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object arr;
 	int sz, i;

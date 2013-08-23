@@ -21,7 +21,12 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
+
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
 
 /*
 mixed **query_roles()
@@ -61,7 +66,7 @@ void emit_say(object actor, object target, object listener, string evoke)
 	);
 }
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object user;
 	object target;
@@ -80,7 +85,7 @@ void main(object actor, string args)
 
 	user = query_user();
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
@@ -98,6 +103,6 @@ void main(object actor, string args)
 	sz = sizeof(mobiles);
 
 	for (i = 0; i < sz; i++) {
-		emit_say(actor, target, mobiles[i], args);
+		emit_say(actor, target, mobiles[i], roles["raw"]);
 	}
 }

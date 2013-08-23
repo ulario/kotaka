@@ -26,15 +26,3 @@ nomask int query_parse_method()
 {
 	return PARSE_RAW;
 }
-
-nomask void do_action(mapping roles)
-{
-	error("This function does not belong in a raw verb");
-}
-
-nomask mixed **query_roles()
-{
-	error("This function does not belong in a raw verb");
-}
-
-void main(object actor, string args);

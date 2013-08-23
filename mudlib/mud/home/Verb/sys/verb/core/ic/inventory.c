@@ -21,7 +21,12 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
+
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
 
 private string print_values(mapping values)
 {
@@ -55,7 +60,7 @@ private string print_values(mapping values)
 	return buf + implode(bits, ", ");
 }
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object *inv;
 	int sz;

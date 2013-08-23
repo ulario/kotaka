@@ -20,9 +20,9 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	string user;
 	int amount;
@@ -33,7 +33,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (sscanf(args, "%s %d", user, amount) != 2) {
+	if (sscanf(roles["raw"], "%s %d", user, amount) != 2) {
 		send_out("Usage: award user amount.\n");
 		return;
 	}

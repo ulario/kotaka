@@ -20,14 +20,19 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	if (query_user()->query_class() < 2) {
 		send_out("You have insufficient access to query i3 mud info.\n");
 		return;
 	}
 
-	send_out(STRINGD->hybrid_sprint("~Intermud/sys/intermudd"->query_mud(args)) + "\n");
+	send_out(STRINGD->hybrid_sprint("~Intermud/sys/intermudd"->query_mud(roles["raw"])) + "\n");
 }

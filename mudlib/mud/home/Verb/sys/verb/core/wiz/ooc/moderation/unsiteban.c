@@ -20,9 +20,9 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
@@ -36,15 +36,15 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("What site do you wish to unban?\n");
 		return;
 	}
 
-	if (!BAND->query_is_site_banned(args)) {
+	if (!BAND->query_is_site_banned(roles["raw"])) {
 		send_out("That site is not banned.\n");
 		return;
 	}
 
-	BAND->unban_site(args);
+	BAND->unban_site(roles["raw"]);
 }

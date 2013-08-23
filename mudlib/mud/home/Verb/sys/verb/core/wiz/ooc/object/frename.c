@@ -20,7 +20,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
 atomic private void do_folder_rename(string old, string new)
 {
@@ -51,7 +51,7 @@ atomic private void do_folder_rename(string old, string new)
 	}
 }
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	string old, new;
 	object user;
@@ -63,7 +63,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (sscanf(args, "%s %s", old, new) != 2) {
+	if (sscanf(roles["raw"], "%s %s", old, new) != 2) {
 		send_out("Usage: frename old_folder new_folder\n");
 		return;
 	}

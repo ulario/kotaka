@@ -22,9 +22,9 @@
 #include <kotaka/paths/verb.h>
 #include <kotaka/paths/thing.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	string *users;
 	object user;
@@ -40,7 +40,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (sscanf(args, "%s %s", oname, pname) != 2) {
+	if (sscanf(roles["raw"], "%s %s", oname, pname) != 2) {
 		send_out("Usage: pget <object> <property name>\n");
 		return;
 	}

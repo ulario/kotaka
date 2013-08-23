@@ -20,20 +20,25 @@
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	if (query_user()->query_class() < 2) {
 		send_out("You have insufficient access to deactivate i3 channels.\n");
 		return;
 	}
 
-	if (!CHANNELD->test_channel(args)) {
+	if (!CHANNELD->test_channel(roles["raw"])) {
 		send_out("Channel must exist before it can be removed from i3");
 		return;
 	}
 
-	CHANNELD->set_intermud(args, 0);
-	"~Intermud/sys/intermudd"->listen_channel(args, 0);
+	CHANNELD->set_intermud(roles["raw"], 0);
+	"~Intermud/sys/intermudd"->listen_channel(roles["raw"], 0);
 }

@@ -21,9 +21,9 @@
 #include <kotaka/paths/verb.h>
 #include <status.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	/* Report all objects inheriting a destructed inheritable */
 	object indices;

@@ -21,9 +21,9 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	string *users;
 	object user;
@@ -39,7 +39,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (sscanf(args, "%s %s %s", oname, pname, pvalue) != 3) {
+	if (sscanf(roles["raw"], "%s %s %s", oname, pname, pvalue) != 3) {
 		send_out("Usage: lpset <object> <local property name> <value>\n");
 		return;
 	}

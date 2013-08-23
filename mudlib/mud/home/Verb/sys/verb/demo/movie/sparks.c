@@ -19,9 +19,9 @@
  */
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	query_ustate()->push_state(new_object("~Text/lwo/ustate/movie/fireworks"));
 }

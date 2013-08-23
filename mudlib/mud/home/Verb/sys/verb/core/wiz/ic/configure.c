@@ -21,7 +21,12 @@
 #include <kotaka/paths/verb.h>
 #include <type.h>
 
-inherit LIB_ENGVERB;
+inherit LIB_VERB;
+
+string *query_parse_methods()
+{
+	return ({ "english" });
+}
 
 /* ({ role, prepositions, raw }) */
 mixed **query_roles()

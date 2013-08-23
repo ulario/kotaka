@@ -26,10 +26,3 @@ nomask int query_parse_method()
 {
 	return PARSE_ENGLISH;
 }
-
-nomask void main(string args)
-{
-	error("This function does not belong in an english verb");
-}
-
-void do_action(object actor, mapping roles, string evoke);

@@ -41,20 +41,7 @@ static void send_out(string str)
 	query_ustate()->send_out(str);
 }
 
-nomask int query_raw()
-{
-	error("Deprecated function");
-}
-
-nomask mixed fetch_raw(mixed junk ...)
-{
-	error("Deprecated function");
-}
-
-nomask mixed fetch_evoke(mixed junk ...)
-{
-	error("Deprecated function");
-}
+string *query_parse_methods();
 
 private object *convert_mobiles(object *bodies)
 {

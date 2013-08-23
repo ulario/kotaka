@@ -21,7 +21,12 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
+
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
 
 private void list_directory(string dir, int level)
 {
@@ -54,7 +59,7 @@ private void list_directory(string dir, int level)
 	}
 }
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	string *users;
 	object user;
@@ -66,8 +71,8 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args != "") {
-		list_directory(args, 0);
+	if (roles["raw"] != "") {
+		list_directory(roles["raw"], 0);
 	} else {
 		list_directory(nil, 0);
 	}

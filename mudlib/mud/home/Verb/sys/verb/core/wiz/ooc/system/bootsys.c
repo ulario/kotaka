@@ -22,9 +22,9 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object user;
 	string name;
@@ -38,22 +38,22 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
 
-	if (!STRINGD->is_alpha(args)) {
+	if (!STRINGD->is_alpha(roles["raw"])) {
 		send_out("Invalid subsystem name.\n");
 		return;
 	}
 
-	if (args[0] < 'A' || args[0] > 'Z') {
+	if (roles["raw"][0] < 'A' || roles["raw"][0] > 'Z') {
 		send_out("Invalid subsystem name.\n");
 		return;
 	}
 
-	INITD->boot_subsystem(args);
+	INITD->boot_subsystem(roles["raw"]);
 
 	send_out("Subsystem booted.\n");
 	return;

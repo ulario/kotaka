@@ -22,9 +22,9 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object user, *users;
 	string kicker_name;
@@ -37,22 +37,22 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("What do you wish to siteban?\n");
 		return;
 	}
 
-	if (args == "127.0.0.1" || args == "::1") {
+	if (roles["raw"] == "127.0.0.1" || roles["raw"] == "::1") {
 		send_out("You cannot siteban localhost\n");
 		return;
 	}
 
-	if (BAND->query_is_site_banned(args)) {
+	if (BAND->query_is_site_banned(roles["raw"])) {
 		send_out("That site is already banned.\n");
 		return;
 	}
 
-	BAND->ban_site(args);
+	BAND->ban_site(roles["raw"]);
 	users = TEXT_USERD->query_users();
 	users += TEXT_USERD->query_guests();
 	sz = sizeof(users);

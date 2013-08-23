@@ -22,9 +22,14 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	int number;
 	int px, py;
@@ -34,15 +39,15 @@ void main(object actor, string args)
 		return;
 	}
 
-	args = STRINGD->to_lower(args);
+	roles["raw"] = STRINGD->to_lower(roles["raw"]);
 	px = actor->query_property("pos_x");
 	py = actor->query_property("pos_y");
 
-	while (strlen(args)) {
-		switch(args[0]) {
+	while (strlen(roles["raw"])) {
+		switch(roles["raw"][0]) {
 		case '0' .. '9':
 			number *= 10;
-			number += args[0] - '0';
+			number += roles["raw"][0] - '0';
 			break;
 
 		case 'n':
@@ -82,12 +87,12 @@ void main(object actor, string args)
 			break;
 		
 		default:
-			send_out("Invalid walk string: " + args + "\n");
-			args = "";
+			send_out("Invalid walk string: " + roles["raw"] + "\n");
+			roles["raw"] = "";
 			continue;
 		}
 
-		args = args[1 ..];
+		roles["raw"] = roles["raw"][1 ..];
 	}
 
 	actor->set_property("pos_x", px);

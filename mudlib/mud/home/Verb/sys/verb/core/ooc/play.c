@@ -25,9 +25,14 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	string name;
 	object world;
@@ -46,8 +51,8 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args != "") {
-		body = CATALOGD->lookup_object(args);
+	if (roles["raw"] != "") {
+		body = CATALOGD->lookup_object(roles["raw"]);
 	}
 
 	if (!body) {

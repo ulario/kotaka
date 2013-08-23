@@ -20,9 +20,9 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
@@ -36,24 +36,24 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("Who do you wish to kick?\n");
 		return;
 	}
 
-	if (args == user->query_username()) {
+	if (roles["raw"] == user->query_username()) {
 		send_out("You cannot kick yourself.\n");
 		return;
 	}
 
-	turkey = TEXT_USERD->find_user(args);
+	turkey = TEXT_USERD->find_user(roles["raw"]);
 
 	if (!turkey) {
 		send_out("That user is not online.\n");
 		return;
 	}
 
-	if (args == "admin") {
+	if (roles["raw"] == "admin") {
 		send_out("You cannot kick admin.\n");
 		return;
 	}

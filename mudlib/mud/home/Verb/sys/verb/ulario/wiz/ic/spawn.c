@@ -23,9 +23,9 @@
 #include <game/paths.h>
 
 inherit LIB_EMIT;
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object master;
 	object thing;
@@ -40,10 +40,10 @@ void main(object actor, string args)
 		return;
 	}
 
-	master = CATALOGD->lookup_object(args);
+	master = CATALOGD->lookup_object(roles["raw"]);
 
 	if (!master) {
-		send_out("No such object: " + args + ".\n");
+		send_out("No such object: " + roles["raw"] + ".\n");
 		return;
 	}
 

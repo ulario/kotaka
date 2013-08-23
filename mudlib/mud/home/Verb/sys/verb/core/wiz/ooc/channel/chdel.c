@@ -20,9 +20,9 @@
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object user;
 	string name;
@@ -36,17 +36,17 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
 
-	if (!CHANNELD->test_channel(args)) {
+	if (!CHANNELD->test_channel(roles["raw"])) {
 		send_out("That channel does not exist.\n");
 		return;
 	}
 
-	CHANNELD->del_channel(args);
+	CHANNELD->del_channel(roles["raw"]);
 
 	send_out("Channel deleted.\n");
 	return;

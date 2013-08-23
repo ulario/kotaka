@@ -20,9 +20,14 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	object user;
 
@@ -33,7 +38,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	switch(args)
+	switch(roles["raw"])
 	{
 	case "on":
 		ACCOUNTD->set_account_property(user->query_username(), "invisible", 1);

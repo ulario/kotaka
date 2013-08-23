@@ -21,9 +21,14 @@
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	object user;
 	string name;
@@ -37,12 +42,12 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
 
-	if (!CHANNELD->test_channel(args)) {
+	if (!CHANNELD->test_channel(roles["raw"])) {
 		send_out("That channel does not exist.\n");
 		return;
 	}
@@ -52,17 +57,17 @@ void main(object actor, string args)
 	if (!subscriptions) {
 		subscriptions = ({ });
 	} else {
-		if (sizeof(subscriptions & ({ args }))) {
+		if (sizeof(subscriptions & ({ roles["raw"] }))) {
 			send_out("You are already subscribed.\n");
 			return;
 		}
 	}
 
-	subscriptions += ({ args });
+	subscriptions += ({ roles["raw"] });
 
 	ACCOUNTD->set_account_property(name, "channels", subscriptions);
 
-	CHANNELD->subscribe_channel(args, user);
+	CHANNELD->subscribe_channel(roles["raw"], user);
 
 	send_out("Channel subscribed.\n");
 	return;

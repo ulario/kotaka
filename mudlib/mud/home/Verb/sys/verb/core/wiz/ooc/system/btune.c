@@ -23,9 +23,9 @@
 #include <kotaka/paths/verb.h>
 #include <kotaka/paths/thing.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object user;
 	float interval;
@@ -37,12 +37,12 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("Current bulk sync interval: " + STRINGD->mixed_sprint(BULKD->query_interval()) + "\n");
 		return;
 	}
 
-	if (!sscanf(args, "%f", interval)) {
+	if (!sscanf(roles["raw"], "%f", interval)) {
 		send_out("Floats only please.\n");
 		return;
 	}

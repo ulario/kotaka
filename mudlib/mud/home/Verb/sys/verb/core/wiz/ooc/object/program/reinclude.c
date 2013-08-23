@@ -25,9 +25,9 @@
 #include <kotaka/paths/verb.h>
 #include <type.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	mixed *status;
 	object hits;
@@ -45,9 +45,9 @@ void main(object actor, string args)
 		return;
 	}
 
-	args = DRIVER->normalize_path(args, "/");
+	roles["raw"] = DRIVER->normalize_path(roles["raw"], "/");
 
-	list = PROGRAMD->query_includers(args);
+	list = PROGRAMD->query_includers(roles["raw"]);
 
 	if (!list) {
 		send_out("No programs include that file.\n");

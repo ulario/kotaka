@@ -21,9 +21,14 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	object env;
 	object user;
@@ -34,7 +39,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args != "") {
+	if (roles["raw"] != "") {
 		send_out("Just type \"leave\".\n");
 		return;
 	}

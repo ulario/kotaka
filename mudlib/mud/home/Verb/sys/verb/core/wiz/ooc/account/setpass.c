@@ -20,9 +20,14 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
+void main(object actor, mapping roles)
 {
 	object user;
 	string name;
@@ -35,7 +40,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (sscanf(args, "%s %s", name, pass) != 2) {
+	if (sscanf(roles["raw"], "%s %s", name, pass) != 2) {
 		send_out("Usage: setpass <account name> <new password>\n");
 		return;
 	}

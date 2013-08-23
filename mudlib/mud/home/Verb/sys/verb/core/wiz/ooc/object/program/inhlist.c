@@ -21,9 +21,9 @@
 #include <kotaka/paths/verb.h>
 #include <status.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	mixed *status;
 	object ilist;
@@ -34,7 +34,7 @@ void main(object actor, string args)
 		return;
 	}
 
-	status = status(args);
+	status = status(roles["raw"]);
 
 	if (!status) {
 		send_out("No such program.\n");

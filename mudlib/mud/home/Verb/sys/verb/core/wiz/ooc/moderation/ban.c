@@ -21,9 +21,9 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
@@ -37,27 +37,27 @@ void main(object actor, string args)
 		return;
 	}
 
-	if (args == "") {
+	if (roles["raw"] == "") {
 		send_out("Who do you wish to ban?\n");
 		return;
 	}
 
-	if (args == user->query_username()) {
+	if (roles["raw"] == user->query_username()) {
 		send_out("You cannot ban yourself.\n");
 		return;
 	}
 
-	if (args == "admin") {
+	if (roles["raw"] == "admin") {
 		send_out("You cannot ban admin.\n");
 		return;
 	}
 
-	if (BAND->query_is_username_banned(args)) {
+	if (BAND->query_is_username_banned(roles["raw"])) {
 		send_out("That user is already banned.\n");
 		return;
 	}
 
-	switch(TEXT_SUBD->query_user_class(args)) {
+	switch(TEXT_SUBD->query_user_class(roles["raw"])) {
 	case 3: /* administrator.  Only the mud owner can ban them */
 		if (user->query_username() != "admin") {
 			send_out("Only the mud owner can ban an administrator.");
@@ -78,13 +78,13 @@ void main(object actor, string args)
 		break;
 	}
 
-	BAND->ban_username(args);
+	BAND->ban_username(roles["raw"]);
 
 	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-	turkey_name = TEXT_SUBD->titled_name(args, TEXT_SUBD->query_user_class(args));
+	turkey_name = TEXT_SUBD->titled_name(roles["raw"], TEXT_SUBD->query_user_class(roles["raw"]));
 
 	user->message("You ban " + turkey_name + " from the mud.\n");
-	turkey = TEXT_USERD->find_user(args);
+	turkey = TEXT_USERD->find_user(roles["raw"]);
 
 	TEXT_SUBD->send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
 

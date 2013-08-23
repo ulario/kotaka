@@ -22,7 +22,12 @@
 #include <type.h>
 
 inherit LIB_EMIT;
-inherit LIB_ENGVERB;
+inherit LIB_VERB;
+
+string *query_parse_methods()
+{
+	return ({ "english" });
+}
 
 /* ({ role, prepositions, raw }) */
 mixed **query_roles()
@@ -32,7 +37,7 @@ mixed **query_roles()
 	});
 }
 
-void do_action(object actor, mapping roles, string evoke)
+void main(object actor, mapping roles)
 {
 	mixed dob;
 	mixed iob;

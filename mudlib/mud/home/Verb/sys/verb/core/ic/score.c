@@ -22,7 +22,12 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
-inherit LIB_RAWVERB;
+inherit LIB_VERB;
+
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
 
 string make_bar(int cur, int max, int len)
 {
@@ -61,7 +66,7 @@ string make_xp_bar(int cur, int max, int len)
 	return buf;
 }
 
-void main(object actor, string args)
+void main(object actor, mapping roles)
 {
 	object user;
 	object body;
