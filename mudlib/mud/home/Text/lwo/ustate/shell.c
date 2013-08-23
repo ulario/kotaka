@@ -402,6 +402,8 @@ private void load_verbs(string directory, object proxy)
 		name = name[ .. strlen(name) - 3];
 
 		proxy->compile_object(directory + "/" + name);
+
+		(directory + "/" + name)->query_parse_methods();
 	}
 }
 
