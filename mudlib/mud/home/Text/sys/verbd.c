@@ -381,49 +381,31 @@ private mapping role_bind(mapping roles, mapping initial)
 	return bind;
 }
 
-int do_verb(string command, string args)
+private mapping english_process(string command, object ustate, object actor, object verb, string args)
 {
-	object verb, actor, ustate;
-	object *def_candidates;
-	string statement, crole, evoke;
-	mixed **parse, **rules;
-	int sz, i;
-	mapping raw, roles, prepkey, candidates;
+	string statement;
+	mixed *parse;
+	string **rules;
+	mapping roles;
+	int i, sz;
+	mapping raw;
+	mapping prepkey;
+	string evoke;
+	string crole;
 	string *rlist;
+	object *def_candidates;
+	mapping candidates;
 
-	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
-
-	verb = find_verb(command);
-
-	if (!verb) {
-		return FALSE;
+	if (!actor) {
+		return ([ "error": "You must be in character to use this command." ]);
 	}
-
-	actor = ustate->query_user()->query_body();
-
-	if (verb->query_parse_method() == PARSE_RAW) {
-		TLSD->set_tls_value("Text", "ustate", ustate);
-		verb->main(actor, args);
-		if (this_object()) {
-			TLSD->set_tls_value("Text", "ustate", nil);
-		}
-		return TRUE;
-	} else {
-		if (!actor) {
-			ustate->send_out("You must be in character to use this command.\n");
-			return TRUE;
-		}
-	}
-
-	TLSD->set_tls_value("Text", "ustate", ustate);
 
 	statement = command + " " + args;
 	parse = ENGLISHD->parse(statement);
 
 	if (!parse) {
 		/* choked on bad grammar */
-		ustate->send_out("Your grammar stinks.\n");
-		return TRUE;
+		return nil;
 	}
 
 	rules = verb->query_roles();
@@ -487,8 +469,7 @@ int do_verb(string command, string args)
 
 		case "E":
 			if (evoke) {
-				ustate->send_out("Too many evokes!\n");
-				return TRUE;
+				return ([ "error": "Multiple evokes" ]);
 			}
 
 			evoke = parse[i][1];
@@ -554,11 +535,65 @@ int do_verb(string command, string args)
 	roles = role_bind(roles, candidates);
 
 	if (TLSD->query_tls_value("Text", "parse_error")) {
-		ustate->send_out(TLSD->query_tls_value("Text", "parse_error") + "\n");
-		return TRUE;
+		return ([ "error" : TLSD->query_tls_value("Text", "parse_error") ]);
 	}
 
-	verb->do_action(actor, roles + raw, evoke);
+	if (evoke) {
+		roles["evoke"] = evoke;
+	}
+
+	roles += raw;
+
+	return roles;
+}
+
+int do_verb(string command, string args)
+{
+	object ustate;
+	object actor;
+	mapping roles;
+	object verb;
+	int i, sz;
+	string *methods;
+
+	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
+
+	verb = find_verb(command);
+
+	if (!verb) {
+		return FALSE;
+	}
+
+	actor = ustate->query_user()->query_body();
+
+	TLSD->set_tls_value("Text", "ustate", ustate);
+
+	methods = verb->query_parse_methods();
+
+	sz = sizeof(methods);
+	
+	for (i = 0; i < sz && !roles; i++) {
+		switch(methods[i]) {
+		case "raw":
+			roles = ([ "raw" : args ]);
+			continue;
+
+		case "english":
+			roles = english_process(command, ustate, actor, verb, args);
+		}
+	}
+
+	if (roles["error"]) {
+		ustate->send_out(roles["error"] + "\n");
+	} else {
+		verb->main(actor, roles);
+	}
+
+	if (this_object()) {
+		TLSD->set_tls_value("Text", "ustate", nil);
+	}
+
+	return TRUE;
 
 	if (this_object()) {
 		TLSD->set_tls_value("Text", "ustate", nil);
