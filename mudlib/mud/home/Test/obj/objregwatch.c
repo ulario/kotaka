@@ -68,7 +68,11 @@ static void check()
 		}
 	}
 
-	call_out("check", 60.0 / (float)count + 0.05);
+	if (count > 120) {
+		count = 120;
+	}
+
+	call_out("check", 60.0 / (float)count);
 
 	cursor = KERNELD->next_link(cursor);
 
