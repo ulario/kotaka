@@ -25,6 +25,11 @@
 inherit LIB_EMIT;
 inherit LIB_VERB;
 
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
 void main(object actor, mapping roles)
 {
 	object master;

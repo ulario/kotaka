@@ -21,6 +21,11 @@
 
 inherit LIB_VERB;
 
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
 void main(object actor, mapping roles)
 {
 	query_ustate()->push_state(new_object("~Text/lwo/ustate/movie/flight"));

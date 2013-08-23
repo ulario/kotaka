@@ -22,6 +22,11 @@
 
 inherit LIB_VERB;
 
+string *query_parse_methods()
+{
+	return ({ "raw" });
+}
+
 atomic private void do_folder_rename(string old, string new)
 {
 	mapping map;
