@@ -35,7 +35,7 @@ mixed **query_roles()
 	return ({ });
 }
 
-void do_action(object actor, mapping roles, string evoke)
+void main(object actor, mapping roles)
 {
 	object configure;
 	mixed dob;
