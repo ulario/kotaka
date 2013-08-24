@@ -75,7 +75,7 @@ nomask void clear_removed_properties()
 	removed_properties = ({ });
 }
 
-nomask void set_local_property(string name, mixed value, varargs int nosignal)
+nomask void set_local_property(string name, mixed value)
 {
 	properties[name] = SUBD->deep_copy(value);
 }
