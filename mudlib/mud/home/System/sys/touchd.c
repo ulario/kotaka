@@ -47,7 +47,9 @@ static void touch()
 	queue->pop_front();
 
 	if (obj) {
-		obj->_F_dummy();
+		catch {
+			obj->_F_dummy();
+		}
 	}
 
 	if (!queue->empty()) {
