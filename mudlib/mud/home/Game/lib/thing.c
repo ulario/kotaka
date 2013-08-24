@@ -21,14 +21,17 @@
 
 inherit thing LIB_THING;
 inherit position "thing/position";
+inherit geometry "thing/geometry";
 
 static void create()
 {
 	thing::create();
+	geometry::create();
 }
 
 static void move_notify(object old_env)
 {
 	thing::move_notify(old_env);
 	position::move_notify(old_env);
+	geometry::move_notify(old_env);
 }
