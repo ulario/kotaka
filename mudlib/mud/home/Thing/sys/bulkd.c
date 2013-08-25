@@ -45,7 +45,7 @@ float query_interval()
 
 void bulk_queue(object obj)
 {
-	ACCESS_CHECK(previous_program() == LIB_BULK || INTERFACE());
+	ACCESS_CHECK(THING() || INTERFACE());
 
 	queue->push_back(obj);
 
