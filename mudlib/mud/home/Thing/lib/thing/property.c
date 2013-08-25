@@ -277,13 +277,3 @@ mixed query_property(string name)
 		error("Invalid property code of " + info[1]);
 	}
 }
-
-mixed *save_property()
-{
-	return ({ properties, removed_properties });
-}
-
-void restore_property(mixed *arr)
-{
-	({ properties, removed_properties }) = arr;
-}

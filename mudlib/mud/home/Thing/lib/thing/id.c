@@ -267,13 +267,3 @@ object find_by_id(string id)
 		}
 	}
 }
-
-mixed *save_id()
-{
-	return ({ id_base, id_number });
-}
-
-void restore_id(mixed *arr)
-{
-	({ id_base, id_number }) = arr;
-}

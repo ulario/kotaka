@@ -183,13 +183,3 @@ nomask atomic void move(object new_env)
 		new_env->insert_notify(this);
 	}
 }
-
-mixed *save_inventory()
-{
-	return ({ environment, inventory });
-}
-
-void restore_inventory(mixed *arr)
-{
-	({ environment, inventory }) = arr;
-}

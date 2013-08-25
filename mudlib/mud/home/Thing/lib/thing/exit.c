@@ -40,13 +40,3 @@ object query_destination()
 {
 	return destination;
 }
-
-mixed *save_exit()
-{
-	return ({ direction, destination });
-}
-
-void restore_exit(mixed *arr)
-{
-	({ direction, destination }) = arr;
-}

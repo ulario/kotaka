@@ -281,13 +281,3 @@ nomask void thing_set_next_instance(object archetype, object instance)
 		next_instance[archetype] = nil;
 	}
 }
-
-mixed *save_archetype()
-{
-	return ({ archetypes, first_instance, prev_instance, next_instance });
-}
-
-void restore_archetype(mixed *arr)
-{
-	({ archetypes, first_instance, prev_instance, next_instance }) = arr;
-}

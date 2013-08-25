@@ -343,13 +343,3 @@ static void move_notify(object old_env)
 		old_env->bulk_invalidate(); /* recursive */
 	}
 }
-
-mixed *save_bulk()
-{
-	return ({ mass, density, flexible, virtual, capacity, max_mass });
-}
-
-void restore_bulk(mixed *arr)
-{
-	({ mass, density, flexible, virtual, capacity, max_mass }) = arr;
-}
