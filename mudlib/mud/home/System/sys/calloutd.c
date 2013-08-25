@@ -45,8 +45,8 @@ mixed *release();
 
 static void create()
 {
-	cmap = clone_object(BIGSTRUCT_ARRAY_OBJ);
-	cqueue = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	cmap = new_object(BIGSTRUCT_ARRAY_LWO);
+	cqueue = new_object(BIGSTRUCT_ARRAY_LWO);
 
 	cmap->set_size(0x7FFFFFFF);
 	cqueue->set_size(0x10000000);
@@ -63,9 +63,6 @@ static void destruct()
 	if (suspend) {
 		error("Cannot destruct while callouts are suspended");
 	}
-
-	destruct_object(cmap);
-	destruct_object(cqueue);
 }
 
 private int object_index(object obj)
