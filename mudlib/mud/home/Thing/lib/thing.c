@@ -17,12 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-inherit arch "archetype";
-inherit id "id";
-inherit inv "inventory";
-inherit prop "property";
-inherit bulk "bulk";
-inherit exit "exit";
+inherit arch "thing/archetype";
+inherit id "thing/id";
+inherit inv "thing/inventory";
+inherit prop "thing/property";
+inherit bulk "thing/bulk";
+inherit exit "thing/exit";
 
 int destructing;
 
