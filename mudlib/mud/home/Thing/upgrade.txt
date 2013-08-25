@@ -1,6 +1,6 @@
-Freeze the mud
-	csuspend
-	cblock
 Compile ~Thing/initd.c
 Rebuild ~Thing/lib/thing and dependencies
 Touch all inheriters of ~Thing/lib/thing
+Unfreeze the mud
+	crelease
+	cunblock
