@@ -52,3 +52,11 @@ string query_destructor(string path)
 		return "thing_destruct";
 	}
 }
+
+string query_toucher(string path)
+{
+	switch(path) {
+	case LIB_THING:
+		return "save_state";
+	}
+}
