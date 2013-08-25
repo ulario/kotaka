@@ -172,13 +172,6 @@ int get_size()
 	return size;
 }
 
-int query_size()
-{
-	check_caller(READ_ACCESS);
-
-	return size;
-}
-
 atomic void set_size(int new_size)
 {
 	int cur_level;
