@@ -90,10 +90,6 @@ atomic nomask void set_archetypes(object *new_archs)
 
 		arch = new[i];
 
-		if (!(arch <- "thing")) {
-			error("Invalid archetype");
-		}
-
 		if (is_archetype_of(arch)) {
 			error("Circular reference");
 		}
@@ -132,7 +128,7 @@ atomic nomask void clear_archetypes()
 
 atomic nomask void add_archetype(object new_arch)
 {
-	if (!new_arch || !(new_arch <- "thing")) {
+	if (!new_arch) {
 		error("Invalid archetype");
 	}
 
@@ -149,7 +145,7 @@ atomic nomask void add_archetype(object new_arch)
 
 atomic nomask void add_archetype_at(object new_arch, int position)
 {
-	if (!new_arch || !(new_arch <- "thing")) {
+	if (!new_arch) {
 		error("Invalid archetype");
 	}
 
