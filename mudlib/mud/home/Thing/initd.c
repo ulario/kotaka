@@ -57,6 +57,6 @@ string query_toucher(string path)
 {
 	switch(path) {
 	case LIB_THING:
-		return "save_state";
+		return "restore_state";
 	}
 }
