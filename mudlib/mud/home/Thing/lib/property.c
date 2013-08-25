@@ -277,14 +277,3 @@ mixed query_property(string name)
 		error("Invalid property code of " + info[1]);
 	}
 }
-
-nomask void touch_properties(varargs string function)
-{
-	if (!properties) {
-		properties = ([ ]);
-	}
-
-	if (!removed_properties) {
-		removed_properties = ({ });
-	}
-}

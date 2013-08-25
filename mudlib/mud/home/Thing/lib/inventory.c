@@ -183,10 +183,3 @@ nomask atomic void move(object new_env)
 		new_env->insert_notify(this);
 	}
 }
-
-nomask void touch_inventory(varargs string function)
-{
-	if (!inventory) {
-		inventory = ({ });
-	}
-}

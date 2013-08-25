@@ -285,21 +285,3 @@ nomask void thing_set_next_instance(object archetype, object instance)
 		next_instance[archetype] = nil;
 	}
 }
-
-atomic nomask void touch_archetype(varargs string function)
-{
-	object *missing;
-	int sz, i;
-	object this;
-
-	missing = query_archetypes();
-	missing -= ({ nil });
-	missing -= map_indices(query_prev_instances());
-	sz = sizeof(missing);
-
-	this = this_object();
-
-	for (i = 0; i < sz; i++) {
-		missing[i]->thing_add_instance(this);
-	}
-}
