@@ -277,7 +277,7 @@ static void load_tick(object cqueue, object tqueue)
 	if (!cqueue->empty()) {
 		string category;
 
-		category = cqueue->get_front();
+		category = cqueue->query_front();
 		cqueue->pop_front();
 
 		load_helpdir(category, cqueue, tqueue);
@@ -287,7 +287,7 @@ static void load_tick(object cqueue, object tqueue)
 		string dir;
 		string entry;
 
-		({ dir, entry }) = tqueue->get_front();
+		({ dir, entry }) = tqueue->query_front();
 		tqueue->pop_front();
 
 		load_helpfile(dir, entry);

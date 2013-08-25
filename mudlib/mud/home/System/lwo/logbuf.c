@@ -57,7 +57,7 @@ string pop()
 		} else {
 			string head;
 
-			head = deque->get_front();
+			head = deque->query_front();
 			deque->pop_front();
 
 			return head;

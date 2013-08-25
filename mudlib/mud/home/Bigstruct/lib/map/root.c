@@ -71,7 +71,7 @@ private object find_node(mixed key)
 	while (node) {
 		mixed this_key;
 
-		this_key = node->get_low_key();
+		this_key = node->query_low_key();
 
 		if (this_key == nil) {
 			/* empty node */
@@ -81,7 +81,7 @@ private object find_node(mixed key)
 		if (key < this_key) {
 			object new_node;
 
-			new_node = node->get_left();
+			new_node = node->query_left();
 
 			if (new_node) {
 				node = new_node;
@@ -99,11 +99,11 @@ private object find_node(mixed key)
 				return node;
 			}
 
-			if (key < next->get_low_key()) {
+			if (key < next->query_low_key()) {
 				/* bracketed */
 				return node;
 			} else {
-				node = node->get_right();
+				node = node->query_right();
 			}
 		}
 	}
@@ -116,7 +116,7 @@ private void merge_node_left(object node)
 
 	prev = prev_node(node);
 
-	map = prev->get_map() + node->get_map();
+	map = prev->query_map() + node->query_map();
 
 	node->set_map(map);
 	node->set_size(map_sizeof(map));
@@ -134,7 +134,7 @@ private void merge_node_right(object node)
 
 	next = next_node(node);
 
-	map = node->get_map() + next->get_map();
+	map = node->query_map() + next->query_map();
 
 	node->set_map(map);
 	node->set_size(map_sizeof(map));
@@ -158,7 +158,7 @@ private void split_node_right(object node)
 
 	next = insert_node(next_node(node));
 
-	map = node->get_map();
+	map = node->query_map();
 	keys = map_indices(map);
 
 	sz = sizeof(keys);
@@ -213,7 +213,7 @@ private int mass_check(object node)
 {
 	int size;
 
-	size = map_sizeof(node->get_map());
+	size = map_sizeof(node->query_map());
 
 	node->set_size(size);
 
@@ -241,7 +241,7 @@ atomic void set_element(mixed key, mixed value)
 	}
 
 	node = find_node(key);
-	map = node->get_map();
+	map = node->query_map();
 
 	if (map[key] == nil) {
 		if (value == nil) {
@@ -249,19 +249,19 @@ atomic void set_element(mixed key, mixed value)
 		} else {
 			mixed low;
 
-			low = node->get_low_key();
+			low = node->query_low_key();
 			if (low == nil || key < low) {
 				node->set_low_key(key);
 			}
 
-			size = node->get_size() + 1;
+			size = node->query_size() + 1;
 			change = 1;
 		}
 	} else if (value == nil) {
-		size = node->get_size() - 1;
+		size = node->query_size() - 1;
 		change = 1;
 	} else {
-		size = node->get_size();
+		size = node->query_size();
 	}
 
 	map[key] = value;
@@ -286,7 +286,7 @@ mixed query_element(mixed key)
 	node = find_node(key);
 	ASSERT(node);
 
-	return node->get_map()[key];
+	return node->query_map()[key];
 }
 
 /* slicing */
@@ -299,7 +299,7 @@ object slice(mixed first, mixed last)
 	error("Function not implemented");
 }
 
-object get_indices()
+object query_indices()
 {
 	object array;
 	object node;
@@ -317,7 +317,7 @@ object get_indices()
 		int index2;
 		int sz;
 
-		map = node->get_map();
+		map = node->query_map();
 		indices = ::map_indices(map);
 		sz = sizeof(indices);
 
@@ -337,7 +337,7 @@ object get_indices()
 	return array;
 }
 
-object get_values()
+object query_values()
 {
 	object array;
 	object node;
@@ -355,7 +355,7 @@ object get_values()
 		int index2;
 		int sz;
 
-		map = node->get_map();
+		map = node->query_map();
 		values = ::map_values(map);
 		sz = sizeof(values);
 
@@ -401,7 +401,7 @@ atomic void reindex()
 		mixed *indices, *values;
 		int sz, i;
 
-		map = node->get_map();
+		map = node->query_map();
 		node = next_node(node);
 
 		sz = map_sizeof(map);
@@ -438,9 +438,9 @@ atomic void reindex()
 			quota = (MIN_MASS + MAX_MASS) / 2;
 		}
 
-		index = deque->get_front();
+		index = deque->query_front();
 		deque->pop_front();
-		value = deque->get_front();
+		value = deque->query_front();
 		deque->pop_front();
 
 		map[index] = value;

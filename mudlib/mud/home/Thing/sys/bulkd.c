@@ -60,7 +60,7 @@ static void process()
 
 	handle = 0;
 
-	obj = queue->get_front();
+	obj = queue->query_front();
 	queue->pop_front();
 
 	if (!queue->empty()) {

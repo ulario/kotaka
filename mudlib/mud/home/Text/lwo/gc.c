@@ -36,7 +36,7 @@ void set_painter(object new_painter)
 
 void set_layer(string name)
 {
-	layer = painter->get_layer(name);
+	layer = painter->query_layer(name);
 }
 
 void set_offset(int x, int y)

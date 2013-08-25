@@ -41,7 +41,7 @@ void main(object actor, mapping roles)
 	}
 
 	indices = PROGRAMD->query_program_indices();
-	sz = indices->get_size();
+	sz = indices->query_size();
 
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 

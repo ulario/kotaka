@@ -352,7 +352,7 @@ private void destruct_verbs(object proxy)
 
 	proglist = PROGRAMD->query_program_indices();
 
-	sz = proglist->get_size();
+	sz = proglist->query_size();
 
 	for (i = 0; i < sz; i++) {
 		object pinfo;

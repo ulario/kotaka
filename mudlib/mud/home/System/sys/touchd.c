@@ -42,7 +42,7 @@ static void touch()
 {
 	object obj;
 
-	obj = queue->get_front();
+	obj = queue->query_front();
 
 	queue->pop_front();
 

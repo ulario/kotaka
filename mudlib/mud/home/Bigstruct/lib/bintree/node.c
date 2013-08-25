@@ -33,19 +33,19 @@ static void destruct()
 	::destruct();
 }
 
-object get_parent()
+object query_parent()
 {
 	check_caller();
 	return parent;
 }
 
-object get_left()
+object query_left()
 {
 	check_caller();
 	return left;
 }
 
-object get_right()
+object query_right()
 {
 	check_caller();
 	return right;

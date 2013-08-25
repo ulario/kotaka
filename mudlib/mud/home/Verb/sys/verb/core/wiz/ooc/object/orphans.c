@@ -39,7 +39,7 @@ void main(object actor, mapping roles)
 
 	arr = OBJECTD->query_orphans();
 
-	if (!(sz = arr->get_size())) {
+	if (!(sz = arr->query_size())) {
 		send_out("There are no orphaned objects.\n");
 		return;
 	}

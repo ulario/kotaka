@@ -41,19 +41,19 @@ static void create()
 	begin = end = arrsz / 2;
 }
 
-object get_prev()
+object query_prev()
 {
 	check_caller();
 	return prev;
 }
 
-object get_next()
+object query_next()
 {
 	check_caller();
 	return next;
 }
 
-int get_mass()
+int query_mass()
 {
 	check_caller();
 	return end - begin;
@@ -65,13 +65,13 @@ int empty()
 	return begin == end;
 }
 
-int get_begin()
+int query_begin()
 {
 	check_caller();
 	return begin;
 }
 
-int get_end()
+int query_end()
 {
 	check_caller();
 	return end;
@@ -101,7 +101,7 @@ void set_next(object new)
 	next = new;
 }
 
-mixed get_front()
+mixed query_front()
 {
 	check_caller();
 
@@ -112,7 +112,7 @@ mixed get_front()
 	return sub[begin];
 }
 
-mixed get_back()
+mixed query_back()
 {
 	check_caller();
 

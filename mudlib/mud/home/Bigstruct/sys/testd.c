@@ -68,7 +68,7 @@ private void test_bigstruct_array()
 	arr->set_element(151, 4337);
 
 	arrslice = arr->slice(50, 150);
-	ASSERT(arrslice->get_size() == 101);
+	ASSERT(arrslice->query_size() == 101);
 	ASSERT(arrslice->query_element(0) == 2337);
 	ASSERT(arrslice->query_element(100) == 3337);
 
@@ -116,14 +116,14 @@ private void test_bigstruct_deque()
 		ASSERT(!deque->empty());
 	}
 
-	ASSERT(deque->get_size() == 1500);
+	ASSERT(deque->query_size() == 1500);
 
 	for (x = 0; x < 1500; x++) {
-		ASSERT(x == deque->get_front());
+		ASSERT(x == deque->query_front());
 		deque->pop_front();
 	}
 
-	ASSERT(deque->get_size() == 0);
+	ASSERT(deque->query_size() == 0);
 	ASSERT(deque->empty());
 
 	for (x = 0; x < 1500; x++) {
@@ -131,14 +131,14 @@ private void test_bigstruct_deque()
 		ASSERT(!deque->empty());
 	}
 
-	ASSERT(deque->get_size() == 1500);
+	ASSERT(deque->query_size() == 1500);
 
 	for (x = 0; x < 1500; x++) {
-		ASSERT(x == deque->get_back());
+		ASSERT(x == deque->query_back());
 		deque->pop_back();
 	}
 
-	ASSERT(deque->get_size() == 0);
+	ASSERT(deque->query_size() == 0);
 	ASSERT(deque->empty());
 
 	for (x = 0; x < 1500; x++) {
@@ -146,14 +146,14 @@ private void test_bigstruct_deque()
 		ASSERT(!deque->empty());
 	}
 
-	ASSERT(deque->get_size() == 1500);
+	ASSERT(deque->query_size() == 1500);
 
 	for (x = 1499; x >= 0; x--) {
-		ASSERT(x == deque->get_front());
+		ASSERT(x == deque->query_front());
 		deque->pop_front();
 	}
 
-	ASSERT(deque->get_size() == 0);
+	ASSERT(deque->query_size() == 0);
 	ASSERT(deque->empty());
 
 	for (x = 0; x < 1500; x++) {
@@ -161,15 +161,15 @@ private void test_bigstruct_deque()
 		ASSERT(!deque->empty());
 	}
 
-	ASSERT(deque->get_size() == 1500);
+	ASSERT(deque->query_size() == 1500);
 
 	for (x = 1499; x >= 0; x--) {
-		ASSERT(x == deque->get_back());
+		ASSERT(x == deque->query_back());
 		deque->pop_back();
 	}
 
 	ASSERT(deque->empty());
-	ASSERT(deque->get_size() == 0);
+	ASSERT(deque->query_size() == 0);
 }
 
 private void test_bigstruct_map()

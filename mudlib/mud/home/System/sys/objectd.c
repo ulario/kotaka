@@ -305,7 +305,7 @@ void recompile_everything()
 
 	rlimits(0; -1) {
 		indices = PROGRAMD->query_program_indices();
-		sz = indices->get_size();
+		sz = indices->query_size();
 
 		for (i = 0; i < sz; i++) {
 			int oindex;
@@ -326,7 +326,7 @@ void recompile_everything()
 		while (!libqueue->empty()) {
 			string path;
 
-			path = libqueue->get_back();
+			path = libqueue->query_back();
 			libqueue->pop_back();
 
 			destruct_object(path);
@@ -334,12 +334,12 @@ void recompile_everything()
 
 		objqueue->grant_access(find_object(SORTD), WRITE_ACCESS);
 
-		SORTD->bqsort(objqueue, 0, objqueue->get_size() - 1);
+		SORTD->bqsort(objqueue, 0, objqueue->query_size() - 1);
 
 		while (!objqueue->empty()) {
 			string path;
 
-			path = objqueue->get_back();
+			path = objqueue->query_back();
 			objqueue->pop_back();
 
 			catch {
@@ -398,7 +398,7 @@ object query_orphans()
 	orphans->grant_access(previous_object(), READ_ACCESS);
 
 	indices = PROGRAMD->query_program_indices();
-	sz = indices->get_size();
+	sz = indices->query_size();
 
 	for (i = 0; i < sz; i++) {
 		object pinfo;

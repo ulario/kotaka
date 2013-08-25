@@ -109,7 +109,7 @@ static void timeout(object conn)
 	}
 }
 
-private object get_manager(object conn)
+private object query_manager(object conn)
 {
 	object base;
 	int port;
@@ -290,7 +290,7 @@ string query_banner(object LIB_CONN connection)
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	userd = get_manager(connection);
+	userd = query_manager(connection);
 
 	if (!userd) {
 		return "Internal error: no connection manager";
@@ -313,7 +313,7 @@ int query_timeout(object LIB_CONN connection)
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	userd = get_manager(connection);
+	userd = query_manager(connection);
 
 	if (!userd || blocked || free_users() < reserve) {
 		return -1;
@@ -331,7 +331,7 @@ object select(string str)
 
 	connection = previous_object(1);
 
-	userd = get_manager(connection);
+	userd = query_manager(connection);
 
 	if (!userd) {
 		return this_object();

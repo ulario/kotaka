@@ -185,7 +185,7 @@ atomic void discover_clones()
 		while (!queue->empty()) {
 			object obj;
 
-			obj = queue->get_front();
+			obj = queue->query_front();
 			queue->pop_front();
 			add_clone(obj);
 		}

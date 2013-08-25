@@ -39,7 +39,7 @@ void main(object actor, mapping roles)
 	}
 
 	indices = PROGRAMD->query_program_indices();
-	sz = indices->get_size();
+	sz = indices->query_size();
 
 	for (i = 0; i < sz; i++) {
 		int pindex;

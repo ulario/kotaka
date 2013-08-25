@@ -28,11 +28,11 @@ void dump();
 
 private void trim_first()
 {
-	if (first->get_mass() == 0 && first != last) {
+	if (first->query_mass() == 0 && first != last) {
 		object old;
 
 		old = first;
-		first = first->get_next();
+		first = first->query_next();
 		old->set_next(nil);
 
 		discard_node(old);
@@ -41,11 +41,11 @@ private void trim_first()
 
 private void trim_last()
 {
-	if (last->get_mass() == 0 && first != last) {
+	if (last->query_mass() == 0 && first != last) {
 		object old;
 
 		old = last;
-		last = last->get_prev();
+		last = last->query_prev();
 
 		discard_node(old);
 	}
@@ -63,23 +63,23 @@ static void destruct()
 	while (first) {
 		object turkey;
 		turkey = first;
-		first = first->get_next();
+		first = first->query_next();
 		discard_node(turkey);
 	}
 }
 
-mixed get_front()
+mixed query_front()
 {
 	check_caller(READ_ACCESS);
 
-	return first->get_front();
+	return first->query_front();
 }
 
-mixed get_back()
+mixed query_back()
 {
 	check_caller(READ_ACCESS);
 
-	return last->get_back();
+	return last->query_back();
 }
 
 void set_front(mixed value)
@@ -169,7 +169,7 @@ atomic void clear()
 	}
 }
 
-int get_size()
+int query_size()
 {
 	object node;
 	int mass;
@@ -181,8 +181,8 @@ int get_size()
 	node = first;
 
 	while (node) {
-		mass += node->get_mass();
-		node = node->get_next();
+		mass += node->query_mass();
+		node = node->query_next();
 	}
 
 	return mass;
@@ -197,7 +197,7 @@ mixed query_element(int index)
 
 	node = first;
 
-	while (node && (mass = node->get_mass()) > index) {
+	while (node && (mass = node->query_mass()) > index) {
 		index -= mass;
 	}
 
@@ -217,7 +217,7 @@ void set_element(int index, mixed value)
 
 	node = first;
 
-	while (node && (mass = node->get_mass()) > index) {
+	while (node && (mass = node->query_mass()) > index) {
 		index -= mass;
 	}
 

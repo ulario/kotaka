@@ -36,11 +36,11 @@ private void purge_node(object node)
 {
 	object subnode;
 
-	if (subnode = node->get_left()) {
+	if (subnode = node->query_left()) {
 		purge_node(subnode);
 	}
 
-	if (subnode = node->get_right()) {
+	if (subnode = node->query_right()) {
 		purge_node(subnode);
 	}
 
@@ -62,7 +62,7 @@ static object leftest(object node)
 
 	while (left) {
 		node = left;
-		left = node->get_left();
+		left = node->query_left();
 	}
 
 	return node;
@@ -76,7 +76,7 @@ static object rightest(object node)
 
 	while (right) {
 		node = right;
-		right = node->get_right();
+		right = node->query_right();
 	}
 
 	return node;
@@ -84,12 +84,12 @@ static object rightest(object node)
 
 static object parent(object node)
 {
-	return node->get_parent();
+	return node->query_parent();
 }
 
 static object grandparent(object node)
 {
-	return node->get_parent()->get_parent();
+	return node->query_parent()->query_parent();
 }
 
 static object uncle(object node)
@@ -98,14 +98,14 @@ static object uncle(object node)
 	object uncle;
 	object parent;
 
-	parent = node->get_parent();
-	grandparent = parent->get_parent();
+	parent = node->query_parent();
+	grandparent = parent->query_parent();
 
-	uncle = grandparent->get_left();
-	parent = node->get_parent();
+	uncle = grandparent->query_left();
+	parent = node->query_parent();
 
 	if (uncle == parent) {
-		uncle = grandparent->get_right();
+		uncle = grandparent->query_right();
 	}
 
 	return uncle;
@@ -116,11 +116,11 @@ static object sibling(object node)
 	object parent;
 	object left;
 
-	parent = node->get_parent();
-	left = parent->get_left();
+	parent = node->query_parent();
+	left = parent->query_left();
 
 	if (node == left) {
-		return parent->get_right();
+		return parent->query_right();
 	} else {
 		return left;
 	}
@@ -132,15 +132,15 @@ static atomic void rotate_left(object node)
 	object right;
 	object swivel;
 
-	parent = node->get_parent();
-	right = node->get_right();
+	parent = node->query_parent();
+	right = node->query_right();
 
 	ASSERT(right);
 
-	swivel = right->get_left();
+	swivel = right->query_left();
 
 	if (parent) {
-		if (node == parent->get_left()) {
+		if (node == parent->query_left()) {
 			parent->set_left(right);
 		} else {
 			parent->set_right(right);
@@ -166,15 +166,15 @@ static atomic void rotate_right(object node)
 	object left;
 	object swivel;
 
-	parent = node->get_parent();
-	left = node->get_left();
+	parent = node->query_parent();
+	left = node->query_left();
 
 	ASSERT(left);
 
-	swivel = left->get_right();
+	swivel = left->query_right();
 
 	if (parent) {
-		if (node == parent->get_left()) {
+		if (node == parent->query_left()) {
 			parent->set_left(left);
 		} else {
 			parent->set_right(left);
@@ -199,13 +199,13 @@ static atomic void swap_nodes(object a, object b)
 	object al, ar, ap;
 	object bl, br, bp;
 
-	al = a->get_left();
-	ar = a->get_right();
-	ap = a->get_parent();
+	al = a->query_left();
+	ar = a->query_right();
+	ap = a->query_parent();
 
-	bl = b->get_left();
-	br = b->get_right();
-	bp = b->get_parent();
+	bl = b->query_left();
+	br = b->query_right();
+	bp = b->query_parent();
 
 	if (bl) {
 		bl->set_parent(a);
@@ -222,7 +222,7 @@ static atomic void swap_nodes(object a, object b)
 	}
 
 	if (ap) {
-		if (ap->get_left() == a) {
+		if (ap->query_left() == a) {
 			ap->set_left(b);
 		} else {
 			ap->set_right(b);
@@ -231,7 +231,7 @@ static atomic void swap_nodes(object a, object b)
 		top = b;
 	}
 	if (bp) {
-		if (bp->get_left() == b) {
+		if (bp->query_left() == b) {
 			bp->set_left(a);
 		} else {
 			bp->set_right(a);
@@ -278,7 +278,7 @@ static object insert_node(object next)
 	if (next) {
 		object next_left;
 
-		next_left = next->get_left();
+		next_left = next->query_left();
 
 		if (next_left) {
 			object next_left_rightest;
@@ -329,22 +329,22 @@ static void delete_node(object node)
 	object left, right;
 	object parent;
 
-	left = node->get_left();
-	right = node->get_right();
+	left = node->query_left();
+	right = node->query_right();
 
 	if (left && right) {
 		swap_nodes(node, next_node(node));
 
-		left = node->get_left();
-		right = node->get_right();
+		left = node->query_left();
+		right = node->query_right();
 	}
 
-	parent = node->get_parent();
+	parent = node->query_parent();
 
 	if (left) {
 		/* slide left branch up */
 		if (parent) {
-			if (parent->get_left() == node) {
+			if (parent->query_left() == node) {
 				parent->set_left(left);
 			} else {
 				parent->set_right(left);
@@ -359,7 +359,7 @@ static void delete_node(object node)
 		node->set_left(nil);
 	} else if (right) {
 		if (parent) {
-			if (parent->get_left() == node) {
+			if (parent->query_left() == node) {
 				parent->set_left(right);
 			} else {
 				parent->set_right(right);
@@ -375,7 +375,7 @@ static void delete_node(object node)
 	} else {
 		/* just disappear */
 		if (parent) {
-			if (parent->get_left() == node) {
+			if (parent->query_left() == node) {
 				parent->set_left(nil);
 			} else {
 				parent->set_right(nil);
@@ -406,21 +406,21 @@ static object prev_node(object node)
 
 	ASSERT(node);
 
-	left = node->get_left();
+	left = node->query_left();
 
 	if (left) {
 		return rightest(left);
 	}
 
-	parent = node->get_parent();
+	parent = node->query_parent();
 
 	while (parent) {
-		if (parent->get_right() == node) {
+		if (parent->query_right() == node) {
 			return parent;
 		}
 
 		node = parent;
-		parent = parent->get_parent();
+		parent = parent->query_parent();
 	}
 }
 
@@ -431,21 +431,21 @@ static object next_node(object node)
 
 	ASSERT(node);
 
-	right = node->get_right();
+	right = node->query_right();
 
 	if (right) {
 		return leftest(right);
 	}
 
-	parent = node->get_parent();
+	parent = node->query_parent();
 
 	while (parent) {
-		if (parent->get_left() == node) {
+		if (parent->query_left() == node) {
 			return parent;
 		}
 
 		node = parent;
-		parent = parent->get_parent();
+		parent = parent->query_parent();
 	}
 }
 
@@ -476,14 +476,14 @@ static void rebalance_step_gather(object node, object array)
 	object right;
 	int sz;
 
-	left = node->get_left();
-	right = node->get_right();
+	left = node->query_left();
+	right = node->query_right();
 
 	if (left) {
 		rebalance_step_gather(left, array);
 	}
 
-	sz = array->get_size();
+	sz = array->query_size();
 	array->set_size(sz + 1);
 
 	array->set_element(sz, node);
@@ -497,10 +497,10 @@ static void rotate_up_to(object node, object ceiling)
 {
 	object parent;
 
-	while (parent = node->get_parent(),
+	while (parent = node->query_parent(),
 		parent != nil && parent != ceiling) {
 
-		if (node == parent->get_left()) {
+		if (node == parent->query_left()) {
 			rotate_right(parent);
 		} else {
 			rotate_left(parent);
@@ -515,7 +515,7 @@ static void rebalance_step_scatter(object array, object ceiling)
 
 	object node;
 
-	high = array->get_size() - 1;
+	high = array->query_size() - 1;
 	mid = high / 2;
 
 	node = array->query_element(mid);

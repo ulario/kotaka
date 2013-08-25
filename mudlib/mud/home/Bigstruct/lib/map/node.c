@@ -37,14 +37,14 @@ static void destruct()
 	::destruct();
 }
 
-int get_mass()
+int query_mass()
 {
 	check_caller();
 
 	return map_sizeof(map);
 }
 
-mixed get_low_key()
+mixed query_low_key()
 {
 	check_caller();
 
@@ -73,7 +73,7 @@ void reset_low_key()
 	}
 }
 
-mapping get_map()
+mapping query_map()
 {
 	check_caller();
 
@@ -101,7 +101,7 @@ void delete_data(mixed *keys)
 	map -= keys;
 }
 
-int get_size()
+int query_size()
 {
 	check_caller();
 

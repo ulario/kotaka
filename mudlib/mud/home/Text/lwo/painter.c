@@ -67,7 +67,7 @@ void set_layer_position(string name, int px, int py)
 	layers[name]->set_position(px, py);
 }
 
-object get_layer(string name)
+object query_layer(string name)
 {
 	ACCESS_CHECK(TEXT());
 

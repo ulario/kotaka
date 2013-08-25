@@ -41,14 +41,14 @@ void set_level(int new_level)
 	level = new_level;
 }
 
-int get_level()
+int query_level()
 {
 	check_caller();
 
 	return level;
 }
 
-mixed *get_array()
+mixed *query_array()
 {
 	check_caller();
 

@@ -378,7 +378,7 @@ object query_program_indices()
 	object indices;
 
 	if (bigready) {
-		indices = progdb->get_indices();
+		indices = progdb->query_indices();
 	} else {
 		int sz, i, *ind;
 		indices = new_object(BIGSTRUCT_ARRAY_LWO);
@@ -400,7 +400,7 @@ object query_includer_indices()
 {
 	object indices;
 
-	indices = incdb->get_indices();
+	indices = incdb->query_indices();
 
 	indices->grant_access(previous_object(), FULL_ACCESS);
 
@@ -442,7 +442,7 @@ object query_inheriters(int oindex)
 	list = inhdb->query_element(oindex);
 
 	if (list) {
-		list = list->get_indices();
+		list = list->query_indices();
 		list->grant_access(previous_object(), FULL_ACCESS);
 		return list;
 	}
@@ -457,7 +457,7 @@ object query_includers(string path)
 	list = incdb->query_element(path);
 
 	if (list) {
-		list = list->get_indices();
+		list = list->query_indices();
 		list->grant_access(previous_object(), FULL_ACCESS);
 		return list;
 	}

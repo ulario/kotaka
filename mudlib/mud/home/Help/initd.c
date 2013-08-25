@@ -55,7 +55,7 @@ void full_reset()
 	while (!turkeylist->empty()) {
 		object turkey;
 
-		turkey = turkeylist->get_front();
+		turkey = turkeylist->query_front();
 		turkeylist->pop_front();
 
 		if (!turkey || turkey == this) {

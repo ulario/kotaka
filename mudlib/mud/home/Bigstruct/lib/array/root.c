@@ -35,12 +35,12 @@ atomic static void create()
 
 private void purge_node(object node)
 {
-	if (node->get_level()) {
+	if (node->query_level()) {
 		object *turkeys;
 		int sz;
 		int i;
 
-		turkeys = node->get_array() - ({ nil });
+		turkeys = node->query_array() - ({ nil });
 
 		sz = sizeof(turkeys);
 
@@ -77,8 +77,8 @@ private mixed sub_query_element(object node, int index)
 	mixed *array;
 	object subnode;
 
-	level = node->get_level();
-	array = node->get_array();
+	level = node->query_level();
+	array = node->query_array();
 	masked = mask(index, level);
 
 	if (level) {
@@ -101,8 +101,8 @@ private void sub_set_element(object node, int index, mixed value)
 	mixed *array;
 	object subnode;
 
-	level = node->get_level();
-	array = node->get_array();
+	level = node->query_level();
+	array = node->query_array();
 	masked = mask(index, level);
 
 	if (level) {
@@ -131,8 +131,8 @@ private void truncate_to(object node, int new_size)
 	int oldmasked;
 	mixed *array;
 
-	level = node->get_level();
-	array = node->get_array();
+	level = node->query_level();
+	array = node->query_array();
 	masked = mask(new_size - 1, level);
 	oldmasked = mask(size - 1, level);
 
@@ -165,7 +165,7 @@ int empty()
 	return !size;
 }
 
-int get_size()
+int query_size()
 {
 	check_caller(READ_ACCESS);
 
@@ -298,14 +298,14 @@ atomic void pop_back()
 	set_size(size - 1);
 }
 
-mixed get_front()
+mixed query_front()
 {
 	check_caller(READ_ACCESS);
 
 	return query_element(0);
 }
 
-mixed get_back()
+mixed query_back()
 {
 	check_caller(READ_ACCESS);
 

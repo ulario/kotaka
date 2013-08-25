@@ -56,7 +56,7 @@ void main(object actor, mapping roles)
 		obj = obj->query_next_clone();
 	} while (obj != first);
 
-	sz = list->get_size();
+	sz = list->query_size();
 
 	send_out("There are " + sz + " orphans.\n");
 

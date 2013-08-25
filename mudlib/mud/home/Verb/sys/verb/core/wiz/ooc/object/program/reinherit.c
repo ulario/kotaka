@@ -65,8 +65,8 @@ void main(object actor, mapping roles)
 
 	SUBD->gather_inheriters(oindex, hits);
 
-	list = hits->get_indices();
-	sz = list->get_size();
+	list = hits->query_indices();
+	sz = list->query_size();
 
 	libs = new_object(BIGSTRUCT_ARRAY_LWO);
 	objs = new_object(BIGSTRUCT_ARRAY_LWO);
@@ -93,14 +93,14 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	sz = libs->get_size();
+	sz = libs->query_size();
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
 	for (i = 0; i < sz; i++) {
 		proxy->destruct_object(libs->query_element(i));
 	}
 
-	sz = objs->get_size();
+	sz = objs->query_size();
 
 	for (i = 0; i < sz; i++) {
 		proxy->compile_object(objs->query_element(i));
