@@ -25,6 +25,9 @@ object query_environment();
 int query_x_position();
 int query_y_position();
 
+int query_x_size();
+int query_y_size();
+
 mixed query_property(string key);
 mixed query_local_property(string key);
 void set_local_property(string key, mixed value);
@@ -97,13 +100,13 @@ private void compare_geometry(object obj)
 
 	/* simulate this by doubling coordinates, and then add one if size is zero */
 
-	mixed lsx, lsy, rsx, rsy;
+	int lsx, lsy, rsx, rsy;
 
 	lxb = query_x_position() * 2;
 	lyb = query_y_position() * 2;
 
-	lsx = query_property("size_x") * 2;
-	lsy = query_property("size_y") * 2;
+	lsx = query_x_size() * 2;
+	lsy = query_y_size() * 2;
 
 	if (!lsx) {
 		lxb++;
@@ -118,8 +121,8 @@ private void compare_geometry(object obj)
 	rxb = obj->query_x_position() * 2;
 	ryb = obj->query_y_position() * 2;
 
-	rsx = obj->query_property("size_x") * 2;
-	rsy = obj->query_property("size_y") * 2;
+	rsx = obj->query_x_size() * 2;
+	rsy = obj->query_y_size() * 2;
 
 	if (!rsx) {
 		rxb++;
