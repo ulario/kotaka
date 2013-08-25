@@ -78,3 +78,27 @@ void self_destruct()
 {
 	destruct_object(this_object());
 }
+
+mapping state;
+
+void save_state()
+{
+	state = ([ ]);
+
+	state["arch"] = save_archetype();
+	state["id"] = save_id();
+	state["inv"] = save_inventory();
+	state["prop"] = save_property();
+	state["bulk"] = save_bulk();
+	state["exit"] = save_exit();
+}
+
+void restore_state()
+{
+	restore_archetype(state["arch"]);
+	restore_id(state["id"]);
+	restore_inventory(state["inv"]);
+	restore_property(state["prop"]);
+	restore_bulk(state["bulk"]);
+	restore_exit(state["exit"]);
+}
