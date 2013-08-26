@@ -103,8 +103,6 @@ void send_to_all(string phrase)
 	int sz;
 	object *users;
 
-	ACCESS_CHECK(TEXT() || GAME());
-
 	users = TEXT_USERD->query_users();
 	users += TEXT_USERD->query_guests();
 
@@ -117,8 +115,6 @@ void send_to_all_except(string phrase, object *exceptions)
 {
 	int sz;
 	object *users;
-
-	ACCESS_CHECK(TEXT() || GAME());
 
 	users = TEXT_USERD->query_users();
 	users += TEXT_USERD->query_guests();
@@ -340,8 +336,6 @@ void login_user(object user)
 
 	int i, sz;
 
-	ACCESS_CHECK(TEXT());
-
 	name = user->query_name();
 
 	if (TEXT_USERD->query_is_guest(user)) {
@@ -369,5 +363,4 @@ void login_user(object user)
 
 void logout_user(object user)
 {
-	ACCESS_CHECK(TEXT());
 }
