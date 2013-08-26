@@ -19,7 +19,8 @@
  */
 #include <kotaka/paths/string.h>
 
-inherit "inventory";
+object query_environment();
+object *query_inventory();
 
 #define ID(x, y) (((y) > 1) ? ((x) + "#" + (y)) : (x))
 

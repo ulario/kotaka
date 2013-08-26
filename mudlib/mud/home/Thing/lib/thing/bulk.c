@@ -19,7 +19,8 @@
  */
 #include <kotaka/paths/thing.h>
 
-inherit "inventory";
+object query_environment();
+object *query_inventory();
 
 /* bulk */
 private float mass;		/* kg */
