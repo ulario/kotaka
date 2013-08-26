@@ -298,8 +298,6 @@ void rename_user(string oldname, string newname)
 
 object find_user(string name)
 {
-	ACCESS_CHECK(TEXT() || GAME());
-
 	return users[name];
 }
 
@@ -320,7 +318,5 @@ object *query_guests()
 
 object *query_connections()
 {
-	ACCESS_CHECK(PRIVILEGED());
-
 	return map_indices(connections);
 }
