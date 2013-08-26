@@ -44,29 +44,6 @@ static void create()
 	relations = ([ ]);
 }
 
-void set_relation(object obj, int relation)
-{
-	int corelation;
-	PERMISSION_CHECK(query_environment() == obj->query_environment());
-
-	relations[obj] = relation;
-
-	switch(relation) {
-	case 1:
-	case 3:
-		corelation = relation ^ 2;
-		break;
-
-	case 2:
-	case 4:
-		corelation = relation;
-		break;
-
-	}
-
-	obj->coset_relation(this_object(), corelation);
-}
-
 void clear_relation(object obj)
 {
 	relations[obj] = nil;
@@ -74,92 +51,107 @@ void clear_relation(object obj)
 	obj->coclear_relation(this_object());
 }
 
-void coset_relation(object obj, int relation)
+private int relation(int ll, int lh, int rl, int rh)
 {
-	ACCESS_CHECK(GAME());
+	int i, o;
 
-	relations[obj] = relation;
+	if (lh < rl || rh < ll) {
+		return 0;
+	}
+
+	if (lh >= rh && ll <= rl) {
+		i = 1;
+	}
+
+	if (lh <= rh && ll >= rl) {
+		o = 1;
+	}
+
+	if (i && o) {
+		return 4;
+	}
+	if (i) {
+		return 1;
+	}
+	if (o) {
+		return 3;
+	}
+	return 2;
 }
 
-void coclear_relation(object obj)
+private int combine_relation(int a, int b)
 {
-	ACCESS_CHECK(GAME());
-
-	relations[obj] = nil;
-}
-
-private void compare_geometry(object obj)
-{
-	int lxb, lyb, rxb, ryb;
-	int lxe, lye, rxe, rye;
-	int is_inside;
-	int is_outside;
-
-	/* if an object has a definite size, it is aligned on the gridlines */
-	/* otherwise, it is within a grid cell */
-
-	/* simulate this by doubling coordinates, and then add one if size is zero */
-
-	int lsx, lsy, rsx, rsy;
-
-	lxb = query_x_position() * 2;
-	lyb = query_y_position() * 2;
-
-	lsx = query_x_size() * 2;
-	lsy = query_y_size() * 2;
-
-	if (!lsx) {
-		lxb++;
-	}
-	if (!lsy) {
-		lyb++;
+	if (a == 0 || b == 0) {
+		return 0;
 	}
 
-	lxe = lxb + lsx;
-	lye = lyb + lsy;
-
-	rxb = obj->query_x_position() * 2;
-	ryb = obj->query_y_position() * 2;
-
-	rsx = obj->query_x_size() * 2;
-	rsy = obj->query_y_size() * 2;
-
-	if (!rsx) {
-		rxb++;
-	}
-	if (!rsy) {
-		ryb++;
-	}
-
-	rxe = rxb + rsx;
-	rye = ryb + rsy;
-
-	if (lxb > rxe || lyb > rye || lxe < rxb || lye < ryb) {
-		clear_relation(obj);
-		return;
-	}
-
-	if (lxb >= rxb && lyb >= ryb && lxe <= rxe && lye <= rye) {
-		is_inside = 1;
-	}
-
-	if (lxb <= rxb && lyb <= ryb && lxe >= rxe && lye >= rye) {
-		is_outside = 1;
-	}
-
-	if (is_inside) {
-		if (is_outside) {
-			set_relation(obj, 4);
-		} else {
-			set_relation(obj, 1);
+	switch(a) {
+	case 1:
+		if (b == 3) {
+			return 0;
 		}
+		return b;
+	case 2:
+		return 2;
+	case 3:
+		if (b == 1) {
+			return 0;
+		}
+		return b;
+	case 4:
+		return b;
+	}
+}
+
+/* warning, dirty trick ahead: */
+/* we deliberately have points as inverse boxes */
+/* to make them always inside the box */
+private int *lhof(int p, int s)
+{
+	if (s) {
+		return ({ p, p + s });
 	} else {
-		if (is_outside) {
-			set_relation(obj, 3);
-		} else {
-			set_relation(obj, 2);
-		}
+		return ({ p + 1, p });
 	}
+}
+
+int compare_geometry(object obj)
+{
+	int px, py, pz;
+	int lsx, lsy;
+	int rsx, rsy;
+
+	int xrel;
+	int yrel;
+
+	int ll, lh, rl, rh;
+
+	({ px, py, pz }) = GAME_SUBD->query_position_difference(this_object(), obj);
+
+	lsx = query_x_size();
+	lsy = query_y_size();
+	rsx = obj->query_x_size();
+	rsy = obj->query_x_size();
+
+	({ ll, lh }) = lhof(0, lsx);
+	({ rl, rh }) = lhof(px, rsx);
+
+	xrel = relation(ll, lh, rl, rh);
+
+	if (!xrel) {
+		return 0;
+	}
+
+	({ ll, lh }) = lhof(0, lsy);
+	({ rl, rh }) = lhof(py, rsy);
+
+	yrel = relation(ll, lh, rl, rh);
+
+	if (!yrel) {
+		return 0;
+	}
+
+	return combine_relation(xrel, yrel);
 }
 
 void check_geometry()
