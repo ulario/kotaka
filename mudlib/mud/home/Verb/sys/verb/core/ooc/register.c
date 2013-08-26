@@ -28,5 +28,5 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	query_ustate()->push_state(new_object("~/lwo/ustate/register"));
+	query_ustate()->push_state(new_object("~Text/lwo/ustate/register"));
 }

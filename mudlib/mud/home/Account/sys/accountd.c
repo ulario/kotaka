@@ -47,7 +47,7 @@ static void create()
 
 void register_account(string name, string password)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || VERB());
 
 	if (passwords[name]) {
 		error("Duplicate account");
@@ -59,7 +59,7 @@ void register_account(string name, string password)
 
 void unregister_account(string name)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(TEXT() || VERB());
 
 	if (!passwords[name]) {
 		error("No such account");
@@ -82,7 +82,7 @@ string *query_accounts()
 
 void change_password(string name, string newpass)
 {
-	ACCESS_CHECK(TEXT() || ACCOUNT());
+	ACCESS_CHECK(TEXT() || ACCOUNT() || VERB());
 
 	if (!passwords[name]) {
 		error("No such account");

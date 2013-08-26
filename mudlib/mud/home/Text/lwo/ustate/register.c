@@ -163,6 +163,7 @@ void receive_in(string input)
 		} else {
 			object parent;
 			object pager;
+			string text;
 
 			ACCOUNTD->register_account(name, password);
 
@@ -179,7 +180,13 @@ void receive_in(string input)
 			TEXT_SUBD->login_user(user);
 
 			pager = new_object("~/lwo/ustate/page");
-			pager->set_text(read_file("~/data/quickstartguide"));
+			text = read_file("~/data/quickstartguide");
+
+			pager->set_text(
+			text ? text : "Yell at the admin, he broke the quick start guide."
+			
+			
+			);
 
 			parent = query_parent();
 
