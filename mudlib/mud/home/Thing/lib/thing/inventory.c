@@ -133,10 +133,6 @@ nomask atomic void move(object new_env)
 	object old_env;
 	object this;
 
-	if (!new_env) {
-		error("Invalid archetype");
-	}
-
 	old_env = environment;
 
 	this = this_object();
