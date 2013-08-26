@@ -51,7 +51,7 @@ void set_relation(object obj, int relation)
 
 	relations[obj] = relation;
 
-	obj->coset_relation(relation);
+	obj->coset_relation(this_object(), relation);
 }
 
 void coset_relation(object obj, int relation)
@@ -204,7 +204,15 @@ void check_geometry()
 	sz = sizeof(siblings);
 
 	for (i = 0; i < sz; i++) {
-		compare_geometry(siblings[i]);
+		int relation;
+		
+		relation = compare_geometry(siblings[i]);
+		
+		if (relation) {
+			set_relation(siblings[i], relation);
+		} else {
+			clear_relation(siblings[i]);
+		}
 	}
 }
 
