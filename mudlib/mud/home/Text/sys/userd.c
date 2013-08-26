@@ -28,7 +28,6 @@ inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 
 mapping connections;	/* all connections */
-mapping burned;		/* burned connections */
 mapping users;		/* all logged in user objects */
 mapping guests;		/* all guest user objects */
 int splash;
@@ -40,7 +39,6 @@ static void create()
 	connections = ([ ]);
 	users = ([ ]);
 	guests = ([ ]);
-	burned = ([ ]);
 
 	SYSTEM_USERD->set_telnet_manager(0, this_object());
 	SYSTEM_USERD->set_binary_manager(1, this_object());
