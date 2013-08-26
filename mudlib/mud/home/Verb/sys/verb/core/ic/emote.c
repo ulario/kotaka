@@ -28,12 +28,79 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+/*
+mixed **query_roles()
+{
+	return ({
+		({ "iob", ({ "to" }), 0 })
+	});
+}
+*/
+
+private object *filter_mobiles(object *bodies)
+{
+	object *mobiles;
+	int sz, i;
+
+	sz = sizeof(bodies);
+	mobiles = ({ });
+
+	for (i = 0; i < sz; i++) {
+		mobiles |= bodies[i]->query_property("mobiles") - ({ nil });
+	}
+
+	return mobiles;
+}
+
+void emit_emote(object actor, object target, object listener, string evoke)
+{
+	string message;
+	object body;
+
+	body = listener->query_body();
+
+	listener->message(
+		TEXT_SUBD->generate_brief_definite(actor) + " " + evoke + "\n"
+	);
+}
+
 void main(object actor, mapping roles)
 {
+	object user;
+	object target;
+	string name;
+
+	int sz, i;
+
+	object env;
+	object *listeners;
+	object *mobiles;
+
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
 		return;
 	}
 
-	send_out("Emoting: " + roles["raw"] + "\n");
+	user = query_user();
+
+	if (roles["raw"] == "") {
+		send_out("Cat got your tongue?\n");
+		return;
+	}
+
+	env = actor->query_environment();
+
+	if (!env) {
+		send_out("The emptiness ignores you.\n");
+		return;
+	}
+
+	listeners = env->query_inventory();
+	mobiles = filter_mobiles(listeners);
+
+	sz = sizeof(mobiles);
+
+	for (i = 0; i < sz; i++) {
+		emit_emote(actor, target, mobiles[i], roles["raw"]);
+	}
 }
