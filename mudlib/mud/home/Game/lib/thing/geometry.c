@@ -44,11 +44,40 @@ static void create()
 	relations = ([ ]);
 }
 
+void set_relation(object obj, int relation)
+{
+	ACCESS_CHECK(GAME());
+
+	relations[obj] = relation;
+
+	obj->coset_relation(relation);
+}
+
+void coset_relation(object obj, int relation)
+{
+	ACCESS_CHECK(GAME());
+
+	if (relation == 1 || relation == 3) {
+		relation ^= 2;
+	}
+
+	relations[obj] = relation;
+}
+
 void clear_relation(object obj)
 {
+	ACCESS_CHECK(GAME());
+
 	relations[obj] = nil;
 
 	obj->coclear_relation(this_object());
+}
+
+void coclear_relation(object obj)
+{
+	ACCESS_CHECK(GAME());
+
+	relations[obj] = nil;
 }
 
 private int relation(int ll, int lh, int rl, int rh)
