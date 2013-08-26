@@ -95,11 +95,11 @@ void main(object actor, mapping roles)
 		}
 
 		if (class > 2 && class >= uclass) {
-			while (user <- LIB_USER) {
-				user = user->query_conn();
+			while (ruser <- LIB_USER) {
+				ruser = ruser->query_conn();
 			}
 
-			buf += " (" + query_ip_number(user) + ")";
+			buf += " (" + query_ip_number(ruser) + ")";
 		}
 
 		lists[uclass] += ({ buf });
