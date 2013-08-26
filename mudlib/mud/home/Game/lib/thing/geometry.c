@@ -85,6 +85,10 @@ private int relation(int ll, int lh, int rl, int rh)
 {
 	int i, o;
 
+	if (ll == rl && lh == rh) {
+		return 4;
+	}
+
 	if (lh < rl || rh < ll) {
 		return 0;
 	}
