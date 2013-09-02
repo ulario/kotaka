@@ -49,9 +49,14 @@ mapping muds;
 mapping channels;
 mixed *routers;	/* ({ name, ({ ip, port }) }) */
 
+private void save();
+private void restore();
+
 static void create()
 {
 	call_out("connect", 0, "204.209.44.3", 8080);
+
+	restore();
 
 	muds = ([ ]);
 	channels = ([ ]);
@@ -298,6 +303,7 @@ private void process_packet(string packet)
 
 	case "mudlist":
 		mudlistid = value[6];
+		save();
 
 		{
 			mapping delta;
@@ -329,6 +335,8 @@ private void process_packet(string packet)
 
 		password = value[7];
 		routers = ({ });
+
+		save();
 
 		{
 			mixed *raw;
@@ -603,4 +611,43 @@ void reset()
 	LOGD->post_message("intermud", LOG_INFO, "Reset");
 
 	call_out("connect", 0, "204.209.44.3", 8080);
+}
+
+private void save()
+{
+	string buf;
+
+	buf = STRINGD->hybrid_sprint(
+		([
+			"password" : password,
+			"mudlistid" : mudlistid
+		])
+	);
+
+	SECRETD->remove_file("intermud-tmp");
+	SECRETD->write_file("intermud-tmp", buf + "\n");
+	SECRETD->remove_file("intermud");
+	SECRETD->rename_file("intermud-tmp", "intermud");
+}
+
+private void restore()
+{
+	mapping map;
+	string buf;
+
+	buf = SECRETD->read_file("intermud");
+
+	if (!buf) {
+		return;
+	}
+
+	map = PARSE_VALUE->parse(buf);
+
+	if (map["password"]) {
+		password = map["password"];
+	}
+
+	if (map["mudlistid"]) {
+		mudlistid = map["mudlistid"];
+	}
 }
