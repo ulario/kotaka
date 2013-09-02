@@ -148,7 +148,7 @@ void main(object actor, mapping roles)
 		for (i = 0; i < sz; i++) {
 			user = users[i];
 
-			while (user <- LIB_USER) {
+			while (user && user <- LIB_USER) {
 				user = user->query_conn();
 			}
 
