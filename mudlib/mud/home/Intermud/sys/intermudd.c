@@ -195,23 +195,23 @@ object select(string input)
 
 void send_channel_message(string channel, string sender, string text)
 {
-	string packet;
+	mixed *packet;
 
-	packet = mudmode_sprint(
-		({
-			"channel-m",
-			5,
-			MUDNAME,
-			sender ? sender : "system",
-			0,
-			0,
-			channel,
-			sender ? STRINGD->to_title(sender) : "(system)",
-			text
-		})
-	);
+	packet = ({
+		"channel-m",
+		5,
+		MUDNAME,
+		sender ? sender : "system",
+		0,
+		0,
+		channel,
+		sender ? STRINGD->to_title(sender) : "(system)",
+		text
+	});
 
-	message(to_packet(packet));
+	write_file("i3log", "out: " + STRINGD->mixed_sprint(packet) + "\n");
+
+	message(to_packet(mudmode_sprint(packet)));
 }
 
 private void process_packet(string packet)
