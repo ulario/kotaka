@@ -619,8 +619,7 @@ private void save()
 
 	buf = STRINGD->hybrid_sprint(
 		([
-			"password" : password,
-			"mudlistid" : mudlistid
+			"password" : password
 		])
 	);
 
@@ -645,9 +644,5 @@ private void restore()
 
 	if (map["password"]) {
 		password = map["password"];
-	}
-
-	if (map["mudlistid"]) {
-		mudlistid = map["mudlistid"];
 	}
 }
