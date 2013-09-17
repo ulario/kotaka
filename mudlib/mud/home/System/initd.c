@@ -211,6 +211,7 @@ void hotboot()
 		}
 	}
 }
+
 void reboot()
 {
 	int index;
