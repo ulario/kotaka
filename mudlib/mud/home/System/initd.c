@@ -120,6 +120,7 @@ static void create()
 	rlimits (0; -1) {
 		catch {
 			initialize();
+			call_out("audit_filequota", 0);
 		} : {
 			LOGD->flush();
 			shutdown();
@@ -210,6 +211,8 @@ void hotboot()
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "hotboot");
 		}
 	}
+
+	call_out("audit_filequota", 0);
 }
 
 void reboot()
@@ -243,6 +246,8 @@ void reboot()
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "reboot");
 		}
 	}
+
+	call_out("audit_filequota", 0);
 }
 
 /** Used to output messages to the console */
@@ -497,4 +502,9 @@ void upgrading()
 string *query_subsystems()
 {
 	return map_indices(subsystems);
+}
+
+static void audit_filequota()
+{
+	DRIVER->fix_filequota(DRIVER->count_filequota());
 }
