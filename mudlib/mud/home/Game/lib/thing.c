@@ -20,33 +20,15 @@
 #include <kotaka/paths/thing.h>
 
 inherit thing LIB_THING;
-private inherit oldposition "thing/position";
-private inherit oldgeometry "thing/geometry";
 
 inherit position "~Geometry/lib/thing/position";
 inherit geometry "~Geometry/lib/thing/geometry";
 
-int migrated;
-
 static void create()
 {
-	migrated = 1;
-
 	thing::create();
 
 	geometry::create();
-}
-
-nomask void thing_migrate()
-{
-	if (migrated) {
-		return;
-	}
-
-	position::load_position_state(oldposition::save_position_state());
-	geometry::load_geometry_state(oldgeometry::save_geometry_state());
-
-	migrated = 1;
 }
 
 static void move_notify(object old_env)
