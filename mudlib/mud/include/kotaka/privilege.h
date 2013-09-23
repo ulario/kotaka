@@ -6,6 +6,7 @@
 #define BIGSTRUCT()	(sscanf(previous_program(), USR_DIR + "/Bigstruct/%*s"))
 #define CATALOG()	(sscanf(previous_program(), USR_DIR + "/Catalog/%*s"))
 #define GAME()		(sscanf(previous_program(), USR_DIR + "/Game/%*s"))
+#define GEOMETRY()	(sscanf(previous_program(), USR_DIR + "/Geometry/%*s"))
 #define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
 #define INTERMUD()	(sscanf(previous_program(), USR_DIR + "/Intermud/%*s"))
 #define KOTAKA()	(sscanf(previous_program(), USR_DIR + "/Kotaka/%*s"))
