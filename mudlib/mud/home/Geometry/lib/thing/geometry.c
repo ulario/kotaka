@@ -47,6 +47,8 @@ static void create()
 
 void set_relation(object obj, int relation)
 {
+	ACCESS_CHECK(GEOMETRY());
+
 	relations[obj] = relation;
 
 	obj->coset_relation(this_object(), relation);
@@ -54,6 +56,8 @@ void set_relation(object obj, int relation)
 
 void coset_relation(object obj, int relation)
 {
+	ACCESS_CHECK(GEOMETRY());
+
 	if (relation == 1 || relation == 3) {
 		relation ^= 2;
 	}
@@ -63,6 +67,8 @@ void coset_relation(object obj, int relation)
 
 void clear_relation(object obj)
 {
+	ACCESS_CHECK(GEOMETRY());
+
 	relations[obj] = nil;
 
 	obj->coclear_relation(this_object());
@@ -70,6 +76,8 @@ void clear_relation(object obj)
 
 void coclear_relation(object obj)
 {
+	ACCESS_CHECK(GEOMETRY());
+
 	relations[obj] = nil;
 }
 
