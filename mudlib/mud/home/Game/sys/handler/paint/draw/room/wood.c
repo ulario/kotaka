@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <game/paths.h>
+#include <kotaka/paths/geometry.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 
@@ -32,7 +32,7 @@ void on_paint_text(object gc, object obj, object viewer)
 	int lx, ly, hx, hy;
 	int sx, sy;
 
-	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, obj);
+	({ dx, dy, dz }) = GEOMETRY_SUBD->query_position_difference(viewer, obj);
 
 	gc->set_layer("view");
 

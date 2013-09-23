@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <game/paths.h>
+#include <kotaka/paths/geometry.h>
 #include <kotaka/privilege.h>
 
 object *query_inventory();
@@ -152,7 +152,7 @@ int compare_geometry(object obj)
 
 	int ll, lh, rl, rh;
 
-	({ px, py, pz }) = GAME_SUBD->query_position_difference(this_object(), obj);
+	({ px, py, pz }) = GEOMETRY_SUBD->query_position_difference(this_object(), obj);
 
 	lsx = query_x_size();
 	lsy = query_y_size();

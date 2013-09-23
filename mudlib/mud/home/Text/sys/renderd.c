@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/algorithm.h>
+#include <kotaka/paths/geometry.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
-#include <game/paths.h>
 
 private void draw_tickmarks(object gc)
 {
@@ -76,7 +76,7 @@ private void default_painter(object gc, object neighbor, object viewer)
 	int x, y;
 	mixed color;
 
-	({ dx, dy, dz }) = GAME_SUBD->query_position_difference(viewer, neighbor);
+	({ dx, dy, dz }) = GEOMETRY_SUBD->query_position_difference(viewer, neighbor);
 
 	/*
 	vy = cos * dy - sin * dx;
