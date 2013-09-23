@@ -33,7 +33,7 @@ mixed query_property(string key);
 mixed query_local_property(string key);
 void set_local_property(string key, mixed value);
 
-private mapping relations;
+mapping relations;
 
 /* 1: insider */
 /* 2: intersect */
@@ -47,8 +47,6 @@ static void create()
 
 void set_relation(object obj, int relation)
 {
-	ACCESS_CHECK(GAME());
-
 	relations[obj] = relation;
 
 	obj->coset_relation(this_object(), relation);
@@ -56,8 +54,6 @@ void set_relation(object obj, int relation)
 
 void coset_relation(object obj, int relation)
 {
-	ACCESS_CHECK(GAME());
-
 	if (relation == 1 || relation == 3) {
 		relation ^= 2;
 	}
@@ -67,8 +63,6 @@ void coset_relation(object obj, int relation)
 
 void clear_relation(object obj)
 {
-	ACCESS_CHECK(GAME());
-
 	relations[obj] = nil;
 
 	obj->coclear_relation(this_object());
@@ -76,8 +70,6 @@ void clear_relation(object obj)
 
 void coclear_relation(object obj)
 {
-	ACCESS_CHECK(GAME());
-
 	relations[obj] = nil;
 }
 
@@ -209,9 +201,9 @@ void check_geometry()
 
 	for (i = 0; i < sz; i++) {
 		int relation;
-		
+
 		relation = compare_geometry(siblings[i]);
-		
+
 		if (relation) {
 			set_relation(siblings[i], relation);
 		} else {
@@ -276,7 +268,7 @@ void set_y_size(int sy)
 	check_geometry();
 }
 
-static mapping save_geometry_state()
+static void load_geometry_state(mapping input)
 {
-	return relations;
+	relations = input;
 }

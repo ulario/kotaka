@@ -17,41 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/thing.h>
+#include <kotaka/paths/system.h>
 
-inherit thing LIB_THING;
-private inherit oldposition "thing/position";
-private inherit oldgeometry "thing/geometry";
-
-inherit position "~Geometry/lib/thing/position";
-inherit geometry "~Geometry/lib/thing/geometry";
-
-int migrated;
+inherit LIB_INITD;
+inherit UTILITY_COMPILE;
 
 static void create()
 {
-	migrated = 1;
-
-	thing::create();
-
-	geometry::create();
-}
-
-nomask void thing_migrate()
-{
-	if (migrated) {
-		return;
-	}
-
-	position::load_position_state(oldposition::save_position_state());
-	geometry::load_geometry_state(oldgeometry::save_geometry_state());
-
-	migrated = 1;
-}
-
-static void move_notify(object old_env)
-{
-	thing::move_notify(old_env);
-	position::move_notify(old_env);
-	geometry::move_notify(old_env);
+	KERNELD->set_global_access("Geometry", 1);
 }

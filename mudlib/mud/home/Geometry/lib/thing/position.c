@@ -98,7 +98,7 @@ int query_z_position()
 	return zpos;
 }
 
-static int *save_position_state()
+static void load_position_state(int *input)
 {
-	return ({ xpos, ypos, zpos });
+	({ xpos, ypos, zpos }) = input;
 }

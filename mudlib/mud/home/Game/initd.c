@@ -347,7 +347,7 @@ void load_help()
 string query_toucher(string path)
 {
 	switch(path) {
-	case USR_DIR + "/Game/lib/thing/geometry":
-		return "touch_geometry";
+	case USR_DIR + "/Game/lib/thing":
+		return "thing_migrate";
 	}
 }

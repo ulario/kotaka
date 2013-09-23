@@ -1,0 +1,11 @@
+bootsys Geometry
+csuspend
+cblock
+compile ~Game/initd.c
+destruct ~Game/lib/thing
+destruct ~Game/lib/thing/geometry
+destruct ~Game/lib/thing/position
+reinherit ~Game/lib/thing
+touchall ~Game/obj/thing
+cunblock
+crelease
