@@ -506,5 +506,5 @@ string *query_subsystems()
 
 static void audit_filequota()
 {
-	DRIVER->fix_filequota(DRIVER->count_filequota());
+	DRIVER->fix_filequota();
 }
