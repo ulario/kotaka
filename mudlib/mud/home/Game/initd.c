@@ -175,6 +175,7 @@ static void create()
 	INITD->boot_subsystem("Text");
 	INITD->boot_subsystem("Account");
 	INITD->boot_subsystem("Thing");
+	INITD->boot_subsystem("Geometry");
 
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
