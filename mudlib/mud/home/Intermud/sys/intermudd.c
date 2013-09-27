@@ -497,7 +497,7 @@ void logout(int quit)
 	buffer = nil;
 }
 
-void connect_failed(object connection)
+void connect_failed(int refused)
 {
 	LOGD->post_message("intermud", LOG_INFO, "Connection failed");
 
