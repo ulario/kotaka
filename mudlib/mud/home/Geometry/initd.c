@@ -24,5 +24,7 @@ inherit UTILITY_COMPILE;
 
 static void create()
 {
+	INITD->boot_subsystem("Thing");
+
 	KERNELD->set_global_access("Geometry", 1);
 }
