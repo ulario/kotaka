@@ -33,7 +33,7 @@ mixed query_property(string key);
 mixed query_local_property(string key);
 void set_local_property(string key, mixed value);
 
-mapping relations;
+private mapping relations;
 
 /* 1: insider */
 /* 2: intersect */
