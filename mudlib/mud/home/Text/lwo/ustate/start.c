@@ -60,7 +60,10 @@ private void prompt()
 
 static void timeout()
 {
+	callout = 0;
+
 	send_out("\n\nSorry, but you took too long.\n");
+
 	query_user()->quit();
 }
 
@@ -94,7 +97,10 @@ void pre_end()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	dead = 1;
-	remove_call_out(callout);
+
+	if (callout) {
+		remove_call_out(callout);
+	}
 }
 
 private void do_help()
