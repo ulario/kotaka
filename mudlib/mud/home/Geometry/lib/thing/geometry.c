@@ -122,14 +122,14 @@ private int combine_relation(int a, int b)
 	switch(a) {
 	case 1:
 		if (b == 3) {
-			return 0;
+			return 2;
 		}
 		return b;
 	case 2:
 		return 2;
 	case 3:
 		if (b == 1) {
-			return 0;
+			return 2;
 		}
 		return b;
 	case 4:
