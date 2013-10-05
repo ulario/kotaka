@@ -18,7 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/geometry.h>
+#include <kotaka/paths/thing.h>
 #include <kotaka/privilege.h>
+
+inherit LIB_THING;
 
 object *query_inventory();
 object query_environment();
