@@ -278,8 +278,3 @@ void set_y_size(int sy)
 
 	check_geometry();
 }
-
-static void load_geometry_state(mapping input)
-{
-	relations = input;
-}
