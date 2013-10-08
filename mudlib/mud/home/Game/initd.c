@@ -344,11 +344,3 @@ void load_help()
 	HELPD->reset();
 	load_rootdir();
 }
-
-string query_toucher(string path)
-{
-	switch(path) {
-	case USR_DIR + "/Game/lib/thing":
-		return "thing_migrate";
-	}
-}
