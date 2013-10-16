@@ -306,6 +306,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 {
 	object *send_list;
 	int time;
+	string stamp;
 
 	if (!norelay) {
 		if (intermud && intermud[channel]) {
@@ -318,6 +319,8 @@ void post_message(string channel, string sender, string message, varargs int nor
 	time = time();
 
 	write_file("log/log-" + (time - time % 86400) + "-" + channel, time + ": " + channel + ": " + (sender ? sender + ": " : "") + message + "\n");
+
+	stamp = ctime(time)[11 .. 18];
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
@@ -332,7 +335,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 		sz = sizeof(send_list);
 
 		for (index = 0; index < sz; index++) {
-			send_list[index]->channel_message(channel, sender, message);
+			send_list[index]->channel_message(channel, stamp, sender, message);
 		}
 	}
 }

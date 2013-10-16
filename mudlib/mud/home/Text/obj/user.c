@@ -182,7 +182,7 @@ mapping bans
 	username : 1
 */
 
-void channel_message(string channel, string sender, string message)
+void channel_message(string channel, string stamp, string sender, string message)
 {
 	mixed ccolor;
 	mixed tcolor;
@@ -210,15 +210,15 @@ void channel_message(string channel, string sender, string message)
 			ASSERT(tcolor);
 			ASSERT(message);
 
-			send_out("[" + ccolor + channel + "\033[0m] \033[1;35m"
+			send_out("[" + ccolor + channel + "\033[0m] " + stamp + "\033[1;35m"
 				+ sender + tcolor + ": " + message + "\n");
 		} else {
-			send_out("[" + ccolor + channel + "\033[0m] "
+			send_out("[" + ccolor + channel + "\033[0m] " + stamp
 				+ TEXT_SUBD->titled_name(sender,
 					TEXT_SUBD->query_user_class(sender)) + tcolor + ": " + message + "\n");
 		}
 	} else {
-		send_out("[" + ccolor + channel + "\033[0m] "
+		send_out("[" + ccolor + channel + "\033[0m] " + stamp
 			+ message + "\n");
 	}
 }
