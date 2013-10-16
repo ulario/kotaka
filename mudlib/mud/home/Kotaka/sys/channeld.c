@@ -352,9 +352,9 @@ void configure_channels()
 
 	ACCESS_CHECK(INTERFACE() || KOTAKA());
 
-	// error: errord, used for runtime errors
-	// trace: errord, used for stack traces
-	// compile: errord, used for compile errors
+	/* error: errord, used for runtime errors */
+	/* trace: errord, used for stack traces */
+	/* compile: errord, used for compile errors */
 
 	channels = ({ "error", "trace", "compile" });
 
