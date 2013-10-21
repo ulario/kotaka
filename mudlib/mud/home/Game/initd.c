@@ -202,10 +202,6 @@ void destroy_object(object obj)
 	destruct_object(obj);
 }
 
-void reboot()
-{
-}
-
 void build_world()
 {
 	object master;
