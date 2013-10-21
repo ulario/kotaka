@@ -124,6 +124,7 @@ void configure_properties()
 	PROPERTYD->add_property("size_z", T_INT, PROP_MAGIC, ({ "query_z_size", "set_z_size" }) );
 
 	PROPERTYD->add_property("relations", T_MAPPING, PROP_MAGIC, ({ "query_relations", nil }) );
+	PROPERTYD->add_property("is_infinite", T_INT, PROP_INHERIT);
 
 	/* event handling */
 	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
