@@ -85,12 +85,12 @@ private void do_particles(object paint, float diff)
 		paint->move_pen(x, y);
 
 		switch(i % 6) {
-		case 0: paint->set_color(0x89); break;
-		case 1: paint->set_color(0x8B); break;
-		case 2: paint->set_color(0x8A); break;
-		case 3: paint->set_color(0x8E); break;
-		case 4: paint->set_color(0x8C); break;
-		case 5: paint->set_color(0x8D); break;
+		case 0: paint->set_color(0x81); break;
+		case 1: paint->set_color(0x89); break;
+		case 2: paint->set_color(0x87); break;
+		case 3: paint->set_color(0x8f); break;
+		case 4: paint->set_color(0x84); break;
+		case 5: paint->set_color(0x8c); break;
 		}
 
 		paint->draw("+");
