@@ -210,15 +210,15 @@ void channel_message(string channel, string stamp, string sender, string message
 			ASSERT(tcolor);
 			ASSERT(message);
 
-			send_out("[" + ccolor + channel + "\033[0m] " + stamp + " \033[1;35m"
+			send_out("[" + ccolor + channel + "\033[0m] \033[31m" + stamp + " \033[1;35m"
 				+ sender + tcolor + ": " + message + "\n");
 		} else {
-			send_out("[" + ccolor + channel + "\033[0m] " + stamp + " "
+			send_out("[" + ccolor + channel + "\033[0m] \033[31m" + stamp + " "
 				+ TEXT_SUBD->titled_name(sender,
 					TEXT_SUBD->query_user_class(sender)) + tcolor + ": " + message + "\n");
 		}
 	} else {
-		send_out("[" + ccolor + channel + "\033[0m] " + stamp
-			+ " " + message + "\n");
+		send_out("[" + ccolor + channel + "\033[0m] \033[31m" + stamp
+			+ " " + tcolor + message + "\n");
 	}
 }
