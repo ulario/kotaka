@@ -203,6 +203,12 @@ int compare_geometry(object obj)
 	return combine_relation(xrel, yrel);
 }
 
+/* do a simple search for relations */
+/* this simply checks against all our thingwise siblings */
+private void update_relations_simple()
+{
+}
+
 void check_geometry()
 {
 	object env;
