@@ -210,6 +210,8 @@ void check_geometry()
 
 	int i, sz;
 
+	reset_relations();
+
 	env = query_environment();
 
 	if (!env) {
