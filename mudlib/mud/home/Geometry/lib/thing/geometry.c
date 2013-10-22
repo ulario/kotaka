@@ -84,6 +84,18 @@ void coclear_relation(object obj)
 	relations[obj] = nil;
 }
 
+private void reset_relations()
+{
+	int sz;
+	object *neighbors;
+
+	neighbors = map_indices(relations);
+
+	for (sz = sizeof(neighbors) - 1; sz >= 0; sz--) {
+		clear_relation(neighbors[sz]);
+	}
+}
+
 private int relation(int ll, int lh, int rl, int rh)
 {
 	int i, o;
