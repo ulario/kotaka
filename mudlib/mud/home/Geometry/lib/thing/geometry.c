@@ -241,6 +241,7 @@ private void update_relations_simple()
 
 void check_geometry()
 {
+	update_relations_simple();
 }
 
 static void move_notify(object old_env)
