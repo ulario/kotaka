@@ -207,10 +207,6 @@ int compare_geometry(object obj)
 /* this simply checks against all our thingwise siblings */
 private void update_relations_simple()
 {
-}
-
-void check_geometry()
-{
 	object env;
 	object *siblings;
 
@@ -241,6 +237,10 @@ void check_geometry()
 			clear_relation(siblings[i]);
 		}
 	}
+}
+
+void check_geometry()
+{
 }
 
 static void move_notify(object old_env)
