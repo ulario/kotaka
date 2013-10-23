@@ -209,8 +209,6 @@ void send_channel_message(string channel, string sender, string text)
 		text
 	});
 
-	write_file("i3log", "out: " + STRINGD->mixed_sprint(packet) + "\n");
-
 	message(to_packet(mudmode_sprint(packet)));
 }
 
