@@ -141,7 +141,7 @@ private void update_relations_simple()
 	for (i = 0; i < sz; i++) {
 		int relation;
 
-		relation = compare_geometry(siblings[i]);
+		relation = xyz_compare_geometry(siblings[i]);
 
 		if (relation) {
 			set_relation(siblings[i], relation);

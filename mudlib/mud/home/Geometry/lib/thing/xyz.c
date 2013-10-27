@@ -74,7 +74,7 @@ static int *lhof(int p, int s)
 	}
 }
 
-int compare_geometry(object obj)
+int xyz_compare_geometry(object obj)
 {
 	int px, py, pz;
 	int lsx, lsy;
