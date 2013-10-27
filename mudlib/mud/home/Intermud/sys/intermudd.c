@@ -455,8 +455,6 @@ int login(string input)
 
 	connection(previous_object());
 
-	write_file("i3-in", input);
-
 	handle = call_out("process", 0);
 
 	return MODE_NOCHANGE;
