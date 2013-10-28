@@ -21,7 +21,6 @@
 
 inherit thing LIB_THING;
 
-inherit position "~Geometry/lib/thing/position";
 inherit geometry "~Geometry/lib/thing/geometry";
 
 static void create()
@@ -34,6 +33,5 @@ static void create()
 static void move_notify(object old_env)
 {
 	thing::move_notify(old_env);
-	position::move_notify(old_env);
 	geometry::move_notify(old_env);
 }
