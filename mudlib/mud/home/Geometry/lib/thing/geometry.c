@@ -103,13 +103,16 @@ static int combine_relation(int a, int b)
 			return 2;
 		}
 		return 1;
+
 	case 2:
 		return 2;
+
 	case 3:
 		if (b == 1 || b == 2) {
 			return 2;
 		}
 		return 3;
+
 	case 4:
 		return b;
 	}
