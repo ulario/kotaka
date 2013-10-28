@@ -1,0 +1,7 @@
+Geometry's lib/geometry now inherits lib/position directly
+
+All inheriters of lib/geometry that inherit lib/position themselves no
+longer need to do so.
+
+Please note that lib/geometry should be recompiled before any inheriters
+that release lib/position, or data will be lost.
