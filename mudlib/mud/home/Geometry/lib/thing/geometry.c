@@ -22,6 +22,7 @@
 #include <kotaka/privilege.h>
 
 inherit LIB_THING;
+inherit position "position";
 inherit "xyz";
 
 object *query_inventory();
@@ -161,6 +162,8 @@ void check_geometry()
 
 static void move_notify(object old_env)
 {
+	position::move_notify(old_env);
+
 	check_geometry();
 }
 
