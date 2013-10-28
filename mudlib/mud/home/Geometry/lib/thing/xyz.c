@@ -30,7 +30,7 @@ void check_geometry();
 
 int combine_relation(int rela, int relb);
 
-static int relation(int ll, int lh, int rl, int rh)
+private int xyz_relation(int ll, int lh, int rl, int rh)
 {
 	int i, o;
 
@@ -65,7 +65,7 @@ static int relation(int ll, int lh, int rl, int rh)
 /* warning, dirty trick ahead: */
 /* we deliberately have points as inverse boxes */
 /* to make them always inside the box */
-static int *lhof(int p, int s)
+private int *lhof(int p, int s)
 {
 	if (s) {
 		return ({ p, p + s });
@@ -95,7 +95,7 @@ int xyz_compare_geometry(object obj)
 	({ ll, lh }) = lhof(0, lsx);
 	({ rl, rh }) = lhof(px, rsx);
 
-	xrel = relation(ll, lh, rl, rh);
+	xrel = xyz_relation(ll, lh, rl, rh);
 
 	if (!xrel) {
 		return 0;
@@ -104,7 +104,7 @@ int xyz_compare_geometry(object obj)
 	({ ll, lh }) = lhof(0, lsy);
 	({ rl, rh }) = lhof(py, rsy);
 
-	yrel = relation(ll, lh, rl, rh);
+	yrel = xyz_relation(ll, lh, rl, rh);
 
 	if (!yrel) {
 		return 0;
