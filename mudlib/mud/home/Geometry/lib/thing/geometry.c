@@ -161,16 +161,6 @@ void check_geometry()
 
 static void move_notify(object old_env)
 {
-	int i, sz;
-	object *ex_neighbors;
-
-	ex_neighbors = map_indices(relations);
-	sz = sizeof(ex_neighbors);
-
-	for (i = 0; i < sz; i++) {
-		clear_relation(ex_neighbors[i]);
-	}
-
 	if (!old_env) {
 		return;
 	}
