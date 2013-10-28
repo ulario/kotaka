@@ -161,10 +161,6 @@ void check_geometry()
 
 static void move_notify(object old_env)
 {
-	if (!old_env) {
-		return;
-	}
-
 	check_geometry();
 }
 
