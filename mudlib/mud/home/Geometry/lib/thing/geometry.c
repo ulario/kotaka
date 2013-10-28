@@ -31,7 +31,7 @@ mixed query_property(string key);
 mixed query_local_property(string key);
 void set_local_property(string key, mixed value);
 
-private mapping relations;
+private mapping relations;	/* relations to other objects */
 
 /* 1: insider */
 /* 2: intersect */
