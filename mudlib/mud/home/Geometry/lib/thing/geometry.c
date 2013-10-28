@@ -33,10 +33,10 @@ void set_local_property(string key, mixed value);
 
 private mapping relations;	/* relations to other objects */
 
-/* 1: insider */
-/* 2: intersect */
-/* 3: outsider */
-/* 4: stack */
+/* 1: inside us */
+/* 2: intersecting us */
+/* 3: surrounding us */
+/* 4: overlapping us */
 
 static void create()
 {
