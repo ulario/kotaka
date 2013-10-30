@@ -65,6 +65,8 @@ private void initialize()
 	load_object(KERNELD);
 	configure_klib();
 
+	KERNELD->set_global_access("System", 1);
+
 	boot_subsystem("String");
 	boot_subsystem("Algorithm");
 
@@ -77,8 +79,6 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
 	OBJECTD->discover_objects();
-
-	KERNELD->set_global_access("System", 1);
 
 	boot_subsystem("Bigstruct");
 	LOGD->post_message("boot", LOG_INFO, "Switching program database to bigstruct");
