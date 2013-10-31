@@ -21,9 +21,12 @@
 #include <kotaka/paths/thing.h>
 #include <kotaka/privilege.h>
 
+private int xpos, ypos, zpos;
+
 int query_x_size();
 int query_y_size();
 
+object query_environment();
 mixed query_local_property(string name);
 void set_local_property(string name, mixed value);
 void check_geometry();
@@ -143,4 +146,82 @@ void set_y_size(int sy)
 	set_local_property("size_y", sy ? sy : nil);
 
 	check_geometry();
+}
+
+/*********************/
+/* Position handling */
+/*********************/
+
+static void move_notify(object old_env)
+{
+	object common;
+	object new_env;
+
+	new_env = query_environment();
+
+	if (!old_env || !new_env) {
+		return;
+	}
+
+	common = THING_SUBD->query_common_container(old_env, new_env);
+
+	if (!common) {
+		xpos = 0;
+		ypos = 0;
+		zpos = 0;
+		return;
+	}
+
+	for (; old_env != common; old_env = old_env->query_environment()) {
+		xpos += old_env->query_x_position();
+		ypos += old_env->query_y_position();
+		zpos += old_env->query_z_position();
+	}
+
+	for (; new_env != common; new_env = new_env->query_environment()) {
+		xpos -= new_env->query_x_position();
+		ypos -= new_env->query_y_position();
+		zpos -= new_env->query_z_position();
+	}
+}
+
+void set_x_position(int new_xpos)
+{
+	xpos = new_xpos;
+
+	check_geometry();
+}
+
+void set_y_position(int new_ypos)
+{
+	ypos = new_ypos;
+
+	check_geometry();
+}
+
+void set_z_position(int new_zpos)
+{
+	zpos = new_zpos;
+
+	check_geometry();
+}
+
+int query_x_position()
+{
+	return xpos;
+}
+
+int query_y_position()
+{
+	return ypos;
+}
+
+int query_z_position()
+{
+	return zpos;
+}
+
+static void restore_position(int *coords)
+{
+	({ xpos, ypos, zpos }) = coords;
 }

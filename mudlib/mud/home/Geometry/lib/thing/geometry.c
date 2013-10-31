@@ -22,8 +22,10 @@
 #include <kotaka/privilege.h>
 
 inherit LIB_THING;
-inherit position "position";
-inherit "xyz";
+private inherit "position";
+inherit xyz "xyz";
+
+int migrated;
 
 object *query_inventory();
 object query_environment();
@@ -42,6 +44,7 @@ private mapping relations;	/* relations to other objects */
 static void create()
 {
 	relations = ([ ]);
+	migrated = 1;
 }
 
 void set_relation(object obj, int relation)
@@ -166,7 +169,7 @@ void check_geometry()
 
 static void move_notify(object old_env)
 {
-	position::move_notify(old_env);
+	xyz::move_notify(old_env);
 
 	check_geometry();
 }
@@ -174,4 +177,19 @@ static void move_notify(object old_env)
 mapping query_relations()
 {
 	return relations[..];
+}
+
+void migrate()
+{
+	if (!migrated) {
+		restore_position(save_position());
+		migrated = 1;
+	}
+}
+
+nomask void touch_geometry()
+{
+	if (!migrated) {
+		migrate();
+	}
 }

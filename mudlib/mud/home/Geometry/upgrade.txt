@@ -1,0 +1,7 @@
+1.  compile ~Geometry/initd.c
+2.  freeze the mud (csuspend and cblock)
+3.  destruct ~Geometry/lib/thing/position
+4.  destruct ~Geometry/lib/thing/geometry
+5.  reinherit ~Geometry/lib/thing/geometry
+6.  touchall for any downstream users of ~Geometry/lib/thing/geometry (probably ~Game/obj/thing)
+7.  unfreeze the mud (crelease and cunblock)

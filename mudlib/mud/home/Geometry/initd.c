@@ -34,6 +34,6 @@ string query_toucher(string path)
 {
 	switch(path) {
 	case USR_DIR + "/Geometry/lib/thing/geometry":
-		return "check_geometry";
+		return "touch_geometry";
 	}
 }
