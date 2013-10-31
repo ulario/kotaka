@@ -57,7 +57,7 @@ void coset_relation(object obj, int relation)
 {
 	ACCESS_CHECK(GEOMETRY());
 
-	if (relation == 1 || relation == 3) {
+	if (relation & 1) {
 		relation ^= 2;
 	}
 
