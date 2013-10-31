@@ -155,6 +155,10 @@ private void update_relations_simple()
 	}
 }
 
+void update_relations()
+{
+}
+
 void check_geometry()
 {
 	update_relations_simple();
