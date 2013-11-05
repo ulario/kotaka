@@ -220,8 +220,3 @@ int query_z_position()
 {
 	return zpos;
 }
-
-static void restore_position(int *coords)
-{
-	({ xpos, ypos, zpos }) = coords;
-}
