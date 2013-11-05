@@ -57,10 +57,7 @@ void disable()
 	DRIVER->set_error_manager(nil);
 }
 
-/** Formats a single stack frame
-
-Shamelessly stolen from Dworkin's Klib
-*/
+/* Shamelessly stolen from Dworkin's Klib */
 string sprintframe(mixed *frame, varargs int include_args)
 {
 	string obj;
@@ -142,7 +139,6 @@ string printstack(mixed **trace, varargs int include_args)
 	return tracestr;
 }
 
-/** Intercepts runtime errors */
 void runtime_error(string error, int caught, mixed **trace)
 {
 	int atom;
@@ -240,14 +236,6 @@ void runtime_error(string error, int caught, mixed **trace)
 	DRIVER->set_error_manager(this_object());
 }
 
-/** Intercepts atomic errors
-
-These are handled by packing up all our information and then
-throwing a packaged error string, which runtime_error unpacks.
-
-Um...but how the hell is this going to work if the atomic frame is UNDER
-a catch frame?
-*/
 void atomic_error(string error, int atom, mixed **trace)
 {
 	string throwstr;
@@ -267,7 +255,6 @@ void atomic_error(string error, int atom, mixed **trace)
 	error(throwstr);
 }
 
-/** Records compilation errors */
 void compile_error(string file, int line, string err)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
