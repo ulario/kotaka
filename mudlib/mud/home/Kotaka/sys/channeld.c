@@ -356,7 +356,7 @@ void configure_channels()
 	/* trace: errord, used for stack traces */
 	/* compile: errord, used for compile errors */
 
-	channels = ({ "error", "trace", "compile" });
+	channels = ({ "error", "trace", "compile", "system" });
 
 	sz = sizeof(channels);
 
