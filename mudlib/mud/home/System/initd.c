@@ -252,20 +252,6 @@ void reboot()
 
 /** Used to output messages to the console */
 
-/*********/
-/* Hooks */
-/*********/
-
-string query_constructor(string path)
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-}
-
-string query_destructor(string path)
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-}
-
 /********************/
 /* Helper functions */
 /********************/
