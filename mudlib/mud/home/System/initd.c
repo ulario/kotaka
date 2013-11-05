@@ -250,8 +250,6 @@ void reboot()
 	call_out("audit_filequota", 0);
 }
 
-/** Used to output messages to the console */
-
 /********************/
 /* Helper functions */
 /********************/

@@ -17,12 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/** Grants proxies
-
-A proxy is used to grant user level permissions to objects, or to allow
-one subsystem to take advantage of grants made by other subsystems.
-
-*/
 #include <kernel/kernel.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>

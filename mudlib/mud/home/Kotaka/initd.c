@@ -32,7 +32,6 @@ inherit UTILITY_COMPILE;
 
 string *bad_bins;
 
-/** Bootstrap */
 static void create()
 {
 	int i;
