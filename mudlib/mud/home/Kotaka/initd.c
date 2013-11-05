@@ -51,24 +51,3 @@ static void create()
 
 	KERNELD->set_global_access("Kotaka", 1);
 }
-
-int forbid_inherit(string from, string path, int priv)
-{
-	string creator;
-	int firstchar;
-
-	ACCESS_CHECK(previous_program() == OBJECTD);
-	creator = DRIVER->creator(from);
-
-	if (!creator) {
-		return 1;
-	}
-
-	firstchar = creator[0];
-
-	if (firstchar < 'A' || firstchar > 'Z') {
-		return 1;
-	}
-
-	return 0;
-}
