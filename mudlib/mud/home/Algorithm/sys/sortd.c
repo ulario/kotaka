@@ -30,8 +30,6 @@ private void aswap(mixed *arr, int a, int b)
 
 void qsort(mixed *arr, int begin, int end, varargs string compfunc)
 {
-	int sign;
-
 	while (begin < end) {
 		int low, mid, high, sign;
 		mixed pivot;
