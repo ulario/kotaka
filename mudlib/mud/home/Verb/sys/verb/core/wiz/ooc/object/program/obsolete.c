@@ -67,8 +67,14 @@ void main(object actor, mapping roles)
 
 		ctime = status(path, O_COMPILETIME);
 
-		if (proxy->file_info(path + ".c")[1] > ctime) {
-			shinies += ({ path + ".c" });
+		{
+			mixed *finfo;
+
+			finfo = proxy->file_info(path + ".c");
+
+			if (!finfo || finfo[1]) {
+				shinies += ({ path + ".c" });
+			}
 		}
 
 		incs = pinfo->query_includes();
