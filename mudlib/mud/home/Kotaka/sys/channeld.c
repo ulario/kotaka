@@ -66,7 +66,6 @@ static void create()
 /* channel management */
 /**********************/
 
-/** creates a new channel */
 void add_channel(string channel, varargs int lock)
 {
 	string program;
@@ -86,13 +85,11 @@ void add_channel(string channel, varargs int lock)
 	}
 }
 
-/** lists all the channels */
 string *query_channels()
 {
 	return map_indices(channels);
 }
 
-/** deletes a channel */
 void del_channel(string channel)
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
@@ -111,7 +108,6 @@ void del_channel(string channel)
 	}
 }
 
-/** queries a channel config value */
 mixed query_channel_config(string channel, string key)
 {
 	mapping config;
@@ -130,14 +126,8 @@ mixed query_channel_config(string channel, string key)
 	return SUBD->deep_copy(config[key]);
 }
 
-/** sets a channel config entry
-
-\note
-
-ChannelD only records config data.  If config values have any side
-effects, it is the caller's responsibility to enforce them.
-
-*/
+/* ChannelD only records config data.  If config values have any side
+effects, it is the caller's responsibility to enforce them. */
 void set_channel_config(string channel, string key, mixed value)
 {
 	mapping config;
@@ -154,7 +144,6 @@ void set_channel_config(string channel, string key, mixed value)
 	config[key] = SUBD->deep_copy(value);
 }
 
-/** returns true if the channel exists */
 int test_channel(string channel)
 {
 	CHECKARG(channel, 1, "test_channel");
@@ -184,11 +173,6 @@ int query_intermud(string channel)
 /* user management */
 /*******************/
 
-/** subscribes to a channel
-
-Access control is the caller's responsiblity.
-
-*/
 void subscribe_channel(string channel, object subscriber)
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
@@ -207,7 +191,6 @@ void subscribe_channel(string channel, object subscriber)
 	subscribers[channel][subscriber] = 1;
 }
 
-/** unsubscribe a user from a channel */
 void unsubscribe_channel(string channel, object subscriber)
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
@@ -230,7 +213,6 @@ void unsubscribe_channel(string channel, object subscriber)
 	}
 }
 
-/** checks if a user is subscribed */
 int is_subscribed(string channel, object user)
 {
 	mixed *data;
@@ -250,7 +232,6 @@ int is_subscribed(string channel, object user)
 	return !!subscribers[channel][user];
 }
 
-/** lists all channels an object is subscribed to */
 string *query_subscriptions(object subscriber)
 {
 	string *names;
@@ -301,7 +282,6 @@ string setcolor(int color)
 	}
 }
 
-/* sends a message to a channel, optionally from a user */
 void post_message(string channel, string sender, string message, varargs int norelay)
 {
 	object *send_list;
