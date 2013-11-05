@@ -324,6 +324,11 @@ void configure_logging()
 	/* debug log gets only debug */
 	LOGD->set_target("*", 128, "file:/log/debug.log");
 	LOGD->set_target("debug", 255, "file:/log/debug.log");
+
+	/* general system log goes to general and logged in staff */
+	LOGD->set_target("system", 255, "file:/log/general.log");
+	LOGD->set_target("system", 255, "file:/log/session.log");
+	LOGD->set_target("system", 255, "channel:system");
 }
 
 int forbid_inherit(string from, string path, int priv)
