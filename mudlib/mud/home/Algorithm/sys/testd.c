@@ -27,7 +27,7 @@ static void create()
 {
 }
 
-private void test_qsort()
+static void test_qsort()
 {
 	int i, sz;
 
@@ -75,5 +75,5 @@ void test()
 
 	fill();
 	scramble();
-	test_qsort();
+	call_limited("test_qsort");
 }
