@@ -271,7 +271,7 @@ private void configure_klib()
 		KERNELD->add_owner(wizards[index]);
 	}
 
-	KERNELD->set_rsrc("ticks", 100000000, 0, 0);
+	KERNELD->set_rsrc("ticks", 1000000, 0, 0);
 }
 
 void configure_logging()
