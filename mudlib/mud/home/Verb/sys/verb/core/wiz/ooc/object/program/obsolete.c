@@ -72,7 +72,7 @@ void main(object actor, mapping roles)
 
 			finfo = proxy->file_info(path + ".c");
 
-			if (!finfo || finfo[1]) {
+			if (!finfo || finfo[1] > ctime) {
 				shinies += ({ path + ".c" });
 			}
 		}
