@@ -156,6 +156,8 @@ private void update_relations_simple()
 
 /* to bootstrap, go up the env chain until we are completely contained */
 /* then we add ourselves as an insider of it */
+
+/* once that is done, we can process normally */
 void update_relations()
 {
 }
