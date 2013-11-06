@@ -54,6 +54,7 @@ void main(object actor, mapping roles)
 		int ctime;
 		string path;
 		string *shinies;
+		string *missing;
 
 		pindex = indices->query_element(i);
 		pinfo = PROGRAMD->query_program_info(pindex);
@@ -64,6 +65,7 @@ void main(object actor, mapping roles)
 
 		path = pinfo->query_path();
 		shinies = ({ });
+		missing = ({ });
 
 		ctime = status(path, O_COMPILETIME);
 
@@ -72,7 +74,9 @@ void main(object actor, mapping roles)
 
 			finfo = proxy->file_info(path + ".c");
 
-			if (!finfo || finfo[1] > ctime) {
+			if (!finfo) {
+				missing += ({ path + ".c" });
+			} else if (finfo[1] > ctime) {
 				shinies += ({ path + ".c" });
 			}
 		}
@@ -82,16 +86,23 @@ void main(object actor, mapping roles)
 
 		for (j = 0; j < ssz; j++) {
 			string inc;
+			mixed *finfo;
 
 			inc = incs[j];
+			finfo = proxy->file_info(inc);
 
-			if (proxy->file_info(inc)[1] > ctime) {
+			if (!finfo) {
+				missing += ({ inc });
+			} else if (finfo[1] > ctime) {
 				shinies += ({ inc });
 			}
 		}
 
 		if (sizeof(shinies)) {
 			send_out(path + " is older than:\n" + implode(shinies, "\n") + "\n\n");
+		}
+		if (sizeof(missing)) {
+			send_out(path + " is missing:\n" + implode(missing, "\n") + "\n\n");
 		}
 	}
 }
