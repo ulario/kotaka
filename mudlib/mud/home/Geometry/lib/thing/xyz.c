@@ -21,14 +21,13 @@
 #include <kotaka/paths/thing.h>
 #include <kotaka/privilege.h>
 
+inherit LIB_THING;
+
 private int xpos, ypos, zpos;
 
 int query_x_size();
 int query_y_size();
 
-object query_environment();
-mixed query_local_property(string name);
-void set_local_property(string name, mixed value);
 void check_geometry();
 
 int combine_relation(int rela, int relb);
