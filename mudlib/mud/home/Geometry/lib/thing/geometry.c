@@ -162,6 +162,40 @@ void update_relations()
 {
 }
 
+void bootstrap_relations()
+{
+	object env;
+
+	reset_relations();
+
+	env = query_environment();
+
+	while (env) {
+		object genv;
+
+		if (env->query_local_property("is_infinite")) {
+			set_relation(env, 3);
+			break;
+		}
+
+		if (xyz_compare_geometry(env) == 3) {
+			set_relation(env, 3);
+			break;
+		}
+
+		genv = env->query_environment();
+
+		if (!genv) {
+			set_relation(env, 3);
+			break;
+		}
+
+		env = genv;
+	}
+
+	update_relations();
+}
+
 void check_geometry()
 {
 	update_relations_simple();
