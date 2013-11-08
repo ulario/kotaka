@@ -49,16 +49,16 @@ void set_relation(object obj, int relation)
 
 	relations[obj] = relation;
 
+	if (relation & 1) {
+		relation ^= 2;
+	}
+
 	obj->coset_relation(this_object(), relation);
 }
 
 void coset_relation(object obj, int relation)
 {
 	ACCESS_CHECK(GEOMETRY());
-
-	if (relation & 1) {
-		relation ^= 2;
-	}
 
 	relations[obj] = relation;
 }
