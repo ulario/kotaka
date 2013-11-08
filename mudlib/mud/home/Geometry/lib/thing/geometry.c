@@ -160,6 +160,17 @@ private void update_relations_simple()
 /* once that is done, we can process normally */
 void update_relations()
 {
+	/* check new neighbors: */
+	/* outsider's insiders and intersecters and overlappers */
+	/* insider's outsiders and intersecters and overlappers */
+	/* our insiders */
+	/* our outsiders */
+	/* our intersectors */
+	/* our overlappers */
+
+	/* trim old neighbors */
+	/* outsider's outsiders are redundant */
+	/* insider's insiders are redundant */
 }
 
 void bootstrap_relations()
