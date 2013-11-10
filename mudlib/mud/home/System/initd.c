@@ -445,6 +445,7 @@ void reboot_subsystem(string subsystem)
 	switch(subsystem) {
 	case "System":
 		error("Cannot shutdown " + subsystem);
+
 	case "Bigstruct":
 		error("Cannot shutdown active dependency of System");
 	}
@@ -465,8 +466,10 @@ void shutdown_subsystem(string subsystem)
 	switch(subsystem) {
 	case "System":
 		error("Cannot shutdown " + subsystem);
+
 	case "Bigstruct":
 		error("Cannot shutdown active dependency of System");
+
 	case "Algorithm":
 	case "String":
 		if (!KADMIN()) {
