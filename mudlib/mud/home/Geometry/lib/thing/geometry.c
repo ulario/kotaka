@@ -168,9 +168,9 @@ void update_relations()
 	/* our intersectors */
 	/* our overlappers */
 
-	/* trim old neighbors */
-	/* outsider's outsiders are redundant */
-	/* insider's insiders are redundant */
+	/* Do a redundancy trim for anyone whose i's or o's changed */
+
+	/* Do a check on anyone exposed to new neighbors (including us) */
 }
 
 void bootstrap_relations()
