@@ -54,12 +54,14 @@ private void restore();
 
 static void create()
 {
+	muds = ([ ]);
+	channels = ([ ]);
+
+	chanlistid = 0;
+
 	call_out("connect", 0, "204.209.44.3", 8080);
 
 	restore();
-
-	muds = ([ ]);
-	channels = ([ ]);
 }
 
 void listen_channel(string channel, int on);
@@ -488,6 +490,7 @@ void logout(int quit)
 		remove_call_out(handle);
 	}
 
+	muds = ([ ]);
 	channels = ([ ]);
 
 	buffer = nil;
