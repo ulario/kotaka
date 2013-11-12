@@ -154,25 +154,30 @@ private void update_relations_simple()
 	}
 }
 
+/* bit 1 = inside visible, bit 2 = outside visible */
+private int viscode(int relation)
+{
+	switch relation()
+	{
+	case 0: return 2; /* looking aside at it */
+	case 1: return 2; /* looking at it from outside */
+	case 2: return 3; /* we can see through it */
+	case 3: return 1; /* looking at it from inside */
+	case 4: return 3; /* we ARE it */
+	}
+}
+
+void update_relations()
+{
+	/* if we reach beyond a veil, we need to look behind it */
+
+	/* we also need to take care of anyone that has pierced US */
+}
+
 /* to bootstrap, go up the env chain until we are completely contained */
 /* then we add ourselves as an insider of it */
 
 /* once that is done, we can process normally */
-void update_relations()
-{
-	/* check new neighbors: */
-	/* outsider's insiders and intersecters and overlappers */
-	/* insider's outsiders and intersecters and overlappers */
-	/* our insiders */
-	/* our outsiders */
-	/* our intersectors */
-	/* our overlappers */
-
-	/* Do a redundancy trim for anyone whose i's or o's changed */
-
-	/* Do a check on anyone exposed to new neighbors (including us) */
-}
-
 void bootstrap_relations()
 {
 	object env;
