@@ -178,6 +178,8 @@ void update_relations()
 /* then we add ourselves as an insider of it */
 
 /* once that is done, we can process normally */
+
+/* this may still be needed for handling a teleport, not just initialization from scratch */
 void bootstrap_relations()
 {
 	object env;
