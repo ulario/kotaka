@@ -111,6 +111,15 @@ void set_target(string facility, int mask, string target_info)
 	}
 }
 
+/*
+000000000011111111112222
+012345678901234567890123
+WWW MMM DD HH:MM:SS YYYY
+
+MMM DD HH:MM
+MMM DD  YYYY
+*/
+
 private string timestamp()
 {
 	int sec;
