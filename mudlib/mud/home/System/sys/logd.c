@@ -122,24 +122,11 @@ MMM DD  YYYY
 
 private string timestamp()
 {
-	int sec;
-	int msec;
+	string c;
 
-	string str_sec;
-	string str_msec;
-	string str_date;
-	mixed *mtime;
-	string timestamp;
+	c = ctime(time());
 
-	mtime = millitime();
-	sec = mtime[0];
-	msec = (int)(mtime[1] * 1000.0);
-	str_sec = "          " + sec;
-	str_sec = str_sec[strlen(str_sec) - 10 ..];
-	str_msec = "00" + msec;
-	str_msec = str_msec[strlen(str_msec) - 3 ..];
-
-	return "[" + str_sec + "." + str_msec + "]";
+	return "[" + c + "]";
 }
 
 private void write_logfile(string file, string message)
