@@ -167,6 +167,26 @@ private int viscode(int relation)
 	}
 }
 
+private mapping query_relation_set(int relation)
+{
+	int sz;
+	int *rel;
+	object *obj;
+	mapping set;
+
+	obj = map_indices(relations);
+	rel = map_values(relations);
+	set = ([ ]);
+
+	for (sz = sizeof(obj) - 1; sz >= 0; sz--) {
+		if (rel[sz] == relation) {
+			set[obj[sz]] = 1;
+		}
+	}
+
+	return set;
+}
+
 void update_relations()
 {
 	/* if we reach beyond a veil, we need to look behind it */
