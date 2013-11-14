@@ -157,8 +157,7 @@ private void update_relations_simple()
 /* bit 1 = inside visible, bit 2 = outside visible */
 private int viscode(int relation)
 {
-	switch relation()
-	{
+	switch(relation) {
 	case 0: return 2; /* looking aside at it */
 	case 1: return 2; /* looking at it from outside */
 	case 2: return 3; /* we can see through it */
