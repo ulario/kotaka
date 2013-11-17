@@ -671,7 +671,9 @@ int touch(object obj, string function)
 {
 	ACCESS_CHECK(KERNEL());
 
-	obj->_F_touch(function);
+	if (!sscanf(object_name(obj), "/kernel/%*s")) {
+		obj->_F_touch(function);
+	}
 }
 
 int forbid_call(string path)

@@ -49,7 +49,9 @@ static void touch()
 
 	if (obj) {
 		catch {
-			obj->_F_dummy();
+			if (!sscanf(object_name(obj), "/kernel/%*s")) {
+				obj->_F_dummy();
+			}
 		}
 	}
 
