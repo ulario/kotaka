@@ -24,6 +24,8 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
+private string draw_object(object gc, object viewer, object obj);
+
 private void draw_tickmarks(object gc)
 {
 	int i;
