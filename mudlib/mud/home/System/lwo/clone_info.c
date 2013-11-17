@@ -41,6 +41,7 @@ void add_clone(object obj)
 
 	if (clones) {
 		ASSERT(!clones[obj]);
+
 		if (count == status(ST_ARRAYSIZE)) {
 			clones = nil;
 		} else {
