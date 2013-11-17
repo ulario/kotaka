@@ -426,7 +426,6 @@ object query_dormant()
 	return notlist;
 }
 
-
 void compiling(string path)
 {
 	ACCESS_CHECK(KERNEL());
