@@ -474,5 +474,3 @@ string draw_look(object viewer)
 
 	return implode(painter->render_color(), "\n") + "\n";
 }
-
-/* draw */
