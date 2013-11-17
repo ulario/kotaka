@@ -76,6 +76,20 @@ private void default_painter(object gc, object neighbor, object viewer)
 	int x, y;
 	mixed color;
 
+	if (neighbor->is_container_of(viewer)) {
+		object *inv;
+		int i, sz;
+
+		inv = neighbor->query_inventory() - ({ viewer });
+		sz = sizeof(inv);
+
+		for (i = 0; i < sz; i++) {
+			draw_object(gc, viewer, inv[i]);
+		}
+
+		return;
+	}
+
 	({ dx, dy, dz }) = GEOMETRY_SUBD->query_position_difference(viewer, neighbor);
 
 	/*
