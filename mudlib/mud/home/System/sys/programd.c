@@ -443,9 +443,12 @@ object query_inheriters(int oindex)
 
 	if (list) {
 		list = list->query_indices();
-		list->grant_access(previous_object(), FULL_ACCESS);
-		return list;
+	} else {
+		list = new_object(BIGSTRUCT_ARRAY_LWO);
 	}
+
+	list->grant_access(previous_object(), FULL_ACCESS);
+	return list;
 }
 
 object query_includers(string path)
@@ -458,9 +461,12 @@ object query_includers(string path)
 
 	if (list) {
 		list = list->query_indices();
-		list->grant_access(previous_object(), FULL_ACCESS);
-		return list;
+	} else {
+		list = new_object(BIGSTRUCT_ARRAY_LWO);
 	}
+
+	list->grant_access(previous_object(), FULL_ACCESS);
+	return list;
 }
 
 void remove_program(int index)
