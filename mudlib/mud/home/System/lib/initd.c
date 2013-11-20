@@ -83,3 +83,8 @@ string query_toucher(string path)
 
 	return nil;
 }
+
+void do_upgrade()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+}
