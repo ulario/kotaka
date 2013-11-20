@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/log.h>
+#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
 
@@ -58,6 +59,7 @@ static void touch()
 	if (!queue->empty()) {
 		call_out("touch", 0);
 	} else {
+		CHANNELD->post_message("system", "touchd", "Global touch completed");
 		LOGD->post_message("system", LOG_INFO, "Global touch completed");
 	}
 }
