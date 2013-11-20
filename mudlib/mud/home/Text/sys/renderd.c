@@ -26,6 +26,8 @@
 
 private void draw_object(object gc, object viewer, object obj);
 
+void draw_contents(object gc, object obj, object viewer);
+
 private void draw_tickmarks(object gc)
 {
 	int i;
@@ -79,15 +81,7 @@ private void default_painter(object gc, object neighbor, object viewer)
 	mixed color;
 
 	if (neighbor->is_container_of(viewer)) {
-		object *inv;
-		int i, sz;
-
-		inv = neighbor->query_inventory() - ({ viewer });
-		sz = sizeof(inv);
-
-		for (i = 0; i < sz; i++) {
-			draw_object(gc, viewer, inv[i]);
-		}
+		draw_contents(gc, neighbor, viewer);
 
 		return;
 	}
