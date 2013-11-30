@@ -590,7 +590,6 @@ private void touch_all_clones_of(string path)
 
 void do_upgrade()
 {
-	add_upgrade_required(status(AUTO, O_INDEX));
 }
 
 void upgrade_system_2()
