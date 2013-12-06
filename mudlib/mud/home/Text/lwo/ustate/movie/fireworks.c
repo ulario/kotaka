@@ -76,8 +76,8 @@ private void do_particles(object paint, float diff)
 			particle[0] = 20.0;
 			particle[1] = 25.0;
 
-			particle[2] = MATHD->bell_rnd(15) * 40.0 - 10.0;
-			particle[3] = MATHD->bell_rnd(15) * 20.0 - 30.0;
+			particle[2] = MATHD->bell_rnd(2) * 40.0 - 10.0;
+			particle[3] = MATHD->bell_rnd(2) * 20.0 - 30.0;
 		}
 
 		x = (int)floor(particle[0]);
