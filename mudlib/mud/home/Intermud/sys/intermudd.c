@@ -30,6 +30,7 @@
 /* mud mode */
 /* (big endian 4 byte integer, length of the string) (string) (null) */
 
+#define ROUTER_IP "204.209.44.3"
 #define MUDNAME "Ulario"
 
 inherit LIB_USERD;
@@ -59,7 +60,7 @@ static void create()
 
 	chanlistid = 0;
 
-	call_out("connect", 0, "204.209.44.3", 8080);
+	call_out("connect", 0, ROUTER_IP, 8080);
 
 	restore();
 }
@@ -483,7 +484,7 @@ void logout(int quit)
 	if (!quit) {
 		LOGD->post_message("intermud", LOG_INFO, "Connection lost");
 
-		call_out("connect", 0, "204.209.44.3", 8080);
+		call_out("connect", 0, ROUTER_IP, 8080);
 	}
 
 	if (handle) {
@@ -500,7 +501,7 @@ void connect_failed(int refused)
 {
 	LOGD->post_message("intermud", LOG_INFO, "Connection failed");
 
-	call_out("connect", 10, "204.209.44.3", 8080);
+	call_out("connect", 10, ROUTER_IP, 8080);
 }
 
 static void destruct()
@@ -609,7 +610,7 @@ void reset()
 
 	LOGD->post_message("intermud", LOG_INFO, "Reset");
 
-	call_out("connect", 0, "204.209.44.3", 8080);
+	call_out("connect", 0, ROUTER_IP, 8080);
 }
 
 private void save()
