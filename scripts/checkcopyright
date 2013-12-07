@@ -1,0 +1,21 @@
+#!/bin/bash
+
+TMPDIR=`mktemp -d`
+
+find mudlib -type f -name "*.[ch]" > $TMPDIR/checklist
+
+(
+IFS=$'\n'
+for file in `cat $TMPDIR/checklist`
+do
+	YEAR=`git log $file | head -3 | tail -1 | tr -s " " | cut -d " " -f 6`
+	if [[ -z $YEAR ]]
+	then
+		echo "$file has no repository history"
+	else
+		echo "$file was last modified in $YEAR"
+	fi
+done
+)
+
+rm -rf $TMPDIR
