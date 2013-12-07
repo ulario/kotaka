@@ -1,21 +1,19 @@
 #!/bin/bash
 
-TMPDIR=`mktemp -d`
+#TMPDIR=`mktemp -d`
 
-find mudlib -type f -name "*.[ch]" > $TMPDIR/checklist
+find mudlib -type f -name "*.[ch]" > checklist
+
+rm -f fixme
 
 (
 IFS=$'\n'
-for file in `cat $TMPDIR/checklist`
+for file in `cat checklist`
 do
-	YEAR=`git log $file | head -3 | tail -1 | tr -s " " | cut -d " " -f 6`
-	if [[ -z $YEAR ]]
-	then
-		echo "$file has no repository history"
-	else
-		echo "$file was last modified in $YEAR"
-	fi
+	git log $file | egrep "^Date:" | tr -s " " | cut -d " " -f 6 | sort | uniq > dates
+	echo $file
+	cat dates
 done
 )
 
-rm -rf $TMPDIR
+#rm -rf $TMPDIR
