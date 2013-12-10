@@ -186,6 +186,23 @@ private mapping query_relation_set(int relation)
 	return set;
 }
 
+mapping setof(mapping set, int code)
+{
+	object *objs;
+	int sz;
+	mapping outset;
+
+	outset = ([ ]);
+
+	objs = map_indices(set);
+
+	for (sz = sizeof(objs) - 1; sz >= 0; sz--) {
+		outset += objs[sz]->query_relation_set(code);
+	}
+
+	return outset;
+}
+
 void update_relations()
 {
 	/* if we reach beyond a veil, we need to look behind it */
