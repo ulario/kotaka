@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2013  Raymond Jennings
+ * Copyright (C) 2013, 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/account.h>
 #include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
@@ -31,6 +33,11 @@ void main(object actor, mapping roles)
 {
 	object user;
 
+	string *channels;
+	string *subscriptions;
+
+	string *active, *inactive, *dead;
+
 	user = query_user();
 
 	if (user->query_class() < 1) {
@@ -38,7 +45,33 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	send_out(implode(CHANNELD->query_channels(), "\n") + "\n");
+	subscriptions = ACCOUNTD->query_account_property(user->query_name(), "channels");
 
-	return;
+	if (!subscriptions) {
+		subscriptions = ({ });
+	}
+
+	channels = CHANNELD->query_channels();
+
+	active = channels & subscriptions;
+	inactive = channels - subscriptions;
+	dead = subscriptions - channels;
+
+	if (sizeof(active)) {
+		send_out("Subscribed channels:\n\n");
+		send_out(STRINGD->wordwrap(implode(active, ", "), 60));
+		send_out("\n\n");
+	}
+
+	if (sizeof(inactive)) {
+		send_out("Unsubscribed channels:\n\n");
+		send_out(STRINGD->wordwrap(implode(inactive, ", "), 60));
+		send_out("\n\n");
+	}
+
+	if (sizeof(dead)) {
+		send_out("Orphaned channels:\n\n");
+		send_out(STRINGD->wordwrap(implode(dead, ", "), 60));
+		send_out("\n\n");
+	}
 }
