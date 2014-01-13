@@ -49,7 +49,7 @@ void main(object actor, mapping roles)
 
 	subscriptions = ACCOUNTD->query_account_property(name, "channels");
 
-	if (!subscriptions) {
+	if (!subscriptions || !sizeof(subscriptions & ({ roles["raw"] }) )) {
 		send_out("You are not currently subscribed.\n");
 		return;
 	}
