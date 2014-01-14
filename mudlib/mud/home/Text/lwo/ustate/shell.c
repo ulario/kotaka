@@ -265,10 +265,12 @@ private void handle_input(string input)
 			input = input[1 ..];
 			first = "say";
 			break;
+
 		case ':':
 			input = input[1 ..];
 			first = "emote";
 			break;
+
 		case ';':
 			input = input[1 ..];
 			first = "emote";
