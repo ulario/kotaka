@@ -401,7 +401,7 @@ private mapping english_process(string command, object ustate, object actor, obj
 	}
 
 	statement = command + " " + args;
-	parse = ENGLISHD->parse(statement);
+	parse = PARSE_ENGLISH->parse(statement);
 
 	if (!parse) {
 		/* choked on bad grammar */
