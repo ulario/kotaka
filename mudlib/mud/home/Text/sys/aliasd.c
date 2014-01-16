@@ -21,9 +21,14 @@
 
 mapping aliases;
 
+private void save();
+private void restore();
+
 static void create()
 {
 	aliases = ([ ]);
+
+	restore();
 }
 
 string *query_aliases()
@@ -41,4 +46,29 @@ void set_alias(string name, string value)
 	ACCESS_CHECK(INTERFACE());
 
 	aliases[name] = value;
+
+	save();
+}
+
+private void save()
+{
+	string buf;
+
+	buf = STRINGD->hybrid_sprint(aliases);
+
+	SECRETD->remove_file("aliases-tmp");
+	SECRETD->write_file("aliases-tmp", buf + "\n");
+	SECRETD->remove_file("aliases");
+	SECRETD->rename_file("aliases-tmp", "aliases");
+}
+
+private void restore()
+{
+	string buf;
+
+	buf = SECRETD->read_file("aliases");
+
+	if (buf) {
+		aliases = PARSER_VALUE->parse(buf);
+	}
 }
