@@ -25,8 +25,7 @@
 #include <kotaka/privilege.h>
 
 private void draw_object(object gc, object viewer, object obj);
-
-void draw_contents(object gc, object obj, object viewer);
+private void draw_contents(object gc, object viewer, object obj);
 
 private void draw_tickmarks(object gc)
 {
@@ -81,17 +80,10 @@ private void default_painter(object gc, object neighbor, object viewer)
 	mixed color;
 
 	if (neighbor->is_container_of(viewer)) {
-		draw_contents(gc, neighbor, viewer);
-
 		return;
 	}
 
 	({ dx, dy, dz }) = GEOMETRY_SUBD->query_position_difference(viewer, neighbor);
-
-	/*
-	vy = cos * dy - sin * dx;
-	vx = sin * dy + cos * dx;
-	*/
 
 	x = (int)dx;
 	y = (int)dy;
@@ -372,7 +364,7 @@ private string look_object(object gc, object viewer, object obj)
 	draw_object(gc, viewer, obj);
 }
 
-void draw_contents(object gc, object obj, object viewer)
+private void draw_contents(object gc, object viewer, object obj)
 {
 	int sz, i;
 	object *inv;
@@ -385,6 +377,7 @@ void draw_contents(object gc, object obj, object viewer)
 
 	for (i = 0; i < sz; i++) {
 		if (inv[i] == viewer) {
+			/* viewer is drawn separately */
 			continue;
 		}
 
@@ -455,7 +448,8 @@ string draw_look(object viewer)
 		env = viewer->query_environment();
 
 		if (env) {
-			look_object(gc, viewer, env);
+			draw_object(gc, viewer, env);
+			draw_contents(gc, viewer, env);
 		}
 
 		gc->set_layer("sprites");

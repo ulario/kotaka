@@ -82,8 +82,6 @@ void on_paint_text(object gc, object obj, object viewer)
 			gc->move_pen(hx + 1, i);
 			gc->draw("|");
 		}
-
-		RENDERD->draw_contents(gc, obj, viewer);
 	} else {
 		int i;
 
