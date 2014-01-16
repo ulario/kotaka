@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/algorithm.h>
+#include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/geometry.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
@@ -441,13 +442,24 @@ string draw_look(object viewer)
 
 	if (viewer) {
 		object env;
+		object envstack;
 
 		gc->set_clip(-8, -8, 8, 8);
 		gc->set_offset(8, 8);
 
 		env = viewer->query_environment();
+		envstack = new_object(BIGSTRUCT_DEQUE_LWO);
 
-		if (env) {
+		rlimits(100; 10000) {
+			while (env) {
+				envstack->push_front(env);
+				env = env->query_environment();
+			}
+		}
+
+		while (!envstack->empty()) {
+			env = envstack->query_front();
+			envstack->pop_front();
 			draw_object(gc, viewer, env);
 			draw_contents(gc, viewer, env);
 		}
