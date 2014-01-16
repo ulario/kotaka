@@ -450,10 +450,15 @@ string draw_look(object viewer)
 		env = viewer->query_environment();
 		envstack = new_object(BIGSTRUCT_DEQUE_LWO);
 
-		rlimits(100; 10000) {
+		rlimits(0; 10000) {
 			while (env) {
 				envstack->push_front(env);
-				env = env->query_environment();
+
+				if (env->query_property("is_transparent")) {
+					env = env->query_environment();
+				} else {
+					env = nil;
+				}
 			}
 		}
 
