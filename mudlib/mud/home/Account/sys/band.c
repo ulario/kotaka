@@ -153,7 +153,7 @@ private void restore()
 	if (buf) {
 		mapping save;
 
-		save = PARSE_VALUE->parse(buf);
+		save = PARSER_VALUE->parse(buf);
 
 		bans = save["bans"];
 		sitebans = save["sitebans"];

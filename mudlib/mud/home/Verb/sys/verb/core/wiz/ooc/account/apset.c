@@ -55,7 +55,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	pvalue = PARSE_VALUE->parse(pvalue);
+	pvalue = PARSER_VALUE->parse(pvalue);
 
 	ACCOUNTD->set_account_property(username, pname, pvalue);
 	send_out("Done.\n");

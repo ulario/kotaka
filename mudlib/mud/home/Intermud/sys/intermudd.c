@@ -228,7 +228,7 @@ private void process_packet(string packet)
 	mixed tmud;
 	mixed tuser;
 
-	value = PARSE_MUDMODE->parse(packet);
+	value = PARSER_MUDMODE->parse(packet);
 
 	({ mtype, ttl, omud, ouser, tmud, tuser }) = value[0 .. 5];
 
@@ -640,7 +640,7 @@ private void restore()
 		return;
 	}
 
-	map = PARSE_VALUE->parse(buf);
+	map = PARSER_VALUE->parse(buf);
 
 	if (map["password"]) {
 		password = map["password"];

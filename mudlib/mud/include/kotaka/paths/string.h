@@ -20,5 +20,5 @@
 #include <config.h>
 
 #define STRINGD		(USR_DIR + "/String/sys/stringd")
-#define PARSE_VALUE	(USR_DIR + "/String/sys/parse/value")
-#define PARSE_MUDMODE	(USR_DIR + "/String/sys/parse/mudmode")
+#define PARSER_VALUE	(USR_DIR + "/String/sys/parser/value")
+#define PARSER_MUDMODE	(USR_DIR + "/String/sys/parser/mudmode")

@@ -64,7 +64,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	pvalue = PARSE_VALUE->parse(pvalue);
+	pvalue = PARSER_VALUE->parse(pvalue);
 	opvalue = ACCOUNTD->query_account_property(username, pname);
 
 	switch(operatur) {

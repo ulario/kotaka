@@ -155,7 +155,7 @@ private void restore()
 		return;
 	}
 
-	map = PARSE_VALUE->parse(buf);
+	map = PARSER_VALUE->parse(buf);
 
 	properties = map["properties"];
 	passwords = map["passwords"];

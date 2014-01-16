@@ -107,7 +107,7 @@ private void do_pop(string input, int op)
 		return;
 	}
 
-	value = PARSE_VALUE->parse(pvalue);
+	value = PARSER_VALUE->parse(pvalue);
 
 	if (op == POP_SET) {
 		obj->set_property(pname, value);

@@ -159,7 +159,7 @@ void runtime_error(string error, int caught, mixed **trace)
 			mapping thrown;
 			/* gift package thrown by atomic error */
 
-			thrown = PARSE_VALUE->parse(error);
+			thrown = PARSER_VALUE->parse(error);
 
 			error = thrown["errstr"];
 			atom = thrown["atom"];

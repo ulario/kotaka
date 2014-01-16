@@ -78,7 +78,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	pvalue = PARSE_VALUE->parse(pvalue);
+	pvalue = PARSER_VALUE->parse(pvalue);
 	opvalue = obj->query_property(pname);
 
 	switch(operatur) {
