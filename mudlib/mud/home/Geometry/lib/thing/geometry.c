@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2013  Raymond Jennings
+ * Copyright (C) 2013, 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,8 +31,6 @@ mixed query_property(string key);
 mixed query_local_property(string key);
 void set_local_property(string key, mixed value);
 
-private mapping relations;	/* relations to other objects */
-
 /* 1: inside us */
 /* 2: intersecting us */
 /* 3: surrounding us */
@@ -40,55 +38,6 @@ private mapping relations;	/* relations to other objects */
 
 static void create()
 {
-	relations = ([ ]);
-}
-
-void set_relation(object obj, int relation)
-{
-	ACCESS_CHECK(GEOMETRY());
-
-	relations[obj] = relation;
-
-	if (relation & 1) {
-		relation ^= 2;
-	}
-
-	obj->coset_relation(this_object(), relation);
-}
-
-void coset_relation(object obj, int relation)
-{
-	ACCESS_CHECK(GEOMETRY());
-
-	relations[obj] = relation;
-}
-
-void clear_relation(object obj)
-{
-	ACCESS_CHECK(GEOMETRY());
-
-	relations[obj] = nil;
-
-	obj->coclear_relation(this_object());
-}
-
-void coclear_relation(object obj)
-{
-	ACCESS_CHECK(GEOMETRY());
-
-	relations[obj] = nil;
-}
-
-private void reset_relations()
-{
-	int sz;
-	object *neighbors;
-
-	neighbors = map_indices(relations);
-
-	for (sz = sizeof(neighbors) - 1; sz >= 0; sz--) {
-		clear_relation(neighbors[sz]);
-	}
 }
 
 static int combine_relation(int a, int b)
@@ -118,42 +67,6 @@ static int combine_relation(int a, int b)
 	}
 }
 
-/* do a simple search for relations */
-/* this simply checks against all our thingwise siblings */
-private void update_relations_simple()
-{
-	object env;
-	object *siblings;
-
-	int i, sz;
-
-	reset_relations();
-
-	env = query_environment();
-
-	if (!env) {
-		return;
-	}
-
-	siblings = env->query_inventory();
-
-	siblings -= ({ this_object() });
-
-	sz = sizeof(siblings);
-
-	for (i = 0; i < sz; i++) {
-		int relation;
-
-		relation = xyz_compare_geometry(siblings[i]);
-
-		if (relation) {
-			set_relation(siblings[i], relation);
-		} else {
-			clear_relation(siblings[i]);
-		}
-	}
-}
-
 /* bit 1 = inside visible, bit 2 = outside visible */
 private int viscode(int relation)
 {
@@ -162,107 +75,11 @@ private int viscode(int relation)
 	case 1: return 2; /* looking at it from outside */
 	case 2: return 3; /* we can see through it */
 	case 3: return 1; /* looking at it from inside */
-	case 4: return 3; /* we ARE it */
+	case 4: return 3; /* we are congruent */
 	}
-}
-
-private mapping query_relation_set(int relation)
-{
-	int sz;
-	int *rel;
-	object *obj;
-	mapping set;
-
-	obj = map_indices(relations);
-	rel = map_values(relations);
-	set = ([ ]);
-
-	for (sz = sizeof(obj) - 1; sz >= 0; sz--) {
-		if (rel[sz] == relation) {
-			set[obj[sz]] = 1;
-		}
-	}
-
-	return set;
-}
-
-mapping setof(mapping set, int code)
-{
-	object *objs;
-	int sz;
-	mapping outset;
-
-	outset = ([ ]);
-
-	objs = map_indices(set);
-
-	for (sz = sizeof(objs) - 1; sz >= 0; sz--) {
-		outset += objs[sz]->query_relation_set(code);
-	}
-
-	return outset;
-}
-
-void update_relations()
-{
-	/* if we reach beyond a veil, we need to look behind it */
-
-	/* we also need to take care of anyone that has pierced US */
-}
-
-/* to bootstrap, go up the env chain until we are completely contained */
-/* then we add ourselves as an insider of it */
-
-/* once that is done, we can process normally */
-
-/* this may still be needed for handling a teleport, not just initialization from scratch */
-void bootstrap_relations()
-{
-	object env;
-
-	reset_relations();
-
-	env = query_environment();
-
-	while (env) {
-		object genv;
-
-		if (env->query_local_property("is_infinite")) {
-			set_relation(env, 3);
-			break;
-		}
-
-		if (xyz_compare_geometry(env) == 3) {
-			set_relation(env, 3);
-			break;
-		}
-
-		genv = env->query_environment();
-
-		if (!genv) {
-			set_relation(env, 3);
-			break;
-		}
-
-		env = genv;
-	}
-
-	update_relations();
-}
-
-void check_geometry()
-{
-	update_relations_simple();
 }
 
 static void move_notify(object old_env)
 {
 	xyz::move_notify(old_env);
-
-	check_geometry();
-}
-
-mapping query_relations()
-{
-	return relations[..];
 }
