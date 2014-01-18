@@ -24,6 +24,8 @@
 inherit LIB_THING;
 inherit xyz "xyz";
 
+private string system;
+
 object *query_inventory();
 object query_environment();
 
@@ -38,6 +40,23 @@ void set_local_property(string key, mixed value);
 
 static void create()
 {
+}
+
+void set_coordinate_system(string type)
+{
+	switch(type) {
+	case "cartesian":
+	case "spherical":
+	case nil:
+		system = type;
+	default:
+		error("Invalid coordinate system");
+	}
+}
+
+string query_coordinate_system()
+{
+	return system;
 }
 
 static int combine_relation(int a, int b)
