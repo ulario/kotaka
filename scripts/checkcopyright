@@ -9,7 +9,7 @@ ERRORS=0
 IFS=$'\n'
 for file in `cat checklist`
 do
-	git log $file > gityears
+	git log --follow $file > gityears
 	head -15 $file | egrep "^ \* Copyright" - > headyears
 
 	IFS=$' \n'
