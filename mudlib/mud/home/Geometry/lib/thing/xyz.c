@@ -28,8 +28,6 @@ private int xpos, ypos, zpos;
 int query_x_size();
 int query_y_size();
 
-void check_geometry();
-
 int combine_relation(int rela, int relb);
 
 private int xyz_relation(int ll, int lh, int rl, int rh)
@@ -136,15 +134,11 @@ int query_y_size()
 void set_x_size(int sx)
 {
 	set_local_property("size_x", sx ? sx : nil);
-
-	check_geometry();
 }
 
 void set_y_size(int sy)
 {
 	set_local_property("size_y", sy ? sy : nil);
-
-	check_geometry();
 }
 
 /*********************/
@@ -187,22 +181,16 @@ static void move_notify(object old_env)
 void set_x_position(int new_xpos)
 {
 	xpos = new_xpos;
-
-	check_geometry();
 }
 
 void set_y_position(int new_ypos)
 {
 	ypos = new_ypos;
-
-	check_geometry();
 }
 
 void set_z_position(int new_zpos)
 {
 	zpos = new_zpos;
-
-	check_geometry();
 }
 
 int query_x_position()
