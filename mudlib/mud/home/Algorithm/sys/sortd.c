@@ -18,27 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/bigstruct.h>
+#include <type.h>
 
-private void aswap(mixed *arr, int a, int b)
+private void aswap(mixed arr, int a, int b)
 {
 	mixed tmp;
 
-	tmp = arr[a];
-	arr[a] = arr[b];
-	arr[b] = tmp;
+	if (typeof(arr) == T_ARRAY) {
+		tmp = arr[a];
+		arr[a] = arr[b];
+		arr[b] = tmp;
+	} else {
+		tmp = arr->query_element(a);
+		arr->set_element(a, arr->query_element(b));
+		arr->set_element(b, tmp);
+	}
 }
 
-private void baswap(object arr, int a, int b)
+void qsort(mixed arr, int begin, int end, varargs string compfunc)
 {
-	mixed tmp;
+	int type;
 
-	tmp = arr->query_element(a);
-	arr->set_element(a, arr->query_element(b));
-	arr->set_element(b, tmp);
-}
+	type = typeof(arr);
 
-void qsort(mixed *arr, int begin, int end, varargs string compfunc)
-{
 	while (begin < end) {
 		int low, mid, high, sign;
 		mixed pivot;
@@ -47,13 +49,13 @@ void qsort(mixed *arr, int begin, int end, varargs string compfunc)
 		mid = (begin + end) / 2;
 		high = end - 1;
 
-		pivot = arr[mid];
+		pivot = (type == T_ARRAY) ? arr[mid] : arr->query_element(mid);
 		aswap(arr, mid, high);
 
 		while (low < high) {
 			if (compfunc) {
-				sign = call_other(previous_object(), compfunc, arr[low], pivot);
-			} else if (arr[low] > pivot) {
+				sign = call_other(previous_object(), compfunc, (type == T_ARRAY) ? arr[low] : arr->query_element(low), pivot);
+			} else if (((type == T_ARRAY) ? arr[low] : arr->query_element(low)) > pivot) {
 				sign = 1;
 			} else {
 				sign = 0;
@@ -78,45 +80,7 @@ void qsort(mixed *arr, int begin, int end, varargs string compfunc)
 	}
 }
 
-void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end, varargs string compfunc)
+void bqsort(mixed arr, int begin, int end, varargs string compfunc)
 {
-	int sign;
-
-	while (begin < end) {
-		int low, mid, high;
-		mixed pivot;
-
-		low = begin;
-		mid = (begin + end) / 2;
-		high = end - 1;
-
-		pivot = arr->query_element(mid);
-		baswap(arr, mid, high);
-
-		while (low < high) {
-			if (compfunc) {
-				sign = call_other(previous_object(), compfunc, arr->query_element(low), pivot);
-			} else if (arr->query_element(low) > pivot) {
-				sign = 1;
-			} else {
-				sign = 0;
-			}
-			if (sign > 0) {
-				baswap(arr, low, --high);
-			} else {
-				low++;
-			}
-		}
-
-		mid = low;
-		baswap(arr, end - 1, mid);
-
-		if (mid - begin < end - mid) {
-			bqsort(arr, begin, mid, compfunc);
-			begin = mid + 1;
-		} else {
-			bqsort(arr, mid + 1, end, compfunc);
-			end = mid;
-		}
-	}
+	qsort(arr, begin, end, compfunc);
 }
