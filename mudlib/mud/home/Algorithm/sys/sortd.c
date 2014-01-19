@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2013  Raymond Jennings
+ * Copyright (C) 2013, 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,15 @@ private void aswap(mixed *arr, int a, int b)
 	tmp = arr[a];
 	arr[a] = arr[b];
 	arr[b] = tmp;
+}
+
+private void baswap(object arr, int a, int b)
+{
+	mixed tmp;
+
+	tmp = arr->query_element(a);
+	arr->set_element(a, arr->query_element(b));
+	arr->set_element(b, tmp);
 }
 
 void qsort(mixed *arr, int begin, int end, varargs string compfunc)
@@ -67,15 +76,6 @@ void qsort(mixed *arr, int begin, int end, varargs string compfunc)
 			end = mid;
 		}
 	}
-}
-
-private void baswap(object arr, int a, int b)
-{
-	mixed tmp;
-
-	tmp = arr->query_element(a);
-	arr->set_element(a, arr->query_element(b));
-	arr->set_element(b, tmp);
 }
 
 void bqsort(object LIB_BIGSTRUCT_ARRAY_ROOT arr, int begin, int end, varargs string compfunc)
