@@ -184,41 +184,22 @@ mapping bans
 
 void channel_message(string channel, string stamp, string sender, string message)
 {
-	mixed ccolor;
-	mixed tcolor;
-
 	ACCESS_CHECK(previous_program() == CHANNELD);
-
-	ccolor = CHANNELD->query_channel_config(channel, "channel_color");
-	tcolor = CHANNELD->query_channel_config(channel, "text_color");
-
-	if (ccolor == nil) {
-		ccolor = -1;
-	}
-	if (tcolor == nil) {
-		tcolor = -1;
-	}
-
-	ccolor = CHANNELD->setcolor(ccolor);
-	tcolor = CHANNELD->setcolor(tcolor);
 
 	if (sender) {
 		if (sscanf(sender, "%*s@%*s")) {
-			ASSERT(ccolor);
 			ASSERT(channel);
-			ASSERT(sender);
-			ASSERT(tcolor);
 			ASSERT(message);
 
-			send_out("[" + ccolor + channel + "\033[0m] \033[31m" + stamp + " \033[1;35m"
-				+ sender + tcolor + ": " + message + "\n");
+			send_out("[" + channel + "] " + stamp + " "
+				+ sender + ": " + message + "\n");
 		} else {
-			send_out("[" + ccolor + channel + "\033[0m] \033[31m" + stamp + " "
+			send_out("[" + channel + "] " + stamp + " "
 				+ TEXT_SUBD->titled_name(sender,
-					TEXT_SUBD->query_user_class(sender)) + tcolor + ": " + message + "\n");
+					TEXT_SUBD->query_user_class(sender)) + ": " + message + "\n");
 		}
 	} else {
-		send_out("[" + ccolor + channel + "\033[0m] \033[31m" + stamp
-			+ " " + tcolor + message + "\n");
+		send_out("[" + channel + "] " + stamp + " "
+			+ message + "\n");
 	}
 }
