@@ -160,28 +160,6 @@ void quit()
 	disconnect();
 }
 
-/*
-Config keys:
-
-Used by ChannelD
-
-int channel_color
-	ANSI color for channel name
-int prefix_color
-	ANSI color for prefix
-int text_color
-	ANSI color for text
-
-Standard with significance
-
-string join_access
-	guest, player, wizard, admin, system
-string post_access
-	guest, player, wizard, admin, system
-mapping bans
-	username : 1
-*/
-
 void channel_message(string channel, string stamp, string sender, string message)
 {
 	ACCESS_CHECK(previous_program() == CHANNELD);
