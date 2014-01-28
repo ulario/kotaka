@@ -164,20 +164,5 @@ void channel_message(string channel, string stamp, string sender, string message
 {
 	ACCESS_CHECK(previous_program() == CHANNELD);
 
-	if (sender) {
-		if (sscanf(sender, "%*s@%*s")) {
-			ASSERT(channel);
-			ASSERT(message);
-
-			send_out("[" + channel + "] " + stamp + " "
-				+ sender + ": " + message + "\n");
-		} else {
-			send_out("[" + channel + "] " + stamp + " "
-				+ TEXT_SUBD->titled_name(sender,
-					TEXT_SUBD->query_user_class(sender)) + ": " + message + "\n");
-		}
-	} else {
-		send_out("[" + channel + "] " + stamp + " "
-			+ message + "\n");
-	}
+	send_out("[" + channel + "] " + stamp + " " + sender + ": " + message + "\n");
 }
