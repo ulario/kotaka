@@ -53,9 +53,13 @@ void qsort(mixed arr, int begin, int end, varargs string compfunc)
 		aswap(arr, mid, high);
 
 		while (low < high) {
+			mixed le;
+
+			le = (type == T_ARRAY) ? arr[low] : arr->query_element(low);
+
 			if (compfunc) {
-				sign = call_other(previous_object(), compfunc, (type == T_ARRAY) ? arr[low] : arr->query_element(low), pivot);
-			} else if (((type == T_ARRAY) ? arr[low] : arr->query_element(low)) > pivot) {
+				sign = call_other(previous_object(), compfunc, le, pivot);
+			} else if (le > pivot) {
 				sign = 1;
 			} else {
 				sign = 0;
