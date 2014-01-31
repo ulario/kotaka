@@ -54,7 +54,7 @@ void main(object actor, mapping roles)
 	}
 
 	sz = ilist->query_size();
-	send_out("There are " + ilist->query_size() + " programs inheriting that object:\n");
+	send_out("There are " + sz + " programs inheriting that object:\n");
 
 	for (i = 0; i < sz; i++) {
 		object pinfo;

@@ -45,7 +45,7 @@ void main(object actor, mapping roles)
 	}
 
 	sz = ilist->query_size();
-	send_out("There are " + ilist->query_size() + " programs including that file:\n");
+	send_out("There are " + sz + " programs including that file:\n");
 
 	for (i = 0; i < sz; i++) {
 		object pinfo;
