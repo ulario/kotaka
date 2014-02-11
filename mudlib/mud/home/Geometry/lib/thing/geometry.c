@@ -46,7 +46,6 @@ void set_coordinate_system(string type)
 {
 	switch(type) {
 	case "cartesian":
-	case "spherical":
 	case nil:
 		system = type;
 	default:
@@ -57,45 +56,6 @@ void set_coordinate_system(string type)
 string query_coordinate_system()
 {
 	return system;
-}
-
-static int combine_relation(int a, int b)
-{
-	if (a == 0 || b == 0) {
-		return 0;
-	}
-
-	switch(a) {
-	case 1:
-		if (b == 3 || b == 2) {
-			return 2;
-		}
-		return 1;
-
-	case 2:
-		return 2;
-
-	case 3:
-		if (b == 1 || b == 2) {
-			return 2;
-		}
-		return 3;
-
-	case 4:
-		return b;
-	}
-}
-
-/* bit 1 = inside visible, bit 2 = outside visible */
-private int viscode(int relation)
-{
-	switch(relation) {
-	case 0: return 2; /* looking aside at it */
-	case 1: return 2; /* looking at it from outside */
-	case 2: return 3; /* we can see through it */
-	case 3: return 1; /* looking at it from inside */
-	case 4: return 3; /* we are congruent */
-	}
 }
 
 static void move_notify(object old_env)
