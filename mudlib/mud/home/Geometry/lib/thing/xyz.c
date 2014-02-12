@@ -25,41 +25,6 @@ inherit LIB_THING;
 
 private int xpos, ypos, zpos;
 
-int query_x_size();
-int query_y_size();
-
-int query_x_size()
-{
-	mixed sx;
-
-	sx = query_local_property("size_x");
-
-	return sx ? sx : 0;
-}
-
-int query_y_size()
-{
-	mixed sy;
-
-	sy = query_local_property("size_y");
-
-	return sy ? sy : 0;
-}
-
-void set_x_size(int sx)
-{
-	set_local_property("size_x", sx ? sx : nil);
-}
-
-void set_y_size(int sy)
-{
-	set_local_property("size_y", sy ? sy : nil);
-}
-
-/*********************/
-/* Position handling */
-/*********************/
-
 static void move_notify(object old_env)
 {
 	object common;
