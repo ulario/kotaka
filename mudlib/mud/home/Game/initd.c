@@ -119,9 +119,9 @@ void configure_properties()
 	PROPERTYD->add_property("pos_y", T_INT, PROP_MAGIC, ({ "query_y_position", "set_y_position" }) );
 	PROPERTYD->add_property("pos_z", T_INT, PROP_MAGIC, ({ "query_z_position", "set_z_position" }) );
 
-	PROPERTYD->add_property("size_x", T_INT, PROP_MAGIC, ({ "query_x_size", "set_x_size" }) );
-	PROPERTYD->add_property("size_y", T_INT, PROP_MAGIC, ({ "query_y_size", "set_y_size" }) );
-	PROPERTYD->add_property("size_z", T_INT, PROP_MAGIC, ({ "query_z_size", "set_z_size" }) );
+	PROPERTYD->add_property("size_x", T_INT, PROP_INHERIT);
+	PROPERTYD->add_property("size_y", T_INT, PROP_INHERIT);
+	PROPERTYD->add_property("size_z", T_INT, PROP_INHERIT);
 
 	PROPERTYD->add_property("is_infinite", T_INT, PROP_INHERIT);
 
