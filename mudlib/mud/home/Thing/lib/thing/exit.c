@@ -20,6 +20,7 @@
 
 string direction;
 object destination;
+object ret_exit;
 
 void set_direction(string new_direction)
 {
@@ -28,7 +29,20 @@ void set_direction(string new_direction)
 
 void set_destination(object new_destination)
 {
+	if (ret_exit) {
+		error("Exit is currently two way");
+	}
+
 	destination = new_destination;
+}
+
+void set_return(object new_return)
+{
+	if (destination) {
+		error("Exit is currently one way");
+	}
+
+	ret_exit = new_return;
 }
 
 string query_direction()
@@ -38,5 +52,14 @@ string query_direction()
 
 object query_destination()
 {
+	if (ret_exit) {
+		return ret_exit->query_environment();
+	}
+
 	return destination;
+}
+
+object query_return()
+{
+	return ret_exit;
 }
