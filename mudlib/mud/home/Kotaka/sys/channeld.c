@@ -298,8 +298,6 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	time = time();
 
-	write_file("log/log-" + (time - time % 86400) + "-" + channel, time + ": " + channel + ": " + (sender ? sender + ": " : "") + message + "\n");
-
 	stamp = ctime(time)[11 .. 18];
 
 	if (subscribers[channel]) {
