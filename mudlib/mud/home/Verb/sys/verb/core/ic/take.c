@@ -47,11 +47,6 @@ void main(object actor, mapping roles)
 
 	dob = roles["dob"];
 
-	if (dob == actor) {
-		send_out("Try as you might, you cannot lift yourself.\n");
-		return;
-	}
-
 	if (!dob) {
 		send_out("Take what?\n");
 		return;
