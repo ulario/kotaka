@@ -147,7 +147,7 @@ private void do_input(string first, string input)
 	}
 
 	catch {
-		if (VERBD->do_verb(first, input)) {
+		if ("~/sys/englishd"->do_verb(first, input)) {
 			return;
 		}
 	} : {
