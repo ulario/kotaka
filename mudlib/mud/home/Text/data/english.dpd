@@ -11,6 +11,7 @@ evoke = /"[^"]*"/
 
 statement: vp ppl
 statement: vp ppl evoke ? statement_vp_ppl_evoke
+statement: vp evoke ppl ? statement_vp_evoke_ppl
 
 vp: verb ? vp_verb
 vp: verb np ? vp_verb_np

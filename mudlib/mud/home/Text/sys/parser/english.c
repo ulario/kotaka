@@ -86,6 +86,18 @@ mixed *statement_vp_ppl_evoke(mixed *input)
 	return input[0 .. sz - 2] + ({ ({ "E", evoke[1 .. strlen(evoke) - 2] }) });
 }
 
+mixed *statement_vp_evoke_ppl(mixed *input)
+{
+	string evoke;
+	int sz;
+
+	sz = sizeof(input);
+
+	evoke = input[1];
+
+	return input[0] + ({ ({ "E", evoke[1 .. strlen(evoke) - 2] }) }) + input[2 ..];
+}
+
 mixed *vp_verb(mixed *input)
 {
 	return ({ ({ "V", input[0], nil }) });
