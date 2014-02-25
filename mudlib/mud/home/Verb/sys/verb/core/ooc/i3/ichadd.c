@@ -28,14 +28,10 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	string chan;
-	int type;
-	string rest;
-
 	if (query_user()->query_class() < 3) {
 		send_out("You have insufficient access to create i3 channels.\n");
 		return;
 	}
 
-	"~Intermud/sys/intermudd"->add_channel(roles["raw"], type);
+	"~Intermud/sys/intermudd"->add_channel(roles["raw"]);
 }

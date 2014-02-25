@@ -547,7 +547,7 @@ void listen_channel(string channel, int on)
 	)));
 }
 
-void add_channel(string channel, int type)
+void add_channel(string channel)
 {
 	ACCESS_CHECK(INTERFACE());
 
@@ -555,7 +555,7 @@ void add_channel(string channel, int type)
 		error("Not our channel");
 	}
 
-	channels[channel] = ({ MUDNAME, type });
+	channels[channel] = ({ MUDNAME, 0 });
 
 	message(to_packet(mudmode_sprint(
 	({
@@ -566,7 +566,7 @@ void add_channel(string channel, int type)
 		"*i4",
 		0,
 		channel,
-		type
+		0
 	})
 	)));
 }
