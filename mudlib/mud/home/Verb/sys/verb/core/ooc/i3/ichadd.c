@@ -37,14 +37,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(roles["raw"], "%s %s", chan, rest)) {
-		if (!sscanf(roles["raw"], "%s %d", chan, type)) {
-			send_out("Channel type must be a number, idiot.\n");
-			return;
-		}
-	} else {
-		chan = roles["raw"];
-	}
-
-	"~Intermud/sys/intermudd"->add_channel(chan, type);
+	"~Intermud/sys/intermudd"->add_channel(roles["raw"], type);
 }
