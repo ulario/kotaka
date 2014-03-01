@@ -159,8 +159,6 @@ private void do_input(string first, string input)
 	send_out("No such command.\n");
 }
 
-private void fix_verbs();
-
 private void handle_input(string input);
 
 atomic private void do_atomic(string args)
@@ -285,7 +283,7 @@ private void handle_input(string input)
 
 	switch(first) {
 	case "+fixverbs":
-		fix_verbs();
+		INITD->reboot_subsystem("Verb");
 		return;
 
 	case "+atomic":
@@ -348,87 +346,4 @@ void receive_in(string input)
 	if (!stopped) {
 		prompt();
 	}
-}
-
-private void destruct_verbs(object proxy)
-{
-	object proglist;
-	int sz;
-	int i;
-
-	proglist = PROGRAMD->query_program_indices();
-
-	sz = proglist->query_size();
-
-	for (i = 0; i < sz; i++) {
-		object pinfo;
-		string path;
-
-		pinfo = PROGRAMD->query_program_info(proglist->query_element(i));
-		path = pinfo->query_path();
-
-		if (path == object_name(this_object())) {
-			continue;
-		}
-
-		if (sscanf(path, USR_DIR + "/Verb/sys/verb/%*s")) {
-			proxy->destruct_object(path);
-			continue;
-		}
-	}
-}
-
-private void load_verbs(string directory, object proxy)
-{
-	mixed **files;
-	string *names;
-	mixed *objs;
-	int *sizes;
-	int index;
-
-	names = proxy->get_dir(directory + "/*")[0];
-
-	for (index = 0; index < sizeof(names); index++) {
-		mixed *info;
-		string name;
-
-		name = names[index];
-
-		info = proxy->file_info(directory + "/" + name);
-
-		if (info[0] == -2) {
-			load_verbs(directory + "/" + name, proxy);
-			continue;
-		}
-
-		if (strlen(name) <= 2 || name[strlen(name) - 2 ..] != ".c") {
-			continue;
-		}
-
-		name = name[ .. strlen(name) - 3];
-
-		proxy->compile_object(directory + "/" + name);
-
-		(directory + "/" + name)->query_parse_methods();
-	}
-}
-
-private void fix_verbs()
-{
-	object user;
-	object *users;
-	object proxy;
-	int i, sz;
-
-	user = query_user();
-
-	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to reload the verb collection.\n");
-		return;
-	}
-
-	proxy = PROXYD->get_proxy(user->query_name());
-
-	destruct_verbs(proxy);
-	load_verbs(USR_DIR + "/Verb/sys/verb", proxy);
 }
