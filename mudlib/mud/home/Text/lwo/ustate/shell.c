@@ -335,7 +335,9 @@ void receive_in(string input)
 
 	reading = 1;
 
-	handle_input(input);
+	catch {
+		handle_input(input);
+	}
 
 	reading = 0;
 
