@@ -24,15 +24,6 @@
 inherit LIB_THING;
 inherit xyz "xyz";
 
-private string system;
-
-object *query_inventory();
-object query_environment();
-
-mixed query_property(string key);
-mixed query_local_property(string key);
-void set_local_property(string key, mixed value);
-
 /* 1: inside us */
 /* 2: intersecting us */
 /* 3: surrounding us */
@@ -40,22 +31,6 @@ void set_local_property(string key, mixed value);
 
 static void create()
 {
-}
-
-void set_coordinate_system(string type)
-{
-	switch(type) {
-	case "cartesian":
-	case nil:
-		system = type;
-	default:
-		error("Invalid coordinate system");
-	}
-}
-
-string query_coordinate_system()
-{
-	return system;
 }
 
 static void move_notify(object old_env)
