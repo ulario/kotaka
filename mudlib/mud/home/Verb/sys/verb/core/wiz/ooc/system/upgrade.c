@@ -47,7 +47,7 @@ atomic void main(object actor, mapping roles)
 
 	send_out("Sending upgrade signal...\n");
 
-	INITD->upgrade_system();
+	UPGRADED->upgrade_system();
 
 	/* upgrades: */
 	/* 1.  Find all inheriters of a library needing an update */

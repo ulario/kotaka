@@ -86,5 +86,10 @@ string query_toucher(string path)
 
 void do_upgrade()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == UPGRADED);
+}
+
+static void add_upgrade_required(int progid)
+{
+	UPGRADED->add_upgrade_required(progid);
 }
