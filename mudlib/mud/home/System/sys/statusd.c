@@ -181,40 +181,45 @@ int receive_message(string str)
 
 	params = explode(str, " ") - ({ "" });
 
-	if (sizeof(params)) switch(params[0]) {
-	case "redraw":
-		redraw(conn);
-		break;
-	case "quit":
-		remove_call_out(connections[conn][2]);
-		conn->message("\033c");
-		return MODE_DISCONNECT;
-	case "interval":
-		if (sizeof(params) < 2) {
-			conn->message("Usage: interval <interval>\n");
+	if (sizeof(params)) {
+		switch(params[0]) {
+		case "redraw":
+			redraw(conn);
 			break;
-		} else {
-			float interval;
 
-			sscanf(params[1], "%f", interval);
+		case "quit":
+			remove_call_out(connections[conn][2]);
+			conn->message("\033c");
+			return MODE_DISCONNECT;
 
-			if (interval < 15.0 && !connections[conn][1]) {
-				conn->message("Intervals less than 15 seconds\nare only allowed for local connections.\n");
+		case "interval":
+			if (sizeof(params) < 2) {
+				conn->message("Usage: interval <interval>\n");
 				break;
+			} else {
+				float interval;
+
+				sscanf(params[1], "%f", interval);
+
+				if (interval < 15.0 && !connections[conn][1]) {
+					conn->message("Intervals less than 15 seconds\nare only allowed for local connections.\n");
+					break;
+				}
+
+				remove_call_out(connections[conn][2]);
+
+				connections[conn][0] = interval;
+				connections[conn][2] = call_out("report", interval, conn);
 			}
 
-			remove_call_out(connections[conn][2]);
+		case "":
+			break;
 
-			connections[conn][0] = interval;
-			connections[conn][2] = call_out("report", interval, conn);
+		default:
+			conn->message("Commands: interval, quit, redraw\n");
+			break;
 		}
-	case "":
-		break;
-	default:
-		conn->message("Commands: interval, quit, redraw\n");
-		break;
-	} else {
-		printstatus(conn);
+
 	}
 
 	prompt(conn);
