@@ -31,14 +31,9 @@ int end;
 
 static void create()
 {
-	int arrsz;
-
 	::create();
-
-	arrsz = status(ST_ARRAYSIZE);
-
-	sub = allocate(arrsz);
-	begin = end = arrsz / 2;
+	sub = allocate(256);
+	begin = end = 128;
 }
 
 object query_prev()
