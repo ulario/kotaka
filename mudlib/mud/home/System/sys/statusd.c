@@ -111,12 +111,12 @@ private void redraw(object conn)
 	conn->message("\033c\033[2J");
 	conn->message("\033[14;1H\033[1m-----------------------------------------");
 	conn->message("\033[21;1H-----------------------------------------");
-	conn->message("\033[21m\033[15;20r\033[15;1H");
+	conn->message("\033[0m\033[15;20r\033[15;1H");
 }
 
 private void prompt(object conn)
 {
-	conn->message("[\033[1;34mstatus\033[21;37m] ");
+	conn->message("[\033[1;34mstatus\033[0m] ");
 }
 
 int login(string str)
