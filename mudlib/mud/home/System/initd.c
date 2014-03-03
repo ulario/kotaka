@@ -445,11 +445,9 @@ void reboot_subsystem(string subsystem)
 	ACCESS_CHECK(INTERFACE() || KADMIN());
 
 	switch(subsystem) {
-	case "System":
-		error("Cannot shutdown " + subsystem);
-
 	case "Bigstruct":
-		error("Cannot shutdown active dependency of System");
+	case "System":
+		error("Cannot reboot " + subsystem);
 	}
 
 	while (cursor = KERNELD->first_link(subsystem)) {
@@ -466,17 +464,11 @@ void shutdown_subsystem(string subsystem)
 	ACCESS_CHECK(INTERFACE() || KADMIN());
 
 	switch(subsystem) {
+	case "Algorithm":
+	case "Bigstruct":
+	case "String":
 	case "System":
 		error("Cannot shutdown " + subsystem);
-
-	case "Bigstruct":
-		error("Cannot shutdown active dependency of System");
-
-	case "Algorithm":
-	case "String":
-		if (!KADMIN()) {
-			error("Shutdown of passive dependency of System is restricted");
-		}
 	}
 
 	while (cursor = KERNELD->first_link(subsystem)) {
