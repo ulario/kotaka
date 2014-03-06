@@ -29,3 +29,12 @@ static void create()
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 }
+
+void bomb(int quota)
+{
+	if (quota) {
+		quota--;
+		clone_object("obj/bomb");
+		call_out("bomb", 0, quota);
+	}
+}
