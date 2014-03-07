@@ -29,27 +29,6 @@ mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
 mapping locks;		/*< configuration locks */
 
-/*
-Config keys:
-
-Used by ChannelD
-
-int channel_color
-	ANSI color for channel name
-int prefix_color
-	ANSI color for prefix
-int text_color
-	ANSI color for text
-
-Standard with significance
-
-string join_access
-	guest, player, wizard, admin, system
-string post_access
-	guest, player, wizard, admin, system
-mapping bans
-	username : 1
-*/
 void configure_channels();
 
 static void create()
@@ -270,17 +249,6 @@ object *query_subscribers(string channel)
 /**********************/
 /* message management */
 /**********************/
-
-string setcolor(int color)
-{
-	if (color == -1) {
-		return "\033[0m";
-	} else if (color < 8) {
-		return "\033[22;3" + color + "m";
-	} else if (color < 16) {
-		return "\033[1;3" + (color - 8) + "m";
-	}
-}
 
 void post_message(string channel, string sender, string message, varargs int norelay)
 {
