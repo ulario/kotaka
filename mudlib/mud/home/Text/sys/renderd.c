@@ -283,6 +283,10 @@ private void draw_banner(object gc, object env)
 		brief = "nowhere";
 	}
 
+	if (brief[0] >= 'a' && brief[0] <= 'z') {
+		brief[0] -= ('a' - 'A');
+	}
+
 	gc->draw(brief);
 }
 
