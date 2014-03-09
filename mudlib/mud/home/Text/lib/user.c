@@ -589,10 +589,8 @@ nomask int ustate_call_out(object ustate, string function, mixed delay, mixed *a
 	return call_out("user_callout", delay, ustate, function, args);
 }
 
-nomask void user_callout(object ustate, string function, mixed *args)
+static void user_callout(object ustate, string function, mixed *args)
 {
-	ACCESS_CHECK(KERNEL());
-
 	if (ustate) {
 		ustate->ustate_callout(function, args);
 	}
