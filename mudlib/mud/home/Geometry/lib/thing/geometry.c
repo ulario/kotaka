@@ -33,7 +33,50 @@ static void create()
 {
 }
 
+int query_x_position();
+int query_y_position();
+int query_z_position();
+void set_x_position(int new_pos);
+void set_y_position(int new_pos);
+void set_z_position(int new_pos);
+
 static void move_notify(object old_env)
 {
-	xyz::move_notify(old_env);
+	int nx, ny, nz;
+	object common;
+	object new_env;
+
+	new_env = query_environment();
+
+	if (!old_env || !new_env) {
+		return;
+	}
+
+	common = THING_SUBD->query_common_container(old_env, new_env);
+
+	if (!common) {
+		nx = 0;
+		ny = 0;
+		nz = 0;
+	} else {
+		nx = query_x_position();
+		ny = query_y_position();
+		nz = query_z_position();
+
+		for (; old_env != common; old_env = old_env->query_environment()) {
+			nx += old_env->query_x_position();
+			ny += old_env->query_y_position();
+			nz += old_env->query_z_position();
+		}
+
+		for (; new_env != common; new_env = new_env->query_environment()) {
+			nx -= new_env->query_x_position();
+			ny -= new_env->query_y_position();
+			nz -= new_env->query_z_position();
+		}
+	}
+
+	set_x_position(nx);
+	set_y_position(ny);
+	set_z_position(nz);
 }
