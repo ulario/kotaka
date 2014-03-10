@@ -519,7 +519,9 @@ void compile(string owner, object obj, string *source, string inherited ...)
 			LOGD->post_message("compile", LOG_INFO, "Upgrading " + path);
 
 			if (function_object("upgrading", obj)) {
-				obj->upgrading();
+				catch {
+					obj->upgrading();
+				}
 			}
 		}
 	}
