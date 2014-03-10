@@ -29,21 +29,21 @@ void set_x_position(int new_xpos)
 {
 	xpos = 0;
 
-	set_local_property("pos_x", new_xpos);
+	set_local_property("pos_x", new_xpos ? new_xpos : nil);
 }
 
 void set_y_position(int new_ypos)
 {
 	ypos = 0;
 
-	set_local_property("pos_y", new_ypos);
+	set_local_property("pos_y", new_ypos ? new_ypos : nil);
 }
 
 void set_z_position(int new_zpos)
 {
 	zpos = 0;
 
-	set_local_property("pos_z", new_zpos);
+	set_local_property("pos_z", new_zpos ? new_zpos : nil);
 }
 
 int query_x_position()
