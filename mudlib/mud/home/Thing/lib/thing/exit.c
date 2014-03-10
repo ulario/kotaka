@@ -52,10 +52,6 @@ string query_direction()
 
 object query_destination()
 {
-	if (ret_exit) {
-		return ret_exit->query_environment();
-	}
-
 	return destination;
 }
 
