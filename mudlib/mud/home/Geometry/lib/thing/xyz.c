@@ -25,6 +25,37 @@ inherit LIB_THING;
 
 private int xpos, ypos, zpos;
 
+
+void set_x_position(int new_xpos)
+{
+	xpos = new_xpos;
+}
+
+void set_y_position(int new_ypos)
+{
+	ypos = new_ypos;
+}
+
+void set_z_position(int new_zpos)
+{
+	zpos = new_zpos;
+}
+
+int query_x_position()
+{
+	return xpos;
+}
+
+int query_y_position()
+{
+	return ypos;
+}
+
+int query_z_position()
+{
+	return zpos;
+}
+
 static void move_notify(object old_env)
 {
 	object common;
@@ -56,34 +87,4 @@ static void move_notify(object old_env)
 		ypos -= new_env->query_y_position();
 		zpos -= new_env->query_z_position();
 	}
-}
-
-void set_x_position(int new_xpos)
-{
-	xpos = new_xpos;
-}
-
-void set_y_position(int new_ypos)
-{
-	ypos = new_ypos;
-}
-
-void set_z_position(int new_zpos)
-{
-	zpos = new_zpos;
-}
-
-int query_x_position()
-{
-	return xpos;
-}
-
-int query_y_position()
-{
-	return ypos;
-}
-
-int query_z_position()
-{
-	return zpos;
 }
