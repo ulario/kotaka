@@ -25,7 +25,6 @@ inherit LIB_THING;
 
 private int xpos, ypos, zpos;
 
-
 void set_x_position(int new_xpos)
 {
 	xpos = new_xpos;
@@ -58,6 +57,7 @@ int query_z_position()
 
 static void move_notify(object old_env)
 {
+	int nx, ny, nz;
 	object common;
 	object new_env;
 
@@ -70,21 +70,28 @@ static void move_notify(object old_env)
 	common = THING_SUBD->query_common_container(old_env, new_env);
 
 	if (!common) {
-		xpos = 0;
-		ypos = 0;
-		zpos = 0;
-		return;
+		nx = 0;
+		ny = 0;
+		nz = 0;
+	} else {
+		nx = query_x_position();
+		ny = query_y_position();
+		nz = query_z_position();
+
+		for (; old_env != common; old_env = old_env->query_environment()) {
+			nx += old_env->query_x_position();
+			ny += old_env->query_y_position();
+			nz += old_env->query_z_position();
+		}
+
+		for (; new_env != common; new_env = new_env->query_environment()) {
+			nx -= new_env->query_x_position();
+			ny -= new_env->query_y_position();
+			nz -= new_env->query_z_position();
+		}
 	}
 
-	for (; old_env != common; old_env = old_env->query_environment()) {
-		xpos += old_env->query_x_position();
-		ypos += old_env->query_y_position();
-		zpos += old_env->query_z_position();
-	}
-
-	for (; new_env != common; new_env = new_env->query_environment()) {
-		xpos -= new_env->query_x_position();
-		ypos -= new_env->query_y_position();
-		zpos -= new_env->query_z_position();
-	}
+	set_x_position(nx);
+	set_y_position(ny);
+	set_z_position(nz);
 }
