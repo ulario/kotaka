@@ -32,7 +32,21 @@ void action(mapping roles)
 
 	actor = roles["actor"];
 	exit = roles["dob"];
-	target = exit->query_property("exit_destination");
+
+	target = exit->query_property("exit_return");
+
+	if (target) {
+		target = target->query_environment();
+
+		if (!target) {
+			send_out("Oops, " + TEXT_SUBD->query_brief_definite(exit) + "'s return exit is lost in the void.\n");
+			return;
+		}
+	}
+
+	if (!target) {
+		target = exit->query_property("exit_destination");
+	}
 
 	if (!target) {
 		send_out("Oops, " + TEXT_SUBD->query_brief_definite(exit) + " doesn't have a destination.\n");
