@@ -486,7 +486,9 @@ void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
 	string err;
+	int index;
 	int is_initd;
+	object pinfo;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -522,6 +524,16 @@ void compile(string owner, object obj, string *source, string inherited ...)
 				catch {
 					obj->upgrading();
 				}
+			}
+		}
+	}
+
+	if (find_object(TOUCHD)) {
+		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
+
+		if (pinfo) {
+			if (pinfo->query_toucher() || sizeof(pinfo->query_inherited_touchers())) {
+				TOUCHD->touch_upgrade(path);
 			}
 		}
 	}

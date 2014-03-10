@@ -21,6 +21,8 @@
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
+#include <kotaka/privilege.h>
+#include <status.h>
 
 inherit SECOND_AUTO;
 
@@ -38,6 +40,25 @@ void queue_touch(object obj)
 	}
 
 	queue->push_back(obj);
+}
+
+void touch_upgrade(string path)
+{
+	int sz, i;
+
+	ACCESS_CHECK(SYSTEM());
+
+	rlimits(0; -1) {
+		sz = status(ST_OTABSIZE);
+
+		for (i = 0; i < sz; i++) {
+			object obj;
+
+			if (obj = find_object(path + "#" + i)) {
+				call_touch(obj);
+			}
+		}
+	}
 }
 
 static void touch()
