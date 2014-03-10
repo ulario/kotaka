@@ -54,24 +54,12 @@ void main(object actor, mapping roles)
 	def = env->query_property("default_exit");
 
 	if (def) {
-		object target;
-
-		target = def->query_destination();
-
-		if (target) {
-			"~Game/sys/action/exit"->action(
-				([
-					"actor": actor,
-					"dob": def
-				])
-			);
-			return;
-		} else {
-			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(def)
-				+ " doesn't seem to have a destination.\n"
-				+ "Yell at a wizard.\n");
-			return;
-		}
+		"~Game/sys/action/exit"->action(
+			([
+				"actor": actor,
+				"dob": def
+			])
+		);
 	} else {
 		user = query_user();
 

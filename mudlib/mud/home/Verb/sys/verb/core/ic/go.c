@@ -55,24 +55,14 @@ void main(object actor, mapping roles)
 
 		exit = inv[i];
 
-		if (roles["raw"] == exit->query_direction()) {
-			object target;
-
-			target = exit->query_destination();
-
-			if (target) {
-				"~Game/sys/action/exit"->action(
-					([
-						"actor": actor,
-						"dob": exit
-					])
-				);
-				return;
-			} else {
-				send_out("Oops, " + TEXT_SUBD->generate_brief_definite(exit)
-					+ " doesn't seem to have a destination.\n"
-					+ "Yell at a wizard.\n");
-			}
+		if (roles["raw"] == exit->query_property("exit_direction")) {
+			"~Game/sys/action/exit"->action(
+				([
+					"actor": actor,
+					"dob": exit
+				])
+			);
+			return;
 		}
 	}
 
