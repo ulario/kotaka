@@ -58,6 +58,7 @@ static void create()
 	muds = ([ ]);
 	channels = ([ ]);
 
+	mudlistid = 0;
 	chanlistid = 0;
 
 	call_out("connect", 0, ROUTER_IP, 8080);
@@ -163,11 +164,11 @@ string query_banner(object LIB_CONN connection)
 		0,
 
 		password,
-		0,
+		mudlistid,
 		0,
 
 		50000,
-		mudlistid,
+		0,
 		0,
 		"Kotaka",
 		"Kotaka",
