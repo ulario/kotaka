@@ -27,32 +27,47 @@ private int xpos, ypos, zpos;
 
 void set_x_position(int new_xpos)
 {
-	xpos = new_xpos;
+	xpos = 0;
+
+	set_local_property("pos_x", new_xpos);
 }
 
 void set_y_position(int new_ypos)
 {
-	ypos = new_ypos;
+	ypos = 0;
+
+	set_local_property("pos_y", new_ypos);
 }
 
 void set_z_position(int new_zpos)
 {
-	zpos = new_zpos;
+	zpos = 0;
+
+	set_local_property("pos_z", new_zpos);
 }
 
 int query_x_position()
 {
-	return xpos;
+	mixed xp;
+	xp = query_local_property("pos_x");
+
+	return xpos ? xpos : (xp ? xp : 0);
 }
 
 int query_y_position()
 {
-	return ypos;
+	mixed yp;
+	yp = query_local_property("pos_y");
+
+	return ypos ? ypos : (yp ? yp : 0);
 }
 
 int query_z_position()
 {
-	return zpos;
+	mixed zp;
+	zp = query_local_property("pos_z");
+
+	return zpos ? zpos : (zp ? zp : 0);
 }
 
 static void move_notify(object old_env)
@@ -94,4 +109,12 @@ static void move_notify(object old_env)
 	set_x_position(nx);
 	set_y_position(ny);
 	set_z_position(nz);
+}
+
+void xyz_convert()
+{
+	"~Kotaka/sys/channeld"->post_message("debug", "xyz", "Converted position for " + object_name(this_object()));
+	set_x_position(query_x_position());
+	set_y_position(query_y_position());
+	set_z_position(query_z_position());
 }

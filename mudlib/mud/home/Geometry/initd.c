@@ -31,4 +31,8 @@ static void create()
 
 string query_toucher(string path)
 {
+	switch(path) {
+	case USR_DIR + "/Geometry/lib/thing/xyz":
+		return "xyz_convert";
+	}
 }
