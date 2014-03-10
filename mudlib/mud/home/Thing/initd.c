@@ -52,3 +52,11 @@ string query_destructor(string path)
 		return "thing_destruct";
 	}
 }
+
+string query_toucher(string path)
+{
+	switch(path) {
+	case USR_DIR + "/Thing/lib/thing/exit":
+		return "exit_convert";
+	}
+}

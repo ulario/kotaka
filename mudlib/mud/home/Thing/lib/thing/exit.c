@@ -22,40 +22,60 @@ string direction;
 object destination;
 object ret_exit;
 
+void set_local_property(string name, mixed value);
+mixed query_local_property(string name);
+
 void set_direction(string new_direction)
 {
-	direction = new_direction;
+	direction = nil;
+
+	set_local_property("exit_direction", new_direction);
 }
 
 void set_destination(object new_destination)
 {
-	if (ret_exit) {
-		error("Exit is currently two way");
-	}
+	destination = nil;
 
-	destination = new_destination;
+	set_local_property("exit_destination", new_destination);
 }
 
 void set_return(object new_return)
 {
-	if (destination) {
-		error("Exit is currently one way");
-	}
+	ret_exit = nil;
 
-	ret_exit = new_return;
+	set_local_property("exit_return", new_return);
 }
 
 string query_direction()
 {
-	return direction;
+	if (direction) {
+		return direction;
+	}
+
+	return query_local_property("exit_direction");
 }
 
 object query_destination()
 {
-	return destination;
+	if (destination) {
+		return destination;
+	}
+
+	return query_local_property("exit_destination");
 }
 
 object query_return()
 {
-	return ret_exit;
+	if (ret_exit) {
+		return ret_exit;
+	}
+
+	return query_local_property("exit_return");
+}
+
+void exit_convert()
+{
+	set_return(query_return());
+	set_destination(query_destination());
+	set_direction(query_direction());
 }
