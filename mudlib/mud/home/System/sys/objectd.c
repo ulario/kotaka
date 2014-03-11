@@ -674,13 +674,6 @@ mixed include_file(string compiled, string from, string path)
 	return path;
 }
 
-void call_touch(object obj)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	::call_touch(obj);
-}
-
 int touch(object obj, string function)
 {
 	ACCESS_CHECK(KERNEL());

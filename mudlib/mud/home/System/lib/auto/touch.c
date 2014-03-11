@@ -27,13 +27,10 @@ mapping touches;
 
 static void call_touch(object obj)
 {
-	if (previous_program() == OBJECTD) {
-		::call_touch(obj);
+	ACCESS_CHECK(SYSTEM());
 
-		TOUCHD->queue_touch(obj);
-	} else {
-		OBJECTD->call_touch(obj);
-	}
+	::call_touch(obj);
+	TOUCHD->queue_touch(obj);
 }
 
 nomask void _F_touch(string function)
