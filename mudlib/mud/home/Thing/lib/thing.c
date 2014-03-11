@@ -22,7 +22,6 @@ inherit id "thing/id";
 inherit inv "thing/inventory";
 inherit prop "thing/property";
 inherit bulk "thing/bulk";
-inherit exit "thing/exit";
 
 int destructing;
 
