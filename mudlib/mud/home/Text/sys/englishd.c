@@ -402,12 +402,9 @@ private mapping english_process(string command, object ustate, object actor, obj
 			break;
 
 		case "E":
-			if (evoke) {
-				return ([ "error": "Multiple evokes" ]);
-			}
-
 			evoke = parse[i][1];
 			continue;
+
 		default:
 			error("Unrecognized parse element");
 		}
