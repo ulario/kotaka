@@ -526,10 +526,4 @@ int do_verb(string command, string args)
 	}
 
 	return TRUE;
-
-	if (this_object()) {
-		TLSD->set_tls_value("Text", "ustate", nil);
-	}
-
-	return TRUE;
 }
