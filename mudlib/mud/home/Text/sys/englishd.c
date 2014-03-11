@@ -349,6 +349,7 @@ private mapping english_process(string command, object ustate, object actor, obj
 	prepkey = ([ ]);
 	roles = ([ ]);
 
+	/* build the prepkey and mark raw roles */
 	for (i = 0; i < sz; i++) {
 		int j;
 		int sz2;
@@ -377,6 +378,7 @@ private mapping english_process(string command, object ustate, object actor, obj
 		}
 	}
 
+	/* assign roles */
 	sz = sizeof(parse);
 
 	for (i = 0; i < sz; i++) {
@@ -437,6 +439,7 @@ private mapping english_process(string command, object ustate, object actor, obj
 		roles[crole] += ({ ({ prep, np }) });
 	}
 
+	/* bind roles */
 	rlist = map_indices(raw);
 	raw = roles & rlist;
 	roles = roles - rlist;
