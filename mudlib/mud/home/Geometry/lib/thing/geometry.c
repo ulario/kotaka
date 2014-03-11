@@ -22,7 +22,10 @@
 #include <kotaka/privilege.h>
 
 inherit LIB_THING;
-inherit xyz "xyz";
+
+object query_environment();
+mixed query_local_property(string name);
+void set_local_property(string name, mixed value);
 
 /* 1: inside us */
 /* 2: intersecting us */
@@ -33,16 +36,48 @@ static void create()
 {
 }
 
-int query_x_position();
-int query_y_position();
-int query_z_position();
-void set_x_position(int new_pos);
-void set_y_position(int new_pos);
-void set_z_position(int new_pos);
+void set_x_position(int new_xpos)
+{
+	set_local_property("pos_x", new_xpos ? new_xpos : nil);
+}
+
+void set_y_position(int new_ypos)
+{
+	set_local_property("pos_y", new_ypos ? new_ypos : nil);
+}
+
+void set_z_position(int new_zpos)
+{
+	set_local_property("pos_z", new_zpos ? new_zpos : nil);
+}
+
+int query_x_position()
+{
+	mixed xp;
+	xp = query_local_property("pos_x");
+
+	return xp ? xp : 0;
+}
+
+int query_y_position()
+{
+	mixed yp;
+	yp = query_local_property("pos_y");
+
+	return yp ? yp : 0;
+}
+
+int query_z_position()
+{
+	mixed zp;
+	zp = query_local_property("pos_z");
+
+	return zp ? zp : 0;
+}
 
 static void move_notify(object old_env)
 {
-	int nx, ny, nz;
+	mixed nx, ny, nz;
 	object common;
 	object new_env;
 
