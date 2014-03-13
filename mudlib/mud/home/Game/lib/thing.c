@@ -26,7 +26,6 @@ inherit geometry "~Geometry/lib/thing/geometry";
 static void create()
 {
 	thing::create();
-
 	geometry::create();
 }
 
