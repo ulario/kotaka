@@ -46,6 +46,7 @@ void boot_subsystem(string subsystem);
 
 private void configure_klib();
 void configure_logging();
+void configure_rsrc();
 private void check_config();
 private void check_versions();
 
@@ -67,6 +68,7 @@ private void initialize()
 	LOGD->post_message("boot", LOG_INFO, "Loading kernel manager");
 	load_object(KERNELD);
 	configure_klib();
+	configure_rsrc();
 
 	KERNELD->set_global_access("System", 1);
 
@@ -202,6 +204,7 @@ void hotboot()
 	LOGD->post_message("system", LOG_NOTICE, "hotbooted");
 
 	clear_admin();
+	configure_rsrc();
 	remove_call_out(dumped);
 	dumped = 0;
 
@@ -232,6 +235,7 @@ void reboot()
 	LOGD->post_message("system", LOG_NOTICE, "rebooted");
 
 	clear_admin();
+	configure_rsrc();
 	remove_call_out(dumped);
 	dumped = 0;
 
@@ -271,7 +275,10 @@ private void configure_klib()
 	for (index = 0; index < sizeof(wizards); index++) {
 		KERNELD->add_owner(wizards[index]);
 	}
+}
 
+void configure_rsrc()
+{
 	KERNELD->set_rsrc("ticks", 1000000, 0, 0);
 }
 
