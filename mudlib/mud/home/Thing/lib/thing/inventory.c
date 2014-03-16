@@ -143,17 +143,18 @@ nomask atomic void move(object new_env)
 
 	if (environment) {
 		environment->thing_del_inventory(this_object());
+		environment->bulk_invalidate();
 	}
 
 	environment = new_env;
 
 	if (environment) {
 		environment->thing_add_inventory(this_object());
+		environment->bulk_invalidate();
 	}
 
 	if (old_env) {
 		old_env->remove_notify(this);
-		old_env->bulk_invalidate();
 	}
 
 	move_notify(old_env);
@@ -161,6 +162,5 @@ nomask atomic void move(object new_env)
 
 	if (new_env) {
 		new_env->insert_notify(this);
-		new_env->bulk_invalidate();
 	}
 }
