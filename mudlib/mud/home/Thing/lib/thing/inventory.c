@@ -147,6 +147,7 @@ nomask atomic void move(object new_env)
 	}
 
 	environment = new_env;
+	reset_id_number();
 
 	if (environment) {
 		environment->thing_add_inventory(this_object());
@@ -158,7 +159,6 @@ nomask atomic void move(object new_env)
 	}
 
 	move_notify(old_env);
-	reset_id_number();
 
 	if (new_env) {
 		new_env->insert_notify(this);
