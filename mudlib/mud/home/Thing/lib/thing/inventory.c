@@ -23,6 +23,8 @@
 private object environment;
 private object *inventory;
 
+void reset_id_number();
+
 static void create()
 {
 	inventory = ({ });
@@ -151,11 +153,14 @@ nomask atomic void move(object new_env)
 
 	if (old_env) {
 		old_env->remove_notify(this);
+		old_env->bulk_invalidate();
 	}
 
 	move_notify(old_env);
+	reset_id_number();
 
 	if (new_env) {
 		new_env->insert_notify(this);
+		new_env->bulk_invalidate();
 	}
 }

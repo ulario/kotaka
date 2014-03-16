@@ -198,7 +198,7 @@ void set_id_number(int new_number)
 	id_number = new_number;
 }
 
-static void move_notify(object old_env)
+static void reset_id_number()
 {
 	object new_env;
 	int new_number;

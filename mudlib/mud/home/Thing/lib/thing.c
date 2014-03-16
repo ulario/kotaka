@@ -43,12 +43,6 @@ int forbid_insert(object obj)
 	return destructing;
 }
 
-static void move_notify(object old_env)
-{
-	id::move_notify(old_env);
-	bulk::move_notify(old_env);
-}
-
 static nomask void thing_destruct()
 {
 	int sz;
