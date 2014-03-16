@@ -102,22 +102,6 @@ nomask int is_container_of(object test)
 	return 0;
 }
 
-nomask int query_depth()
-{
-	object obj;
-	int depth;
-
-	obj = environment;
-
-	while (obj) {
-		depth++;
-
-		obj = obj->query_environment();
-	}
-
-	return depth;
-}
-
 nomask object query_environment()
 {
 	return environment;
@@ -152,10 +136,6 @@ nomask atomic void move(object new_env)
 
 		if (is_container_of(new_env)) {
 			error("Cyclic containment attempted");
-		}
-
-		if (new_env->query_depth() > 20) {
-			error("Excessive nesting attempted");
 		}
 	}
 
