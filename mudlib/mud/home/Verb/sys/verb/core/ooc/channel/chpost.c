@@ -41,7 +41,7 @@ void main(object actor, mapping roles)
 	}
 
 	if (sscanf(roles["raw"], "%s %s", channel, text) != 2) {
-		send_out("Usage: chpost <channel> <text\n");
+		send_out("Usage: chpost <channel> <text>\n");
 		return;
 	}
 
