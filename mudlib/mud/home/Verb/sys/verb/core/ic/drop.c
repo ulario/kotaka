@@ -89,7 +89,7 @@ void main(object actor, mapping roles)
 		dob->set_x_position(actor->query_x_position());
 		dob->set_y_position(actor->query_y_position());
 		dob->set_z_position(actor->query_z_position());
-		generic_emit(actor, ({ "drop", "drops" }), dob, nil);
+		emit_from(actor, ({ "drop", "drops" }), dob, nil);
 		return;
 	}
 
