@@ -206,7 +206,7 @@ void build_world()
 	master->set_object_name("class:race:humanoid:human");
 
 	world->set_capacity(1000000.0);
-	world->set_mass(1e+9);
+	world->set_mass(5.972e+24);
 	world->set_density(6.5);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/fill/grass");
