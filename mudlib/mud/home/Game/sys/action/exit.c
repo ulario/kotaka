@@ -39,7 +39,7 @@ void action(mapping roles)
 		target = target->query_environment();
 
 		if (!target) {
-			send_out("Oops, " + TEXT_SUBD->query_brief_definite(exit) + "'s return exit is lost in the void.\n");
+			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(exit) + "'s return exit is lost in the void.\n");
 			return;
 		}
 	}
@@ -49,7 +49,7 @@ void action(mapping roles)
 	}
 
 	if (!target) {
-		send_out("Oops, " + TEXT_SUBD->query_brief_definite(exit) + " doesn't have a destination.\n");
+		send_out("Oops, " + TEXT_SUBD->generate_brief_definite(exit) + " doesn't have a destination.\n");
 		return;
 	}
 
