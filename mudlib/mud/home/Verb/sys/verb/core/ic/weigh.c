@@ -70,8 +70,20 @@ void main(object actor, mapping roles)
 	}
 
 	if (dob->query_environment() == actor) {
+		float mass;
+
 		emit_from(actor, ({ "weigh", "weighs" }), dob);
-		send_out("You weigh " + TEXT_SUBD->generate_brief_definite(dob) + ", and it appears to be " + dob->query_total_mass() + " kilograms in mass.\n");
+		mass = dob->query_total_mass();
+
+		if (mass < 1000.0) {
+			send_out("It weighs " + mass * 1000.0 + " grams.\n");
+		} else if (mass < 1000000.0) {
+			send_out("It weighs " + mass + " kilograms.\n");
+		} else if (mass < 1e9) {
+			send_out("It weighs " + mass / 1000.0 + " metric tons.\n");
+		} else {
+			send_out("It weighs " + mass / 1e6 + " metric kilotons.\n");
+		}
 		return;
 	}
 }
