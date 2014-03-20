@@ -292,6 +292,7 @@ void recompile_everything()
 	object indices;
 	object libqueue;
 	object objqueue;
+	object initdqueue;
 
 	int i;
 	int sz;
@@ -302,6 +303,7 @@ void recompile_everything()
 
 	libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
 	objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+	initdqueue = new_object(BIGSTRUCT_ARRAY_LWO);
 
 	rlimits(0; -1) {
 		indices = PROGRAMD->query_program_indices();
@@ -318,6 +320,8 @@ void recompile_everything()
 
 			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
 				libqueue->push_back(path);
+			} else if (sscanf(path, USR_DIR + "/%*s/initd")) {
+				initdqueue->push_back(path);
 			} else {
 				objqueue->push_back(path);
 			}
@@ -335,6 +339,17 @@ void recompile_everything()
 		objqueue->grant_access(find_object(SORTD), WRITE_ACCESS);
 
 		SORTD->bqsort(objqueue, 0, objqueue->query_size() - 1);
+
+		while (!initdqueue->empty()) {
+			string path;
+
+			path = initdqueue->query_back();
+			initdqueue->pop_back();
+
+			catch {
+				compile_object(path);
+			}
+		}
 
 		while (!objqueue->empty()) {
 			string path;
