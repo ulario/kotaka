@@ -45,17 +45,45 @@ void queue_touch(object obj)
 void touch_upgrade(string path)
 {
 	int sz, i;
+	object cinfo;
+	object *clones;
 
 	ACCESS_CHECK(SYSTEM());
 
 	rlimits(0; -1) {
-		sz = status(ST_OTABSIZE);
+		call_touch(find_object(path));
 
-		for (i = 0; i < sz; i++) {
-			object obj;
+		cinfo = CLONED->query_clone_info(status(path, O_INDEX));
 
-			if (obj = find_object(path + "#" + i)) {
-				call_touch(obj);
+		if (!cinfo) {
+			return;
+		}
+
+		clones = cinfo->query_clones();
+
+		if (clones) {
+			int sz;
+			int i;
+
+			sz = sizeof(clones);
+
+			for (i = 0; i < sz; i++) {
+				call_touch(clones[i]);
+			}
+		} else {
+			int sz;
+			int i;
+
+			sz = status(ST_OTABSIZE);
+
+			for (i = 0; i < sz; i++) {
+				object obj;
+
+				obj = find_object(path + "#" + i);
+
+				if (obj) {
+					call_touch(obj);
+				}
 			}
 		}
 	}

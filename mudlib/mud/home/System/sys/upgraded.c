@@ -80,45 +80,6 @@ void add_upgrade_required(int progid)
 	}
 }
 
-private void touch_all_clones_of(string path)
-{
-	object cinfo;
-	object *clones;
-
-	cinfo = CLONED->query_clone_info(status(path, O_INDEX));
-
-	if (!cinfo) {
-		return;
-	}
-
-	clones = cinfo->query_clones();
-
-	if (clones) {
-		int sz;
-		int i;
-
-		sz = sizeof(clones);
-
-		for (i = 0; i < sz; i++) {
-			call_touch(clones[i]);
-		}
-	} else {
-		int sz;
-		int i;
-
-		sz = status(ST_OTABSIZE);
-		for (i = 0; i < sz; i++) {
-			object obj;
-
-			obj = find_object(path + "#" + i);
-
-			if (obj) {
-				call_touch(obj);
-			}
-		}
-	}
-}
-
 static void upgrade_system_2(string *subs)
 {
 	object libs;
@@ -192,17 +153,13 @@ static void upgrade_system_2(string *subs)
 		if (sscanf(path, "/kernel/%*s")) {
 			continue;
 		}
-
-		call_touch(find_object(path));
-		touch_all_clones_of(path);
 	}
 
 	/* upgrades: */
 	/* 1.  Find all inheriters of a library needing an update */
 	/* 2.  Have all the libraries destructed */
 	/* 3.  Recompile all non libraries inheriting them */
-	/* 4.  Touch all the objects/clones inheriting them */
-	/* 5.  Wait for all touches to be completed */
+	/* 4.  Wait for all touches to be completed */
 }
 
 static void upgrade_system_3()
