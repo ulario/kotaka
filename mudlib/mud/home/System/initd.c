@@ -468,7 +468,7 @@ void shutdown_subsystem(string subsystem)
 {
 	object cursor;
 
-	ACCESS_CHECK(INTERFACE() || KADMIN());
+	ACCESS_CHECK(INTERFACE() || KADMIN() || subsystem == DRIVER->creator(object_name(previous_object())));
 
 	switch(subsystem) {
 	case "Algorithm":
