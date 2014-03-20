@@ -43,3 +43,11 @@ static void create()
 
 	KERNELD->set_global_access("Kotaka", 1);
 }
+
+void do_upgrade()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	load_dir("obj", 1);
+	load_dir("sys", 1);
+}
