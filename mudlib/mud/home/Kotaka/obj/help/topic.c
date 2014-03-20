@@ -31,14 +31,14 @@ static void destruct(int clone)
 
 void set_content(mixed new_content)
 {
-	ACCESS_CHECK(HELP());
+	ACCESS_CHECK(KOTAKA());
 
 	content = new_content;
 }
 
 mixed query_content()
 {
-	ACCESS_CHECK(HELP());
+	ACCESS_CHECK(KOTAKA());
 
 	return content;
 }
