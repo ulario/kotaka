@@ -31,3 +31,8 @@ static void create()
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 }
+
+void do_upgrade()
+{
+	INITD->shutdown_subsystem("Help");
+}
