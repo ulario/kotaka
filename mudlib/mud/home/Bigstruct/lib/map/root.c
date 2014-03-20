@@ -24,8 +24,8 @@
 
 inherit "../bintree/root";
 
-#define MIN_MASS 256
-#define MAX_MASS 768
+#define MIN_MASS 64
+#define MAX_MASS 256
 
 int type;
 
