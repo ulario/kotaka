@@ -24,7 +24,7 @@ object root_category;
 
 static void create()
 {
-	root_category = clone_object("~/obj/category");
+	root_category = clone_object("~/obj/help/category");
 }
 
 static void destruct()
@@ -40,7 +40,7 @@ void reset()
 
 	destruct_object(root_category);
 
-	root_category = clone_object("~/obj/category");
+	root_category = clone_object("~/obj/help/category");
 }
 
 void add_category(string category)
