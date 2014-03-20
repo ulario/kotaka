@@ -38,10 +38,7 @@ static void create()
 
 	load_object(STRINGD);
 
-	load_dir("lib", 1);
-	load_dir("lwo", 1);
 	load_dir("obj", 1);
-	load_dir("open", 1);
 	load_dir("sys", 1);
 
 	KERNELD->set_global_access("Kotaka", 1);
