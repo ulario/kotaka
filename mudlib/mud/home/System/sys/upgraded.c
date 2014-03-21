@@ -28,11 +28,31 @@ inherit SECOND_AUTO;
 
 object hitlist;
 
+int major;
+int minor;
+int patch;
+
 static void create()
 {
 }
 
 atomic void upgrade_system()
+{
+	compile_object(object_name(this_object()));
+
+	call_out("check_version", 0);
+}
+
+static void check_version()
+{
+	major = 0;
+	minor = 33;
+	patch = 0;
+
+	call_out("upgrade_system_1", 0);
+}
+
+static void upgrade_system_1()
 {
 	string *subs;
 	int i, sz;
