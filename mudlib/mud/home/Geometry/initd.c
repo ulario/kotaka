@@ -28,11 +28,3 @@ static void create()
 
 	KERNELD->set_global_access("Geometry", 1);
 }
-
-string query_toucher(string path)
-{
-	switch(path) {
-	case USR_DIR + "/Geometry/lib/thing/xyz":
-		return "xyz_convert";
-	}
-}
