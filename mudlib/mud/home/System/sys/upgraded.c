@@ -38,6 +38,8 @@ static void create()
 
 atomic void upgrade_system()
 {
+	ACCESS_CHECK(VERB());
+
 	compile_object(object_name(this_object()));
 
 	call_out("check_version", 0);
@@ -56,8 +58,6 @@ static void upgrade_system_1()
 {
 	string *subs;
 	int i, sz;
-
-	ACCESS_CHECK(VERB());
 
 	subs = INITD->query_subsystems();
 
