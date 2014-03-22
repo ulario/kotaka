@@ -25,7 +25,7 @@ inherit "~/lib/animate";
 
 float **particles;
 
-#define NPARTICLES 30
+#define NPARTICLES 100
 
 static void create(int clone)
 {
@@ -66,7 +66,7 @@ private void do_particles(object paint, float diff)
 		particle = particles[i];
 
 		ovy = particle[3];
-		nvy = ovy + diff * 20.0;
+		nvy = ovy + diff * 40.0;
 
 		particle[0] += particle[2] * diff;
 		particle[1] += (ovy + nvy) * 0.5 * diff;
@@ -76,21 +76,22 @@ private void do_particles(object paint, float diff)
 			particle[0] = 20.0;
 			particle[1] = 25.0;
 
-			particle[2] = MATHD->bell_rnd(2) * 40.0 - 10.0;
-			particle[3] = MATHD->bell_rnd(2) * 20.0 - 30.0;
+			particle[2] = MATHD->bell_rnd(2) * 80.0 - 20.0;
+			particle[3] = MATHD->bell_rnd(2) * 40.0 - 60.0;
 		}
 
 		x = (int)floor(particle[0]);
 		y = (int)floor(particle[1]);
 		paint->move_pen(x, y);
 
-		switch(i % 6) {
-		case 0: paint->set_color(0x81); break;
-		case 1: paint->set_color(0x89); break;
-		case 2: paint->set_color(0x87); break;
-		case 3: paint->set_color(0x8f); break;
-		case 4: paint->set_color(0x84); break;
-		case 5: paint->set_color(0x8c); break;
+		switch(i % 7) {
+		case 0: paint->set_color(0x8f); break;
+		case 1: paint->set_color(0x87); break;
+		case 2: paint->set_color(0x88); break;
+		case 3: paint->set_color(0x81); break;
+		case 4: paint->set_color(0x89); break;
+		case 5: paint->set_color(0x83); break;
+		case 6: paint->set_color(0x8b); break;
 		}
 
 		paint->draw("+");
