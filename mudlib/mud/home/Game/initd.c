@@ -126,11 +126,6 @@ void configure_properties()
 
 	PROPERTYD->add_property("is_infinite", T_INT, PROP_INHERIT);
 
-	/* event handling */
-	PROPERTYD->add_property("event:create", T_STRING, PROP_INHERIT);
-	PROPERTYD->add_property("event:destroy", T_STRING, PROP_INHERIT);
-	PROPERTYD->add_property("event:timer", T_STRING, PROP_INHERIT);
-
 	/* catch all */
 	PROPERTYD->add_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );
 
