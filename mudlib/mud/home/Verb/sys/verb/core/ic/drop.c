@@ -48,7 +48,7 @@ void main(object actor, mapping roles)
 	dob = roles["dob"];
 
 	if (!dob) {
-		send_out("Take what?\n");
+		send_out("Drop what?\n");
 		return;
 	}
 
@@ -58,14 +58,14 @@ void main(object actor, mapping roles)
 	}
 
 	if (dob[0]) {
-		send_out("Your grammar stinks.\n");
+		send_out("You cannot use a preposition with a direct object in this verb.\n");
 		return;
 	}
 
 	dob = dob[1];
 
 	if (dob == actor) {
-		send_out("Try as you might, you cannot lift yourself.\n");
+		send_out("That doesn't make any sense.\n");
 		return;
 	}
 
