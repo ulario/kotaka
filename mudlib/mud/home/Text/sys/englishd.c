@@ -21,6 +21,7 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
+#include <kotaka/paths/verb.h>
 
 private string raw_convert(mixed **role)
 {

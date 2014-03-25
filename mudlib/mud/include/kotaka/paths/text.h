@@ -33,7 +33,6 @@
 #define PARSER_ENGLISH		(USR_DIR + "/Text/sys/parser/english")
 #define TEXT_SUBD		(USR_DIR + "/Text/sys/subd")
 #define TEXT_USERD		(USR_DIR + "/Text/sys/userd")
-#define VERBD			(USR_DIR + "/Text/sys/verbd")
 
 /* lwos */
 
