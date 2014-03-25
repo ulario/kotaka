@@ -104,7 +104,7 @@ void set_cell(int x, int y, int b)
 	}
 }
 
-void set_row(int row, int startbit, int endbit, int b)
+void set_row_bits(int row, int startbit, int endbit, int b)
 {
 	int startbyte, endbyte;
 
