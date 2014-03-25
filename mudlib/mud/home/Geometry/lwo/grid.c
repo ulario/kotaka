@@ -156,3 +156,12 @@ void set_row(int row, int startbit, int endbit, int b)
 		}
 	}
 }
+
+string query_row(int row)
+{
+	if (row < 0 || row >= height) {
+		error("Row out of range");
+	}
+
+	return rows[row];
+}
