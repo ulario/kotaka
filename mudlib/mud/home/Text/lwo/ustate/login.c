@@ -190,8 +190,17 @@ void receive_in(string input)
 				user->quit();
 			} else {
 				send_out("Your previous connection went away before I could evict it.\n");
+
+				TEXT_SUBD->send_to_all_except(
+					TEXT_SUBD->titled_name(
+						user->query_username(),
+						user->query_class())
+					+ " logs in.\n", ({ user }));
 			}
 
+			query_user()->set_username(name);
+			TEXT_SUBD->login_user(query_user());
+			terminate_account_state();
 		} else {
 			send_out("Ok then.\n");
 			pop_state();
