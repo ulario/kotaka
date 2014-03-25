@@ -26,5 +26,7 @@ static void create()
 {
 	INITD->boot_subsystem("Thing");
 
+	load_dir("lwo", 1);
+
 	KERNELD->set_global_access("Geometry", 1);
 }
