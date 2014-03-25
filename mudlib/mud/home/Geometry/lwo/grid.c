@@ -35,8 +35,8 @@ void set_size(int new_width, int new_height)
 	int bytes, new_bytes;
 	int i;
 
-	bytes = (height + 7) >> 3;
-	new_bytes = (new_height + 7) >> 3;
+	bytes = (width + 7) >> 3;
+	new_bytes = (new_width + 7) >> 3;
 
 	if (new_height > height) {
 		/* add rows */
@@ -86,6 +86,9 @@ void set_size(int new_width, int new_height)
 			rows[i][new_bytes - 1] &= (255 >> (new_width & 7));
 		}
 	}
+
+	width = new_width;
+	height = new_height;
 }
 
 void set_cell(int x, int y, int b)
@@ -111,6 +114,10 @@ void set_row(int row, int startbit, int endbit, int b)
 
 	if (row < 0 || row >= height) {
 		error("Row out of range");
+	}
+
+	if (startbit < 0 || endbit >= width) {
+		error("Column out of range");
 	}
 
 	startbyte = startbit >> 3;
