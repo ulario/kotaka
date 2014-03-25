@@ -121,7 +121,7 @@ void set_row(int row, int startbit, int endbit, int b)
 	}
 
 	startbyte = startbit >> 3;
-	endbyte = endbit >> 3;
+	endbyte = (endbit + 1) >> 3;
 
 	if (startbyte < endbyte) {
 		int i;
@@ -143,7 +143,7 @@ void set_row(int row, int startbit, int endbit, int b)
 			rows[row][startbyte] &= ~mask;
 		}
 
-		mask = 255 >> (endbit & 7);
+		mask = 255 >> ((endbit + 1) & 7);
 
 		if (b) {
 			rows[row][endbyte] |= mask;
@@ -154,7 +154,7 @@ void set_row(int row, int startbit, int endbit, int b)
 		int mask;
 
 		mask = 255 << (startbit & 7);
-		mask &= 255 >> (endbit & 7);
+		mask &= 255 >> ((endbit + 1) & 7);
 
 		if (b) {
 			rows[row][startbyte] |= mask;
