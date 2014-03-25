@@ -44,7 +44,7 @@ void set_size(int new_width, int new_height)
 		string nulls;
 
 		rows += allocate(new_height - height);
-		top = new_height;
+		top = height;
 		nulls = STRINGD->nulls(new_bytes);
 
 		/* these rows are ready */
