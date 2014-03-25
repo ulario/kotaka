@@ -109,11 +109,7 @@ void set_row(int row, int startbit, int endbit, int b)
 		error("Invalid range");
 	}
 
-	if (row < 0) {
-		error("Invalid row");
-	}
-
-	if (row >= height) {
+	if (row < 0 || row >= height) {
 		error("Row out of range");
 	}
 
