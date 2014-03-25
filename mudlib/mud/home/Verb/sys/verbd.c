@@ -19,16 +19,12 @@
  */
 #include <config.h>
 
-string *verbdirs;
-
 static void create()
 {
-	verbdirs = ({ USR_DIR + "/Verb/sys/verb" });
 }
 
 static void upgrading()
 {
-	verbdirs = ({ USR_DIR + "/Verb/sys/verb" });
 }
 
 private string *gather_dirs(string dir)
@@ -64,12 +60,7 @@ object find_verb(string command)
 	string *dirs;
 	int i, sz;
 
-	sz = sizeof(verbdirs);
-	dirs = ({ });
-
-	for (i = 0; i < sz; i++) {
-		dirs += gather_dirs(verbdirs[i]);
-	}
+	dirs = gather_dirs("verb");
 
 	sz = sizeof(dirs);
 
@@ -78,9 +69,4 @@ object find_verb(string command)
 			return verb;
 		}
 	}
-}
-
-void add_verb_directory(string directory)
-{
-	verbdirs |= ({ directory });
 }
