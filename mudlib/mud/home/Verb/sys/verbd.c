@@ -19,14 +19,6 @@
  */
 #include <config.h>
 
-static void create()
-{
-}
-
-static void upgrading()
-{
-}
-
 private string *gather_dirs(string dir)
 {
 	string *buf;
