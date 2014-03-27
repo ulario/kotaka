@@ -37,33 +37,6 @@ mixed **query_roles()
 }
 */
 
-private object *filter_mobiles(object *bodies)
-{
-	object *mobiles;
-	int sz, i;
-
-	sz = sizeof(bodies);
-	mobiles = ({ });
-
-	for (i = 0; i < sz; i++) {
-		mobiles |= bodies[i]->query_property("mobiles") - ({ nil });
-	}
-
-	return mobiles;
-}
-
-void emit_emote(object actor, object target, object listener, string evoke)
-{
-	string message;
-	object body;
-
-	body = listener->query_body();
-
-	listener->message(
-		TEXT_SUBD->generate_brief_definite(actor) + " " + evoke + "\n"
-	);
-}
-
 void main(object actor, mapping roles)
 {
 	object user;
@@ -95,12 +68,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	listeners = env->query_inventory();
-	mobiles = filter_mobiles(listeners);
-
-	sz = sizeof(mobiles);
-
-	for (i = 0; i < sz; i++) {
-		emit_emote(actor, target, mobiles[i], roles["raw"]);
-	}
+	emit_from(actor, ({ nil, nil }), roles["raw"]);
 }
