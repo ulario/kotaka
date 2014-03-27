@@ -35,9 +35,13 @@ void emit_to(object actor, object viewer, string *verbs, mixed chain ...)
 	seen = ([ ]);
 
 	if (actor == viewer) {
-		buffer += ({ "you", verbs[0] });
+		if (verbs[0]) {
+			buffer += ({ "you", verbs[0] });
+		}
 	} else {
-		buffer = ({ TEXT_SUBD->generate_brief_definite(actor), verbs[1] });
+		if (verbs[1]) {
+			buffer = ({ TEXT_SUBD->generate_brief_definite(actor), verbs[1] });
+		}
 	}
 
 	seen[actor] = 1;
