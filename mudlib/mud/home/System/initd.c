@@ -55,8 +55,6 @@ private void initialize()
 	subsystems = ([ ]);
 
 	load_object(ERRORD);
-	ERRORD->enable();
-
 	load_object(LOGD);
 
 	remove_file("/log/session.log");

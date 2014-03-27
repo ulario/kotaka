@@ -43,18 +43,7 @@ mixed **lasttrace;	/* last trace */
 
 static void create()
 {
-}
-
-void enable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN());
 	DRIVER->set_error_manager(this_object());
-}
-
-void disable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN());
-	DRIVER->set_error_manager(nil);
 }
 
 /* Shamelessly stolen from Dworkin's Klib */
@@ -152,6 +141,7 @@ void runtime_error(string error, int caught, mixed **trace)
 
 	ACCESS_CHECK(previous_program() == DRIVER);
 
+	rlimits(0; -1) {
 	DRIVER->set_error_manager(nil);
 
 	catch {
@@ -234,6 +224,7 @@ void runtime_error(string error, int caught, mixed **trace)
 	}
 
 	DRIVER->set_error_manager(this_object());
+	}
 }
 
 void atomic_error(string error, int atom, mixed **trace)
