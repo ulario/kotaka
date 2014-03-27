@@ -504,6 +504,8 @@ void do_upgrade()
 {
 	ACCESS_CHECK(SYSTEM());
 
+	destruct_object(ERRORD);
+
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("sys", 1);
