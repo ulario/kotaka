@@ -29,4 +29,6 @@ static void create()
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("sys", 1);
+
+	"sys/testd"->test();
 }
