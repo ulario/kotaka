@@ -278,6 +278,7 @@ private void configure_klib()
 void configure_rsrc()
 {
 	KERNELD->set_rsrc("ticks", 1000000, 0, 0);
+	KERNELD->set_rsrc("tick usage", -1, 1, 60);
 }
 
 void configure_logging()
