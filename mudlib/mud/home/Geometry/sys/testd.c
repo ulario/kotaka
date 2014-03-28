@@ -25,17 +25,10 @@ static void create()
 	call_out("test", 0);
 }
 
-void kaboom()
-{
-	destruct_object(this_object());
-}
-
 void test()
 {
 	object grid;
 	string row;
-
-	call_out("kaboom", 0);
 
 	grid = new_object("~/lwo/grid");
 
@@ -57,9 +50,4 @@ void test()
 	CHANNELD->post_message("debug", nil, "Row 1: " + row[1] + ", should be " + '\377');
 	CHANNELD->post_message("debug", nil, "Row 2: " + row[2] + ", should be " + '\017');
 	ASSERT(grid->query_row(2) == "\340\377\017\000");
-}
-
-void upgrading()
-{
-	call_out("test", 0);
 }
