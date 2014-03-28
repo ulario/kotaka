@@ -24,7 +24,7 @@
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-static void reboot()
+static void reboot_self()
 {
 	INITD->reboot_subsystem("Intermud");
 }
@@ -43,5 +43,5 @@ static void create()
 	CHANNELD->set_channel_config("dgd", "channel_color", 0x0c);
 
 	load_dir("sys", 1);
-	call_out("reboot", 300);
+	call_out("reboot_self", 300);
 }
