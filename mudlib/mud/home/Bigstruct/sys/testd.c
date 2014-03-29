@@ -223,7 +223,7 @@ private void test_bigstruct_map()
 
 void test()
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(SYSTEM() || BIGSTRUCT());
 
 	LOGD->post_message("test", LOG_DEBUG, "Starting array test...");
 	test_bigstruct_array();
