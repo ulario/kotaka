@@ -74,8 +74,8 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (dob->query_environment() == actor->query_environment()) {
-		send_out("It is already on the ground!\n");
+	if (dob->query_environment() != actor) {
+		send_out("You don't have it.\n");
 		return;
 	}
 
@@ -84,14 +84,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (dob->query_environment() == actor) {
-		dob->move(actor->query_environment());
-		dob->set_x_position(actor->query_x_position());
-		dob->set_y_position(actor->query_y_position());
-		dob->set_z_position(actor->query_z_position());
-		emit_from(actor, ({ "drop", "drops" }), dob, nil);
-		return;
-	}
-
-	send_out("It is out of reach.\n");
+	dob->move(actor->query_environment());
+	dob->set_x_position(actor->query_x_position());
+	dob->set_y_position(actor->query_y_position());
+	dob->set_z_position(actor->query_z_position());
+	emit_from(actor, ({ "drop", "drops" }), dob, nil);
 }
