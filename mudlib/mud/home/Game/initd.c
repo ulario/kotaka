@@ -148,6 +148,21 @@ void configure_properties()
 	PROPERTYD->add_property("first_instance", T_OBJECT, PROP_MAGIC, ({ "query_first_instance", nil }) );
 	PROPERTYD->add_property("prev_instances", T_MAPPING, PROP_MAGIC, ({ "query_next_instances", nil }) );
 	PROPERTYD->add_property("next_instances", T_MAPPING, PROP_MAGIC, ({ "query_prev_instances", nil }) );
+
+	/* clothing */
+	PROPERTYD->add_property("is_clothing", T_INT, PROP_INHERIT);
+	PROPERTYD->add_property("fills_slot", T_INT, PROP_INHERIT);
+	PROPERTYD->add_property("parts_covered", T_ARRAY, PROP_INHERIT);
+
+	PROPERTYD->add_property("is_worn", T_INT, PROP_SIMPLE);
+	PROPERTYD->add_property("clothing_layer", T_INT, PROP_SIMPLE);
+
+	/* head, neck, chest */
+	/* left arm, left wrist, left hand */
+	/* right arm, right wrist, right hand */
+	/* belly, hips, groin */
+	/* left leg, left ankle, left foot */
+	/* right leg, right ankle, right foot */
 }
 
 static void create()
