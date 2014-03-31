@@ -106,7 +106,7 @@ void main(object actor, mapping roles)
 		layer = worn[i]->query_property("clothing_layer");
 
 		if (layer > dlayer) {
-			send_out("Try removing your " + worn[i]->query_property("brief") + " first.\n");
+			send_out("You have to remove your " + worn[i]->query_property("brief") + " first.\n");
 			return;
 		}
 	}
