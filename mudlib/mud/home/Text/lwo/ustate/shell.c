@@ -159,7 +159,7 @@ private void do_input(string first, string input)
 	send_out("No such command.\n");
 }
 
-private void handle_input(string input);
+private void handle_input(string input, varargs mapping dup);
 
 atomic private void do_atomic(string args)
 {
@@ -249,11 +249,10 @@ private void do_alias(string args)
 	}
 }
 
-private void handle_input(string input)
+private void handle_input(string input, varargs mapping dup)
 {
 	string first;
 	string alias;
-	mapping dup;
 
 	input = STRINGD->trim_whitespace(input);
 
@@ -298,8 +297,6 @@ private void handle_input(string input)
 		return;
 
 	default:
-		dup = TLSD->query_tls_value("Text", "aliases");
-
 		if (!dup || !dup[first]) {
 			alias = ALIASD->query_alias(first);
 
@@ -310,14 +307,10 @@ private void handle_input(string input)
 
 				dup[first] = 1;
 
-				TLSD->set_tls_value("Text", "aliases", dup);
-
 				send_out("Expanding to: " + alias + " " + input + "\n");
-				handle_input(alias + " " + input);
+				handle_input(alias + " " + input, dup);
 
 				dup[first] = nil;
-
-				TLSD->set_tls_value("Text", "aliases", dup);
 
 				return;
 			}
