@@ -137,28 +137,6 @@ private int is_wiztool_command(string command)
 	}
 }
 
-private void do_input(string first, string input)
-{
-	if (query_user()->query_class() >= 2) {
-		if (is_wiztool_command(first)) {
-			query_user()->dispatch_wiztool(first + " " + input);
-			return;
-		}
-	}
-
-	catch {
-		if ("~/sys/englishd"->do_verb(first, input)) {
-			return;
-		}
-	} : {
-		send_out("Error.\n");
-
-		return;
-	}
-
-	send_out("No such command.\n");
-}
-
 private void handle_input(string input, varargs mapping dup);
 
 atomic private void do_atomic(string args)
@@ -315,10 +293,27 @@ private void handle_input(string input, varargs mapping dup)
 				return;
 			}
 		}
+	}
 
-		if (first) {
-			do_input(first, input);
+	if (!first) {
+		return;
+	}
+
+	if (query_user()->query_class() >= 2) {
+		if (is_wiztool_command(first)) {
+			query_user()->dispatch_wiztool(first + " " + input);
+			return;
 		}
+	}
+
+	catch {
+		if ("~/sys/englishd"->do_verb(first, input)) {
+			return;
+		} else {
+			send_out("No such command.\n");
+		}
+	} : {
+		send_out("Error.\n");
 	}
 }
 
