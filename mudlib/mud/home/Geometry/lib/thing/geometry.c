@@ -17,15 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/geometry.h>
 #include <kotaka/paths/thing.h>
-#include <kotaka/privilege.h>
 
 inherit LIB_THING;
-
-object query_environment();
-mixed query_local_property(string name);
-void set_local_property(string name, mixed value);
+inherit "xyz";
 
 /* 1: inside us */
 /* 2: intersecting us */
@@ -36,82 +31,7 @@ static void create()
 {
 }
 
-void set_x_position(int new_xpos)
-{
-	set_local_property("pos_x", new_xpos ? new_xpos : nil);
-}
-
-void set_y_position(int new_ypos)
-{
-	set_local_property("pos_y", new_ypos ? new_ypos : nil);
-}
-
-void set_z_position(int new_zpos)
-{
-	set_local_property("pos_z", new_zpos ? new_zpos : nil);
-}
-
-int query_x_position()
-{
-	mixed xp;
-	xp = query_local_property("pos_x");
-
-	return xp ? xp : 0;
-}
-
-int query_y_position()
-{
-	mixed yp;
-	yp = query_local_property("pos_y");
-
-	return yp ? yp : 0;
-}
-
-int query_z_position()
-{
-	mixed zp;
-	zp = query_local_property("pos_z");
-
-	return zp ? zp : 0;
-}
-
 static void move_notify(object old_env)
 {
-	mixed nx, ny, nz;
-	object common;
-	object new_env;
-
-	new_env = query_environment();
-
-	if (!old_env || !new_env) {
-		return;
-	}
-
-	common = THING_SUBD->query_common_container(old_env, new_env);
-
-	if (!common) {
-		nx = 0;
-		ny = 0;
-		nz = 0;
-	} else {
-		nx = query_x_position();
-		ny = query_y_position();
-		nz = query_z_position();
-
-		for (; old_env != common; old_env = old_env->query_environment()) {
-			nx += old_env->query_x_position();
-			ny += old_env->query_y_position();
-			nz += old_env->query_z_position();
-		}
-
-		for (; new_env != common; new_env = new_env->query_environment()) {
-			nx -= new_env->query_x_position();
-			ny -= new_env->query_y_position();
-			nz -= new_env->query_z_position();
-		}
-	}
-
-	set_x_position(nx);
-	set_y_position(ny);
-	set_z_position(nz);
+	xyz_move_notify(old_env);
 }
