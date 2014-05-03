@@ -329,7 +329,7 @@ private mapping english_process(string command, object ustate, object actor, obj
 
 	if (!parse) {
 		/* choked on bad grammar */
-		return nil;
+		return ([ "error": "Parsing error" ]);
 	}
 
 	rules = verb->query_roles();
