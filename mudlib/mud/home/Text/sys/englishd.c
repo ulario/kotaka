@@ -324,10 +324,6 @@ private mapping english_process(string command, object ustate, object actor, obj
 	object *def_candidates;
 	mapping candidates;
 
-	if (!actor) {
-		return ([ "error": "You must be in character to use this command." ]);
-	}
-
 	statement = command + " " + args;
 	parse = PARSER_ENGLISH->parse(statement);
 
