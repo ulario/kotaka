@@ -125,18 +125,6 @@ private object *filter_adjectives(object *candidates, string *adjectives)
 	return contenders;
 }
 
-private object *gather_relation(string prep, object source)
-{
-	switch(prep) {
-	case "from":
-	case "in":
-		return source->query_inventory();
-	default:
-		TLSD->set_tls_value("Text", "parse_error", "Cannot handle relation: " + prep);
-		return nil;
-	}
-}
-
 private string *select_ordinals(string *adjectives)
 {
 	int sz;
@@ -281,7 +269,14 @@ private mixed role_convert(mixed **role, object *initial)
 		}
 
 		if (i > 0) {
-			candidates = gather_relation(phrase[0], candidates[0]);
+			switch(phrase[0]) {
+			case "from":
+			case "in":
+				return candidates[0]->query_inventory();
+			default:
+				TLSD->set_tls_value("Text", "parse_error", "Cannot handle relation: " + phrase[0]);
+				return nil;
+			}
 		}
 
 		if (TLSD->query_tls_value("Text", "parse_error")) {
