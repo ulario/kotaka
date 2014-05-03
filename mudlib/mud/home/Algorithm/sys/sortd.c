@@ -64,6 +64,7 @@ void qsort(mixed arr, int begin, int end, varargs string compfunc)
 			} else {
 				sign = 0;
 			}
+
 			if (sign > 0) {
 				aswap(arr, low, --high);
 			} else {
