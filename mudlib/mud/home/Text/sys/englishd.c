@@ -272,7 +272,8 @@ private mixed role_convert(mixed **role, object *initial)
 			switch(phrase[0]) {
 			case "from":
 			case "in":
-				return candidates[0]->query_inventory();
+				candidates = candidates[0]->query_inventory();
+				break;
 			default:
 				TLSD->set_tls_value("Text", "parse_error", "Cannot handle relation: " + phrase[0]);
 				return nil;
