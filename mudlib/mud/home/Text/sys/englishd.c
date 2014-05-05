@@ -472,22 +472,15 @@ private mapping english_process(string command, object ustate, object actor, obj
 	return roles;
 }
 
-int do_verb(string command, string args)
+int do_verb(object verb, string command, string args)
 {
 	object ustate;
 	object actor;
 	mapping roles;
-	object verb;
 	int i, sz;
 	string *methods;
 
 	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
-
-	verb = VERBD->find_verb(command);
-
-	if (!verb) {
-		return FALSE;
-	}
 
 	actor = ustate->query_user()->query_body();
 

@@ -22,6 +22,7 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
+#include <kotaka/paths/verb.h>
 #include <kotaka/privilege.h>
 
 inherit TEXT_LIB_USTATE;
@@ -307,11 +308,16 @@ private void handle_input(string input, varargs mapping dup)
 	}
 
 	catch {
-		if ("~/sys/englishd"->do_verb(first, input)) {
-			return;
-		} else {
+		object verb;
+
+		verb = VERBD->find_verb(first);
+
+		if (!verb) {
 			send_out("No such command.\n");
+			return;
 		}
+
+		"~/sys/englishd"->do_verb(verb, first, input);
 	} : {
 		send_out("Error.\n");
 	}
