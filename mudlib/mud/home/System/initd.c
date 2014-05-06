@@ -65,10 +65,11 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_INFO, "Loading kernel manager");
 	load_object(KERNELD);
+	KERNELD->set_global_access("System", 1);
+
+	LOGD->post_message("boot", LOG_INFO, "Configuring kernel library");
 	configure_klib();
 	configure_rsrc();
-
-	KERNELD->set_global_access("System", 1);
 
 	boot_subsystem("String");
 	boot_subsystem("Algorithm");
