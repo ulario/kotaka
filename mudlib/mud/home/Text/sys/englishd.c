@@ -22,6 +22,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
+#include <type.h>
 
 private string raw_convert(mixed **role)
 {
@@ -476,9 +477,10 @@ int do_verb(object verb, string command, string args)
 {
 	object ustate;
 	object actor;
-	mapping roles;
+	mixed roles;
 	int i, sz;
 	string *methods;
+	string err;
 
 	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
 
@@ -491,20 +493,30 @@ int do_verb(object verb, string command, string args)
 	sz = sizeof(methods);
 
 	for (i = 0; i < sz && !roles; i++) {
+		int leave;
+
 		switch(methods[i]) {
 		case "raw":
 			roles = ([ "raw" : args ]);
-			continue;
+			verb->main(actor, roles);
+			break;
 
 		case "english":
 			roles = english_process(command, ustate, actor, verb, args);
+
+			if (typeof(roles) == T_STRING) {
+				err = roles;
+			} else if (roles["error"]) {
+				err = roles["error"];
+				roles = nil;
+			} else if (typeof(roles) == T_MAPPING) {
+				verb->main(actor, roles);
+			}
 		}
 	}
 
-	if (roles["error"]) {
+	if (err) {
 		ustate->send_out(roles["error"] + "\n");
-	} else {
-		verb->main(actor, roles);
 	}
 
 	if (this_object()) {
