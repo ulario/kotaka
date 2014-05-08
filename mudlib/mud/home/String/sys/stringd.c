@@ -931,9 +931,9 @@ string string_rshift(string a, int bits)
 
 string string_lshift(string a, int bits)
 {
-	for (; bits >= 8; bits -= 8) {
-		a = "\000" + a;
-	}
+	a = nulls(bits / 8) + a;
+	bits %= 8;
+
 	return rtrim_null(string_rshift("\000" + a, 8 - bits));
 }
 
