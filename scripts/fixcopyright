@@ -2,7 +2,19 @@
 
 find mudlib -type f -name "*.[ch]" | sort > checklist
 
+function cleanup()
+{
+	rm -f $GITYEARS
+	rm -f $HEADYEARS
+}
+
+trap cleanup SIGTERM
+trap cleanup SIGINT
+
 YEARS="2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014"
+
+GITYEARS=`tempfile`
+HEADYEARS=`tempfile`
 
 ERRORS=0
 (
@@ -10,15 +22,15 @@ IFS=$'\n'
 for file in `cat checklist`
 do
 	echo "Checking $file"
-	git log --follow $file > gityears
-	head -15 $file | egrep "^ \* Copyright" - > headyears
+	git log --follow $file > $GITYEARS
+	head -15 $file | egrep "^ \* Copyright" - > $HEADYEARS
 
 	COPYRIGHT=""
 
 	IFS=$' \n'
 	for year in $YEARS
 	do
-		if grep $year gityears > /dev/null
+		if grep $year $GITYEARS > /dev/null
 		then
 			COPYRIGHT="$COPYRIGHT, $year"
 		fi
@@ -29,3 +41,5 @@ do
 	sed -i -e "s_^ \* Copyright.*_ \* Copyright (C) $COPYRIGHT  Raymond Jennings_" $file
 done
 )
+
+cleanup
