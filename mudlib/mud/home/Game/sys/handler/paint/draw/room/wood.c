@@ -30,7 +30,7 @@ void on_paint_text(object gc, object obj, object viewer)
 {
 	int dx, dy, dz;
 	int lx, ly, hx, hy;
-	int sx, sy;
+	mixed sx, sy;
 
 	({ dx, dy, dz }) = GEOMETRY_SUBD->query_position_difference(viewer, obj);
 
@@ -40,6 +40,14 @@ void on_paint_text(object gc, object obj, object viewer)
 	ly = dy;
 	sx = obj->query_property("size_x");
 	sy = obj->query_property("size_y");
+
+	if (!sx) {
+		sx = 0;
+	}
+	if (!sy) {
+		sy = 0;
+	}
+
 	hx = dx + sx - 1;
 	hy = dy + sy - 1;
 
