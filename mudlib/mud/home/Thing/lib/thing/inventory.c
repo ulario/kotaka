@@ -114,7 +114,23 @@ nomask object *query_inventory()
 	return (inventory -= ({ nil }))[..];
 }
 
-nomask atomic void move(object new_env)
+private atomic void move_core(object new_env)
+{
+	if (environment) {
+		environment->thing_del_inventory(this_object());
+		environment->bulk_invalidate();
+	}
+
+	environment = new_env;
+	reset_id_number();
+
+	if (environment) {
+		environment->thing_add_inventory(this_object());
+		environment->bulk_invalidate();
+	}
+}
+
+nomask void move(object new_env)
 {
 	object old_env;
 	object this;
@@ -141,18 +157,7 @@ nomask atomic void move(object new_env)
 		}
 	}
 
-	if (environment) {
-		environment->thing_del_inventory(this_object());
-		environment->bulk_invalidate();
-	}
-
-	environment = new_env;
-	reset_id_number();
-
-	if (environment) {
-		environment->thing_add_inventory(this_object());
-		environment->bulk_invalidate();
-	}
+	move_core(new_env);
 
 	if (old_env) {
 		old_env->remove_notify(this);
