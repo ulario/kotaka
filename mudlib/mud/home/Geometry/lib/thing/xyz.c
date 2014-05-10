@@ -38,6 +38,16 @@ void set_z_position(int new_zpos)
 	set_local_property("pos_z", new_zpos ? new_zpos : nil);
 }
 
+void set_x_size(int new_xsize)
+{
+	set_local_property("size_x", new_xsize ? new_xsize : nil);
+}
+
+void set_y_size(int new_ysize)
+{
+	set_local_property("size_y", new_ysize ? new_ysize : nil);
+}
+
 int query_x_position()
 {
 	mixed xp;
@@ -64,6 +74,25 @@ int query_z_position()
 
 	return zp ? zp : 0;
 }
+
+int query_x_size()
+{
+	mixed xs;
+
+	xs = query_local_property("size_x");
+
+	return xs ? xs : 0;
+}
+
+int query_y_size()
+{
+	mixed ys;
+
+	ys = query_local_property("size_y");
+
+	return ys ? ys : 0;
+}
+
 
 static void xyz_move_notify(object old_env)
 {
