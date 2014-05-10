@@ -22,11 +22,6 @@
 inherit LIB_THING;
 inherit "xyz";
 
-/* 1: inside us */
-/* 2: intersecting us */
-/* 3: surrounding us */
-/* 4: overlapping us */
-
 static void create()
 {
 }
