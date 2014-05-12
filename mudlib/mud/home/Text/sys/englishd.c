@@ -516,7 +516,7 @@ int do_verb(object verb, string command, string args)
 	}
 
 	if (err) {
-		ustate->send_out(roles["error"] + "\n");
+		ustate->send_out(err + "\n");
 	}
 
 	if (this_object()) {
