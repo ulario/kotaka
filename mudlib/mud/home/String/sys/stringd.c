@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/text.h>
+
 #include <status.h>
 #include <type.h>
 
@@ -513,8 +515,10 @@ string mixed_sprint(mixed data, varargs mapping seen)
 
 			if (name = data->query_object_name()) {
 				return "<" + name + ">";
+			} else if (data <- "~Game/lib/thing") {
+				return "<" + TEXT_SUBD->generate_brief_indefinite(data) + ">";
 			} else {
-				return "<" + object_name(data) + ">";
+				return "<" + object_name(data) + ":" +  ">";
 			}
 		}
 		break;
