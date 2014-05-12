@@ -1,0 +1,4 @@
+Version 0.33 is a pure maintenance release with minimal pain.
+
+After pulling this, first delete any orphaned daemons, rebuild, and then
+compile any dormant LPC files.
