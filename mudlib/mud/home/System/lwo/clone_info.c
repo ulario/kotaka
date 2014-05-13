@@ -83,5 +83,7 @@ int query_clone_count()
 
 object *query_clones()
 {
-	return map_indices(clones);
+	if (clones) {
+		return map_indices(clones);
+	}
 }
