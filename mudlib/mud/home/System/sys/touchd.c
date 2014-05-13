@@ -24,6 +24,8 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
+#define TOUCH_DELAY	0.1
+
 inherit SECOND_AUTO;
 
 object queue;
@@ -38,7 +40,7 @@ void call_touch(object obj)
 	ACCESS_CHECK(SYSTEM());
 
 	if (queue->empty()) {
-		call_out("touch", 0);
+		call_out("touch", TOUCH_DELAY);
 	}
 
 	queue->push_back(obj);
@@ -109,7 +111,7 @@ static void touch()
 	}
 
 	if (!queue->empty()) {
-		call_out("touch", 0);
+		call_out("touch", TOUCH_DELAY);
 	} else {
 		CHANNELD->post_message("system", "touchd", "Global touch completed");
 		LOGD->post_message("system", LOG_INFO, "Global touch completed");
