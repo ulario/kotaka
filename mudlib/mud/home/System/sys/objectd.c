@@ -724,6 +724,7 @@ object find_all_clones(string path)
 	int i, sz;
 
 	list = new_object(BIGSTRUCT_ARRAY_LWO);
+	sz = status(ST_OTABSIZE);
 
 	for (i = 0; i < sz; i++) {
 		object obj;
