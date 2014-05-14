@@ -49,6 +49,7 @@ void activate(object first)
 static void check()
 {
 	int count;
+	object prev, next;
 
 	if (!master || !owner) {
 		destruct_object(this_object());
@@ -74,7 +75,20 @@ static void check()
 
 	call_out("check", 60.0 / (float)count);
 
-	cursor = KERNELD->next_link(cursor);
+	prev = KERNELD->prev_link(cursor);
+	next = KERNELD->next_link(cursor);
+
+	if (KERNELD->next_link(prev) != cursor) {
+		LOGD->post_message("test", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
+		KERNELD->shutdown();
+	}
+
+	if (KERNELD->prev_link(next) != cursor) {
+		LOGD->post_message("test", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
+		KERNELD->shutdown();
+	}
+
+	cursor = next;
 
 	if (!cursor) {
 		LOGD->post_message("test", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
