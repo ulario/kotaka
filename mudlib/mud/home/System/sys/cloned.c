@@ -111,6 +111,10 @@ void remove_clone(object obj)
 
 	cinfo->remove_clone(obj);
 
+	if (sscanf(object_name(obj), "/kernel/%*s")) {
+		return;
+	}
+
 	if (obj == obj->query_next_clone()) {
 		/* last clone */
 		if (is_bigstruct) {
@@ -118,10 +122,6 @@ void remove_clone(object obj)
 		} else {
 			db->set_element(index, nil);
 		}
-		return;
-	}
-
-	if (sscanf(object_name(obj), "/kernel/%*s")) {
 		return;
 	}
 
