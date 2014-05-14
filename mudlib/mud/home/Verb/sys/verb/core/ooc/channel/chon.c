@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/account.h>
+#include <kotaka/paths/algorithm.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/verb.h>
 
@@ -64,6 +65,8 @@ void main(object actor, mapping roles)
 	}
 
 	subscriptions += ({ roles["raw"] });
+
+	SORTD->qsort(subscriptions, 0, sizeof(subscriptions));
 
 	ACCOUNTD->set_account_property(name, "channels", subscriptions);
 
