@@ -81,11 +81,13 @@ static void check()
 	if (KERNELD->next_link(prev) != cursor) {
 		LOGD->post_message("test", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
 		KERNELD->shutdown();
+		error("internal error");
 	}
 
 	if (KERNELD->prev_link(next) != cursor) {
 		LOGD->post_message("test", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
 		KERNELD->shutdown();
+		error("internal error");
 	}
 
 	cursor = next;
@@ -93,5 +95,6 @@ static void check()
 	if (!cursor) {
 		LOGD->post_message("test", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
 		KERNELD->shutdown();
+		error("internal error");
 	}
 }
