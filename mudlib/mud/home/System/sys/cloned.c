@@ -136,6 +136,14 @@ void remove_clone(object obj)
 	next->set_prev_clone(prev);
 }
 
+void remove_program(int index)
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	bmap[index] = nil;
+	db->set_element(index, nil);
+}
+
 atomic void discover_clones()
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());

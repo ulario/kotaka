@@ -676,6 +676,10 @@ void remove_program(string owner, string path, int timestamp, int index)
 	if (find_object(PROGRAMD)) {
 		PROGRAMD->remove_program(index);
 	}
+
+	if (find_object(CLONED)) {
+		CLONED->remove_program(index);
+	}
 }
 
 mixed include_file(string compiled, string from, string path)
