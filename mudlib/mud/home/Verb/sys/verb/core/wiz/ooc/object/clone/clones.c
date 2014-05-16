@@ -30,48 +30,33 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
+	string path;
 	mixed *st;
-	object cinfo;
-	int oindex;
-	int count;
+	int i, sz;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do a clone check.\n");
 		return;
 	}
 
-	st = status(roles["raw"]);
+	path = roles["raw"];
+
+	st = status(path);
 
 	if (!st) {
 		send_out("No such object.\n");
 		return;
 	}
 
-	cinfo = CLONED->query_clone_info(st[O_INDEX]);
+	sz = status(ST_OTABSIZE);
 
-	if (!cinfo) {
-		send_out("There are no clones.\n");
-		return;
-	}
+	for (i = 0; i < sz; i++) {
+		object obj;
 
-	send_out("There are " + cinfo->query_clone_count() + " clones.\n");
+		obj = find_object(path + "#" + i);
 
-	if (cinfo->query_clone_count() < 20) {
-		object *clones;
-
-		clones = cinfo->query_clones();
-
-		if (clones) {
-			int sz, i;
-			sz = sizeof(clones);
-
-			for (i = 0; i < sz; i++) {
-				send_out(object_name(clones[i]) + "\n");
-			}
-		} else {
-			send_out("There were too many to list at one point.\n");
+		if (obj) {
+			send_out(object_name(obj) + "\n");
 		}
-	} else {
-		send_out("There are too many to list.\n");
 	}
 }
