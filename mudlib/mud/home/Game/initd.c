@@ -127,6 +127,8 @@ void configure_properties()
 	PROPERTYD->add_property("size_y", T_INT, PROP_MAGIC, ({ "query_y_size", "set_y_size" }) );
 	PROPERTYD->add_property("size_z", T_INT, PROP_MAGIC, ({ "query_z_size", "set_z_size" }) );
 
+	PROPERTYD->add_property("relations", T_MAPPING, PROP_MAGIC, ({ "query_relations", nil }) );
+
 	/* catch all */
 	PROPERTYD->add_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );
 
