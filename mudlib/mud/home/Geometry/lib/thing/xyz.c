@@ -22,15 +22,18 @@
 object query_environment();
 mixed query_local_property(string name);
 void set_local_property(string name, mixed value);
+void check_relations();
 
 void set_x_position(int new_xpos)
 {
 	set_local_property("pos_x", new_xpos ? new_xpos : nil);
+	check_relations();
 }
 
 void set_y_position(int new_ypos)
 {
 	set_local_property("pos_y", new_ypos ? new_ypos : nil);
+	check_relations();
 }
 
 void set_z_position(int new_zpos)
@@ -41,11 +44,13 @@ void set_z_position(int new_zpos)
 void set_x_size(int new_xsize)
 {
 	set_local_property("size_x", new_xsize ? new_xsize : nil);
+	check_relations();
 }
 
 void set_y_size(int new_ysize)
 {
 	set_local_property("size_y", new_ysize ? new_ysize : nil);
+	check_relations();
 }
 
 int query_x_position()
