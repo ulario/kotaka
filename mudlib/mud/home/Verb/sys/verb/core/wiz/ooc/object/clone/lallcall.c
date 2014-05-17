@@ -81,7 +81,11 @@ static void do_allcall(object list, string func)
 	obj = list->query_front();
 	list->pop_front();
 
-	call_other(obj, func);
+	if (!list->empty()) {
+		call_out("do_allcall", 0, list, func);
+	}
 
-	call_out("do_allcall", 0, list, func);
+	if (obj) {
+		call_other(obj, func);
+	}
 }

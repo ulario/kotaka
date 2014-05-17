@@ -60,7 +60,10 @@ void main(object actor, mapping roles)
 		obj = find_object(path + "#" + i);
 
 		if (obj) {
-			call_other(obj, func);
+			catch {
+				call_other(obj, func);
+			}
+
 			tcount++;
 		}
 	}
