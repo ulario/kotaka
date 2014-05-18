@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/privilege.h>
+#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
@@ -311,8 +312,9 @@ private mapping role_bind(mapping roles, mapping initial)
 	return bind;
 }
 
-private mapping english_process(string command, object ustate, object actor, object verb, string args)
+private mapping old_english_process(string command, object ustate, object actor, object verb, string args)
 {
+	/* phase 1: parse */
 	string statement;
 	mixed *parse;
 	string **rules;
@@ -327,7 +329,13 @@ private mapping english_process(string command, object ustate, object actor, obj
 	mapping candidates;
 
 	statement = command + " " + args;
+
+	/* phase 1: parse */
 	parse = PARSER_ENGLISH->parse(statement);
+
+	/* phase 2: mapping */
+
+	/* phase 3: binding */
 
 	if (!parse) {
 		/* choked on bad grammar */
@@ -473,6 +481,8 @@ private mapping english_process(string command, object ustate, object actor, obj
 	return roles;
 }
 
+mixed *english_process(string command, object ustate, object actor, object verb, string args);
+
 int do_verb(object verb, string command, string args)
 {
 	object ustate;
@@ -503,15 +513,30 @@ int do_verb(object verb, string command, string args)
 			break;
 
 		case "english":
-			roles = english_process(command, ustate, actor, verb, args);
+			{
+				mixed *result;
 
-			if (typeof(roles) == T_STRING) {
-				err = roles;
-			} else if (roles["error"]) {
-				err = roles["error"];
-				roles = nil;
-			} else if (typeof(roles) == T_MAPPING) {
-				verb->main(actor, roles);
+				result = english_process(command, ustate, actor, verb, args);
+
+				switch(result[0]) {
+				case 0: /* parse failure */
+					err = result[1];
+					roles = ([ ]);
+					continue;
+
+				case 1: /* map failure */
+					err = result[1];
+					roles = ([ ]);
+					continue;
+
+				case 2: /* bind failure */
+					err = result[1];
+					roles = ([ ]);
+					continue;
+
+				default:
+					break;
+				}
 			}
 		}
 	}
@@ -525,4 +550,161 @@ int do_verb(object verb, string command, string args)
 	}
 
 	return TRUE;
+}
+
+mixed *english_process(string command, object ustate, object actor, object verb, string args)
+{
+	mixed *parse;
+	mapping raw;
+	mapping prepkey;
+	mapping roles;
+	/* 0 = parse failure */
+	/* 1 = map failure */
+	/* 2 = bind failure */
+	/* 3 = success */
+
+	/* phase 1: parse */
+	{
+		string statement;
+
+		statement = command + " " + args;
+
+		parse = PARSER_ENGLISH->parse(statement);
+
+		if (!parse) {
+			return ({ 0, "Could not parse." });
+		}
+	}
+	/* phase 2: map */
+
+	/* stage 2-1: read roles and build prepkey */
+	{
+		mixed **rules;
+		int i, sz;
+
+		raw = ([ ]);
+		prepkey = ([ ]);
+
+		rules = verb->query_roles();
+
+		sz = sizeof(rules);
+
+		for (i = 0; i < sz; i++) {
+			mixed *rule;
+			string *preps;
+			int sz2, j;
+			string role;
+
+			rule = rules[i];
+
+			role = rule[0];
+			preps = rule[1];
+			sz2 = sizeof(preps);
+
+			if (sizeof(rule) > 2 && rule[2]) {
+				raw[role] = 1;
+			}
+
+			for (j = 0; j < sz2; j++) {
+				string prep;
+
+				prep = preps[j];
+
+				if (!prepkey[prep]) {
+					prepkey[prep] = ({ });
+				}
+
+				prepkey[prep] += ({ rule[0] });
+			}
+		}
+	}
+
+	CHANNELD->post_message("debug", "parse", "Prepkey: " + STRINGD->hybrid_sprint(prepkey));
+
+	/* stage 2-2: assign phrases to roles */
+	{
+		int i, sz;
+		string evoke;
+		string crole;
+
+		roles = ([ ]);
+
+		sz = sizeof(parse);
+
+		for (i = 0; i < sz; i++) {
+			mixed *phrase;
+			mixed *np;
+			string prep;
+			string *rcand;
+			int j, sz2;
+
+			phrase = parse[i];
+			CHANNELD->post_message("debug", "parse", "Phrase: " + STRINGD->hybrid_sprint(phrase));
+
+			switch(phrase[0]) {
+			case "V":
+				prep = nil;
+				break;
+
+			case "P":
+				prep = phrase[1];
+				break;
+
+			case "E":
+				if (evoke) {
+					return ({ 1, "Multiple evokes" });
+				}
+
+				evoke = phrase[1];
+				continue;
+			}
+
+			rcand = prepkey[prep];
+
+			if (!rcand) {
+				CHANNELD->post_message("debug", "parse", "Empty rcand for " + (prep ? prep : "nil"));
+				rcand = ({ });
+			}
+
+			sz2 = sizeof(rcand);
+
+			for (j = 0; j < sz2; j++) {
+				string role;
+
+				role = rcand[j];
+
+				if (!roles[role]) {
+					crole = role;
+					break;
+				}
+			}
+
+			if (crole) {
+				if (!roles[crole]) {
+					roles[crole] = ({ });
+				}
+
+				roles[crole] += ({ phrase });
+			} else {
+				if (prep) {
+					return ({ 1, "No role for preposition \"" + prep + "\"" });
+				} else if (phrase[2]) {
+					return ({ 1, "No direct role" });
+				} else {
+					if (!roles["verb"]) {
+						roles["verb"] = ({ });
+					}
+
+					roles["verb"] += ({ phrase });
+					/* harmless */
+				}
+			}
+		}
+
+		roles["evoke"] = evoke;
+	}
+
+	/* phase 3: bind */
+	CHANNELD->post_message("debug", "parse", "Roles: " + STRINGD->hybrid_sprint(roles));
+	return ({ 2, "Not yet implemented" });
 }

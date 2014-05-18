@@ -32,7 +32,9 @@ string *query_parse_methods()
 /* ({ role, prepositions, raw }) */
 mixed **query_roles()
 {
-	return ({ });
+	return ({
+		({ "dob", ({ nil, "at" }) })
+	});
 }
 
 void main(object actor, mapping roles)

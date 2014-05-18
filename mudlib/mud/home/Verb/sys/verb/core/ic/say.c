@@ -31,7 +31,7 @@ string *query_parse_methods()
 mixed **query_roles()
 {
 	return ({
-		({ "iob", ({ "to" }), 0 })
+		({ "iob", ({ "to" }) })
 	});
 }
 
