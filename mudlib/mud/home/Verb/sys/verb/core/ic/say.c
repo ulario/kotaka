@@ -25,8 +25,7 @@ inherit LIB_VERB;
 
 string *query_parse_methods()
 {
-	/*	return ({ "english", "raw" });*/
-	return ({ "raw" });
+	return ({ "english", "raw" });
 }
 
 mixed **query_roles()
@@ -48,6 +47,7 @@ void main(object actor, mapping roles)
 	object *listeners;
 	object *mobiles;
 	string text;
+	mixed *role;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
@@ -66,6 +66,16 @@ void main(object actor, mapping roles)
 		return;
 	}
 
+	role = roles["iob"];
+
+	if (role) {
+		if (role[0] != "to") {
+			send_out("And just how do you expect to use it that way?\n");
+			return;
+		}
+		target = role[1];
+	}
+
 	env = actor->query_environment();
 
 	if (!env) {
@@ -73,5 +83,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	emit_from(actor, ({ "say", "says" }), text);
+	if (target) {
+		emit_from(actor, ({ "say", "says" }), "to", target, "\"" + text + "\"");
+	} else {
+		emit_from(actor, ({ "say", "says" }), "\"" + text + "\"");
+	}
 }

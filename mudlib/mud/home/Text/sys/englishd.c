@@ -497,6 +497,7 @@ int do_verb(object verb, string command, string args)
 
 		switch(methods[i]) {
 		case "raw":
+			err = nil;
 			roles = ([ "raw" : args ]);
 			verb->main(actor, roles);
 			break;
