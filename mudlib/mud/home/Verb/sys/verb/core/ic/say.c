@@ -25,17 +25,16 @@ inherit LIB_VERB;
 
 string *query_parse_methods()
 {
+	/*	return ({ "english", "raw" });*/
 	return ({ "raw" });
 }
 
-/*
 mixed **query_roles()
 {
 	return ({
 		({ "iob", ({ "to" }), 0 })
 	});
 }
-*/
 
 void main(object actor, mapping roles)
 {
@@ -48,6 +47,7 @@ void main(object actor, mapping roles)
 	object env;
 	object *listeners;
 	object *mobiles;
+	string text;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
@@ -55,8 +55,13 @@ void main(object actor, mapping roles)
 	}
 
 	user = query_user();
+	text = roles["evoke"];
 
-	if (roles["raw"] == "") {
+	if (!text) {
+		text = roles["raw"];
+	}
+
+	if (!text || text == "") {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
@@ -68,5 +73,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	emit_from(actor, ({ "say", "says" }), roles["raw"]);
+	emit_from(actor, ({ "say", "says" }), text);
 }
