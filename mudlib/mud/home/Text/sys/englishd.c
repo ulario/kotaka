@@ -25,65 +25,6 @@
 #include <kotaka/paths/verb.h>
 #include <type.h>
 
-private string raw_convert(mixed **role)
-{
-	string *build;
-	int sz;
-	int i;
-
-	build = ({ });
-
-	sz = sizeof(role);
-
-	for (i = 0; i < sz; i++) {
-		mixed *phrase;
-		mixed *np;
-
-		phrase = role[i];
-
-		switch(phrase[0]) {
-		case "V":
-			np = phrase[2];
-
-			if (np) {
-				build += np[1];
-			}
-
-			break;
-
-		case "P":
-			build += ({ phrase[1] });
-			np = phrase[2];
-
-			if (np) {
-				build += np[1];
-			}
-
-			break;
-		}
-	}
-
-	return implode(build, " ");
-}
-
-private mapping raw_bind(mapping raw)
-{
-	mapping bind;
-	string *rlist;
-	int sz;
-	int i;
-
-	bind = ([ ]);
-	rlist = map_indices(raw);
-	sz = sizeof(rlist);
-
-	for (i = 0; i < sz; i++) {
-		bind[rlist[i]] = raw_convert(raw[rlist[i]]);
-	}
-
-	return bind;
-}
-
 private object *filter_noun(object *candidates, string noun)
 {
 	object *contenders;
@@ -290,198 +231,7 @@ private mixed role_convert(mixed **role, object *initial)
 	return ({ role[0][0], candidates[0] });
 }
 
-private mapping role_bind(mapping roles, mapping initial)
-{
-	mapping bind;
-	string *rlist;
-	int sz;
-	int i;
-
-	bind = ([ ]);
-	rlist = map_indices(roles);
-	sz = sizeof(rlist);
-
-	for (i = 0; i < sz; i++) {
-		bind[rlist[i]] = role_convert(roles[rlist[i]], initial[rlist[i]]);
-
-		if (TLSD->query_tls_value("Text", "parse_error")) {
-			return ([ ]);
-		}
-	}
-
-	return bind;
-}
-
-private mapping old_english_process(string command, object ustate, object actor, object verb, string args)
-{
-	/* phase 1: parse */
-	string statement;
-	mixed *parse;
-	string **rules;
-	mapping roles;
-	int i, sz;
-	mapping raw;
-	mapping prepkey;
-	string evoke;
-	string crole;
-	string *rlist;
-	object *def_candidates;
-	mapping candidates;
-
-	statement = command + " " + args;
-
-	/* phase 1: parse */
-	parse = PARSER_ENGLISH->parse(statement);
-
-	/* phase 2: mapping */
-
-	/* phase 3: binding */
-
-	if (!parse) {
-		/* choked on bad grammar */
-		return ([ "error": "Parsing error" ]);
-	}
-
-	rules = verb->query_roles();
-
-	sz = sizeof(rules);
-
-	/* ({ role, prepositions, raw }) */
-	raw = ([ ]);
-	prepkey = ([ ]);
-	roles = ([ ]);
-
-	/* build the prepkey and mark raw roles */
-	for (i = 0; i < sz; i++) {
-		int j;
-		int sz2;
-
-		string role;
-		string *preps;
-		mixed *rule;
-
-		rule = rules[i];
-
-		role = rule[0];
-		preps = rule[1];
-
-		if (rule[2]) {
-			raw[role] = 1;
-		}
-
-		sz2 = sizeof(preps);
-
-		for (j = 0; j < sz2; j++) {
-			if (!prepkey[preps[j]]) {
-				prepkey[preps[j]] = ({ });
-			}
-
-			prepkey[preps[j]] += ({ role });
-		}
-	}
-
-	/* assign roles */
-	sz = sizeof(parse);
-
-	for (i = 0; i < sz; i++) {
-		string prep;
-		string *np;
-		string *rcand;
-
-		switch(parse[i][0]) {
-		case "V":
-			np = parse[i][2];
-
-			if (!np) {
-				continue;
-			}
-
-			break;
-
-		case "P":
-			prep = parse[i][1];
-			np = parse[i][2];
-			break;
-
-		case "E":
-			evoke = parse[i][1];
-			continue;
-
-		default:
-			error("Unrecognized parse element");
-		}
-
-		if (!crole) {
-			crole = "dob";
-		}
-
-		rcand = prepkey[prep];
-
-		if (rcand) {
-			int j;
-			int sz2;
-
-			sz2 = sizeof(rcand);
-
-			for (j = 0; j < sz2; j++) {
-				if (!roles[rcand[j]]) {
-					crole = rcand[j];
-					break;
-				}
-			}
-		}
-
-		if (!roles[crole]) {
-			roles[crole] = ({ });
-		}
-
-		roles[crole] += ({ ({ prep, np }) });
-	}
-
-	/* bind roles */
-	rlist = map_indices(raw);
-	raw = roles & rlist;
-	roles = roles - rlist;
-	raw = raw_bind(raw);
-
-	if (actor) {
-		object environment;
-
-		def_candidates = actor->query_inventory();
-		environment = actor->query_environment();
-
-		if (environment) {
-			def_candidates += environment->query_inventory();
-		}
-	} else {
-		def_candidates = ({ });
-	}
-
-	rlist = map_indices(roles);
-	candidates = ([ ]);
-	sz = sizeof(rlist);
-
-	/* todo: query verb for candidates for each role */
-	for (i = 0; i < sz; i++) {
-		candidates[rlist[i]] = def_candidates[..];
-	}
-
-	roles = role_bind(roles, candidates);
-
-	if (TLSD->query_tls_value("Text", "parse_error")) {
-		return ([ "error" : TLSD->query_tls_value("Text", "parse_error") ]);
-	}
-
-	if (evoke) {
-		roles["evoke"] = evoke;
-	}
-
-	roles += raw;
-
-	return roles;
-}
-
-mixed *english_process(string command, object ustate, object actor, object verb, string args);
+private mixed *english_process(string command, object ustate, object actor, object verb, string args);
 
 int do_verb(object verb, string command, string args)
 {
@@ -532,6 +282,11 @@ int do_verb(object verb, string command, string args)
 					roles = ([ ]);
 					continue;
 
+				case 3: /* success */
+					roles = result[1];
+					verb->main(actor, roles);
+					continue;
+
 				default:
 					break;
 				}
@@ -550,12 +305,118 @@ int do_verb(object verb, string command, string args)
 	return TRUE;
 }
 
-mixed *english_process(string command, object ustate, object actor, object verb, string args)
+private string bind_raw(mixed **phrases)
+{
+	string *build;
+	int sz;
+	int i;
+
+	build = ({ });
+
+	sz = sizeof(phrases);
+
+	for (i = 0; i < sz; i++) {
+		mixed *phrase;
+		mixed *np;
+
+		phrase = phrase[i];
+
+		switch(phrase[0]) {
+		case "V":
+			np = phrase[2];
+
+			if (np) {
+				build += np[1];
+			}
+
+			break;
+
+		case "P":
+			build += ({ phrase[1] });
+			np = phrase[2];
+
+			if (np) {
+				build += np[1];
+			}
+
+			break;
+		}
+	}
+
+	return implode(build, " ");
+}
+
+private mixed *bind_english(mixed **phrases, object *initial)
+{
+	int sz, i;
+	object *candidates;
+	string *adj;
+	string noun;
+
+	sz = sizeof(phrases);
+	candidates = initial;
+
+	CHANNELD->post_message("debug", "parse", "Binding phrases: " + STRINGD->hybrid_sprint(phrases));
+
+	for (i = sz - 1; i >= 0; i--) {
+		mixed *phrase;
+		string *np;
+		string *ordinals;
+		string pre;
+		/* 1.  find np in candidates */
+		/* 2.  build new candidates using the preposition */
+
+		phrase = phrases[i];
+
+		if (!phrase[1]) {
+			return ({ 0, "Bad grammar" });
+		}
+
+		np = phrase[1][1];
+
+		noun = np[sizeof(np) - 1];
+		adj = np[0 .. sizeof(np) - 2];
+
+		ordinals = select_ordinals(adj);
+		adj -= ordinals;
+
+		candidates = filter_noun(candidates, noun);
+		candidates = filter_adjectives(candidates, adj);
+		candidates = filter_ordinals(candidates, ordinals);
+
+		if (sizeof(candidates) == 0) {
+			return ({ 2, "No " + implode(adj + ({ noun }), " ") });
+		} else if (sizeof(candidates) > 1) {
+			return ({ 2, "Multiple " + implode(adj + ({ noun }), " ") });
+		}
+
+		if (i > 0) {
+			switch(phrase[0]) {
+			case "from":
+			case "in":
+				candidates = candidates[0]->query_inventory();
+				break;
+
+			default:
+				return ({ 0, "Cannot handle relation: " + phrase[0] });
+			}
+		}
+
+		if (TLSD->query_tls_value("Text", "parse_error")) {
+			return ({ 0, "Undefined parse error" });
+		}
+	}
+
+	return ({ 3, phrases[0][0], candidates[0] });
+}
+
+private mixed *english_process(string command, object ustate, object actor, object verb, string args)
 {
 	mixed *parse;
 	mapping raw;
 	mapping prepkey;
 	mapping roles;
+	string evoke;
 	/* 0 = parse failure */
 	/* 1 = map failure */
 	/* 2 = bind failure */
@@ -622,7 +483,6 @@ mixed *english_process(string command, object ustate, object actor, object verb,
 	/* stage 2-2: assign phrases to roles */
 	{
 		int i, sz;
-		string evoke;
 		string crole;
 
 		roles = ([ ]);
@@ -685,7 +545,7 @@ mixed *english_process(string command, object ustate, object actor, object verb,
 						roles[crole] = ({ });
 					}
 
-					roles[crole] += ({ prep, np });
+					roles[crole] += ({ ({ prep, np }) });
 				}
 			} else {
 				if (prep) {
@@ -697,11 +557,40 @@ mixed *english_process(string command, object ustate, object actor, object verb,
 				}
 			}
 		}
-
-		roles["evoke"] = evoke;
 	}
 
 	/* phase 3: bind */
+	{
+		string *rlist;
+		int i, sz;
+
+		rlist = map_indices(roles);
+		sz = sizeof(rlist);
+
+		for (i = 0; i < sz; i++) {
+			string role;
+
+			role = rlist[i];
+
+			if (raw[role]) {
+				roles[role] = bind_raw(roles[role]);
+			} else {
+				mixed *result;
+
+				result = bind_english(roles[role], actor->query_environment()->query_inventory());
+
+				switch(result[0]) {
+				case 0 .. 2:
+					return result;
+
+				case 3:
+					roles[role] = result[1 ..];
+				}
+			}
+		}
+	}
+
+	roles["evoke"] = evoke;
 	CHANNELD->post_message("debug", "parse", "Roles: " + STRINGD->hybrid_sprint(roles));
-	return ({ 2, "Not yet implemented" });
+	return ({ 3, roles });
 }
