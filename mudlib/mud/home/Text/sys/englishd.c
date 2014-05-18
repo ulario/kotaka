@@ -521,12 +521,10 @@ int do_verb(object verb, string command, string args)
 				switch(result[0]) {
 				case 0: /* parse failure */
 					err = result[1];
-					roles = ([ ]);
 					continue;
 
 				case 1: /* map failure */
 					err = result[1];
-					roles = ([ ]);
 					continue;
 
 				case 2: /* bind failure */
@@ -644,10 +642,12 @@ mixed *english_process(string command, object ustate, object actor, object verb,
 			switch(phrase[0]) {
 			case "V":
 				prep = nil;
+				np = phrase[2];
 				break;
 
 			case "P":
 				prep = phrase[1];
+				np = phrase[2];
 				break;
 
 			case "E":
@@ -680,22 +680,19 @@ mixed *english_process(string command, object ustate, object actor, object verb,
 			}
 
 			if (crole) {
-				if (!roles[crole]) {
-					roles[crole] = ({ });
-				}
+				if (prep || np) {
+					if (!roles[crole]) {
+						roles[crole] = ({ });
+					}
 
-				roles[crole] += ({ phrase });
+					roles[crole] += ({ prep, np });
+				}
 			} else {
 				if (prep) {
 					return ({ 1, "No role for preposition \"" + prep + "\"" });
-				} else if (phrase[2]) {
+				} else if (np) {
 					return ({ 1, "No direct role" });
 				} else {
-					if (!roles["verb"]) {
-						roles["verb"] = ({ });
-					}
-
-					roles["verb"] += ({ phrase });
 					/* harmless */
 				}
 			}
