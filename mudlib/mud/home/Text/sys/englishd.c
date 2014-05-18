@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/privilege.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
@@ -356,8 +355,6 @@ private mixed *bind_english(mixed **phrases, object *initial)
 	sz = sizeof(phrases);
 	candidates = initial;
 
-	CHANNELD->post_message("debug", "parse", "Binding phrases: " + STRINGD->hybrid_sprint(phrases));
-
 	for (i = sz - 1; i >= 0; i--) {
 		mixed *phrase;
 		string *np;
@@ -478,8 +475,6 @@ private mixed *english_process(string command, object ustate, object actor, obje
 		}
 	}
 
-	CHANNELD->post_message("debug", "parse", "Prepkey: " + STRINGD->hybrid_sprint(prepkey));
-
 	/* stage 2-2: assign phrases to roles */
 	{
 		int i, sz;
@@ -497,7 +492,6 @@ private mixed *english_process(string command, object ustate, object actor, obje
 			int j, sz2;
 
 			phrase = parse[i];
-			CHANNELD->post_message("debug", "parse", "Phrase: " + STRINGD->hybrid_sprint(phrase));
 
 			switch(phrase[0]) {
 			case "V":
@@ -522,7 +516,6 @@ private mixed *english_process(string command, object ustate, object actor, obje
 			rcand = prepkey[prep];
 
 			if (!rcand) {
-				CHANNELD->post_message("debug", "parse", "Empty rcand for " + (prep ? prep : "nil"));
 				rcand = ({ });
 			}
 
@@ -591,6 +584,5 @@ private mixed *english_process(string command, object ustate, object actor, obje
 	}
 
 	roles["evoke"] = evoke;
-	CHANNELD->post_message("debug", "parse", "Roles: " + STRINGD->hybrid_sprint(roles));
 	return ({ 3, roles });
 }
