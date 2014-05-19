@@ -63,7 +63,7 @@ private mixed *filter_noun(object *candidates, string noun)
 	}
 
 	if (sizeof(scont) > 1) {
-		return ({ 2, "Be more specific" });
+		return ({ 2, "MULTIPLE" });
 	}
 
 	return ({ 3, scont });
@@ -267,6 +267,14 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		result = filter_noun(result[1], noun);
 
 		if (result[0] != 3) {
+			switch(result[1]) {
+			case "NOMATCH":
+				return ({ 2, "There is no " + implode(adj + ({ noun }), " ") });
+
+			case "MULTIPLE":
+				return ({ 2, "Be more specific, there is more than one " + implode(adj + ({ noun }), " ") });
+
+			}
 			return result;
 		}
 
@@ -278,12 +286,14 @@ private mixed *bind_english(mixed **phrases, object *initial)
 
 		candidates = result[1];
 
+		if (sizeof(candidates) == 0) {
+			return ({ 2, "There is no " + implode(adj + ({ noun }), " ") });
+		}
+
 		/* todo:  allow multiple matches for the last part */
 		if (i > 0) {
-			if (sizeof(candidates) == 0) {
-				return ({ 2, "No " + implode(adj + ({ noun }), " ") });
-			} else if (sizeof(candidates) > 1) {
-				return ({ 2, "Multiple " + implode(adj + ({ noun }), " ") });
+			if (sizeof(candidates) > 1) {
+				return ({ 2, "Be more specific, there is more than one " + implode(adj + ({ noun }), " ") });
 			}
 
 			switch(phrase[0]) {
@@ -298,7 +308,11 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		}
 	}
 
-	return ({ 3, phrases[0][0], candidates });
+	if (sizeof(candidates) > 1) {
+		return ({ 3, phrases[0][0], candidates });
+	} else {
+		return ({ 3, phrases[0][0], candidates[0] });
+	}
 }
 
 private mixed *english_process(string command, object ustate, object actor, object verb, string args)
