@@ -32,7 +32,6 @@ private mixed *filter_noun(object *candidates, string noun)
 	int i;
 
 	sz = sizeof(candidates);
-	contenders = ({ });
 
 	noun = STRINGD->to_lower(noun);
 
@@ -46,7 +45,7 @@ private mixed *filter_noun(object *candidates, string noun)
 		string *snouns;
 		string *pnouns;
 
-		snouns = candidates[i]->query_property("snouns")
+		snouns = candidates[i]->query_property("snouns");
 		pnouns = candidates[i]->query_property("pnouns");
 
 		if (sizeof(({ noun }) & snouns)) {
