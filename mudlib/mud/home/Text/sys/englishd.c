@@ -57,18 +57,10 @@ private mixed *filter_noun(object *candidates, string noun)
 		}
 	}
 
-	if (sizeof(pcont)) {
-		return ({ 3, scont + pcont });
-	}
-
-	if (sizeof(scont) > 1) {
-		return ({ 2, "MULTIPLE" });
-	}
-
-	return ({ 3, scont });
+	return ({ 3, scont + pcont, !sizeof(pcont) && sizeof(scont) });
 }
 
-private object *filter_adjectives(object *candidates, string *adjectives)
+private mixed *filter_adjectives(object *candidates, string *adjectives)
 {
 	object *contenders;
 	int sz;
@@ -83,7 +75,7 @@ private object *filter_adjectives(object *candidates, string *adjectives)
 		}
 	}
 
-	return contenders;
+	return ({ 3, contenders });
 }
 
 private string *select_ordinals(string *adjectives)
@@ -240,6 +232,7 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		string *ordinals;
 		string pre;
 		mixed *result;
+		int exact;
 		/* 1.  find np in candidates */
 		/* 2.  build new candidates using the preposition */
 
@@ -264,6 +257,7 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		}
 
 		result = filter_noun(result[1], noun);
+		exact = result[2];
 
 		if (result[0] != 3) {
 			switch(result[1]) {
@@ -289,12 +283,14 @@ private mixed *bind_english(mixed **phrases, object *initial)
 			return ({ 2, "There is no " + implode(adj + ({ noun }), " ") });
 		}
 
-		/* todo:  allow multiple matches for the last part */
-		if (i > 0) {
+		if (exact || i > 0) {
 			if (sizeof(candidates) > 1) {
 				return ({ 2, "Be more specific, there is more than one " + implode(adj + ({ noun }), " ") });
 			}
+		}
 
+		/* todo:  allow multiple matches for the last part */
+		if (i > 0) {
 			switch(phrase[0]) {
 			case "from":
 			case "in":
