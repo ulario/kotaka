@@ -143,94 +143,26 @@ private int resolve_ordinal_number(string ordinal)
 	}
 }
 
-private object *filter_ordinals(object *candidates, string *ordinals)
+private mixed *filter_ordinals(object *candidates, string *ordinals)
 {
 	int number;
 
 	if (sizeof(ordinals) > 1) {
-		TLSD->set_tls_value("Text", "parse_error", "Too many ordinals");
-		return ({ });
+		return ({ 0, "Too many ordinals" });
 	}
 
 	if (sizeof(ordinals) == 0) {
-		return candidates;
+		return ({ 3, candidates });
 	}
 
 	number = resolve_ordinal_number(ordinals[0]);
 
 	if (number > sizeof(candidates)) {
-		TLSD->set_tls_value("Text", "parse_error", "There aren't that many");
-		return ({ });
+		return ({ 2, "There aren't that many to pick from." });
 	}
 
-	return ({ candidates[number - 1] });
+	return ({ 3, ({ candidates[number - 1] }) });
 }
-
-private mixed role_convert(mixed **role, object *initial)
-{
-	int sz, i;
-	object *candidates;
-	string *adj;
-	string noun;
-
-	sz = sizeof(role);
-	candidates = initial;
-
-	for (i = sz - 1; i >= 0; i--) {
-		mixed *phrase;
-		string *np;
-		string *ordinals;
-		/* 1.  find np in candidates */
-		/* 2.  build new candidates using the preposition */
-
-		phrase = role[i];
-
-		if (!phrase[1]) {
-			TLSD->set_tls_value("Text", "parse_error", "Bad grammar");
-			return nil;
-		}
-
-		np = phrase[1][1];
-
-		noun = np[sizeof(np) - 1];
-		adj = np[0 .. sizeof(np) - 2];
-
-		ordinals = select_ordinals(adj);
-		adj -= ordinals;
-
-		candidates = filter_noun(candidates, noun);
-		candidates = filter_adjectives(candidates, adj);
-		candidates = filter_ordinals(candidates, ordinals);
-
-		if (sizeof(candidates) == 0) {
-			TLSD->set_tls_value("Text", "parse_error", "There is no " + implode(adj + ({ noun }), " ") + ".");
-			return nil;
-		} else if (sizeof(candidates) > 1) {
-			TLSD->set_tls_value("Text", "parse_error", "There is more than one " + implode(adj + ({ noun }), " ") + ".");
-			return nil;
-		}
-
-		if (i > 0) {
-			switch(phrase[0]) {
-			case "from":
-			case "in":
-				candidates = candidates[0]->query_inventory();
-				break;
-			default:
-				TLSD->set_tls_value("Text", "parse_error", "Cannot handle relation: " + phrase[0]);
-				return nil;
-			}
-		}
-
-		if (TLSD->query_tls_value("Text", "parse_error")) {
-			return nil;
-		}
-	}
-
-	return ({ role[0][0], candidates[0] });
-}
-
-private mixed *english_process(string command, object ustate, object actor, object verb, string args);
 
 int do_verb(object verb, string command, string args)
 {
@@ -360,6 +292,7 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		string *np;
 		string *ordinals;
 		string pre;
+		mixed *result;
 		/* 1.  find np in candidates */
 		/* 2.  build new candidates using the preposition */
 
@@ -377,10 +310,27 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		ordinals = select_ordinals(adj);
 		adj -= ordinals;
 
-		candidates = filter_noun(candidates, noun);
-		candidates = filter_adjectives(candidates, adj);
-		candidates = filter_ordinals(candidates, ordinals);
+		result = filter_noun(candidates, noun);
 
+		if (result[0] != 3) {
+			return result;
+		}
+
+		result = filter_adjectives(result[1], adj);
+
+		if (result[0] != 3) {
+			return result;
+		}
+
+		result = filter_ordinals(result[1], ordinals);
+
+		if (result[0] != 3) {
+			return result;
+		}
+
+		candidates = result[1];
+
+		/* todo:  allow multiple matches for the last part */
 		if (sizeof(candidates) == 0) {
 			return ({ 2, "No " + implode(adj + ({ noun }), " ") });
 		} else if (sizeof(candidates) > 1) {
@@ -397,10 +347,6 @@ private mixed *bind_english(mixed **phrases, object *initial)
 			default:
 				return ({ 0, "Cannot handle relation: " + phrase[0] });
 			}
-		}
-
-		if (TLSD->query_tls_value("Text", "parse_error")) {
-			return ({ 0, "Undefined parse error" });
 		}
 	}
 
