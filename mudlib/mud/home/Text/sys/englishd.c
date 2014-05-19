@@ -164,78 +164,6 @@ private mixed *filter_ordinals(object *candidates, string *ordinals)
 	return ({ 3, ({ candidates[number - 1] }) });
 }
 
-int do_verb(object verb, string command, string args)
-{
-	object ustate;
-	object actor;
-	mixed roles;
-	int i, sz;
-	string *methods;
-	string err;
-
-	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
-
-	actor = ustate->query_user()->query_body();
-
-	TLSD->set_tls_value("Text", "ustate", ustate);
-
-	methods = verb->query_parse_methods();
-
-	sz = sizeof(methods);
-
-	for (i = 0; i < sz && !roles; i++) {
-		int leave;
-
-		switch(methods[i]) {
-		case "raw":
-			err = nil;
-			roles = ([ "raw" : args ]);
-			verb->main(actor, roles);
-			break;
-
-		case "english":
-			{
-				mixed *result;
-
-				result = english_process(command, ustate, actor, verb, args);
-
-				switch(result[0]) {
-				case 0: /* parse failure */
-					err = result[1];
-					continue;
-
-				case 1: /* map failure */
-					err = result[1];
-					continue;
-
-				case 2: /* bind failure */
-					err = result[1];
-					roles = ([ ]);
-					continue;
-
-				case 3: /* success */
-					roles = result[1];
-					verb->main(actor, roles);
-					continue;
-
-				default:
-					break;
-				}
-			}
-		}
-	}
-
-	if (err) {
-		ustate->send_out(err + "\n");
-	}
-
-	if (this_object()) {
-		TLSD->set_tls_value("Text", "ustate", nil);
-	}
-
-	return TRUE;
-}
-
 private string bind_raw(mixed **phrases)
 {
 	string *build;
@@ -542,4 +470,76 @@ private mixed *english_process(string command, object ustate, object actor, obje
 	roles["evoke"] = evoke;
 
 	return ({ 3, roles });
+}
+
+int do_verb(object verb, string command, string args)
+{
+	object ustate;
+	object actor;
+	mixed roles;
+	int i, sz;
+	string *methods;
+	string err;
+
+	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
+
+	actor = ustate->query_user()->query_body();
+
+	TLSD->set_tls_value("Text", "ustate", ustate);
+
+	methods = verb->query_parse_methods();
+
+	sz = sizeof(methods);
+
+	for (i = 0; i < sz && !roles; i++) {
+		int leave;
+
+		switch(methods[i]) {
+		case "raw":
+			err = nil;
+			roles = ([ "raw" : args ]);
+			verb->main(actor, roles);
+			break;
+
+		case "english":
+			{
+				mixed *result;
+
+				result = english_process(command, ustate, actor, verb, args);
+
+				switch(result[0]) {
+				case 0: /* parse failure */
+					err = result[1];
+					continue;
+
+				case 1: /* map failure */
+					err = result[1];
+					continue;
+
+				case 2: /* bind failure */
+					err = result[1];
+					roles = ([ ]);
+					continue;
+
+				case 3: /* success */
+					roles = result[1];
+					verb->main(actor, roles);
+					continue;
+
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	if (err) {
+		ustate->send_out(err + "\n");
+	}
+
+	if (this_object()) {
+		TLSD->set_tls_value("Text", "ustate", nil);
+	}
+
+	return TRUE;
 }
