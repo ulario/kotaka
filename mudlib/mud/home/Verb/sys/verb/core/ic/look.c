@@ -20,6 +20,7 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
+#include <type.h>
 
 inherit LIB_EMIT;
 inherit LIB_VERB;
@@ -40,7 +41,7 @@ mixed **query_roles()
 void main(object actor, mapping roles)
 {
 	mixed dob;
-	object obj;
+	mixed obj;
 	string prep;
 	string look;
 
@@ -63,13 +64,37 @@ void main(object actor, mapping roles)
 	switch(prep) {
 	case nil:
 	case "at":
-		emit_from(actor, ({ "look", "looks" }), "at", obj);
-		look = obj->query_property("look");
-		send_out(look ? STRINGD->wordwrap(look, 60) : "a bland object");
-		send_out("\n");
+		if (typeof(obj) == T_OBJECT) {
+			emit_from(actor, ({ "look", "looks" }), "at", obj);
+			look = obj->query_property("look");
+			send_out(look ? STRINGD->wordwrap(look, 60) : "a bland object");
+			send_out("\n");
+		} else {
+			int sz, i;
+			string *briefs;
+
+			emit_from(actor, ({ "look", "looks" }), "at a bunch of stuff");
+
+			sz = sizeof(obj);
+			briefs = ({ });
+
+			for (i = 0; i < sz; i++) {
+				briefs += ({ TEXT_SUBD->generate_brief_indefinite(obj[i]) });
+			}
+
+			briefs[sz - 1] = "and " + briefs[sz - 1];
+
+			send_out(implode(briefs, ", ") + "\n");
+		}
+
 		break;
 
 	case "in":
+		if (typeof(obj) == T_OBJECT) {
+		} else {
+			send_out("You have to be more specific to look inside something.\n");
+		}
+
 		emit_from(actor, ({ "look", "looks" }), "in", obj);
 		{
 			object *inv;
