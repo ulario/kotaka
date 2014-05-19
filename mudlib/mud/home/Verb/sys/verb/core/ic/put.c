@@ -33,6 +33,7 @@ string *query_parse_methods()
 mixed **query_roles()
 {
 	return ({
+		({ "dob", ({ nil }), 0 }),
 		({ "iob", ({ "in" }), 0 })
 	});
 }

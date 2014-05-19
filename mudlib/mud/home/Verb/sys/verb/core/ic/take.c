@@ -64,6 +64,24 @@ void main(object actor, mapping roles)
 
 	dob = dob[1];
 
+	if (typeof(dob) == T_ARRAY) {
+		object obj;
+		int sz, i;
+
+		sz = sizeof(dob);
+
+		for (i = 0; i < sz; i++) {
+			obj = dob[i];
+
+			if (obj != actor) {
+				obj->move(actor);
+			}
+		}
+
+		emit_from(actor, ({ "take", "takes" }), "a bunch of stuff.");
+		return;
+	}
+
 	if (dob == actor) {
 		send_out("Find a yoga instructor for that.\n");
 		return;
