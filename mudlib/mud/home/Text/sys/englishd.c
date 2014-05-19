@@ -473,7 +473,7 @@ private mixed *english_process(string command, object ustate, object actor, obje
 		env = actor->query_environment();
 
 		if (env) {
-			icand = env->query_inventory() + actor->query_inventory();
+			icand = actor->query_inventory() + env->query_inventory();
 		} else {
 			icand = ({ actor }) + actor->query_inventory();
 		}
