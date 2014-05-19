@@ -348,6 +348,11 @@ private mixed *english_process(string command, object ustate, object actor, obje
 
 		sz = sizeof(rules);
 
+		if (!sz) {
+			rules = ({ ({ "dob", ({ nil }) }) });
+			sz = 1;
+		}
+
 		for (i = 0; i < sz; i++) {
 			mixed *rule;
 			string *preps;
