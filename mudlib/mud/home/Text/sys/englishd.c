@@ -488,7 +488,7 @@ private mixed *english_process(string command, object ustate, object actor, obje
 			} else {
 				mixed *result;
 
-				result = bind_english(roles[role], actor->query_environment()->query_inventory());
+				result = bind_english(roles[role], icand);
 
 				switch(result[0]) {
 				case 0 .. 2:
