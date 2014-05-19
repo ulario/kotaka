@@ -238,13 +238,13 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		ordinals = select_ordinals(adj);
 		adj -= ordinals;
 
-		result = filter_noun(candidates, noun);
+		result = filter_adjectives(candidates, adj);
 
 		if (result[0] != 3) {
 			return result;
 		}
 
-		result = filter_adjectives(result[1], adj);
+		result = filter_noun(result[1], noun);
 
 		if (result[0] != 3) {
 			return result;
