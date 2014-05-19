@@ -24,9 +24,10 @@
 #include <kotaka/paths/verb.h>
 #include <type.h>
 
-private object *filter_noun(object *candidates, string noun)
+private mixed *filter_noun(object *candidates, string noun)
 {
-	object *contenders;
+	object *scont;
+	object *pcont;
 	int sz;
 	int i;
 
@@ -35,18 +36,37 @@ private object *filter_noun(object *candidates, string noun)
 
 	noun = STRINGD->to_lower(noun);
 
+	/* singular nouns must match one and only one object */
+	/* plural nouns can match multiples */
+
+	scont = ({ });
+	pcont = ({ });
+
 	for (i = 0; i < sz; i++) {
-		string *match;
+		string *snouns;
+		string *pnouns;
 
-		match = candidates[i]->query_property("snouns")
-			| candidates[i]->query_property("pnouns");
+		snouns = candidates[i]->query_property("snouns")
+		pnouns = candidates[i]->query_property("pnouns");
 
-		if (sizeof(({ noun }) & match)) {
-			contenders += ({ candidates[i] });
+		if (sizeof(({ noun }) & snouns)) {
+			scont += ({ candidates[i] });
+		}
+
+		if (sizeof(({ noun }) & pnouns)) {
+			pcont += ({ candidates[i] });
 		}
 	}
 
-	return contenders;
+	if (sizeof(pcont)) {
+		return ({ 3, scont + pcont });
+	}
+
+	if (sizeof(scont) > 1) {
+		return ({ 2, "Be more specific" });
+	}
+
+	return ({ 3, scont });
 }
 
 private object *filter_adjectives(object *candidates, string *adjectives)
@@ -259,13 +279,13 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		candidates = result[1];
 
 		/* todo:  allow multiple matches for the last part */
-		if (sizeof(candidates) == 0) {
-			return ({ 2, "No " + implode(adj + ({ noun }), " ") });
-		} else if (sizeof(candidates) > 1) {
-			return ({ 2, "Multiple " + implode(adj + ({ noun }), " ") });
-		}
-
 		if (i > 0) {
+			if (sizeof(candidates) == 0) {
+				return ({ 2, "No " + implode(adj + ({ noun }), " ") });
+			} else if (sizeof(candidates) > 1) {
+				return ({ 2, "Multiple " + implode(adj + ({ noun }), " ") });
+			}
+
 			switch(phrase[0]) {
 			case "from":
 			case "in":
@@ -278,7 +298,7 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		}
 	}
 
-	return ({ 3, phrases[0][0], candidates[0] });
+	return ({ 3, phrases[0][0], candidates });
 }
 
 private mixed *english_process(string command, object ustate, object actor, object verb, string args)
