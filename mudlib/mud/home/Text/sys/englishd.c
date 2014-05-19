@@ -555,10 +555,20 @@ private mixed *english_process(string command, object ustate, object actor, obje
 	/* phase 3: bind */
 	{
 		string *rlist;
+		object env;
+		object *icand;
 		int i, sz;
 
 		rlist = map_indices(roles);
 		sz = sizeof(rlist);
+
+		env = actor->query_environment();
+
+		if (env) {
+			icand = env->query_inventory() + actor->query_inventory();
+		} else {
+			icand = ({ actor }) + actor->query_inventory();
+		}
 
 		for (i = 0; i < sz; i++) {
 			string role;
@@ -584,5 +594,6 @@ private mixed *english_process(string command, object ustate, object actor, obje
 	}
 
 	roles["evoke"] = evoke;
+
 	return ({ 3, roles });
 }
