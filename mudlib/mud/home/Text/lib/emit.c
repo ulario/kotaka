@@ -21,6 +21,23 @@
 #include <kotaka/paths/text.h>
 #include <type.h>
 
+private string from_object(object obj, mapping seen, object viewer)
+{
+	if (seen[obj]) {
+		if (obj == viewer) {
+			return "yourself";
+		} else {
+			return "itself";
+		}
+	} else {
+		if (obj == viewer) {
+			return "you";
+		} else {
+			return TEXT_SUBD->generate_brief_definite(obj);
+		}
+	}
+}
+
 void emit_to(object actor, object viewer, string *verbs, mixed chain ...)
 {
 	string *buffer;
@@ -59,19 +76,26 @@ void emit_to(object actor, object viewer, string *verbs, mixed chain ...)
 			break;
 
 		case T_OBJECT:
-			if (seen[item]) {
-				if (item == viewer) {
-					buffer += ({ "yourself" });
-				} else {
-					buffer += ({ "itself" });
+			buffer += ({ from_object(item, seen, viewer) });
+			break;
+
+		case T_ARRAY:
+			{
+				int j, sz2;
+				string *list;
+
+				sz2 = sizeof(item);
+				list = ({ });
+
+				for (j = 0; j < sz2; j++) {
+					list += ({ from_object(item[j], seen, viewer) });
 				}
-			} else {
-				if (item == viewer) {
-					buffer += ({ "you" });
-				} else {
-					buffer += ({ TEXT_SUBD->generate_brief_definite(item) });
-				}
+
+				list[sz2 - 1] = "and " + list[sz2 - 1];
+
+				buffer += ({ implode(list, ", ") });
 			}
+			break;
 		}
 	}
 
