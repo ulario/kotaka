@@ -121,5 +121,4 @@ void main(object actor, mapping roles)
 	default:
 		send_out("todo: handle preposition " + prep + "\n");
 	}
-
 }
