@@ -33,8 +33,40 @@ string *query_parse_methods()
 mixed **query_roles()
 {
 	return ({
+		({ "dob", ({ nil }), 0 }),
 		({ "iob", ({ "to" }), 0 })
 	});
+}
+
+private string validate_give(object actor, object obj, object iob)
+{
+	if (obj == actor) {
+		return "Giving yourself can't be done literally.";
+	}
+
+	if (obj->query_environment() != actor) {
+		return "It has to be in your possession first.";
+	}
+
+	if (obj->is_container_of(iob)) {
+		return "Turn it inside out first.";
+	}
+
+	if (obj == iob) {
+		return "Just turn it inside out.";
+	}
+
+	if (obj->query_property("is_immobile")) {
+		return "It is stuck like glue and cannot be given away.";
+	}
+}
+
+private void do_give(object actor, object obj, object iob)
+{
+	obj->move(iob);
+	obj->set_x_position(0);
+	obj->set_y_position(0);
+	obj->set_z_position(0);
 }
 
 void main(object actor, mapping roles)
@@ -51,18 +83,8 @@ void main(object actor, mapping roles)
 	dob = roles["dob"];
 	iob = roles["iob"];
 
-	if (dob == actor) {
-		send_out("Try as you might, you cannot lift yourself.\n");
-		return;
-	}
-
 	if (!dob) {
 		send_out("Give what?\n");
-		return;
-	}
-
-	if (typeof(dob) == T_STRING) {
-		send_out(dob + "\n");
 		return;
 	}
 
@@ -71,45 +93,76 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (typeof(iob) == T_STRING) {
-		send_out(iob + "\n");
+	if (dob[0]) {
+		send_out("Bad grammar.\n");
 		return;
 	}
 
-	if (dob[0]) {
-		send_out("Your grammar stinks.\n");
+	if (iob[0] != "to") {
+		send_out("Bad grammar.\n");
 		return;
 	}
 
 	dob = dob[1];
 	iob = iob[1];
 
-	if (dob->query_environment() != actor) {
-		send_out("It doesn't appear to be in your hands.\n");
+	switch(typeof(dob)) {
+	case T_STRING:
+		send_out(dob + "\n");
 		return;
+
+	case T_ARRAY:
+	case T_OBJECT:
+		switch(typeof(iob)) {
+		case T_STRING:
+			send_out(iob + "\n");
+			return;
+
+		case T_ARRAY:
+			send_out("Please be more specific on who or what you are giving things to.\n");
+			return;
+
+		case T_OBJECT:
+			switch(typeof(dob)) {
+			case T_ARRAY:
+				{
+					int i, sz;
+					sz = sizeof(dob);
+
+					for (i = 0; i < sz; i++) {
+						string err;
+
+						err = validate_give(actor, dob[i], iob);
+
+						if (err) {
+							send_out(err + "\n");
+							return;
+						}
+					}
+
+					for (i = 0; i < sz; i++) {
+						do_give(actor, dob[i], iob);
+					}
+				}
+				break;
+
+			case T_OBJECT:
+				{
+					string err;
+
+					err = validate_give(actor, dob, iob);
+
+					if (err) {
+						send_out(err + "\n");
+						return;
+					}
+
+					do_give(actor, dob, iob);
+				}
+				break;
+			}
+		}
 	}
 
-	if (dob->query_environment() == actor) {
-		if (dob->is_container_of(iob)) {
-			send_out("Turn it inside out first.\n");
-			return;
-		}
-
-		if (dob == iob) {
-			send_out("Just turn it inside out.\n");
-			return;
-		}
-
-		if (dob->query_property("is_immobile")) {
-			send_out("It is stuck like glue and cannot be given away.\n");
-			return;
-		}
-
-		dob->move(iob);
-		dob->set_x_position(0);
-		dob->set_y_position(0);
-		dob->set_z_position(0);
-		emit_from(actor, ({ "give", "givess" }), dob, "to", iob);
-		return;
-	}
+	emit_from(actor, ({ "give", "gives" }), dob, "to", iob);
 }
