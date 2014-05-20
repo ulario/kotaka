@@ -35,10 +35,30 @@ mixed **query_roles()
 	return ({ });
 }
 
+string validate_take(object actor, object obj)
+{
+	if (obj->is_container_of(actor)) {
+		return "You can't take something you're inside of.";
+	}
+
+	if (obj->query_environment() == actor) {
+		return "You already have it.";
+	}
+
+	if (obj == actor) {
+		return "You can't take yourself.";
+	}
+
+	if (obj->query_property("is_immobile")) {
+		return "It is stuck like glue and cannot be taken.\n";
+	}
+}
+
 void main(object actor, mapping roles)
 {
 	mixed dob;
 	string look;
+	object from;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
@@ -52,11 +72,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (typeof(dob) == T_STRING) {
-		send_out(dob + "\n");
-		return;
-	}
-
 	if (dob[0]) {
 		send_out("Your grammar stinks.\n");
 		return;
@@ -64,49 +79,66 @@ void main(object actor, mapping roles)
 
 	dob = dob[1];
 
-	if (typeof(dob) == T_ARRAY) {
-		object obj;
-		int sz, i;
+	switch(typeof(dob)) {
+	case T_STRING:
+		send_out(dob + "\n");
+		return;
 
-		sz = sizeof(dob);
+	case T_OBJECT:
+		{
+			string err;
 
-		for (i = 0; i < sz; i++) {
-			obj = dob[i];
+			err = validate_take(actor, dob);
 
-			if (obj != actor) {
-				obj->move(actor);
+			if (err) {
+				send_out(err + "\n");
+				return;
+			}
+
+			if (dob->query_environment() != actor->query_environment()) {
+				from = dob->query_environment();
+			}
+
+			dob->move(actor);
+		}
+		break;
+
+	case T_ARRAY:
+		{
+			object obj;
+			int sz, i;
+
+			sz = sizeof(dob);
+
+			/* validate */
+			for (i = 0; i < sz; i++) {
+				string err;
+
+				obj = dob[i];
+
+				err = validate_take(actor, obj);
+
+				if (err) {
+					send_out(err + "\n");
+					return;
+				}
+			}
+
+			if (dob[0]->query_environment() != actor->query_environment()) {
+				from = dob[0]->query_environment();
+			}
+
+			/* execute */
+			for (i = 0; i < sz; i++) {
+				dob[i]->move(actor);
 			}
 		}
-
-		emit_from(actor, ({ "take", "takes" }), "a bunch of stuff.");
-		return;
+		break;
 	}
 
-	if (dob == actor) {
-		send_out("Find a yoga instructor for that.\n");
-		return;
-	}
-
-	if (dob->is_container_of(actor)) {
-		send_out("Find a yoga instructor for that.\n");
-		return;
-	}
-
-	if (dob->query_environment() == actor) {
-		send_out("You already have it!\n");
-		return;
-	}
-
-	if (dob->query_property("is_immobile")) {
-		send_out("It is stuck like glue and cannot be taken.\n");
-		return;
-	}
-
-	if (dob->query_environment() == actor->query_environment()) {
-		emit_from(actor, ({ "take", "takes" }), dob);
+	if (from) {
+		emit_from(actor, ({ "take", "takes" }), dob, "from", from);
 	} else {
-		emit_from(actor, ({ "take", "takes" }), dob, "from", dob->query_environment());
+		emit_from(actor, ({ "take", "takes" }), dob);
 	}
-
-	dob->move(actor);
 }
