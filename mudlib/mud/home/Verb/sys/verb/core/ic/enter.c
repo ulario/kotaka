@@ -57,47 +57,53 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (typeof(dob) == T_STRING) {
-		send_out(dob + "\n");
-		return;
-	}
-
 	if (dob[0]) {
 		send_out("Your grammar stinks.\n");
 		return;
 	}
-
 	dob = dob[1];
 
-	def = dob->query_property("default_entrance");
+	switch(typeof(dob)) {
+	case T_STRING:
+		send_out(dob + "\n");
+		return;
 
-	if (def) {
-		"~Game/sys/action/exit"->action(
-			([
-				"actor": actor,
-				"dob": def
-			])
-		);
-	} else {
-		user = query_user();
+	case T_OBJECT:
+		def = dob->query_property("default_entrance");
 
-		if (user->query_class() < 2) {
-			send_out("Strange, it doesn't appear to have a main entrance.\n");
-			return;
+		if (def) {
+			"~Game/sys/action/exit"->action(
+				([
+					"actor": actor,
+					"dob": def
+				])
+			);
+		} else {
+			user = query_user();
+
+			if (user->query_class() < 2) {
+				send_out("Strange, it doesn't appear to have a main entrance.\n");
+				return;
+			}
+
+			if (dob == actor || actor->is_container_of(dob)) {
+				send_out("Are you trying to create a singularity?\n");
+				return;
+			}
+
+			emit_from(actor, ({ "enter", "enters" }), dob);
+
+			actor->move(dob);
+			actor->set_x_position(0);
+			actor->set_y_position(0);
+			actor->set_z_position(0);
+
+			emit_from(actor, ({ "arrive", "arrives" }));
 		}
+		break;
 
-		if (dob == actor || actor->is_container_of(dob)) {
-			send_out("Are you trying to create a singularity?\n");
-			return;
-		}
-
-		emit_from(actor, ({ "enter", "enters" }), dob);
-
-		actor->move(dob);
-		actor->set_x_position(0);
-		actor->set_y_position(0);
-		actor->set_z_position(0);
-
-		emit_from(actor, ({ "arrive", "arrives" }));
+	case T_ARRAY:
+		send_out("You have to be more specific, there is more than one.\n");
+		return;
 	}
 }
