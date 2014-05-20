@@ -35,6 +35,21 @@ mixed **query_roles()
 	return ({ });
 }
 
+private string validate_drop(object actor, object obj)
+{
+	if (obj->query_environment() != actor) {
+		return "You can only drop something if you have it.";
+	}
+}
+
+private void do_drop(object actor, object obj)
+{
+	obj->move(actor->query_environment());
+	obj->set_x_position(actor->query_x_position());
+	obj->set_y_position(actor->query_y_position());
+	obj->set_z_position(actor->query_z_position());
+}
+
 void main(object actor, mapping roles)
 {
 	mixed dob;
@@ -64,29 +79,54 @@ void main(object actor, mapping roles)
 
 	dob = dob[1];
 
-	if (dob == actor) {
-		send_out("That doesn't make any sense.\n");
+	switch(typeof(dob)) {
+	case T_STRING:
+		send_out(dob + "\n");
 		return;
+
+	case T_OBJECT:
+		{
+			string err;
+
+			err = validate_drop(actor, dob);
+
+			if (err) {
+				send_out(err + "\n");
+				return;
+			}
+
+			do_drop(actor, dob);
+		}
+		break;
+
+	case T_ARRAY:
+		{
+			object obj;
+			int sz, i;
+
+			sz = sizeof(dob);
+
+			/* validate */
+			for (i = 0; i < sz; i++) {
+				string err;
+
+				obj = dob[i];
+
+				err = validate_drop(actor, obj);
+
+				if (err) {
+					send_out(err + "\n");
+					return;
+				}
+			}
+
+			/* execute */
+			for (i = 0; i < sz; i++) {
+				do_drop(actor, dob[i]);
+			}
+		}
+		break;
 	}
 
-	if (!actor->query_environment()) {
-		send_out("It isn't polite to litter in the void.\n");
-		return;
-	}
-
-	if (dob->query_environment() != actor) {
-		send_out("You don't have it.\n");
-		return;
-	}
-
-	if (dob->query_property("is_immobile")) {
-		send_out("It is stuck like glue and cannot be dropped.\n");
-		return;
-	}
-
-	dob->move(actor->query_environment());
-	dob->set_x_position(actor->query_x_position());
-	dob->set_y_position(actor->query_y_position());
-	dob->set_z_position(actor->query_z_position());
-	emit_from(actor, ({ "drop", "drops" }), dob, nil);
+	emit_from(actor, ({ "drop", "drops" }), dob);
 }
