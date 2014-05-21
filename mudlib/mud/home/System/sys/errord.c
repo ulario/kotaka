@@ -196,14 +196,20 @@ void runtime_error(string error, int caught, mixed **trace)
 			}
 
 			LOGD->post_message("error", caught ? LOG_NOTICE : LOG_ERR, errstr);
-			LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
+
+			if (!compstr) {
+				LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
+			}
 		} else {
 			if (compstr) {
 				DRIVER->message(compstr + "\n");
 			}
 
 			DRIVER->message(errstr + "\n");
-			DRIVER->message(tracestr + "\n");
+
+			if (!compstr) {
+				DRIVER->message(tracestr + "\n");
+			}
 		}
 
 		if (find_object(CHANNELD)) {
@@ -217,8 +223,10 @@ void runtime_error(string error, int caught, mixed **trace)
 				CHANNELD->post_message("error", nil, errstr);
 			}
 
-			catch {
-				CHANNELD->post_message("trace", nil, tracestr);
+			if (!compstr) {
+				catch {
+					CHANNELD->post_message("trace", nil, tracestr);
+				}
 			}
 		}
 	}
