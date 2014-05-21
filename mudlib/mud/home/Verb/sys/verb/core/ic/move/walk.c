@@ -85,7 +85,7 @@ void main(object actor, mapping roles)
 			}
 			number = 0;
 			break;
-		
+
 		default:
 			send_out("Invalid walk string: " + roles["raw"] + "\n");
 			roles["raw"] = "";
