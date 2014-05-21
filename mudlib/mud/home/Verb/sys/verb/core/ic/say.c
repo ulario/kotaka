@@ -83,9 +83,11 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (target) {
-		emit_from(actor, ({ "say", "says" }), "to", target, "\"" + text + "\"");
-	} else {
-		emit_from(actor, ({ "say", "says" }), "\"" + text + "\"");
-	}
+	"~Game/sys/action/speak"->action(
+		([
+			"actor": actor,
+			"iob": target,
+			"evoke": text
+		])
+	);
 }
