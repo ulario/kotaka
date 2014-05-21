@@ -130,6 +130,8 @@ private string *select_ordinals(string *adjectives)
 
 private int resolve_ordinal_number(string ordinal)
 {
+	int number;
+
 	switch(ordinal) {
 	case "first":
 		return 1;
@@ -151,6 +153,19 @@ private int resolve_ordinal_number(string ordinal)
 		return 9;
 	case "tenth":
 		return 10;
+	default:
+		if (sscanf(ordinal, "%dst", number)) {
+			return number;
+		}
+		if (sscanf(ordinal, "%dnd", number)) {
+			return number;
+		}
+		if (sscanf(ordinal, "%drd", number)) {
+			return number;
+		}
+		if (sscanf(ordinal, "%dth", number)) {
+			return number;
+		}
 	}
 }
 
