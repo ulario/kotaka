@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/algorithm.h>
+#include <kotaka/paths/ansi.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/geometry.h>
 #include <kotaka/paths/kotaka.h>
