@@ -194,12 +194,12 @@ private void do_alias(string args)
 			break;
 		}
 
-		if (sscanf(args, "%s %s", alias, args)) {
+		if (sscanf(args, "%*s %*s")) {
 			send_out("Don't specify an expansion when removing an alias\n");
 			break;
 		}
 
-		ALIASD->set_alias(alias, nil);
+		ALIASD->set_alias(args, nil);
 		send_out("Done.\n");
 		break;
 
