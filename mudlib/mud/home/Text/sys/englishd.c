@@ -485,12 +485,14 @@ private mixed *english_process(string command, object ustate, object actor, obje
 		rlist = map_indices(roles);
 		sz = sizeof(rlist);
 
-		env = actor->query_environment();
+		if (actor) {
+			env = actor->query_environment();
 
-		if (env) {
-			icand = actor->query_inventory() + env->query_inventory();
-		} else {
-			icand = ({ actor }) + actor->query_inventory();
+			if (env) {
+				icand = actor->query_inventory() + env->query_inventory();
+			} else {
+				icand = ({ actor }) + actor->query_inventory();
+			}
 		}
 
 		for (i = 0; i < sz; i++) {
