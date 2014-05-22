@@ -231,6 +231,7 @@ void unblock_connections(varargs object except)
 	}
 
 	reblocked = nil;
+	connections = nil;
 }
 
 int query_blocked()
