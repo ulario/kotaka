@@ -21,6 +21,7 @@
 #include <kernel/kernel.h>
 #include <kernel/user.h>
 
+#define ANSI()		(sscanf(previous_program(), USR_DIR + "/Ansi/%*s"))
 #define ACCOUNT()	(sscanf(previous_program(), USR_DIR + "/Account/%*s"))
 #define BIGSTRUCT()	(sscanf(previous_program(), USR_DIR + "/Bigstruct/%*s"))
 #define CATALOG()	(sscanf(previous_program(), USR_DIR + "/Catalog/%*s"))

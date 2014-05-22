@@ -29,7 +29,7 @@ int size_x, size_y;
 
 void set_position(int x, int y)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	pos_x = x;
 	pos_y = y;
@@ -37,7 +37,7 @@ void set_position(int x, int y)
 
 int *query_position()
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	return ({ pos_x, pos_y });
 }
@@ -46,7 +46,7 @@ void set_size(int dx, int dy)
 {
 	int i;
 
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	size_x = dx;
 	size_y = dy;
@@ -64,7 +64,7 @@ void set_size(int dx, int dy)
 
 int *query_size()
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	return ({ size_x, size_y });
 }
@@ -74,7 +74,7 @@ void draw(string brush, int pen_x, int pen_y, int color)
 	int i;
 	int sz;
 
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	sz = strlen(brush);
 
@@ -117,7 +117,7 @@ void erase(int length, int pen_x, int pen_y, int color)
 	int i;
 	int sz;
 
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	sz = length;
 
@@ -145,21 +145,21 @@ void erase(int length, int pen_x, int pen_y, int color)
 
 string *query_colors()
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	return colors;
 }
 
 string *query_chars()
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	return chars;
 }
 
 string *query_mask()
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	return mask;
 }

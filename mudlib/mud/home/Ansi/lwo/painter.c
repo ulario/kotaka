@@ -69,7 +69,7 @@ void set_layer_position(string name, int px, int py)
 
 object query_layer(string name)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(ANSI());
 
 	if (layers[name]) {
 		return layers[name];
