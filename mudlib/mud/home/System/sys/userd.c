@@ -275,8 +275,6 @@ void reboot()
 
 	ACCESS_CHECK(SYSTEM());
 
-	LOGD->post_message("system", LOG_NOTICE, "UserD->reboot");
-
 	if (enabled) {
 		unregister_with_klib_userd();
 		register_with_klib_userd();
