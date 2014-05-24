@@ -53,6 +53,11 @@ void main(object actor, mapping roles)
 			break;
 		}
 
+		if (alias == "alias") {
+			send_out("The alias command cannot be aliased.\n");
+			return;
+		}
+
 		ALIASD->set_alias(alias, args);
 		send_out("Done.\n");
 		break;
