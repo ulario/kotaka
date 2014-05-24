@@ -390,6 +390,7 @@ object query_program_indices()
 	}
 
 	indices->grant_access(previous_object(), FULL_ACCESS);
+	indices->grant_access(this_object(), 0);
 
 	return indices;
 }
@@ -401,6 +402,7 @@ object query_includer_indices()
 	indices = incdb->query_indices();
 
 	indices->grant_access(previous_object(), FULL_ACCESS);
+	indices->grant_access(this_object(), 0);
 
 	return indices;
 }
@@ -446,6 +448,8 @@ object query_inheriters(int oindex)
 	}
 
 	list->grant_access(previous_object(), FULL_ACCESS);
+	list->grant_access(this_object(), 0);
+
 	return list;
 }
 
@@ -464,6 +468,8 @@ object query_includers(string path)
 	}
 
 	list->grant_access(previous_object(), FULL_ACCESS);
+	list->grant_access(this_object(), 0);
+
 	return list;
 }
 
