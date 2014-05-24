@@ -57,7 +57,7 @@ private mixed *filter_noun(object *candidates, string noun)
 		}
 	}
 
-	return ({ 3, scont + pcont, !sizeof(pcont) && sizeof(scont) });
+	return ({ 3, scont | pcont, !sizeof(pcont) && sizeof(scont) });
 }
 
 private mixed *filter_adjectives(object *candidates, string *adjectives)
