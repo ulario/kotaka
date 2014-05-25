@@ -24,7 +24,7 @@ object root_category;
 
 static void create()
 {
-	root_category = clone_object("~/obj/help/category");
+	root_category = clone_object("~/obj/category");
 }
 
 static void destruct()
@@ -40,7 +40,7 @@ void reset()
 
 	destruct_object(root_category);
 
-	root_category = clone_object("~/obj/help/category");
+	root_category = clone_object("~/obj/category");
 }
 
 void add_category(string category)
@@ -53,6 +53,7 @@ void add_category(string category)
 void add_topic(string topic, varargs mixed content)
 {
 	ACCESS_CHECK(PRIVILEGED());
+
 	ASSERT(content);
 
 	root_category->insert_entry(topic, 0)->set_content(content);
