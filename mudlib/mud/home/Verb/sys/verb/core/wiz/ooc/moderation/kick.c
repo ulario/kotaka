@@ -31,6 +31,7 @@ void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
+	string username;
 	string kicker_name;
 	string turkey_name;
 
@@ -41,24 +42,26 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
+	username = roles["raw"];
+
+	if (username == "") {
 		send_out("Who do you wish to kick?\n");
 		return;
 	}
 
-	if (roles["raw"] == user->query_username()) {
+	if (username == user->query_username()) {
 		send_out("You cannot kick yourself.\n");
 		return;
 	}
 
-	turkey = TEXT_USERD->find_user(roles["raw"]);
+	turkey = TEXT_USERD->find_user(username);
 
 	if (!turkey) {
 		send_out("That user is not online.\n");
 		return;
 	}
 
-	if (roles["raw"] == "admin") {
+	if (username == "admin") {
 		send_out("You cannot kick admin.\n");
 		return;
 	}
