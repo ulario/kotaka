@@ -38,7 +38,6 @@
 #define TESTD		(USR_DIR + "/System/sys/testd")
 #define TLSD		(USR_DIR + "/System/sys/tlsd")
 #define TOUCHD		(USR_DIR + "/System/sys/touchd")
-#define UPGRADED	(USR_DIR + "/System/sys/upgraded")
 #define WATCHDOGD	(USR_DIR + "/System/sys/watchdogd")
 
 /* libs */

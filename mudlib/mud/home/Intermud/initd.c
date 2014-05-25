@@ -20,9 +20,15 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
+
+private void load()
+{
+	load_dir("sys", 1);
+}
 
 static void reboot_self()
 {
@@ -31,9 +37,9 @@ static void reboot_self()
 
 static void create()
 {
-	LOGD->post_message("intermud", LOG_INFO, "Intermud subsystem loading...");
-
 	KERNELD->set_global_access("Intermud", 1);
+
+	load();
 
 	if (!CHANNELD->test_channel("dgd")) {
 		CHANNELD->add_channel("dgd");
@@ -42,6 +48,14 @@ static void create()
 
 	CHANNELD->set_channel_config("dgd", "channel_color", 0x0c);
 
-	load_dir("sys", 1);
 	call_out("reboot_self", 300);
+}
+
+void upgrade_subsystem()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	load();
+
+	purge_orphans("Intermud");
 }

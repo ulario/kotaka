@@ -50,6 +50,13 @@ void configure_rsrc();
 private void check_config();
 private void check_versions();
 
+private void load()
+{
+	load_dir("lwo", 1);
+	load_dir("obj", 1);
+	load_dir("sys", 1);
+}
+
 private void initialize()
 {
 	subsystems = ([ ]);
@@ -93,9 +100,8 @@ private void initialize()
 	load_object(CLONED);
 
 	LOGD->post_message("boot", LOG_INFO, "Loading system");
-	load_dir("lwo", 1);
-	load_dir("obj", 1);
-	load_dir("sys", 1);
+
+	load();
 
 	LOGD->post_message("boot", LOG_INFO, "Configuring user manager");
 	SYSTEM_USERD->set_reserve(2);
@@ -502,13 +508,39 @@ static void audit_filequota()
 	DRIVER->fix_filequota();
 }
 
-void do_upgrade()
+atomic void upgrade_system()
 {
-	ACCESS_CHECK(SYSTEM());
+	string *users;
+	int sz;
 
-	destruct_object(ERRORD);
+	users = get_dir(USR_DIR + "/*")[0];
+	users &= KERNELD->query_users();
 
-	load_dir("lwo", 1);
-	load_dir("obj", 1);
-	load_dir("sys", 1);
+	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
+		compile_object(USR_DIR + "/" + users[sz] + "/initd");
+	}
+
+	call_out("upgrade_system_2", 0);
+}
+
+atomic static void upgrade_system_2()
+{
+	string *users;
+	int sz;
+
+	users = get_dir(USR_DIR + "/*")[0];
+	users &= KERNELD->query_users();
+
+	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
+		(USR_DIR + "/" + users[sz] + "/initd")->upgrade_subsystem();
+	}
+}
+
+void upgrade_subsystem()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	load();
+
+	purge_orphans("System");
 }

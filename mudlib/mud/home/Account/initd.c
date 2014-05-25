@@ -24,11 +24,16 @@
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
+private void load()
+{
+	load_dir("sys");
+}
+
 static void create()
 {
 	KERNELD->set_global_access("Account", 1);
 
-	load_dir("sys");
+	load();
 }
 
 void prepare_reboot()
@@ -45,4 +50,13 @@ void reboot()
 
 	ACCOUNTD->force_restore();
 	BAND->force_restore();
+}
+
+void upgrade_subsystem()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	load();
+
+	purge_orphans("Account");
 }

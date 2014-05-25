@@ -84,12 +84,37 @@ string query_toucher(string path)
 	return nil;
 }
 
-void do_upgrade()
+void upgrade_subsystem()
 {
-	ACCESS_CHECK(previous_program() == UPGRADED);
+	ACCESS_CHECK(previous_program() == INITD);
 }
 
-static void add_upgrade_required(int progid)
+static void purge_orphans(string subsystem)
 {
-	UPGRADED->add_upgrade_required(progid);
+	object list;
+
+	list = PROGRAMD->query_program_indices();
+
+	while (!list->empty()) {
+		int index;
+		object pinfo;
+		string file;
+
+		index = list->query_back();
+		list->pop_back();
+
+		pinfo = PROGRAMD->query_program_info(index);
+
+		file = pinfo->query_path();
+
+		if (!sscanf(file, USR_DIR + "/" + subsystem + "/%*s")) {
+			continue;
+		}
+
+		if (file_info(file + ".c")) {
+			continue;
+		}
+
+		destruct_object(file);
+	}
 }

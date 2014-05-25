@@ -32,26 +32,13 @@ string *query_parse_methods()
 atomic void main(object actor, mapping roles)
 {
 	object user;
-	string name;
-
-	string *subsystems;
-	int sz, i;
 
 	user = query_user();
-	name = user->query_username();
 
 	if (user->query_class() < 3) {
 		send_out("You do not have sufficient access rights to upgrade the system\n");
 		return;
 	}
 
-	send_out("Sending upgrade signal...\n");
-
-	UPGRADED->upgrade_system();
-
-	/* upgrades: */
-	/* 1.  Find all inheriters of a library needing an update */
-	/* 2.  Have all the libraries destructed */
-	/* 3.  Touch all the objects/clones inheriting them */
-	/* 4.  Wait for all touches to be completed */
+	INITD->upgrade_system();
 }

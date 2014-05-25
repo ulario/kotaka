@@ -18,13 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
+
+private void load()
+{
+	load_dir("sys", 1);
+}
 
 static void create()
 {
 	KERNELD->set_global_access("String", 1);
 
-	load_dir("sys", 1);
+	load();
+}
+
+void upgrade_subsystem()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	load();
+
+	purge_orphans("String");
 }

@@ -26,6 +26,13 @@
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
+void load()
+{
+	load_dir("lwo", 1);
+	load_dir("obj", 1);
+	load_dir("sys", 1);
+}
+
 static void create()
 {
 	KERNELD->set_global_access("Text", 1);
@@ -35,12 +42,14 @@ static void create()
 	INITD->boot_subsystem("Ansi");
 	INITD->boot_subsystem("Verb");
 
-	load_dir("lwo", 1);
-	load_dir("obj", 1);
-	load_dir("sys", 1);
+	load();
 }
 
-static void upgrading()
+void upgrade_subsystem()
 {
-	TLSD->set_tls_access("Text", "ustate", "Verb", READ_ACCESS);
+	ACCESS_CHECK(previous_program() == INITD);
+
+	load();
+
+	purge_orphans("Text");
 }

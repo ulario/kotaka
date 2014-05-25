@@ -208,15 +208,6 @@ int query_timeout(object LIB_CONN connection)
 	return 5;
 }
 
-void upgrade()
-{
-	if (!guests) {
-		guests = ([ ]);
-	}
-
-	LOGD->post_message("Text", LOG_INFO, "Text user manager upgraded.");
-}
-
 void add_user(string name, object user)
 {
 	ACCESS_CHECK(TEXT());

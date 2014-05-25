@@ -54,6 +54,14 @@ void build_world();
 /* Constructors */
 /****************/
 
+private void load()
+{
+	load_dir("lwo", 1);
+	load_dir("obj", 1);
+	load_dir("open", 1);
+	load_dir("sys", 1);
+}
+
 private void create_channels()
 {
 	CHANNELD->add_channel("chat");
@@ -171,10 +179,7 @@ static void create()
 	INITD->boot_subsystem("Thing");
 	INITD->boot_subsystem("Geometry");
 
-	load_dir("lwo", 1);
-	load_dir("obj", 1);
-	load_dir("open", 1);
-	load_dir("sys", 1);
+	load();
 
 	configure_properties();
 	create_channels();
@@ -333,4 +338,13 @@ void load_help()
 
 	HELPD->reset();
 	load_rootdir();
+}
+
+void upgrade_subsystem()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	load();
+
+	purge_orphans("Game");
 }

@@ -32,22 +32,26 @@ inherit UTILITY_COMPILE;
 
 string *bad_bins;
 
-static void create()
+private void load()
 {
-	int i;
-
-	load_object(STRINGD);
-
 	load_dir("obj", 1);
 	load_dir("sys", 1);
-
-	KERNELD->set_global_access("Kotaka", 1);
 }
 
-void do_upgrade()
+static void create()
 {
-	ACCESS_CHECK(SYSTEM());
+	INITD->boot_subsystem("String");
 
-	load_dir("obj", 1);
-	load_dir("sys", 1);
+	KERNELD->set_global_access("Kotaka", 1);
+
+	load();
+}
+
+void upgrade_subsystem()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	load();
+
+	purge_orphans("Kotaka");
 }
