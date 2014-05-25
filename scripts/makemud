@@ -20,7 +20,6 @@ mkdir -p dgd/$MUDNAME/mud
 mkdir -p dgd/$MUDNAME/mud/doc
 mkdir -p dgd/$MUDNAME/mud/doc/kernel
 mkdir -p dgd/$MUDNAME/mud/doc/kfun
-mkdir -p dgd/$MUDNAME/mud/home
 mkdir -p dgd/$MUDNAME/mud/include
 mkdir -p dgd/$MUDNAME/mud/kernel
 mkdir -p dgd/$MUDNAME/mud/kernel/data
@@ -77,10 +76,7 @@ ln -s ../../../../git/kernellib/include/kernel dgd/$MUDNAME/mud/include
 
 echo "Setting up kotaka symlinks..."
 
-for d in git/kotaka/mudlib/mud/home/*
-do
-	ln -s ../../../../$d dgd/$MUDNAME/mud/home
-done
+ln -s ../../../git/kotaka/mudlib/mud/home dgd/$MUDNAME/mud
 
 for d in git/kotaka/mudlib/mud/include/*
 do
