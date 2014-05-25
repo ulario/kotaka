@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2010, 2012, 2013, 2014  Raymond Jennings
+ * Copyright (C) 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,16 +17,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <config.h>
+#include <kotaka/paths/system.h>
 
-/* daemons */
+inherit LIB_INITD;
+inherit UTILITY_COMPILE;
 
-#define CHANNELD	(USR_DIR + "/Kotaka/sys/channeld")
-#define DUMPD		(USR_DIR + "/Kotaka/sys/dumpd")
-#define PARSE_DUMP	(USR_DIR + "/Kotaka/sys/parse/dump")
+static void create()
+{
+	KERNELD->set_global_access("Utility", 1);
 
-/* libs */
-
-#define LIB_KOTAKA_USER		(USR_DIR + "/Kotaka/lib/user")
-#define LIB_USTATE		(USR_DIR + "/Kotaka/lib/ustate")
-#define LIB_DRIVER		(USR_DIR + "/Kotaka/lib/driver")
+	load_dir("obj", 1);
+	load_dir("sys", 1);
+}

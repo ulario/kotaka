@@ -21,12 +21,8 @@
 
 /* daemons */
 
-#define CHANNELD	(USR_DIR + "/Kotaka/sys/channeld")
-#define DUMPD		(USR_DIR + "/Kotaka/sys/dumpd")
-#define PARSE_DUMP	(USR_DIR + "/Kotaka/sys/parse/dump")
+#define SUBD		(USR_DIR + "/Utility/sys/subd")
 
 /* libs */
 
-#define LIB_KOTAKA_USER		(USR_DIR + "/Kotaka/lib/user")
-#define LIB_USTATE		(USR_DIR + "/Kotaka/lib/ustate")
-#define LIB_DRIVER		(USR_DIR + "/Kotaka/lib/driver")
+#define LIB_DEEP_COPY		(USR_DIR + "/Utility/lib/deep_copy")

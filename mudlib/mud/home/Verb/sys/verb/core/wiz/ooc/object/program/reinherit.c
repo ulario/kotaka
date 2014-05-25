@@ -23,6 +23,7 @@
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/paths/utility.h>
 #include <type.h>
 
 inherit LIB_VERB;

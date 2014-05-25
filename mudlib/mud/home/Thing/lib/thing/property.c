@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/thing.h>
+#include <kotaka/paths/utility.h>
 #include <kotaka/property.h>
 #include <type.h>
 
