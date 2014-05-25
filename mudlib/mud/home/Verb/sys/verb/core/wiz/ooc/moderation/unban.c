@@ -32,6 +32,7 @@ void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
+	string username;
 	string kicker_name;
 	string turkey_name;
 
@@ -42,17 +43,19 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
+	username = roles["raw"];
+
+	if (username == "") {
 		send_out("Who do you wish to unban?\n");
 		return;
 	}
 
-	if (!BAND->query_is_username_banned(roles["raw"])) {
+	if (!BAND->query_is_username_banned(username)) {
 		send_out("That user is not banned.\n");
 		return;
 	}
 
-	switch(TEXT_SUBD->query_user_class(roles["raw"])) {
+	switch(TEXT_SUBD->query_user_class(username)) {
 	case 3: /* administrator.  Only the mud owner can ban them */
 		if (user->query_username() != "admin") {
 			send_out("Only the mud owner can unban an administrator.");
@@ -73,10 +76,10 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	BAND->unban_username(roles["raw"]);
+	BAND->unban_username(username);
 
 	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-	turkey_name = TEXT_SUBD->titled_name(roles["raw"], TEXT_SUBD->query_user_class(roles["raw"]));
+	turkey_name = TEXT_SUBD->titled_name(username, TEXT_SUBD->query_user_class(username));
 
 	user->message("You unban " + turkey_name + " from the mud.\n");
 

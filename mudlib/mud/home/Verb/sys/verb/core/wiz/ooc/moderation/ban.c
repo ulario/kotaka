@@ -32,6 +32,7 @@ void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
+	string username;
 	string kicker_name;
 	string turkey_name;
 
@@ -42,27 +43,29 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
+	username = roles["raw"];
+
+	if (username == "") {
 		send_out("Who do you wish to ban?\n");
 		return;
 	}
 
-	if (roles["raw"] == user->query_username()) {
+	if (username == user->query_username()) {
 		send_out("You cannot ban yourself.\n");
 		return;
 	}
 
-	if (roles["raw"] == "admin") {
+	if (username == "admin") {
 		send_out("You cannot ban admin.\n");
 		return;
 	}
 
-	if (BAND->query_is_username_banned(roles["raw"])) {
+	if (BAND->query_is_username_banned(username)) {
 		send_out("That user is already banned.\n");
 		return;
 	}
 
-	switch(TEXT_SUBD->query_user_class(roles["raw"])) {
+	switch(TEXT_SUBD->query_user_class(username)) {
 	case 3: /* administrator.  Only the mud owner can ban them */
 		if (user->query_username() != "admin") {
 			send_out("Only the mud owner can ban an administrator.");
@@ -83,13 +86,13 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	BAND->ban_username(roles["raw"]);
+	BAND->ban_username(username);
 
 	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-	turkey_name = TEXT_SUBD->titled_name(roles["raw"], TEXT_SUBD->query_user_class(roles["raw"]));
+	turkey_name = TEXT_SUBD->titled_name(username, TEXT_SUBD->query_user_class(username));
 
 	user->message("You ban " + turkey_name + " from the mud.\n");
-	turkey = TEXT_USERD->find_user(roles["raw"]);
+	turkey = TEXT_USERD->find_user(username);
 
 	TEXT_SUBD->send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
 

@@ -33,6 +33,7 @@ void main(object actor, mapping roles)
 {
 	object user, *users;
 	string kicker_name;
+	string site;
 	int i, sz;
 
 	user = query_user();
@@ -42,22 +43,24 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
+	site = roles["raw"];
+
+	if (site == "") {
 		send_out("What do you wish to siteban?\n");
 		return;
 	}
 
-	if (roles["raw"] == "127.0.0.1" || roles["raw"] == "::1") {
+	if (site == "127.0.0.1" || site == "::1") {
 		send_out("You cannot siteban localhost\n");
 		return;
 	}
 
-	if (BAND->query_is_site_banned(roles["raw"])) {
+	if (BAND->query_is_site_banned(site)) {
 		send_out("That site is already banned.\n");
 		return;
 	}
 
-	BAND->ban_site(roles["raw"]);
+	BAND->ban_site(site);
 	users = TEXT_USERD->query_users();
 	users += TEXT_USERD->query_guests();
 	sz = sizeof(users);

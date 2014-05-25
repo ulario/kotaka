@@ -31,6 +31,7 @@ void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
+	string site;
 	string kicker_name;
 	string turkey_name;
 
@@ -41,15 +42,17 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
+	site = roles["raw"];
+
+	if (site == "") {
 		send_out("What site do you wish to unban?\n");
 		return;
 	}
 
-	if (!BAND->query_is_site_banned(roles["raw"])) {
+	if (!BAND->query_is_site_banned(site)) {
 		send_out("That site is not banned.\n");
 		return;
 	}
 
-	BAND->unban_site(roles["raw"]);
+	BAND->unban_site(site);
 }
