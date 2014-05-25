@@ -145,8 +145,8 @@ void configure_properties()
 	PROPERTYD->add_property("mobiles", T_ARRAY, PROP_SIMPLE, ({ }) );
 
 	/* exits */
-	PROPERTYD->add_property("exit_return", T_OBJECT, PROP_SIMPLE);
-	PROPERTYD->add_property("exit_destination", T_OBJECT, PROP_SIMPLE);
+	PROPERTYD->add_property("exit_return", T_OBJECT, PROP_MAGIC, ({ "query_exit_return", "set_exit_return" }));
+	PROPERTYD->add_property("exit_destination", T_OBJECT, PROP_MAGIC, ({ "query_exit_destination", "set_exit_destination" }));
 	PROPERTYD->add_property("exit_direction", T_STRING, PROP_SIMPLE);
 	PROPERTYD->add_property("default_exit", T_OBJECT, PROP_INHERIT);
 	PROPERTYD->add_property("default_entrance", T_OBJECT, PROP_INHERIT);
