@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012, 2013, 2014  Raymond Jennings
+ * Copyright (C) 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,43 +17,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/channel.h>
-#include <kotaka/paths/kotaka.h>
-#include <kotaka/paths/verb.h>
+#include <kernel/kernel.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 
-inherit LIB_VERB;
+inherit LIB_INITD;
+inherit UTILITY_COMPILE;
 
-string *query_parse_methods()
+private void load()
 {
-	return ({ "raw" });
+	load_dir("sys", 1);
 }
 
-void main(object actor, mapping roles)
+static void create()
 {
-	object user;
-	string name;
-	string *subscriptions;
+	KERNELD->set_global_access("Channel", 1);
 
-	user = query_user();
-	name = user->query_username();
+	load();
+}
 
-	if (user->query_class() < 2) {
-		send_out("You do not have sufficient access rights to delete channels.\n");
-		return;
-	}
+void upgrade_subsystem()
+{
+	ACCESS_CHECK(previous_program() == INITD);
 
-	if (roles["raw"] == "") {
-		send_out("Cat got your tongue?\n");
-		return;
-	}
+	load();
 
-	if (!CHANNELD->test_channel(roles["raw"])) {
-		send_out("That channel does not exist.\n");
-		return;
-	}
-
-	CHANNELD->del_channel(roles["raw"]);
-
-	send_out("Channel deleted.\n");
-	return;
+	purge_orphans("Channel");
 }

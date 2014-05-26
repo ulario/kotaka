@@ -21,7 +21,6 @@
 
 /* daemons */
 
-#define CHANNELD	(USR_DIR + "/Kotaka/sys/channeld")
 #define DUMPD		(USR_DIR + "/Kotaka/sys/dumpd")
 #define PARSE_DUMP	(USR_DIR + "/Kotaka/sys/parse/dump")
 

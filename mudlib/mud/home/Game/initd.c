@@ -21,6 +21,7 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/help.h>
 #include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/thing.h>
 #include <kotaka/privilege.h>
@@ -178,6 +179,7 @@ static void create()
 	INITD->boot_subsystem("Account");
 	INITD->boot_subsystem("Thing");
 	INITD->boot_subsystem("Geometry");
+	INITD->boot_subsystem("Channel");
 
 	load();
 

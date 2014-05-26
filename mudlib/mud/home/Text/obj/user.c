@@ -19,6 +19,7 @@
  */
 #include <kernel/user.h>
 #include <kotaka/assert.h>
+#include <kotaka/paths/channel.h>
 #include <kotaka/paths/utility.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>

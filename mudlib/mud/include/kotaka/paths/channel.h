@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012, 2013, 2014  Raymond Jennings
+ * Copyright (C) 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,43 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/channel.h>
-#include <kotaka/paths/kotaka.h>
-#include <kotaka/paths/verb.h>
+#include <config.h>
 
-inherit LIB_VERB;
+/* daemons */
 
-string *query_parse_methods()
-{
-	return ({ "raw" });
-}
-
-void main(object actor, mapping roles)
-{
-	object user;
-	string name;
-	string *subscriptions;
-
-	user = query_user();
-	name = user->query_username();
-
-	if (user->query_class() < 2) {
-		send_out("You do not have sufficient access rights to delete channels.\n");
-		return;
-	}
-
-	if (roles["raw"] == "") {
-		send_out("Cat got your tongue?\n");
-		return;
-	}
-
-	if (!CHANNELD->test_channel(roles["raw"])) {
-		send_out("That channel does not exist.\n");
-		return;
-	}
-
-	CHANNELD->del_channel(roles["raw"]);
-
-	send_out("Channel deleted.\n");
-	return;
-}
+#define CHANNELD	(USR_DIR + "/Channel/sys/channeld")

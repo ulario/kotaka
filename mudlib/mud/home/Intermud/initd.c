@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/log.h>
+#include <kotaka/paths/channel.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
@@ -37,6 +38,8 @@ static void reboot_self()
 
 static void create()
 {
+	INITD->boot_subsystem("Channel");
+
 	KERNELD->set_global_access("Intermud", 1);
 
 	load();

@@ -20,6 +20,7 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/algorithm.h>
 #include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/channel.h>
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
