@@ -46,46 +46,36 @@ static void create()
 
 object select(string str)
 {
-	int level;
-	object base_conn;
+	int has_telnet;
+	object conn;
 	object user;
 	string basename;
 
-	base_conn = previous_object(2);
+	conn = previous_object(2);
 
-	while (base_conn && base_conn <- LIB_USER) {
-		level++;
-		base_conn = base_conn->query_conn();
+	while (conn && conn <- LIB_USER) {
+		if (conn <- "~/obj/filter/telnet") {
+			has_telnet = 1;
+		}
+
+		conn = conn->query_conn();
 	}
 
-	if (!base_conn) {
+	if (!conn) {
 		return nil;
 	}
 
-	sscanf(object_name(base_conn), "%s#%*d", basename);
+	sscanf(object_name(conn), "%s#%*d", basename);
 
 	switch(basename) {
 	case BINARY_CONN:
-		switch(level + 1) {
-		case 0:
-			return clone_object("~System/obj/filter/atomic");
-		case 1:
-			return clone_object("~System/obj/filter/rlimits");
-		case 2:
+		if (!has_telnet) {
 			return clone_object("~/obj/filter/telnet");
-		case 3:
-			return clone_object("~/obj/user");
 		}
+		return clone_object("~/obj/user");
 
 	case TELNET_CONN:
-		switch(level + 1) {
-		case 0:
-			return clone_object("~System/obj/filter/atomic");
-		case 1:
-			return clone_object("~System/obj/filter/rlimits");
-		case 2:
-			return clone_object("~/obj/user");
-		}
+		return clone_object("~/obj/user");
 	}
 }
 
@@ -133,20 +123,20 @@ string query_banner(object LIB_CONN connection)
 	string ansi;
 	int sz;
 	int level;
-	object base_conn;
+	object conn;
 
-	base_conn = connection;
+	conn = connection;
 
-	while (base_conn && base_conn <- LIB_USER) {
+	while (conn && conn <- LIB_USER) {
 		level++;
-		base_conn = base_conn->query_conn();
+		conn = conn->query_conn();
 	}
 
-	if (is_sitebanned(query_ip_number(base_conn))) {
+	if (is_sitebanned(query_ip_number(conn))) {
 		return "You are sitebanned.\n";
 	}
 
-	if (!base_conn) {
+	if (!conn) {
 		return "";
 	}
 
@@ -181,20 +171,20 @@ string query_banner(object LIB_CONN connection)
 int query_timeout(object LIB_CONN connection)
 {
 	int level;
-	object base_conn;
+	object conn;
 
-	base_conn = connection;
+	conn = connection;
 
-	while (base_conn && base_conn <- LIB_USER) {
+	while (conn && conn <- LIB_USER) {
 		level++;
-		base_conn = base_conn->query_conn();
+		conn = conn->query_conn();
 	}
 
-	if (!base_conn) {
+	if (!conn) {
 		return -1;
 	}
 
-	if (is_sitebanned(query_ip_number(base_conn))) {
+	if (is_sitebanned(query_ip_number(conn))) {
 		return -1;
 	}
 

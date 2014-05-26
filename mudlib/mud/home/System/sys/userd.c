@@ -30,6 +30,7 @@ inherit user LIB_USER;
 
 int reserve;
 object *connections;
+object intercept;
 
 /*************/
 /* Variables */
@@ -314,6 +315,8 @@ int query_timeout(object LIB_CONN connection)
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
+	intercept = nil;
+
 	userd = query_manager(connection);
 
 	if (!userd || blocked || free_users() < reserve) {
@@ -326,13 +329,36 @@ int query_timeout(object LIB_CONN connection)
 object select(string str)
 {
 	object userd;
-	object connection;
+	object conn;
+	object user;
+
+	int has_rlimits;
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	connection = previous_object(1);
+	conn = previous_object(1);
 
-	userd = query_manager(connection);
+	while (conn && conn <- LIB_USER) {
+		if (conn <- "~/obj/filter/rlimits") {
+			has_rlimits = 1;
+		}
+
+		conn = conn->query_conn();
+	}
+
+	if (!has_rlimits) {
+		return clone_object("~/obj/filter/rlimits");
+	}
+
+	if (intercept) {
+		user = intercept;
+
+		intercept = nil;
+
+		return user;
+	}
+
+	userd = query_manager(conn);
 
 	if (!userd) {
 		return this_object();
@@ -357,5 +383,41 @@ int receive_message(string str)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	previous_object()->message("Internal error: connection manager fault\n");
+
 	return MODE_DISCONNECT;
+}
+
+/* interception */
+void intercept_redirect(object user, string str)
+{
+	object start;
+	object conn;
+	int has_rlimits;
+
+	ACCESS_CHECK(SYSTEM());
+
+	conn = previous_object();
+	start = conn;
+
+	while (conn && conn <- LIB_USER) {
+		if (conn <- "~/obj/filter/rlimits") {
+			has_rlimits = 1;
+		}
+
+		conn = conn->query_conn();
+	}
+
+	if (!has_rlimits) {
+		object filter;
+
+		intercept = user;
+
+		filter = clone_object("~/obj/filter/rlimits");
+
+		start->system_redirect(filter, str);
+
+		return;
+	}
+
+	start->system_redirect(user, str);
 }

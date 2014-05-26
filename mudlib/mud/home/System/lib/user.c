@@ -19,6 +19,7 @@
  */
 #include <kernel/user.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;
 inherit user LIB_USER;
@@ -33,4 +34,16 @@ static void set_mode(int new_mode)
 	if (this_object() && query_conn()) {
 		query_conn()->set_mode(new_mode);
 	}
+}
+
+static void redirect(object user, string str)
+{
+	SYSTEM_USERD->intercept_redirect(user, str);
+}
+
+void system_redirect(object user, string str)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	::redirect(user, str);
 }
