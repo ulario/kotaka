@@ -105,44 +105,35 @@ void pre_end()
 	send_out("Come back soon.\n");
 }
 
-private int is_wiztool_command(string command)
-{
-	switch(command) {
-	case "code":
-	case "compile":
-	case "clone":
-	case "destruct":
-
-	case "ls":
-	case "cp":
-	case "mv":
-	case "rm":
-	case "mkdir":
-	case "rmdir":
-
-	case "access":
-	case "grant":
-	case "ungrant":
-	case "quota":
-	case "rsrc":
-
-	case "people":
-	case "status":
-	case "swapout":
-	case "statedump":
-	case "shutdown":
-	case "reboot":
-		return 1;
-	default:
-		return 0;
-	}
-}
-
 private void handle_input(string input, varargs mapping dup);
 
 atomic private void do_atomic(string args)
 {
 	handle_input(args);
+}
+
+private void do_plus_command(string input)
+{
+	string first;
+
+	if (!first && !sscanf(input, "%s %s", first, input)) {
+		first = input;
+		input = "";
+	}
+
+	switch(first) {
+	case "fixverbs":
+		INITD->reboot_subsystem("Verb");
+		return;
+
+	case "atomic":
+		do_atomic(input);
+		return;
+
+	default:
+		send_out("Invalid plus command.\n");
+		return;
+	}
 }
 
 private void handle_input(string input, varargs mapping dup)
@@ -154,6 +145,14 @@ private void handle_input(string input, varargs mapping dup)
 
 	if (strlen(input) > 0) {
 		switch(input[0]) {
+		case '%':
+			if (query_user()->query_class() >= 2) {
+				query_user()->dispatch_wiztool(input[1 ..]);
+			} else {
+				send_out("Only game staff are allowed to use the wiztool.\n");
+			}
+			return;
+
 		case '\'':
 			input = input[1 ..];
 			first = "say";
@@ -168,6 +167,10 @@ private void handle_input(string input, varargs mapping dup)
 			input = input[1 ..];
 			first = "emote";
 			break;
+
+		case '+':
+			do_plus_command(input[1 ..]);
+			return;
 		}
 	}
 
@@ -176,46 +179,25 @@ private void handle_input(string input, varargs mapping dup)
 		input = "";
 	}
 
-	switch(first) {
-	case "+fixverbs":
-		INITD->reboot_subsystem("Verb");
+	if (first == "") {
 		return;
+	}
 
-	case "+atomic":
-		do_atomic(input);
-		return;
+	if (!dup || !dup[first]) {
+		alias = ALIASD->query_alias(first);
 
-	case "":
-		return;
-
-	default:
-		if (!dup || !dup[first]) {
-			alias = ALIASD->query_alias(first);
-
-			if (alias) {
-				if (!dup) {
-					dup = ([ ]);
-				}
-
-				dup[first] = 1;
-
-				send_out("Expanding to: " + alias + " " + input + "\n");
-				handle_input(alias + " " + input, dup);
-
-				dup[first] = nil;
-
-				return;
+		if (alias) {
+			if (!dup) {
+				dup = ([ ]);
 			}
-		}
-	}
 
-	if (!first) {
-		return;
-	}
+			dup[first] = 1;
 
-	if (query_user()->query_class() >= 2) {
-		if (is_wiztool_command(first)) {
-			query_user()->dispatch_wiztool(first + " " + input);
+			send_out("Expanding to: " + alias + " " + input + "\n");
+			handle_input(alias + " " + input, dup);
+
+			dup[first] = nil;
+
 			return;
 		}
 	}
