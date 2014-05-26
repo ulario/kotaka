@@ -289,18 +289,20 @@ string query_banner(object LIB_CONN connection)
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
+	intercept = nil;
+
 	userd = query_manager(connection);
 
 	if (!userd) {
-		return "Internal error: no connection manager";
+		return "Internal error: no connection manager\n";
 	}
 
 	if (free_users() < reserve) {
-		return userd->query_overload_banner();
+		return userd->query_overload_banner(connection);
 	}
 
 	if (blocked) {
-		return userd->query_blocked_banner();
+		return userd->query_blocked_banner(connection);
 	}
 
 	return userd->query_banner(connection);
@@ -346,6 +348,7 @@ int login(string str)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	previous_object()->message("Internal error: connection manager fault\n");
+
 	return MODE_DISCONNECT;
 }
 
