@@ -18,30 +18,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/kernel.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-#define RED 1
-#define GREEN 2
-#define BLUE 4
-#define BRIGHT 8
-
-string *bad_bins;
-
 private void load()
 {
-	load_dir("obj", 1);
-	load_dir("sys", 1);
 }
 
 static void create()
 {
-	INITD->boot_subsystem("String");
-
 	KERNELD->set_global_access("Kotaka", 1);
 
 	load();
