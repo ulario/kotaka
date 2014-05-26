@@ -20,7 +20,7 @@
 #include <kernel/user.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/string.h>
+#include <kotaka/paths/ansi.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
@@ -163,7 +163,7 @@ string query_banner(object LIB_CONN connection)
 		ansi = read_file("~/data/splash/telnet_banners/ansi/" + files[splash]);
 
 		if (!ansi) {
-			ansi = STRINGD->simple_ansify(
+			ansi = ANSI_SUBD->simple_ansify(
 				read_file("~/data/splash/telnet_banners/chars/" + files[splash]),
 				read_file("~/data/splash/telnet_banners/fgcolor/" + files[splash]),
 				read_file("~/data/splash/telnet_banners/bgcolor/" + files[splash])

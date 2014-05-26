@@ -26,6 +26,7 @@ inherit UTILITY_COMPILE;
 private void load()
 {
 	load_dir("lwo", 1);
+	load_dir("sys", 1);
 }
 
 static void create()

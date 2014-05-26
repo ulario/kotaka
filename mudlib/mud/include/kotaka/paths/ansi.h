@@ -20,3 +20,4 @@
 #include <config.h>
 
 #define LWO_PAINTER		(USR_DIR + "/Ansi/lwo/painter")
+#define ANSI_SUBD		(USR_DIR + "/Ansi/sys/subd")
