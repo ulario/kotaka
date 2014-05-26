@@ -29,22 +29,21 @@ void action(mapping roles)
 	object exit;
 	object target;
 	object actor;
+	object retexit;
 
 	actor = roles["actor"];
 	exit = roles["dob"];
 
-	target = exit->query_property("exit_return");
+	retexit = exit->query_property("exit_return");
 
-	if (target) {
-		target = target->query_environment();
+	if (retexit) {
+		target = retexit->query_environment();
 
 		if (!target) {
 			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(exit) + "'s return exit is lost in the void.\n");
 			return;
 		}
-	}
-
-	if (!target) {
+	} else {
 		target = exit->query_property("exit_destination");
 	}
 
@@ -63,5 +62,10 @@ void action(mapping roles)
 	actor->set_y_position(exit->query_y_position());
 	actor->set_z_position(exit->query_z_position());
 	actor->move(target);
-	emit_from(actor, ({ "arrive", "arrives" }));
+
+	if (retexit) {
+		emit_from(actor, ({ "arrive", "arrives" }), "from", retexit);
+	} else {
+		emit_from(actor, ({ "arrive", "arrives" }));
+	}
 }
