@@ -44,6 +44,6 @@ void main(object actor, mapping roles)
 	if (sizeof(users)) {
 		send_out("Banned users: " + implode(users, ", ") + "\n");
 	} else {
-		send_out("Tnere are no banned users.\n");
+		send_out("There are no banned users.\n");
 	}
 }
