@@ -34,13 +34,12 @@ private float max_mass;		/* kg */
 
 /* caching */
 private int bulk_dirty;			/* if cache is invalid */
-private int bulk_queued;		/* if we're in the bulk sync queue */
 
 private float cached_content_mass;	/* cached mass of our contents */
 private float cached_content_volume;	/* cached volume of our contents */
 
-void bulk_invalidate(varargs int force);	/* invalidate */
-void bulk_sync(varargs int force);		/* synchronize bulk cache */
+void bulk_invalidate();			/* invalidate */
+void bulk_sync(varargs int force);	/* synchronize bulk cache */
 
 static void create()
 {
@@ -269,17 +268,6 @@ int query_bulk_dirty()
 	return bulk_dirty;
 }
 
-void bulk_dequeue()
-{
-	if (bulk_queued) {
-		bulk_queued--;
-	}
-
-	if (!bulk_queued) {
-		bulk_sync();
-	}
-}
-
 void bulk_sync(varargs int force)
 {
 	int i;
@@ -306,23 +294,13 @@ void bulk_sync(varargs int force)
 	bulk_dirty = 0;
 }
 
-void bulk_queue_reset()
-{
-	bulk_queued = 0;
-	bulk_sync();
-}
-
-void bulk_invalidate(varargs int force)
+void bulk_invalidate()
 {
 	object env;
 
 	bulk_dirty = 1;
 
-	BULKD->bulk_queue(this_object());
-
 	if (env = query_environment()) {
-		env->bulk_invalidate(force);
+		env->bulk_invalidate();
 	}
-
-	bulk_queued++;
 }
