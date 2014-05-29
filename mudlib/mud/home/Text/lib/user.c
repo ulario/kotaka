@@ -158,7 +158,8 @@ private void do_escape(string str)
 			"help\n----\n" +
 			"help\tHelp\n" +
 			"list\tList child ustates\n" +
-			"bt\tBacktrace\n" +
+			"trace\tList all objects in connection chain\n" +
+			"states\tList all ustates in current stack\n" +
 			"abort\tKill current ustate\n" +
 			"quit\tForce quit\n" +
 			"suspend\tSuspend current ustate\n" +
@@ -179,7 +180,21 @@ private void do_escape(string str)
 		}
 		break;
 
-	case "bt":
+	case "trace":
+		parent = this_object();
+
+		while(parent) {
+			::message(object_name(parent) + "\n");
+
+			if (parent <- LIB_USER) {
+				parent = parent->query_conn();
+			} else {
+				break;
+			}
+		}
+		break;
+
+	case "states":
 		parent = root->query_top();
 
 		while(parent) {
