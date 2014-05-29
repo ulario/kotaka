@@ -50,6 +50,8 @@ void configure_rsrc();
 private void check_config();
 private void check_versions();
 
+int upgraded_v_0_33;
+
 private void load()
 {
 	load_dir("lwo", 1);
@@ -534,6 +536,8 @@ atomic static void upgrade_system_2()
 	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
 		(USR_DIR + "/" + users[sz] + "/initd")->upgrade_subsystem();
 	}
+
+	upgraded_v_0_33 = 1;	/* we will check this on the next upgrade */
 }
 
 void upgrade_subsystem()
