@@ -290,8 +290,6 @@ string query_banner(object LIB_CONN connection)
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	intercept = nil;
-
 	userd = query_manager(connection);
 
 	if (!userd) {
@@ -314,8 +312,6 @@ int query_timeout(object LIB_CONN connection)
 	object userd;
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
-
-	intercept = nil;
 
 	userd = query_manager(connection);
 
@@ -415,6 +411,8 @@ void intercept_redirect(object user, string str)
 		filter = clone_object("~/obj/filter/rlimits");
 
 		start->system_redirect(filter, str);
+
+		intercept = nil;
 
 		return;
 	}
