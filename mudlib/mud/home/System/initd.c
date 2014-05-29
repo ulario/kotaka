@@ -50,7 +50,7 @@ void configure_rsrc();
 private void check_config();
 private void check_versions();
 
-int upgraded_v_0_33;
+int upgraded_v_0_34;
 
 private void load()
 {
@@ -537,7 +537,7 @@ atomic static void upgrade_system_2()
 		(USR_DIR + "/" + users[sz] + "/initd")->upgrade_subsystem();
 	}
 
-	upgraded_v_0_33 = 1;	/* we will check this on the next upgrade */
+	upgraded_v_0_34 = 1;	/* we will check this on the next upgrade */
 }
 
 void upgrade_subsystem()
