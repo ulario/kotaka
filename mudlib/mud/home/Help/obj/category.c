@@ -133,8 +133,6 @@ private void index_insert(string key, string entry, int is_category)
 {
 	mapping submap;
 
-	ACCESS_CHECK(HELP());
-
 	submap = index[key];
 
 	if (!submap) {
@@ -151,8 +149,6 @@ private void index_insert(string key, string entry, int is_category)
 private void index_delete(string key, string entry, int is_category)
 {
 	mapping submap;
-
-	ACCESS_CHECK(HELP());
 
 	submap = index[key];
 
