@@ -23,6 +23,7 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <kotaka/version.h>
@@ -518,9 +519,13 @@ atomic void upgrade_system()
 	users = get_dir(USR_DIR + "/*")[0];
 	users &= KERNELD->query_users();
 
+	CHANNELD->post_message("system", "upgrade", "Recompiling initd's");
+
 	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
 		compile_object(USR_DIR + "/" + users[sz] + "/initd");
 	}
+
+	CHANNELD->post_message("system", "upgrade", "Upgrading subsystems");
 
 	call_out("upgrade_system_2", 0);
 }
@@ -538,6 +543,8 @@ atomic static void upgrade_system_2()
 	}
 
 	upgraded_v_0_34 = 1;	/* we will check this on the next upgrade */
+
+	CHANNELD->post_message("system", "upgrade", "Upgrade completed");
 }
 
 void upgrade_subsystem()
