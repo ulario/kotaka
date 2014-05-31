@@ -28,7 +28,6 @@ inherit SECOND_AUTO;
 inherit userd API_USER;
 inherit user LIB_USER;
 
-int reserve;
 object *connections;
 object intercept;
 
@@ -256,18 +255,6 @@ void set_telnet_manager(int port, object LIB_USERD manager)
 	telnet_managers[port] = manager;
 }
 
-void set_reserve(int new_reserve)
-{
-	ACCESS_CHECK(PRIVILEGED());
-
-	reserve = new_reserve;
-}
-
-int query_reserve()
-{
-	return reserve;
-}
-
 /* initd hooks */
 
 void reboot()
@@ -296,7 +283,8 @@ string query_banner(object LIB_CONN connection)
 		return "Internal error: no connection manager\n";
 	}
 
-	if (free_users() < reserve) {
+	if (free_users() < 2) {
+		/* one for the admin, and one for dumping overloads */
 		return userd->query_overload_banner(connection);
 	}
 
@@ -315,7 +303,7 @@ int query_timeout(object LIB_CONN connection)
 
 	userd = query_manager(connection);
 
-	if (!userd || blocked || free_users() < reserve) {
+	if (!userd || blocked || free_users() < 2) {
 		return -1;
 	}
 
