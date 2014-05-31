@@ -95,26 +95,28 @@ static void purge_orphans(string subsystem)
 
 	list = PROGRAMD->query_program_indices();
 
-	while (!list->empty()) {
-		int index;
-		object pinfo;
-		string file;
+	rlimits (0; -1) {
+		while (!list->empty()) {
+			int index;
+			object pinfo;
+			string file;
 
-		index = list->query_back();
-		list->pop_back();
+			index = list->query_back();
+			list->pop_back();
 
-		pinfo = PROGRAMD->query_program_info(index);
+			pinfo = PROGRAMD->query_program_info(index);
 
-		file = pinfo->query_path();
+			file = pinfo->query_path();
 
-		if (!sscanf(file, USR_DIR + "/" + subsystem + "/%*s")) {
-			continue;
+			if (!sscanf(file, USR_DIR + "/" + subsystem + "/%*s")) {
+				continue;
+			}
+
+			if (file_info(file + ".c")) {
+				continue;
+			}
+
+			destruct_object(file);
 		}
-
-		if (file_info(file + ".c")) {
-			continue;
-		}
-
-		destruct_object(file);
 	}
 }
