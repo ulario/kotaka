@@ -535,7 +535,7 @@ atomic void upgrade_system()
 		initd = USR_DIR + "/" + users[sz] + "/initd";
 
 		if (find_object(initd)) {
-			compile_object(USR_DIR + "/" + users[sz] + "/initd");
+			compile_object(initd);
 		} else {
 			users[sz] = nil;
 		}
