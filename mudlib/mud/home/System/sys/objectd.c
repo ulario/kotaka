@@ -462,8 +462,6 @@ private void compile_common(string owner, string path, string *source, string *i
 	object initd;
 	object pinfo;
 
-	LOGD->post_message("compile", LOG_INFO, "Compiled " + path);
-
 	if (find_object(PROGRAMD)) {
 		pinfo = PROGRAMD->register_program(path, inherited, includes);
 	}
@@ -534,8 +532,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		upgrading = 0;
 
 		if (!is_kernel) {
-			LOGD->post_message("compile", LOG_INFO, "Upgrading " + path);
-
 			if (function_object("upgrading", obj)) {
 				catch {
 					obj->upgrading();
