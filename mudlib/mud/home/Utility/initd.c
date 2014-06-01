@@ -32,6 +32,8 @@ private void load()
 static void create()
 {
 	KERNELD->set_global_access("Utility", 1);
+
+	load();
 }
 
 void upgrade_subsystem()
