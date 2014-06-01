@@ -173,7 +173,6 @@ void prepare_reboot()
 
 	for (index = 0; index < sz; index++) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE, "sending prepare_reboot to " + ind[index]);
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "prepare_reboot");
 		}
 	}
@@ -221,7 +220,6 @@ void hotboot()
 
 	for (index = 0; index < sz; index++) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE, "Sending hotboot to " + ind[index]);
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "hotboot");
 		}
 	}
@@ -255,7 +253,6 @@ void reboot()
 
 	for (index = 0; index < sz; index++) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE, "Sending reboot to " + ind[index]);
 			call_other(USR_DIR + "/" + ind[index] + "/initd", "reboot");
 		}
 	}
