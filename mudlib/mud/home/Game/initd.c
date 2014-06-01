@@ -57,6 +57,13 @@ void build_world();
 
 private void load()
 {
+	INITD->boot_subsystem("Account");
+	INITD->boot_subsystem("Channel");
+	INITD->boot_subsystem("Geometry");
+	INITD->boot_subsystem("Help");
+	INITD->boot_subsystem("Text");
+	INITD->boot_subsystem("Thing");
+
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("open", 1);
@@ -175,13 +182,6 @@ void configure_properties()
 
 static void create()
 {
-	INITD->boot_subsystem("Account");
-	INITD->boot_subsystem("Channel");
-	INITD->boot_subsystem("Geometry");
-	INITD->boot_subsystem("Help");
-	INITD->boot_subsystem("Text");
-	INITD->boot_subsystem("Thing");
-
 	load();
 
 	configure_properties();

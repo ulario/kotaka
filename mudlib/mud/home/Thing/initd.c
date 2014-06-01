@@ -28,14 +28,14 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	INITD->boot_subsystem("Utility");
+
 	load_dir("obj", 1);
 	load_dir("sys", 1);
 }
 
 static void create()
 {
-	INITD->boot_subsystem("Utility");
-
 	KERNELD->set_global_access("Thing", 1);
 
 	load();

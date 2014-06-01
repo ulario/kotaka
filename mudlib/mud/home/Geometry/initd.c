@@ -25,14 +25,14 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	INITD->boot_subsystem("Thing");
+
 	load_dir("lwo", 1);
 	load_dir("sys", 1);
 }
 
 static void create()
 {
-	INITD->boot_subsystem("Thing");
-
 	KERNELD->set_global_access("Geometry", 1);
 
 	load();

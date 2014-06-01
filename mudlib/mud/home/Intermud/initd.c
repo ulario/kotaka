@@ -28,6 +28,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	INITD->boot_subsystem("Channel");
+
 	load_dir("sys", 1);
 }
 
@@ -38,8 +40,6 @@ static void reboot_self()
 
 static void create()
 {
-	INITD->boot_subsystem("Channel");
-
 	KERNELD->set_global_access("Intermud", 1);
 
 	load();
