@@ -34,6 +34,8 @@ private void load()
 
 static void create()
 {
+	INITD->boot_subsystem("Utility");
+
 	KERNELD->set_global_access("Thing", 1);
 
 	load();
