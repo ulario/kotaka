@@ -280,16 +280,24 @@ string query_banner(object LIB_CONN connection)
 	userd = query_manager(connection);
 
 	if (!userd) {
-		return "Internal error: no connection manager\n";
+		return "Internal error: no connection manager.\n";
 	}
 
 	if (free_users() < 2) {
 		/* one for the admin, and one for dumping overloads */
-		return userd->query_overload_banner(connection);
+		catch {
+			return userd->query_overload_banner(connection);
+		} : {
+			return "Internal error: overload banner failed.\n";
+		}
 	}
 
 	if (blocked) {
-		return userd->query_blocked_banner(connection);
+		catch {
+			return userd->query_blocked_banner(connection);
+		} : {
+			return "Internal error: blocked banner failed.\n";
+		}
 	}
 
 	return userd->query_banner(connection);
