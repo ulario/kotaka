@@ -175,11 +175,12 @@ void configure_properties()
 
 static void create()
 {
-	INITD->boot_subsystem("Text");
 	INITD->boot_subsystem("Account");
-	INITD->boot_subsystem("Thing");
-	INITD->boot_subsystem("Geometry");
 	INITD->boot_subsystem("Channel");
+	INITD->boot_subsystem("Geometry");
+	INITD->boot_subsystem("Help");
+	INITD->boot_subsystem("Text");
+	INITD->boot_subsystem("Thing");
 
 	load();
 
