@@ -25,6 +25,7 @@
 #define ACCOUNT()	(sscanf(previous_program(), USR_DIR + "/Account/%*s"))
 #define BIGSTRUCT()	(sscanf(previous_program(), USR_DIR + "/Bigstruct/%*s"))
 #define CATALOG()	(sscanf(previous_program(), USR_DIR + "/Catalog/%*s"))
+#define CHANNEL()	(sscanf(previous_program(), USR_DIR + "/Channel/%*s"))
 #define GAME()		(sscanf(previous_program(), USR_DIR + "/Game/%*s"))
 #define GEOMETRY()	(sscanf(previous_program(), USR_DIR + "/Geometry/%*s"))
 #define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
