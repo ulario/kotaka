@@ -94,8 +94,8 @@ static void check()
 		callout = call_out("check", 1);
 	}
 
-	mem_used = (float)status(ST_DMEMUSED) + (float)status(ST_SMEMUSED);
-	mem_size = (float)status(ST_DMEMSIZE) + (float)status(ST_SMEMSIZE);
+	mem_used = (float)status(ST_DMEMUSED);
+	mem_size = (float)status(ST_DMEMSIZE);
 	mem_free = mem_size - mem_used;
 
 	obj_used = status(ST_NOBJECTS);
