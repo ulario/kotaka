@@ -378,6 +378,11 @@ private void check_config()
 	if (status(ST_ARRAYSIZE) < 256) {
 		error("Array size setting is too small");
 	}
+
+	if (status(ST_UTABSIZE) < 3) {
+		/* game, admin, and burn */
+		error("Not enough user slots");
+	}
 }
 
 /* shamelessly stolen from phantasmal, kudos to Noah Gibbs */
