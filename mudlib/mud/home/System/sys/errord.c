@@ -44,6 +44,19 @@ mixed **lasttrace;	/* last trace */
 
 static void create()
 {
+}
+
+void disable()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
+	DRIVER->set_error_manager(nil);
+}
+
+void enable()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
 	DRIVER->set_error_manager(this_object());
 }
 
