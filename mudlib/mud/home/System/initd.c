@@ -107,7 +107,6 @@ private void initialize()
 	load();
 
 	LOGD->post_message("boot", LOG_INFO, "Configuring user manager");
-	SYSTEM_USERD->set_reserve(2);
 	SYSTEM_USERD->enable();
 
 	LOGD->post_message("boot", LOG_INFO, "Starting status manager");
