@@ -215,6 +215,9 @@ void hotboot()
 
 	clear_admin();
 	configure_rsrc();
+
+	SYSTEM_USERD->hotboot();
+
 	remove_call_out(dumped);
 	dumped = 0;
 

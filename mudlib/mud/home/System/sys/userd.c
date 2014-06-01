@@ -269,6 +269,18 @@ void reboot()
 	}
 }
 
+void hotboot()
+{
+	int i, sz;
+
+	ACCESS_CHECK(SYSTEM());
+
+	if (enabled) {
+		unregister_with_klib_userd();
+		register_with_klib_userd();
+	}
+}
+
 /* userd hooks */
 
 string query_banner(object LIB_CONN connection)
