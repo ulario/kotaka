@@ -529,11 +529,18 @@ atomic void upgrade_system()
 
 	users = get_dir(USR_DIR + "/*")[0];
 	users &= KERNELD->query_users();
+	users &= KERNELD->query_owners();
 
 	CHANNELD->post_message("system", "upgrade", "Recompiling initd's");
 
 	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
-		compile_object(USR_DIR + "/" + users[sz] + "/initd");
+		string initd;
+
+		initd = USR_DIR + "/" + users[sz] + "/initd";
+
+		if (find_object(initd)) {
+			compile_object(USR_DIR + "/" + users[sz] + "/initd");
+		}
 	}
 
 	CHANNELD->post_message("system", "upgrade", "Upgrading subsystems");
