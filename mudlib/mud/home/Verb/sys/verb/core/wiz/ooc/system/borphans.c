@@ -37,6 +37,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	"~Bigstruct/sys/bigstructd"->find_orphaned_nodes();
-	"~Bigstruct/sys/bigstructd"->find_orphaned_roots();
+	"~Bigstruct/sys/bigstructd"->check();
 }

@@ -32,32 +32,6 @@ private void check_node(object node)
 	}
 }
 
-private void find_orphaned_nodes_of(string program)
-{
-	/* a node is orphaned if its root object is missing */
-	int i;
-	int sz;
-
-	sz = status(ST_OTABSIZE);
-
-	for (i = 0; i < sz; i++) {
-		object obj;
-
-		obj = find_object(program + "#" + i);
-
-		if (obj) {
-			check_node(obj);
-		}
-	}
-}
-
-void find_orphaned_nodes()
-{
-	find_orphaned_nodes_of(USR_DIR + "/Bigstruct/obj/array/node");
-	find_orphaned_nodes_of(USR_DIR + "/Bigstruct/obj/deque/node");
-	find_orphaned_nodes_of(USR_DIR + "/Bigstruct/obj/map/node");
-}
-
 private void check_root(object root)
 {
 	mapping grants;
@@ -73,28 +47,71 @@ private void check_root(object root)
 	}
 }
 
-private void find_orphaned_roots_of(string program)
+void root_check_tick(int sz)
 {
-	/* a root is orphaned if no object has full access */
-	int i;
-	int sz;
+	int quota;
 
-	sz = status(ST_OTABSIZE);
-
-	for (i = 0; i < sz; i++) {
+	for (; quota < 100 && sz >= 0; --sz, quota++) {
 		object obj;
 
-		obj = find_object(program + "#" + i);
+		obj = find_object(USR_DIR + "/Bigstruct/obj/array/root#" + sz);
+
+		if (obj) {
+			check_root(obj);
+		}
+
+		obj = find_object(USR_DIR + "/Bigstruct/obj/deque/root#" + sz);
+
+		if (obj) {
+			check_root(obj);
+		}
+
+		obj = find_object(USR_DIR + "/Bigstruct/obj/map/root#" + sz);
 
 		if (obj) {
 			check_root(obj);
 		}
 	}
+
+	if (sz >= 0) {
+		call_out("root_check_tick", 0, sz);
+	} else {
+		call_out("node_check_tick", 0, status(ST_OTABSIZE) - 1);
+	}
 }
 
-void find_orphaned_roots()
+void node_check_tick(int sz)
 {
-	find_orphaned_roots_of(USR_DIR + "/Bigstruct/obj/array/root");
-	find_orphaned_roots_of(USR_DIR + "/Bigstruct/obj/deque/root");
-	find_orphaned_roots_of(USR_DIR + "/Bigstruct/obj/map/root");
+	int quota;
+
+	for (; quota < 100 && sz >= 0; --sz, quota++) {
+		object obj;
+
+		obj = find_object(USR_DIR + "/Bigstruct/obj/array/node#" + sz);
+
+		if (obj) {
+			check_node(obj);
+		}
+
+		obj = find_object(USR_DIR + "/Bigstruct/obj/deque/node#" + sz);
+
+		if (obj) {
+			check_node(obj);
+		}
+
+		obj = find_object(USR_DIR + "/Bigstruct/obj/map/node#" + sz);
+
+		if (obj) {
+			check_node(obj);
+		}
+	}
+
+	if (sz >= 0) {
+		call_out("node_check_tick", 0, sz);
+	}
+}
+
+void check()
+{
+	call_out("root_check_tick", 0, status(ST_OTABSIZE) - 1);
 }
