@@ -28,13 +28,38 @@ static void create(int clone)
 
 int login(string str)
 {
+	object conn;
+
 	connection(previous_object());
 
 	message("HTTP/1.1 404 No handler\n");
 	message("Connection: close\n");
 	message("\n");
+	message("</html>\n");
+	message("<head>\n");
+	message("<title>No handler</title>\n");
+	message("</head>\n");
+	message("<body>\n");
 	message("<h1>No handler</h1>\n");
 	message("<p>There is no handler for that path.</p>\n");
+	message("<p>For the curious, here's a list of all objects involved in this connection:</p>\n");
+	message("<ul>\n");
+
+	conn = this_object();
+
+	while(conn) {
+		message("<li>" + object_name(conn) + "</li>\n");
+
+		if (conn <- LIB_USER) {
+			conn = conn->query_conn();
+		} else {
+			break;
+		}
+	}
+
+	message("</ul>\n");
+	message("</body>\n");
+	message("</html>\n");
 
 	return MODE_DISCONNECT;
 }
