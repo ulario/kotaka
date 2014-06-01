@@ -37,8 +37,6 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-int dumped;
-
 mapping subsystems;
 
 void console_post(string str, int level);
@@ -218,9 +216,6 @@ void hotboot()
 
 	SYSTEM_USERD->hotboot();
 
-	remove_call_out(dumped);
-	dumped = 0;
-
 	ind = map_indices(subsystems - ({ "System" }));
 	sz = sizeof(ind);
 
@@ -249,8 +244,6 @@ void reboot()
 
 	clear_admin();
 	configure_rsrc();
-	remove_call_out(dumped);
-	dumped = 0;
 
 	ACCESSD->restore();
 	OBJECTD->reboot();
