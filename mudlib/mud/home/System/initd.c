@@ -204,6 +204,12 @@ void hotboot()
 	int sz;
 	string *ind;
 
+	if (KADMIN()) {
+		dump_state();
+		shutdown(1);
+		return;
+	}
+
 	ACCESS_CHECK(KERNEL());
 
 	check_config();
