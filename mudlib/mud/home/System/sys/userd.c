@@ -309,9 +309,13 @@ int query_timeout(object LIB_CONN connection)
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
+	if (blocked || free_users() < 2) {
+		return -1;
+	}
+
 	userd = query_manager(connection);
 
-	if (!userd || blocked || free_users() < 2) {
+	if (!userd) {
 		return -1;
 	}
 
