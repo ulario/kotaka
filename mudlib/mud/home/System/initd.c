@@ -540,21 +540,19 @@ atomic void upgrade_system()
 
 		if (find_object(initd)) {
 			compile_object(USR_DIR + "/" + users[sz] + "/initd");
+		} else {
+			users[sz] = nil;
 		}
 	}
 
 	CHANNELD->post_message("system", "upgrade", "Upgrading subsystems");
 
-	call_out("upgrade_system_2", 0);
+	call_out("upgrade_system_2", 0, users - ({ nil }) );
 }
 
-atomic static void upgrade_system_2()
+atomic static void upgrade_system_2(string *users)
 {
-	string *users;
 	int sz;
-
-	users = get_dir(USR_DIR + "/*")[0];
-	users &= KERNELD->query_users();
 
 	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
 		(USR_DIR + "/" + users[sz] + "/initd")->upgrade_subsystem();
