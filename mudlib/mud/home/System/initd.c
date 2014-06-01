@@ -83,6 +83,7 @@ private void initialize()
 
 	boot_subsystem("String");
 	boot_subsystem("Algorithm");
+	boot_subsystem("Bigstruct");
 
 	LOGD->post_message("boot", LOG_INFO, "Loading program manager");
 	load_object(PROGRAM_INFO);
@@ -93,10 +94,6 @@ private void initialize()
 
 	LOGD->post_message("boot", LOG_INFO, "Initializing program database");
 	OBJECTD->discover_objects();
-
-	boot_subsystem("Bigstruct");
-	LOGD->post_message("boot", LOG_INFO, "Switching program database to bigstruct");
-	PROGRAMD->convert_database();
 
 	LOGD->post_message("boot", LOG_INFO, "Loading clone manager");
 	load_object(CLONE_INFO);
