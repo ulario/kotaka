@@ -29,6 +29,7 @@
 #define GAME()		(sscanf(previous_program(), USR_DIR + "/Game/%*s"))
 #define GEOMETRY()	(sscanf(previous_program(), USR_DIR + "/Geometry/%*s"))
 #define HELP()		(sscanf(previous_program(), USR_DIR + "/Help/%*s"))
+#define HTTP()		(sscanf(previous_program(), USR_DIR + "/Http/%*s"))
 #define INTERMUD()	(sscanf(previous_program(), USR_DIR + "/Intermud/%*s"))
 #define KOTAKA()	(sscanf(previous_program(), USR_DIR + "/Kotaka/%*s"))
 #define TEST()		(sscanf(previous_program(), USR_DIR + "/Test/%*s"))
@@ -42,7 +43,7 @@
 			sscanf(previous_program(), USR_DIR + "/%*s/_code"))
 #define LOCAL()		(calling_object() == this_object())
 
-#define INTERFACE()	(TEXT() || SYSTEM() || GAME() || INTERMUD() || VERB())
+#define INTERFACE()	(TEXT() || SYSTEM() || GAME() || INTERMUD() || VERB() || HTTP())
 #define PRIVILEGED()	(KOTAKA() || GAME() || SYSTEM() || KADMIN() || TEST())
 #define ACCESS_CHECK(x)	do { if (!(x)) error("Access denied"); } while (0)
 #define PERMISSION_CHECK(x)	do { if (!(x)) error("Permission denied"); } while (0)
