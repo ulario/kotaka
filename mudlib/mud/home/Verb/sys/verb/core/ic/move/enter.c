@@ -93,7 +93,7 @@ void main(object actor, mapping roles)
 
 			emit_from(actor, ({ "enter", "enters" }), dob);
 
-			actor->move(dob);
+			actor->move(dob, 1);
 			actor->set_x_position(0);
 			actor->set_y_position(0);
 			actor->set_z_position(0);
