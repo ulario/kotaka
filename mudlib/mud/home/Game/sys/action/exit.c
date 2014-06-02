@@ -57,11 +57,25 @@ void action(mapping roles)
 		return;
 	}
 
-	emit_from(actor, ({ "leave", "leaves" }), "through", exit);
-	actor->set_x_position(exit->query_x_position());
-	actor->set_y_position(exit->query_y_position());
-	actor->set_z_position(exit->query_z_position());
-	actor->move(target);
+	if (query_user()->query_class() >= 2) {
+		emit_from(actor, ({ "leave", "leaves" }), "through", exit);
+		actor->set_x_position(exit->query_x_position());
+		actor->set_y_position(exit->query_y_position());
+		actor->set_z_position(exit->query_z_position());
+		actor->move(target, 1);
+	} else {
+		if (actor->query_total_mass() > target->query_max_mass() - target->query_contained_mass()) {
+			send_out("You're too heavy.\n");
+		}
+		if (actor->query_total_volume() > target->query_capacity() - target->query_contained_volume()) {
+			send_out("You're too big.\n");
+		}
+		emit_from(actor, ({ "leave", "leaves" }), "through", exit);
+		actor->set_x_position(exit->query_x_position());
+		actor->set_y_position(exit->query_y_position());
+		actor->set_z_position(exit->query_z_position());
+		actor->move(target, 1);
+	}
 
 	if (retexit) {
 		emit_from(actor, ({ "arrive", "arrives" }), "from", retexit);
