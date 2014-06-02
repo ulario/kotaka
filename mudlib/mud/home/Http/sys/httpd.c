@@ -35,6 +35,16 @@ string query_banner(object connection)
 	return "";
 }
 
+string query_blocked_banner(object connection)
+{
+	return read_file("~/data/error/500");
+}
+
+string query_overload_banner(object connection)
+{
+	return read_file("~/data/error/500");
+}
+
 int query_timeout(object connection)
 {
 	return 5;
