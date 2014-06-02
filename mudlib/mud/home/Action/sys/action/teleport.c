@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2010, 2011, 2012, 2013, 2014  Raymond Jennings
+ * Copyright (C) 2012, 2013, 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,14 +17,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <config.h>
+#include <kotaka/paths/text.h>
+#include <kotaka/paths/action.h>
 
-#define LIB_HANDLER		(USR_DIR + "/Game/lib/handler")
+inherit LIB_USERIO;
+inherit LIB_EMIT;
+inherit LIB_ACTION;
 
-#define SNOOPD			(USR_DIR + "/Game/sys/snoopd")
-#define GAME_INITD		(USR_DIR + "/Game/initd")
-#define GAME_HELPD		(USR_DIR + "/Game/sys/helpd")
-#define GAME_DRIVER		(USR_DIR + "/Game/sys/driver")
-#define GAME_ROOT		(USR_DIR + "/Game/sys/root")
-#define GAME_SUBD		(USR_DIR + "/Game/sys/subd")
-#define GAME_TESTD		(USR_DIR + "/Game/sys/testd")
+void action(mapping roles)
+{
+	object exit;
+	object target;
+	object actor;
+
+	actor = roles["actor"];
+	target = roles["dob"];
+
+	if (actor->query_property("is_immobile")) {
+		send_out("You're stuck like glue and can't move.\n");
+		return;
+	}
+
+	emit_from(actor, ({ "vanish", "vanishes" }), "into thin air");
+	actor->move(target);
+	emit_from(actor, ({ "appear", "appears" }), "out of thin air");
+}

@@ -83,7 +83,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	"~Game/sys/action/speak"->action(
+	"~Action/sys/action/speak"->action(
 		([
 			"actor": actor,
 			"iob": target,

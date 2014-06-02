@@ -72,7 +72,7 @@ void main(object actor, mapping roles)
 		def = dob->query_property("default_entrance");
 
 		if (def) {
-			"~Game/sys/action/exit"->action(
+			"~Action/sys/action/exit"->action(
 				([
 					"actor": actor,
 					"dob": def

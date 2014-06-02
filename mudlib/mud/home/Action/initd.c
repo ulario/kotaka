@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012, 2013, 2014  Raymond Jennings
+ * Copyright (C) 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,28 +17,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/text.h>
-#include <game/paths.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 
-inherit LIB_USERIO;
-inherit LIB_EMIT;
-inherit LIB_ACTION;
+inherit LIB_INITD;
+inherit UTILITY_COMPILE;
 
-void action(mapping roles)
+private void load()
 {
-	object exit;
-	object target;
-	object actor;
+	load_dir("lwo", 1);
+	load_dir("sys", 1);
+}
 
-	actor = roles["actor"];
-	target = roles["dob"];
+static void create()
+{
+	KERNELD->set_global_access("Action", 1);
 
-	if (actor->query_property("is_immobile")) {
-		send_out("You're stuck like glue and can't move.\n");
-		return;
-	}
+	load();
+}
 
-	emit_from(actor, ({ "vanish", "vanishes" }), "into thin air");
-	actor->move(target);
-	emit_from(actor, ({ "appear", "appears" }), "out of thin air");
+void upgrade_subsystem()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	load();
+
+	purge_orphans("Action");
 }

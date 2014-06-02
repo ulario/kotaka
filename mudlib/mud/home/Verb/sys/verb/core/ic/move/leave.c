@@ -54,7 +54,7 @@ void main(object actor, mapping roles)
 	def = env->query_property("default_exit");
 
 	if (def) {
-		"~Game/sys/action/exit"->action(
+		"~Action/sys/action/exit"->action(
 			([
 				"actor": actor,
 				"dob": def

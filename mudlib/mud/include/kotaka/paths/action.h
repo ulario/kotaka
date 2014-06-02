@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2010, 2011, 2012, 2013, 2014  Raymond Jennings
+ * Copyright (C) 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,12 +19,4 @@
  */
 #include <config.h>
 
-#define LIB_HANDLER		(USR_DIR + "/Game/lib/handler")
-
-#define SNOOPD			(USR_DIR + "/Game/sys/snoopd")
-#define GAME_INITD		(USR_DIR + "/Game/initd")
-#define GAME_HELPD		(USR_DIR + "/Game/sys/helpd")
-#define GAME_DRIVER		(USR_DIR + "/Game/sys/driver")
-#define GAME_ROOT		(USR_DIR + "/Game/sys/root")
-#define GAME_SUBD		(USR_DIR + "/Game/sys/subd")
-#define GAME_TESTD		(USR_DIR + "/Game/sys/testd")
+#define LIB_ACTION		(USR_DIR + "/Action/lib/action")

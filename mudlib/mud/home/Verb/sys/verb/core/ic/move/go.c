@@ -56,7 +56,7 @@ void main(object actor, mapping roles)
 		exit = inv[i];
 
 		if (roles["raw"] == exit->query_property("exit_direction")) {
-			"~Game/sys/action/exit"->action(
+			"~Action/sys/action/exit"->action(
 				([
 					"actor": actor,
 					"dob": exit

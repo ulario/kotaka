@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/text.h>
-#include <game/paths.h>
+#include <kotaka/paths/action.h>
 
 inherit LIB_USERIO;
 inherit LIB_EMIT;
