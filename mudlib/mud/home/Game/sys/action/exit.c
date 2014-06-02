@@ -64,12 +64,29 @@ void action(mapping roles)
 		actor->set_z_position(exit->query_z_position());
 		actor->move(target, 1);
 	} else {
+		int heavy, big;
+
 		if (actor->query_total_mass() > target->query_max_mass() - target->query_contained_mass()) {
-			send_out("You're too heavy.\n");
+			heavy = 1;
 		}
+
 		if (actor->query_total_volume() > target->query_capacity() - target->query_contained_volume()) {
-			send_out("You're too big.\n");
+			big = 1;
 		}
+
+		if (heavy) {
+			if (big) {
+				send_out("You are too big and heavy.\n");
+				return;
+			} else {
+				send_out("You are too heavy.\n");
+				return;
+			}
+		} else if (big) {
+			send_out("You are too big.\n");
+			return;
+		}
+
 		emit_from(actor, ({ "leave", "leaves" }), "through", exit);
 		actor->set_x_position(exit->query_x_position());
 		actor->set_y_position(exit->query_y_position());
