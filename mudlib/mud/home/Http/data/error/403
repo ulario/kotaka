@@ -1,0 +1,12 @@
+HTTP/1.1 403 Forbidden
+Connection: close
+
+</html>
+	<head>
+		<title>Forbidden</title>
+	</head>
+	<body>
+		<h1>Forbidden</h1>
+		<p>The requested action is not allowed.</p>
+	</body>
+</html>

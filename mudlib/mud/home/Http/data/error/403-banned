@@ -1,0 +1,12 @@
+HTTP/1.1 403 Banned
+Connection: close
+
+</html>
+	<head>
+		<title>Banned</title>
+	</head>
+	<body>
+		<h1>Banned</h1>
+		<p>You are banned from this server.</p>
+	</body>
+</html>
