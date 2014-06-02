@@ -24,6 +24,8 @@ private object environment;
 private object *inventory;
 
 void reset_id_number();
+float query_total_mass();
+float query_total_volume();
 
 static void create()
 {
@@ -130,7 +132,7 @@ private atomic void move_core(object new_env)
 	}
 }
 
-nomask void move(object new_env)
+nomask void move(object new_env, varargs int force)
 {
 	object old_env;
 	object this;
@@ -154,6 +156,16 @@ nomask void move(object new_env)
 
 		if (is_container_of(new_env)) {
 			error("Cyclic containment attempted");
+		}
+	}
+
+	if (!force && !new_env->query_virtual()) {
+		if (query_total_mass() > new_env->query_max_mass()) {
+			error("Object too massive for new environment");
+		}
+
+		if (query_total_volume() > new_env->query_capacity()) {
+			error("Object too big for new environment");
 		}
 	}
 
