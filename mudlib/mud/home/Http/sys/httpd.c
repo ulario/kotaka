@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/system.h>
+#include <kernel/user.h>
 
 inherit LIB_USERD;
 
@@ -32,6 +33,20 @@ static void create()
 
 string query_banner(object connection)
 {
+	object conn;
+
+	conn = connection;
+
+	while (conn && conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	if (is_sitebanned(query_ip_number(conn))) {
+		TLSD->set_tls_value("Http", "connection-abort", 1);
+
+		return read_file("~/data/error/403-banned");
+	}
+
 	return "";
 }
 
@@ -47,6 +62,10 @@ string query_overload_banner(object connection)
 
 int query_timeout(object connection)
 {
+	if (TLSD->query_tls_value("Http", "connection-abort")) {
+		return -1;
+	}
+
 	return 5;
 }
 
