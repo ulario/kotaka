@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/user.h>
+#include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
@@ -65,4 +66,32 @@ void connect(string host, int port)
 	conn = clone_object(SYSTEM_CONN);
 	conn->set_manager(this_object());
 	conn->connect(host, port);
+}
+
+static int is_sitebanned(string ip)
+{
+	string o1, o2, o3, o4;
+
+	if (sscanf(ip, "%s.%s.%s.%s", o1, o2, o3, o4) < 4) {
+		/* weird IP? */
+		return 0;
+	}
+
+	if (BAND->query_is_site_banned(o1 + "." + o2 + "." + o3 + "." + o4)) {
+		return 1;
+	}
+
+	if (BAND->query_is_site_banned(o1 + "." + o2 + "." + o3 + ".*")) {
+		return 1;
+	}
+
+	if (BAND->query_is_site_banned(o1 + "." + o2 + ".*.*")) {
+		return 1;
+	}
+
+	if (BAND->query_is_site_banned(o1 + ".*.*.*")) {
+		return 1;
+	}
+
+	return 0;
 }
