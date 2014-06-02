@@ -40,8 +40,8 @@ void action(mapping roles)
 	text = roles["evoke"];
 
 	if (target) {
-		emit_from(actor, ({ "say", "says" }), "to", target, "\"" + text + "\"");
+		emit_from(actor, actor, " ", ({ "say", "says" }), "to", target, ", \"" + text + "\".");
 	} else {
-		emit_from(actor, ({ "say", "says" }), "\"" + text + "\"");
+		emit_from(actor, actor, " ", ({ "say", "says" }), ", \"" + text + "\".");
 	}
 }

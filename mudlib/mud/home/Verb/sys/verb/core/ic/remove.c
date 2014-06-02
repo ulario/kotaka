@@ -111,7 +111,7 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	emit_from(actor, ({ "remove", "removes" }), dob, nil);
+	emit_from(actor, actor, " ", ({ "remove", "removes" }), " ", dob, ".");
 	dob->set_property("is_worn", nil);
 	dob->set_property("clothing_layer", nil);
 }

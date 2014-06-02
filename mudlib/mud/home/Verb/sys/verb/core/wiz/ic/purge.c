@@ -69,7 +69,7 @@ void main(object actor, mapping roles)
 
 	dob = dob[1];
 
-	emit_from(actor, ({ "purge", "purges" }), dob);
+	emit_from(actor, actor, " ", ({ "purge", "purges" }), " ", dob, ".");
 
 	{
 		int sz, i;

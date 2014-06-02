@@ -68,13 +68,13 @@ void main(object actor, mapping roles)
 			return;
 		}
 
-		emit_from(actor, ({ "leave", "leaves" }), "through thin air");
+		emit_from(actor, actor, " ", ({ "leave", "leaves" }), " through thin air.");
 
 		actor->move(env->query_environment(), 1);
 		actor->set_x_position(0);
 		actor->set_y_position(0);
 		actor->set_z_position(0);
 
-		emit_from(actor, ({ "arrive", "arrives" }));
+		emit_from(actor, actor, " ", ({ "arrive", "arrives" }), ".");
 	}
 }

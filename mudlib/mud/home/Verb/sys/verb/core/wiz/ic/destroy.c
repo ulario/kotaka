@@ -79,6 +79,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	emit_from(actor, ({ "destroy", "destroys" }), dob);
+	emit_from(actor, actor, " ", ({ "destroy", "destroys" }), " ", dob, ".");
 	dob->self_destruct();
 }

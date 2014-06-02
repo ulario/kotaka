@@ -72,7 +72,7 @@ void main(object actor, mapping roles)
 	if (dob->query_environment() == actor) {
 		float mass;
 
-		emit_from(actor, ({ "weigh", "weighs" }), dob);
+		emit_from(actor, actor, " ", ({ "weigh", "weighs" }), " ", dob, ".");
 		mass = dob->query_total_mass();
 
 		if (mass < 1000.0) {

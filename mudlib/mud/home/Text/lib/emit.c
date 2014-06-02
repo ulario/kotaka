@@ -38,30 +38,18 @@ private string from_object(object obj, mapping seen, object viewer)
 	}
 }
 
-void emit_to(object actor, object viewer, string *verbs, mixed chain ...)
+void emit_to(object actor, object viewer, mixed chain ...)
 {
-	string *buffer;
+	string buffer;
 	mapping seen;
 	string phrase;
 	object *mobiles;
 
 	int i, sz;
 
-	buffer = ({ });
+	buffer = "";
 
 	seen = ([ ]);
-
-	if (actor == viewer) {
-		if (verbs[0]) {
-			buffer += ({ "you", verbs[0] });
-		}
-	} else {
-		if (verbs[1]) {
-			buffer = ({ TEXT_SUBD->generate_brief_definite(actor), verbs[1] });
-		}
-	}
-
-	seen[actor] = 1;
 
 	sz = sizeof(chain);
 
@@ -72,46 +60,64 @@ void emit_to(object actor, object viewer, string *verbs, mixed chain ...)
 
 		switch(typeof(item)) {
 		case T_STRING:
-			buffer += ({ item });
+			buffer += item;
 			break;
 
 		case T_OBJECT:
-			buffer += ({ from_object(item, seen, viewer) });
+			buffer += from_object(item, seen, viewer);
 			break;
 
 		case T_ARRAY:
-			{
-				int j, sz2;
-				string *list;
-
-				sz2 = sizeof(item);
-				list = ({ });
-
-				for (j = 0; j < sz2; j++) {
-					list += ({ from_object(item[j], seen, viewer) });
+			switch(typeof(item[0])) {
+			case T_STRING:
+				/* verb */
+				{
+					if (actor == viewer) {
+						buffer += item[0];
+					} else {
+						buffer += item[1];
+					}
 				}
+				break;
 
-				list[sz2 - 1] = "and " + list[sz2 - 1];
+			case T_OBJECT:
+				/* list of objects */
+				{
+					int j, sz2;
+					string *list;
 
-				buffer += ({ implode(list, ", ") });
+					sz2 = sizeof(item);
+					list = ({ });
+
+					for (j = 0; j < sz2; j++) {
+						list += ({ from_object(item[j], seen, viewer) });
+					}
+
+					list[sz2 - 1] = "and " + list[sz2 - 1];
+
+					buffer += implode(list, ", ");
+				}
 			}
 			break;
 		}
 	}
 
-	phrase = implode(buffer, " ") + ".";
-	phrase = STRINGD->to_upper(phrase[0 .. 0]) + phrase[1 ..];
+	if (strlen(buffer) > 1) {
+		buffer = STRINGD->to_upper(buffer[0 .. 0]) + buffer[1 ..];
+	} else {
+		buffer = STRINGD->to_upper(buffer);
+	}
 
 	mobiles = viewer->query_property("mobiles");
 
 	sz = sizeof(mobiles -= ({ nil }) );
 
 	for (i = 0; i < sz; i++) {
-		mobiles[i]->message(phrase + "\n");
+		mobiles[i]->message(buffer + "\n");
 	}
 }
 
-void emit_from(object actor, string *verbs, mixed chain ...)
+void emit_from(object actor, mixed chain ...)
 {
 	object env;
 	object *cand;
@@ -131,6 +137,6 @@ void emit_from(object actor, string *verbs, mixed chain ...)
 	sz = sizeof(cand);
 
 	for (i = 0; i < sz; i++) {
-		emit_to(actor, cand[i], verbs, chain ...);
+		emit_to(actor, cand[i], chain ...);
 	}
 }

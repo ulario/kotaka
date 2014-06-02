@@ -65,5 +65,5 @@ atomic void main(object actor, mapping roles)
 		num--;
 	}
 
-	emit_from(actor, ({ "spawn", "spawns" }), thing, num + "times");
+	emit_from(actor, actor, " ", ({ "spawn", "spawns" }), " ", thing, " ", num + "times.");
 }

@@ -56,5 +56,5 @@ void main(object actor, mapping roles)
 	thing->add_archetype(master);
 	thing->move(actor);
 
-	emit_from(actor, ({ "spawn", "spawns" }), thing);
+	emit_from(actor, actor, " ", ({ "spawn", "spawns" }), " ", thing, ".");
 }

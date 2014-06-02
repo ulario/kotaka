@@ -164,5 +164,5 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	emit_from(actor, ({ "put", "puts" }), dob, "in", iob);
+	emit_from(actor, actor, " ", ({ "put", "puts" }), dob, " in ", iob, ".");
 }

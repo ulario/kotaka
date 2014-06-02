@@ -53,7 +53,7 @@ void main(object actor, mapping roles)
 	dob = roles["dob"];
 
 	if (!dob) {
-		emit_from(actor, ({ "look", "looks" }), "around");
+		emit_from(actor, actor, " ", ({ "look", "looks" }), " around.");
 		send_out(RENDERD->draw_look(actor));
 		return;
 	}
@@ -65,7 +65,7 @@ void main(object actor, mapping roles)
 	case nil:
 	case "at":
 		if (typeof(obj) == T_OBJECT) {
-			emit_from(actor, ({ "look", "looks" }), "at", obj);
+			emit_from(actor, actor, " ", ({ "look", "looks" }), " at ", obj, ".");
 			look = obj->query_property("look");
 			send_out(look ? STRINGD->wordwrap(look, 60) : "a bland object");
 			send_out("\n");
@@ -73,7 +73,7 @@ void main(object actor, mapping roles)
 			int sz, i;
 			string *briefs;
 
-			emit_from(actor, ({ "look", "looks" }), "at a bunch of stuff");
+			emit_from(actor, " ", ({ "look", "looks" }), " at a bunch of stuff.");
 
 			sz = sizeof(obj);
 			briefs = ({ });
@@ -95,7 +95,7 @@ void main(object actor, mapping roles)
 			send_out("You have to be more specific to look inside something.\n");
 		}
 
-		emit_from(actor, ({ "look", "looks" }), "in", obj);
+		emit_from(actor, actor, " ", ({ "look", "looks" }), " in ", obj, ".");
 		{
 			object *inv;
 			int sz;

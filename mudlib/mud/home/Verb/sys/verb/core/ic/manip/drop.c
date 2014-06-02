@@ -128,5 +128,5 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	emit_from(actor, ({ "drop", "drops" }), dob);
+	emit_from(actor, actor, " ", ({ "drop", "drops" }), " ", dob, ".");
 }

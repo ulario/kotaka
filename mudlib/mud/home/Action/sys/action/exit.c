@@ -58,7 +58,7 @@ void action(mapping roles)
 	}
 
 	if (query_user()->query_class() >= 2) {
-		emit_from(actor, ({ "leave", "leaves" }), "through", exit);
+		emit_from(actor, actor, " ", ({ "leave", "leaves" }), " through ", exit, ".");
 		actor->set_x_position(exit->query_x_position());
 		actor->set_y_position(exit->query_y_position());
 		actor->set_z_position(exit->query_z_position());
@@ -89,7 +89,7 @@ void action(mapping roles)
 			}
 		}
 
-		emit_from(actor, ({ "leave", "leaves" }), "through", exit);
+		emit_from(actor, actor, " ", ({ "leave", "leaves" }), " through ", exit, ".");
 		actor->set_x_position(exit->query_x_position());
 		actor->set_y_position(exit->query_y_position());
 		actor->set_z_position(exit->query_z_position());
@@ -97,8 +97,8 @@ void action(mapping roles)
 	}
 
 	if (retexit) {
-		emit_from(actor, ({ "arrive", "arrives" }), "from", retexit);
+		emit_from(actor, actor, " ", ({ "arrive", "arrives" }), " from ", retexit, ".");
 	} else {
-		emit_from(actor, ({ "arrive", "arrives" }));
+		emit_from(actor, actor, " ", ({ "arrive", "arrives" }), ".");
 	}
 }

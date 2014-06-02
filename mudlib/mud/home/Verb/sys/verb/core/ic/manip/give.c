@@ -164,5 +164,5 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	emit_from(actor, ({ "give", "gives" }), dob, "to", iob);
+	emit_from(actor, actor, " ", ({ "give", "gives" }), dob, " to ", iob, ".");
 }

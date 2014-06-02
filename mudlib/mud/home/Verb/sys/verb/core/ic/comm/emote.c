@@ -42,6 +42,7 @@ void main(object actor, mapping roles)
 	object user;
 	object target;
 	string name;
+	string emote;
 
 	int sz, i;
 
@@ -56,7 +57,9 @@ void main(object actor, mapping roles)
 
 	user = query_user();
 
-	if (roles["raw"] == "") {
+	emote = roles["raw"];
+
+	if (emote == "") {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
@@ -68,5 +71,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	emit_from(actor, ({ nil, nil }), roles["raw"]);
+	if (emote[strlen(emote) - 1] != '.') {
+		emote += ".";
+	}
+
+	emit_from(actor, actor, " ", emote);
 }

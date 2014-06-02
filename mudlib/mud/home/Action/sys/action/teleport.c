@@ -38,7 +38,7 @@ void action(mapping roles)
 		return;
 	}
 
-	emit_from(actor, ({ "vanish", "vanishes" }), "into thin air");
+	emit_from(actor, actor, " ", ({ "vanish", "vanishes" }), " into thin air.");
 	actor->move(target);
-	emit_from(actor, ({ "appear", "appears" }), "out of thin air");
+	emit_from(actor, actor, " ", ({ "appear", "appears" }), " out of thin air.");
 }

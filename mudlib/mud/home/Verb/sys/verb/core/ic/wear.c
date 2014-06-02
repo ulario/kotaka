@@ -110,7 +110,7 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	emit_from(actor, ({ "wear", "wears" }), dob, nil);
+	emit_from(actor, actor, " ", ({ "wear", "wears" }), " ", dob, ".");
 	dob->set_property("is_worn", 1);
 	dob->set_property("clothing_layer", hlayer);
 }
