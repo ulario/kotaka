@@ -85,7 +85,7 @@ void main(object actor, mapping roles)
 			continue;
 		}
 
-		if (!TEXT_USERD->is_sitebanned(query_ip_number(conn))) {
+		if (!BAND->query_is_site_banned(query_ip_number(conn))) {
 			continue;
 		}
 
