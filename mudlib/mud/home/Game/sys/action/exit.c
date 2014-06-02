@@ -66,25 +66,27 @@ void action(mapping roles)
 	} else {
 		int heavy, big;
 
-		if (actor->query_total_mass() > target->query_max_mass() - target->query_contained_mass()) {
-			heavy = 1;
-		}
+		if (!target->query_virtual()) {
+			if (actor->query_total_mass() > target->query_max_mass() - target->query_contained_mass()) {
+				heavy = 1;
+			}
 
-		if (actor->query_total_volume() > target->query_capacity() - target->query_contained_volume()) {
-			big = 1;
-		}
+			if (actor->query_total_volume() > target->query_capacity() - target->query_contained_volume()) {
+				big = 1;
+			}
 
-		if (heavy) {
-			if (big) {
-				send_out("You are too big and heavy.\n");
-				return;
-			} else {
-				send_out("You are too heavy.\n");
+			if (heavy) {
+				if (big) {
+					send_out("You are too big and heavy.\n");
+					return;
+				} else {
+					send_out("You are too heavy.\n");
+					return;
+				}
+			} else if (big) {
+				send_out("You are too big.\n");
 				return;
 			}
-		} else if (big) {
-			send_out("You are too big.\n");
-			return;
 		}
 
 		emit_from(actor, ({ "leave", "leaves" }), "through", exit);
