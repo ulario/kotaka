@@ -29,7 +29,6 @@ inherit userd API_USER;
 inherit user LIB_USER;
 
 object *connections;
-object intercept;
 
 /*************/
 /* Variables */
@@ -292,10 +291,14 @@ string query_banner(object LIB_CONN connection)
 	userd = query_manager(connection);
 
 	if (!userd) {
+		TLSD->set_tls_value("System", "abort-connection", 1);
+
 		return "Internal error: no connection manager.\n";
 	}
 
 	if (free_users() < 2) {
+		TLSD->set_tls_value("System", "abort-connection", 1);
+
 		/* one for the admin, and one for dumping overloads */
 		catch {
 			return userd->query_overload_banner(connection);
@@ -305,6 +308,8 @@ string query_banner(object LIB_CONN connection)
 	}
 
 	if (blocked) {
+		TLSD->set_tls_value("System", "abort-connection", 1);
+
 		catch {
 			return userd->query_blocked_banner(connection);
 		} : {
@@ -321,9 +326,9 @@ int query_timeout(object LIB_CONN connection)
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	if (blocked || free_users() < 2) {
+	if (TLSD->query_tls_value("System", "abort-connection")) {
 		return -1;
-	}
+	};
 
 	userd = query_manager(connection);
 
@@ -339,6 +344,7 @@ object select(string str)
 	object userd;
 	object conn;
 	object user;
+	object intercept;
 
 	int has_rlimits;
 
@@ -358,7 +364,7 @@ object select(string str)
 		return clone_object("~/obj/filter/rlimits");
 	}
 
-	if (intercept) {
+	if (intercept = TLSD->query_tls_value("System", "redirect-intercept")) {
 		user = intercept;
 
 		intercept = nil;
@@ -418,13 +424,13 @@ void intercept_redirect(object user, string str)
 	if (!has_rlimits) {
 		object filter;
 
-		intercept = user;
-
 		filter = clone_object("~/obj/filter/rlimits");
+
+		TLSD->set_tls_value("System", "redirect-intercept", user);
 
 		start->system_redirect(filter, str);
 
-		intercept = nil;
+		TLSD->set_tls_value("System", "redirect-intercept", nil);
 
 		return;
 	}
