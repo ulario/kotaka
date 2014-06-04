@@ -26,7 +26,6 @@ inherit SECOND_AUTO;
 
 object first;
 mapping clones;
-int count;
 
 static void create(int clone)
 {
@@ -40,16 +39,12 @@ void add_clone(object obj)
 	ACCESS_CHECK(previous_program() == CLONED);
 
 	if (clones) {
-		ASSERT(!clones[obj]);
-
-		if (count == status(ST_ARRAYSIZE)) {
+		if (map_sizeof(clones) == status(ST_ARRAYSIZE)) {
 			clones = nil;
 		} else {
 			clones[obj] = 1;
 		}
 	}
-
-	count++;
 }
 
 void remove_clone(object obj)
@@ -57,11 +52,8 @@ void remove_clone(object obj)
 	ACCESS_CHECK(previous_program() == CLONED);
 
 	if (clones) {
-		ASSERT(clones[obj]);
 		clones[obj] = nil;
 	}
-
-	count--;
 }
 
 void set_first_clone(object obj)
@@ -74,11 +66,6 @@ void set_first_clone(object obj)
 object query_first_clone()
 {
 	return first;
-}
-
-int query_clone_count()
-{
-	return count;
 }
 
 object *query_clones()
