@@ -66,15 +66,11 @@ static void check_caller(int access)
 
 mapping query_grants()
 {
-	check_caller(READ_ACCESS);
-
 	return grants[..];
 }
 
 int query_global_access()
 {
-	check_caller(READ_ACCESS);
-
 	return global_access;
 }
 
