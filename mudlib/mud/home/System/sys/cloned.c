@@ -131,15 +131,16 @@ void remove_clone(object obj)
 		return;
 	}
 
-	if (obj == cinfo->query_first_clone()) {
-		cinfo->set_first_clone(obj->query_next_clone());
-	}
-
 	prev = obj->query_prev_clone();
 	next = obj->query_next_clone();
 
-	prev->set_next_clone(next);
-	next->set_prev_clone(prev);
+	if (prev) {
+		prev->set_next_clone(next);
+	}
+
+	if (next) {
+		next->set_prev_clone(prev);
+	}
 }
 
 void remove_program(int index)
