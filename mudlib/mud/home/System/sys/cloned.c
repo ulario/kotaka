@@ -109,7 +109,13 @@ void remove_clone(object obj)
 		cinfo = db->query_element(index);
 	}
 
-	cinfo->remove_clone(obj);
+	if (cinfo) {
+		if (obj == cinfo->query_first_clone()) {
+			cinfo->set_first_clone(obj->query_next_clone());
+		}
+
+		cinfo->remove_clone(obj);
+	}
 
 	if (sscanf(object_name(obj), "/kernel/%*s")) {
 		return;
