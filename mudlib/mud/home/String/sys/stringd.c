@@ -518,7 +518,7 @@ string mixed_sprint(mixed data, varargs mapping seen)
 			} else if (data <- "~Game/lib/thing") {
 				return "<" + TEXT_SUBD->generate_brief_indefinite(data) + ">";
 			} else {
-				return "<" + object_name(data) + ":" +  ">";
+				return "<" + object_name(data) + ">";
 			}
 		}
 		break;
