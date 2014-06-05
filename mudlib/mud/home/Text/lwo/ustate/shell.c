@@ -96,11 +96,7 @@ void pre_end()
 	ACCESS_CHECK(previous_object() == user);
 
 	if (user->query_username()) {
-		TEXT_SUBD->send_to_all_except(
-			TEXT_SUBD->titled_name(
-				user->query_username(),
-				user->query_class())
-			+ " logs out.\n", ({ user }));
+		TEXT_SUBD->send_logout_message(user->query_username());
 	}
 	send_out("Come back soon.\n");
 }

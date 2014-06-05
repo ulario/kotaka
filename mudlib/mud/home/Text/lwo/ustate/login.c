@@ -154,13 +154,9 @@ void receive_in(string input)
 
 			query_user()->set_username(name);
 
-			TEXT_SUBD->send_to_all_except(
-				TEXT_SUBD->titled_name(
-					user->query_username(),
-					user->query_class())
-				+ " logs in.\n", ({ user }));
-
 			TEXT_SUBD->login_user(query_user());
+
+			TEXT_SUBD->send_login_message(name);
 
 			terminate_account_state();
 

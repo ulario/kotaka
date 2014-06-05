@@ -26,6 +26,8 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
+inherit LIB_EMIT;
+
 string titled_name(string name, int class)
 {
 	string username;
@@ -358,6 +360,60 @@ void login_user(object user)
 			} else {
 				user->message("Warning: " + channels[i] + " does not exist.\n");
 			}
+		}
+	}
+}
+
+void send_login_message(string name)
+{
+	string *users;
+	int sz;
+
+	users = TEXT_USERD->query_names();
+
+	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
+		if (users[sz] == name) {
+			continue;
+		} else {
+			ooc_emit_to(name, users[sz],
+				titled_name(name, query_user_class(name))
+				 + " logs in.\n");
+		}
+	}
+}
+
+void send_logout_message(string name)
+{
+	string *users;
+	int sz;
+
+	users = TEXT_USERD->query_names();
+
+	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
+		if (users[sz] == name) {
+			continue;
+		} else {
+			ooc_emit_to(name, users[sz],
+				titled_name(name, query_user_class(name))
+				+ " logs out.\n");
+		}
+	}
+}
+
+void send_register_message(string name)
+{
+	string *users;
+	int sz;
+
+	users = TEXT_USERD->query_names();
+
+	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
+		if (users[sz] == name) {
+			continue;
+		} else {
+			ooc_emit_to(name, users[sz],
+				titled_name(name, query_user_class(name))
+				+ " registers.\n");
 		}
 	}
 }

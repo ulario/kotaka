@@ -169,23 +169,17 @@ void receive_in(string input)
 
 			query_user()->set_username(name);
 
-			TEXT_SUBD->send_to_all_except(
-				TEXT_SUBD->titled_name(
-					user->query_username(),
-					user->query_class())
-				+ " registers.\n", ({ user }));
-
 			ACCOUNTD->set_account_property(name, "channels", ({ "chat" }));
 
 			TEXT_SUBD->login_user(user);
+
+			TEXT_SUBD->send_register_message(name);
 
 			pager = new_object("~/lwo/ustate/page");
 			text = read_file("~/data/quickstartguide");
 
 			pager->set_text(
 			text ? text : "Yell at the admin, he broke the quick start guide."
-			
-			
 			);
 
 			parent = query_parent();
