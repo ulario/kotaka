@@ -466,9 +466,23 @@ void reboot_subsystem(string subsystem)
 		error("Cannot reboot " + subsystem);
 	}
 
+	catch {
+		KERNELD->rsrc_set_limit(subsystem, "objects", 0);
+	}
+	catch {
+		KERNELD->rsrc_set_limit(subsystem, "callouts", 0);
+	}
+
 	while (cursor = KERNELD->first_link(subsystem)) {
 		destruct_object(cursor);
 	};
+
+	catch {
+		KERNELD->rsrc_set_limit(subsystem, "objects", -1);
+	}
+	catch {
+		KERNELD->rsrc_set_limit(subsystem, "callouts", -1);
+	}
 
 	compile_object(USR_DIR + "/" + subsystem + "/initd");
 }
@@ -485,6 +499,13 @@ void shutdown_subsystem(string subsystem)
 	case "String":
 	case "System":
 		error("Cannot shutdown " + subsystem);
+	}
+
+	catch {
+		KERNELD->rsrc_set_limit(subsystem, "objects", 0);
+	}
+	catch {
+		KERNELD->rsrc_set_limit(subsystem, "callouts", 0);
 	}
 
 	while (cursor = KERNELD->first_link(subsystem)) {
