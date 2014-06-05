@@ -50,6 +50,7 @@ private void check_config();
 private void check_versions();
 
 int upgraded_v_0_34;
+int upgraded_v_0_35;
 
 private void load()
 {
@@ -61,6 +62,9 @@ private void load()
 private void initialize()
 {
 	subsystems = ([ ]);
+
+	upgraded_v_0_34 = 1;
+	upgraded_v_0_35 = 1;
 
 	load_object(ERRORD);
 	load_object(LOGD);
@@ -544,6 +548,10 @@ atomic void upgrade_system()
 	string *users;
 	int sz;
 
+	if (!upgraded_v_0_34) {
+		error("Please upgrade to version 0.34 first.\n");
+	}
+
 	users = get_dir(USR_DIR + "/*")[0];
 	users &= KERNELD->query_users();
 	users &= KERNELD->query_owners();
@@ -575,7 +583,7 @@ atomic static void upgrade_system_2(string *users)
 		(USR_DIR + "/" + users[sz] + "/initd")->upgrade_subsystem();
 	}
 
-	upgraded_v_0_34 = 1;	/* we will check this on the next upgrade */
+	upgraded_v_0_35 = 1;	/* we will check this on the next upgrade */
 
 	CHANNELD->post_message("system", "upgrade", "Upgrade completed");
 }
