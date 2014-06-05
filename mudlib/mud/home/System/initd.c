@@ -450,6 +450,7 @@ void boot_subsystem(string subsystem)
 	catch {
 		KERNELD->rsrc_set_limit(subsystem, "objects", -1);
 	}
+
 	catch {
 		KERNELD->rsrc_set_limit(subsystem, "callouts", -1);
 	}
@@ -462,7 +463,7 @@ void boot_subsystem(string subsystem)
 		error("Failure to grant global access by " + subsystem);
 	}
 
-	LOGD->post_message("boot", LOG_NOTICE, "Booted subsystem: " + subsystem);
+	CHANNELD->post_message("system", "initd", "Booted " + subsystem);
 }
 
 static void purge_subsystem_tick(string subsystem, varargs int reboot)
@@ -473,6 +474,7 @@ static void purge_subsystem_tick(string subsystem, varargs int reboot)
 
 	if (cursor) {
 		destruct_object(cursor);
+
 		call_out("purge_subsystem_tick", 0, subsystem, reboot);
 	} else if (reboot) {
 		catch {
@@ -485,9 +487,9 @@ static void purge_subsystem_tick(string subsystem, varargs int reboot)
 
 		compile_object(USR_DIR + "/" + subsystem + "/initd");
 
-		CHANNELD->post_message("system", "upgrade", "Rebooted " + subsystem);
+		CHANNELD->post_message("system", "initd", "Rebooted " + subsystem);
 	} else {
-		CHANNELD->post_message("system", "upgrade", "Shut down " + subsystem);
+		CHANNELD->post_message("system", "initd", "Shut down " + subsystem);
 	}
 }
 
