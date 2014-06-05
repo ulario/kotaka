@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/account.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <type.h>
@@ -139,4 +140,22 @@ void emit_from(object actor, mixed chain ...)
 	for (i = 0; i < sz; i++) {
 		emit_to(actor, cand[i], chain ...);
 	}
+}
+
+void ooc_emit_to(string sender, string receiver, string message)
+{
+	int sinvis;
+	int sclass;
+	int rclass;
+
+	sclass = TEXT_SUBD->query_user_class(sender);
+	rclass = TEXT_SUBD->query_user_class(receiver);
+
+	sinvis = !!ACCOUNTD->query_account_property(sender, "invisible");
+
+	if (sinvis && sclass >= rclass) {
+		return;
+	}
+
+	TEXT_USERD->find_user(receiver)->message(message);
 }
