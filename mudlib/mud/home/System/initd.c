@@ -443,6 +443,13 @@ void boot_subsystem(string subsystem)
 	KERNELD->add_user(subsystem);
 	KERNELD->add_owner(subsystem);
 
+	catch {
+		KERNELD->rsrc_set_limit(subsystem, "objects", -1);
+	}
+	catch {
+		KERNELD->rsrc_set_limit(subsystem, "callouts", -1);
+	}
+
 	rlimits(100; -1) {
 		load_object(USR_DIR + "/" + subsystem + "/initd");
 	}
