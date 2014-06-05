@@ -465,6 +465,32 @@ void boot_subsystem(string subsystem)
 	LOGD->post_message("boot", LOG_NOTICE, "Booted subsystem: " + subsystem);
 }
 
+static void purge_subsystem_tick(string subsystem, varargs int reboot)
+{
+	object cursor;
+
+	cursor = KERNELD->first_link(subsystem);
+
+	if (cursor) {
+		destruct_object(cursor);
+		call_out("purge_subsystem_tick", 0, subsystem, reboot);
+	} else if (reboot) {
+		catch {
+			KERNELD->rsrc_set_limit(subsystem, "objects", -1);
+		}
+
+		catch {
+			KERNELD->rsrc_set_limit(subsystem, "callouts", -1);
+		}
+
+		compile_object(USR_DIR + "/" + subsystem + "/initd");
+
+		CHANNELD->post_message("system", "upgrade", "Rebooted " + subsystem);
+	} else {
+		CHANNELD->post_message("system", "upgrade", "Shut down " + subsystem);
+	}
+}
+
 void reboot_subsystem(string subsystem)
 {
 	object cursor;
@@ -484,18 +510,7 @@ void reboot_subsystem(string subsystem)
 		KERNELD->rsrc_set_limit(subsystem, "callouts", 0);
 	}
 
-	while (cursor = KERNELD->first_link(subsystem)) {
-		destruct_object(cursor);
-	};
-
-	catch {
-		KERNELD->rsrc_set_limit(subsystem, "objects", -1);
-	}
-	catch {
-		KERNELD->rsrc_set_limit(subsystem, "callouts", -1);
-	}
-
-	compile_object(USR_DIR + "/" + subsystem + "/initd");
+	call_out("purge_subsystem_tick", 0, subsystem, 1);
 }
 
 void shutdown_subsystem(string subsystem)
@@ -519,11 +534,9 @@ void shutdown_subsystem(string subsystem)
 		KERNELD->rsrc_set_limit(subsystem, "callouts", 0);
 	}
 
-	while (cursor = KERNELD->first_link(subsystem)) {
-		destruct_object(cursor);
-	};
-
 	KERNELD->remove_user(subsystem);
+
+	call_out("purge_subsystem_tick", 0, subsystem);
 }
 
 void upgrading()
