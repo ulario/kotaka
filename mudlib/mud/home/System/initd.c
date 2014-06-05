@@ -330,6 +330,14 @@ void configure_logging()
 	/* general system log goes to general and logged in staff */
 	LOGD->set_target("system", 255, "file:/log/general.log");
 	LOGD->set_target("system", 255, "file:/log/session.log");
+
+	/* post these on the system channel */
+	LOGD->set_target("system", 255, "channel:system");
+	LOGD->set_target("boot", 255, "channel:system");
+
+	LOGD->set_target("compile", 255, "channel:compile");
+	LOGD->set_target("error", 255, "channel:error");
+	LOGD->set_target("trace", 255, "channel:trace");
 }
 
 int forbid_inherit(string from, string path, int priv)
