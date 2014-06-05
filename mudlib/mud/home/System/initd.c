@@ -170,7 +170,7 @@ void prepare_reboot()
 
 	ACCESSD->save();
 
-	LOGD->post_message("system", LOG_NOTICE, "InitD: Preparing for reboot");
+	LOGD->post_message("system", LOG_NOTICE, "Preparing for reboot");
 
 	ind = map_indices(subsystems - ({ "System" }));
 	sz = sizeof(ind);
@@ -212,7 +212,7 @@ void hotboot()
 	check_config();
 	check_versions();
 
-	LOGD->post_message("system", LOG_NOTICE, "hotbooted");
+	LOGD->post_message("system", LOG_NOTICE, "Hotbooted");
 
 	clear_admin();
 	configure_rsrc();
@@ -242,7 +242,7 @@ void reboot()
 	check_config();
 	check_versions();
 
-	LOGD->post_message("system", LOG_NOTICE, "rebooted");
+	LOGD->post_message("system", LOG_NOTICE, "Rebooted");
 
 	clear_admin();
 	configure_rsrc();
@@ -463,7 +463,7 @@ void boot_subsystem(string subsystem)
 		error("Failure to grant global access by " + subsystem);
 	}
 
-	CHANNELD->post_message("system", "initd", "Booted " + subsystem);
+	LOGD->post_message("system", LOG_NOTICE, "Booted " + subsystem);
 }
 
 static void purge_subsystem_tick(string subsystem, varargs int reboot)
@@ -487,9 +487,9 @@ static void purge_subsystem_tick(string subsystem, varargs int reboot)
 
 		compile_object(USR_DIR + "/" + subsystem + "/initd");
 
-		CHANNELD->post_message("system", "initd", "Rebooted " + subsystem);
+		LOGD->post_message("system", LOG_NOTICE, "Rebooted " + subsystem);
 	} else {
-		CHANNELD->post_message("system", "initd", "Shut down " + subsystem);
+		LOGD->post_message("system", LOG_NOTICE, "Shut down " + subsystem);
 	}
 }
 
@@ -571,7 +571,7 @@ atomic void upgrade_system()
 	users &= KERNELD->query_users();
 	users &= KERNELD->query_owners();
 
-	CHANNELD->post_message("system", "upgrade", "Recompiling initd's");
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling initd's");
 
 	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
 		string initd;
@@ -585,7 +585,7 @@ atomic void upgrade_system()
 		}
 	}
 
-	CHANNELD->post_message("system", "upgrade", "Upgrading subsystems");
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading subsystems");
 
 	call_out("upgrade_system_2", 0, users - ({ nil }) );
 }
@@ -600,7 +600,7 @@ atomic static void upgrade_system_2(string *users)
 
 	upgraded_v_0_35 = 1;	/* we will check this on the next upgrade */
 
-	CHANNELD->post_message("system", "upgrade", "Upgrade completed");
+	LOGD->post_message("system", LOG_NOTICE, "Upgrade completed");
 }
 
 void upgrade_subsystem()
