@@ -198,7 +198,7 @@ void flush()
 	}
 }
 
-private void send_to_target(string target, string header, string message)
+private void send_to_target(string target, string message)
 {
 	string prefix, info;
 	string *lines;
@@ -222,7 +222,7 @@ private void send_to_target(string target, string header, string message)
 
 	case "driver":
 		for (i = 0; i < sz; i++) {
-			DRIVER->message(header + ": " + lines[i] + "\n");
+			DRIVER->message(lines[i] + "\n");
 		}
 		break;
 
@@ -230,7 +230,7 @@ private void send_to_target(string target, string header, string message)
 		ASSERT(info);
 
 		for (i = 0; i < sz; i++) {
-			CHANNELD->post_message(info, nil, header + ": " + lines[i]);
+			CHANNELD->post_message(info, nil, lines[i]);
 		}
 
 		break;
@@ -239,7 +239,7 @@ private void send_to_target(string target, string header, string message)
 		ASSERT(info);
 
 		for (i = 0; i < sz; i++) {
-			write_logfile(info, header + ": " + lines[i]);
+			write_logfile(info, lines[i]);
 		}
 
 		break;
@@ -336,8 +336,9 @@ private void send_to_target(string target, string header, string message)
 		object user;
 
 		user = users[i];
+
 		for (j = 0; j < sz; j++) {
-			user->message(header + ": " + lines[j] + "\n");
+			user->message(lines[j] + "\n");
 		}
 	}
 }
@@ -409,10 +410,10 @@ void post_message(string facility, int priority, string message)
 			sz = sizeof(targets);
 
 			for (index = 0; index < sz; index++) {
-				send_to_target(targets[index], facility, message);
+				send_to_target(targets[index], message);
 			}
 		} else {
-			DRIVER->message(creator + ": " + facility + ": " + message + "\n");
+			DRIVER->message(creator + ": " + message + "\n");
 		}
 	} : {
 		DRIVER->message("Error logging: " + creator + ": " + facility + ": " + message + "\n");
