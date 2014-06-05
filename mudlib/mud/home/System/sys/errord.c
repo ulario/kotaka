@@ -224,22 +224,22 @@ void runtime_error(string error, int caught, mixed **trace)
 			if (!compstr) {
 				DRIVER->message(tracestr + "\n");
 			}
-		}
 
-		if (find_object(CHANNELD)) {
-			catch {
-				if (compstr) {
-					CHANNELD->post_message("compile", nil, compstr);
-				}
-			}
-
-			catch {
-				CHANNELD->post_message("error", nil, errstr);
-			}
-
-			if (!compstr) {
+			if (find_object(CHANNELD)) {
 				catch {
-					CHANNELD->post_message("trace", nil, tracestr);
+					if (compstr) {
+						CHANNELD->post_message("compile", nil, compstr);
+					}
+				}
+
+				catch {
+					CHANNELD->post_message("error", nil, errstr);
+				}
+
+				if (!compstr) {
+					catch {
+						CHANNELD->post_message("trace", nil, tracestr);
+					}
 				}
 			}
 		}
