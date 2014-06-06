@@ -1,6 +1,3 @@
-HTTP/1.1 500 Server busy
-Connection: close
-
 <html>
 <head>
 <title>Server busy</title>

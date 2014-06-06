@@ -1,6 +1,3 @@
-HTTP/1.1 403 Banned
-Connection: close
-
 <html>
 <head>
 <title>Banned</title>

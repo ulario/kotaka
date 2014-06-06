@@ -1,6 +1,3 @@
-HTTP/1.1 403 Forbidden
-Connection: close
-
 <html>
 <head>
 <title>Forbidden</title>

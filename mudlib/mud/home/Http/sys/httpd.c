@@ -44,7 +44,9 @@ string query_banner(object connection)
 	if (is_sitebanned(query_ip_number(conn))) {
 		TLSD->set_tls_value("Http", "connection-abort", 1);
 
-		return read_file("~/data/error/403-banned");
+		return "HTTP/1.1 403 Banned"
+		+ "Connection: close"
+		+ read_file("~/data/error/403-banned");
 	}
 
 	return "";
@@ -52,12 +54,16 @@ string query_banner(object connection)
 
 string query_blocked_banner(object connection)
 {
-	return read_file("~/data/error/500");
+	return "HTTP/1.1 500 Suspended"
+	+ "Connection: close"
+	+ read_file("~/data/error/500");
 }
 
 string query_overload_banner(object connection)
 {
-	return read_file("~/data/error/500");
+	return "HTTP/1.1 500 Overload"
+	+ "Connection: close"
+	+ read_file("~/data/error/500");
 }
 
 int query_timeout(object connection)
