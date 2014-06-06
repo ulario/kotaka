@@ -33,9 +33,8 @@ int login(string str)
 	connection(previous_object());
 
 	message("HTTP/1.1 404 No handler\n");
-	message("Connection: close\n");
-	message("\n");
-	message("</html>\n");
+	message("Connection: close\n\n");
+	message("<html>\n");
 	message("<head>\n");
 	message("<title>No handler</title>\n");
 	message("</head>\n");
