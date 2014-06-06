@@ -59,6 +59,13 @@ private void load()
 	load_dir("sys", 1);
 }
 
+private void load_core()
+{
+	load_object(ERRORD);
+	load_object(LOGD);
+	load_object(OBJECTD);
+}
+
 private void initialize()
 {
 	subsystems = ([ ]);
@@ -66,11 +73,9 @@ private void initialize()
 	upgraded_v_0_34 = 1;
 	upgraded_v_0_35 = 1;
 
-	load_object(ERRORD);
-	load_object(LOGD);
+	load_core();
 
 	remove_file("/log/session.log");
-	configure_logging();
 
 	LOGD->post_message("boot", LOG_INFO, "Logging initialized");
 	LOGD->post_message("boot", LOG_INFO, "Welcome to Kotaka " + KOTAKA_VERSION);
@@ -80,9 +85,11 @@ private void initialize()
 	KERNELD->set_global_access("System", 1);
 
 	LOGD->post_message("boot", LOG_INFO, "Configuring kernel library");
+
 	configure_klib();
 	configure_rsrc();
 
+	boot_subsystem("Channel");
 	boot_subsystem("String");
 	boot_subsystem("Algorithm");
 	boot_subsystem("Bigstruct");
@@ -101,9 +108,8 @@ private void initialize()
 	load_object(CLONE_INFO);
 	load_object(CLONED);
 
-	LOGD->post_message("boot", LOG_INFO, "Loading system");
-
 	load();
+	configure_logging();
 
 	LOGD->post_message("boot", LOG_INFO, "Configuring user manager");
 	SYSTEM_USERD->enable();
