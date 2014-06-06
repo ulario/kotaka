@@ -26,7 +26,7 @@
 
 inherit SECOND_AUTO;
 
-#define MAX_MEMORY	(1 << 30)	/* 1 gigabyte */
+#define MAX_MEMORY	((2048 + 512) << 20)	/* 2.5 gigabytes */
 #define FRAG_RATIO	(0.25)		/* one quarter free */
 #define FREE_SLACK	(32 << 20)	/* 32 megabytes */
 
@@ -76,9 +76,13 @@ void reboot()
 
 static void check()
 {
-	float mem_size;
-	float mem_used;
-	float mem_free;
+	float smem_size;
+	float smem_used;
+	float smem_free;
+
+	float dmem_size;
+	float dmem_used;
+	float dmem_free;
 
 	int obj_size;
 	int obj_used;
@@ -94,9 +98,13 @@ static void check()
 		callout = call_out("check", 1);
 	}
 
-	mem_used = (float)status(ST_DMEMUSED);
-	mem_size = (float)status(ST_DMEMSIZE);
-	mem_free = mem_size - mem_used;
+	smem_used = (float)status(ST_SMEMUSED);
+	smem_size = (float)status(ST_SMEMSIZE);
+	smem_free = smem_size - smem_used;
+
+	dmem_used = (float)status(ST_DMEMUSED);
+	dmem_size = (float)status(ST_DMEMSIZE);
+	dmem_free = dmem_size - dmem_used;
 
 	obj_used = status(ST_NOBJECTS);
 	obj_size = status(ST_OTABSIZE);
@@ -120,13 +128,13 @@ static void check()
 	}
 #endif
 
-	if (mem_used > (float)MAX_MEMORY) {
+	if (smem_used + dmem_used > (float)MAX_MEMORY) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
 		swapout();
 		return;
 	}
 
-	if (((mem_free - (float)FREE_SLACK) / mem_size) > (float)FRAG_RATIO) {
+	if (((dmem_free - (float)FREE_SLACK) / dmem_size) > (float)FRAG_RATIO) {
 		if (!frag_angst) {
 			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented");
 		}
