@@ -413,7 +413,7 @@ void post_message(string facility, int priority, string message)
 				send_to_target(targets[index], message);
 			}
 		} else {
-			DRIVER->message(creator + ": " + message + "\n");
+			DRIVER->message(message + "\n");
 		}
 	} : {
 		DRIVER->message("Error logging: " + creator + ": " + facility + ": " + message + "\n");
