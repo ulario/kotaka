@@ -25,6 +25,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	INITD->boot_subsystem("Text");
+
 	load_dir("lwo", 1);
 	load_dir("sys", 1);
 }
