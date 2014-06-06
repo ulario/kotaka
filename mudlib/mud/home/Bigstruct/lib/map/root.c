@@ -321,10 +321,8 @@ object query_indices()
 		indices = ::map_indices(map);
 		sz = sizeof(indices);
 
-		array->set_size(index + sz);
-
 		for (index2 = 0; index2 < sz; index2++) {
-			array->set_element(index + index2, indices[index2]);
+			array->push_back(indices[index2]);
 		}
 
 		index += sz;
@@ -359,10 +357,8 @@ object query_values()
 		values = ::map_values(map);
 		sz = sizeof(values);
 
-		array->set_size(index + sz);
-
 		for (index2 = 0; index2 < sz; index2++) {
-			array->set_element(index + index2, values[index2]);
+			array->push_back(values[index2]);
 		}
 
 		index += sz;
