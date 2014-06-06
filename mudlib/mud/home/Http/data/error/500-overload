@@ -4,6 +4,7 @@
 </head>
 <body>
 <h1>Server busy</h1>
-<p>Sorry but the server is too busy right now.</p>
+<p>The server has too many connections at the moment.</p>
+<p>Please try again in 60 seconds.</p>
 </body>
 </html>

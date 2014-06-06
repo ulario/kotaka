@@ -1,9 +1,10 @@
 <html>
 <head>
-<title>Blocked</title>
+<title>Server suspended</title>
 </head>
 <body>
-<h1>Blocked</h1>
-<p>Server is in maintenance mode at the moment.</p>
+<h1>Server suspended</h1>
+<p>The server is suspended at the moment due to internal maintenance.</p>
+<p>Please try again in 20 seconds.</p>
 </body>
 </html>

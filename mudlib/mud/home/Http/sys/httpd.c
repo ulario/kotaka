@@ -54,16 +54,16 @@ string query_banner(object connection)
 
 string query_blocked_banner(object connection)
 {
-	return "HTTP/1.1 500 Suspended"
+	return "HTTP/1.1 500 Server suspended"
 	+ "Connection: close"
-	+ read_file("~/data/error/500");
+	+ read_file("~/data/error/500-blocked");
 }
 
 string query_overload_banner(object connection)
 {
-	return "HTTP/1.1 500 Overload"
+	return "HTTP/1.1 500 Server busy"
 	+ "Connection: close"
-	+ read_file("~/data/error/500");
+	+ read_file("~/data/error/500-overload");
 }
 
 int query_timeout(object connection)
