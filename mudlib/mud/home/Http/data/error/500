@@ -1,9 +1,9 @@
 <html>
 <head>
-<title>Server busy</title>
+<title>Server error</title>
 </head>
 <body>
-<h1>Server busy</h1>
-<p>Sorry but the server is too busy right now.</p>
+<h1>Server error</h1>
+<p>Unspecified server error.</p>
 </body>
 </html>
