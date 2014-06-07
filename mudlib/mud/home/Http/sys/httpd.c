@@ -22,12 +22,8 @@
 
 inherit LIB_USERD;
 
-mapping handlers;
-
 static void create()
 {
-	handlers = ([ ]);
-
 	SYSTEM_USERD->set_binary_manager(2, this_object());
 }
 
