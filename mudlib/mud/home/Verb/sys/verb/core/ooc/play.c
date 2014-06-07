@@ -74,13 +74,13 @@ void main(object actor, mapping roles)
 		body->add_archetype(CATALOGD->lookup_object("class:race:humanoid:human"));
 		body->set_object_name("players:" + name);
 		body->move(world);
-		send_out("You create " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
+		send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	}
 
 	oldbody = user->query_body();
 
 	if (oldbody) {
-		send_out("You leave " + TEXT_SUBD->generate_brief_definite(oldbody) + ".\n");
+		send_out("Unselected " + TEXT_SUBD->generate_brief_definite(oldbody) + ".\n");
 
 		mobiles = oldbody->query_property("mobiles");
 		mobiles -= ({ user });
@@ -92,5 +92,5 @@ void main(object actor, mapping roles)
 	body->set_property("mobiles", mobiles);
 
 	user->set_body(body);
-	send_out("You inhabit " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
+	send_out("Selected " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 }
