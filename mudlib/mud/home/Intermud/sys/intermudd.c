@@ -68,13 +68,16 @@ static void create()
 }
 
 void listen_channel(string channel, int on);
+private string mudmode_sprint(mixed *data);
 
-string to_packet(string data)
+private string make_packet(mixed *data)
 {
 	int len;
+	string str;
 	string bigendian;
 
-	len = strlen(data) + 1;
+	str = mudmode_sprint(data);
+	len = strlen(str) + 1;
 
 	bigendian = "    ";
 
@@ -83,7 +86,7 @@ string to_packet(string data)
 	bigendian[2] = (len & 0xff00) >> 8;
 	bigendian[3] = len & 0xff;
 
-	return bigendian + data + "\000";
+	return bigendian + str + "\000";
 }
 
 private string mudmode_sprint(mixed data)
@@ -156,7 +159,7 @@ string query_banner(object LIB_CONN connection)
 	mixed *startup;
 	string packet;
 
-	startup = ({
+	return make_packet( ({
 		"startup-req-3",
 		5,
 		MUDNAME,
@@ -181,11 +184,7 @@ string query_banner(object LIB_CONN connection)
 			"channel":1
 		]),
 		([ ])
-	});
-
-	packet = to_packet(mudmode_sprint(startup));
-
-	return packet;
+	}) );
 }
 
 int query_timeout(object LIB_CONN connection)
@@ -202,7 +201,7 @@ void send_channel_message(string channel, string sender, string text)
 {
 	mixed *packet;
 
-	packet = ({
+	message(make_packet( ({
 		"channel-m",
 		5,
 		MUDNAME,
@@ -212,9 +211,7 @@ void send_channel_message(string channel, string sender, string text)
 		channel,
 		sender ? STRINGD->to_title(sender) : "(system)",
 		text
-	});
-
-	message(to_packet(mudmode_sprint(packet)));
+	}) );
 }
 
 private void process_packet(string packet)
@@ -535,8 +532,7 @@ void listen_channel(string channel, int on)
 {
 	ACCESS_CHECK(INTERFACE());
 
-	message(to_packet(mudmode_sprint(
-	({
+	message(make_packet( ({
 		"channel-listen",
 		5,
 		MUDNAME,
@@ -545,8 +541,7 @@ void listen_channel(string channel, int on)
 		0,
 		channel,
 		on
-	})
-	)));
+	}) );
 }
 
 void add_channel(string channel)
@@ -559,8 +554,7 @@ void add_channel(string channel)
 
 	channels[channel] = ({ MUDNAME, 0 });
 
-	message(to_packet(mudmode_sprint(
-	({
+	message(make_packet( ({
 		"channel-add",
 		5,
 		MUDNAME,
@@ -569,8 +563,7 @@ void add_channel(string channel)
 		0,
 		channel,
 		0
-	})
-	)));
+	}) );
 }
 
 void remove_channel(string channel)
@@ -587,8 +580,7 @@ void remove_channel(string channel)
 
 	channels[channel] = nil;
 
-	message(to_packet(mudmode_sprint(
-	({
+	message(to_packet(mudmode_sprint( ({
 		"channel-remove",
 		5,
 		MUDNAME,
@@ -596,8 +588,7 @@ void remove_channel(string channel)
 		"*i4",
 		0,
 		channel
-	})
-	)));
+	}) );
 }
 
 void reset()
