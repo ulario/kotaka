@@ -88,10 +88,6 @@ static void create()
 		configure_rsrc();
 
 		boot_subsystem("Bigstruct");
-
-		load_object(CLONE_INFO);
-		load_object(CLONED);
-
 		OBJECTD->discover_objects();
 
 		boot_subsystem("Channel");
