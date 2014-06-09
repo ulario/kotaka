@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
@@ -38,9 +39,22 @@ static void create()
 
 void bomb(int quota)
 {
+	int limit;
+
+	limit = (int)sqrt((float)quota);
+
+	CHANNELD->post_message("debug", "bomb", "Bombs this round: " + limit + "\nBombs left to go: " + quota);
+
+	while (limit) {
+		if (quota) {
+			quota--;
+			clone_object("obj/bomb");
+		}
+
+		limit--;
+	}
+
 	if (quota) {
-		quota--;
-		clone_object("obj/bomb");
 		call_out("bomb", 0, quota);
 	}
 }

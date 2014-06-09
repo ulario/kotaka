@@ -526,6 +526,7 @@ void reboot_subsystem(string subsystem)
 	catch {
 		KERNELD->rsrc_set_limit(subsystem, "objects", 0);
 	}
+
 	catch {
 		KERNELD->rsrc_set_limit(subsystem, "callouts", 0);
 	}
@@ -550,6 +551,7 @@ void shutdown_subsystem(string subsystem)
 	catch {
 		KERNELD->rsrc_set_limit(subsystem, "objects", 0);
 	}
+
 	catch {
 		KERNELD->rsrc_set_limit(subsystem, "callouts", 0);
 	}
