@@ -44,16 +44,9 @@ static void create()
 	interval = 0.0;
 }
 
-void disable()
-{
-	ACCESS_CHECK(KADMIN() || SYSTEM());
-
-	SYSTEM_USERD->set_telnet_manager(1, nil);
-}
-
 void enable()
 {
-	ACCESS_CHECK(KADMIN() || SYSTEM());
+	ACCESS_CHECK(SYSTEM());
 
 	SYSTEM_USERD->set_telnet_manager(1, this_object());
 }

@@ -33,8 +33,11 @@ inherit SECOND_AUTO;
 int callout;
 int frag_angst;
 
+void enable();
+
 static void create()
 {
+	enable();
 }
 
 void enable()

@@ -62,6 +62,7 @@ private void load_core()
 {
 	load_object(ERRORD);
 	load_object(LOGD);
+	load_object(PROGRAM_INFO);
 	load_object(OBJECTD);
 }
 
@@ -77,49 +78,31 @@ static void create()
 
 		remove_file("/log/session.log");
 
-		LOGD->post_message("boot", LOG_INFO, "Logging initialized");
 		LOGD->post_message("boot", LOG_INFO, "Welcome to Kotaka " + KOTAKA_VERSION);
 
-		LOGD->post_message("boot", LOG_INFO, "Loading kernel manager");
 		load_object(KERNELD);
-		KERNELD->set_global_access("System", 1);
 
-		LOGD->post_message("boot", LOG_INFO, "Configuring kernel library");
+		KERNELD->set_global_access("System", 1);
 
 		configure_klib();
 		configure_rsrc();
 
-		boot_subsystem("Channel");
-		boot_subsystem("String");
-		boot_subsystem("Algorithm");
 		boot_subsystem("Bigstruct");
 
-		LOGD->post_message("boot", LOG_INFO, "Loading program manager");
-		load_object(PROGRAM_INFO);
-		load_object(PROGRAMD);
-
-		LOGD->post_message("boot", LOG_INFO, "Loading object manager");
-		load_object(OBJECTD);
-
-		LOGD->post_message("boot", LOG_INFO, "Initializing program database");
-		OBJECTD->discover_objects();
-
-		LOGD->post_message("boot", LOG_INFO, "Loading clone manager");
 		load_object(CLONE_INFO);
 		load_object(CLONED);
 
+		OBJECTD->discover_objects();
+
+		boot_subsystem("Channel");
+		boot_subsystem("String");
+		boot_subsystem("Algorithm");
+
 		load();
 
-		configure_logging();
-
-		LOGD->post_message("boot", LOG_INFO, "Configuring user manager");
-		SYSTEM_USERD->enable();
-
-		LOGD->post_message("boot", LOG_INFO, "Starting status manager");
 		STATUSD->enable();
 
-		LOGD->post_message("boot", LOG_INFO, "Starting watchdog");
-		WATCHDOGD->enable();
+		configure_logging();
 
 		/* Booted up */
 
