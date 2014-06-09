@@ -169,10 +169,10 @@ atomic void discover_clones()
 			destruct_object(db);
 		}
 
+		bmap = ([ ]);
+
 		db = clone_object(BIGSTRUCT_MAP_OBJ);
 		db->set_type(T_INT);
-
-		bmap = ([ ]);
 
 		for (i = 0; i < sz; i++) {
 			object first;
