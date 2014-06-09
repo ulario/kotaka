@@ -39,5 +39,4 @@ void main(object actor, mapping roles)
 	}
 
 	OBJECTD->full_reset();
-	CLONED->discover_clones();
 }
