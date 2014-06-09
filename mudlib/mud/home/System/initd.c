@@ -107,6 +107,7 @@ static void create()
 		boot_subsystem("Kotaka");
 		boot_subsystem("Game");
 		boot_subsystem("Test");
+
 		call_out("audit_filequota", 0);
 	} : {
 		LOGD->flush();
