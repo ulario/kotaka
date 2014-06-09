@@ -33,7 +33,6 @@ private void load()
 	INITD->boot_subsystem("Channel");
 	INITD->boot_subsystem("Geometry");
 	INITD->boot_subsystem("Help");
-	INITD->boot_subsystem("Help");
 	INITD->boot_subsystem("Http");
 	INITD->boot_subsystem("String");
 	INITD->boot_subsystem("Text");
