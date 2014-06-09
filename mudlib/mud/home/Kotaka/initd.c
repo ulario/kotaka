@@ -26,6 +26,19 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	INITD->boot_subsystem("Account");
+	INITD->boot_subsystem("Algorithm");
+	INITD->boot_subsystem("Ansi");
+	INITD->boot_subsystem("Bigstruct");
+	INITD->boot_subsystem("Channel");
+	INITD->boot_subsystem("Geometry");
+	INITD->boot_subsystem("Help");
+	INITD->boot_subsystem("Help");
+	INITD->boot_subsystem("Http");
+	INITD->boot_subsystem("String");
+	INITD->boot_subsystem("Text");
+	INITD->boot_subsystem("Thing");
+	INITD->boot_subsystem("Utility");
 }
 
 static void create()
