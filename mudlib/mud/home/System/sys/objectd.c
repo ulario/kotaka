@@ -397,11 +397,42 @@ void discover_objects()
 
 atomic void full_reset()
 {
+	object ind;
+	object paths;
+
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
+
+	ind = PROGRAMD->query_program_indices();
+	paths = new_object(BIGSTRUCT_ARRAY_LWO);
+
+	while (!ind->empty()) {
+		object pinfo;
+
+		pinfo = PROGRAMD->query_program_info(ind->query_back());
+		ind->pop_back();
+
+		paths->push_back(pinfo->query_path());
+	}
 
 	PROGRAMD->reset_program_database();
 
 	discover_objects();
+
+	while (!paths->empty()) {
+		string path;
+
+		path = paths->query_back();
+		paths->pop_back();
+
+		if (!status(path)) {
+			continue;
+		}
+
+		if (PROGRAMD->query_program_index(path) == -1) {
+			LOGD->post_message("system", LOG_INFO, "Restoring orphaned program " + path);
+			PROGRAMD->register_program(path, ({ }), ({ }));
+		}
+	}
 }
 
 object query_orphans()
