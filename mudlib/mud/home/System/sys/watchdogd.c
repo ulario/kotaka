@@ -26,7 +26,7 @@
 
 inherit SECOND_AUTO;
 
-#define MAX_MEMORY	((2048 + 512) << 20)	/* 2.5 gigabytes */
+#define MAX_MEMORY	((2048.0 + 512.0) * 1048576.0)	/* 2.5 gigabytes */
 #define FRAG_RATIO	(0.25)		/* one quarter free */
 #define FREE_SLACK	(32 << 20)	/* 32 megabytes */
 
