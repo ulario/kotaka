@@ -62,7 +62,6 @@ private void load_core()
 {
 	load_object(ERRORD);
 	load_object(LOGD);
-	load_object(PROGRAM_INFO);
 	load_object(OBJECTD);
 }
 
@@ -88,6 +87,10 @@ static void create()
 		configure_rsrc();
 
 		boot_subsystem("Bigstruct");
+
+		load_object(PROGRAM_INFO);
+		load_object(PROGRAMD);
+
 		OBJECTD->discover_objects();
 
 		boot_subsystem("Channel");
