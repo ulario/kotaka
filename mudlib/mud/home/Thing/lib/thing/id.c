@@ -180,6 +180,10 @@ void set_id_number(int new_number)
 		error("Invalid ID (number requires base)");
 	}
 
+	if (new_number <= 0) {
+		error("Invalid ID (number must be positive)");
+	}
+
 	env = query_environment();
 
 	if (new_number == id_number) {

@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/checkarg.h>
 #include <kotaka/privilege.h>
 
 private object *archetypes;
@@ -128,9 +129,7 @@ atomic nomask void clear_archetypes()
 
 atomic nomask void add_archetype(object new_arch)
 {
-	if (!new_arch) {
-		error("Invalid archetype");
-	}
+	CHECKARG(new_arch, 1, "add_archetype");
 
 	if (is_archetype_of(new_arch)) {
 		error("Circular reference");
@@ -145,17 +144,9 @@ atomic nomask void add_archetype(object new_arch)
 
 atomic nomask void add_archetype_at(object new_arch, int position)
 {
-	if (!new_arch) {
-		error("Invalid archetype");
-	}
-
-	if (position < 0) {
-		error("Invalid position");
-	}
-
-	if (position > sizeof(archetypes)) {
-		error("Invalid position");
-	}
+	CHECKARG(new_arch, 1, "add_archetype_at");
+	CHECKARG(position >= 0, 2, "add_archetype_at");
+	CHECKARG(position <= sizeof(archetypes), 2, "add_archetype_at");
 
 	if (is_archetype_of(new_arch)) {
 		error("Circular reference");
