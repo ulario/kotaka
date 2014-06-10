@@ -44,6 +44,7 @@ mixed **lasttrace;	/* last trace */
 
 static void create()
 {
+	DRIVER->set_error_manager(this_object());
 }
 
 void disable()
