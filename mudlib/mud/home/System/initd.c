@@ -531,13 +531,6 @@ void shutdown_subsystem(string subsystem)
 	call_out("purge_subsystem_tick", 0, subsystem);
 }
 
-void upgrading()
-{
-	if (!subsystems) {
-		subsystems = ([ ]);
-	}
-}
-
 string *query_subsystems()
 {
 	return map_indices(subsystems);
