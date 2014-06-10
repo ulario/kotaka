@@ -260,7 +260,9 @@ object query_includer_indices()
 
 object query_program_info(int oindex)
 {
-	return progdb->query_element(oindex);
+	if (progdb) {
+		return progdb->query_element(oindex);
+	}
 }
 
 int query_program_index(string path)
