@@ -34,6 +34,7 @@ string err;		/* cached error string for initd hooks */
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
+int is_initd;		/* current compilation is for an initd */
 int is_kernel;		/* current compilation is for a kernel object */
 int is_auto;		/* current compilation is for a second auto support library */
 
@@ -497,34 +498,43 @@ private void compile_common(string owner, string path, string *source, string *i
 		pinfo = PROGRAMD->register_program(path, inherited, includes);
 	}
 
-	is_kernel = sscanf(path, "/kernel/%*s");
+	if (is_initd) {
+		return;
+	}
 
-	if (!is_kernel) {
-		is_auto = sscanf(path, USR_DIR + "/System"
-			+ INHERITABLE_SUBDIR + "auto/%*s");
+	if (is_kernel) {
+		return;
+	}
 
-		if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
-			error("Failure to inherit SECOND_AUTO: " + path);
-		}
+	if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
+		error("Failure to inherit SECOND_AUTO: " + path);
+	}
 
-		if (pinfo) {
-			initd = find_object(USR_DIR + "/" + owner + "/initd");
-		}
+	if (pinfo) {
+		initd = find_object(USR_DIR + "/" + owner + "/initd");
+	}
 
-		if (initd) {
-			string *ret;
+	if (initd) {
+		string *ret;
 
-			ret = fetch_from_initd(initd, path);
+		ret = fetch_from_initd(initd, path);
 
-			err = ret[0];
+		err = ret[0];
 
-			pinfo->set_constructor(ret[1]);
-			pinfo->set_destructor(ret[2]);
-			pinfo->set_toucher(ret[3]);
-		}
+		pinfo->set_constructor(ret[1]);
+		pinfo->set_destructor(ret[2]);
+		pinfo->set_toucher(ret[3]);
 	}
 
 	includes = nil;
+}
+
+private void set_flags(string path, string owner)
+{
+	is_kernel = sscanf(path, "/kernel/%*s");
+	is_auto = sscanf(path, USR_DIR + "/System"
+		+ INHERITABLE_SUBDIR + "auto/%*s");
+	is_initd = (path == USR_DIR + "/" + owner + "/initd");
 }
 
 void compile(string owner, object obj, string *source, string inherited ...)
@@ -532,12 +542,13 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	string path;
 	string err;
 	int index;
-	int is_initd;
 	object pinfo;
 
 	ACCESS_CHECK(KERNEL());
 
 	path = object_name(obj);
+
+	set_flags(path, owner);
 
 	if (path != DRIVER) {
 		inherited |= ({ AUTO });
@@ -549,7 +560,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 
 	compile_common(owner, path, source, inherited);
-	is_initd = (path == USR_DIR + "/" + owner + "/initd");
 
 	if (is_initd) {
 		INITD->add_subsystem(obj);
@@ -598,6 +608,8 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	object initd;
 
 	ACCESS_CHECK(KERNEL());
+
+	set_flags(path, owner);
 
 	if (path != AUTO) {
 		inherited |= ({ AUTO });
