@@ -63,6 +63,8 @@ private void deindex_inherits(int oindex, int *inh)
 	int sz;
 	int i;
 
+	ASSERT(inhdb);
+
 	sz = sizeof(inh);
 
 	for (i = 0; i < sz; i++) {
@@ -77,6 +79,8 @@ private void deindex_includes(int oindex, string *inc)
 	int sz;
 	int i;
 
+	ASSERT(incdb);
+
 	sz = sizeof(inc);
 
 	for (i = 0; i < sz; i++) {
@@ -90,6 +94,8 @@ private void index_inherits(int oindex, int *inh)
 {
 	int sz;
 	int i;
+
+	ASSERT(inhdb);
 
 	sz = sizeof(inh);
 
@@ -110,6 +116,8 @@ private void index_includes(int oindex, string *inc)
 {
 	int sz;
 	int i;
+
+	ASSERT(incdb);
 
 	sz = sizeof(inc);
 
@@ -139,6 +147,11 @@ object register_program(string path, string *inherits,
 	string *touchers;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	ASSERT(progdb);
+	ASSERT(incdb);
+	ASSERT(inhdb);
+	ASSERT(pathdb);
 
 	oindex = status(path, O_INDEX);
 
@@ -221,6 +234,8 @@ object query_program_indices()
 {
 	object indices;
 
+	ASSERT(progdb);
+
 	indices = progdb->query_indices();
 
 	indices->grant_access(previous_object(), FULL_ACCESS);
@@ -232,6 +247,8 @@ object query_program_indices()
 object query_includer_indices()
 {
 	object indices;
+
+	ASSERT(incdb);
 
 	indices = incdb->query_indices();
 
@@ -263,6 +280,8 @@ object query_inheriters(int oindex)
 {
 	object list;
 
+	ASSERT(inhdb);
+
 	list = inhdb->query_element(oindex);
 
 	if (list) {
@@ -280,6 +299,8 @@ object query_inheriters(int oindex)
 object query_includers(string path)
 {
 	object list;
+
+	ASSERT(incdb);
 
 	list = incdb->query_element(path);
 
@@ -301,6 +322,8 @@ void remove_program(int index)
 	string path;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	ASSERT(progdb);
 
 	pinfo = query_program_info(index);
 
