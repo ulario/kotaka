@@ -110,7 +110,9 @@ static void create()
 
 		call_out("audit_filequota", 0);
 	} : {
-		LOGD->flush();
+		if (find_object(LOGD)) {
+			LOGD->flush();
+		}
 		shutdown();
 		error("System setup failed");
 	}
