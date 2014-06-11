@@ -134,8 +134,7 @@ private void index_includes(int oindex, string *inc)
 	}
 }
 
-object register_program(string path, string *inherits,
-	string *includes)
+object register_program(string path, string *inherits, string *includes)
 {
 	int i;
 	int sz;
