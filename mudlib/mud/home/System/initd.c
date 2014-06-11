@@ -424,11 +424,15 @@ private void check_versions()
 	}
 }
 
-void add_subsystem(object initd)
+void add_subsystem(mixed owner)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	subsystems[initd->query_owner()] = initd;
+	if (typeof(owner) == T_OBJECT) {
+		owner = DRIVER->creator(object_name(owner));
+	}
+
+	subsystems[owner] = find_object(USR_DIR + "/" + owner + "/initd");
 }
 
 void boot_subsystem(string subsystem)

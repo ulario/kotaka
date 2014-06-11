@@ -544,7 +544,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 
 	if (is_initd) {
-		INITD->add_subsystem(obj);
+		INITD->add_subsystem(owner);
 	}
 
 	compile_common(owner, path, source, inherited);
