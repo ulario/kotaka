@@ -30,7 +30,6 @@
 
 inherit SECOND_AUTO;
 
-string err;		/* cached error string for initd hooks */
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
@@ -50,24 +49,11 @@ void reboot()
 
 private string *fetch_from_initd(object initd, string path)
 {
-	string constructor;
-	string destructor;
-	string toucher;
-	string err;
-
-	err = nil;
-
-	err = catch(constructor = initd->query_constructor(path));
-
-	if (!err) {
-		err = catch(destructor = initd->query_destructor(path));
-	}
-
-	if (!err) {
-		err = catch(toucher = initd->query_toucher(path));
-	}
-
-	return ({ err, constructor, destructor, toucher });
+	return ({
+		initd->query_constructor(path),
+		initd->query_destructor(path),
+		initd->query_toucher(path)
+	});
 }
 
 private mixed query_include_file(string compiled, string from, string path)
@@ -519,11 +505,9 @@ private void compile_common(string owner, string path, string *source, string *i
 
 		ret = fetch_from_initd(initd, path);
 
-		err = ret[0];
-
-		pinfo->set_constructor(ret[1]);
-		pinfo->set_destructor(ret[2]);
-		pinfo->set_toucher(ret[3]);
+		pinfo->set_constructor(ret[0]);
+		pinfo->set_destructor(ret[1]);
+		pinfo->set_toucher(ret[2]);
 	}
 
 	includes = nil;
@@ -559,11 +543,13 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		return;
 	}
 
+	if (is_initd) {
+		INITD->add_subsystem(obj);
+	}
+
 	compile_common(owner, path, source, inherited);
 
 	if (is_initd) {
-		INITD->add_subsystem(obj);
-
 		if (!sizeof(({ LIB_INITD }) & inherited)) {
 			error("Failure to inherit LIB_INITD: " + path);
 		}
@@ -590,15 +576,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 			}
 		}
 	}
-
-	if (err) {
-		string msg;
-
-		msg = err;
-		err = nil;
-
-		error(msg);
-	}
 }
 
 void compile_lib(string owner, string path, string *source, string inherited ...)
@@ -616,15 +593,6 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	}
 
 	compile_common(owner, path, source, inherited);
-
-	if (err) {
-		string msg;
-
-		msg = err;
-		err = nil;
-
-		error(msg);
-	}
 }
 
 void compile_failed(string owner, string path)
