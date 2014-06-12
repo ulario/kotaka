@@ -79,6 +79,10 @@ static int is_sitebanned(string ip)
 {
 	string o1, o2, o3, o4;
 
+	if (!find_object(BAND)) {
+		return 0;
+	}
+
 	if (sscanf(ip, "%s.%s.%s.%s", o1, o2, o3, o4) < 4) {
 		/* weird IP? */
 		return 0;
