@@ -555,9 +555,7 @@ atomic void upgrade_system()
 	string *users;
 	int sz;
 
-	users = get_dir(USR_DIR + "/*")[0];
-	users &= KERNELD->query_users();
-	users &= KERNELD->query_owners();
+	users = map_indices(subsystems);
 
 	LOGD->post_message("system", LOG_NOTICE, "Recompiling initd's");
 
