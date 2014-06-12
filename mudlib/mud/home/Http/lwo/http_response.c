@@ -24,6 +24,9 @@ string content_type;
 
 static void create(int clone)
 {
+	if (clone) {
+		content_type = "text/html";
+	}
 }
 
 void set_status(int code, string message)
