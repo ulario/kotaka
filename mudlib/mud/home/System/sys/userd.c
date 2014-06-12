@@ -24,6 +24,7 @@
 #include <status.h>
 
 inherit SECOND_AUTO;
+inherit LIB_USERD;
 
 inherit userd API_USER;
 inherit user LIB_USER;
@@ -112,16 +113,9 @@ static void timeout(object conn)
 	}
 }
 
-private object query_manager(object conn)
+private object query_manager(object base)
 {
-	object base;
 	int port;
-
-	base = conn;
-
-	while (base <- LIB_USER) {
-		base = base->query_conn();
-	}
 
 	port = base->query_port();
 
@@ -289,15 +283,37 @@ void hotboot()
 string query_banner(object LIB_CONN connection)
 {
 	object userd;
+	object root;
+	string ip;
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	userd = query_manager(connection);
+	root = connection;
+
+	while (root && root<-LIB_USER) {
+		root = root->query_conn();
+	}
+
+	TLSD->set_tls_value("System", "root-connection", root);
+
+	userd = query_manager(root);
+
+	TLSD->set_tls_value("System", "userd", userd);
 
 	if (!userd) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 
 		return "Internal error: no connection manager.\n";
+	}
+
+	if (is_sitebanned(query_ip_number(root))) {
+		TLSD->set_tls_value("System", "abort-connection", 1);
+
+		catch {
+			return userd->query_sitebanned_banner(connection);
+		} : {
+			return "Banned";
+		}
 	}
 
 	if (free_users() < 2) {
@@ -334,7 +350,7 @@ int query_timeout(object LIB_CONN connection)
 		return -1;
 	};
 
-	userd = query_manager(connection);
+	userd = TLSD->query_tls_value("System", "userd");
 
 	if (!userd) {
 		return -1;

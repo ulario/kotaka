@@ -45,6 +45,13 @@ string query_overload_banner(object LIB_CONN connection)
 	return "The mud is too full to accept any more connections.\n";
 }
 
+string query_sitebanned_banner(object LIB_CONN connection)
+{
+	ACCESS_CHECK(previous_program() == SYSTEM_USERD);
+
+	return "Banned.\n";
+}
+
 int query_timeout(object LIB_CONN connection)
 {
 	ACCESS_CHECK(previous_program() == SYSTEM_USERD);

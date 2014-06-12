@@ -89,6 +89,11 @@ string query_overload_banner(object LIB_CONN connection)
 	return "There are too many connections to this mud.\n";
 }
 
+string query_sitebanned_banner(object LIB_CONN connection)
+{
+	return "You are sitebanned.\n";
+}
+
 string query_banner(object LIB_CONN connection)
 {
 	string *files;
@@ -102,10 +107,6 @@ string query_banner(object LIB_CONN connection)
 	while (conn && conn <- LIB_USER) {
 		level++;
 		conn = conn->query_conn();
-	}
-
-	if (is_sitebanned(query_ip_number(conn))) {
-		return "You are sitebanned.\n";
 	}
 
 	if (!conn) {

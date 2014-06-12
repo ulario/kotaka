@@ -29,26 +29,6 @@ static void create()
 
 string query_banner(object connection)
 {
-	object conn;
-
-	conn = connection;
-
-	while (conn && conn <- LIB_USER) {
-		conn = conn->query_conn();
-	}
-
-	if (is_sitebanned(query_ip_number(conn))) {
-		object header;
-
-		TLSD->set_tls_value("Http", "connection-abort", 1);
-
-		header = new_object("~/lwo/http_response");
-		header->set_status(403, "Banned");
-
-		return header->generate_header()
-			+ read_file("~/data/error/403-banned.html");
-	}
-
 	return "";
 }
 
@@ -72,6 +52,17 @@ string query_overload_banner(object connection)
 
 	return header->generate_header()
 		+ read_file("~/data/error/503-overload.html");
+}
+
+string query_sitebanned_banner(object connection)
+{
+	object header;
+
+	header = new_object("~/lwo/http_response");
+	header->set_status(403, "Banned");
+
+	return header->generate_header()
+		+ read_file("~/data/error/403-banned.html");
 }
 
 int query_timeout(object connection)
