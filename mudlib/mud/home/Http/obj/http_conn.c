@@ -29,11 +29,15 @@ static void create(int clone)
 int login(string str)
 {
 	object conn;
+	object header;
 
 	connection(previous_object());
 
-	message("HTTP/1.1 404 No handler\n");
-	message("Connection: close\n\n");
+	header = new_object("~/lwo/http_response");
+
+	header->set_status(503, "No handler");
+
+	message(header->generate_header());
 	message("<html>\n");
 	message("<head>\n");
 	message("<title>No handler</title>\n");
