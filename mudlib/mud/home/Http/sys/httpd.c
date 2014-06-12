@@ -38,11 +38,15 @@ string query_banner(object connection)
 	}
 
 	if (is_sitebanned(query_ip_number(conn))) {
+		object header;
+
 		TLSD->set_tls_value("Http", "connection-abort", 1);
 
-		return "HTTP/1.1 403 Banned\n"
-		+ "Connection: close\n\n"
-		+ read_file("~/data/error/403-banned.html");
+		header = new_object("~/lwo/http_response");
+		header->set_status(403, "Banned");
+
+		return header->generate_header()
+			+ read_file("~/data/error/403-banned.html");
 	}
 
 	return "";
@@ -50,16 +54,24 @@ string query_banner(object connection)
 
 string query_blocked_banner(object connection)
 {
-	return "HTTP/1.1 503 Server suspended\n"
-	+ "Connection: close\n\n"
-	+ read_file("~/data/error/503-blocked.html");
+	object header;
+
+	header = new_object("~/lwo/http_response");
+	header->set_status(503, "Server suspended");
+
+	return header->generate_header()
+		+ read_file("~/data/error/503-blocked.html");
 }
 
 string query_overload_banner(object connection)
 {
-	return "HTTP/1.1 503 Server busy\n"
-	+ "Connection: close\n\n"
-	+ read_file("~/data/error/503-overload.html");
+	object header;
+
+	header = new_object("~/lwo/http_response");
+	header->set_status(503, "Server busy");
+
+	return header->generate_header()
+		+ read_file("~/data/error/503-overload.html");
 }
 
 int query_timeout(object connection)
