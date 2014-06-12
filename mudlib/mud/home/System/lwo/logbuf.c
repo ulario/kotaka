@@ -44,6 +44,8 @@ void push(string text)
 
 		deque->push_back(tail);
 		tail = text;
+	} else {
+		tail += text;
 	}
 }
 
