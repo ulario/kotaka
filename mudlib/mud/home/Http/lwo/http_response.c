@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2010, 2012, 2013, 2014  Raymond Jennings
+ * Copyright (C) 2014  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,31 +17,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/system.h>
-#include <kotaka/privilege.h>
 
-inherit LIB_INITD;
-inherit UTILITY_COMPILE;
+int status_code;
+string status_message;
+string content_type;
 
-private void load()
+static void create(int clone)
 {
-	load_dir("lwo");
-	load_dir("obj");
-	load_dir("sys");
 }
 
-static void create()
+void set_status(int code, string message)
 {
-	KERNELD->set_global_access("Http", 1);
-
-	load();
+	status_code = code;
+	status_message = message;
 }
 
-void upgrade_subsystem()
+string generate_header()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	string buffer;
+	int close;
+	string *headers;
 
-	load();
+	if (!status_code) {
+		error("Status code not set");
+	}
 
-	purge_orphans("Http");
+	buffer = "HTTP/1.1 " + status_code + " " + status_message + "\r\n";
+	buffer += "Content-Type: " + content_type + "\r\n";
+
+	switch(status_code / 100) {
+	case 3:
+	case 4:
+	case 5:
+		buffer += "Cache-Control: no-cache\r\n";
+	}
+
+	buffer += "Connection: close\r\n";
+	buffer += "\r\n";
+
+	return buffer;
 }
