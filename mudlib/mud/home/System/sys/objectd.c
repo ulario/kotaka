@@ -543,10 +543,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		return;
 	}
 
-	if (is_initd) {
-		INITD->add_subsystem(owner);
-	}
-
 	compile_common(owner, path, source, inherited);
 
 	if (is_initd) {

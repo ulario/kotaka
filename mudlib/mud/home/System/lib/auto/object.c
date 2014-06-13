@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/kernel.h>
+#include <kotaka/assert.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <status.h>
@@ -25,55 +26,67 @@
 inherit "call_guard";
 inherit "catalog";
 
-nomask void _F_sys_create(int clone)
+nomask int _F_sys_create(int clone)
 {
-	int index;
-	int sz;
-	object pinfo;
-	object programd;
-	string base;
-	string ctor;
-	string *ctors;
 	string oname;
+	string creator;
 
-	ACCESS_CHECK(KERNEL());
+	object this;
+	object programd;
 
-	oname = object_name(this_object());
-	base = oname;
-	sscanf(base, "%s#%*d", base);
+	ACCESS_CHECK(KERNEL() || SYSTEM());
+
+	this = this_object();
+	oname = object_name(this);
+
+	sscanf(oname, "%s#%*d", oname);
+
+	creator = DRIVER->creator(oname);
 
 	programd = find_object(PROGRAMD);
 
-	if (!programd) {
-		return;
+	if (programd) {
+		object pinfo;
+		string *ctors;
+		string ctor;
+		int i, sz;
+
+		pinfo = PROGRAMD->query_program_info(
+			status(this, O_INDEX)
+		);
+
+		if (pinfo) {
+			ctors = pinfo->query_inherited_constructors();
+
+			sz = sizeof(ctors);
+
+			for (i = 0; i < sz; i++) {
+				call_other(this, ctors[i]);
+			}
+
+			ctor = pinfo->query_constructor();
+
+			if (ctor) {
+				call_other(this, ctor);
+			}
+		}
+	} else {
+		ASSERT(creator == "System" || creator == "Bigstruct");
 	}
 
-	if (DRIVER->creator(base) == "System") {
-		return;
+	/* call higher-level creator function */
+	if (sscanf(oname, "%*s" + CLONABLE_SUBDIR) == 0 &&
+		sscanf(oname, "%*s" + LIGHTWEIGHT_SUBDIR) == 0) {
+		create();
+	} else {
+		create(clone);
 	}
 
-	if (DRIVER->creator(base) == "Bigstruct") {
-		return;
+	if (oname == USR_DIR + "/" + creator + "/initd") {
+		INITD->add_subsystem(creator);
 	}
 
-	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
-
-	if (!pinfo) {
-		return;
-	}
-
-	ctors = pinfo->query_inherited_constructors();
-	ctor = pinfo->query_constructor();
-
-	sz = sizeof(ctors);
-
-	for (index = 0; index < sz; index++) {
-		call_other(this_object(), ctors[index]);
-	}
-
-	if (ctor) {
-		call_other(this_object(), ctor);
-	}
+	return 1;
 }
 
 static void destruct(varargs int clone)

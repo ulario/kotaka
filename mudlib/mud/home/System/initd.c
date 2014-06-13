@@ -426,7 +426,7 @@ private void check_versions()
 
 void add_subsystem(mixed owner)
 {
-	ACCESS_CHECK(previous_program() == OBJECTD);
+	ACCESS_CHECK(SYSTEM());
 
 	if (typeof(owner) == T_OBJECT) {
 		owner = DRIVER->creator(object_name(owner));
