@@ -74,7 +74,6 @@ nomask int _F_sys_create(int clone)
 		ASSERT(creator == "System" || creator == "Bigstruct");
 	}
 
-	/* call higher-level creator function */
 	if (sscanf(oname, "%*s" + CLONABLE_SUBDIR) == 0 &&
 		sscanf(oname, "%*s" + LIGHTWEIGHT_SUBDIR) == 0) {
 		create();
@@ -95,22 +94,22 @@ static void destruct(varargs int clone)
 
 nomask void _F_sys_destruct()
 {
-	int clone;
-	int index;
-	int sz;
-	object pinfo;
-	object programd;
-	string base;
-	string dtor;
-	string *dtors;
 	string oname;
+	string creator;
 
-	ACCESS_CHECK(previous_program() == OBJECTD);
+	object this;
+	object programd;
 
-	oname = object_name(this_object());
-	base = oname;
-	sscanf(base, "%s#%*d", base);
+	int clone;
+
+	ACCESS_CHECK(KERNEL() || SYSTEM());
+
+	this = this_object();
+	oname = object_name(this);
+
 	clone = !!sscanf(oname, "%*s#");
+
+	sscanf(oname, "%s#%*d", oname);
 
 	if (sscanf(oname, "%*s" + CLONABLE_SUBDIR) == 0 &&
 		sscanf(oname, "%*s" + LIGHTWEIGHT_SUBDIR) == 0) {
@@ -119,44 +118,36 @@ nomask void _F_sys_destruct()
 		destruct(clone);
 	}
 
-	if (DRIVER->creator(base) == "System") {
-		return;
-	}
-
-	if (DRIVER->creator(base) == "Bigstruct") {
-		return;
-	}
+	creator = DRIVER->creator(oname);
 
 	programd = find_object(PROGRAMD);
 
-	if (!programd) {
-		set_object_name(nil);
+	if (programd) {
+		object pinfo;
+		string *dtors;
+		string dtor;
+		int i, sz;
 
-		return;
+		pinfo = PROGRAMD->query_program_info(
+			status(this, O_INDEX)
+		);
+
+		if (pinfo) {
+			dtor = pinfo->query_destructor();
+
+			if (dtor) {
+				call_other(this, dtor);
+			}
+
+			dtors = pinfo->query_inherited_destructors();
+
+			for (sz = sizeof(dtors) - 1; sz >= 0; --sz) {
+				call_other(this, dtors[i]);
+			}
+		}
+	} else {
+		ASSERT(creator == "System" || creator == "Bigstruct");
 	}
-
-	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
-
-	if (!pinfo) {
-		set_object_name(nil);
-
-		return;
-	}
-
-	dtor = pinfo->query_destructor();
-	dtors = pinfo->query_inherited_destructors();
-
-	if (dtor) {
-		call_other(this_object(), dtor);
-	}
-
-	sz = sizeof(dtors);
-
-	for (index = sz - 1; index >= 0; index--) {
-		call_other(this_object(), dtors[index]);
-	}
-
-	set_object_name(nil);
 }
 
 void upgrading()
