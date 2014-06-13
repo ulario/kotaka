@@ -426,6 +426,9 @@ private void check_versions()
 
 void add_subsystem(mixed owner)
 {
+	string *others;
+	int sz;
+
 	ACCESS_CHECK(SYSTEM());
 
 	if (typeof(owner) == T_OBJECT) {
@@ -433,6 +436,15 @@ void add_subsystem(mixed owner)
 	}
 
 	subsystems[owner] = find_object(USR_DIR + "/" + owner + "/initd");
+
+	others = map_indices(subsystems) - ({ owner });
+
+	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
+		catch {
+			find_object(USR_DIR + "/" + others[sz] + "/initd")
+			->booted_subsystem(owner);
+		}
+	}
 }
 
 void boot_subsystem(string subsystem)

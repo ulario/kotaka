@@ -352,3 +352,12 @@ void upgrade_subsystem()
 
 	purge_orphans("Game");
 }
+
+void booted_subsystem(string subsystem)
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	if (subsystem == "Help") {
+		load_help();
+	}
+}

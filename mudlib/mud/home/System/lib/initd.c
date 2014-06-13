@@ -89,6 +89,11 @@ void upgrade_subsystem()
 	ACCESS_CHECK(previous_program() == INITD);
 }
 
+void booted_subsystem(string subsystem)
+{
+	ACCESS_CHECK(previous_program() == INITD);
+}
+
 static void purge_orphans(string subsystem)
 {
 	object list;
