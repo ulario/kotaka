@@ -24,7 +24,7 @@ private object root;
 
 static void create()
 {
-	root = previous_object();
+	root = previous_object(1);
 }
 
 static void destruct()

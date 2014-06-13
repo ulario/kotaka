@@ -29,7 +29,7 @@ static void discard_node(object node);
 
 static void create()
 {
-	grants = ([ previous_object() : FULL_ACCESS ]);
+	grants = ([ previous_object(1) : FULL_ACCESS ]);
 }
 
 static void destruct()
