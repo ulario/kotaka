@@ -31,8 +31,9 @@
 /* mud mode */
 /* (big endian 4 byte integer, length of the string) (string) (null) */
 
-#define ROUTER_IP "204.209.44.3"
-#define MUDNAME "Ulario"
+#define ROUTER_IP	"204.209.44.3"
+#define ROUTER_PORT	8080
+#define MUDNAME		"Ulario"
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
@@ -62,13 +63,13 @@ static void create()
 	mudlistid = 0;
 	chanlistid = 0;
 
-	call_out("connect", 0, ROUTER_IP, 8080);
+	call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
 
 	restore();
 }
 
 void listen_channel(string channel, int on);
-private string mudmode_sprint(mixed *data);
+private string mudmode_sprint(mixed data);
 
 private string make_packet(mixed *data)
 {
@@ -211,7 +212,7 @@ void send_channel_message(string channel, string sender, string text)
 		channel,
 		sender ? STRINGD->to_title(sender) : "(system)",
 		text
-	}) );
+	}) ));
 }
 
 private void process_packet(string packet)
@@ -281,8 +282,7 @@ private void process_packet(string packet)
 			if (user = TEXT_USERD->find_user(tuser)) {
 				user->message(value[6] + "@" + omud + " emotes to you: " + value[7]);
 			} else {
-				message(to_packet(mudmode_sprint(
-				({
+				message(make_packet( ({
 					"error",
 					5,
 					MUDNAME,
@@ -292,7 +292,7 @@ private void process_packet(string packet)
 					"unk-user",
 					"User not online: " + tuser,
 					value
-				}) )));
+				}) ));
 			}
 		}
 
@@ -385,8 +385,7 @@ private void process_packet(string packet)
 			if (user = TEXT_USERD->find_user(tuser)) {
 				user->message(value[6] + "@" + omud + " tells you: " + value[7]);
 			} else {
-				message(to_packet(mudmode_sprint(
-				({
+				message(make_packet( ({
 					"error",
 					5,
 					MUDNAME,
@@ -396,7 +395,7 @@ private void process_packet(string packet)
 					"unk-user",
 					"User not online: " + tuser,
 					value
-				}) )));
+				}) ));
 			}
 		}
 
@@ -406,19 +405,17 @@ private void process_packet(string packet)
 
 		{
 			/* send back an error packet */
-			message(to_packet(mudmode_sprint(
-				({
-					"error",
-					5,
-					MUDNAME,
-					0,
-					omud,
-					ouser,
-					"unk-type",
-					"Unhandled packet type: " + mtype,
-					value
-				})
-			)));
+			message(make_packet( ({
+				"error",
+				5,
+				MUDNAME,
+				0,
+				omud,
+				ouser,
+				"unk-type",
+				"Unhandled packet type: " + mtype,
+				value
+			}) ));
 		}
 	}
 }
@@ -541,7 +538,7 @@ void listen_channel(string channel, int on)
 		0,
 		channel,
 		on
-	}) );
+	}) ));
 }
 
 void add_channel(string channel)
@@ -563,7 +560,7 @@ void add_channel(string channel)
 		0,
 		channel,
 		0
-	}) );
+	}) ));
 }
 
 void remove_channel(string channel)
@@ -580,7 +577,7 @@ void remove_channel(string channel)
 
 	channels[channel] = nil;
 
-	message(to_packet(mudmode_sprint( ({
+	message(make_packet( ({
 		"channel-remove",
 		5,
 		MUDNAME,
@@ -588,7 +585,7 @@ void remove_channel(string channel)
 		"*i4",
 		0,
 		channel
-	}) );
+	}) ));
 }
 
 void reset()
@@ -610,11 +607,9 @@ private void save()
 {
 	string buf;
 
-	buf = STRINGD->hybrid_sprint(
-		([
-			"password" : password
-		])
-	);
+	buf = STRINGD->hybrid_sprint( ([
+		"password" : password
+	]) );
 
 	SECRETD->remove_file("intermud-tmp");
 	SECRETD->write_file("intermud-tmp", buf + "\n");
