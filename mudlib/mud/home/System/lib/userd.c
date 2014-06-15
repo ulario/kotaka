@@ -66,7 +66,7 @@ object select(string str)
 	return find_object(SYSTEM_USERD);
 }
 
-void connect(string host, int port)
+static void connect(string host, int port)
 {
 	object conn;
 
