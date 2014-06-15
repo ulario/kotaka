@@ -59,7 +59,7 @@ private void prompt()
 			name = "guest";
 		}
 
-		send_out("[" + name + "@ulario] ");
+		send_out("[" + query_user()->query_titled_name() + "@ulario] ");
 	}
 }
 

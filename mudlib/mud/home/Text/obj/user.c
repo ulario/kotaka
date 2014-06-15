@@ -65,6 +65,11 @@ int query_class()
 	return "~/sys/subd"->query_user_class(username);
 }
 
+string query_titled_name()
+{
+	return TEXT_SUBD->titled_name(username, query_class());
+}
+
 void set_username(string new_username)
 {
 	ACCESS_CHECK(TEXT());

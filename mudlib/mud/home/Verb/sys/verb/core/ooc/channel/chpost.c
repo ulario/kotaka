@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/channel.h>
+#include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
@@ -56,5 +57,8 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	CHANNELD->post_message(channel, user->query_name(), text);
+	CHANNELD->post_message(channel,
+		TEXT_SUBD->titled_name(user->query_name(), user->query_class())
+		, text
+	);
 }
