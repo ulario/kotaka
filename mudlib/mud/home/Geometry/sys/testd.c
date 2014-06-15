@@ -47,8 +47,5 @@ void test()
 	/* 01234567 89012345 6789 */
 	row = grid->query_row(2);
 
-	CHANNELD->post_message("debug", nil, "Row 0: " + row[0] + ", should be " + '\340');
-	CHANNELD->post_message("debug", nil, "Row 1: " + row[1] + ", should be " + '\377');
-	CHANNELD->post_message("debug", nil, "Row 2: " + row[2] + ", should be " + '\017');
 	ASSERT(grid->query_row(2) == "\340\377\017\000");
 }
