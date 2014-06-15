@@ -58,19 +58,19 @@ void main(object actor, mapping roles)
 	switch(TEXT_SUBD->query_user_class(username)) {
 	case 3: /* administrator.  Only the mud owner can ban them */
 		if (user->query_username() != "admin") {
-			send_out("Only the mud owner can unban an administrator.");
+			send_out("Only the mud owner can unban an administrator.\n");
 			return;
 		}
 		break;
 	case 2: /* wizard.  Only an administrator can ban them */
 		if (user->query_class() < 3) {
-			send_out("Only an administrator can unban a wizard.");
+			send_out("Only an administrator can unban a wizard.\n");
 			return;
 		}
 		break;
 	default:
 		if (user->query_class() < 2) {
-			send_out("Only a wizard can unban someone.");
+			send_out("Only a wizard can unban someone.\n");
 			return;
 		}
 		break;
