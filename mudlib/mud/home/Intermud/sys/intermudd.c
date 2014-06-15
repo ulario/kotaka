@@ -465,7 +465,7 @@ void logout(int quit)
 	if (!quit) {
 		LOGD->post_message("intermud", LOG_INFO, "Connection lost");
 
-		call_out("connect", 0, ROUTER_IP, 8080);
+		call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
 	}
 
 	if (handle) {
@@ -482,7 +482,7 @@ void connect_failed(int refused)
 {
 	LOGD->post_message("intermud", LOG_INFO, "Connection failed");
 
-	call_out("connect", 10, ROUTER_IP, 8080);
+	call_out("connect", 10, ROUTER_IP, ROUTER_PORT);
 }
 
 static void destruct()
@@ -585,7 +585,7 @@ void reset()
 
 	LOGD->post_message("intermud", LOG_INFO, "Reset");
 
-	call_out("connect", 0, ROUTER_IP, 8080);
+	call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
 }
 
 private void save()
