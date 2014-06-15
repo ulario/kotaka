@@ -50,7 +50,6 @@ int chanlistid;
 
 mapping muds;
 mapping channels;
-mixed *routers;	/* ({ name, ({ ip, port }) }) */
 
 private void save();
 private void restore();
@@ -215,6 +214,120 @@ void send_channel_message(string channel, string sender, string text)
 	}) ));
 }
 
+private void do_chanlist_reply(mixed *value)
+{
+	mapping delta;
+	string *names;
+	mixed *values;
+	int sz;
+
+	chanlistid = value[6];
+
+	delta = value[7];
+
+	names = map_indices(delta);
+	values = map_values(delta);
+
+	sz = sizeof(names);
+
+	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
+		if (values[sz] == 0) {
+			channels[names[sz]] = nil;
+		} else {
+			channels[names[sz]] = values[sz];
+		}
+	}
+}
+
+private void do_emoteto(mixed *value, string tuser, string omud, string ouser)
+{
+	object user;
+
+	if (user = TEXT_USERD->find_user(tuser)) {
+		user->message(value[6] + "@" + omud + " emotes to you: " + value[7]);
+	} else {
+		message(make_packet( ({
+			"error",
+			5,
+			MUDNAME,
+			0,
+			omud,
+			ouser,
+			"unk-user",
+			"User not online: " + tuser,
+			value
+		}) ));
+	}
+}
+
+private void do_mudlist(mixed *value)
+{
+	mapping delta;
+	string *names;
+	mixed *values;
+	int sz;
+
+	mudlistid = value[6];
+
+	save();
+
+	delta = value[7];
+
+	names = map_indices(delta);
+	values = map_values(delta);
+
+	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
+		if (values[sz] == 0) {
+			muds[names[sz]] = nil;
+		} else {
+			muds[names[sz]] = values[sz];
+		}
+	}
+}
+
+private void do_startup_reply(mixed *value)
+{
+	string *ch;
+	mixed *raw;
+	int sz;
+
+	LOGD->post_message("intermud", LOG_INFO, "Received startup reply");
+
+	password = value[7];
+
+	save();
+
+	ch = CHANNELD->query_channels();
+	sz = sizeof(ch);
+
+	for (sz = sizeof(ch) - 1; sz >= 0; --sz) {
+		if (channels[ch[sz]]) {
+			listen_channel(ch[sz], CHANNELD->query_intermud(ch[sz]));
+		}
+	}
+}
+
+private void do_tell(mixed *value, string tuser, string omud, string ouser)
+{
+	object user;
+
+	if (user = TEXT_USERD->find_user(tuser)) {
+		user->message(value[6] + "@" + omud + " tells you: " + value[7]);
+	} else {
+		message(make_packet( ({
+			"error",
+			5,
+			MUDNAME,
+			0,
+			omud,
+			ouser,
+			"unk-user",
+			"User not online: " + tuser,
+			value
+		}) ));
+	}
+}
+
 private void process_packet(string packet)
 {
 	mixed *value;
@@ -234,31 +347,7 @@ private void process_packet(string packet)
 
 	switch(mtype) {
 	case "chanlist-reply":
-		chanlistid = value[6];
-
-		{
-			mapping delta;
-			string *names;
-			mixed *values;
-
-			int i, sz;
-
-			delta = value[7];
-
-			names = map_indices(delta);
-			values = map_values(delta);
-
-			sz = sizeof(names);
-
-			for (i = 0; i < sz; i++) {
-				if (values[i] == 0) {
-					channels[names[i]] = nil;
-				} else {
-					channels[names[i]] = values[i];
-				}
-			}
-		}
-
+		do_chanlist_reply(value);
 		break;
 
 	case "channel-m":
@@ -276,128 +365,24 @@ private void process_packet(string packet)
 		break;
 
 	case "emoteto":
-		{
-			object user;
-
-			if (user = TEXT_USERD->find_user(tuser)) {
-				user->message(value[6] + "@" + omud + " emotes to you: " + value[7]);
-			} else {
-				message(make_packet( ({
-					"error",
-					5,
-					MUDNAME,
-					0,
-					omud,
-					ouser,
-					"unk-user",
-					"User not online: " + tuser,
-					value
-				}) ));
-			}
-		}
-
+		do_emoteto(value, tuser, omud, ouser);
+		break;
 
 	case "error":
 		CHANNELD->post_message("error", nil, "intermud error: " + STRINGD->mixed_sprint(value));
 		break;
 
 	case "mudlist":
-		mudlistid = value[6];
-		save();
-
-		{
-			mapping delta;
-			string *names;
-			mixed *values;
-
-			int i, sz;
-
-			delta = value[7];
-
-			names = map_indices(delta);
-			values = map_values(delta);
-
-			sz = sizeof(names);
-
-			for (i = 0; i < sz; i++) {
-				if (values[i] == 0) {
-					muds[names[i]] = nil;
-				} else {
-					muds[names[i]] = values[i];
-				}
-			}
-		}
-
+		do_mudlist(value);
 		break;
 
 	case "startup-reply":
-		LOGD->post_message("intermud", LOG_INFO, "Received startup reply");
-
-		password = value[7];
-		routers = ({ });
-
-		save();
-
-		{
-			mixed *raw;
-			int i, sz;
-
-			raw = value[6];
-			sz = sizeof(raw);
-
-			for (i = 0; i < sz; i++) {
-				string *router;
-				string name;
-				string addr;
-				string ip;
-				int port;
-
-				router = raw[i];
-				name = router[0];
-				addr = router[1];
-
-				sscanf(addr, "%s %d", ip, port);
-
-				routers += ({ name, ({ ip, port }) });
-			}
-		}
-
-		{
-			string *ch;
-			int i, sz;
-
-			ch = CHANNELD->query_channels();
-			sz = sizeof(ch);
-
-			for (i = 0; i < sz; i++) {
-				if (channels[ch[i]]) {
-					listen_channel(ch[i], CHANNELD->query_intermud(ch[i]));
-				}
-			}
-		}
-
+		do_startup_reply(value);
 		break;
 
 	case "tell":
-		{
-			object user;
-
-			if (user = TEXT_USERD->find_user(tuser)) {
-				user->message(value[6] + "@" + omud + " tells you: " + value[7]);
-			} else {
-				message(make_packet( ({
-					"error",
-					5,
-					MUDNAME,
-					0,
-					omud,
-					ouser,
-					"unk-user",
-					"User not online: " + tuser,
-					value
-				}) ));
-			}
-		}
+		do_tell(value, tuser, omud, ouser);
+		break;
 
 	default:
 		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
