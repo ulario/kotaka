@@ -88,7 +88,7 @@ void main(object actor, mapping roles)
 			}
 		}
 
-		buf = TEXT_SUBD->titled_name(name, uclass);
+		buf = ruser->query_titled_name();
 
 		if (invisible) {
 			buf += " (invisible)";

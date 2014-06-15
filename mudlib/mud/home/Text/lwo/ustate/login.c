@@ -188,9 +188,7 @@ void receive_in(string input)
 				send_out("Your previous connection went away before I could evict it.\n");
 
 				TEXT_SUBD->send_to_all_except(
-					TEXT_SUBD->titled_name(
-						user->query_username(),
-						user->query_class())
+					TEXT_SUBD->query_titled_name(name)
 					+ " logs in.\n", ({ user }));
 			}
 

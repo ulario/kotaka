@@ -64,7 +64,7 @@ void main(object actor, mapping roles)
 	ACCOUNTD->unregister_account(roles["raw"]);
 
 	turkey = TEXT_USERD->find_user(roles["raw"]);
-	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
+	kicker_name = user->query_titled_name();
 
 	user->message("You nuke " + roles["raw"] + " from the mud.\n");
 

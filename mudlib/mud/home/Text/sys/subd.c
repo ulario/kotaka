@@ -28,17 +28,21 @@
 
 inherit LIB_EMIT;
 
-string titled_name(string name, int class)
+int query_user_class(string username);
+
+string query_titled_name(string username)
 {
-	string username;
+	string name;
 
-	username = name;
+	int class;
 
-	if (name) {
-		name = STRINGD->to_title(name);
+	if (username) {
+		name = STRINGD->to_title(username);
 	} else {
 		name = "guest";
 	}
+
+	class = query_user_class(username);
 
 	switch(class) {
 	case 0:
@@ -47,7 +51,6 @@ string titled_name(string name, int class)
 	case 1:
 		switch(ACCOUNTD->query_account_property(username, "gender")) {
 		case nil:
-			name = name;
 			break;
 
 		case "male":
@@ -376,7 +379,7 @@ void send_login_message(string name)
 			continue;
 		} else {
 			ooc_emit_to(name, users[sz],
-				titled_name(name, query_user_class(name))
+				query_titled_name(name)
 				 + " logs in.\n");
 		}
 	}
@@ -394,7 +397,7 @@ void send_logout_message(string name)
 			continue;
 		} else {
 			ooc_emit_to(name, users[sz],
-				titled_name(name, query_user_class(name))
+				query_titled_name(name)
 				+ " logs out.\n");
 		}
 	}
@@ -412,7 +415,7 @@ void send_register_message(string name)
 			continue;
 		} else {
 			ooc_emit_to(name, users[sz],
-				titled_name(name, query_user_class(name))
+				query_titled_name(name)
 				+ " registers.\n");
 		}
 	}

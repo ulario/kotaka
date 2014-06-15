@@ -88,8 +88,8 @@ void main(object actor, mapping roles)
 
 	BAND->ban_username(username);
 
-	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-	turkey_name = TEXT_SUBD->titled_name(username, TEXT_SUBD->query_user_class(username));
+	kicker_name = user->query_titled_name();
+	turkey_name = TEXT_SUBD->query_titled_name(username);
 
 	user->message("You ban " + turkey_name + " from the mud.\n");
 	turkey = TEXT_USERD->find_user(username);

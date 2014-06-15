@@ -67,7 +67,7 @@ void main(object actor, mapping roles)
 
 	/* kick turkeys */
 
-	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
+	kicker_name = user->query_titled_name();
 
 	for (i = 0; i < sz; i++) {
 		object conn;
@@ -89,7 +89,7 @@ void main(object actor, mapping roles)
 			continue;
 		}
 
-		turkey_name = TEXT_SUBD->titled_name(turkey->query_name(), TEXT_SUBD->query_user_class(turkey->query_name()));
+		turkey_name = turkey->query_titled_name();
 
 		user->message("You siteban " + turkey_name + " from the mud.\n");
 

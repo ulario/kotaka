@@ -87,8 +87,8 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	kicker_name = TEXT_SUBD->titled_name(user->query_username(), user->query_class());
-	turkey_name = TEXT_SUBD->titled_name(turkey->query_username(), turkey->query_class());
+	kicker_name = user->query_titled_name();
+	turkey_name = turkey->query_titled_name();
 
 	user->message("You kick " + turkey_name + " from the mud.\n");
 	TEXT_SUBD->send_to_all_except(kicker_name + " kicked " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
