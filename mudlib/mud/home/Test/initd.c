@@ -41,7 +41,7 @@ void bomb(int quota)
 {
 	int limit;
 
-	limit = (int)sqrt((float)quota);
+	limit = (int)pow((float)quota, 0.3);
 
 	CHANNELD->post_message("debug", "bomb", "Bombs this round: " + limit + "\nBombs left to go: " + quota);
 
