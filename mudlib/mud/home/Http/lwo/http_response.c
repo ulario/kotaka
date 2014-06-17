@@ -21,11 +21,14 @@
 int status_code;
 string status_message;
 string content_type;
+mapping headers;
 
 static void create(int clone)
 {
 	if (clone) {
-		content_type = "text/html";
+		headers = ([ ]);
+
+		headers["Content-Type"] = "text/html";
 	}
 }
 
@@ -39,23 +42,33 @@ string generate_header()
 {
 	string buffer;
 	int close;
-	string *headers;
+
+	string *hind, *hval;
+	int i, sz;
 
 	if (!status_code) {
 		error("Status code not set");
 	}
 
 	buffer = "HTTP/1.1 " + status_code + " " + status_message + "\r\n";
-	buffer += "Content-Type: " + content_type + "\r\n";
 
 	switch(status_code / 100) {
 	case 3:
 	case 4:
 	case 5:
-		buffer += "Cache-Control: no-cache\r\n";
+		headers["Cache-Control"] = "no-cache";
 	}
 
-	buffer += "Connection: close\r\n";
+	headers["Connection"] = "close";
+
+	hind = map_indices(headers);
+	hval = map_values(headers);
+	sz = sizeof(hind);
+
+	for (i = 0; i < sz; i++) {
+		buffer += hind[i] + ": " + hval[i] + "\r\n";
+	}
+
 	buffer += "\r\n";
 
 	return buffer;
