@@ -82,6 +82,11 @@ string query_banner(object conn)
 	return nil;
 }
 
+string query_sitebanned_banner(object conn)
+{
+	return "Access denied.\n";
+}
+
 int query_timeout(object conn)
 {
 	ACCESS_CHECK(previous_program() == SYSTEM_USERD);
