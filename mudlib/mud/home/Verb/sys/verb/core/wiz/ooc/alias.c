@@ -94,5 +94,10 @@ void main(object actor, mapping roles)
 				send_out(alias + " - " + ALIASD->query_alias(alias) + "\n");
 			}
 		}
+		break;
+
+	default:
+		send_out("Invalid alias command.\n");
+		send_out("Choices:  gadd, gdel, glist.\n");
 	}
 }
