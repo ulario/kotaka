@@ -61,17 +61,18 @@ void main(object actor, mapping roles)
 		return;
 	}
 
+	catch {
+		turkey = TEXT_USERD->find_user(roles["raw"]);
+		kicker_name = user->query_titled_name();
+
+		if (turkey) {
+			turkey->message("You have been nuked from the mud by " + kicker_name + "!\n");
+			turkey->quit();
+		}
+	}
+
 	ACCOUNTD->unregister_account(roles["raw"]);
 
-	turkey = TEXT_USERD->find_user(roles["raw"]);
-	kicker_name = user->query_titled_name();
-
 	user->message("You nuke " + roles["raw"] + " from the mud.\n");
-
 	TEXT_SUBD->send_to_all_except(roles["raw"] + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
-
-	if (turkey) {
-		turkey->message("You have been nuked from the mud by " + kicker_name + "!\n");
-		turkey->quit();
-	}
 }
