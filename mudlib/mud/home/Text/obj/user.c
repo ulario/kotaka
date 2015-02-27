@@ -149,6 +149,8 @@ int receive_message(string str)
 
 	user = username ? username : ip;
 
+	SECRETD->make_dir(".");
+	SECRETD->make_dir("log");
 	SECRETD->write_file("log/log-" + user, "[" + SUBD->pmtime(millitime()) + "] " + user + ": " + str + "\n");
 
 	ret = ::receive_message(str);

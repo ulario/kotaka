@@ -138,6 +138,7 @@ private void save()
 	buf = STRINGD->hybrid_sprint( ([ "properties" : properties,
 		"passwords" : passwords ]) );
 
+	SECRETD->make_dir(".");
 	SECRETD->remove_file("accounts-tmp");
 	SECRETD->write_file("accounts-tmp", buf + "\n");
 	SECRETD->remove_file("accounts");

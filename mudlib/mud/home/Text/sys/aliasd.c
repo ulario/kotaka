@@ -58,6 +58,7 @@ private void save()
 
 	buf = STRINGD->hybrid_sprint(aliases);
 
+	SECRETD->make_dir(".");
 	SECRETD->remove_file("aliases-tmp");
 	SECRETD->write_file("aliases-tmp", buf + "\n");
 	SECRETD->remove_file("aliases");
