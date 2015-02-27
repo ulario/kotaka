@@ -101,13 +101,13 @@ atomic void push_front(mixed value)
 	check_caller(WRITE_ACCESS);
 
 	if (first->full_front()) {
-		object new;
+		object new_node;
 
-		new = new_node();
+		new_node = new_node();
 
-		first->set_prev(new);
-		new->set_next(first);
-		first = new;
+		first->set_prev(new_node);
+		new_node->set_next(first);
+		first = new_node;
 	}
 
 	trim_last();
@@ -119,13 +119,13 @@ atomic void push_back(mixed value)
 	check_caller(WRITE_ACCESS);
 
 	if (last->full_back()) {
-		object new;
+		object new_node;
 
-		new = new_node();
+		new_node = new_node();
 
-		last->set_next(new);
-		new->set_prev(last);
-		last = new;
+		last->set_next(new_node);
+		new_node->set_prev(last);
+		last = new_node;
 	}
 
 	last->push_back(value);

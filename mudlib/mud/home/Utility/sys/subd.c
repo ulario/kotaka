@@ -50,11 +50,11 @@ mixed deep_copy(mixed in, varargs mapping dupes)
 		case T_OBJECT:
 			{
 				mixed data;
-				object new;
+				object new_obj;
 
-				new = new_object(in);
-				dupes[in] = new;
-				new->finish_deep_copy(dupes);
+				new_obj = new_object(in);
+				dupes[in] = new_obj;
+				new_obj->finish_deep_copy(dupes);
 			}
 			break;
 

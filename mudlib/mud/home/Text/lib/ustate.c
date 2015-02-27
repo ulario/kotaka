@@ -224,20 +224,20 @@ void pop_state()
 	user->pop_state(this_object());
 }
 
-void switch_state(object new)
+void switch_state(object new_state)
 {
 	ASSERT(user);
 
-	user->switch_state(this_object(), new);
+	user->switch_state(this_object(), new_state);
 }
 
-void collapse_state(object new)
+void collapse_state(object new_state)
 {
 	ASSERT(user);
 
-	ASSERT(sizeof(({ new }) & children));
+	ASSERT(sizeof(({ new_state }) & children));
 
-	user->collapse_state(this_object(), new);
+	user->collapse_state(this_object(), new_state);
 }
 
 void suspend_user()
@@ -254,11 +254,11 @@ void release_user()
 	user->release_user();
 }
 
-void swap_state(object new)
+void swap_state(object new_state)
 {
 	ASSERT(user);
 
-	user->swap_state(this_object(), new);
+	user->swap_state(this_object(), new_state);
 }
 
 static void terminate_account_state()

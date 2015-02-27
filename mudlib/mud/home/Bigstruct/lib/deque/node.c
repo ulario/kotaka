@@ -84,16 +84,16 @@ int full_back()
 	return end == sizeof(sub);
 }
 
-void set_prev(object new)
+void set_prev(object new_prev)
 {
 	check_caller();
-	prev = new;
+	prev = new_prev;
 }
 
-void set_next(object new)
+void set_next(object new_next)
 {
 	check_caller();
-	next = new;
+	next = new_next;
 }
 
 mixed query_front()

@@ -44,8 +44,8 @@ void quit();
 
 void pop_state(object state);
 void push_state(object state, object parent);
-void switch_state(object parent, object new);
-void swap_state(object old, object new);
+void switch_state(object parent, object new_state);
+void swap_state(object old, object new_state);
 void suspend_user();
 void resume_user();
 
@@ -386,7 +386,7 @@ void pop_state(object state)
 }
 
 /* switch: old stop, new go */
-void switch_state(object parent, object new)
+void switch_state(object parent, object new_state)
 {
 	object oldtop;
 	object newtop;
@@ -394,17 +394,17 @@ void switch_state(object parent, object new)
 	ACCESS_CHECK(TEXT());
 	ASSERT(parent);
 
-	if (parent->query_current() == new) {
+	if (parent->query_current() == new_state) {
 		return;
 	}
 
-	if (new) {
-		ASSERT(new->query_parent() == parent);
+	if (new_state) {
+		ASSERT(new_state->query_parent() == parent);
 	}
 
 	oldtop = root->query_top();
 
-	parent->_F_set_current(new);
+	parent->_F_set_current(new_state);
 
 	newtop = root->query_top();
 
@@ -420,48 +420,48 @@ void switch_state(object parent, object new)
 }
 
 /* swap: old stop, parent pop, old end, new begin, parent push, new go */
-void swap_state(object old, object new)
+void swap_state(object old_state, object new_state)
 {
 	/* the old ustate is being replaced */
 	object parent;
 
 	ACCESS_CHECK(TEXT());
 
-	ASSERT(old);
-	ASSERT(new);
-	ASSERT(!new->query_user());
+	ASSERT(old_state);
+	ASSERT(new_state);
+	ASSERT(!new_state->query_user());
 
-	parent = old->query_parent();
+	parent = old_state->query_parent();
 
-	if (root == old) {
-		root = new;
+	if (root == old_state) {
+		root = new_state;
 	}
 
-	new->_F_set_user(this_object());
-	new->_F_set_parent(parent);
-	new->pre_begin();
+	new_state->_F_set_user(this_object());
+	new_state->_F_set_parent(parent);
+	new_state->pre_begin();
 
 	if (parent) {
-		parent->_F_add_child(new);
-		parent->_F_set_current(new);
+		parent->_F_add_child(new_state);
+		parent->_F_set_current(new_state);
 	}
 
-	if (old == root) {
-		root = new;
+	if (old_state == root) {
+		root = new_state;
 	}
 
-	nuke_state_tree(old);
+	nuke_state_tree(old_state);
 
-	if (new) {
-		new->begin();
+	if (new_state) {
+		new_state->begin();
 	}
 
-	if (new && !suspend) {
-		new->go();
+	if (new_state && !suspend) {
+		new_state->go();
 	}
 }
 
-void collapse_state(object old, object new)
+void collapse_state(object old_state, object new_state)
 {
 	/* the old ustate is being replaced */
 	object parent;
@@ -469,31 +469,31 @@ void collapse_state(object old, object new)
 
 	ACCESS_CHECK(TEXT());
 
-	ASSERT(old);
-	ASSERT(new);
+	ASSERT(old_state);
+	ASSERT(new_state);
 
-	parent = old->query_parent();
+	parent = old_state->query_parent();
 
-	if (root == old) {
-		root = new;
+	if (root == old_state) {
+		root = new_state;
 	}
 
-	new->_F_set_parent(parent);
-	new->pre_begin();
+	new_state->_F_set_parent(parent);
+	new_state->pre_begin();
 
 	if (parent) {
-		parent->_F_add_child(new);
-		parent->_F_set_current(new);
-		parent->_F_del_child(old);
+		parent->_F_add_child(new_state);
+		parent->_F_set_current(new_state);
+		parent->_F_del_child(old_state);
 	}
 
-	old->_F_del_child(new);
+	old_state->_F_del_child(new_state);
 
-	if (old == root) {
-		root = new;
+	if (old_state == root) {
+		root = new_state;
 	}
 
-	nuke_state_tree(old);
+	nuke_state_tree(old_state);
 }
 
 object query_root_state()

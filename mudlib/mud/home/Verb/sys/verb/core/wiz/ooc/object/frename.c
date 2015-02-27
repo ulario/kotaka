@@ -27,14 +27,14 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
-atomic private void do_folder_rename(string old, string new)
+atomic private void do_folder_rename(string old_name, string new_name)
 {
 	mapping map;
 	string *names;
 	int *keys;
 	int sz, i;
 
-	map = CATALOGD->list_directory(old);
+	map = CATALOGD->list_directory(old_name);
 
 	names = map_indices(map);
 	keys = map_values(map);
@@ -48,17 +48,17 @@ atomic private void do_folder_rename(string old, string new)
 
 		switch(keys[i]) {
 		case 1: /* object */
-			CATALOGD->lookup_object(old + ":" + name)->set_object_name(new + ":" + name);
+			CATALOGD->lookup_object(old_name + ":" + name)->set_object_name(new_name + ":" + name);
 			break;
 		case 2:
-			do_folder_rename(old + ":" + name, new + ":" + name);
+			do_folder_rename(old_name + ":" + name, new_name + ":" + name);
 		}
 	}
 }
 
 void main(object actor, mapping roles)
 {
-	string old, new;
+	string old_name, new_name;
 	object user;
 
 	user = query_user();
@@ -68,23 +68,23 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(roles["raw"], "%s %s", old, new) != 2) {
+	if (sscanf(roles["raw"], "%s %s", old_name, new_name) != 2) {
 		send_out("Usage: frename old_folder new_folder\n");
 		return;
 	}
 
-	switch (CATALOGD->test_name(old)) {
-	case -2: send_out(old + " has an object in it.\n"); return;
-	case -1: send_out(old + " does not exist somewhere.\n"); return;
-	case 0: send_out(old + " does not exist.\n"); return;
-	case 1: send_out(old + " is an object.\n"); return;
+	switch (CATALOGD->test_name(old_name)) {
+	case -2: send_out(old_name + " has an object in it.\n"); return;
+	case -1: send_out(old_name + " does not exist somewhere.\n"); return;
+	case 0: send_out(old_name + " does not exist.\n"); return;
+	case 1: send_out(old_name + " is an object.\n"); return;
 	}
 
-	switch (CATALOGD->test_name(new)) {
-	case -2: send_out(new + " has an object in it.\n"); return;
-	case 2: send_out(new + " already exists.\n"); return;
-	case 1: send_out(new + " is an object.\n"); return;
+	switch (CATALOGD->test_name(new_name)) {
+	case -2: send_out(new_name + " has an object in it.\n"); return;
+	case 2: send_out(new_name + " already exists.\n"); return;
+	case 1: send_out(new_name + " is an object.\n"); return;
 	}
 
-	do_folder_rename(old, new);
+	do_folder_rename(old_name, new_name);
 }

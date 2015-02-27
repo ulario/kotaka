@@ -51,20 +51,20 @@ object query_right()
 	return right;
 }
 
-void set_parent(object new)
+void set_parent(object new_parent)
 {
 	check_caller();
-	parent = new;
+	parent = new_parent;
 }
 
-void set_left(object new)
+void set_left(object new_left)
 {
 	check_caller();
-	left = new;
+	left = new_left;
 }
 
-void set_right(object new)
+void set_right(object new_right)
 {
 	check_caller();
-	right = new;
+	right = new_right;
 }
