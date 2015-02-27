@@ -595,6 +595,7 @@ private void save()
 		"password" : password
 	]) );
 
+	SECRETD->make_dir(".");
 	SECRETD->remove_file("intermud-tmp");
 	SECRETD->write_file("intermud-tmp", buf + "\n");
 	SECRETD->remove_file("intermud");
