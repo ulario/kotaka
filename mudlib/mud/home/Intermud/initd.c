@@ -33,11 +33,6 @@ private void load()
 	load_dir("sys", 1);
 }
 
-static void reboot_self()
-{
-	INITD->reboot_subsystem("Intermud");
-}
-
 static void create()
 {
 	KERNELD->set_global_access("Intermud", 1);
@@ -50,8 +45,6 @@ static void create()
 	}
 
 	CHANNELD->set_channel_config("dgd", "channel_color", 0x0c);
-
-	call_out("reboot_self", 300);
 }
 
 void upgrade_subsystem()
