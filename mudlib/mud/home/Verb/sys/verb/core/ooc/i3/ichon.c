@@ -36,7 +36,7 @@ void main(object actor, mapping roles)
 	}
 
 	if (!CHANNELD->test_channel(roles["raw"])) {
-		send_out("Channel must exist before it can be attached to i3");
+		send_out("Channel must exist before it can be attached to i3.\n");
 		return;
 	}
 
