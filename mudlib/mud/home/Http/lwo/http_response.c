@@ -50,7 +50,7 @@ string generate_header()
 		error("Status code not set");
 	}
 
-	buffer = "HTTP/1.1 " + status_code + " " + status_message + "\r\n";
+	buffer = "HTTP/1.1 " + status_code + " " + status_message + "\n";
 
 	switch(status_code / 100) {
 	case 3:
@@ -66,10 +66,10 @@ string generate_header()
 	sz = sizeof(hind);
 
 	for (i = 0; i < sz; i++) {
-		buffer += hind[i] + ": " + hval[i] + "\r\n";
+		buffer += hind[i] + ": " + hval[i] + "\n";
 	}
 
-	buffer += "\r\n";
+	buffer += "\n";
 
 	return buffer;
 }

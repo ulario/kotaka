@@ -26,45 +26,18 @@ static void create(int clone)
 {
 }
 
+private int input(string message);
+
 int login(string str)
 {
-	object conn;
-	object header;
-
 	connection(previous_object());
 
-	header = new_object("~/lwo/http_response");
+	return input(str);
+}
 
-	header->set_status(503, "No handler");
-
-	message(header->generate_header());
-	message("<html>\n");
-	message("<head>\n");
-	message("<title>No handler</title>\n");
-	message("</head>\n");
-	message("<body>\n");
-	message("<h1>No handler</h1>\n");
-	message("<p>There is no handler for that path.</p>\n");
-	message("<p>For the curious, here's a list of all objects involved in this connection:</p>\n");
-	message("<ul>\n");
-
-	conn = this_object();
-
-	while(conn) {
-		message("<li>" + object_name(conn) + "</li>\n");
-
-		if (conn <- LIB_USER) {
-			conn = conn->query_conn();
-		} else {
-			break;
-		}
-	}
-
-	message("</ul>\n");
-	message("</body>\n");
-	message("</html>\n");
-
-	return MODE_DISCONNECT;
+int receive_message(string message)
+{
+	return input(message);
 }
 
 void logout(int quit)
@@ -72,12 +45,49 @@ void logout(int quit)
 	destruct_object(this_object());
 }
 
-int receive_message()
+int message_done()
 {
 	return MODE_DISCONNECT;
 }
 
-int message_done()
+private int input(string message)
 {
-	return MODE_DISCONNECT;
+	if (message == "") {
+		object conn;
+		object header;
+
+		header = new_object("~/lwo/http_response");
+
+		header->set_status(503, "No handler");
+
+		message(header->generate_header());
+		message("<html>\n");
+		message("<head>\n");
+		message("<title>No handler</title>\n");
+		message("</head>\n");
+		message("<body>\n");
+		message("<h1>No handler</h1>\n");
+		message("<p>There is no handler for that path.</p>\n");
+		message("<p>For the curious, here's a list of all objects involved in this connection:</p>\n");
+		message("<ul>\n");
+
+		conn = this_object();
+
+		while(conn) {
+			message("<li>" + object_name(conn) + "</li>\n");
+
+			if (conn <- LIB_USER) {
+				conn = conn->query_conn();
+			} else {
+				break;
+			}
+		}
+
+		message("</ul>\n");
+		message("</body>\n");
+		message("</html>\n");
+		return MODE_DISCONNECT;
+	}
+
+	return MODE_NOCHANGE;
 }
