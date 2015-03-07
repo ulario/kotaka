@@ -66,7 +66,7 @@ private int input(string message)
 		message("<title>No handler</title>\n");
 		message("</head>\n");
 		message("<body>\n");
-		message("<h1>No handler</h1>\n");
+		message("<h1 style=\"color: red\">No handler</h1>\n");
 		message("<p>There is no handler for that path.</p>\n");
 		message("<p>For the curious, here's a list of all objects involved in this connection:</p>\n");
 		message("<ul>\n");
