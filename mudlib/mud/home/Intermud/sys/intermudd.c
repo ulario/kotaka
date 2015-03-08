@@ -239,22 +239,22 @@ private void do_chanlist_reply(mixed *value)
 	}
 }
 
-private void do_emoteto(mixed *value, string tuser, string omud, string ouser)
+private void do_emoteto(mixed *value)
 {
 	object user;
 
-	if (user = TEXT_USERD->find_user(tuser)) {
-		user->message(value[6] + "@" + omud + " emotes to you: " + value[7]);
+	if (user = TEXT_USERD->find_user(value[5])) {
+		user->message(value[6] + "@" + value[2] + " emotes to you: " + value[7]);
 	} else {
 		message(make_packet( ({
 			"error",
 			5,
 			MUDNAME,
 			0,
-			omud,
-			ouser,
+			value[2],
+			value[3],
 			"unk-user",
-			"User not online: " + tuser,
+			"User not online: " + value[5],
 			value
 		}) ));
 	}
@@ -307,22 +307,22 @@ private void do_startup_reply(mixed *value)
 	}
 }
 
-private void do_tell(mixed *value, string tuser, string omud, string ouser)
+private void do_tell(mixed *value)
 {
 	object user;
 
-	if (user = TEXT_USERD->find_user(tuser)) {
-		user->message(value[6] + "@" + omud + " tells you: " + value[7]);
+	if (user = TEXT_USERD->find_user(value[5])) {
+		user->message(value[6] + "@" + value[2] + " tells you: " + value[7]);
 	} else {
 		message(make_packet( ({
 			"error",
 			5,
 			MUDNAME,
 			0,
-			omud,
-			ouser,
+			value[2],
+			value[3],
 			"unk-user",
-			"User not online: " + tuser,
+			"User not online: " + value[5],
 			value
 		}) ));
 	}
@@ -330,36 +330,25 @@ private void do_tell(mixed *value, string tuser, string omud, string ouser)
 
 private void process_packet(mixed *value)
 {
-	string mtype;
-	int ttl;
-
-	mixed omud;
-	mixed ouser;
-
-	mixed tmud;
-	mixed tuser;
-
-	({ mtype, ttl, omud, ouser, tmud, tuser }) = value[0 .. 5];
-
-	switch(mtype) {
+	switch(value[0]) {
 	case "chanlist-reply":
 		do_chanlist_reply(value);
 		break;
 
 	case "channel-m":
 		if (CHANNELD->test_channel(value[6])) {
-			CHANNELD->post_message(value[6], value[7] + "@" + omud, value[8], 1);
+			CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
 		}
 		break;
 
 	case "channel-e":
 		if (CHANNELD->test_channel(value[6])) {
-			CHANNELD->post_message(value[6], value[7] + "@" + omud, value[8], 1);
+			CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
 		}
 		break;
 
 	case "emoteto":
-		do_emoteto(value, tuser, omud, ouser);
+		do_emoteto(value);
 		break;
 
 	case "error":
@@ -375,7 +364,7 @@ private void process_packet(mixed *value)
 		break;
 
 	case "tell":
-		do_tell(value, tuser, omud, ouser);
+		do_tell(value);
 		break;
 
 	case "ucache-update":
@@ -384,7 +373,7 @@ private void process_packet(mixed *value)
 
 	default:
 		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
-		LOGD->post_message("intermud", LOG_INFO, "Bouncing back an error to \"" + omud + "\"\n");
+		LOGD->post_message("intermud", LOG_INFO, "Bouncing back an error to \"" + value[2] + "\"\n");
 
 		{
 			/* send back an error packet */
@@ -393,10 +382,10 @@ private void process_packet(mixed *value)
 				5,
 				MUDNAME,
 				0,
-				omud,
-				ouser,
+				value[2],
+				value[3],
 				"unk-type",
-				"Unhandled packet type: " + mtype,
+				"Unhandled packet type: " + value[0],
 				value
 			}) ));
 		}
