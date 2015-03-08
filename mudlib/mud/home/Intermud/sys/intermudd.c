@@ -342,6 +342,27 @@ private void do_channel_e(value)
 	}
 }
 
+private void bounce_packet(value)
+{
+	/* send back an error packet */
+	LOGD->post_message("intermud", LOG_INFO,
+		"Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
+	LOGD->post_message("intermud", LOG_INFO,
+		"Bouncing back an error to \"" + value[2] + "\"\n");
+
+	message(make_packet( ({
+		"error",
+		5,
+		MUDNAME,
+		0,
+		value[2],
+		value[3],
+		"unk-type",
+		"Unhandled packet type: " + value[0],
+		value
+	}) ));
+}
+
 private void process_packet(mixed *value)
 {
 	switch(value[0]) {
@@ -382,23 +403,7 @@ private void process_packet(mixed *value)
 		break;
 
 	default:
-		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
-		LOGD->post_message("intermud", LOG_INFO, "Bouncing back an error to \"" + value[2] + "\"\n");
-
-		{
-			/* send back an error packet */
-			message(make_packet( ({
-				"error",
-				5,
-				MUDNAME,
-				0,
-				value[2],
-				value[3],
-				"unk-type",
-				"Unhandled packet type: " + value[0],
-				value
-			}) ));
-		}
+		bounce_packet(value);
 	}
 }
 
