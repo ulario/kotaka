@@ -328,10 +328,8 @@ private void do_tell(mixed *value, string tuser, string omud, string ouser)
 	}
 }
 
-private void process_packet(string packet)
+private void process_packet(mixed *value)
 {
-	mixed *value;
-
 	string mtype;
 	int ttl;
 
@@ -340,8 +338,6 @@ private void process_packet(string packet)
 
 	mixed tmud;
 	mixed tuser;
-
-	value = PARSER_MUDMODE->parse(packet);
 
 	({ mtype, ttl, omud, ouser, tmud, tuser }) = value[0 .. 5];
 
@@ -428,7 +424,7 @@ static void process()
 	packet = buffer[0 .. len - 2];
 	buffer = buffer[len ..];
 
-	process_packet(packet);
+	process_packet(PARSER_MUDMODE->parse(packet));
 
 	handle = call_out("process", 0);
 }
