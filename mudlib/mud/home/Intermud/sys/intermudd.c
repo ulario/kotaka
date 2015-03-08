@@ -382,6 +382,10 @@ private void process_packet(string packet)
 		do_tell(value, tuser, omud, ouser);
 		break;
 
+	case "ucache-update":
+		/* we don't care about these right now */
+		break;
+
 	default:
 		LOGD->post_message("intermud", LOG_INFO, "Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
 		LOGD->post_message("intermud", LOG_INFO, "Bouncing back an error to \"" + omud + "\"\n");
