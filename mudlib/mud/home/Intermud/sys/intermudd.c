@@ -291,7 +291,7 @@ private void do_startup_reply(mixed *value)
 	mixed *raw;
 	int sz;
 
-	LOGD->post_message("intermud", LOG_INFO, "Received startup reply");
+	LOGD->post_message("intermud", LOG_INFO, "Intermud: Received startup reply");
 
 	password = value[7];
 
@@ -354,7 +354,6 @@ private void process_packet(string packet)
 		if (CHANNELD->test_channel(value[6])) {
 			CHANNELD->post_message(value[6], value[7] + "@" + omud, value[8], 1);
 		}
-
 		break;
 
 	case "channel-e":
@@ -462,7 +461,7 @@ int message_done()
 void logout(int quit)
 {
 	if (!quit) {
-		LOGD->post_message("intermud", LOG_INFO, "Connection lost");
+		LOGD->post_message("intermud", LOG_INFO, "Intermud: Connection lost");
 
 		call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
 	}
@@ -479,7 +478,7 @@ void logout(int quit)
 
 void connect_failed(int refused)
 {
-	LOGD->post_message("intermud", LOG_INFO, "Connection failed");
+	LOGD->post_message("intermud", LOG_INFO, "Intermud: Connection failed");
 
 	call_out("connect", 10, ROUTER_IP, ROUTER_PORT);
 }
