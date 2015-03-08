@@ -398,8 +398,11 @@ private void process_packet(mixed *value)
 		do_tell(value);
 		break;
 
+	/* we don't care about these right now */
 	case "ucache-update":
-		/* we don't care about these right now */
+		break;
+
+	case "locate-req":
 		break;
 
 	default:
