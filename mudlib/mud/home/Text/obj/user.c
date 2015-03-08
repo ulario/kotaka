@@ -174,8 +174,13 @@ void channel_message(string channel, string stamp, string sender, string message
 	ACCESS_CHECK(previous_program() == CHANNELD);
 
 	if (sender) {
-		send_out("[\033[1m" + channel + "\033[0m] \033[1;32m" + stamp +
-			"\033[0m \033[1;34m" + sender + "\033[0m: " + message + "\n");
+		if (message) {
+			send_out("[\033[1m" + channel + "\033[0m] \033[1;32m" + stamp +
+				"\033[0m \033[1;34m" + sender + "\033[0m: " + message + "\n");
+		} else {
+			send_out("[\033[1m" + channel + "\033[0m] \033[1;32m" + stamp +
+				"\033[0m \033[1;34m" + sender + "\033[0m\n");
+		}
 	} else {
 		send_out("[\033[1m" + channel + "\033[0m] \033[1;32m" + stamp +
 			"\033[0m " + message + "\n");

@@ -338,7 +338,12 @@ private void do_channel_m(value)
 private void do_channel_e(value)
 {
 	if (CHANNELD->test_channel(value[6])) {
-		CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
+		string text;
+
+		text = STRINGD->replace(
+			value[8], "$N", value[7] + "@" + value[2]);
+
+		CHANNELD->post_message(value[6], text, nil, 1);
 	}
 }
 
