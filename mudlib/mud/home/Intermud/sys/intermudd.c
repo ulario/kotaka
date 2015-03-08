@@ -328,6 +328,20 @@ private void do_tell(mixed *value)
 	}
 }
 
+private void do_channel_m(value)
+{
+	if (CHANNELD->test_channel(value[6])) {
+		CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
+	}
+}
+
+private void do_channel_e(value)
+{
+	if (CHANNELD->test_channel(value[6])) {
+		CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
+	}
+}
+
 private void process_packet(mixed *value)
 {
 	switch(value[0]) {
@@ -336,15 +350,11 @@ private void process_packet(mixed *value)
 		break;
 
 	case "channel-m":
-		if (CHANNELD->test_channel(value[6])) {
-			CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
-		}
+		do_channel_m(value);
 		break;
 
 	case "channel-e":
-		if (CHANNELD->test_channel(value[6])) {
-			CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
-		}
+		do_channel_e(value);
 		break;
 
 	case "emoteto":
