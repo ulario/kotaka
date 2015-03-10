@@ -1,0 +1,17 @@
+Login
+	If you have an account on the system already, this will
+	log you in with your username and password.
+
+Register a new account
+	This will let you create an account, claim a username,
+	and set a password.
+
+Connect as a guest
+	Logs you into the system with no username.  Please note
+	that many features may be restricted from guests for security reasons.
+
+Get help for this menu
+	Explain each of the five options.
+
+Disconnect
+	Leave without logging in.
