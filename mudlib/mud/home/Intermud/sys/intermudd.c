@@ -328,14 +328,14 @@ private void do_tell(mixed *value)
 	}
 }
 
-private void do_channel_m(value)
+private void do_channel_m(mixed *value)
 {
 	if (CHANNELD->test_channel(value[6])) {
 		CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
 	}
 }
 
-private void do_channel_e(value)
+private void do_channel_e(mixed *value)
 {
 	if (CHANNELD->test_channel(value[6])) {
 		string text;
@@ -347,7 +347,7 @@ private void do_channel_e(value)
 	}
 }
 
-private void bounce_packet(value)
+private void bounce_packet(mixed *value)
 {
 	/* send back an error packet */
 	LOGD->post_message("intermud", LOG_INFO,
