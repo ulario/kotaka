@@ -24,22 +24,17 @@ inherit SECOND_AUTO;
 
 void reboot()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 }
 
 void hotboot()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 }
 
 void prepare_reboot()
 {
-	ACCESS_CHECK(previous_program() == INITD);
-}
-
-void dumped_state()
-{
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 }
 
 int forbid_inherit(string from, string path, int priv)
@@ -84,17 +79,22 @@ string query_toucher(string path)
 	return nil;
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 }
 
-void booted_subsystem(string subsystem)
+void booted_module(string module)
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 }
 
-static void purge_orphans(string subsystem)
+void shutdown_module(string module)
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+}
+
+static void purge_orphans(string module)
 {
 	object list;
 
@@ -113,7 +113,7 @@ static void purge_orphans(string subsystem)
 
 			file = pinfo->query_path();
 
-			if (!sscanf(file, USR_DIR + "/" + subsystem + "/%*s")) {
+			if (!sscanf(file, USR_DIR + "/" + module + "/%*s")) {
 				continue;
 			}
 

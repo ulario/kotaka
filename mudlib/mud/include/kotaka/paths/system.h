@@ -21,14 +21,15 @@
 
 /* daemons */
 
-#define CATALOGD	(USR_DIR + "/System/sys/catalogd")
 #define CALLOUTD	(USR_DIR + "/System/sys/calloutd")
+#define CATALOGD	(USR_DIR + "/System/sys/catalogd")
 #define CLONED		(USR_DIR + "/System/sys/cloned")
 #define ERRORD		(USR_DIR + "/System/sys/errord")
 #define FILTERD		(USR_DIR + "/System/sys/filterd")
 #define INITD		(USR_DIR + "/System/initd")
 #define KERNELD		(USR_DIR + "/System/sys/kerneld")
 #define LOGD		(USR_DIR + "/System/sys/logd")
+#define MODULED		(USR_DIR + "/System/sys/moduled")
 #define OBJECTD		(USR_DIR + "/System/sys/objectd")
 #define PROGRAMD	(USR_DIR + "/System/sys/programd")
 #define PROXYD		(USR_DIR + "/System/sys/proxyd")

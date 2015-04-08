@@ -81,10 +81,6 @@ nomask int _F_sys_create(int clone)
 		create(clone);
 	}
 
-	if (oname == USR_DIR + "/" + creator + "/initd") {
-		INITD->add_subsystem(creator);
-	}
-
 	return 1;
 }
 

@@ -1,4 +1,6 @@
-Version 0.33 is a pure maintenance release with minimal pain.
+To upgrade to version 0.36 from version 0.35
 
-After pulling this, first delete any orphaned daemons, rebuild, and then
-compile any dormant LPC files.
+%compile ~System/initd.c
+%compile ~System/sys/moduled.c
+
+Then issue the upgrade command

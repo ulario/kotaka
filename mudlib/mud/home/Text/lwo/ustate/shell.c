@@ -119,7 +119,7 @@ private void do_plus_command(string input)
 
 	switch(first) {
 	case "fixverbs":
-		INITD->reboot_subsystem("Verb");
+		MODULED->reboot_module("Verb");
 		return;
 
 	case "atomic":

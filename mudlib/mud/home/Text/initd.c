@@ -39,17 +39,19 @@ static void create()
 
 	TLSD->set_tls_access("Text", "ustate", "Verb", READ_ACCESS);
 
-	INITD->boot_subsystem("Ansi");
-	INITD->boot_subsystem("Verb");
+	MODULED->boot_module("Ansi");
+	MODULED->boot_module("Verb");
 
 	load();
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
+
+	compile_object("~/lwo/ustate/shell");
 
 	purge_orphans("Text");
 }

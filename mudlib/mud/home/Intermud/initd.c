@@ -28,7 +28,7 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	INITD->boot_subsystem("Channel");
+	MODULED->boot_module("Channel");
 
 	load_dir("sys", 1);
 }
@@ -47,9 +47,9 @@ static void create()
 	CHANNELD->set_channel_config("dgd", "channel_color", 0x0c);
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
 

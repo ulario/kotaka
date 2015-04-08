@@ -57,13 +57,13 @@ void build_world();
 
 private void load()
 {
-	INITD->boot_subsystem("Account");
-	INITD->boot_subsystem("Action");
-	INITD->boot_subsystem("Channel");
-	INITD->boot_subsystem("Geometry");
-	INITD->boot_subsystem("Help");
-	INITD->boot_subsystem("Text");
-	INITD->boot_subsystem("Thing");
+	MODULED->boot_module("Account");
+	MODULED->boot_module("Action");
+	MODULED->boot_module("Channel");
+	MODULED->boot_module("Geometry");
+	MODULED->boot_module("Help");
+	MODULED->boot_module("Text");
+	MODULED->boot_module("Thing");
 
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
@@ -344,20 +344,20 @@ void load_help()
 	load_rootdir();
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
 
 	purge_orphans("Game");
 }
 
-void booted_subsystem(string subsystem)
+void booted_module(string module)
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
-	if (subsystem == "Help") {
+	if (module == "Help") {
 		load_help();
 	}
 }

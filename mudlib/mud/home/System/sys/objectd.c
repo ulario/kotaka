@@ -611,6 +611,7 @@ void clone(string owner, object obj)
 void destruct(varargs mixed owner, mixed obj)
 {
 	int is_clone;
+	int is_initd;
 	string name;
 	string path;
 	object pinfo;
@@ -631,7 +632,14 @@ void destruct(varargs mixed owner, mixed obj)
 		return;
 	}
 
+	set_flags(name, obj);
 	is_clone = sscanf(name, "%s#%*d", path);
+
+	if (is_initd) {
+		if (sizeof(MODULED->query_modules() & ({ owner }))) {
+			error("Module must be shutdown before initd can be destroyed");
+		}
+	}
 
 	if (!path) {
 		path = name;

@@ -37,11 +37,8 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-mapping subsystems;
-
 void console_post(string str, int level);
 void message(string str);
-void boot_subsystem(string subsystem);
 
 private void configure_klib();
 void configure_logging();
@@ -71,8 +68,6 @@ static void create()
 	check_versions();
 
 	catch {
-		subsystems = ([ ]);
-
 		load_core();
 
 		remove_file("/log/session.log");
@@ -86,16 +81,20 @@ static void create()
 		configure_klib();
 		configure_rsrc();
 
-		boot_subsystem("Bigstruct");
+		load_object(MODULED);
+
+		MODULED->boot_module("Bigstruct");
 
 		load_object(PROGRAM_INFO);
 		load_object(PROGRAMD);
 
 		OBJECTD->discover_objects();
 
-		boot_subsystem("Channel");
-		boot_subsystem("String");
-		boot_subsystem("Algorithm");
+		load_object(SYSTEM_USERD);
+
+		MODULED->boot_module("Channel");
+		MODULED->boot_module("String");
+		MODULED->boot_module("Algorithm");
 
 		load();
 
@@ -107,9 +106,10 @@ static void create()
 
 		LOGD->post_message("boot", LOG_INFO, "System ready");
 
-		boot_subsystem("Kotaka");
-		boot_subsystem("Game");
-		boot_subsystem("Test");
+		MODULED->boot_module("Account");
+		MODULED->boot_module("Kotaka");
+		MODULED->boot_module("Game");
+		MODULED->boot_module("Test");
 
 		call_out("audit_filequota", 0);
 	} : {
@@ -141,28 +141,6 @@ int restoring()
 		&& frame[TRACE_FUNCTION] == "restored";
 }
 
-void prepare_reboot()
-{
-	int sz;
-	int index;
-	string *ind;
-
-	ACCESS_CHECK(KERNEL());
-
-	ACCESSD->save();
-
-	LOGD->post_message("system", LOG_NOTICE, "Preparing for reboot");
-
-	ind = map_indices(subsystems - ({ "System" }));
-	sz = sizeof(ind);
-
-	for (index = 0; index < sz; index++) {
-		catch {
-			call_other(USR_DIR + "/" + ind[index] + "/initd", "prepare_reboot");
-		}
-	}
-}
-
 void clear_admin()
 {
 	string *resources;
@@ -176,80 +154,66 @@ void clear_admin()
 	}
 }
 
-void hotboot()
+void prepare_reboot()
 {
-	int index;
-	int sz;
-	string *ind;
+	if (previous_program() != MODULED) {
+		ACCESS_CHECK(KERNEL());
 
-	if (KADMIN()) {
-		dump_state();
-		shutdown(1);
-		return;
+		check_config();
+		check_versions();
+
+		MODULED->prepare_reboot_modules();
 	}
-
-	ACCESS_CHECK(KERNEL());
-
-	check_config();
-	check_versions();
-
-	LOGD->post_message("system", LOG_NOTICE, "Hotbooted");
-
-	clear_admin();
-	configure_rsrc();
-
-	SYSTEM_USERD->hotboot();
-
-	ind = map_indices(subsystems - ({ "System" }));
-	sz = sizeof(ind);
-
-	for (index = 0; index < sz; index++) {
-		catch {
-			call_other(USR_DIR + "/" + ind[index] + "/initd", "hotboot");
-		}
-	}
-
-	call_out("audit_filequota", 0);
 }
 
 void reboot()
 {
-	int index;
-	int sz;
-	string *ind;
+	if (previous_program() == MODULED) {
+		clear_admin();
+		configure_rsrc();
 
-	ACCESS_CHECK(KERNEL());
+		ACCESSD->restore();
+		OBJECTD->reboot();
+		WATCHDOGD->reboot();
+		SYSTEM_USERD->reboot();
 
-	check_config();
-	check_versions();
-
-	LOGD->post_message("system", LOG_NOTICE, "Rebooted");
-
-	clear_admin();
-	configure_rsrc();
-
-	ACCESSD->restore();
-	OBJECTD->reboot();
-	WATCHDOGD->reboot();
-	SYSTEM_USERD->reboot();
-
-	ind = map_indices(subsystems - ({ "System" }));
-	sz = sizeof(ind);
-
-	for (index = 0; index < sz; index++) {
-		catch {
-			call_other(USR_DIR + "/" + ind[index] + "/initd", "reboot");
+		call_out("audit_filequota", 0);
+	} else {
+		if (KADMIN()) {
+			dump_state();
+			shutdown(1);
+			return;
 		}
-	}
 
-	call_out("audit_filequota", 0);
+		ACCESS_CHECK(KERNEL());
+
+		check_config();
+		check_versions();
+
+		MODULED->reboot_modules();
+	}
 }
 
-/********************/
-/* Helper functions */
-/********************/
+void hotboot()
+{
+	if (previous_program() == MODULED) {
+		clear_admin();
+		configure_rsrc();
 
-/* Miscellaneous */
+		SYSTEM_USERD->hotboot();
+
+		call_out("audit_filequota", 0);
+	} else {
+		ACCESS_CHECK(KERNEL());
+
+		check_config();
+		check_versions();
+
+		MODULED->hotboot_modules();
+	}
+}
+
+/* miscellaneous */
 
 private void configure_klib()
 {
@@ -424,139 +388,6 @@ private void check_versions()
 	}
 }
 
-void add_subsystem(mixed owner)
-{
-	string *others;
-	int sz;
-
-	ACCESS_CHECK(SYSTEM());
-
-	if (typeof(owner) == T_OBJECT) {
-		owner = DRIVER->creator(object_name(owner));
-	}
-
-	subsystems[owner] = find_object(USR_DIR + "/" + owner + "/initd");
-
-	others = map_indices(subsystems) - ({ owner });
-
-	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
-		catch {
-			find_object(USR_DIR + "/" + others[sz] + "/initd")
-			->booted_subsystem(owner);
-		}
-	}
-}
-
-void boot_subsystem(string subsystem)
-{
-	if (find_object(USR_DIR + "/" + subsystem + "/initd")) {
-		return;
-	}
-
-	KERNELD->add_user(subsystem);
-	KERNELD->add_owner(subsystem);
-
-	catch {
-		KERNELD->rsrc_set_limit(subsystem, "objects", -1);
-	}
-
-	catch {
-		KERNELD->rsrc_set_limit(subsystem, "callouts", -1);
-	}
-
-	rlimits(100; -1) {
-		load_object(USR_DIR + "/" + subsystem + "/initd");
-	}
-
-	if (!sizeof(KERNELD->query_global_access() & ({ subsystem }))) {
-		error("Failure to grant global access by " + subsystem);
-	}
-
-	LOGD->post_message("system", LOG_NOTICE, "Booted " + subsystem);
-}
-
-static void purge_subsystem_tick(string subsystem, varargs int reboot)
-{
-	object cursor;
-
-	cursor = KERNELD->first_link(subsystem);
-
-	if (cursor) {
-		destruct_object(cursor);
-
-		call_out("purge_subsystem_tick", 0, subsystem, reboot);
-	} else if (reboot) {
-		catch {
-			KERNELD->rsrc_set_limit(subsystem, "objects", -1);
-		}
-
-		catch {
-			KERNELD->rsrc_set_limit(subsystem, "callouts", -1);
-		}
-
-		compile_object(USR_DIR + "/" + subsystem + "/initd");
-
-		LOGD->post_message("system", LOG_NOTICE, "Rebooted " + subsystem);
-	} else {
-		LOGD->post_message("system", LOG_NOTICE, "Shut down " + subsystem);
-	}
-}
-
-void reboot_subsystem(string subsystem)
-{
-	object cursor;
-
-	ACCESS_CHECK(INTERFACE() || KADMIN() || subsystem == DRIVER->creator(object_name(previous_object())));
-
-	switch(subsystem) {
-	case "Bigstruct":
-	case "System":
-		error("Cannot reboot " + subsystem);
-	}
-
-	catch {
-		KERNELD->rsrc_set_limit(subsystem, "objects", 0);
-	}
-
-	catch {
-		KERNELD->rsrc_set_limit(subsystem, "callouts", 0);
-	}
-
-	call_out("purge_subsystem_tick", 0, subsystem, 1);
-}
-
-void shutdown_subsystem(string subsystem)
-{
-	object cursor;
-
-	ACCESS_CHECK(INTERFACE() || KADMIN() || subsystem == DRIVER->creator(object_name(previous_object())));
-
-	switch(subsystem) {
-	case "Algorithm":
-	case "Bigstruct":
-	case "String":
-	case "System":
-		error("Cannot shutdown " + subsystem);
-	}
-
-	catch {
-		KERNELD->rsrc_set_limit(subsystem, "objects", 0);
-	}
-
-	catch {
-		KERNELD->rsrc_set_limit(subsystem, "callouts", 0);
-	}
-
-	KERNELD->remove_user(subsystem);
-
-	call_out("purge_subsystem_tick", 0, subsystem);
-}
-
-string *query_subsystems()
-{
-	return map_indices(subsystems);
-}
-
 static void audit_filequota()
 {
 	DRIVER->fix_filequota();
@@ -564,45 +395,30 @@ static void audit_filequota()
 
 atomic void upgrade_system()
 {
+	string *safe_versions;
 	string *users;
 	int sz;
 
-	users = map_indices(subsystems);
+	safe_versions = explode(read_file("~/data/safe_upgrade_versions"), "\n");
 
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling initd's");
-
-	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
-		string initd;
-
-		initd = USR_DIR + "/" + users[sz] + "/initd";
-
-		if (find_object(initd)) {
-			compile_object(initd);
-		} else {
-			users[sz] = nil;
+	for (sz = sizeof(safe_versions) - 1; sz >= 0; --sz) {
+		if (safe_versions[sz] == KOTAKA_VERSION) {
+			break;
 		}
 	}
 
-	LOGD->post_message("system", LOG_NOTICE, "Upgrading subsystems");
-
-	call_out("upgrade_system_2", 0, users - ({ nil }) );
-}
-
-atomic static void upgrade_system_2(string *users)
-{
-	int sz;
-
-	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
-		(USR_DIR + "/" + users[sz] + "/initd")->upgrade_subsystem();
+	if (sz == -1) {
+		error("Cannot safely upgrade from version " + KOTAKA_VERSION);
 	}
 
-	LOGD->post_message("system", LOG_NOTICE, "Upgrade completed");
+	MODULED->upgrade_modules();
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
+	destruct_object("~/lib/auto/object");
 	load();
 
 	purge_orphans("System");

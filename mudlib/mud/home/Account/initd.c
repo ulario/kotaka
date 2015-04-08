@@ -38,7 +38,7 @@ static void create()
 
 void prepare_reboot()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	ACCOUNTD->force_save();
 	BAND->force_save();
@@ -46,15 +46,15 @@ void prepare_reboot()
 
 void reboot()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	ACCOUNTD->force_restore();
 	BAND->force_restore();
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
 

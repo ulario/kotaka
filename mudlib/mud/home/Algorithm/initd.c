@@ -37,9 +37,9 @@ static void create()
 	"sys/testd"->test();
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
 

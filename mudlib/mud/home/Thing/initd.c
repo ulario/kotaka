@@ -28,7 +28,7 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	INITD->boot_subsystem("Utility");
+	MODULED->boot_module("Utility");
 
 	load_dir("obj", 1);
 	load_dir("sys", 1);
@@ -61,9 +61,9 @@ string query_destructor(string path)
 	}
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
 

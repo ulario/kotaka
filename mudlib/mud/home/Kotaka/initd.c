@@ -26,18 +26,18 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	INITD->boot_subsystem("Account");
-	INITD->boot_subsystem("Algorithm");
-	INITD->boot_subsystem("Ansi");
-	INITD->boot_subsystem("Bigstruct");
-	INITD->boot_subsystem("Channel");
-	INITD->boot_subsystem("Geometry");
-	INITD->boot_subsystem("Help");
-	INITD->boot_subsystem("Http");
-	INITD->boot_subsystem("String");
-	INITD->boot_subsystem("Text");
-	INITD->boot_subsystem("Thing");
-	INITD->boot_subsystem("Utility");
+	MODULED->boot_module("Account");
+	MODULED->boot_module("Algorithm");
+	MODULED->boot_module("Ansi");
+	MODULED->boot_module("Bigstruct");
+	MODULED->boot_module("Channel");
+	MODULED->boot_module("Geometry");
+	MODULED->boot_module("Help");
+	MODULED->boot_module("Http");
+	MODULED->boot_module("String");
+	MODULED->boot_module("Text");
+	MODULED->boot_module("Thing");
+	MODULED->boot_module("Utility");
 }
 
 static void create()
@@ -47,9 +47,9 @@ static void create()
 	load();
 }
 
-void upgrade_subsystem()
+void upgrade_module()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
 
