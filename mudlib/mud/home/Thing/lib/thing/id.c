@@ -214,7 +214,7 @@ static void reset_id_number()
 	new_env = query_environment();
 
 	if (new_env) {
-		new_number = new_env->query_lowest_free(id_base, nil);
+		new_number = new_env->query_lowest_free(id_base, this_object());
 	} else {
 		new_number = 1;
 	}
