@@ -513,12 +513,12 @@ private void compile_common(string owner, string path, string *source, string *i
 	includes = nil;
 }
 
-private void set_flags(string path, string owner)
+private void set_flags(string path)
 {
 	is_kernel = sscanf(path, "/kernel/%*s");
 	is_auto = sscanf(path, USR_DIR + "/System"
 		+ INHERITABLE_SUBDIR + "auto/%*s");
-	is_initd = (path == USR_DIR + "/" + owner + "/initd");
+	is_initd = (path == USR_DIR + "/" + DRIVER->creator(path) + "/initd");
 }
 
 void compile(string owner, object obj, string *source, string inherited ...)
@@ -532,7 +532,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 	path = object_name(obj);
 
-	set_flags(path, owner);
+	set_flags(path);
 
 	if (path != DRIVER) {
 		inherited |= ({ AUTO });
@@ -582,11 +582,11 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 
 	ACCESS_CHECK(KERNEL());
 
-	set_flags(path, owner);
-
 	if (path != AUTO) {
 		inherited |= ({ AUTO });
 	}
+
+	set_flags(path);
 
 	compile_common(owner, path, source, inherited);
 }
@@ -632,7 +632,7 @@ void destruct(varargs mixed owner, mixed obj)
 		return;
 	}
 
-	set_flags(name, obj);
+	set_flags(name);
 	is_clone = sscanf(name, "%s#%*d", path);
 
 	if (is_initd) {
@@ -645,7 +645,7 @@ void destruct(varargs mixed owner, mixed obj)
 		path = name;
 	}
 
-	if (!sscanf(path, "/kernel/%*s")) {
+	if (!is_kernel) {
 		obj->_F_sys_destruct();
 	}
 
