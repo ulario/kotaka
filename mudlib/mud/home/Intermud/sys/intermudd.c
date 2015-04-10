@@ -567,21 +567,6 @@ void remove_channel(string channel)
 	}) ));
 }
 
-void reset()
-{
-	disconnect();
-
-	mudlistid = 0;
-	chanlistid = 0;
-
-	muds = ([ ]);
-	channels = ([ ]);
-
-	LOGD->post_message("intermud", LOG_INFO, "Reset");
-
-	call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
-}
-
 private void save()
 {
 	string buf;
