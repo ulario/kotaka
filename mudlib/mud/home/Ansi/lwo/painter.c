@@ -122,6 +122,8 @@ string *render()
 			}
 		}
 	}
+
+	return chars;
 }
 
 string *render_color()
