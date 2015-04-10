@@ -76,10 +76,10 @@ private string make_packet(mixed *data)
 
 	bigendian = "    ";
 
-	bigendian[0] = (len & 0xff000000) >> 24;
-	bigendian[1] = (len & 0xff0000) >> 16;
-	bigendian[2] = (len & 0xff00) >> 8;
-	bigendian[3] = len & 0xff;
+	bigendian[0] = len >> 24;
+	bigendian[1] = len >> 16;
+	bigendian[2] = len >> 8;
+	bigendian[3] = len;
 
 	return bigendian + str + "\000";
 }
