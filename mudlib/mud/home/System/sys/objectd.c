@@ -733,25 +733,3 @@ int forbid_inherit(string from, string path, int priv)
 
 	return initd->forbid_inherit(from, path, priv);
 }
-
-object find_all_clones(string path)
-{
-	object list;
-	int i, sz;
-
-	list = new_object(BIGSTRUCT_ARRAY_LWO);
-	sz = status(ST_OTABSIZE);
-
-	for (i = 0; i < sz; i++) {
-		object obj;
-
-		if (obj = find_object(path + "#" + i)) {
-			list->push_back(obj);
-		}
-	}
-
-	list->grant_access(previous_object(), FULL_ACCESS);
-	list->grant_access(this_object(), 0);
-
-	return list;
-}
