@@ -187,7 +187,7 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 
 private int is_protected(string path)
 {
-	if (sscanf(path, USR_DIR + "/Bigstruct/%*s/")) {
+	if (DRIVER->creator(path) == "Bigstruct") {
 		return 1;
 	}
 
