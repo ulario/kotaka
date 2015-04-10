@@ -35,11 +35,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (!CHANNELD->test_channel(roles["raw"])) {
-		send_out("Channel must exist before it can be removed from i3");
-		return;
-	}
-
 	CHANNELD->set_intermud(roles["raw"], 0);
 	"~Intermud/sys/intermudd"->listen_channel(roles["raw"], 0);
 }
