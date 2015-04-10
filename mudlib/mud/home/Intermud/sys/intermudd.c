@@ -31,6 +31,7 @@
 /* mud mode */
 /* (big endian 4 byte integer, length of the string) (string) (null) */
 
+#define ROUTER_NAME	"*i4"
 #define ROUTER_IP	"204.209.44.3"
 #define ROUTER_PORT	8080
 #define MUDNAME		"Ulario"
@@ -158,7 +159,7 @@ string query_banner(object LIB_CONN connection)
 		5,
 		MUDNAME,
 		0,
-		"*i4",
+		ROUTER_NAME,
 		0,
 
 		password,
@@ -517,7 +518,7 @@ void listen_channel(string channel, int on)
 		5,
 		MUDNAME,
 		0,
-		"*i4",
+		ROUTER_NAME,
 		0,
 		channel,
 		on
@@ -539,7 +540,7 @@ void add_channel(string channel)
 		5,
 		MUDNAME,
 		0,
-		"*i4",
+		ROUTER_NAME,
 		0,
 		channel,
 		0
@@ -565,7 +566,7 @@ void remove_channel(string channel)
 		5,
 		MUDNAME,
 		0,
-		"*i4",
+		ROUTER_NAME,
 		0,
 		channel
 	}) ));
