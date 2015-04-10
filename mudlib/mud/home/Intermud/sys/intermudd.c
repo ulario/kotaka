@@ -45,9 +45,6 @@ string routername;
 
 int password;
 
-int mudlistid;
-int chanlistid;
-
 mapping muds;
 mapping channels;
 
@@ -58,9 +55,6 @@ static void create()
 {
 	muds = ([ ]);
 	channels = ([ ]);
-
-	mudlistid = 0;
-	chanlistid = 0;
 
 	call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
 
@@ -168,7 +162,7 @@ string query_banner(object LIB_CONN connection)
 		0,
 
 		password,
-		mudlistid,
+		0,
 		0,
 
 		50000,
@@ -221,8 +215,6 @@ private void do_chanlist_reply(mixed *value)
 	mixed *values;
 	int sz;
 
-	chanlistid = value[6];
-
 	delta = value[7];
 
 	names = map_indices(delta);
@@ -266,10 +258,6 @@ private void do_mudlist(mixed *value)
 	string *names;
 	mixed *values;
 	int sz;
-
-	mudlistid = value[6];
-
-	save();
 
 	delta = value[7];
 
