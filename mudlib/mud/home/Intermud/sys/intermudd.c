@@ -151,9 +151,6 @@ private string mudmode_sprint(mixed data)
 
 string query_banner(object LIB_CONN connection)
 {
-	mixed *startup;
-	string packet;
-
 	return make_packet( ({
 		"startup-req-3",
 		5,
@@ -194,8 +191,6 @@ object select(string input)
 
 void send_channel_message(string channel, string sender, string text)
 {
-	mixed *packet;
-
 	message(make_packet( ({
 		"channel-m",
 		5,
