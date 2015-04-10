@@ -28,7 +28,7 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	if (query_user()->query_class() < 3) {
+	if (query_user()->query_class() < 2) {
 		send_out("You have insufficient access to create i3 channels.\n");
 		return;
 	}
