@@ -418,6 +418,7 @@ void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
+	SYSTEM_USERD->set_telnet_manager(1, find_object("~/sys/statusd"));
 	load();
 
 	purge_orphans("System");

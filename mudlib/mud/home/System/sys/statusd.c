@@ -42,11 +42,6 @@ static void create()
 
 	connections = ([ ]);
 	interval = 0.0;
-}
-
-void enable()
-{
-	ACCESS_CHECK(SYSTEM());
 
 	SYSTEM_USERD->set_telnet_manager(1, this_object());
 }
