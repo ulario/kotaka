@@ -38,13 +38,6 @@ static void create()
 	KERNELD->set_global_access("Intermud", 1);
 
 	load();
-
-	if (!CHANNELD->test_channel("dgd")) {
-		CHANNELD->add_channel("dgd");
-		CHANNELD->set_intermud("dgd", 1);
-	}
-
-	CHANNELD->set_channel_config("dgd", "channel_color", 0x0c);
 }
 
 void upgrade_module()
