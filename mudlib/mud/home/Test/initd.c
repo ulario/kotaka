@@ -20,6 +20,7 @@
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <status.h>
 
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
@@ -39,19 +40,15 @@ static void create()
 
 void bomb(int quota)
 {
-	int limit;
+	while (quota) {
+		if (status(ST_TICKS) < 15000) {
+			break;
+		}
 
-	limit = (int)pow((float)quota, 0.3);
-
-	CHANNELD->post_message("debug", "bomb", "Bombs this round: " + limit + "\nBombs left to go: " + quota);
-
-	while (limit) {
 		if (quota) {
 			quota--;
 			clone_object("obj/bomb");
 		}
-
-		limit--;
 	}
 
 	if (quota) {
