@@ -28,7 +28,6 @@
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
-mapping locks;		/*< configuration locks */
 
 void configure_channels();
 
@@ -36,7 +35,6 @@ static void create()
 {
 	channels = ([ ]);
 	subscribers = ([ ]);
-	locks = ([ ]);
 	intermud = ([ ]);
 
 	configure_channels();
@@ -46,11 +44,9 @@ static void create()
 /* channel management */
 /**********************/
 
-void add_channel(string channel, varargs int lock)
+void add_channel(string channel)
 {
 	string program;
-
-	program == previous_program();
 
 	CHECKARG(1, channel, "add_channel");
 
@@ -59,10 +55,6 @@ void add_channel(string channel, varargs int lock)
 	}
 
 	channels[channel] = ([ ]);
-
-	if (lock) {
-		locks[channel] = program;
-	}
 }
 
 string *query_channels()
@@ -76,8 +68,10 @@ void del_channel(string channel)
 
 	CHECKARG(1, channel, "del_channel");
 
-	if (locks[channel]) {
-		ACCESS_CHECK(locks[channel] == previous_program());
+	if (sizeof(({ channel })
+		& ({ "error", "trace", "compile", "system" }))
+	) {
+		error("Cannot remove a system channel");
 	}
 
 	if (channels[channel]) {
@@ -287,11 +281,6 @@ void post_message(string channel, string sender, string message, varargs int nor
 	}
 }
 
-int is_locked(string channel)
-{
-	return !!locks[channel];
-}
-
 void configure_channels()
 {
 	string *channels;
@@ -309,7 +298,7 @@ void configure_channels()
 
 	for (i = 0; i < sz; i++) {
 		if (!test_channel(channels[i])) {
-			add_channel(channels[i], 1);
+			add_channel(channels[i]);
 		}
 	}
 
