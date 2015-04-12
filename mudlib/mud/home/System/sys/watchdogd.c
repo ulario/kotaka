@@ -30,51 +30,11 @@ inherit SECOND_AUTO;
 #define FRAG_RATIO	(0.25)		/* one quarter free */
 #define FREE_SLACK	(32 << 20)	/* 32 megabytes */
 
-int callout;
 int frag_angst;
-
-void enable();
 
 static void create()
 {
-	enable();
-}
-
-void enable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN() || LOCAL());
-
-	if (callout) {
-		error("Watchdog already enabled");
-	}
-
-	rlimits (0; -1) {
-		callout = call_out("check", 1);
-	}
-}
-
-void disable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN());
-
-	if (!callout) {
-		error("Watchdog not enabled");
-	}
-
-	rlimits (0; -1) {
-		remove_call_out(callout);
-		callout = 0;
-	}
-}
-
-int enabled()
-{
-	return !!callout;
-}
-
-void reboot()
-{
-	ACCESS_CHECK(SYSTEM());
+	call_out("check", 1);
 }
 
 static void check()
@@ -87,19 +47,7 @@ static void check()
 	float dmem_used;
 	float dmem_free;
 
-	int obj_size;
-	int obj_used;
-	int obj_free;
-
-	int swap_size;
-	int swap_used;
-	int swap_free;
-
-	int freeze;
-
-	rlimits(0; -1) {
-		callout = call_out("check", 1);
-	}
+	call_out("check", 1);
 
 	smem_used = (float)status(ST_SMEMUSED);
 	smem_size = (float)status(ST_SMEMSIZE);
@@ -109,30 +57,9 @@ static void check()
 	dmem_size = (float)status(ST_DMEMSIZE);
 	dmem_free = dmem_size - dmem_used;
 
-	obj_used = status(ST_NOBJECTS);
-	obj_size = status(ST_OTABSIZE);
-	obj_free = obj_size - obj_used;
-
-	swap_used = status(ST_SWAPUSED);
-	swap_size = status(ST_SWAPSIZE);
-	swap_free = swap_size - swap_used;
-
-#if 0
-	if ((float)obj_free / (float)obj_size < 0.25) {
-		if (CALLOUTD->query_suspend() != -1) {
-			CALLOUTD->suspend_callouts();
-		}
-	}
-
-	if ((float)swap_free / (float)swap_size < 0.25) {
-		if (CALLOUTD->query_suspend() != -1) {
-			CALLOUTD->suspend_callouts();
-		}
-	}
-#endif
-
 	if (smem_used + dmem_used > (float)MAX_MEMORY) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
+		frag_angst = 0;
 		swapout();
 		return;
 	}
@@ -144,8 +71,8 @@ static void check()
 
 		++frag_angst;
 
-		if (frag_angst >= 180) {
-			frag_angst -= 120;
+		if (frag_angst >= 10) {
+			frag_angst = 0;
 			LOGD->post_message("watchdog", LOG_NOTICE, "Memory still fragmented, swapping out");
 			swapout();
 		}
