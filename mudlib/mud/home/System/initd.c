@@ -418,7 +418,6 @@ void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
-	destruct_object("~/lib/auto/object");
 	load();
 
 	purge_orphans("System");
