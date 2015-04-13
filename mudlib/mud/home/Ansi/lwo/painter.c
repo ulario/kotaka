@@ -36,19 +36,8 @@ static void create(int clone)
 
 void set_size(int dx, int dy)
 {
-	object *obj;
-	int i, sz;
-
 	size_x = dx;
 	size_y = dy;
-
-	obj = map_values(layers);
-
-	sz = sizeof(obj);
-
-	for (i = 0; i < sz; i++) {
-		obj[i]->set_size(dx, dy);
-	}
 }
 
 void add_layer(string name)
