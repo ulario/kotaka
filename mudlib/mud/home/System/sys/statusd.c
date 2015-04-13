@@ -187,10 +187,12 @@ int receive_message(string str)
 					break;
 				}
 
-				remove_call_out(connections[conn][2]);
-
 				connections[conn][0] = interval;
-				connections[conn][2] = call_out("report", interval, conn);
+
+				if (connections[conn][2]) {
+					remove_call_out(connections[conn][2]);
+					connections[conn][2] = call_out("report", interval, conn);
+				}
 			}
 
 		case "":
@@ -235,11 +237,5 @@ static void report(object conn)
 
 	connections[conn][2] = 0;
 
-	status = printstatus(conn);
-
-	if (status) {
-		connections[conn][2] = call_out("report",
-			connections[conn][0], conn
-		);
-	}
+	printstatus(conn);
 }
