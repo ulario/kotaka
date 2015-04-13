@@ -31,7 +31,6 @@ inherit SECOND_AUTO;
 
 string message;
 mapping connections;
-float interval;
 /* ([ connobj : ({ delay, trust, callout }) ]) */
 
 static void create()
@@ -41,7 +40,6 @@ static void create()
 	user::create();
 
 	connections = ([ ]);
-	interval = 0.0;
 
 	SYSTEM_USERD->set_telnet_manager(1, this_object());
 }
@@ -51,20 +49,17 @@ private float swap_used_ratio()
 	return (float)status(ST_SWAPUSED) / (float)status(ST_SWAPSIZE);
 }
 
-mixed message(string msg)
+static mixed message(string msg)
 {
-	switch (previous_program()) {
-	case LIB_WIZTOOL:
-		message = msg;
-		return nil;
-	default:
-		error(previous_program() + " is harassing me!");
-	}
+	message = msg;
+
+	return nil;
 }
 
 string status_message()
 {
 	cmd_status(nil, nil, nil);
+
 	return message;
 }
 
@@ -152,9 +147,6 @@ private int printstatus(object conn)
 {
 	if (conn) {
 		return conn->message("\0337\033[1;1H" + status_message() + "\n\0338");
-	} else {
-		LOGD->post_message("status", LOG_INFO, status_message());
-		return 0;
 	}
 }
 
@@ -164,11 +156,7 @@ int receive_message(string str)
 	string *params;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
-
-	if (!str) {
-		catch(error("suspicious"));
-		return MODE_NOCHANGE;
-	}
+	ASSERT(str);
 
 	conn = previous_object();
 
