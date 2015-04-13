@@ -22,6 +22,7 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <status.h>
 #include <type.h>
 
 inherit SECOND_AUTO;
@@ -160,15 +161,26 @@ void remove_module(string module)
 
 static void purge_module_tick(string module, varargs int reboot)
 {
-	object cursor;
+	int ticks;
+	int done;
 
-	cursor = KERNELD->first_link(module);
+	ticks = status(ST_TICKS);
 
-	if (cursor) {
-		destruct_object(cursor);
+	while (ticks - status(ST_TICKS) < 50000) {
+		object cursor;
 
+		cursor = KERNELD->first_link(module);
+
+		if (cursor) {
+			destruct_object(cursor);
+		} else {
+			done = 1;
+			break;
+		}
+	}
+
+	if (!done) {
 		call_out("purge_module_tick", 0, module, reboot);
-
 		return;
 	}
 
