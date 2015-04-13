@@ -40,14 +40,16 @@ static void create()
 
 void bomb(int quota)
 {
-	while (quota) {
-		if (status(ST_TICKS) < 15000) {
-			break;
-		}
+	int ticks;
 
+	ticks = status(ST_TICKS);
+
+	while (ticks - status(ST_TICKS) < 1000000) {
 		if (quota) {
 			quota--;
 			clone_object("obj/bomb");
+		} else {
+			break;
 		}
 	}
 
