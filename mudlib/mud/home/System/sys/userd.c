@@ -38,7 +38,6 @@ object *connections;
 mapping telnet_managers;	/* managers assigned to logical telnet ports */
 mapping binary_managers;	/* managers assigned to logical binary ports */
 
-int enabled;		/* active or not */
 int binary_port_count;	/* number of ports currently registered */
 int telnet_port_count;	/* number of ports currently registered */
 int blocked;		/* connection blocking is active */
@@ -50,8 +49,6 @@ mapping reblocked;	/* objects that were already manually blocked */
 
 /* internal */
 
-void enable();
-
 static void create()
 {
 	user::create();
@@ -61,8 +58,6 @@ static void create()
 	telnet_managers = ([ ]);
 
 	reblocked = ([ ]);
-
-	enable();
 }
 
 private void register_with_klib_userd()
@@ -139,22 +134,6 @@ private object query_manager(object base)
 int free_users()
 {
 	return status(ST_UTABSIZE) - sizeof(userd::query_connections());
-}
-
-void enable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN());
-
-	register_with_klib_userd();
-	enabled = 1;
-}
-
-void disable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN());
-
-	enabled = 0;
-	unregister_with_klib_userd();
 }
 
 void block_connections(varargs object except)
@@ -260,10 +239,8 @@ void reboot()
 
 	ACCESS_CHECK(SYSTEM());
 
-	if (enabled) {
-		unregister_with_klib_userd();
-		register_with_klib_userd();
-	}
+	unregister_with_klib_userd();
+	register_with_klib_userd();
 }
 
 void hotboot()
@@ -272,10 +249,8 @@ void hotboot()
 
 	ACCESS_CHECK(SYSTEM());
 
-	if (enabled) {
-		unregister_with_klib_userd();
-		register_with_klib_userd();
-	}
+	unregister_with_klib_userd();
+	register_with_klib_userd();
 }
 
 /* userd hooks */
