@@ -30,7 +30,7 @@ inherit SECOND_AUTO;
 #define FRAG_RATIO	(0.25)		/* one quarter free */
 #define FREE_SLACK	(32 << 20)	/* 32 megabytes */
 
-int frag_angst;
+int frag;
 
 static void create()
 {
@@ -59,28 +59,22 @@ static void check()
 
 	if (smem_used + dmem_used > (float)MAX_MEMORY) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
-		frag_angst = 0;
+		frag = 0;
 		swapout();
 		return;
 	}
 
-	if (((dmem_free - (float)FREE_SLACK) / dmem_size) > (float)FRAG_RATIO) {
-		if (!frag_angst) {
-			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented");
-		}
+	if ((((dmem_free + smem_free) - (float)FREE_SLACK) / (dmem_size + smem_size)) > (float)FRAG_RATIO) {
+		++frag;
 
-		++frag_angst;
-
-		if (frag_angst >= 10) {
-			frag_angst = 0;
-			LOGD->post_message("watchdog", LOG_NOTICE, "Memory still fragmented, swapping out");
+		if (frag >= 10) {
+			frag = 0;
+			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
 			swapout();
 		}
 	} else {
-		if (frag_angst) {
-			if (!--frag_angst) {
-				LOGD->post_message("watchdog", LOG_NOTICE, "Memory no longer fragmented");
-			}
+		if (frag) {
+			--frag;
 		}
 	}
 }
