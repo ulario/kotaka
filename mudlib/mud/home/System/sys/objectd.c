@@ -42,11 +42,6 @@ static void create()
 	DRIVER->set_object_manager(this_object());
 }
 
-void reboot()
-{
-	ACCESS_CHECK(SYSTEM());
-}
-
 private string *fetch_from_initd(object initd, string path)
 {
 	return ({

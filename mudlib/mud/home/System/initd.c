@@ -172,19 +172,10 @@ void reboot()
 		clear_admin();
 		configure_rsrc();
 
-		ACCESSD->restore();
-		OBJECTD->reboot();
-		WATCHDOGD->reboot();
 		SYSTEM_USERD->reboot();
 
 		call_out("audit_filequota", 0);
 	} else {
-		if (KADMIN()) {
-			dump_state();
-			shutdown(1);
-			return;
-		}
-
 		ACCESS_CHECK(KERNEL());
 
 		check_config();
