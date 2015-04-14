@@ -213,6 +213,11 @@ void build_world()
 	world = create_object();
 	world->set_property("id", "world");
 	world->set_object_name("world");
+	world->set_capacity(1000000.0);
+	world->set_mass(5.972e+24);
+	world->set_density(6.5);
+	world->set_property("event:paint",
+		USR_DIR + "/Game/sys/handler/paint/fill/grass");
 
 	master = create_object();
 	master->set_property("id", "human");
@@ -220,12 +225,6 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/human");
 	master->set_local_property("nouns", ({ "human", "man" }) );
 	master->set_object_name("class:race:humanoid:human");
-
-	world->set_capacity(1000000.0);
-	world->set_mass(5.972e+24);
-	world->set_density(6.5);
-	world->set_property("event:paint",
-		USR_DIR + "/Game/sys/handler/paint/fill/grass");
 }
 
 /********/
@@ -291,8 +290,6 @@ static void load_tick(object cqueue, object tqueue)
 		load_helpfile(dir, entry);
 
 		call_out("load_tick", 0, cqueue, tqueue);
-	} else {
-		LOGD->post_message("help", LOG_NOTICE, "Help information loaded.");
 	}
 }
 
