@@ -46,8 +46,6 @@ void configure_rsrc();
 private void check_config();
 private void check_versions();
 
-mapping upgrades;
-
 private void load()
 {
 	load_dir("lwo", 1);
@@ -377,12 +375,6 @@ void upgrade_system()
 	string *safe_versions;
 	string *users;
 	int sz;
-
-	if (KOTAKA_VERSION == "0.37") {
-		LOGD->post_message("system", LOG_INFO, "Already upgraded");
-
-		return;
-	}
 
 	safe_versions = explode(read_file("~/data/safe_upgrade_versions"), "\n");
 
