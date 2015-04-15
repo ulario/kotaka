@@ -184,13 +184,11 @@ void receive_in(string input)
 
 			parent = query_parent();
 
-			if (parent <- "~/lwo/ustate/start") {
+			if (parent <- "start") {
 				object shell;
 
-				send_out("Starting popup.\n");
-
 				suspend_user();
-				shell = new_object("~/lwo/ustate/shell");
+				shell = new_object("shell");
 				push_state(shell);
 				shell->push_state(pager);
 				release_user();
