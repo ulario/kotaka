@@ -320,8 +320,7 @@ void recompile_everything()
 		}
 
 		objqueue->grant_access(find_object(SORTD), WRITE_ACCESS);
-
-		SORTD->bqsort(objqueue, 0, objqueue->query_size() - 1);
+		SORTD->qsort(objqueue, 0, objqueue->query_size() - 1);
 
 		while (!initdqueue->empty()) {
 			string path;
