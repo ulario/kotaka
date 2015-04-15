@@ -21,46 +21,20 @@
 #include <status.h>
 
 mapping trackers; /* ([ owner : tracker ]) */
-int handle;
 
 static void create()
 {
 	trackers = ([ ]);
-}
 
-void enable()
-{
-	handle = call_out("check", 0);
-}
-
-void disable()
-{
-	object *turkeys;
-	int sz;
-
-	turkeys = map_values(trackers);
-
-	for (sz = sizeof(turkeys) - 1; sz >= 0; --sz) {
-		destruct_object(turkeys[sz]);
-	}
-
-	handle = 0;
-
-	{
-		mixed *callouts;
-
-		callouts = status(this_object(), O_CALLOUTS);
-
-		for (sz = sizeof(callouts) - 1; sz >= 0; --sz) {
-			remove_call_out(callouts[sz][CO_HANDLE]);
-		}
-	}
+	call_out("check", 0);
 }
 
 static void check()
 {
 	string *owners;
 	int sz, i;
+
+	call_out("check", 1);
 
 	owners = KERNELD->query_owners();
 
