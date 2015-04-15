@@ -397,7 +397,9 @@ atomic void upgrade_system()
 	}
 
 	if (sz == -1) {
-		error("Cannot safely upgrade from version " + KOTAKA_VERSION);
+		LOGD->post_message("system", LOG_INFO, "Cannot safely upgrade from version " + KOTAKA_VERSION);
+
+		return;
 	}
 
 	MODULED->upgrade_modules();
