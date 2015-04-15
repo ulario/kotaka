@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
@@ -38,23 +39,24 @@ static void create()
 	load();
 }
 
-void bomb(int quota)
+void bomb()
 {
+	int done;
 	int ticks;
 
 	ticks = status(ST_TICKS);
 
-	while (ticks - status(ST_TICKS) < 1000000) {
-		if (quota) {
-			quota--;
-			clone_object("obj/bomb");
-		} else {
-			break;
+	ASSERT(ticks > 0);
+
+	while (ticks - status(ST_TICKS) < 20000000) {
+		if (status(ST_OTABSIZE) - status(ST_NOBJECTS) <= 1024) {
+			return;
 		}
+		clone_object("obj/bomb");
 	}
 
-	if (quota) {
-		call_out("bomb", 0, quota);
+	if (!done) {
+		call_out("bomb", 0);
 	}
 }
 
