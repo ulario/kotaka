@@ -72,7 +72,7 @@ static void create()
 
 		remove_file("/log/session.log");
 
-		LOGD->post_message("boot", LOG_INFO, "Welcome to Kotaka " + KOTAKA_VERSION);
+		LOGD->post_message("system", LOG_INFO, "Welcome to Kotaka " + KOTAKA_VERSION);
 
 		load_object(KERNELD);
 
@@ -102,7 +102,7 @@ static void create()
 
 		/* Booted up */
 
-		LOGD->post_message("boot", LOG_INFO, "System ready");
+		LOGD->post_message("system", LOG_INFO, "System ready");
 
 		MODULED->boot_module("Account");
 		MODULED->boot_module("Kotaka");
@@ -268,7 +268,6 @@ void configure_logging()
 
 	/* post these on the system channel */
 	LOGD->set_target("system", 255, "channel:system");
-	LOGD->set_target("boot", 255, "channel:system");
 
 	LOGD->set_target("compile", 255, "channel:compile");
 	LOGD->set_target("error", 255, "channel:error");
