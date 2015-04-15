@@ -215,9 +215,10 @@ void build_world()
 	world = create_object();
 	world->set_property("id", "world");
 	world->set_object_name("world");
-	world->set_capacity(1000000.0);
 	world->set_mass(5.972e+24);
 	world->set_density(6.5);
+	world->set_capacity(1e+12);
+	world->set_max_mass(5.972e+24);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/fill/grass");
 
