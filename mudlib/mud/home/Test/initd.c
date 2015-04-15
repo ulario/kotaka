@@ -48,7 +48,7 @@ void bomb()
 
 	ASSERT(ticks > 0);
 
-	while (ticks - status(ST_TICKS) < 20000000) {
+	while (ticks - status(ST_TICKS) < 200000) {
 		if (status(ST_OTABSIZE) - status(ST_NOBJECTS) <= 1024) {
 			return;
 		}
