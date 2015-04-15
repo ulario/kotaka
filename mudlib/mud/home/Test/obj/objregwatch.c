@@ -19,6 +19,7 @@
  */
 #include <config.h>
 #include <kernel/rsrc.h>
+#include <kotaka/assert.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 
@@ -33,17 +34,11 @@ static void create(int clone)
 	}
 }
 
-void activate(object first)
+void set_owner(string new_owner)
 {
-	master = find_object(USR_DIR + "/Test/sys/objregwatchd");
+	ASSERT(!owner);
 
-	if (previous_object() != master) {
-		error("Access denied");
-	}
-
-	cursor = first;
-
-	owner = first->query_owner();
+	owner = new_owner;
 }
 
 static void check()
@@ -51,7 +46,7 @@ static void check()
 	int count;
 	object prev, next;
 
-	if (!master || !owner) {
+	if (!find_object("../sys/objregwatchd")) {
 		destruct_object(this_object());
 
 		return;

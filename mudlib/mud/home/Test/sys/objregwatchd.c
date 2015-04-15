@@ -61,6 +61,6 @@ static void check()
 
 		trackers[owner] = tracker;
 
-		tracker->activate(first);
+		tracker->set_owner(owner);
 	}
 }
