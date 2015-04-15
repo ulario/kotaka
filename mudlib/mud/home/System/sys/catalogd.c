@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
@@ -277,5 +278,54 @@ mapping list_directory(string name)
 		return dir->query_entry_value(path[i])->query_key();
 	} else {
 		return root->query_key();
+	}
+}
+
+private void gather(string path, object dir, object deque)
+{
+	string *names;
+	mapping key;
+	int *vals;
+	int sz;
+
+	key = dir->query_key();
+	names = map_indices(key);
+	vals = map_values(key);
+
+	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
+		switch(vals[sz]) {
+		case 1:
+			if (!dir->query_entry_value(names[sz])) {
+				deque->push_back(
+					path ?
+					(path + ":" + names[sz]) :
+					names[sz]);
+			}
+			break;
+
+		case 2:
+			gather(
+				path ?
+				path + ":" + names[sz] :
+				names[sz], dir->query_entry_value(names[sz]), deque);
+		}
+	}
+}
+
+void fix()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	rlimits(0; -1) {
+		object deque;
+
+		deque = new_object(BIGSTRUCT_DEQUE_LWO);
+
+		gather(nil, root, deque);
+
+		while (!deque->empty()) {
+			remove_object(deque->query_front());
+			deque->pop_front();
+		}
 	}
 }
