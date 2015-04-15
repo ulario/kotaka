@@ -98,8 +98,6 @@ static void create()
 
 		load();
 
-		STATUSD->enable();
-
 		configure_logging();
 
 		/* Booted up */
