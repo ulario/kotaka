@@ -73,7 +73,9 @@ private void load()
 
 private void create_channels()
 {
-	CHANNELD->add_channel("chat");
+	if (!CHANNELD->test_channel("chat")) {
+		CHANNELD->add_channel("chat");
+	}
 }
 
 void configure_channels()
