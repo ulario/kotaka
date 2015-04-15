@@ -29,13 +29,17 @@ int destructing;
 /* General stuff */
 /*****************/
 
-static void create()
+static nomask void thing_create()
 {
 	arch::create();
 	id::create();
 	inv::create();
 	prop::create();
 	bulk::create();
+}
+
+static void create()
+{
 }
 
 int forbid_insert(object obj)
