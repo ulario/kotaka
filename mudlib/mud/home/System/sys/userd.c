@@ -50,6 +50,8 @@ mapping reblocked;	/* objects that were already manually blocked */
 
 /* internal */
 
+private void register_with_klib_userd();
+
 static void create()
 {
 	user::create();
@@ -59,6 +61,8 @@ static void create()
 	telnet_managers = ([ ]);
 
 	reblocked = ([ ]);
+
+	register_with_klib_userd();
 }
 
 private void register_with_klib_userd()
