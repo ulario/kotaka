@@ -154,52 +154,42 @@ void clear_admin()
 
 void prepare_reboot()
 {
-	if (previous_program() != MODULED) {
-		ACCESS_CHECK(KERNEL());
+	ACCESS_CHECK(KERNEL());
 
-		check_config();
-		check_versions();
-
-		MODULED->prepare_reboot_modules();
-	}
+	MODULED->prepare_reboot_modules();
 }
 
 void reboot()
 {
-	if (previous_program() == MODULED) {
-		clear_admin();
-		configure_rsrc();
+	ACCESS_CHECK(KERNEL());
 
-		SYSTEM_USERD->reboot();
+	check_config();
+	check_versions();
 
-		call_out("audit_filequota", 0);
-	} else {
-		ACCESS_CHECK(KERNEL());
+	clear_admin();
+	configure_rsrc();
 
-		check_config();
-		check_versions();
+	SYSTEM_USERD->reboot();
 
-		MODULED->reboot_modules();
-	}
+	call_out("audit_filequota", 0);
+	MODULED->reboot_modules();
 }
 
 void hotboot()
 {
-	if (previous_program() == MODULED) {
-		clear_admin();
-		configure_rsrc();
+	ACCESS_CHECK(KERNEL());
 
-		SYSTEM_USERD->hotboot();
+	check_config();
+	check_versions();
 
-		call_out("audit_filequota", 0);
-	} else {
-		ACCESS_CHECK(KERNEL());
+	clear_admin();
+	configure_rsrc();
 
-		check_config();
-		check_versions();
+	SYSTEM_USERD->hotboot();
 
-		MODULED->hotboot_modules();
-	}
+	MODULED->hotboot_modules();
+
+	call_out("audit_filequota", 0);
 }
 
 /* miscellaneous */
@@ -382,11 +372,17 @@ static void audit_filequota()
 	DRIVER->fix_filequota();
 }
 
-atomic void upgrade_system()
+void upgrade_system()
 {
 	string *safe_versions;
 	string *users;
 	int sz;
+
+	if (KOTAKA_VERSION == "0.37") {
+		LOGD->post_message("system", LOG_INFO, "Already upgraded");
+
+		return;
+	}
 
 	safe_versions = explode(read_file("~/data/safe_upgrade_versions"), "\n");
 
@@ -402,16 +398,18 @@ atomic void upgrade_system()
 		return;
 	}
 
-	MODULED->upgrade_modules();
+	compile_object("initd");
+
+	call_out("upgrade_system_2", 0);
 }
 
-void upgrade_module()
+static void upgrade_system_2()
 {
-	ACCESS_CHECK(previous_program() == MODULED);
-
 	CATALOGD->fix();
 	SYSTEM_USERD->set_telnet_manager(1, find_object("~/sys/statusd"));
 	load();
 
 	purge_orphans("System");
+
+	MODULED->upgrade_modules();
 }

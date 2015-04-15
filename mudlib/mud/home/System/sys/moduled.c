@@ -64,6 +64,7 @@ private void reset_modules_list()
 	int sz;
 
 	dirs = get_dir(USR_DIR + "/*")[0];
+	dirs -= ({ "System" });
 
 	for (sz = sizeof(dirs) - 1; sz >= 0; --sz) {
 		string path;
@@ -85,6 +86,8 @@ void upgrade_modules()
 	ACCESS_CHECK(SYSTEM());
 
 	list = map_indices(modules);
+	list -= ({ "System" });
+
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -212,7 +215,7 @@ void boot_module(string module)
 		error("No initd for module");
 	}
 
-	if (status(USR_DIR + "/" + module + "/initd")) {
+	if (modules[module]) {
 		/* module already loaded */
 		return;
 	}
@@ -303,6 +306,7 @@ void prepare_reboot_modules()
 	ACCESS_CHECK(SYSTEM());
 
 	list = map_indices(modules);
+	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -322,6 +326,7 @@ void reboot_modules()
 	ACCESS_CHECK(SYSTEM());
 
 	list = map_indices(modules);
+	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -341,6 +346,7 @@ void hotboot_modules()
 	ACCESS_CHECK(SYSTEM());
 
 	list = map_indices(modules);
+	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -351,5 +357,3 @@ void hotboot_modules()
 		}
 	}
 }
-
-/* helpers */
