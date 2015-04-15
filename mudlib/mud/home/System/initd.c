@@ -397,8 +397,6 @@ void upgrade_system()
 
 static void upgrade_system_2()
 {
-	CATALOGD->fix();
-	SYSTEM_USERD->set_telnet_manager(1, find_object("~/sys/statusd"));
 	load();
 
 	purge_orphans("System");
