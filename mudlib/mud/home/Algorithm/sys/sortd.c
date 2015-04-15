@@ -85,11 +85,6 @@ void qsort(mixed arr, int begin, int end, varargs string compfunc)
 	}
 }
 
-void bqsort(mixed arr, int begin, int end, varargs string compfunc)
-{
-	qsort(arr, begin, end, compfunc);
-}
-
 int binary_search_floor(mixed *arr, mixed value)
 {
 	int begin;
