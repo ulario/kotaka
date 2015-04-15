@@ -74,35 +74,3 @@ static void connect(string host, int port)
 	conn->set_manager(this_object());
 	conn->connect(host, port);
 }
-
-static int is_sitebanned(string ip)
-{
-	string o1, o2, o3, o4;
-
-	if (!find_object(BAND)) {
-		return 0;
-	}
-
-	if (sscanf(ip, "%s.%s.%s.%s", o1, o2, o3, o4) < 4) {
-		/* weird IP? */
-		return 0;
-	}
-
-	if (BAND->query_is_site_banned(o1 + "." + o2 + "." + o3 + "." + o4)) {
-		return 1;
-	}
-
-	if (BAND->query_is_site_banned(o1 + "." + o2 + "." + o3 + ".*")) {
-		return 1;
-	}
-
-	if (BAND->query_is_site_banned(o1 + "." + o2 + ".*.*")) {
-		return 1;
-	}
-
-	if (BAND->query_is_site_banned(o1 + ".*.*.*")) {
-		return 1;
-	}
-
-	return 0;
-}

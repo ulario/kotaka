@@ -157,7 +157,7 @@ int query_timeout(object LIB_CONN connection)
 		return -1;
 	}
 
-	if (is_sitebanned(query_ip_number(conn))) {
+	if (BAND->check_siteban(query_ip_number(conn))) {
 		return -1;
 	}
 

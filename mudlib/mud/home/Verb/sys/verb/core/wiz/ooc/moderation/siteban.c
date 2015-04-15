@@ -34,7 +34,7 @@ void main(object actor, mapping roles)
 	object user, *users;
 	string kicker_name;
 	string site;
-	int i, sz;
+	int sz;
 
 	user = query_user();
 
@@ -63,18 +63,17 @@ void main(object actor, mapping roles)
 	BAND->ban_site(site);
 	users = TEXT_USERD->query_users();
 	users += TEXT_USERD->query_guests();
-	sz = sizeof(users);
 
 	/* kick turkeys */
 
 	kicker_name = user->query_titled_name();
 
-	for (i = 0; i < sz; i++) {
+	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
 		object conn;
 		object turkey;
 		string turkey_name;
 
-		turkey = users[i];
+		turkey = users[sz];
 		conn = turkey;
 
 		while (conn && conn <- LIB_USER) {
@@ -85,7 +84,7 @@ void main(object actor, mapping roles)
 			continue;
 		}
 
-		if (!BAND->query_is_site_banned(query_ip_number(conn))) {
+		if (!BAND->check_siteban(query_ip_number(conn))) {
 			continue;
 		}
 

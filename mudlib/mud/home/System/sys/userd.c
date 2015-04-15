@@ -19,6 +19,7 @@
  */
 #include <kernel/user.h>
 #include <kotaka/log.h>
+#include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <status.h>
@@ -281,7 +282,7 @@ string query_banner(object LIB_CONN connection)
 		return "Internal error: no connection manager.\n";
 	}
 
-	if (is_sitebanned(query_ip_number(root))) {
+	if (BAND->check_siteban(query_ip_number(root))) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 
 		catch {

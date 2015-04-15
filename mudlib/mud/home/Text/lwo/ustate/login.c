@@ -155,7 +155,6 @@ void receive_in(string input)
 			query_user()->set_username(name);
 
 			TEXT_SUBD->login_user(query_user());
-
 			TEXT_SUBD->send_login_message(name);
 
 			terminate_account_state();
