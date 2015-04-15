@@ -56,6 +56,8 @@ void ban_site(string site)
 
 	sitebans[site] = 1;
 	save();
+
+	SYSTEM_USERD->check_sitebans();
 }
 
 void unban_site(string site)

@@ -433,3 +433,19 @@ void intercept_redirect(object user, string str)
 
 	start->system_redirect(user, str);
 }
+
+void check_sitebans()
+{
+	object *conns;
+	int sz;
+
+	ACCESS_CHECK(ACCOUNT());
+
+	conns = KERNELD->query_connections();
+
+	for (sz = sizeof(conns) - 1; sz >= 0; --sz) {
+		if (BAND->check_siteban(query_ip_number(conns[sz]))) {
+			conns[sz]->reboot();
+		}
+	}
+}
