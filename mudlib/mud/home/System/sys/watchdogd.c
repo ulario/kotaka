@@ -59,22 +59,12 @@ static void check()
 
 	if (smem_used + dmem_used > (float)MAX_MEMORY) {
 		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
-		frag = 0;
 		swapout();
 		return;
 	}
 
 	if ((((dmem_free + smem_free) - (float)FREE_SLACK) / (dmem_size + smem_size)) > (float)FRAG_RATIO) {
-		++frag;
-
-		if (frag >= 10) {
-			frag = 0;
-			LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
-			swapout();
-		}
-	} else {
-		if (frag) {
-			--frag;
-		}
+		LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
+		swapout();
 	}
 }
