@@ -34,6 +34,10 @@ static void call_touch(object obj)
 	}
 }
 
+static void touch()
+{
+}
+
 nomask void _F_touch(string function)
 {
 	int index;
@@ -75,4 +79,6 @@ nomask void _F_touch(string function)
 	if (toucher) {
 		call_other(this_object(), toucher);
 	}
+
+	touch();
 }
