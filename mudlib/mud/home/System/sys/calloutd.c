@@ -41,21 +41,16 @@ private int bypass(object obj);
 int empty();
 mixed *release();
 
+private void alloc_queue();
+private void free_queue();
+
 /* private */
 
 static void create()
 {
-	cmap = new_object(BIGSTRUCT_ARRAY_LWO);
-	cqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-
-	cmap->set_size(0x7FFFFFFF);
-	cqueue->set_size(0x10000000);
-
 	begin = end = callouts = holes = handle = 0;
 
-	catch {
-		RSRCD->set_suspension_manager(this_object());
-	}
+	RSRCD->set_suspension_manager(this_object());
 }
 
 static void destruct()
@@ -76,6 +71,21 @@ private int object_index(object obj)
 	return status(obj, O_INDEX);
 }
 
+private void alloc_queue()
+{
+	cmap = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	cqueue = clone_object(BIGSTRUCT_ARRAY_OBJ);
+
+	cmap->set_size(0x7FFFFFFF);
+	cqueue->set_size(0x10000000);
+}
+
+private void free_queue()
+{
+	destruct_object(cmap);
+	destruct_object(cqueue);
+}
+
 /* rsrcd hooks */
 
 void suspend_callouts()
@@ -88,6 +98,10 @@ void suspend_callouts()
 		if (handle) {
 			remove_call_out(handle);
 			handle = 0;
+		}
+
+		if (!cmap) {
+			alloc_queue();
 		}
 	} else {
 		RSRCD->suspend_callouts();
@@ -251,10 +265,12 @@ static void do_release()
 			RSRCD->release_callout(nil, 0);
 			LOGD->post_message("system", LOG_INFO, "Released callouts");
 
+			if (cmap) {
+				free_queue();
+			}
+
 			suspend = 0;
 			begin = end = 0;
-			cmap->clear();
-			cqueue->clear();
 
 			if (callouts != 0) {
 				error(callouts + " callouts unaccounted for");
