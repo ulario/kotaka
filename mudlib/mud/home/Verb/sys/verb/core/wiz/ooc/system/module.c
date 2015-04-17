@@ -75,27 +75,18 @@ void main(object actor, mapping roles)
 			return;
 		}
 		MODULED->boot_module(module);
-		if (this_object() && user) {
-			send_out("Module booted.\n");
-		}
 		break;
 	case "reboot":
 		if (!check_module_name(module)) {
 			return;
 		}
 		MODULED->reboot_module(module);
-		if (this_object() && user) {
-			send_out("Module rebooted.\n");
-		}
 		break;
 	case "shutdown":
 		if (!check_module_name(module)) {
 			return;
 		}
 		MODULED->shutdown_module(module);
-		if (this_object() && user) {
-			send_out("Module shutdown.\n");
-		}
 		break;
 	}
 }
