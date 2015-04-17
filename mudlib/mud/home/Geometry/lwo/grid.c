@@ -39,26 +39,22 @@ void set_size(int new_width, int new_height)
 	new_bytes = (new_width + 7) >> 3;
 
 	if (new_height > height) {
-		/* add rows */
 		int i;
 		string nulls;
 
 		rows += allocate(new_height - height);
-		top = height;
 		nulls = STRINGD->nulls(new_bytes);
 
-		/* these rows are ready */
 		for (i = height; i < new_height; i++) {
 			rows[i] = nulls;
 		}
-	} else {
-		/* trim rows */
-		if (new_height < height) {
-			rows = rows[0 .. new_height - 1];
-		}
-
-		top = height;
 	}
+
+	if (new_height < height) {
+		rows = rows[0 .. new_height - 1];
+	}
+
+	top = height;
 
 	if (new_bytes > bytes) {
 		int i;
@@ -70,18 +66,19 @@ void set_size(int new_width, int new_height)
 		for (i = 0; i < top; i++) {
 			rows[i] += suffix;
 		}
-	} else if (new_bytes < bytes) {
+	}
+
+	if (new_bytes < bytes) {
 		int i;
 
-		/* truncate each row */
 		for (i = 0; i < top; i++) {
 			rows[i] = rows[i][0 .. new_bytes - 1];
-			rows[i][new_bytes - 1] &= (255 >> (new_width & 7));
 		}
-	} else if (new_width < width) {
+	}
+
+	if (new_width < width) {
 		int i;
 
-		/* truncate each row */
 		for (i = 0; i < top; i++) {
 			rows[i][new_bytes - 1] &= (255 >> (new_width & 7));
 		}
