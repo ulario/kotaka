@@ -1,5 +1,2 @@
-To upgrade to version 0.37 from version 0.36
-
-%compile ~System/initd.c
-
-Then issue the upgrade command
+To upgrade to version 0.38 from version 0.37,
+just use the upgrade command.
