@@ -17,50 +17,97 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/log.h>
 #include <kotaka/paths/system.h>
+#include <kernel/rsrc.h>
 #include <status.h>
 
-mapping trackers; /* ([ owner : tracker ]) */
+inherit SECOND_AUTO;
+
+mapping cursors;
+mapping scores;
 
 static void create()
 {
-	trackers = ([ ]);
+	cursors = ([ ]);
+	scores = ([ ]);
 
-	call_out("check", 0);
+	call_out("tick", 0);
 }
 
-static void check()
+private void check(string owner)
+{
+	object prev, next;
+	object obj;
+
+	obj = cursors[owner];
+
+	if (!obj) {
+		return;
+	}
+
+	prev = KERNELD->prev_link(obj);
+	next = KERNELD->next_link(obj);
+
+	if (!prev || !next) {
+		LOGD->post_message("system", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
+		KERNELD->shutdown();
+		error("internal error");
+	}
+
+	if (KERNELD->next_link(prev) != obj) {
+		LOGD->post_message("system", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
+		KERNELD->shutdown();
+		error("internal error");
+	}
+
+	if (KERNELD->prev_link(next) != obj) {
+		LOGD->post_message("system", LOG_EMERG, "Fatal error: ObjRegD corruption for " + owner);
+		KERNELD->shutdown();
+		error("internal error");
+	}
+
+	cursors[owner] = next;
+}
+
+static void tick()
 {
 	string *owners;
-	int sz, i;
+	int sz;
 
-	call_out("check", 1);
+	call_out("tick", 1);
 
 	owners = KERNELD->query_owners();
+	cursors &= owners;
+	scores &= owners;
 
-	sz = sizeof(owners);
-
-	for (i = 0; i < sz; i++) {
+	for (sz = sizeof(owners) - 1; sz >= 0; --sz) {
 		string owner;
 		object first;
-		object tracker;
 
-		owner = owners[i];
+		owner = owners[sz];
 
-		if (trackers[owner]) {
-			continue;
+		if (!cursors[owner]) {
+			cursors[owner] = KERNELD->first_link(owner);
+
+			if (!cursors[owner]) {
+				scores[owner] = nil;
+
+				continue;
+			}
 		}
 
-		first = KERNELD->first_link(owner);
-
-		if (!first) {
-			continue;
+		if (!scores[owner]) {
+			scores[owner] = 0.0;
 		}
 
-		tracker = clone_object("~/obj/objregwatch");
+		scores[owner] +=
+			(float)KERNELD->rsrc_get(owner, "objects")[RSRC_USAGE]
+			/ (float)status(ST_NOBJECTS);
 
-		trackers[owner] = tracker;
-
-		tracker->set_owner(owner);
+		while (scores[owner] > 1.0) {
+			scores[owner] -= 1.0;
+			check(owner);
+		}
 	}
 }
