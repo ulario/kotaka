@@ -50,13 +50,21 @@ void main(object actor, mapping roles)
 
 void nuke(string path, int index, object proxy)
 {
-	object obj;
+	int ticks;
 
-	if (obj = find_object(path + "#" + index)) {
-		proxy->destruct_object(obj);
+	ticks = status(ST_TICKS);
+
+	while (index >= 0 && ticks - status(ST_TICKS) < 100000) {
+		object obj;
+
+		if (obj = find_object(path + "#" + index)) {
+			proxy->destruct_object(obj);
+		}
+
+		--index;
 	}
 
-	if (index) {
+	if (index > 0) {
 		call_out("nuke", 0, path, index - 1, proxy);
 	}
 }
