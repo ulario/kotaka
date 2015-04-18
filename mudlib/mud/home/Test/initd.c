@@ -43,19 +43,19 @@ void bomb()
 {
 	int done;
 	int ticks;
+	int limit;
 
 	ticks = status(ST_TICKS);
 
 	ASSERT(ticks > 0);
 
-	while (ticks - status(ST_TICKS) < 200000) {
-		if (status(ST_OTABSIZE) - status(ST_NOBJECTS) <= 1024) {
-			return;
-		}
+	limit = status(ST_OTABSIZE) - status(ST_NOBJECTS) - 1024;
+
+	while (ticks - status(ST_TICKS) < 200000 && --limit > 0) {
 		clone_object("obj/bomb");
 	}
 
-	if (!done) {
+	if (limit) {
 		call_out("bomb", 0);
 	}
 }
