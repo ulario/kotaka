@@ -164,7 +164,7 @@ object register_program(string path, string *inherits, string *includes)
 		object subpinfo;
 		int suboindex;
 
-		suboindex = status(inherits[i])[O_INDEX];
+		suboindex = status(inherits[i], O_INDEX);
 		oindices[i] = suboindex;
 
 		subpinfo = progdb->query_element(suboindex);
