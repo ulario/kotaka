@@ -29,9 +29,9 @@
 inherit SECOND_AUTO;
 
 object progdb;	/* program database, index -> program_info */
-object pathdb;	/* path database, name -> latest index */
-object inhdb;	/* inherit database, index -> inherited indices */
-object incdb;	/* include database, index -> included files */
+object pathdb;	/* path database, filename -> latest index */
+object inhdb;	/* inherit database, filename -> inheriting objects */
+object incdb;	/* include database, filename -> including objects */
 
 private void setup_database()
 {
