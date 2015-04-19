@@ -35,7 +35,7 @@ static void create()
 	call_out("tick", 0);
 }
 
-private void check(string owner)
+static void check(string owner)
 {
 	object prev, next;
 	object obj;
@@ -43,7 +43,11 @@ private void check(string owner)
 	obj = cursors[owner];
 
 	if (!obj) {
-		return;
+		obj = KERNELD->first_link(owner);
+
+		if (!obj) {
+			return;
+		}
 	}
 
 	prev = KERNELD->prev_link(obj);
@@ -75,27 +79,16 @@ static void tick()
 	string *owners;
 	int sz;
 
-	call_out("tick", 1);
+	call_out("tick", 1.0);
 
 	owners = KERNELD->query_owners();
 	cursors &= owners;
 	scores &= owners;
 
-	for (sz = sizeof(owners) - 1; sz >= 0; --sz) {
+	for (sz = sizeof(owners); --sz >= 0; ) {
 		string owner;
-		object first;
 
 		owner = owners[sz];
-
-		if (!cursors[owner]) {
-			cursors[owner] = KERNELD->first_link(owner);
-
-			if (!cursors[owner]) {
-				scores[owner] = nil;
-
-				continue;
-			}
-		}
 
 		if (!scores[owner]) {
 			scores[owner] = 0.0;
@@ -107,7 +100,7 @@ static void tick()
 
 		while (scores[owner] > 1.0) {
 			scores[owner] -= 1.0;
-			check(owner);
+			call_out("check", 0, owner);
 		}
 	}
 }
