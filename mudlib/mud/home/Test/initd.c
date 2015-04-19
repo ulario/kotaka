@@ -28,8 +28,6 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	load_dir("obj", 1);
-	load_dir("sys", 1);
 }
 
 static void create()
@@ -37,27 +35,6 @@ static void create()
 	KERNELD->set_global_access("Test", 1);
 
 	load();
-}
-
-void bomb()
-{
-	int done;
-	int ticks;
-	int limit;
-
-	ticks = status(ST_TICKS);
-
-	ASSERT(ticks > 0);
-
-	limit = status(ST_OTABSIZE) - status(ST_NOBJECTS) - 1024;
-
-	while (ticks - status(ST_TICKS) < 200000 && --limit > 0) {
-		clone_object("obj/bomb");
-	}
-
-	if (limit) {
-		call_out("bomb", 0);
-	}
 }
 
 void upgrade_module()
