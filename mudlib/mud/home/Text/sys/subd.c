@@ -238,6 +238,7 @@ string print_dollars(int cents)
 	if (cents == 1) {
 		return "one cent";
 	}
+
 	if (cents < 100) {
 		return cents + " cents";
 	}
@@ -246,7 +247,6 @@ string print_dollars(int cents)
 	cents = cents % 100;
 
 	centspart = "0" + cents;
-
 	centspart = centspart[(strlen(centspart) - 2) ..];
 
 	return "$" + dollars + "." + centspart;
