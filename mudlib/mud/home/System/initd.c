@@ -166,6 +166,7 @@ void reboot()
 
 	clear_admin();
 	configure_rsrc();
+	configure_logging();
 
 	SYSTEM_USERD->reboot();
 
@@ -182,6 +183,7 @@ void hotboot()
 
 	clear_admin();
 	configure_rsrc();
+	configure_logging();
 
 	SYSTEM_USERD->hotboot();
 
@@ -260,6 +262,7 @@ void configure_logging()
 	LOGD->set_target("compile", 255, "channel:compile");
 	LOGD->set_target("error", 255, "channel:error");
 	LOGD->set_target("trace", 255, "channel:trace");
+	LOGD->set_target("debug", 255, "channel:debug");
 }
 
 int forbid_inherit(string from, string path, int priv)
