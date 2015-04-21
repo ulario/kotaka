@@ -35,22 +35,25 @@ static void create()
 	KERNELD->set_global_access("Account", 1);
 
 	load();
+
+	ACCOUNTD->restore();
+	BAND->restore();
 }
 
 void prepare_reboot()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
-	ACCOUNTD->force_save();
-	BAND->force_save();
+	ACCOUNTD->save();
+	BAND->save();
 }
 
 void reboot()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
-	ACCOUNTD->force_restore();
-	BAND->force_restore();
+	ACCOUNTD->restore();
+	BAND->restore();
 }
 
 void upgrade_module()

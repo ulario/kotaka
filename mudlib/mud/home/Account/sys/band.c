@@ -120,23 +120,11 @@ string *query_site_bans()
 	return map_indices(sitebans);
 }
 
-void force_save()
-{
-	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN() || ACCOUNT());
-
-	save();
-}
-
-void force_restore()
-{
-	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN() || ACCOUNT());
-
-	restore();
-}
-
-private void save()
+void save()
 {
 	string buf;
+
+	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN() || ACCOUNT());
 
 	buf = STRINGD->hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
 
@@ -147,9 +135,11 @@ private void save()
 	SECRETD->rename_file("bans-tmp", "bans");
 }
 
-private void restore()
+void restore()
 {
 	string buf;
+
+	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN() || ACCOUNT());
 
 	buf = SECRETD->read_file("bans");
 
