@@ -29,7 +29,6 @@ static void create()
 	make_dir(USR_DIR + "/Secret");
 }
 
-/* lets users and subsystems alike store stuff secretly */
 string proper_path(string given, string user)
 {
 	return DRIVER->normalize_path(given, USR_DIR + "/Secret/" + user);
@@ -45,6 +44,7 @@ void validate_path(string path, string user)
 }
 
 /* files */
+
 string read_file(string file, varargs int offset, int size)
 {
 	string user;
@@ -117,8 +117,6 @@ mixed *file_info(string file)
 
 	return ::file_info(file);
 }
-
-/* void file_info(); */
 
 /* directories */
 
