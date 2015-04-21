@@ -69,12 +69,13 @@ private int input(string message)
 		message("<h1 style=\"color: red\">No handler</h1>\n");
 		message("<p>There is no handler for that path.</p>\n");
 		message("<p>For the curious, here's a list of all objects involved in this connection:</p>\n");
-		message("<ul>\n");
 
 		conn = this_object();
 
+		message("<p style=\"color: darkgreen\">\n");
+
 		while(conn) {
-			message("<li>" + object_name(conn) + "</li>\n");
+			message(object_name(conn) + "<br />\n");
 
 			if (conn <- LIB_USER) {
 				conn = conn->query_conn();
@@ -83,7 +84,7 @@ private int input(string message)
 			}
 		}
 
-		message("</ul>\n");
+		message("</p>\n");
 		message("</body>\n");
 		message("</html>\n");
 		return MODE_DISCONNECT;
