@@ -53,27 +53,11 @@ void reboot()
 	BAND->force_restore();
 }
 
-static void upgrade_module_2()
-{
-	"sys/accountd"->upgrade();
-}
-
 void upgrade_module()
 {
-	mixed *info;
-
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
-	compile_object("sys/accountd");
+
 	purge_orphans("Account");
-
-	info = SECRETD->file_info("accounts");
-
-	if (info && info[0] != -2) {
-		SECRETD->remove_file("account");
-		SECRETD->rename_file("accounts", "account");
-	}
-
-	call_out("upgrade_module_2", 0);
 }

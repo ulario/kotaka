@@ -73,7 +73,6 @@ void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
-	destruct_object("lib/thing");
 	load();
 
 	purge_orphans("Thing");

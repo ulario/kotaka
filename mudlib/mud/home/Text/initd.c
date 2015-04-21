@@ -68,21 +68,9 @@ void hotboot()
 
 void upgrade_module()
 {
-	string buf;
-
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
 
-	compile_object("~/lwo/ustate/shell");
-
 	purge_orphans("Text");
-
-	buf = SECRETD->read_file("aliases");
-
-	if (buf) {
-		SECRETD->remove_file("aliases");
-		CONFIGD->make_dir(".");
-		CONFIGD->write_file("aliases", buf);
-	}
 }

@@ -25,75 +25,9 @@
 #include <type.h>
 
 mapping accounts;
-mapping properties;
-mapping passwords;
 
 static void create()
 {
-}
-
-void upgrade()
-{
-	string *names;
-	int sz;
-
-	ACCESS_CHECK(ACCOUNT());
-
-	if (!accounts) {
-		accounts = ([ ]);
-	}
-
-	if (!passwords) {
-		passwords = ([ ]);
-	}
-
-	if (!passwords) {
-		passwords = ([ ]);
-	}
-
-	if (!properties) {
-		properties = ([ ]);
-	}
-
-	names = map_indices(passwords);
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		string name;
-		string password;
-
-		object account;
-
-		name = names[sz];
-
-		account = clone_object("../obj/account");
-		accounts[name] = account;
-		account->set_name(name);
-		account->set_hashed_password(passwords[name]);
-
-		if (properties[name]) {
-			string *propnames;
-			int sz2;
-			mapping prop;
-
-			propnames = map_indices(properties[name]);
-
-			for (sz2 = sizeof(propnames); --sz2 >= 0; ) {
-				LOGD->post_message("debug", LOG_INFO, "Copying property" + propnames[sz2]);
-
-				account->set_property(propnames[sz2],
-					properties[name][propnames[sz2]]);
-			}
-		}
-
-		account->save();
-		passwords[name] = nil;
-		properties[name] = nil;
-	}
-
-	ASSERT(map_sizeof(passwords) == 0);
-	ASSERT(map_sizeof(properties) == 0);
-
-	SECRETD->remove_file("account");
 }
 
 void register_account(string name, string password)
@@ -109,7 +43,6 @@ void register_account(string name, string password)
 	account = clone_object("../obj/account");
 	account->set_name(name);
 	account->set_password(password);
-	account->save();
 }
 
 void unregister_account(string name)
@@ -142,7 +75,6 @@ void change_password(string name, string new_password)
 	}
 
 	accounts[name]->set_password(new_password);
-	accounts[name]->save();
 }
 
 int authenticate(string name, string password)
@@ -177,13 +109,23 @@ void set_account_property(string name, string property, mixed value)
 	}
 
 	accounts[name]->set_property(property, value);
-	accounts[name]->save();
 }
 
-void force_save()
+void save()
 {
 	string *names;
 	int sz;
+
+	SECRETD->make_dir(".");
+	SECRETD->make_dir("accounts");
+
+	names = SECRETD->get_dir("accounts/*")[0];
+
+	if (names) {
+		for (sz = sizeof(names); --sz >= 0; ) {
+			SECRETD->remove_file("accounts/" + names[sz]);
+		}
+	}
 
 	names = map_indices(accounts);
 
@@ -199,12 +141,21 @@ void force_save()
 	}
 }
 
-void force_restore()
+void restore()
 {
+	string *remove;
 	string *names;
 	int sz;
 
 	names = SECRETD->get_dir("accounts/*")[0];
+
+	if (names) {
+		remove = map_indices(accounts) - names;
+
+		for (sz = sizeof(remove); --sz >= 0; ) {
+			destruct_object(accounts[remove[sz]]);
+		}
+	}
 
 	for (sz = sizeof(names); --sz >= 0; ) {
 		object account;

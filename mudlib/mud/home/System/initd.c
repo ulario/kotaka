@@ -400,8 +400,6 @@ void upgrade_system()
 
 static void upgrade_system_2()
 {
-	destruct_object("sys/calloutd");
-
 	load();
 
 	purge_orphans("System");
