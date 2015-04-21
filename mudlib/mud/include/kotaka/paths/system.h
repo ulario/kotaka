@@ -24,6 +24,7 @@
 #define CALLOUTD	(USR_DIR + "/System/sys/calloutd")
 #define CATALOGD	(USR_DIR + "/System/sys/catalogd")
 #define CLONED		(USR_DIR + "/System/sys/cloned")
+#define CONFIGD		(USR_DIR + "/System/sys/configd")
 #define ERRORD		(USR_DIR + "/System/sys/errord")
 #define FILTERD		(USR_DIR + "/System/sys/filterd")
 #define INITD		(USR_DIR + "/System/initd")
