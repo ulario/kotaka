@@ -23,8 +23,8 @@
 
 mapping aliases;
 
-private void save();
-private void restore();
+void save();
+void restore();
 
 static void create()
 {
@@ -52,24 +52,28 @@ void set_alias(string name, string value)
 	save();
 }
 
-private void save()
+void save()
 {
 	string buf;
+
+	ACCESS_CHECK(INTERFACE());
 
 	buf = STRINGD->hybrid_sprint(aliases);
 
-	SECRETD->make_dir(".");
-	SECRETD->remove_file("aliases-tmp");
-	SECRETD->write_file("aliases-tmp", buf + "\n");
-	SECRETD->remove_file("aliases");
-	SECRETD->rename_file("aliases-tmp", "aliases");
+	CONFIGD->make_dir(".");
+	CONFIGD->remove_file("aliases-tmp");
+	CONFIGD->write_file("aliases-tmp", buf + "\n");
+	CONFIGD->remove_file("aliases");
+	CONFIGD->rename_file("aliases-tmp", "aliases");
 }
 
-private void restore()
+void restore()
 {
 	string buf;
 
-	buf = SECRETD->read_file("aliases");
+	ACCESS_CHECK(INTERFACE());
+
+	buf = CONFIGD->read_file("aliases");
 
 	if (buf) {
 		aliases = PARSER_VALUE->parse(buf);

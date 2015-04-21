@@ -45,8 +45,31 @@ static void create()
 	load();
 }
 
+void prepare_reboot()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	"sys/aliasd"->save();
+}
+
+void reboot()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	"sys/aliasd"->restore();
+}
+
+void hotboot()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	"sys/aliasd"->restore();
+}
+
 void upgrade_module()
 {
+	string buf;
+
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
@@ -54,4 +77,12 @@ void upgrade_module()
 	compile_object("~/lwo/ustate/shell");
 
 	purge_orphans("Text");
+
+	buf = SECRETD->read_file("aliases");
+
+	if (buf) {
+		SECRETD->remove_file("aliases");
+		CONFIGD->make_dir(".");
+		CONFIGD->write_file("aliases", buf);
+	}
 }
