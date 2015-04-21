@@ -29,6 +29,7 @@ mapping accounts;
 
 static void create()
 {
+	accounts = ([ ]);
 }
 
 void register_account(string name, string password)
