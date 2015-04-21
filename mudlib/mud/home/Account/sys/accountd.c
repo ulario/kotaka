@@ -19,22 +19,33 @@
  */
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/assert.h>
+#include <kotaka/log.h>
 #include <kotaka/privilege.h>
 #include <type.h>
 
-int max_uid;
-
+mapping accounts;
 mapping properties;
 mapping passwords;
 
-private void save();
-private void restore();
-
 static void create()
 {
-	max_uid = 1;
+}
 
-	restore();
+void upgrade()
+{
+	string *names;
+	int sz;
+
+	ACCESS_CHECK(ACCOUNT());
+
+	if (!accounts) {
+		accounts = ([ ]);
+	}
+
+	if (!passwords) {
+		passwords = ([ ]);
+	}
 
 	if (!passwords) {
 		passwords = ([ ]);
@@ -43,169 +54,171 @@ static void create()
 	if (!properties) {
 		properties = ([ ]);
 	}
+
+	names = map_indices(passwords);
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+		string password;
+
+		object account;
+
+		name = names[sz];
+
+		account = clone_object("../obj/account");
+		accounts[name] = account;
+		account->set_name(name);
+		account->set_hashed_password(passwords[name]);
+
+		if (properties[name]) {
+			string *propnames;
+			int sz2;
+			mapping prop;
+
+			propnames = map_indices(properties[name]);
+
+			for (sz2 = sizeof(propnames); --sz2 >= 0; ) {
+				LOGD->post_message("debug", LOG_INFO, "Copying property" + propnames[sz2]);
+
+				account->set_property(propnames[sz2],
+					properties[name][propnames[sz2]]);
+			}
+		}
+
+		account->save();
+		passwords[name] = nil;
+		properties[name] = nil;
+	}
+
+	ASSERT(map_sizeof(passwords) == 0);
+	ASSERT(map_sizeof(properties) == 0);
+
+	SECRETD->remove_file("account");
 }
 
 void register_account(string name, string password)
 {
+	object account;
+
 	ACCESS_CHECK(TEXT() || VERB());
 
-	if (passwords[name]) {
+	if (accounts[name]) {
 		error("Duplicate account");
 	}
 
-	passwords[name] = hash_string("crypt", password, name);
-	save();
+	account = clone_object("../obj/account");
+	account->set_name(name);
+	account->set_password(password);
+	account->save();
 }
 
 void unregister_account(string name)
 {
 	ACCESS_CHECK(TEXT() || VERB());
 
-	if (!passwords[name]) {
+	if (!accounts[name]) {
 		error("No such account");
 	}
 
-	passwords[name] = nil;
-	properties[name] = nil;
-	save();
+	accounts[name]->delete_account();
 }
 
 int query_is_registered(string name)
 {
-	return !!passwords[name];
+	return !!accounts[name];
 }
 
 string *query_accounts()
 {
-	return map_indices(passwords);
+	return map_indices(accounts);
 }
 
-void change_password(string name, string newpass)
+void change_password(string name, string new_password)
 {
 	ACCESS_CHECK(TEXT() || ACCOUNT() || VERB());
 
-	if (!passwords[name]) {
+	if (!accounts[name]) {
 		error("No such account");
 	}
 
-	passwords[name] = hash_string("crypt", newpass, name);
-
-	save();
+	accounts[name]->set_password(new_password);
+	accounts[name]->save();
 }
 
 int authenticate(string name, string password)
 {
 	ACCESS_CHECK(TEXT());
 
-	if (!passwords[name]) {
+	if (!accounts[name]) {
 		error("No such account");
 	}
 
-	if (passwords[name] == hash_string("crypt", password, name)) {
+	if (accounts[name]->authenticate(password)) {
 		change_password(name, password);
 		return TRUE;
 	}
 
-	if (passwords[name] == hash_string("SHA1", password)) {
-		change_password(name, password);
-		return TRUE;
-	}
-
-	if (passwords[name] == hash_string("MD5", password)) {
-		change_password(name, password);
-		return TRUE;
-	}
-}
-
-void force_save()
-{
-	ACCESS_CHECK(INTERFACE() || KADMIN() || ACCOUNT());
-
-	save();
-}
-
-void force_restore()
-{
-	ACCESS_CHECK(INTERFACE() || KADMIN() || ACCOUNT());
-
-	restore();
-}
-
-private void save()
-{
-	string buf;
-
-	buf = STRINGD->hybrid_sprint( ([ "properties" : properties,
-		"passwords" : passwords ]) );
-
-	SECRETD->make_dir(".");
-	SECRETD->remove_file("accounts-tmp");
-	SECRETD->write_file("accounts-tmp", buf + "\n");
-	SECRETD->remove_file("accounts");
-	SECRETD->rename_file("accounts-tmp", "accounts");
-}
-
-private void restore()
-{
-	mapping map;
-	string buf;
-
-	buf = SECRETD->read_file("accounts");
-
-	if (!buf) {
-		return;
-	}
-
-	map = PARSER_VALUE->parse(buf);
-
-	properties = map["properties"];
-	passwords = map["passwords"];
+	return FALSE;
 }
 
 mixed query_account_property(string name, string property)
 {
-	if (!property) {
-		error("Invalid property name");
-	}
-
-	if (!passwords[name]) {
+	if (!accounts[name]) {
 		error("No such account");
 	}
 
-	if (properties[name]) {
-		return properties[name][property];
-	} else {
-		return nil;
-	}
+	return accounts[name]->query_property(property);
 }
 
 void set_account_property(string name, string property, mixed value)
 {
-	mapping prop;
-
-	if (!property) {
-		error("Invalid property name");
-	}
-
-	if (!passwords[name]) {
+	if (!accounts[name]) {
 		error("No such account");
 	}
 
-	prop = properties[name];
+	accounts[name]->set_property(property, value);
+	accounts[name]->save();
+}
 
-	if (!prop) {
-		if (value == nil) {
-			return;
+void force_save()
+{
+	string *names;
+	int sz;
+
+	names = map_indices(accounts);
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		object account;
+		string name;
+
+		name = names[sz];
+
+		account = accounts[name];
+
+		account->save();
+	}
+}
+
+void force_restore()
+{
+	string *names;
+	int sz;
+
+	names = SECRETD->get_dir("accounts/*")[0];
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		object account;
+		string name;
+
+		name = names[sz];
+
+		if (!accounts[name]) {
+			accounts[name] = clone_object("../obj/account");
 		}
 
-		properties[name] = prop = ([ ]);
+		account = accounts[name];
+
+		account->set_name(name);
+		account->load();
 	}
-
-	prop[property] = value;
-
-	if (!map_sizeof(prop)) {
-		properties[name] = nil;
-	}
-
-	save();
 }
