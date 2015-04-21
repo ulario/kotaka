@@ -20,6 +20,7 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/assert.h>
+#include <kotaka/checkarg.h>
 #include <kotaka/log.h>
 #include <kotaka/privilege.h>
 #include <type.h>
@@ -36,6 +37,8 @@ void register_account(string name, string password)
 
 	ACCESS_CHECK(TEXT() || VERB());
 
+	CHECKARG(name, 1, "register_account");
+
 	if (accounts[name]) {
 		error("Duplicate account");
 	}
@@ -49,6 +52,8 @@ void unregister_account(string name)
 {
 	ACCESS_CHECK(TEXT() || VERB());
 
+	CHECKARG(name, 1, "unregister_account");
+
 	if (!accounts[name]) {
 		error("No such account");
 	}
@@ -58,6 +63,8 @@ void unregister_account(string name)
 
 int query_is_registered(string name)
 {
+	CHECKARG(name, 1, "query_is_registered");
+
 	return !!accounts[name];
 }
 
@@ -68,7 +75,8 @@ string *query_accounts()
 
 void change_password(string name, string new_password)
 {
-	ACCESS_CHECK(TEXT() || ACCOUNT() || VERB());
+	ACCESS_CHECK(TEXT() || ACCOUNT() || VERB() || KADMIN());
+	CHECKARG(name, 1, "change_password");
 
 	if (!accounts[name]) {
 		error("No such account");
@@ -80,6 +88,7 @@ void change_password(string name, string new_password)
 int authenticate(string name, string password)
 {
 	ACCESS_CHECK(TEXT());
+	CHECKARG(name, 1, "authenticate");
 
 	if (!accounts[name]) {
 		error("No such account");
@@ -95,6 +104,9 @@ int authenticate(string name, string password)
 
 mixed query_account_property(string name, string property)
 {
+	CHECKARG(name, 1, "query_account_property");
+	CHECKARG(property, 2, "query_account_property");
+
 	if (!accounts[name]) {
 		error("No such account");
 	}
@@ -104,6 +116,9 @@ mixed query_account_property(string name, string property)
 
 void set_account_property(string name, string property, mixed value)
 {
+	CHECKARG(name, 1, "set_account_property");
+	CHECKARG(property, 2, "set_account_property");
+
 	if (!accounts[name]) {
 		error("No such account");
 	}
