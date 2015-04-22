@@ -26,8 +26,8 @@
 mapping bans;
 mapping sitebans;
 
-private void save();
-private void restore();
+void save();
+void restore();
 
 static void create()
 {
