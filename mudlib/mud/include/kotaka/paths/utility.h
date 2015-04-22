@@ -22,7 +22,3 @@
 /* daemons */
 
 #define SUBD		(USR_DIR + "/Utility/sys/subd")
-
-/* libs */
-
-#define LIB_DEEP_COPY		(USR_DIR + "/Utility/lib/deep_copy")
