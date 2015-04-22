@@ -21,13 +21,11 @@
 #include <kotaka/paths/algorithm.h>
 #include <status.h>
 
-int *arr;
-
 static void create()
 {
 }
 
-static void test_qsort()
+static void test_qsort(int *arr)
 {
 	int i, sz;
 
@@ -40,7 +38,7 @@ static void test_qsort()
 	}
 }
 
-private void scramble()
+private void scramble(int *arr)
 {
 	int i, sz;
 
@@ -58,7 +56,7 @@ private void scramble()
 	}
 }
 
-private void fill()
+private void fill(int *arr)
 {
 	int sz;
 
@@ -69,11 +67,11 @@ private void fill()
 
 void test()
 {
-	int l, sz;
+	int *arr;
 
 	arr = allocate(status(ST_ARRAYSIZE));
 
-	fill();
-	scramble();
-	call_limited("test_qsort");
+	fill(arr);
+	scramble(arr);
+	call_limited("test_qsort", arr);
 }
