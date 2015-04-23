@@ -26,19 +26,19 @@ inherit SECOND_AUTO;
 
 static void create()
 {
-	make_dir("/config");
+	make_dir("/etc");
 }
 
 string proper_path(string given, string user)
 {
-	return DRIVER->normalize_path(given, "/config/" + user);
+	return DRIVER->normalize_path(given, "/etc/" + user);
 }
 
 void validate_path(string path, string user)
 {
-	if (path != "/config/" + user) {
+	if (path != "/etc/" + user) {
 		PERMISSION_CHECK(
-			sscanf(path, "/config/" + user + "/%*s")
+			sscanf(path, "/etc/" + user + "/%*s")
 		);
 	}
 }

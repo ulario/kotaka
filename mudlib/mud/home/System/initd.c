@@ -402,6 +402,7 @@ static void upgrade_system_2()
 	load();
 
 	purge_orphans("System");
+	rename_file("/config", "/etc");
 
 	MODULED->upgrade_modules();
 }
