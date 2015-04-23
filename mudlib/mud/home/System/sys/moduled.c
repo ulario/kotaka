@@ -162,25 +162,13 @@ void remove_module(string module)
 
 static void purge_module_tick(string module, varargs int reboot)
 {
-	int ticks;
 	int done;
+	object cursor;
 
-	ticks = status(ST_TICKS);
+	cursor = KERNELD->first_link(module);
 
-	while (ticks - status(ST_TICKS) < 50000) {
-		object cursor;
-
-		cursor = KERNELD->first_link(module);
-
-		if (cursor) {
-			destruct_object(cursor);
-		} else {
-			done = 1;
-			break;
-		}
-	}
-
-	if (!done) {
+	if (cursor) {
+		destruct_object(cursor);
 		call_out("purge_module_tick", 0, module, reboot);
 		return;
 	}
