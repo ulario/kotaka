@@ -225,12 +225,12 @@ void test()
 {
 	ACCESS_CHECK(SYSTEM() || BIGSTRUCT());
 
-	LOGD->post_message("test", LOG_DEBUG, "Starting array test...");
+	LOGD->post_message("debug", LOG_DEBUG, "Starting array test...");
 	test_bigstruct_array();
 
-	LOGD->post_message("test", LOG_DEBUG, "Starting deque test...");
+	LOGD->post_message("debug", LOG_DEBUG, "Starting deque test...");
 	test_bigstruct_deque();
 
-	LOGD->post_message("test", LOG_DEBUG, "Starting map test...");
+	LOGD->post_message("debug", LOG_DEBUG, "Starting map test...");
 	test_bigstruct_map();
 }
