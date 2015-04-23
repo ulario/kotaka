@@ -105,7 +105,6 @@ static void create()
 		MODULED->boot_module("Account");
 		MODULED->boot_module("Kotaka");
 		MODULED->boot_module("Game");
-		MODULED->boot_module("Test");
 
 		call_out("audit_filequota", 0);
 	} : {
