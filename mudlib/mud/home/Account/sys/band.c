@@ -46,7 +46,11 @@ void ban_site(string site)
 {
 	ACCESS_CHECK(INTERFACE() || GAME());
 
-	if (site == "127.0.0.1" || site == "::1") {
+	if (sscanf(site, "127.%*s")) {
+		error("Cannot ban localhost");
+	}
+
+	if (site == "::1") {
 		error("Cannot ban localhost");
 	}
 
