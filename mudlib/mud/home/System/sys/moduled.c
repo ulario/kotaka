@@ -97,14 +97,12 @@ void upgrade_modules()
 
 static void recompile_initd(string module)
 {
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling initd for " + module);
 	compile_object(USR_DIR + "/" + module + "/initd");
 	call_out("upgrade_module", 0, module);
 }
 
 static void upgrade_module(string module)
 {
-	LOGD->post_message("system", LOG_NOTICE, "Upgrading " + module);
 	(USR_DIR + "/" + module + "/initd")->upgrade_module();
 }
 
@@ -311,8 +309,6 @@ void prepare_reboot_modules()
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE,
-				"Sending prepare_reboot signal to " + list[sz]);
 			(USR_DIR + "/" + list[sz] + "/initd")->prepare_reboot();
 		}
 	}
@@ -331,8 +327,6 @@ void reboot_modules()
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE,
-				"Sending reboot signal to " + list[sz]);
 			(USR_DIR + "/" + list[sz] + "/initd")->reboot();
 		}
 	}
@@ -351,8 +345,6 @@ void hotboot_modules()
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
 		catch {
-			LOGD->post_message("system", LOG_NOTICE,
-				"Sending hotboot signal to " + list[sz]);
 			(USR_DIR + "/" + list[sz] + "/initd")->hotboot();
 		}
 	}
