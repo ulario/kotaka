@@ -434,8 +434,9 @@ string mixed_sprint(mixed data, varargs mapping seen)
 	string tmp;
 	mixed *arr;
 
-	if (!seen)
+	if (!seen) {
 		seen = ([ ]);
+	}
 
 	switch (typeof(data)) {
 	case T_NIL:
@@ -472,7 +473,7 @@ string mixed_sprint(mixed data, varargs mapping seen)
 
 	case T_ARRAY:
 		if (seen[data] != nil) {
-			return "#" + seen[data];
+			return "@" + seen[data];
 		}
 
 		seen[data] = map_sizeof(seen);
@@ -513,10 +514,16 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		{
 			string name;
 
-			if (name = data->query_object_name()) {
+			if (sscanf(object_name(data), "%s#-1", name)) {
+				if (seen[data] != nil) {
+					return "@" + seen[data];
+				}
+
+				seen[data] = map_sizeof(seen);
+
+				return "(< <" + name + ">: " + mixed_sprint(data->sprint_save(), seen) + ">)";
+			} else if (name = data->query_object_name()) {
 				return "<" + name + ">";
-			} else if (data <- "~Game/lib/thing") {
-				return "<" + TEXT_SUBD->generate_brief_indefinite(data) + ">";
 			} else {
 				return "<" + object_name(data) + ">";
 			}
@@ -563,10 +570,10 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 	case T_STRING:
 	case T_FLOAT:
 	case T_OBJECT:
-		return mixed_sprint(data);
+		return mixed_sprint(data, seen);
 	case T_ARRAY:
 		if (seen[data] != nil) {
-			return "#" + seen[data];
+			return "@" + seen[data];
 		}
 
 		seen[data] = map_sizeof(seen);
@@ -712,7 +719,7 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 	case T_STRING:
 	case T_FLOAT:
 	case T_OBJECT:
-		return mixed_sprint(data);
+		return mixed_sprint(data, seen);
 	case T_ARRAY:
 		if (seen[data] != nil) {
 			return "#" + seen[data];

@@ -137,3 +137,18 @@ static mixed *strike_middle(mixed *input)
 {
 	return ({ input[0], input[sizeof(input) - 1] });
 }
+
+static object *make_lwo(mixed *input)
+{
+	string name;
+	mixed value;
+	object obj;
+
+	name = input[1];
+	value = input[3];
+
+	obj = new_object(name[1 .. strlen(name) - 2]);
+	obj->sprint_restore(value);
+
+	return ({ obj });
+}
