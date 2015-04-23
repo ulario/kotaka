@@ -140,8 +140,10 @@ void save()
 
 	ACCESS_CHECK(ACCOUNT());
 
-	buf = STRINGD->hybrid_sprint( ([ "properties" : properties,
-		"password" : password ]) );
+	buf = STRINGD->hybrid_sprint(
+		([ "properties" : properties,
+		"password" : password ])
+	);
 
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("accounts");
