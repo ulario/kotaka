@@ -195,7 +195,7 @@ string *query_modules()
 
 /* commands */
 
-private void unprovision_module(string module)
+private void deprovision_module(string module)
 {
 	KERNELD->rsrc_set_limit(module, "objects", 0);
 	KERNELD->rsrc_set_limit(module, "callouts", 0);
