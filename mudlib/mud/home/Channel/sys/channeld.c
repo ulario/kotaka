@@ -19,8 +19,9 @@
  */
 #include <kotaka/checkarg.h>
 #include <kotaka/log.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/intermud.h>
+#include <kotaka/paths/kotaka.h>
+#include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/utility.h>
 #include <kotaka/privilege.h>
@@ -32,6 +33,8 @@ mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
 
 void configure_channels();
+void save();
+void restore();
 
 static void create()
 {
@@ -39,7 +42,46 @@ static void create()
 	subscribers = ([ ]);
 	intermud = ([ ]);
 
+	restore();
+
 	configure_channels();
+}
+
+void destruct()
+{
+	save();
+}
+
+void save()
+{
+	string buf;
+
+	CONFIGD->make_dir(".");
+
+	buf = STRINGD->hybrid_sprint( ([
+		"channels": channels,
+		"intermud": intermud
+	]) );
+
+	CONFIGD->remove_file("config-tmp");
+	CONFIGD->write_file("config-tmp", buf + "\n");
+	CONFIGD->remove_file("config");
+	CONFIGD->rename_file("config-tmp", "config");
+}
+
+void restore()
+{
+	string buf;
+	mapping save;
+
+	buf = CONFIGD->read_file("config");
+
+	if (buf) {
+		save = PARSER_VALUE->parse(buf);
+
+		channels = save["channels"];
+		intermud = save["intermud"];
+	}
 }
 
 /**********************/

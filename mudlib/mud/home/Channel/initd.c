@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/kernel.h>
+#include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
@@ -34,6 +35,20 @@ static void create()
 	KERNELD->set_global_access("Channel", 1);
 
 	load();
+}
+
+void prepare_reboot()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	CHANNELD->save();
+}
+
+void reboot()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	CHANNELD->restore();
 }
 
 void upgrade_module()
