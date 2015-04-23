@@ -44,6 +44,15 @@ private int check_module_name(string module)
 	return 1;
 }
 
+private void usage()
+{
+	send_out("Usage: module <subcommand> <module name>\n");
+	send_out("Subcommands:\n");
+	send_out("boot     - to boot a module.\n");
+	send_out("reboot   - to reboot a module.\n");
+	send_out("shutdown - to shutdown a module.\n");
+}
+
 void main(object actor, mapping roles)
 {
 	object user;
@@ -61,11 +70,7 @@ void main(object actor, mapping roles)
 	}
 
 	if (sscanf(command, "%s %s", command, module) < 2) {
-		send_out("Usage: module <subcommand> <module name>\n");
-		send_out("Subcommands:\n");
-		send_out("boot     - to boot a module.\n");
-		send_out("reboot   - to reboot a module.\n");
-		send_out("shutdown - to shutdown a module.\n");
+		usage();
 		return;
 	}
 
@@ -88,5 +93,7 @@ void main(object actor, mapping roles)
 		}
 		MODULED->shutdown_module(module);
 		break;
+	default:
+		usage();
 	}
 }
