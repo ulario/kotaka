@@ -23,11 +23,14 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
+#define TICKS 200000
+
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
 private void load()
 {
+	load_dir("obj", 1);
 }
 
 static void create()
@@ -35,6 +38,24 @@ static void create()
 	KERNELD->set_global_access("Test", 1);
 
 	load();
+}
+
+void bomb(int quota)
+{
+	rlimits (0; TICKS + 20000) {
+		int ticks;
+
+		ticks = status(ST_TICKS);
+
+		while (ticks - status(ST_TICKS) < TICKS && quota > 0) {
+			clone_object("obj/bomb");
+			quota--;
+		}
+	}
+
+	if (quota > 0) {
+		call_out("bomb", 0, quota);
+	}
 }
 
 void upgrade_module()
