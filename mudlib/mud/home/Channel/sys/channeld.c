@@ -25,6 +25,8 @@
 #include <kotaka/paths/utility.h>
 #include <kotaka/privilege.h>
 
+#define SYSTEM_CHANNELS ({ "compile", "debug", "error", "system", "trace" })
+
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
@@ -69,7 +71,7 @@ void del_channel(string channel)
 	CHECKARG(1, channel, "del_channel");
 
 	if (sizeof(({ channel })
-		& ({ "error", "trace", "compile", "system" }))
+		& SYSTEM_CHANNELS)
 	) {
 		error("Cannot remove a system channel");
 	}
@@ -284,7 +286,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 void configure_channels()
 {
 	string *channels;
-	int i, sz;
+	int sz;
 
 	ACCESS_CHECK(INTERFACE() || CHANNEL());
 
@@ -292,21 +294,11 @@ void configure_channels()
 	/* trace: errord, used for stack traces */
 	/* compile: errord, used for compile errors */
 
-	channels = ({ "error", "trace", "compile", "system" });
+	channels = SYSTEM_CHANNELS;
 
-	sz = sizeof(channels);
-
-	for (i = 0; i < sz; i++) {
-		if (!test_channel(channels[i])) {
-			add_channel(channels[i]);
+	for (sz = sizeof(channels); --sz >= 0; ) {
+		if (!test_channel(channels[sz])) {
+			add_channel(channels[sz]);
 		}
-	}
-
-	channels = query_channels() - channels;
-
-	sz = sizeof(channels);
-
-	for (i = 0; i < sz; i++) {
-		del_channel(channels[i]);
 	}
 }

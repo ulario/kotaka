@@ -42,5 +42,7 @@ void upgrade_module()
 
 	load();
 
+	CHANNELD->configure_channels();
+
 	purge_orphans("Channel");
 }
