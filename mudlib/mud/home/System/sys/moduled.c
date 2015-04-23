@@ -195,6 +195,22 @@ string *query_modules()
 
 /* commands */
 
+private void unprovision_module(string module)
+{
+	KERNELD->rsrc_set_limit(module, "objects", 0);
+	KERNELD->rsrc_set_limit(module, "callouts", 0);
+	KERNELD->rsrc_set_limit(module, "stack", 0);
+	KERNELD->rsrc_set_limit(module, "ticks", 0);
+}
+
+private void provision_module(string module)
+{
+	KERNELD->rsrc_set_limit(module, "objects", -1);
+	KERNELD->rsrc_set_limit(module, "callouts", -1);
+	KERNELD->rsrc_set_limit(module, "stack", -1);
+	KERNELD->rsrc_set_limit(module, "ticks", -1);
+}
+
 void boot_module(string module)
 {
 	if (!file_info(USR_DIR + "/" + module + "/initd.c")) {
@@ -209,13 +225,7 @@ void boot_module(string module)
 	KERNELD->add_user(module);
 	KERNELD->add_owner(module);
 
-	catch {
-		KERNELD->rsrc_set_limit(module, "objects", -1);
-	}
-
-	catch {
-		KERNELD->rsrc_set_limit(module, "callouts", -1);
-	}
+	provision_module(module);
 
 	rlimits(100; -1) {
 		load_object(USR_DIR + "/" + module + "/initd");
@@ -240,14 +250,7 @@ void shutdown_module(string module)
 		error("Cannot shutdown " + module);
 	}
 
-	catch {
-		KERNELD->rsrc_set_limit(module, "objects", 0);
-	}
-
-	catch {
-		KERNELD->rsrc_set_limit(module, "callouts", 0);
-	}
-
+	deprovision_module(module);
 	remove_module(module);
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
@@ -267,14 +270,7 @@ void reboot_module(string module)
 		error("Cannot reboot " + module);
 	}
 
-	catch {
-		KERNELD->rsrc_set_limit(module, "objects", 0);
-	}
-
-	catch {
-		KERNELD->rsrc_set_limit(module, "callouts", 0);
-	}
-
+	deprovision_module(module);
 	remove_module(module);
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
