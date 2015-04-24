@@ -161,7 +161,7 @@ int remove_callout(object obj, int handle)
 
 	map = cmap->query_element(oindex);
 
-	if (!map || map[handle]) {
+	if (!map || map[handle] == nil) {
 		return FALSE;
 	}
 
