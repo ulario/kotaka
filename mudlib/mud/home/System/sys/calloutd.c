@@ -156,7 +156,9 @@ void suspend(object obj, int handle)
 	ACCESS_CHECK(previous_program() == RSRCD);
 
 	if (bypass(obj)) {
-		RSRCD->release_callout(obj, handle);
+		catch {
+			RSRCD->release_callout(obj, handle);
+		}
 		return;
 	}
 
