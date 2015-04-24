@@ -53,13 +53,20 @@ void reboot()
 	CHANNELD->restore();
 }
 
+static void upgrade_module_2()
+{
+	CHANNELD->configure_channels();
+}
+
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
 
-	CHANNELD->configure_channels();
+	compile_object(CHANNELD);
+
+	call_out("upgrade_module_2", 0);
 
 	purge_orphans("Channel");
 }
