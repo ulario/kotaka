@@ -85,6 +85,22 @@ private void free_queue()
 	destruct_object(cqueue);
 }
 
+/* public */
+
+void suspend_global()
+{
+	ACCESS_CHECK(VERB() || INTERFACE() || KADMIN());
+
+	RSRCD->suspend_callouts();
+}
+
+void release_global()
+{
+	ACCESS_CHECK(VERB() || INTERFACE() || KADMIN());
+
+	RSRCD->release_callouts();
+}
+
 /* initd hooks */
 
 void reboot()
@@ -98,28 +114,42 @@ void reboot()
 
 void suspend_callouts()
 {
-	if (previous_program() == RSRCD) {
-		LOGD->post_message("system", LOG_INFO, "Suspending callouts");
+	ACCESS_CHECK(previous_program() == RSRCD);
 
-		suspend = -1;
+	LOGD->post_message("system", LOG_INFO, "Suspending callouts");
 
-		if (handle) {
-			remove_call_out(handle);
-			handle = 0;
-		}
+	suspend = -1;
 
-		if (!cmap) {
-			alloc_queue();
-		}
-	} else {
-		RSRCD->suspend_callouts();
+	if (handle) {
+		remove_call_out(handle);
+		handle = 0;
+	}
+
+	if (!cmap) {
+		alloc_queue();
+	}
+}
+
+void release_callouts()
+{
+	ACCESS_CHECK(previous_program() == RSRCD);
+
+	LOGD->post_message("system", LOG_INFO, "Releasing callouts");
+
+	suspend = 1;
+
+	/* Don't send any more callouts our way */
+	RSRCD->release_callout(nil, 0);
+
+	/* start draining backed up callouts */
+	if (!handle) {
+		handle = call_out("do_release", 0);
 	}
 }
 
 void suspend(object obj, int handle)
 {
 	mixed *callout;
-
 	mapping map;
 	int oindex;
 
@@ -207,24 +237,7 @@ void remove_callouts(object obj)
 	}
 }
 
-void release_callouts()
-{
-	if (previous_program() == RSRCD) {
-		LOGD->post_message("system", LOG_INFO, "Releasing callouts");
-
-		suspend = 1;
-
-		/* Don't send any more callouts our way */
-		RSRCD->release_callout(nil, 0);
-
-		/* start draining backed up callouts */
-		if (!handle) {
-			handle = call_out("do_release", 0);
-		}
-	} else {
-		RSRCD->release_callouts();
-	}
-}
+/* misc */
 
 int query_suspend()
 {

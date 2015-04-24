@@ -38,5 +38,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	CALLOUTD->release_callouts();
+	CALLOUTD->release_global();
 }
