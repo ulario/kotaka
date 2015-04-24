@@ -79,6 +79,9 @@ static void create()
 		configure_klib();
 		configure_rsrc();
 
+		load_object(SECRETD);
+		load_object(CONFIGD);
+
 		load_object(MODULED);
 
 		MODULED->boot_module("Bigstruct");
@@ -90,8 +93,8 @@ static void create()
 
 		load_object(SYSTEM_USERD);
 
-		MODULED->boot_module("Channel");
 		MODULED->boot_module("String");
+		MODULED->boot_module("Channel");
 		MODULED->boot_module("Algorithm");
 
 		load();
