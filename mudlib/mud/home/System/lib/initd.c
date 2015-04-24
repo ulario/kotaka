@@ -111,6 +111,10 @@ static void purge_orphans(string module)
 
 			pinfo = PROGRAMD->query_program_info(index);
 
+			if (!pinfo) {
+				continue;
+			}
+
 			file = pinfo->query_path();
 
 			if (!sscanf(file, USR_DIR + "/" + module + "/%*s")) {
