@@ -187,14 +187,6 @@ static void purge_module_tick(string module, varargs int reboot)
 	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + module);
 
 	if (reboot) {
-		catch {
-			KERNELD->rsrc_set_limit(module, "objects", -1);
-		}
-
-		catch {
-			KERNELD->rsrc_set_limit(module, "callouts", -1);
-		}
-
 		call_out("boot_module", 0, module);
 	}
 }
