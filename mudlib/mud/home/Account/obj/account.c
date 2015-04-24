@@ -91,6 +91,10 @@ int authenticate(string trial_password)
 		return TRUE;
 	}
 
+	if (password == hash_string("crypt", trial_password, password)) {
+		return TRUE;
+	}
+
 	if (password == hash_string("crypt", trial_password)) {
 		return TRUE;
 	}
