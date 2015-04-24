@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/kernel.h>
+#include <kernel/rsrc.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
@@ -56,6 +57,14 @@ private void scramble(mixed *arr)
 		arr[i] = arr[j];
 		arr[j] = tmp;
 	}
+}
+
+private void freeze_module(string module)
+{
+	KERNELD->rsrc_set_limit(module, "objects", 0);
+	KERNELD->rsrc_set_limit(module, "callouts", 0);
+	KERNELD->rsrc_set_limit(module, "stack", 0);
+	KERNELD->rsrc_set_limit(module, "ticks", 0);
 }
 
 private void reset_modules_list()
@@ -160,6 +169,35 @@ void remove_module(string module)
 	}
 }
 
+private void wipe_module(string module)
+{
+	string *rsrc_names;
+	int sz;
+	int clear;
+
+	clear = 1;
+
+	rsrc_names = KERNELD->query_resources();
+
+	for (sz = sizeof(rsrc_names); --sz >= 0; ) {
+		mixed *rsrc;
+		string rsrc_name;
+
+		rsrc_name = rsrc_names[sz];
+
+		KERNELD->rsrc_set_limit(module, rsrc_name, -1);
+
+		if (KERNELD->rsrc_get(module, rsrc_name)
+			[RSRC_USAGE]) {
+			clear = 0;
+		}
+	}
+
+	if (clear) {
+		KERNELD->remove_owner(module);
+	}
+}
+
 static void purge_module_tick(string module, varargs int reboot)
 {
 	int done;
@@ -186,6 +224,8 @@ static void purge_module_tick(string module, varargs int reboot)
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + module);
 
+	wipe_module(module);
+
 	if (reboot) {
 		call_out("boot_module", 0, module);
 	}
@@ -197,22 +237,6 @@ string *query_modules()
 }
 
 /* commands */
-
-private void deprovision_module(string module)
-{
-	KERNELD->rsrc_set_limit(module, "objects", 0);
-	KERNELD->rsrc_set_limit(module, "callouts", 0);
-	KERNELD->rsrc_set_limit(module, "stack", 0);
-	KERNELD->rsrc_set_limit(module, "ticks", 0);
-}
-
-private void provision_module(string module)
-{
-	KERNELD->rsrc_set_limit(module, "objects", -1);
-	KERNELD->rsrc_set_limit(module, "callouts", -1);
-	KERNELD->rsrc_set_limit(module, "stack", -1);
-	KERNELD->rsrc_set_limit(module, "ticks", -1);
-}
 
 void boot_module(string module)
 {
@@ -227,8 +251,6 @@ void boot_module(string module)
 
 	KERNELD->add_user(module);
 	KERNELD->add_owner(module);
-
-	provision_module(module);
 
 	rlimits(100; -1) {
 		load_object(USR_DIR + "/" + module + "/initd");
@@ -253,7 +275,7 @@ void shutdown_module(string module)
 		error("Cannot shutdown " + module);
 	}
 
-	deprovision_module(module);
+	freeze_module(module);
 	remove_module(module);
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
@@ -273,7 +295,7 @@ void reboot_module(string module)
 		error("Cannot reboot " + module);
 	}
 
-	deprovision_module(module);
+	freeze_module(module);
 	remove_module(module);
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
