@@ -37,30 +37,10 @@ void on_paint_text(object gc, object obj, object viewer)
 		return;
 	}
 
+	gc->set_color(0x2A);
+
 	for (my = -8; my <= 8; my++) {
-		for (mx = -8; mx <= 8; mx++) {
-			gc->move_pen(mx, my);
-
-			switch(random(3)) {
-			case 0:
-				gc->set_color(0x20);
-				break;
-			case 1:
-				gc->set_color(0x2A);
-				break;
-			case 2:
-				gc->set_color(0x23);
-				break;
-			}
-
-			switch(random(2)) {
-			case 0:
-				gc->draw(",");
-				break;
-			case 1:
-				gc->draw("'");
-				break;
-			}
-		}
+		gc->move_pen(-8, my);
+		gc->draw(STRINGD->chars('\'', 17));
 	}
 }
