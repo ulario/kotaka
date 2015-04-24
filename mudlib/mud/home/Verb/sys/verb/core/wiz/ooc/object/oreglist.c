@@ -30,7 +30,6 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	string owner;
-	mapping seen;
 	object first;
 	object obj;
 
@@ -39,7 +38,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	seen = ([ ]);
 	first = KERNELD->first_link(roles["raw"]);
 
 	if (!first) {
@@ -54,12 +52,6 @@ void main(object actor, mapping roles)
 	do {
 		send_out(object_name(obj) + "\n");
 
-		seen[obj] = 1;
 		obj = KERNELD->next_link(obj);
-
-		if (!obj) {
-			send_out("nil\n");
-			break;
-		}
-	} while (!seen[obj]);
+	} while (obj != first);
 }
