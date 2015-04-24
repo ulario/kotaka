@@ -290,7 +290,7 @@ private int bypass(object obj)
 		return 1;
 	}
 
-	return DRIVER->creator(object_name(obj)) == "System";
+	return obj->query_owner() == "System";
 }
 
 private mixed *release()
