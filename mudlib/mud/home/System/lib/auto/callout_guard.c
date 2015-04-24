@@ -37,7 +37,7 @@ static int call_out(string func, mixed delay, mixed args...)
 		error("Call_out to undefined function " + func);
 	}
 
-	if (!SYSTEM() && free_callouts() < 20) {
+	if (!SYSTEM() && free_callouts() < (status(ST_COTABSIZE) / 20)) {
 		error("Too many callouts");
 	}
 

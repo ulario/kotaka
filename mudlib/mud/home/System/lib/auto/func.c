@@ -32,7 +32,9 @@ static object compile_object(mixed args ...)
 
 	obj = find_object(args[0]);
 
-	if (!SYSTEM() && DRIVER->creator(args[0]) != "System" && !obj && free_objects() < 50) {
+	if (!SYSTEM() &&
+		DRIVER->creator(args[0]) != "System" &&
+		!obj && free_objects() < status(ST_OTABSIZE) / 20) {
 		error("Too many objects");
 	}
 
@@ -49,7 +51,9 @@ static object load_object(mixed args ...)
 		return obj;
 	}
 
-	if (!SYSTEM() && DRIVER->creator(args[0]) != "System" && !obj && free_objects() < 50) {
+	if (!SYSTEM() &&
+		DRIVER->creator(args[0]) != "System" &&
+		!obj && free_objects() < status(ST_OTABSIZE) / 20) {
 		error("Too many objects");
 	}
 
@@ -58,7 +62,9 @@ static object load_object(mixed args ...)
 
 static object clone_object(mixed args ...)
 {
-	if (!SYSTEM() && query_owner() != "System" && free_objects() < 100) {
+	if (!SYSTEM() &&
+		query_owner() != "System" &&
+		free_objects() < status(ST_OTABSIZE) / 20) {
 		error("Too many objects");
 	}
 
