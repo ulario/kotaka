@@ -1,6 +1,5 @@
-To upgrade to version 0.38 from version 0.37:
+To upgrade to version 0.39 from version 0.38:
 
-First, make sure that callouts are not currently suspended
-(this version destructs and reloads the callout manager)
-
-Then use the upgrade command, followed by rebuild.
+upgrade
+rebuild
+module shutdown Algorithm
