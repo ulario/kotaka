@@ -240,8 +240,6 @@ void set_telnet_manager(int port, object LIB_USERD manager)
 
 void reboot()
 {
-	int i, sz;
-
 	ACCESS_CHECK(SYSTEM());
 
 	unregister_with_klib_userd();
@@ -250,8 +248,6 @@ void reboot()
 
 void hotboot()
 {
-	int i, sz;
-
 	ACCESS_CHECK(SYSTEM());
 
 	unregister_with_klib_userd();
