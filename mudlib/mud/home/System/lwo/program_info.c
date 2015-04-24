@@ -93,14 +93,14 @@ void set_inherits(int *new_inherits)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherits = new_inherits;
+	inherits = new_inherits[..];
 }
 
 void set_includes(string *new_includes)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	includes = new_includes;
+	includes = new_includes[..];
 }
 
 void set_destructed()
@@ -135,21 +135,21 @@ void set_inherited_constructors(string *constructors)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherited_constructors = constructors;
+	inherited_constructors = constructors[..];
 }
 
 void set_inherited_destructors(string *destructors)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherited_destructors = destructors;
+	inherited_destructors = destructors[..];
 }
 
 void set_inherited_touchers(string *touchers)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherited_touchers = touchers;
+	inherited_touchers = touchers[..];
 }
 
 string query_path()
@@ -189,15 +189,15 @@ string query_toucher()
 
 string *query_inherited_constructors()
 {
-	return inherited_constructors;
+	return inherited_constructors[..];
 }
 
 string *query_inherited_destructors()
 {
-	return inherited_destructors;
+	return inherited_destructors[..];
 }
 
 string *query_inherited_touchers()
 {
-	return inherited_touchers;
+	return inherited_touchers[..];
 }
