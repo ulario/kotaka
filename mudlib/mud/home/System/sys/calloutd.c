@@ -35,12 +35,11 @@ object cmap;	/* ([ oindex : ([ handle : iterator ]) ]) */
 object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
 
 int begin, end;
-int callouts, holes;
 
 private int bypass(object obj);
 int empty();
-mixed *release();
 
+private mixed *release();
 private void alloc_queue();
 private void free_queue();
 
@@ -48,7 +47,7 @@ private void free_queue();
 
 static void create()
 {
-	begin = end = callouts = holes = handle = 0;
+	begin = end = handle = 0;
 
 	RSRCD->set_suspension_manager(this_object());
 }
@@ -131,7 +130,7 @@ void suspend(object obj, int handle)
 		return;
 	}
 
-	if ((end + 1) & 0x0FFFFFFF == begin) {
+	if ((end + 1) & 0x3FFFFFFF == begin) {
 		error("Suspension queue overflow");
 	}
 
@@ -147,8 +146,7 @@ void suspend(object obj, int handle)
 	map[handle] = end;
 
 	cqueue->set_element(end++, ({ obj, handle }) );
-	end &= 0x0FFFFFFF;
-	callouts++;
+	end &= 0x3FFFFFFF;
 }
 
 int remove_callout(object obj, int handle)
@@ -173,9 +171,6 @@ int remove_callout(object obj, int handle)
 	if (!map_sizeof(map)) {
 		cmap->set_element(oindex, nil);
 	}
-
-	callouts--;
-	holes++;
 
 	return TRUE;
 }
@@ -208,9 +203,6 @@ void remove_callouts(object obj)
 	for (sz = osz; --sz >= 0; ) {
 		cqueue->set_element(qindices[sz], nil);
 	}
-
-	callouts -= osz;
-	holes += osz;
 }
 
 void release_callouts()
@@ -280,14 +272,6 @@ static void do_release()
 
 			suspend = 0;
 			begin = end = 0;
-
-			if (callouts != 0) {
-				error(callouts + " callouts unaccounted for");
-			}
-
-			if (holes != 0) {
-				error(holes + " holes unaccounted for");
-			}
 		}
 
 		break;
@@ -307,18 +291,11 @@ private int bypass(object obj)
 	return DRIVER->creator(object_name(obj)) == "System";
 }
 
-int empty()
-{
-	return begin == end;
-}
-
-mixed *release()
+private mixed *release()
 {
 	mixed *callout;
 	mixed map;
 	int oindex;
-
-	ACCESS_CHECK(SYSTEM());
 
 	if (begin == end) {
 		return nil;
@@ -327,13 +304,10 @@ mixed *release()
 	callout = cqueue->query_element(begin);
 	cqueue->set_element(begin++, nil);
 
-	begin &= 0x0FFFFFFF;
+	begin &= 0x3FFFFFFF;
 
 	if (!callout) {
-		holes--;
 		return ({ nil, -1 });
-	} else {
-		callouts--;
 	}
 
 	if (!callout[0]) {
