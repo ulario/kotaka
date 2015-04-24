@@ -33,7 +33,7 @@ void main(object actor, mapping roles)
 
 	user = query_user();
 
-	if (user->query_class() < 1) {
+	if (user->query_class() < 2) {
 		send_out("You do not have sufficient access rights to rebuild.\n");
 		return;
 	}
