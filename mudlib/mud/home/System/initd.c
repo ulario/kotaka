@@ -168,6 +168,7 @@ void reboot()
 	configure_logging();
 
 	SYSTEM_USERD->reboot();
+	CALLOUTD->reboot();
 
 	call_out("audit_filequota", 0);
 	MODULED->reboot_modules();
@@ -185,6 +186,7 @@ void hotboot()
 	configure_logging();
 
 	SYSTEM_USERD->hotboot();
+	CALLOUTD->reboot();
 
 	MODULED->hotboot_modules();
 

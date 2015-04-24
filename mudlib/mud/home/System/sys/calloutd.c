@@ -76,14 +76,23 @@ private void alloc_queue()
 	cmap = clone_object(BIGSTRUCT_ARRAY_OBJ);
 	cqueue = clone_object(BIGSTRUCT_ARRAY_OBJ);
 
-	cmap->set_size(0x7FFFFFFF);
-	cqueue->set_size(0x10000000);
+	cmap->set_size(status(ST_OTABSIZE));
+	cqueue->set_size(0x40000000);
 }
 
 private void free_queue()
 {
 	destruct_object(cmap);
 	destruct_object(cqueue);
+}
+
+/* initd hooks */
+
+void reboot()
+{
+	if (cmap) {
+		cmap->set_size(status(ST_OTABSIZE));
+	}
 }
 
 /* rsrcd hooks */
