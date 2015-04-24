@@ -172,6 +172,8 @@ int remove_callout(object obj, int handle)
 		cmap->set_element(oindex, nil);
 	}
 
+	cqueue->set_element(qindex, nil);
+
 	return TRUE;
 }
 
