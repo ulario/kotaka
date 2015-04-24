@@ -41,7 +41,7 @@ void call_touch(object obj)
 	ACCESS_CHECK(SYSTEM());
 
 	if (queue->empty()) {
-		call_out("touch", TOUCH_DELAY);
+		call_out("touch", 0);
 	}
 
 	queue->push_back(obj);

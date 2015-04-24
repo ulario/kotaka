@@ -22,14 +22,11 @@
 #include <status.h>
 #include <type.h>
 
-string *chars;
-
 string hex(int i);
 string bin(int i);
 
 static void create()
 {
-	chars = allocate(256);
 }
 
 string chars(int code, int count)
@@ -44,14 +41,8 @@ string chars(int code, int count)
 		error("String too long (" + count + ")");
 	}
 
-	if (!chars[code]) {
-		string single;
-		single = " ";
-		single[0] = code;
-		chars[code] = single;
-	}
-
-	log = chars[code];
+	log = " ";
+	log[0] = code;
 
 	while (strlen(log) < count) {
 		if (strlen(log) * 2 > count) {
@@ -61,7 +52,6 @@ string chars(int code, int count)
 		}
 	}
 
-	chars[code] = log;
 	return log[0 .. count - 1];
 }
 
