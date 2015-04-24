@@ -27,7 +27,6 @@ inherit UTILITY_COMPILE;
 private void load()
 {
 	MODULED->boot_module("Account");
-	MODULED->boot_module("Algorithm");
 	MODULED->boot_module("Ansi");
 	MODULED->boot_module("Bigstruct");
 	MODULED->boot_module("Channel");

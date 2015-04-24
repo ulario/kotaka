@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <game/paths.h>
-#include <kotaka/paths/algorithm.h>
+#include <kotaka/paths/utility.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>

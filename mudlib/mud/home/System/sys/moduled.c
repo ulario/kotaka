@@ -246,10 +246,10 @@ void shutdown_module(string module)
 	ACCESS_CHECK(INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
 
 	switch(module) {
-	case "Algorithm":
 	case "Bigstruct":
 	case "String":
 	case "System":
+	case "Utility":
 		error("Cannot shutdown " + module);
 	}
 

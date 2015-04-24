@@ -94,8 +94,8 @@ static void create()
 		load_object(SYSTEM_USERD);
 
 		MODULED->boot_module("String");
+		MODULED->boot_module("Utility");
 		MODULED->boot_module("Channel");
-		MODULED->boot_module("Algorithm");
 
 		load();
 

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/algorithm.h>
+#include <kotaka/paths/utility.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/verb.h>

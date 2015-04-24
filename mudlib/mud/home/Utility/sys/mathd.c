@@ -17,9 +17,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <config.h>
+float rnd()
+{
+	mixed low;
+	mixed high;
 
-/* daemons */
+	low = random(1 << 18);
+	high = random(1 << 18);
 
-#define MATHD		(USR_DIR + "/Algorithm/sys/mathd")
-#define SORTD		(USR_DIR + "/Algorithm/sys/sortd")
+	return ldexp((float)low, -36) + ldexp((float)high, -18);
+}
+
+float bell_rnd(int degree)
+{
+	float sum;
+	int i;
+
+	for (i = 0; i < degree; i++) {
+		sum += rnd();
+	}
+
+	return sum / (float)degree;
+}
+
+float pi()
+{
+	return atan(1.0) * 4.0;
+}
+
+int dice(int faces, int count)
+{
+	int sum;
+
+	while (count) {
+		sum += random(faces) + 1;
+		count--;
+	}
+
+	return sum;
+}
