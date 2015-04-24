@@ -152,11 +152,14 @@ void clear_admin()
 	}
 }
 
+/* kernel hooks */
+
 void prepare_reboot()
 {
 	ACCESS_CHECK(KERNEL());
 
 	MODULED->prepare_reboot_modules();
+	ACCESSD->save();
 }
 
 void reboot()
@@ -172,6 +175,7 @@ void reboot()
 
 	SYSTEM_USERD->reboot();
 	CALLOUTD->reboot();
+	ACCESSD->restore();
 
 	call_out("audit_filequota", 0);
 	MODULED->reboot_modules();
