@@ -23,8 +23,6 @@
 
 inherit "call_guard";
 
-mapping touches;
-
 static void call_touch(object obj)
 {
 	if (previous_program() == TOUCHD) {
