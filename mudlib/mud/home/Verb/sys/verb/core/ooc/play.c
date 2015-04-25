@@ -52,6 +52,10 @@ void main(object actor, mapping roles)
 	}
 
 	if (roles["raw"] != "") {
+		if (user->query_class() < 2) {
+			send_out("Only a wizard can play someone other than their default character.\n");
+			return;
+		}
 		body = CATALOGD->lookup_object(roles["raw"]);
 	}
 
