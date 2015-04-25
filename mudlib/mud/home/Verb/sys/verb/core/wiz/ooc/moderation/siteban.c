@@ -50,7 +50,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (site == "127.0.0.1" || site == "::1") {
+	if (sscanf(site, "127.%*s") || site == "::1") {
 		send_out("You cannot siteban localhost\n");
 		return;
 	}
