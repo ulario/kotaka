@@ -52,6 +52,7 @@ void main(object actor, mapping roles)
 
 	if (!tuser) {
 		send_out("User not found.\n");
+		return;
 	}
 
 	tuser->message(user->query_titled_name() + " tells you: " + text + "\n");
