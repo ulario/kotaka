@@ -70,7 +70,7 @@ void main(object actor, mapping roles)
 
 	send_out("You start to configure " + TEXT_SUBD->generate_brief_definite(dob) + ".\n");
 
-	configure = new_object("~Text/lwo/ustate/objconf");
+	configure = new_object("~Text/lwo/ustate/wiz/objconf");
 	configure->set_object(dob);
 	query_ustate()->push_state(configure);
 }
