@@ -21,11 +21,6 @@
 #include <type.h>
 #include <trace.h>
 
-/* call_other masking is optional */
-#if 1
-
-/* but if we have call_other, the other routines are mandatory */
-#if 1
 static mixed call_other(mixed obj, string func, varargs mixed args ...)
 {
 	string path;
@@ -58,7 +53,6 @@ static mixed call_other(mixed obj, string func, varargs mixed args ...)
 
 	return ::call_other(obj, func, args ...);
 }
-#endif
 
 static string previous_program(varargs int n)
 {
@@ -100,22 +94,6 @@ static mixed **call_trace()
 	}
 
 	return trace - ({ nil });
-}
-#endif
-
-static mixed call_other_unprotected(varargs mixed args ...)
-{
-	return ::call_other(args ...);
-}
-
-static mixed **call_trace_unprotected()
-{
-	return ::call_trace();
-}
-
-static string previous_program_unprotected(varargs int steps)
-{
-	return ::previous_program(steps);
 }
 
 static object calling_object(varargs int steps)
