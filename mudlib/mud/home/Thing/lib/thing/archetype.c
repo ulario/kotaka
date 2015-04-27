@@ -76,6 +76,8 @@ atomic nomask void set_archetypes(object *new_archs)
 	object *removed, *added, *arch;
 	object *check, this;
 
+	CHECKARG(sizeof(new_archs - ({ nil })), 1, "set_archetypes");
+
 	arch = query_archetypes();
 
 	removed = arch - new_archs;
@@ -118,7 +120,7 @@ atomic nomask void clear_archetypes()
 	int sz, i;
 	object this;
 
-	sz = sizeof(archetypes);
+	sz = sizeof(archetypes -= ({ nil }) );
 
 	this = this_object();
 
