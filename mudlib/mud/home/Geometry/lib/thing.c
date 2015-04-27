@@ -20,7 +20,7 @@
 #include <kotaka/paths/thing.h>
 
 inherit LIB_THING;
-inherit "xyz";
+inherit "thing/xyz";
 
 static void create()
 {

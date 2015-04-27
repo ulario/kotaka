@@ -20,7 +20,7 @@
 #include <kotaka/paths/thing.h>
 
 inherit thing LIB_THING;
-inherit geometry "~Geometry/lib/thing/geometry";
+inherit geometry "~Geometry/lib/thing";
 inherit "thing/exit";
 
 static void create()
