@@ -197,8 +197,15 @@ static void create()
 	build_world();
 }
 
+object create_thing()
+{
+	return clone_object("~/obj/thing");
+}
+
 object create_object()
 {
+	LOGD->post_message("debug", LOG_WARN, "Please update " + previous_program() + " to use GAME_INITD->create_thing()");
+
 	return clone_object("~/obj/thing");
 }
 
