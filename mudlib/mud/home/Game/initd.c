@@ -204,9 +204,13 @@ object create_thing()
 
 object create_object()
 {
+	object thing;
+
 	LOGD->post_message("debug", LOG_WARN, "Please update " + previous_program() + " to use GAME_INITD->create_thing()");
 
-	return clone_object("~/obj/thing");
+	thing = clone_object("~/obj/thing");
+	thing->set_local_property("local_snouns", ({ "thing" }) );
+	return thing;
 }
 
 void destroy_object(object obj)
