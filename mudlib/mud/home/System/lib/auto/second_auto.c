@@ -28,8 +28,8 @@ inherit "callout_guard";
 inherit "catalog";
 inherit "clone";
 inherit "file_guard";
-inherit "func";
 inherit "object";
+inherit "object_guard";
 inherit "touch";
 
 /**********/
