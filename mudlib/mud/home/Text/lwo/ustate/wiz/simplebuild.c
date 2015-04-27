@@ -154,7 +154,7 @@ void pre_end()
 	dead = 1;
 }
 
-private void do_makeroom()
+private atomic void do_makeroom()
 {
 	int bx, by, sx, sy;
 	int px, py;
@@ -195,7 +195,7 @@ private void do_makeroom()
 	room = nil;
 }
 
-private void do_linkroom(int offset)
+private atomic void do_linkroom(int offset)
 {
 	object room2;
 	object env;
