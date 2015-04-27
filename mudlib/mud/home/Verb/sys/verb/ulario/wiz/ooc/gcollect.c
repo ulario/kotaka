@@ -20,6 +20,7 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
+#include <game/paths.h>
 #include <status.h>
 
 inherit LIB_VERB;
@@ -58,9 +59,9 @@ void main(object actor, mapping roles)
 
 	sz = list->query_size();
 
-	send_out("There are " + sz + " orphans.\n");
-
 	for (i = 0; i < sz; i++) {
-		send_out(object_name(list->query_element(i)) + "\n");
+		GAME_INITD->destroy_object(list->query_element(i));
 	}
+
+	send_out("Destroyed " + sz + " orphans.\n");
 }
