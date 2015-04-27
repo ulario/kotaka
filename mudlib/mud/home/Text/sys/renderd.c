@@ -203,6 +203,18 @@ private void draw_prose(object gc, object actor)
 
 		inv = env->query_inventory() - ({ actor });
 
+		{
+			int sz;
+
+			for (sz = sizeof(inv); --sz >= 0; ) {
+				if (inv[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
+					inv[sz] = nil;
+				}
+			}
+
+			inv -= ({ nil });
+		}
+
 		if (sizeof(inv)) {
 			lines += ({ "" });
 

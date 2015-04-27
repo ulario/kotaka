@@ -71,6 +71,19 @@ void main(object actor, mapping roles)
 	}
 
 	inv = actor->query_inventory();
+
+	{
+		int sz;
+
+		for (sz = sizeof(inv); --sz >= 0; ) {
+			if (inv[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
+				inv[sz] = nil;
+			}
+		}
+
+		inv -= ({ nil });
+	}
+
 	sz = sizeof(inv);
 
 	if (sz) {

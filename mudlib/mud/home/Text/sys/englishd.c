@@ -295,6 +295,18 @@ private mixed *bind_english(mixed **phrases, object *initial)
 
 		candidates = result[1];
 
+		{
+			int sz;
+
+			for (sz = sizeof(candidates); --sz >= 0; ) {
+				if (candidates[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
+					candidates[sz] = nil;
+				}
+			}
+
+			candidates -= ({ nil });
+		}
+
 		if (sizeof(candidates) == 0) {
 			return ({ 2, "There is no " + implode(adj + ({ noun }), " ") });
 		}
@@ -494,6 +506,18 @@ private mixed *english_process(string command, object ustate, object actor, obje
 			} else {
 				icand = ({ actor }) + actor->query_inventory();
 			}
+		}
+
+		{
+			int sz;
+
+			for (sz = sizeof(icand); --sz >= 0; ) {
+				if (icand[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
+					icand[sz] = nil;
+				}
+			}
+
+			icand -= ({ nil });
 		}
 
 		for (i = 0; i < sz; i++) {
