@@ -93,7 +93,7 @@ void action(mapping roles)
 		actor->set_x_position(exit->query_x_position());
 		actor->set_y_position(exit->query_y_position());
 		actor->set_z_position(exit->query_z_position());
-		actor->move(target, 1);
+		actor->move(target);
 	}
 
 	if (retexit) {
