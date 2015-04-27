@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
+#include <kotaka/paths/verb.h>
 #include <kotaka/privilege.h>
 
 #define POP_SET		0
@@ -161,6 +162,7 @@ private void do_input(string input)
 
 	if (!sscanf(input, "%s %s", first, args)) {
 		first = input;
+		args = "";
 	}
 
 	switch(first) {
@@ -209,14 +211,30 @@ private void do_input(string input)
 		break;
 
 	case "pget":
-		if (args) {
+		if (args != "") {
 			send_out(STRINGD->mixed_sprint(obj->query_property(args)) + "\n");
 		} else {
 			send_out("What property?\n");
 		}
 		break;
 
-	case "lplist":
+	case "walk":
+	case "look":
+		{
+			object verb;
+
+			verb = VERBD->find_verb(first);
+
+			if (!verb) {
+				send_out("No such command.\n");
+				break;
+			}
+
+			"~/sys/englishd"->do_verb(verb, first, args);
+			break;
+		}
+
+	case "plist":
 		{
 			string *props;
 
