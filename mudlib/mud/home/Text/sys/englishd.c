@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/checkarg.h>
 #include <kotaka/privilege.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
@@ -533,6 +534,9 @@ int do_verb(object verb, string command, string args)
 	string err;
 
 	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
+	CHECKARG(verb, 1, "do_verb");
+	CHECKARG(command && command != "", 2, "do_verb");
+	CHECKARG(args, 3, "do_verb");
 
 	actor = ustate->query_user()->query_body();
 
