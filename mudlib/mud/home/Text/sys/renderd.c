@@ -455,23 +455,21 @@ string draw_look(object viewer)
 
 	if (viewer) {
 		object env;
+		object oenv;
 		object envstack;
 
 		gc->set_clip(-8, -8, 8, 8);
 		gc->set_offset(8, 8);
 
 		env = viewer->query_environment();
+		oenv = env;
 		envstack = new_object(BIGSTRUCT_DEQUE_LWO);
 
-		rlimits(0; 10000) {
-			while (env) {
-				envstack->push_front(env);
+		while (env && env->query_property("is_transparent")) {
+			env = env->query_environment();
 
-				if (env->query_property("is_transparent")) {
-					env = env->query_environment();
-				} else {
-					env = nil;
-				}
+			if (env) {
+				envstack->push_front(env);
 			}
 		}
 
@@ -479,8 +477,10 @@ string draw_look(object viewer)
 			env = envstack->query_front();
 			envstack->pop_front();
 			draw_object(gc, viewer, env);
-			draw_contents(gc, viewer, env);
 		}
+
+		draw_object(gc, viewer, oenv);
+		draw_contents(gc, viewer, oenv);
 
 		gc->set_layer("sprites");
 		gc->move_pen(0, 0);
