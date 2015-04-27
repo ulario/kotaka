@@ -42,6 +42,22 @@ static void create()
 	DRIVER->set_object_manager(this_object());
 }
 
+void enable()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
+
+	DRIVER->set_object_manager(this_object());
+}
+
+void disable()
+{
+	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
+
+	DRIVER->set_object_manager(nil);
+}
+
+/* private */
+
 private string *fetch_from_initd(object initd, string path)
 {
 	return ({
@@ -195,280 +211,6 @@ private int is_protected(string path)
 	return 0;
 }
 
-void enable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
-
-	DRIVER->set_object_manager(this_object());
-}
-
-void disable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
-
-	DRIVER->set_object_manager(nil);
-}
-
-void recompile_kernel_library()
-{
-	string *names;
-	mixed **dir;
-	int i;
-
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
-	dir = get_dir("/kernel/lib/*");
-	names = dir[0];
-
-	for (i = 0; i < sizeof(names); i++) {
-		string name;
-
-		name = names[i];
-		name = name[0 .. strlen(name) - 3];
-
-		destruct_object("/kernel/lib/" + name);
-	}
-
-	dir = get_dir("/kernel/lib/api/*");
-	names = dir[0];
-
-	for (i = 0; i < sizeof(names); i++) {
-		string name;
-
-		name = names[i];
-		name = name[0..strlen(name) - 3];
-
-		destruct_object("/kernel/lib/api/" + name);
-	}
-
-	dir = get_dir("/kernel/obj/*");
-	names = dir[0];
-
-	for (i = 0; i < sizeof(names); i++) {
-		string name;
-
-		name = names[i];
-		name = name[0 .. strlen(name) - 3];
-
-		if (find_object("/kernel/obj/" + name)) {
-			compile_object("/kernel/obj/" + name);
-		}
-	}
-
-	dir = get_dir("/kernel/sys/*");
-	names = dir[0];
-
-	for (i = 0; i < sizeof(names); i++) {
-		string name;
-
-		name = names[i];
-		name = name[0..strlen(name) - 3];
-
-		if (find_object("/kernel/sys/" + name)) {
-			compile_object("/kernel/sys/" + name);
-		}
-	}
-}
-
-void recompile_everything()
-{
-	object indices;
-	object libqueue;
-	object objqueue;
-	object initdqueue;
-
-	int i;
-	int sz;
-
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
-	ASSERT(find_object(PROGRAMD));
-
-	libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-	objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-	initdqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-
-	rlimits(0; -1) {
-		indices = PROGRAMD->query_program_indices();
-		sz = indices->query_size();
-
-		for (i = 0; i < sz; i++) {
-			int oindex;
-			object pinfo;
-			string path;
-
-			oindex = indices->query_element(i);
-			pinfo = PROGRAMD->query_program_info(oindex);
-			path = pinfo->query_path();
-
-			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
-				libqueue->push_back(path);
-			} else if (sscanf(path, USR_DIR + "/%*s/initd")) {
-				initdqueue->push_back(path);
-			} else {
-				objqueue->push_back(path);
-			}
-		}
-
-		while (!libqueue->empty()) {
-			string path;
-
-			path = libqueue->query_back();
-			libqueue->pop_back();
-
-			destruct_object(path);
-		}
-
-		objqueue->grant_access(find_object(SORTD), WRITE_ACCESS);
-		SORTD->qsort(objqueue, 0, objqueue->query_size() - 1);
-
-		while (!initdqueue->empty()) {
-			string path;
-
-			path = initdqueue->query_back();
-			initdqueue->pop_back();
-
-			catch {
-				compile_object(path);
-			}
-		}
-
-		while (!objqueue->empty()) {
-			string path;
-
-			path = objqueue->query_back();
-			objqueue->pop_back();
-
-			catch {
-				compile_object(path);
-			}
-		}
-	}
-}
-
-void discover_objects()
-{
-	ACCESS_CHECK(PRIVILEGED());
-
-	rlimits(0; -1) {
-		mixed libqueue;
-		mixed objqueue;
-		int sz, i;
-
-		libqueue = ([ ]);
-		objqueue = ([ ]);
-
-		scan_objects_light("/", libqueue, objqueue);
-
-		libqueue = map_indices(libqueue);
-		sz = sizeof(libqueue);
-
-		for (i = 0; i < sz; i++) {
-			destruct_object(libqueue[i]);
-		}
-
-		objqueue = map_indices(objqueue);
-		sz = sizeof(objqueue);
-
-		for (i = 0; i < sz; i++) {
-			compile_object(objqueue[i]);
-		}
-	}
-}
-
-atomic void full_reset()
-{
-	object ind;
-	object paths;
-
-	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
-	ind = PROGRAMD->query_program_indices();
-	paths = new_object(BIGSTRUCT_ARRAY_LWO);
-
-	while (!ind->empty()) {
-		object pinfo;
-
-		pinfo = PROGRAMD->query_program_info(ind->query_back());
-		ind->pop_back();
-
-		paths->push_back(pinfo->query_path());
-	}
-
-	PROGRAMD->reset_program_database();
-
-	discover_objects();
-
-	while (!paths->empty()) {
-		string path;
-
-		path = paths->query_back();
-		paths->pop_back();
-
-		if (!status(path)) {
-			continue;
-		}
-
-		if (PROGRAMD->query_program_index(path) == -1) {
-			LOGD->post_message("system", LOG_INFO, "Restoring orphaned program " + path);
-			PROGRAMD->register_program(path, ({ }), ({ }));
-		}
-	}
-}
-
-object query_orphans()
-{
-	object orphans;
-	object indices;
-	int sz, i;
-
-	orphans = new_object(BIGSTRUCT_ARRAY_LWO);
-	orphans->grant_access(previous_object(), READ_ACCESS);
-
-	indices = PROGRAMD->query_program_indices();
-	sz = indices->query_size();
-
-	for (i = 0; i < sz; i++) {
-		object pinfo;
-		string path;
-
-		pinfo = PROGRAMD->query_program_info(indices->query_element(i));
-
-		if (!file_info((path = pinfo->query_path()) + ".c")) {
-			orphans->push_back(path);
-		}
-	}
-
-	return orphans;
-}
-
-object query_dormant()
-{
-	object notlist;
-
-	notlist = new_object(BIGSTRUCT_ARRAY_LWO);
-	notlist->grant_access(previous_object(), READ_ACCESS);
-
-	scan_objects("/", nil, nil, notlist);
-
-	return notlist;
-}
-
-void compiling(string path)
-{
-	ACCESS_CHECK(KERNEL());
-
-	if (path == DRIVER || path == AUTO) {
-		includes = ({ });
-	} else {
-		includes = ({ "/include/std.h" });
-	}
-
-	if (find_object(path)) {
-		upgrading = 1;
-	}
-}
-
 private void compile_common(string owner, string path, string *source, string *inherited)
 {
 	object initd;
@@ -513,6 +255,23 @@ private void set_flags(string path)
 	is_auto = sscanf(path, USR_DIR + "/System"
 		+ INHERITABLE_SUBDIR + "auto/%*s");
 	is_initd = (path == USR_DIR + "/" + DRIVER->creator(path) + "/initd");
+}
+
+/* klib hooks */
+
+void compiling(string path)
+{
+	ACCESS_CHECK(KERNEL());
+
+	if (path == DRIVER || path == AUTO) {
+		includes = ({ });
+	} else {
+		includes = ({ "/include/std.h" });
+	}
+
+	if (find_object(path)) {
+		upgrading = 1;
+	}
 }
 
 void compile(string owner, object obj, string *source, string inherited ...)
@@ -726,4 +485,251 @@ int forbid_inherit(string from, string path, int priv)
 	}
 
 	return initd->forbid_inherit(from, path, priv);
+}
+
+/* public */
+
+void discover_objects()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	rlimits(0; -1) {
+		mixed libqueue;
+		mixed objqueue;
+		int sz, i;
+
+		libqueue = ([ ]);
+		objqueue = ([ ]);
+
+		scan_objects_light("/", libqueue, objqueue);
+
+		libqueue = map_indices(libqueue);
+		sz = sizeof(libqueue);
+
+		for (i = 0; i < sz; i++) {
+			destruct_object(libqueue[i]);
+		}
+
+		objqueue = map_indices(objqueue);
+		sz = sizeof(objqueue);
+
+		for (i = 0; i < sz; i++) {
+			compile_object(objqueue[i]);
+		}
+	}
+}
+
+atomic void full_reset()
+{
+	object ind;
+	object paths;
+
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
+
+	ind = PROGRAMD->query_program_indices();
+	paths = new_object(BIGSTRUCT_ARRAY_LWO);
+
+	while (!ind->empty()) {
+		object pinfo;
+
+		pinfo = PROGRAMD->query_program_info(ind->query_back());
+		ind->pop_back();
+
+		paths->push_back(pinfo->query_path());
+	}
+
+	PROGRAMD->reset_program_database();
+
+	discover_objects();
+
+	while (!paths->empty()) {
+		string path;
+
+		path = paths->query_back();
+		paths->pop_back();
+
+		if (!status(path)) {
+			continue;
+		}
+
+		if (PROGRAMD->query_program_index(path) == -1) {
+			LOGD->post_message("system", LOG_INFO, "Restoring orphaned program " + path);
+			PROGRAMD->register_program(path, ({ }), ({ }));
+		}
+	}
+}
+
+object query_dormant()
+{
+	object notlist;
+
+	notlist = new_object(BIGSTRUCT_ARRAY_LWO);
+	notlist->grant_access(previous_object(), READ_ACCESS);
+
+	scan_objects("/", nil, nil, notlist);
+
+	return notlist;
+}
+
+object query_orphans()
+{
+	object orphans;
+	object indices;
+	int sz, i;
+
+	orphans = new_object(BIGSTRUCT_ARRAY_LWO);
+	orphans->grant_access(previous_object(), READ_ACCESS);
+
+	indices = PROGRAMD->query_program_indices();
+	sz = indices->query_size();
+
+	for (i = 0; i < sz; i++) {
+		object pinfo;
+		string path;
+
+		pinfo = PROGRAMD->query_program_info(indices->query_element(i));
+
+		if (!file_info((path = pinfo->query_path()) + ".c")) {
+			orphans->push_back(path);
+		}
+	}
+
+	return orphans;
+}
+
+void recompile_everything()
+{
+	object indices;
+	object libqueue;
+	object objqueue;
+	object initdqueue;
+
+	int i;
+	int sz;
+
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
+
+	ASSERT(find_object(PROGRAMD));
+
+	libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+	objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+	initdqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+
+	rlimits(0; -1) {
+		indices = PROGRAMD->query_program_indices();
+		sz = indices->query_size();
+
+		for (i = 0; i < sz; i++) {
+			int oindex;
+			object pinfo;
+			string path;
+
+			oindex = indices->query_element(i);
+			pinfo = PROGRAMD->query_program_info(oindex);
+			path = pinfo->query_path();
+
+			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
+				libqueue->push_back(path);
+			} else if (sscanf(path, USR_DIR + "/%*s/initd")) {
+				initdqueue->push_back(path);
+			} else {
+				objqueue->push_back(path);
+			}
+		}
+
+		while (!libqueue->empty()) {
+			string path;
+
+			path = libqueue->query_back();
+			libqueue->pop_back();
+
+			destruct_object(path);
+		}
+
+		objqueue->grant_access(find_object(SORTD), WRITE_ACCESS);
+		SORTD->qsort(objqueue, 0, objqueue->query_size() - 1);
+
+		while (!initdqueue->empty()) {
+			string path;
+
+			path = initdqueue->query_back();
+			initdqueue->pop_back();
+
+			catch {
+				compile_object(path);
+			}
+		}
+
+		while (!objqueue->empty()) {
+			string path;
+
+			path = objqueue->query_back();
+			objqueue->pop_back();
+
+			catch {
+				compile_object(path);
+			}
+		}
+	}
+}
+
+void recompile_kernel_library()
+{
+	string *names;
+	mixed **dir;
+	int i;
+
+	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
+
+	dir = get_dir("/kernel/lib/*");
+	names = dir[0];
+
+	for (i = 0; i < sizeof(names); i++) {
+		string name;
+
+		name = names[i];
+		name = name[0 .. strlen(name) - 3];
+
+		destruct_object("/kernel/lib/" + name);
+	}
+
+	dir = get_dir("/kernel/lib/api/*");
+	names = dir[0];
+
+	for (i = 0; i < sizeof(names); i++) {
+		string name;
+
+		name = names[i];
+		name = name[0..strlen(name) - 3];
+
+		destruct_object("/kernel/lib/api/" + name);
+	}
+
+	dir = get_dir("/kernel/obj/*");
+	names = dir[0];
+
+	for (i = 0; i < sizeof(names); i++) {
+		string name;
+
+		name = names[i];
+		name = name[0 .. strlen(name) - 3];
+
+		if (find_object("/kernel/obj/" + name)) {
+			compile_object("/kernel/obj/" + name);
+		}
+	}
+
+	dir = get_dir("/kernel/sys/*");
+	names = dir[0];
+
+	for (i = 0; i < sizeof(names); i++) {
+		string name;
+
+		name = names[i];
+		name = name[0..strlen(name) - 3];
+
+		if (find_object("/kernel/sys/" + name)) {
+			compile_object("/kernel/sys/" + name);
+		}
+	}
 }
