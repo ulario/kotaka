@@ -114,20 +114,3 @@ void receive_datagram(string packet)
 
 	call_limited("limited_receive_datagram", packet);
 }
-
-void check_self()
-{
-	object conn;
-
-	conn = query_conn();
-
-	while (conn) {
-		if (query_ip_number(conn)) {
-			return;
-		}
-
-		conn = conn->query_conn();
-	}
-
-	destruct_object(this_object());
-}
