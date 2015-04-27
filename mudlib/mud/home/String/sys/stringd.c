@@ -147,7 +147,7 @@ int regex_match(string in, string regex)
 
 int is_valid_base_id(string str)
 {
-	return regex_match(str, "[-+A-Za-z0-9_]+");
+	return regex_match(str, "[A-Za-z][-+A-Za-z0-9_]*");
 }
 
 int is_valid_id(string str)
