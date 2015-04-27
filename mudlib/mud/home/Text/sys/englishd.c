@@ -508,7 +508,7 @@ private mixed *english_process(string command, object ustate, object actor, obje
 			}
 		}
 
-		{
+		if (icand) {
 			int sz;
 
 			for (sz = sizeof(icand); --sz >= 0; ) {
