@@ -47,8 +47,6 @@ private void free_queue();
 
 static void create()
 {
-	begin = end = handle = 0;
-
 	RSRCD->set_suspension_manager(this_object());
 }
 
@@ -141,7 +139,7 @@ void release_callouts()
 	/* Don't send any more callouts our way */
 	RSRCD->release_callout(nil, 0);
 
-	/* start draining backed up callouts */
+	/* start releasing callouts */
 	if (!handle) {
 		handle = call_out("do_release", 0);
 	}
