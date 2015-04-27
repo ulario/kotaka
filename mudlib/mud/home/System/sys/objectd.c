@@ -97,52 +97,6 @@ private mixed query_include_file(string compiled, string from, string path)
 	return path;
 }
 
-private void scan_objects_light(string path, mapping libqueue, mapping objqueue)
-{
-	string *names;
-	int *sizes;
-	mixed **dir;
-	int i;
-
-	path = find_object(DRIVER)->normalize_path(path, "/");
-
-	dir = get_dir(path + "/*");
-	names = dir[0];
-	sizes = dir[1];
-
-	for (i = 0; i < sizeof(names); i++) {
-		string name;
-		string opath;
-
-		name = names[i];
-
-		if (sizes[i] == -2) {
-			scan_objects_light(path + "/" + name, libqueue, objqueue);
-			continue;
-		}
-
-		if (strlen(name) > 2 && name[strlen(name) - 2 ..] == ".c") {
-			string opath;
-			mixed *status;
-			int oindex;
-
-			opath = path + "/" + name[0 .. strlen(name) - 3];
-
-			status = status(opath);
-
-			if (!status) {
-				continue;
-			}
-
-			if (sscanf(opath, "%*s" + INHERITABLE_SUBDIR)) {
-				libqueue[opath] = 1;
-			} else {
-				objqueue[opath] = 1;
-			}
-		}
-	}
-}
-
 private void scan_objects(string path, object libqueue, object objqueue, object notqueue)
 {
 	string *names;
@@ -494,27 +448,21 @@ void discover_objects()
 	ACCESS_CHECK(PRIVILEGED());
 
 	rlimits(0; -1) {
-		mixed libqueue;
-		mixed objqueue;
-		int sz, i;
+		object libqueue;
+		object objqueue;
+		int sz;
 
-		libqueue = ([ ]);
-		objqueue = ([ ]);
+		libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+		objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
 
-		scan_objects_light("/", libqueue, objqueue);
+		scan_objects("/", libqueue, objqueue, nil);
 
-		libqueue = map_indices(libqueue);
-		sz = sizeof(libqueue);
-
-		for (i = 0; i < sz; i++) {
-			destruct_object(libqueue[i]);
+		for (sz = libqueue->query_size(); --sz >= 0; ) {
+			destruct_object(libqueue->query_element(sz));
 		}
 
-		objqueue = map_indices(objqueue);
-		sz = sizeof(objqueue);
-
-		for (i = 0; i < sz; i++) {
-			compile_object(objqueue[i]);
+		for (sz = objqueue->query_size(); --sz >= 0; ) {
+			compile_object(objqueue->query_element(sz));
 		}
 	}
 }
