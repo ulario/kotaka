@@ -26,7 +26,6 @@ static int free_callouts()
 		(status(ST_NCOSHORT) + status(ST_NCOLONG));
 }
 
-#if 1
 static int call_out(string func, mixed delay, mixed args...)
 {
 	if (!this_object()) {
@@ -43,4 +42,3 @@ static int call_out(string func, mixed delay, mixed args...)
 
 	return ::call_out(func, delay, args...);
 }
-#endif
