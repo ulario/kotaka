@@ -86,10 +86,6 @@ string sprintframe(mixed *frame, varargs int include_args)
 	lnum = frame[TRACE_LINE];
 	ext = frame[TRACE_EXTERNAL];
 
-	if (prog == CALL_GUARD) {
-		flags[0] = 'G';
-	}
-
 	if (ext) {
 		flags[1] = 'E';
 	}
@@ -136,6 +132,10 @@ string printstack(mixed **trace, varargs int include_args)
 		mixed *frame;
 
 		frame = trace[i];
+
+		if (frame[TRACE_PROGNAME] == CALL_GUARD) {
+			continue;
+		}
 
 		tracestr += sprintframe(trace[i], include_args) + "\n";
 	}
