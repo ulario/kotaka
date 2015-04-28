@@ -168,7 +168,7 @@ private string inventory_list(object *inv)
 	return TEXT_SUBD->generate_list(desc);
 }
 
-private void draw_prose(object gc, object viewer)
+private string prose(object viewer)
 {
 	object env;
 
@@ -176,18 +176,10 @@ private void draw_prose(object gc, object viewer)
 		env = viewer->query_environment();
 	}
 
-	gc->set_layer("canvas");
-	gc->set_clip(0, 0, 60, 15);
-	gc->set_offset(2, 4);
-
-	gc->set_color(0x07);
-
 	if (!viewer) {
-		gc->move_pen(0, 0);
-		gc->draw("You don't exist.");
+		return "You don't exist.";
 	} else if (!env) {
-		gc->move_pen(0, 0);
-		gc->draw("You are in the formless void.");
+		return "You are in the formless void.";
 	} else {
 		string *lines;
 		string desc;
@@ -199,7 +191,7 @@ private void draw_prose(object gc, object viewer)
 			desc = "This place is boring.";
 		}
 
-		lines = explode(STRINGD->wordwrap(desc, 55), "\n");
+		desc = STRINGD->wordwrap(desc, 55) + "\n";
 
 		inv = env->query_inventory() - ({ viewer });
 
@@ -216,17 +208,36 @@ private void draw_prose(object gc, object viewer)
 		}
 
 		if (sizeof(inv)) {
-			lines += ({ "" });
-
-			lines += explode(STRINGD->wordwrap("You see " + inventory_list(inv), 55) + ".", "\n");
+			desc += "\n" + STRINGD->wordwrap("You see " + inventory_list(inv) + ".", 55) + "\n";
 		}
 
-		sz = sizeof(lines);
+		return desc;
+	}
+}
 
-		for (i = 0; i < sz; i++) {
-			gc->move_pen(0, i);
-			gc->draw(lines[i]);
-		}
+private void draw_prose(object gc, object viewer)
+{
+	object env;
+	string *lines;
+	int i, sz;
+
+	if (viewer) {
+		env = viewer->query_environment();
+	}
+
+	gc->set_layer("canvas");
+	gc->set_clip(0, 0, 60, 15);
+	gc->set_offset(2, 4);
+
+	gc->set_color(0x07);
+	gc->move_pen(0, 0);
+
+	lines = explode(prose(viewer), "\n");
+	sz = sizeof(lines);
+
+	for (i = 0; i < sz; i++) {
+		gc->move_pen(0, i);
+		gc->draw(lines[i]);
 	}
 }
 
@@ -529,51 +540,7 @@ private string draw_look_xyz(object viewer)
 
 private string draw_void(object viewer)
 {
-	object env;
-
-	if (viewer) {
-		env = viewer->query_environment();
-	}
-
-	if (!viewer) {
-		return "You don't exist.";
-	} else if (!env) {
-		return "You are in the formless void.";
-	} else {
-		string *lines;
-		string desc;
-		object *inv;
-		int i;
-		int sz;
-
-		if (!(desc = env->query_property("look"))) {
-			desc = "This place is boring.";
-		}
-
-		lines = explode(STRINGD->wordwrap(desc, 55), "\n");
-
-		inv = env->query_inventory() - ({ viewer });
-
-		{
-			int sz;
-
-			for (sz = sizeof(inv); --sz >= 0; ) {
-				if (inv[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
-					inv[sz] = nil;
-				}
-			}
-
-			inv -= ({ nil });
-		}
-
-		if (sizeof(inv)) {
-			lines += ({ "" });
-
-			lines += explode(STRINGD->wordwrap("You see " + inventory_list(inv), 55) + ".", "\n");
-		}
-
-		return implode(lines, "\n") + "\n";
-	}
+	return prose(viewer);
 }
 
 string draw_look(object viewer)
