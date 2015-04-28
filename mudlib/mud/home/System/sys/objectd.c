@@ -217,11 +217,7 @@ void compiling(string path)
 {
 	ACCESS_CHECK(KERNEL());
 
-	if (path == DRIVER || path == AUTO) {
-		includes = ({ });
-	} else {
-		includes = ({ "/include/std.h" });
-	}
+	includes = ({ "/include/std.h" });
 
 	if (find_object(path)) {
 		upgrading = 1;
