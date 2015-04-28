@@ -404,14 +404,14 @@ private void draw_contents(object gc, object viewer, object obj)
 	}
 }
 
-string draw_look(object viewer)
+private string draw_look_xyz(object viewer)
 {
+	object oenv;
 	int x, y, sz, i;
 	object painter;
 	object *envstack;
 	object gc;
-
-	ACCESS_CHECK(TEXT() || GAME() || VERB());
+	string render;
 
 	painter = new_object(LWO_PAINTER);
 	painter->set_size(80, 21);
@@ -455,7 +455,6 @@ string draw_look(object viewer)
 
 	if (viewer) {
 		object env;
-		object oenv;
 		object envstack;
 
 		gc->set_clip(-8, -8, 8, 8);
@@ -490,5 +489,110 @@ string draw_look(object viewer)
 		draw_bsod(gc);
 	}
 
-	return implode(painter->render_color(), "\n") + "\n";
+	render = implode(painter->render_color(), "\n") + "\n";
+
+	{
+		object origin;
+
+		origin = viewer->query_outer_origin();
+
+		if (!origin) {
+			render += "No origin.\n";
+		} else {
+			string csystem;
+
+			csystem = origin->query_coordinate_system();
+
+			render += "Coordinate system: " + csystem + "\n";
+			render += "Origin: " + TEXT_SUBD->generate_brief_definite(origin) + "\n";
+
+			switch(csystem) {
+			case "xyz":
+				render += "Your coordinates are:";
+				{
+					int *d;
+
+					d = GEOMETRY_SUBD->query_position_difference(origin, viewer);
+
+					render += " ( " + d[0] + ", " + d[1] + ", " + d[2] + " )\n";
+				}
+				break;
+
+			case "void":
+				render += "You don't have any coordinates here.\n";
+			}
+		}
+	}
+
+	return render;
+}
+
+private string draw_void(object viewer)
+{
+	object env;
+
+	if (viewer) {
+		env = viewer->query_environment();
+	}
+
+	if (!viewer) {
+		return "You don't exist.";
+	} else if (!env) {
+		return "You are in the formless void.";
+	} else {
+		string *lines;
+		string desc;
+		object *inv;
+		int i;
+		int sz;
+
+		if (!(desc = env->query_property("look"))) {
+			desc = "This place is boring.";
+		}
+
+		lines = explode(STRINGD->wordwrap(desc, 55), "\n");
+
+		inv = env->query_inventory() - ({ viewer });
+
+		{
+			int sz;
+
+			for (sz = sizeof(inv); --sz >= 0; ) {
+				if (inv[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
+					inv[sz] = nil;
+				}
+			}
+
+			inv -= ({ nil });
+		}
+
+		if (sizeof(inv)) {
+			lines += ({ "" });
+
+			lines += explode(STRINGD->wordwrap("You see " + inventory_list(inv), 55) + ".", "\n");
+		}
+
+		return implode(lines, "\n") + "\n";
+	}
+}
+
+string draw_look(object viewer)
+{
+	object origin;
+
+	ACCESS_CHECK(TEXT() || GAME() || VERB());
+
+	origin = viewer->query_outer_origin();
+
+	if (!origin) {
+		return draw_void(viewer);
+	}
+
+	switch (origin->query_coordinate_system()) {
+	case "xyz":
+		return draw_look_xyz(viewer);
+
+	case "void":
+		return draw_void(viewer);
+	}
 }
