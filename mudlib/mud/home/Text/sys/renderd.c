@@ -168,12 +168,12 @@ private string inventory_list(object *inv)
 	return TEXT_SUBD->generate_list(desc);
 }
 
-private void draw_prose(object gc, object actor)
+private void draw_prose(object gc, object viewer)
 {
 	object env;
 
-	if (actor) {
-		env = actor->query_environment();
+	if (viewer) {
+		env = viewer->query_environment();
 	}
 
 	gc->set_layer("canvas");
@@ -182,7 +182,7 @@ private void draw_prose(object gc, object actor)
 
 	gc->set_color(0x07);
 
-	if (!actor) {
+	if (!viewer) {
 		gc->move_pen(0, 0);
 		gc->draw("You don't exist.");
 	} else if (!env) {
@@ -201,7 +201,7 @@ private void draw_prose(object gc, object actor)
 
 		lines = explode(STRINGD->wordwrap(desc, 55), "\n");
 
-		inv = env->query_inventory() - ({ actor });
+		inv = env->query_inventory() - ({ viewer });
 
 		{
 			int sz;
