@@ -229,8 +229,10 @@ private void send_to_target(string target, string message)
 	case "channel":
 		ASSERT(info);
 
-		for (i = 0; i < sz; i++) {
-			CHANNELD->post_message(info, nil, lines[i]);
+		if (find_object(CHANNELD)) {
+			for (i = 0; i < sz; i++) {
+				CHANNELD->post_message(info, nil, lines[i]);
+			}
 		}
 
 		break;
