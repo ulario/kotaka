@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2003, 2013, 2014  Raymond Jennings
+ * Copyright (C)  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,17 +17,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/system.h>
+#include <kotaka/paths/geometry.h>
 #include <kotaka/paths/thing.h>
+#include <kotaka/paths/text.h>
+#include <kotaka/log.h>
 
 inherit LIB_THING;
-inherit "thing/xyz";
-inherit "thing/coordinate";
 
-static void create()
+string query_coordinate_system()
 {
+	return query_property("coordinate_system");
 }
 
-static void move_notify(object old_env)
+object query_outer_origin()
 {
-	xyz_move_notify(old_env);
+	object env;
+
+	env = query_environment();
+
+	while (env) {
+		string s;
+
+		s = env->query_property("coordinate_system");
+
+		if (s) {
+			return env;
+		}
+
+		env = env->query_environment();
+	}
+}
+
+object query_inner_origin()
+{
+	if (query_coordinate_system()) {
+		return this_object();
+	} else {
+		return query_outer_origin();
+	}
 }
