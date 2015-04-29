@@ -186,7 +186,7 @@ private void compile_common(string owner, string path, string *source, string *i
 		error("Failure to inherit SECOND_AUTO: " + path);
 	}
 
-	if (pinfo) {
+	if (pinfo && owner) {
 		initd = find_object(USR_DIR + "/" + owner + "/initd");
 	}
 
@@ -205,10 +205,15 @@ private void compile_common(string owner, string path, string *source, string *i
 
 private void set_flags(string path)
 {
+	string creator;
+
 	is_kernel = sscanf(path, "/kernel/%*s");
 	is_auto = sscanf(path, USR_DIR + "/System"
 		+ INHERITABLE_SUBDIR + "auto/%*s");
-	is_initd = (path == USR_DIR + "/" + DRIVER->creator(path) + "/initd");
+
+	creator = DRIVER->creator(path);
+
+	is_initd = creator ? (path == USR_DIR + "/" + creator + "/initd") : 0;
 }
 
 /* klib hooks */
