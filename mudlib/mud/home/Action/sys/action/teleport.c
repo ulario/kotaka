@@ -24,11 +24,49 @@ inherit LIB_USERIO;
 inherit LIB_EMIT;
 inherit LIB_ACTION;
 
+private void fix_position(object actor)
+{
+	object origin;
+	string csystem;
+	object env;
+
+	int px;
+	int py;
+	int pz;
+
+	origin = actor->query_outer_origin();
+
+	if (!origin) {
+		actor->clear_xyz();
+		return;
+	}
+
+	csystem = origin->query_coordinate_system();
+
+	if (csystem != "xyz") {
+		actor->clear_xyz();
+		return;
+	}
+
+	env = actor->query_environment();
+
+	if (!env) {
+		actor->clear_xyz();
+		return;
+	}
+
+	actor->set_x_position((env->query_x_size() - 1) / 2);
+	actor->set_y_position((env->query_y_size() - 1) / 2);
+	actor->set_z_position(0);
+}
+
 void action(mapping roles)
 {
 	object exit;
 	object target;
 	object actor;
+
+	object origin;
 
 	actor = roles["actor"];
 	target = roles["dob"];
@@ -40,5 +78,7 @@ void action(mapping roles)
 
 	emit_from(actor, actor, " ", ({ "vanish", "vanishes" }), " into thin air.");
 	actor->move(target);
+	fix_position(actor);
+
 	emit_from(actor, actor, " ", ({ "appear", "appears" }), " out of thin air.");
 }
