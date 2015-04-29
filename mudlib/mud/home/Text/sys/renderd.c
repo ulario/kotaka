@@ -177,9 +177,9 @@ private string prose(object viewer)
 	}
 
 	if (!viewer) {
-		return "You don't exist.";
+		return "You don't exist.\n";
 	} else if (!env) {
-		return "You are in the formless void.";
+		return "You are in the formless void.\n";
 	} else {
 		string *lines;
 		string desc;
