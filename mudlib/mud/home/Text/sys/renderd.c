@@ -540,7 +540,20 @@ private string draw_look_xyz(object viewer)
 
 private string draw_void(object viewer)
 {
-	return prose(viewer);
+	object env;
+	string output;
+
+	env = viewer->query_environment();
+	output = "";
+
+	if (env) {
+		output = TEXT_SUBD->generate_brief_definite(env) + "\n\n";
+		output = STRINGD->to_upper(output[0 .. 0]) + output[1 ..];
+	}
+
+	output += prose(viewer);
+
+	return output;
 }
 
 string draw_look(object viewer)
