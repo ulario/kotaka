@@ -192,6 +192,8 @@ private atomic void do_makeroom()
 	room->set_y_position(py);
 	room->set_x_size(sx);
 	room->set_y_size(sy);
+	room->set_capacity((float)(sx * sy * 3));
+	room->set_max_mass((float)(sx * sy * 1000));
 	room = nil;
 }
 
