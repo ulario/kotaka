@@ -530,6 +530,10 @@ private mixed *english_process(string command, object ustate, object actor, obje
 			} else {
 				mixed *result;
 
+				if (!actor) {
+					return ({ 2, "You must be in character to use this command." });
+				}
+
 				result = bind_english(roles[role], icand);
 
 				switch(result[0]) {
