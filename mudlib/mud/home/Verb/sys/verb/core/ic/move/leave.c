@@ -71,7 +71,7 @@ void main(object actor, mapping roles)
 		"~Action/sys/action/teleport"->action(
 			([
 				"actor": actor,
-				"dob": env->query_environment();
+				"dob": env->query_environment()
 			])
 		);
 	}
