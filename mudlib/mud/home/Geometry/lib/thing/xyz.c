@@ -108,6 +108,13 @@ int query_z_size()
 	return zs ? zs : 0;
 }
 
+void clear_xyz()
+{
+	set_local_property("pos_x", nil);
+	set_local_property("pos_y", nil);
+	set_local_property("pos_z", nil);
+}
+
 static void xyz_move_notify(object old_env)
 {
 	mixed nx, ny, nz;
