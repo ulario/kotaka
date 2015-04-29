@@ -157,15 +157,15 @@ nomask void move(object new_env, varargs int force)
 		if (is_container_of(new_env)) {
 			error("Cyclic containment attempted");
 		}
-	}
 
-	if (!force && !new_env->query_virtual()) {
-		if (query_total_mass() > new_env->query_max_mass()) {
-			error("Object too massive for new environment");
-		}
+		if (!force && !new_env->query_virtual()) {
+			if (query_total_mass() > new_env->query_max_mass()) {
+				error("Object too massive for new environment");
+			}
 
-		if (query_total_volume() > new_env->query_capacity()) {
-			error("Object too big for new environment");
+			if (query_total_volume() > new_env->query_capacity()) {
+				error("Object too big for new environment");
+			}
 		}
 	}
 
