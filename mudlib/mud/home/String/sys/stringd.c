@@ -1339,16 +1339,7 @@ string hex(int val)
 	return out;
 }
 
-/*
-000000000011111111112222
-012345678901234567890123
-WWW MMM DD HH:MM:SS YYYY
-
-MMM DD HH:MM
-MMM DD  YYYY
-*/
-
-string wordwrap(string text, int width)
+private string wordwrap_line(string line, int width)
 {
 	string *words;
 	string buffer;
@@ -1358,7 +1349,7 @@ string wordwrap(string text, int width)
 	int sz;
 
 	buffer = "";
-	words = explode(text, " ") - ({ nil, "" });
+	words = explode(line, " ") - ({ nil, "" });
 	sz = sizeof(words);
 
 	for (i = 0; i < sz; i++) {
@@ -1391,4 +1382,19 @@ string wordwrap(string text, int width)
 	}
 
 	return buffer;
+}
+
+string wordwrap(string text, int width)
+{
+	string *lines;
+	int i, sz;
+
+	lines = explode(text, "\n\n");
+	sz = sizeof(lines);
+
+	for (i = 0; i < sz; i++) {
+		lines[i] = wordwrap_line(lines[i], width);
+	}
+
+	return implode(lines, "\n\n");
 }
