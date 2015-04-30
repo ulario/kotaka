@@ -54,13 +54,13 @@ static void check()
 	dmem_free = dmem_size - dmem_used;
 
 	if (dmem_used > (float)(1 << 30)) {
-		LOGD->post_message("watchdog", LOG_NOTICE, "Memory full, swapping out");
+		LOGD->post_message("system", LOG_NOTICE, "Memory full, swapping out");
 		swapout();
 		return;
 	}
 
-	if ((dmem_free - (float)(32 << 20)) / dmem_size > 0.25) {
-		LOGD->post_message("watchdog", LOG_NOTICE, "Memory fragmented, swapping out");
+	if ((dmem_free - (float)(1 << 20)) / dmem_size > 0.25) {
+		LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
 		swapout();
 	}
 }
