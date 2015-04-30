@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/intermud.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
@@ -34,5 +35,10 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	send_out(STRINGD->hybrid_sprint("~Intermud/sys/intermudd"->query_channel(roles["raw"])) + "\n");
+	if (!find_object(INTERMUDD)) {
+		send_out("IntermudD is offline.\n");
+		return;
+	}
+
+	send_out(STRINGD->hybrid_sprint(INTERMUDD->query_channel(roles["raw"])) + "\n");
 }

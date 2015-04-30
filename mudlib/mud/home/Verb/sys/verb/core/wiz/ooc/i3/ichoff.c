@@ -17,9 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/channel.h>
+#include <kotaka/paths/intermud.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/verb.h>
-#include <kotaka/paths/channel.h>
 
 inherit LIB_VERB;
 
@@ -32,6 +33,11 @@ void main(object actor, mapping roles)
 {
 	if (query_user()->query_class() < 2) {
 		send_out("You have insufficient access to deactivate i3 channels.\n");
+		return;
+	}
+
+	if (!find_object(INTERMUDD)) {
+		send_out("IntermudD is offline.\n");
 		return;
 	}
 

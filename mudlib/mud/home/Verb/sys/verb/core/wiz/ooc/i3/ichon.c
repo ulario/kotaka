@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/channel.h>
+#include <kotaka/paths/intermud.h>
 #include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/verb.h>
 
@@ -40,6 +41,11 @@ void main(object actor, mapping roles)
 		return;
 	}
 
+	if (!find_object(INTERMUDD)) {
+		send_out("IntermudD is offline.\n");
+		return;
+	}
+
 	CHANNELD->set_intermud(roles["raw"], 1);
-	"~Intermud/sys/intermudd"->listen_channel(roles["raw"], 1);
+	INTERMUDD->listen_channel(roles["raw"], 1);
 }

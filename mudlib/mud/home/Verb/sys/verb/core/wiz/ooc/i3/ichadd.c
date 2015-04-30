@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/verb.h>
+#include <kotaka/paths/intermud.h>
 
 inherit LIB_VERB;
 
@@ -33,5 +34,10 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	"~Intermud/sys/intermudd"->add_channel(roles["raw"]);
+	if (!find_object(INTERMUDD)) {
+		send_out("IntermudD is offline.\n");
+		return;
+	}
+
+	INTERMUDD->add_channel(roles["raw"]);
 }

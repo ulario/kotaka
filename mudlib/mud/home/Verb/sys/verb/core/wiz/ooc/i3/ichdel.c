@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/intermud.h>
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
@@ -33,5 +34,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	"~Intermud/sys/intermudd"->remove_channel(roles["raw"]);
+	INTERMUDD->remove_channel(roles["raw"]);
 }
