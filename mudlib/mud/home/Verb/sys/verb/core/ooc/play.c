@@ -87,7 +87,7 @@ void main(object actor, mapping roles)
 		send_out("Unselected " + TEXT_SUBD->generate_brief_definite(oldbody) + ".\n");
 
 		mobiles = oldbody->query_property("mobiles");
-		mobiles -= ({ user });
+		mobiles -= ({ user, nil });
 		oldbody->set_property("mobiles", mobiles);
 	}
 
