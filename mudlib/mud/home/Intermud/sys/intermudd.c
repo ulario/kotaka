@@ -388,9 +388,8 @@ private void process_packet(mixed *value)
 		break;
 
 	/* we don't care about these right now */
+	case "finger-req":
 	case "ucache-update":
-		break;
-
 	case "locate-req":
 		break;
 
