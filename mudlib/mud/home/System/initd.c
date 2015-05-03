@@ -53,6 +53,13 @@ private void load()
 	load_dir("sys", 1);
 }
 
+private void reload()
+{
+	load_dir("lwo", 5);
+	load_dir("obj", 5);
+	load_dir("sys", 5);
+}
+
 private void load_core()
 {
 	load_object(ERRORD);
@@ -408,10 +415,15 @@ void upgrade_system()
 
 static void upgrade_system_2()
 {
-	load();
+	reload();
 
 	purge_orphans("System");
 	rename_file("/config", "/etc");
 
+	call_out("upgrade_system_3", 0);
+}
+
+static void upgrade_system_3()
+{
 	MODULED->upgrade_modules();
 }
