@@ -418,7 +418,6 @@ static void upgrade_system_2()
 	reload();
 
 	purge_orphans("System");
-	rename_file("/config", "/etc");
 
 	call_out("upgrade_system_3", 0);
 }
