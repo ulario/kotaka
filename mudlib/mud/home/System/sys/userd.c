@@ -270,8 +270,6 @@ string query_banner(object LIB_CONN connection)
 		root = root->query_conn();
 	}
 
-	TLSD->set_tls_value("System", "root-connection", root);
-
 	userd = query_manager(root);
 
 	TLSD->set_tls_value("System", "userd", userd);
