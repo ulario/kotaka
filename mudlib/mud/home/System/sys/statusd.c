@@ -41,6 +41,11 @@ static void create()
 
 	connections = ([ ]);
 
+	call_out("configure", 0);
+}
+
+static void configure()
+{
 	SYSTEM_USERD->set_telnet_manager(1, this_object());
 }
 
