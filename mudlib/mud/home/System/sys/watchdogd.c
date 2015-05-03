@@ -59,7 +59,7 @@ static void check()
 		return;
 	}
 
-	if ((dmem_free - (float)(1 << 20)) / dmem_size > 0.25) {
+	if ((dmem_free - (float)(32 << 20)) / dmem_size > 0.25) {
 		LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
 		swapout();
 	}
