@@ -26,6 +26,8 @@ inherit w LIB_SYSTEM_WIZTOOL;
 
 private object user;		/* associated user object */
 
+static void process(string str);
+
 /*
  * NAME:	create()
  * DESCRIPTION:	initialize object
@@ -54,7 +56,11 @@ static void message(string str)
 void input(string str)
 {
     if (previous_object() == user) {
-	call_limited("process", str);
+	if (query_owner() == "admin") {
+	    process(str);
+	} else {
+	    call_limited("process", str);
+	}
     } else {
 	error("Security violation:  Caller is "
 		+ object_name(previous_object())
