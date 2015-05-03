@@ -100,13 +100,18 @@ void upgrade_modules()
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
-		call_out("recompile_initd", 0, list[sz]);
+		if (!file_info(USR_DIR + "/" + list[sz] + "/initd.c")) {
+			call_out("shutdown_module", 0, list[sz]);
+		} else {
+			call_out("recompile_initd", 0, list[sz]);
+		}
 	}
 }
 
 static void recompile_initd(string module)
 {
 	compile_object(USR_DIR + "/" + module + "/initd");
+
 	call_out("upgrade_module", 0, module);
 }
 
@@ -265,7 +270,7 @@ void shutdown_module(string module)
 {
 	object cursor;
 
-	ACCESS_CHECK(INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
+	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
 
 	switch(module) {
 	case "Bigstruct":
