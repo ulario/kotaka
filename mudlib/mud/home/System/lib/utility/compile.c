@@ -42,7 +42,7 @@ static void load_dir(string dir, varargs int flags)
 
 		info = file_info(dir + "/" + name);
 
-		if (info[2]) {
+		if (info[2] && !(flags & 4)) {
 			continue;
 		}
 
