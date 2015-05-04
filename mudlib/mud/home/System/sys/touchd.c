@@ -39,7 +39,7 @@ void call_touch(object obj)
 	ACCESS_CHECK(SYSTEM());
 
 	if (queue->empty()) {
-		call_out("touch", 0);
+		call_out("touch_tick", 0);
 	}
 
 	queue->push_back(obj);
@@ -93,7 +93,7 @@ void touch_upgrade(string path)
 	}
 }
 
-static void touch()
+static void touch_tick()
 {
 	object obj;
 
@@ -110,7 +110,7 @@ static void touch()
 	}
 
 	if (!queue->empty()) {
-		call_out("touch", 0);
+		call_out("touch_tick", 0);
 	} else {
 		CHANNELD->post_message("system", "touchd", "Global touch completed");
 		LOGD->post_message("system", LOG_INFO, "Global touch completed");
