@@ -112,7 +112,6 @@ static void touch_tick()
 	if (!queue->empty()) {
 		call_out("touch_tick", 0);
 	} else {
-		CHANNELD->post_message("system", "touchd", "Global touch completed");
 		LOGD->post_message("system", LOG_INFO, "Global touch completed");
 	}
 }
