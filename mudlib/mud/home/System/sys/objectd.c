@@ -36,6 +36,7 @@ int upgrading;		/* are we upgrading or making a new compile? */
 int is_initd;		/* current compilation is for an initd */
 int is_kernel;		/* current compilation is for a kernel object */
 int is_auto;		/* current compilation is for a second auto support library */
+object upgrades;	/* list of objects needing upgrade */
 
 static void create()
 {
@@ -268,16 +269,14 @@ void compile(string owner, object obj, string *source, string inherited ...)
 					obj->upgrading();
 				}
 			}
-		}
-	}
 
-	if (find_object(TOUCHD)) {
-		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
-
-		if (pinfo) {
-			if (pinfo->query_toucher() || sizeof(pinfo->query_inherited_touchers())) {
-				TOUCHD->touch_upgrade(path);
+			if (!upgrades) {
+				call_out("upgrade_objects", 0);
+				upgrades = new_object(BIGSTRUCT_DEQUE_LWO);
+				INITD->suspend_system("objectd-upgrade");
 			}
+
+			upgrades->push_back(path);
 		}
 	}
 }
@@ -680,5 +679,39 @@ void recompile_kernel_library()
 		if (find_object("/kernel/sys/" + name)) {
 			compile_object("/kernel/sys/" + name);
 		}
+	}
+}
+
+static void upgrade_objects()
+{
+	catch {
+		string path;
+
+		path = upgrades->query_back();
+		upgrades->pop_back();
+
+		if (find_object(TOUCHD)) {
+			object pinfo;
+
+			pinfo = PROGRAMD->query_program_info(status(path, O_INDEX));
+
+			if (pinfo) {
+				if (pinfo->query_toucher() || sizeof(pinfo->query_inherited_touchers())) {
+					TOUCHD->touch_upgrade(path);
+				}
+			}
+		}
+
+		if (upgrades->empty()) {
+			INITD->release_system("objectd-upgrade");
+
+			upgrades = nil;
+		} else {
+			call_out("upgrade_objects", 0);
+		}
+	} : {
+		INITD->release_system("objectd-upgrade");
+
+		upgrades = nil;
 	}
 }
