@@ -38,5 +38,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	CALLOUTD->suspend_global();
+	CALLOUTD->suspend_callouts();
 }
