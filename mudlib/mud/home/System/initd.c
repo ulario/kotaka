@@ -46,6 +46,8 @@ void configure_rsrc();
 private void check_config();
 private void check_versions();
 
+mapping suspends;
+
 private void load()
 {
 	load_dir("lwo", 1);
@@ -425,4 +427,38 @@ static void upgrade_system_2()
 static void upgrade_system_3()
 {
 	MODULED->upgrade_modules();
+}
+
+void suspend_system(string flag)
+{
+	if (!suspends) {
+		suspends = ([ ]);
+	}
+
+	if (suspends[flag]) {
+		error("System already suspended\n");
+	}
+
+	if (!map_sizeof(suspends)) {
+		CALLOUTD->suspend_callouts();
+		SYSTEM_USERD->block_connections();
+	}
+
+	suspends[flag] = 1;
+}
+
+void release_system(string flag)
+{
+	if (!suspends[flag]) {
+		error("Not suspended\n");
+	}
+
+	suspends[flag] = nil;
+
+	if (!map_sizeof(suspends)) {
+		suspends = nil;
+
+		CALLOUTD->release_callouts();
+		SYSTEM_USERD->unblock_connections();
+	}
 }
