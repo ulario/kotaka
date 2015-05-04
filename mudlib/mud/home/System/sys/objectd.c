@@ -695,15 +695,7 @@ static void upgrade_objects()
 		upgrades->pop_back();
 
 		if (find_object(TOUCHD)) {
-			object pinfo;
-
-			pinfo = PROGRAMD->query_program_info(status(path, O_INDEX));
-
-			if (pinfo) {
-				if (pinfo->query_toucher() || sizeof(pinfo->query_inherited_touchers())) {
-					TOUCHD->touch_all_clones(path);
-				}
-			}
+			TOUCHD->touch_all_clones(path);
 		}
 
 		if (upgrades->empty()) {
