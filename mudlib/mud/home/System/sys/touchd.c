@@ -46,7 +46,7 @@ void call_touch(object obj)
 	::call_touch(obj);
 }
 
-void touch_upgrade(string path)
+void touch_all_clones(string path)
 {
 	int sz, i;
 	object cinfo;

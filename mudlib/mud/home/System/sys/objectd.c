@@ -701,7 +701,7 @@ static void upgrade_objects()
 
 			if (pinfo) {
 				if (pinfo->query_toucher() || sizeof(pinfo->query_inherited_touchers())) {
-					TOUCHD->touch_upgrade(path);
+					TOUCHD->touch_all_clones(path);
 				}
 			}
 		}
