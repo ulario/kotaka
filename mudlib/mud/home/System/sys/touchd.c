@@ -46,9 +46,25 @@ void call_touch(object obj)
 	::call_touch(obj);
 }
 
+private void touch_scan_otable(string path)
+{
+	rlimits(0; -1) {
+		int sz;
+
+		for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
+			object obj;
+
+			obj = find_object(path + "#" + sz);
+
+			if (obj) {
+				call_touch(obj);
+			}
+		}
+	}
+}
+
 void touch_all_clones(string path)
 {
-	int sz, i;
 	object cinfo;
 	object *clones;
 
@@ -60,6 +76,7 @@ void touch_all_clones(string path)
 		cinfo = CLONED->query_clone_info(status(path, O_INDEX));
 
 		if (!cinfo) {
+			touch_scan_otable();
 			return;
 		}
 
@@ -67,28 +84,12 @@ void touch_all_clones(string path)
 
 		if (clones) {
 			int sz;
-			int i;
 
-			sz = sizeof(clones);
-
-			for (i = 0; i < sz; i++) {
-				call_touch(clones[i]);
+			for (sz = sizeof(clones); sz >= 0; ) {
+				call_touch(clones[sz]);
 			}
 		} else {
-			int sz;
-			int i;
-
-			sz = status(ST_OTABSIZE);
-
-			for (i = 0; i < sz; i++) {
-				object obj;
-
-				obj = find_object(path + "#" + i);
-
-				if (obj) {
-					call_touch(obj);
-				}
-			}
+			touch_scan_otable(path);
 		}
 	}
 }
