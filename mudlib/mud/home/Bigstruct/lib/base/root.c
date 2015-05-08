@@ -21,6 +21,7 @@
 #include <kernel/access.h>
 #include <kotaka/privilege.h>
 
+string creator;
 private mapping grants;
 private int global_access;
 
@@ -30,6 +31,12 @@ static void discard_node(object node);
 static void create()
 {
 	grants = ([ previous_object(1) : FULL_ACCESS ]);
+	creator = object_name(previous_object(1));
+}
+
+string query_creator()
+{
+	return creator;
 }
 
 static void destruct()
