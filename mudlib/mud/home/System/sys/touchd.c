@@ -86,7 +86,7 @@ void touch_all_clones(string path)
 		if (clones) {
 			int sz;
 
-			for (sz = sizeof(clones); sz >= 0; ) {
+			for (sz = sizeof(clones); --sz >= 0; ) {
 				call_touch(clones[sz]);
 			}
 		} else {
