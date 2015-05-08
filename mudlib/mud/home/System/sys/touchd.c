@@ -76,7 +76,8 @@ void touch_all_clones(string path)
 		cinfo = CLONED->query_clone_info(status(path, O_INDEX));
 
 		if (!cinfo) {
-			touch_scan_otable();
+			touch_scan_otable(path);
+
 			return;
 		}
 
