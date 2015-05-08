@@ -73,6 +73,18 @@ void touch_all_clones(string path)
 	rlimits(0; -1) {
 		call_touch(find_object(path));
 
+		if (!sscanf(path, "%*s" + CLONABLE_SUBDIR)) {
+			return;
+		}
+
+		if (sscanf(path, "%*s" + LIGHTWEIGHT_SUBDIR)) {
+			return;
+		}
+
+		if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
+			return;
+		}
+
 		cinfo = CLONED->query_clone_info(status(path, O_INDEX));
 
 		if (!cinfo) {
