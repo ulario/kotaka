@@ -151,21 +151,6 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 	}
 }
 
-private int is_protected(string path)
-{
-	if (DRIVER->creator(path) == "Bigstruct") {
-		return 1;
-	}
-
-	switch(path) {
-	case INITD:
-	case OBJECTD:
-		return 1;
-	}
-
-	return 0;
-}
-
 private void compile_common(string owner, string path, string *source, string *inherited)
 {
 	object initd;
