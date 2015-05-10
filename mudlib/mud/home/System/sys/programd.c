@@ -195,6 +195,8 @@ object register_program(string path, string *inherits, string *includes)
 			}
 
 			touchers |= ({ subpinfo->query_toucher() });
+		} else {
+			LOGD->post_message("debug", LOG_WARN, "No program info for inherited program " + inherits[i]);
 		}
 	}
 
