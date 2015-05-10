@@ -29,8 +29,6 @@
 inherit SECOND_AUTO;
 
 mixed **comperr;
-string lasterror;	/* last error */
-mixed **lasttrace;	/* last trace */
 
 /* in atomic error, we throw a stringified mapping */
 /*
