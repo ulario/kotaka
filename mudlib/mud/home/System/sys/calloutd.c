@@ -103,7 +103,7 @@ int query_suspend_count()
 void suspend_callouts()
 {
 	if (previous_program() == RSRCD) {
-		LOGD->post_message("system", LOG_INFO, "Suspending callouts");
+		LOGD->post_message("system", LOG_NOTICE, "Suspending callouts");
 
 		suspend = -1;
 
@@ -220,7 +220,7 @@ void remove_callouts(object obj)
 void release_callouts()
 {
 	if (previous_program() == RSRCD) {
-		LOGD->post_message("system", LOG_INFO, "Releasing callouts");
+		LOGD->post_message("system", LOG_NOTICE, "Releasing callouts");
 
 		suspend = 1;
 
@@ -260,11 +260,11 @@ static void do_release()
 	handle = 0;
 
 	switch(suspend) {
-	case -1: /* suspended! */
+	case -1: /* suspended */
 		LOGD->post_message("system", LOG_INFO, "calloutd: Release while suspended");
 		return;
 
-	case 0: /* idle! */
+	case 0: /* idle */
 		LOGD->post_message("system", LOG_INFO, "calloutd: Release while idle");
 		return;
 
@@ -284,7 +284,7 @@ static void do_release()
 			handle = call_out("do_release", 0);
 		} else {
 			RSRCD->release_callout(nil, 0);
-			LOGD->post_message("system", LOG_INFO, "Released callouts");
+			LOGD->post_message("system", LOG_NOTICE, "Released callouts");
 
 			if (cmap) {
 				free_queue();

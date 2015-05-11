@@ -152,7 +152,7 @@ void block_connections(varargs object except)
 		return;
 	}
 
-	LOGD->post_message("userd", LOG_NOTICE, "Blocking connections");
+	LOGD->post_message("system", LOG_NOTICE, "Blocking connections");
 
 	blocked = 1;
 	reblocked = ([ ]);
@@ -193,7 +193,7 @@ void unblock_connections(varargs object except)
 		return;
 	}
 
-	LOGD->post_message("userd", LOG_NOTICE, "Unblocking connections");
+	LOGD->post_message("system", LOG_NOTICE, "Unblocking connections");
 
 	blocked = 0;
 
