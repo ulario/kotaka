@@ -34,8 +34,6 @@ void discover_clones();
 static void create()
 {
 	bmap = ([ ]);
-
-	discover_clones();
 }
 
 void add_clone(object obj)
