@@ -33,8 +33,10 @@ object pathdb;	/* path database, filename -> latest index */
 object inhdb;	/* inherit database, filename -> inheriting objects */
 object incdb;	/* include database, filename -> including objects */
 
-private void setup_database()
+void setup_database()
 {
+	ACCESS_CHECK(SYSTEM());
+
 	ASSERT(!progdb);
 	ASSERT(!inhdb);
 	ASSERT(!incdb);
@@ -55,7 +57,6 @@ private void setup_database()
 
 static void create()
 {
-	setup_database();
 }
 
 private void deindex_inherits(int oindex, int *inh)
@@ -134,6 +135,10 @@ object register_program(string path, string *inherits, string *includes)
 	string *touchers;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (!progdb) {
+		return nil;
+	}
 
 	ASSERT(progdb);
 	ASSERT(incdb);

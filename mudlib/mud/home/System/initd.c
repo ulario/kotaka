@@ -87,28 +87,30 @@ static void create()
 
 		configure_klib();
 		configure_rsrc();
+		configure_logging();
 
-		load_object(SECRETD);
-		load_object(CONFIGD);
+		load();
 
-		load_object(MODULED);
+		call_out("boot", 0);
+	} : {
+		LOGD->flush();
+		shutdown();
+		error("System setup failed");
+	}
+}
 
+static void boot()
+{
+	catch {
 		MODULED->boot_module("Bigstruct");
 
-		load_object(PROGRAM_INFO);
-		load_object(PROGRAMD);
-
+		PROGRAMD->setup_database();
 		OBJECTD->discover_objects();
-
-		load_object(SYSTEM_USERD);
+		CLONED->discover_clones();
 
 		MODULED->boot_module("String");
 		MODULED->boot_module("Utility");
 		MODULED->boot_module("Channel");
-
-		load();
-
-		configure_logging();
 
 		/* Booted up */
 

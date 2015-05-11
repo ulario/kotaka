@@ -31,14 +31,14 @@ object queue;
 
 static void create()
 {
-	queue = new_object(BIGSTRUCT_DEQUE_LWO);
 }
 
 void call_touch(object obj)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	if (queue->empty()) {
+	if (!queue || queue->empty()) {
+		queue = new_object(BIGSTRUCT_DEQUE_LWO);
 		call_out("touch_tick", 0);
 	}
 
@@ -124,6 +124,8 @@ static void touch_tick()
 	if (!queue->empty()) {
 		call_out("touch_tick", 0);
 	} else {
+		queue = nil;
+
 		LOGD->post_message("system", LOG_INFO, "Global touch completed");
 	}
 }
