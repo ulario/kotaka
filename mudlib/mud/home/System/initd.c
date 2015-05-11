@@ -91,6 +91,8 @@ static void create()
 
 		load();
 
+		LOGD->post_message("system", LOG_INFO, "System loaded");
+
 		call_out("boot", 0);
 	} : {
 		LOGD->flush();
@@ -113,6 +115,8 @@ static void boot()
 		MODULED->boot_module("Channel");
 
 		/* Booted up */
+
+		ERRORD->enable();
 
 		LOGD->post_message("system", LOG_INFO, "System ready");
 
