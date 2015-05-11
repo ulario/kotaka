@@ -418,6 +418,27 @@ string quote_escape(string input)
 	return input;
 }
 
+string mixed_sprint(mixed data, varargs mapping seen);
+
+string sprint_object(object obj, varargs mapping seen)
+{
+	string path;
+
+	if (sscanf(object_name(obj), "%s#-1", path)) {
+		if (seen[obj] != nil) {
+			return "@" + seen[obj];
+		}
+
+		seen[obj] = map_sizeof(seen);
+
+		return "(< <" + path + ">: " + mixed_sprint(obj->sprint_save(), seen) + ">)";
+	} else if (path = obj->query_object_name()) {
+		return "<" + path + ">";
+	} else {
+		return "<" + object_name(obj) + ">";
+	}
+}
+
 string mixed_sprint(mixed data, varargs mapping seen)
 {
 	int iter;
@@ -501,22 +522,10 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		return tmp + " ])";
 
 	case T_OBJECT:
-		{
-			string name;
-
-			if (sscanf(object_name(data), "%s#-1", name)) {
-				if (seen[data] != nil) {
-					return "@" + seen[data];
-				}
-
-				seen[data] = map_sizeof(seen);
-
-				return "(< <" + name + ">: " + mixed_sprint(data->sprint_save(), seen) + ">)";
-			} else if (name = data->query_object_name()) {
-				return "<" + name + ">";
-			} else {
-				return "<" + object_name(data) + ">";
-			}
+		if (function_object("sprint_object", previous_object())) {
+			return previous_object()->sprint_object(data, seen);
+		} else {
+			return sprint_object(data, seen);
 		}
 		break;
 	}

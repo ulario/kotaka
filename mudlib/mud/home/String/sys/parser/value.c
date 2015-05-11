@@ -78,6 +78,16 @@ static object *parse_obj(string *input)
 	oname = input[0];
 	oname = oname[1 .. strlen(oname) - 2];	/* strip off angle brackets */
 
+	if (function_object("parse_object", previous_object(1))) {
+		object *obj;
+
+		obj = previous_object(1)->parse_object(oname);
+
+		if (obj) {
+			return obj;
+		}
+	}
+
 	obj = find_object(oname);
 
 	if (!obj) {
