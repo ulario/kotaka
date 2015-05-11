@@ -417,7 +417,7 @@ void upgrade_system()
 
 static void upgrade_system_2()
 {
-	reload();
+	load();
 
 	purge_orphans("System");
 
