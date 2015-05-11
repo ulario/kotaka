@@ -61,15 +61,12 @@ static void create()
 private void deindex_inherits(int oindex, int *inh)
 {
 	int sz;
-	int i;
 
 	ASSERT(inhdb);
 
-	sz = sizeof(inh);
-
-	for (i = 0; i < sz; i++) {
+	for (sz = sizeof(inh); --sz >= 0; ) {
 		object submap;
-		submap = inhdb->query_element(inh[i]);
+		submap = inhdb->query_element(inh[sz]);
 		submap->set_element(oindex, nil);
 	}
 }
@@ -77,15 +74,12 @@ private void deindex_inherits(int oindex, int *inh)
 private void deindex_includes(int oindex, string *inc)
 {
 	int sz;
-	int i;
 
 	ASSERT(incdb);
 
-	sz = sizeof(inc);
-
-	for (i = 0; i < sz; i++) {
+	for (sz = sizeof(inc); --sz >= 0; ) {
 		object submap;
-		submap = incdb->query_element(inc[i]);
+		submap = incdb->query_element(inc[sz]);
 		submap->set_element(oindex, nil);
 	}
 }
@@ -93,18 +87,15 @@ private void deindex_includes(int oindex, string *inc)
 private void index_inherits(int oindex, int *inh)
 {
 	int sz;
-	int i;
 
 	ASSERT(inhdb);
 
-	sz = sizeof(inh);
-
-	for (i = 0; i < sz; i++) {
+	for (sz = sizeof(inh); --sz >= 0; ) {
 		object submap;
-		submap = inhdb->query_element(inh[i]);
+		submap = inhdb->query_element(inh[sz]);
 
 		if (!submap) {
-			inhdb->set_element(inh[i], submap = new_object(BIGSTRUCT_MAP_LWO));
+			inhdb->set_element(inh[sz], submap = new_object(BIGSTRUCT_MAP_LWO));
 			submap->set_type(T_INT);
 		}
 
@@ -115,18 +106,15 @@ private void index_inherits(int oindex, int *inh)
 private void index_includes(int oindex, string *inc)
 {
 	int sz;
-	int i;
 
 	ASSERT(incdb);
 
-	sz = sizeof(inc);
-
-	for (i = 0; i < sz; i++) {
+	for (sz = sizeof(inc); --sz >= 0; ) {
 		object submap;
-		submap = incdb->query_element(inc[i]);
+		submap = incdb->query_element(inc[sz]);
 
 		if (!submap) {
-			incdb->set_element(inc[i], submap = new_object(BIGSTRUCT_MAP_LWO));
+			incdb->set_element(inc[sz], submap = new_object(BIGSTRUCT_MAP_LWO));
 			submap->set_type(T_INT);
 		}
 
