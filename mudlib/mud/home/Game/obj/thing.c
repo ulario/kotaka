@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
+
 inherit "../lib/thing";
 
 static void create(int clone)
@@ -24,4 +26,40 @@ static void create(int clone)
 	if (clone) {
 		::create();
 	}
+}
+
+mapping save()
+{
+	ACCESS_CHECK(GAME());
+
+	return ([
+		"archetypes": query_archetypes(),
+		"capacity": query_capacity(),
+		"density": query_density(),
+		"environment": query_environment(),
+		"flexible": query_flexible(),
+		"id": query_id(),
+		"inventory": query_inventory(),
+		"mass": query_mass(),
+		"max_mass": query_max_mass(),
+		"name": query_object_name(),
+		"properties": query_local_properties(),
+		"virtual": query_virtual()
+	]);
+}
+
+void load(mapping data)
+{
+	ACCESS_CHECK(GAME());
+
+	set_archetypes(data["archetypes"]);
+	set_virtual(data["virtual"]);
+	set_capacity(data["capacity"]);
+	set_density(data["density"]);
+	set_flexible(data["flexible"]);
+	set_id(data["id"]);
+	rearrange_inventory(data["inventory"]);
+	set_mass(data["mass"]);
+	set_max_mass(data["max_mass"]);
+	set_local_properties(data["properties"]);
 }
