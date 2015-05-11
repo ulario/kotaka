@@ -202,6 +202,34 @@ private void set_flags(string path)
 	is_initd = creator ? (path == USR_DIR + "/" + creator + "/initd") : 0;
 }
 
+static void upgrade_objects()
+{
+	catch {
+		string path;
+
+		path = upgrades->query_back();
+		upgrades->pop_back();
+
+		if (find_object(TOUCHD)) {
+			TOUCHD->touch_all_clones(path);
+		}
+
+		if (upgrades->empty()) {
+			INITD->release_system("objectd-upgrade");
+
+			upgrades = nil;
+		} else {
+			call_out("upgrade_objects", 0);
+		}
+	} : {
+		INITD->release_system("objectd-upgrade");
+
+		upgrades = nil;
+	}
+}
+
+/* program management */
+
 /* klib hooks */
 
 void compiling(string path)
@@ -668,31 +696,5 @@ void recompile_kernel_library()
 		if (find_object("/kernel/sys/" + name)) {
 			compile_object("/kernel/sys/" + name);
 		}
-	}
-}
-
-static void upgrade_objects()
-{
-	catch {
-		string path;
-
-		path = upgrades->query_back();
-		upgrades->pop_back();
-
-		if (find_object(TOUCHD)) {
-			TOUCHD->touch_all_clones(path);
-		}
-
-		if (upgrades->empty()) {
-			INITD->release_system("objectd-upgrade");
-
-			upgrades = nil;
-		} else {
-			call_out("upgrade_objects", 0);
-		}
-	} : {
-		INITD->release_system("objectd-upgrade");
-
-		upgrades = nil;
 	}
 }
