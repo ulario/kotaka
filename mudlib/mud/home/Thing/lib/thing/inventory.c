@@ -59,7 +59,7 @@ void remove_notify(object obj)
 {
 }
 
-nomask void thing_add_inventory(object arriving)
+void thing_add_inventory(object arriving)
 {
 	ACCESS_CHECK(THING());
 
@@ -69,7 +69,7 @@ nomask void thing_add_inventory(object arriving)
 	inventory = ({ arriving }) + (inventory - ({ nil }));
 }
 
-nomask void thing_del_inventory(object departing)
+void thing_del_inventory(object departing)
 {
 	ACCESS_CHECK(THING());
 
@@ -78,7 +78,7 @@ nomask void thing_del_inventory(object departing)
 	inventory -= ({ departing, nil });
 }
 
-nomask int is_container_of(object test)
+int is_container_of(object test)
 {
 	object env;
 	object this;
@@ -106,12 +106,12 @@ nomask int is_container_of(object test)
 	return 0;
 }
 
-nomask object query_environment()
+object query_environment()
 {
 	return environment;
 }
 
-nomask object *query_inventory()
+object *query_inventory()
 {
 	return (inventory -= ({ nil }))[..];
 }
@@ -132,7 +132,7 @@ private atomic void move_core(object new_env)
 	}
 }
 
-nomask void move(object new_env, varargs int force)
+void move(object new_env, varargs int force)
 {
 	object old_env;
 	object this;
