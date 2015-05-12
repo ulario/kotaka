@@ -59,11 +59,11 @@ private void purge_savedir()
 	do {
 		int sz;
 
-		names = get_dir("~/data/save/*")[0];
+		names = CONFIGD->get_dir("save/*")[0];
 
 		if (names) {
 			for (sz = sizeof(names); --sz >= 0; ) {
-				remove_file("~/data/save/" + names[sz]);
+				CONFIGD->remove_file("save/" + names[sz]);
 			}
 		}
 	} while (names && sizeof(names));
@@ -131,11 +131,14 @@ void save_world()
 
 	put_directory(nil);
 
+	CONFIGD->make_dir(".");
+	CONFIGD->make_dir("save");
+
 	for (sz = objlist->query_size(); --sz >= 0; ) {
-		write_file("~/data/save/" + (sz + 1) + ".obj",
+		CONFIGD->write_file("save/" + (sz + 1) + ".obj",
 			STRINGD->hybrid_sprint(
 				objlist->query_element(sz)[1]
-			)
+			) + "\n"
 		);
 	}
 }
@@ -161,7 +164,7 @@ void load_world()
 	sz = 1;
 
 	for (;;) {
-		if (file_info("~/data/save/" + sz + ".obj")) {
+		if (CONFIGD->file_info("save/" + sz + ".obj")) {
 			object obj;
 			int i;
 			obj = clone_object("~Game/obj/thing");
@@ -170,7 +173,7 @@ void load_world()
 			oindex2onum->set_element(i, sz);
 
 			objlist->push_back( ({ obj,
-				read_file("~/data/save/" + sz + ".obj") }) );
+				CONFIGD->read_file("save/" + sz + ".obj") }) );
 			sz++;
 		} else {
 			break;
