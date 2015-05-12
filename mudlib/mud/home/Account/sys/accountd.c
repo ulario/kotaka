@@ -47,6 +47,8 @@ void register_account(string name, string password)
 	account = clone_object("../obj/account");
 	account->set_name(name);
 	account->set_password(password);
+
+	accounts[name] = account;
 }
 
 void unregister_account(string name)
