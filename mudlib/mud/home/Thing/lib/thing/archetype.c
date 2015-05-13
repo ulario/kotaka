@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
 #include <kotaka/checkarg.h>
 #include <kotaka/privilege.h>
 
@@ -127,6 +128,8 @@ atomic nomask void clear_archetypes()
 	for (i = 0; i < sz; i++) {
 		archetypes[i]->thing_remove_instance(this);
 	}
+
+	archetypes = ({ });
 }
 
 atomic nomask void add_archetype(object new_arch)
@@ -203,7 +206,7 @@ nomask mapping query_next_instances()
 nomask void thing_add_instance(object instance)
 {
 	object this;
-	object prev_instance;
+	object prev;
 
 	ACCESS_CHECK(THING());
 
@@ -211,18 +214,17 @@ nomask void thing_add_instance(object instance)
 
 	if (!first_instance) {
 		first_instance = instance;
+		instance->thing_set_prev_instance(this, instance);
+		instance->thing_set_next_instance(this, instance);
+	} else {
+		prev = first_instance->query_prev_instance(this);
+
+		first_instance->thing_set_prev_instance(this, instance);
+		instance->thing_set_next_instance(this, first_instance);
+
+		instance->thing_set_prev_instance(this, prev);
+		prev->thing_set_next_instance(this, instance);
 	}
-
-	prev_instance = first_instance->query_prev_instance(this);
-
-	if (prev_instance) {
-		prev_instance->thing_set_next_instance(this, instance);
-	}
-
-	first_instance->thing_set_prev_instance(this, instance);
-
-	instance->thing_set_next_instance(this, first_instance);
-	instance->thing_set_prev_instance(this, prev_instance);
 }
 
 nomask void thing_remove_instance(object instance)
@@ -232,25 +234,22 @@ nomask void thing_remove_instance(object instance)
 	ACCESS_CHECK(THING());
 
 	this = this_object();
-
-	if (first_instance == instance) {
-		first_instance = instance->query_next_instance(this);
-
-		if (first_instance == instance) {
-			first_instance = nil;
-		}
-	}
-
 	prev = instance->query_prev_instance(this);
 	next = instance->query_next_instance(this);
+	ASSERT(prev);
+	ASSERT(next);
 
-	if (!prev || !next) {
-		/* not in list */
-		return;
+	if (instance == next) {
+		first_instance = nil;
+		instance->thing_set_prev_instance(this, nil);
+		instance->thing_set_next_instance(this, nil);
+	} else {
+		if (first_instance == instance) {
+			first_instance = next;
+		}
+		prev->thing_set_next_instance(this, next);
+		next->thing_set_prev_instance(this, prev);
 	}
-
-	prev->thing_set_next_instance(this, next);
-	next->thing_set_prev_instance(this, prev);
 }
 
 nomask void thing_set_prev_instance(object archetype, object instance)
