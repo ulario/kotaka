@@ -45,7 +45,7 @@ float pi()
 	return atan(1.0) * 4.0;
 }
 
-int dice(int faces, int count)
+int dice(int count, int faces)
 {
 	int sum;
 
