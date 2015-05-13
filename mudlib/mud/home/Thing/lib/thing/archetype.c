@@ -169,7 +169,7 @@ atomic nomask void add_archetype_at(object new_arch, int position)
 	new_arch->thing_add_instance(this_object());
 }
 
-nomask void del_archetype(object old_arch)
+atomic nomask void del_archetype(object old_arch)
 {
 	archetypes -= ({ old_arch });
 
