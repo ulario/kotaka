@@ -58,7 +58,7 @@ void set_password(string new_password)
 {
 	ACCESS_CHECK(ACCOUNT());
 
-	password = hash_string("crypt", new_password, name);
+	password = hash_string("crypt", new_password);
 }
 
 void set_hashed_password(string new_password)
@@ -84,22 +84,27 @@ int authenticate(string trial_password)
 	}
 
 	if (password == hash_string("SHA1", trial_password)) {
+		set_password(trial_password);
 		return TRUE;
 	}
 
 	if (password == hash_string("MD5", trial_password)) {
+		set_password(trial_password);
 		return TRUE;
 	}
 
 	if (password == hash_string("crypt", trial_password, password)) {
+		set_password(trial_password);
 		return TRUE;
 	}
 
 	if (password == hash_string("crypt", trial_password)) {
+		set_password(trial_password);
 		return TRUE;
 	}
 
 	if (password == hash_string("crypt", trial_password, name)) {
+		set_password(trial_password);
 		return TRUE;
 	}
 }
