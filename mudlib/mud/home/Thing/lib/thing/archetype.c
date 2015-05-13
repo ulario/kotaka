@@ -273,3 +273,11 @@ nomask void thing_set_next_instance(object archetype, object instance)
 		next_instance[archetype] = nil;
 	}
 }
+
+static void thing_wipe_archetype()
+{
+	archetypes = ({ });
+	first_instance = nil;
+	prev_instance = ([ ]);
+	next_instance = ([ ]);
+}
