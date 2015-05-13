@@ -59,6 +59,8 @@ void set_password(string new_password)
 	ACCESS_CHECK(ACCOUNT());
 
 	password = hash_string("crypt", new_password);
+
+	save();
 }
 
 void set_hashed_password(string new_password)
@@ -66,6 +68,8 @@ void set_hashed_password(string new_password)
 	ACCESS_CHECK(ACCOUNT());
 
 	password = new_password;
+
+	save();
 }
 
 void clear_password()
@@ -73,6 +77,8 @@ void clear_password()
 	ACCESS_CHECK(ACCOUNT());
 
 	password = nil;
+
+	save();
 }
 
 int authenticate(string trial_password)
@@ -126,6 +132,8 @@ void set_property(string property, mixed value)
 	if (!map_sizeof(properties)) {
 		properties = nil;
 	}
+
+	save();
 }
 
 mixed query_property(string property)
