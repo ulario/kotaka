@@ -73,7 +73,7 @@ void main(object actor, mapping roles)
 			int sz, i;
 			string *briefs;
 
-			emit_from(actor, " ", ({ "look", "looks" }), " at a bunch of stuff.");
+			emit_from(actor, actor, " ", ({ "look", "looks" }), " at a bunch of stuff.");
 
 			sz = sizeof(obj);
 			briefs = ({ });
