@@ -36,6 +36,7 @@ object cmap;	/* ([ oindex : ([ handle : iterator ]) ]) */
 object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
 
 int begin, end;
+mapping bypass;
 
 private int bypass(object obj);
 int empty();
@@ -48,6 +49,8 @@ private void free_queue();
 
 static void create()
 {
+	bypass = ([ ]);
+
 	RSRCD->set_suspension_manager(this_object());
 }
 
@@ -244,9 +247,25 @@ void release_callouts()
 	}
 }
 
+/* public */
+
 int query_suspend()
 {
 	return suspend;
+}
+
+void add_bypass(string creator)
+{
+	if (!bypass) {
+		bypass = ([ ]);
+	}
+
+	bypass[creator] = 1;
+}
+
+void clear_bypass()
+{
+	bypass = ([ ]);
 }
 
 /* internal */
@@ -300,15 +319,23 @@ static void do_release()
 
 private int bypass(object obj)
 {
-	if (obj == this_object()) {
-		return 1;
-	}
+	string owner;
 
 	if (suspend == 1) {
 		return 1;
 	}
 
-	return obj->query_owner() == "System";
+	owner = obj->query_owner();
+
+	if (owner == "System") {
+		return 1;
+	}
+
+	if (bypass[owner]) {
+		return 1;
+	}
+
+	return 0;
 }
 
 private mixed *release()

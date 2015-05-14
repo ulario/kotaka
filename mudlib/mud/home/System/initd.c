@@ -449,11 +449,12 @@ void suspend_system(string flag)
 	}
 
 	suspends[flag] = 1;
+	CALLOUTD->add_bypass(previous_object()->query_owner());
 }
 
 void release_system(string flag)
 {
-	if (!suspends[flag]) {
+	if (!suspends || !suspends[flag]) {
 		error("Not suspended\n");
 	}
 
@@ -463,6 +464,7 @@ void release_system(string flag)
 		suspends = nil;
 
 		CALLOUTD->release_callouts();
+		CALLOUTD->clear_bypass();
 		SYSTEM_USERD->unblock_connections();
 	}
 }
