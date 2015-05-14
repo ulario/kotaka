@@ -71,7 +71,6 @@ nomask object *query_archetypes()
 
 atomic nomask void set_archetypes(object *new_archs)
 {
-	int i;
 	int sz;
 
 	object *removed, *added, *arch;
@@ -87,12 +86,10 @@ atomic nomask void set_archetypes(object *new_archs)
 	removed -= ({ nil });
 	added -= ({ nil });
 
-	sz = sizeof(added);
-
-	for (i = 0; i < sz; i++) {
+	for (sz = sizeof(added); --sz >= 0; ) {
 		object arch;
 
-		arch = added[i];
+		arch = added[sz];
 
 		if (is_archetype_of(arch)) {
 			error("Circular reference");
@@ -103,30 +100,24 @@ atomic nomask void set_archetypes(object *new_archs)
 
 	this = this_object();
 
-	sz = sizeof(removed);
-
-	for (i = 0; i < sz; i++) {
-		removed[i]->thing_remove_instance(this);
+	for (sz = sizeof(removed); --sz >= 0; ) {
+		removed[sz]->thing_remove_instance(this);
 	}
 
-	sz = sizeof(added);
-
-	for (i = 0; i < sz; i++) {
-		added[i]->thing_add_instance(this);
+	for (sz = sizeof(added); --sz >= 0; ) {
+		added[sz]->thing_add_instance(this);
 	}
 }
 
 atomic nomask void clear_archetypes()
 {
-	int sz, i;
+	int sz;
 	object this;
-
-	sz = sizeof(archetypes -= ({ nil }) );
 
 	this = this_object();
 
-	for (i = 0; i < sz; i++) {
-		archetypes[i]->thing_remove_instance(this);
+	for (sz = sizeof(archetypes -= ({ nil }) ); sz >= 0; ) {
+		archetypes[sz]->thing_remove_instance(this);
 	}
 
 	archetypes = ({ });
