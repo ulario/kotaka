@@ -451,11 +451,11 @@ int forbid_inherit(string from, string path, int priv)
 
 	initd = find_object(USR_DIR + "/" + DRIVER->creator(path) + "/initd");
 
-	if (!initd) {
+	if (initd) {
+		return initd->forbid_inherit(from, path, priv);
+	} else if (!initd && DRIVER->creator(path) != "System") {
 		error("No initd loaded for " + path);
 	}
-
-	return initd->forbid_inherit(from, path, priv);
 }
 
 /* public */
