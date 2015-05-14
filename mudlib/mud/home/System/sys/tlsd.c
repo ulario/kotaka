@@ -21,6 +21,7 @@
 #include <kernel/kernel.h>
 #include <kernel/tls.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/paths/string.h>
 
 inherit SECOND_AUTO;
 
@@ -28,12 +29,21 @@ private inherit API_TLS;
 
 mapping registry;	/*< ([ domain: ([ key: ([ user: access ]) ]) ]) */
 
+void restore();
+void save();
+
 static void create()
 {
 	::create();
 	::set_tls_size(1);
 
 	registry = ([ ]);
+
+	if (find_object(STRINGD)) {
+		restore();
+	} else {
+		call_out("restore", 0);
+	}
 }
 
 int query_tls_access(string domain, string key, string user)
@@ -115,6 +125,8 @@ mixed set_tls_access(string domain, string key, string user, int access)
 	}
 
 	registry[domain] = dmap;
+
+	save();
 }
 
 mixed query_tls_value(string domain, string key)
@@ -189,4 +201,32 @@ void set_tls_value(string domain, string key, mixed value)
 	}
 
 	set_tlvar(0, heap);
+}
+
+void save()
+{
+	string buf;
+
+	buf = STRINGD->hybrid_sprint( ([ "registry": registry ]) );
+
+	CONFIGD->make_dir(".");
+	CONFIGD->remove_file("tlsd-tmp");
+	CONFIGD->write_file("tlsd-tmp", buf + "\n");
+	CONFIGD->remove_file("tlsd");
+	CONFIGD->rename_file("tlsd-tmp", "tlsd");
+}
+
+void restore()
+{
+	string buf;
+
+	buf = CONFIGD->read_file("tlsd");
+
+	if (buf) {
+		mapping save;
+
+		save = PARSER_VALUE->parse(buf);
+
+		registry = save["registry"];
+	}
 }
