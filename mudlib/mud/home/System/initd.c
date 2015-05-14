@@ -468,3 +468,8 @@ void release_system(string flag)
 		SYSTEM_USERD->unblock_connections();
 	}
 }
+
+string *query_suspends()
+{
+	return suspends ? map_indices(suspends) : ({ });
+}
