@@ -433,7 +433,7 @@ static void upgrade_system_3()
 	MODULED->upgrade_modules();
 }
 
-void suspend_system(string flag)
+atomic void suspend_system(string flag)
 {
 	if (!suspends) {
 		suspends = ([ ]);
@@ -452,7 +452,7 @@ void suspend_system(string flag)
 	CALLOUTD->add_bypass(previous_object()->query_owner());
 }
 
-void release_system(string flag)
+atomic void release_system(string flag)
 {
 	if (!suspends || !suspends[flag]) {
 		error("Not suspended\n");
