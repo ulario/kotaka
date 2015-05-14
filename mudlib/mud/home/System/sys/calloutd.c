@@ -254,18 +254,23 @@ int query_suspend()
 	return suspend;
 }
 
-void add_bypass(string creator)
+void add_bypass(object obj)
 {
 	if (!bypass) {
 		bypass = ([ ]);
 	}
 
-	bypass[creator] = 1;
+	bypass[obj] = 1;
 }
 
 void clear_bypass()
 {
 	bypass = ([ ]);
+}
+
+object *query_bypass()
+{
+	return bypass ? map_indices(bypass) : ({ });
 }
 
 /* internal */
@@ -327,11 +332,7 @@ private int bypass(object obj)
 
 	owner = obj->query_owner();
 
-	if (owner == "System") {
-		return 1;
-	}
-
-	if (bypass[owner]) {
+	if (bypass && bypass[obj]) {
 		return 1;
 	}
 
