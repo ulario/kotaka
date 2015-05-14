@@ -129,10 +129,6 @@ mixed query_tls_value(string domain, string key)
 		error("Access denied");
 	}
 
-	if (INITD->booting()) {
-		return nil;
-	}
-
 	heap = get_tlvar(0);
 
 	if (!heap) {
@@ -153,10 +149,6 @@ void set_tls_value(string domain, string key, mixed value)
 	string creator;
 	mapping heap;
 	mapping dmap;
-
-	if (INITD->booting()) {
-		error("Cannot set TLS during boot");
-	}
 
 	creator = DRIVER->creator(previous_program());
 
