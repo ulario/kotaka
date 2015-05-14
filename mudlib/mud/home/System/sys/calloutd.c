@@ -324,13 +324,17 @@ static void do_release()
 
 private int bypass(object obj)
 {
-	string owner;
+	if (obj == this_object()) {
+		return 1;
+	}
+
+	if (obj->query_owner() == "System") {
+		return 1;
+	}
 
 	if (suspend == 1) {
 		return 1;
 	}
-
-	owner = obj->query_owner();
 
 	if (bypass && bypass[obj]) {
 		return 1;

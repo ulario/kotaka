@@ -449,7 +449,7 @@ atomic void suspend_system(string flag)
 	}
 
 	suspends[flag] = 1;
-	CALLOUTD->add_bypass(previous_object()->query_owner());
+	CALLOUTD->add_bypass(previous_object());
 }
 
 atomic void release_system(string flag)
