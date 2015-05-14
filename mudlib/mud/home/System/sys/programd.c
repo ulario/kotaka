@@ -37,22 +37,25 @@ void setup_database()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	ASSERT(!progdb);
-	ASSERT(!inhdb);
-	ASSERT(!incdb);
-	ASSERT(!pathdb);
+	if (!progdb) {
+		progdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		progdb->set_type(T_INT);
+	}
 
-	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	progdb->set_type(T_INT);
+	if (!inhdb) {
+		inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		inhdb->set_type(T_INT);
+	}
 
-	inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	inhdb->set_type(T_INT);
+	if (!incdb) {
+		incdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		incdb->set_type(T_STRING);
+	}
 
-	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	incdb->set_type(T_STRING);
-
-	pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	pathdb->set_type(T_STRING);
+	if (!pathdb) {
+		pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		pathdb->set_type(T_STRING);
+	}
 }
 
 static void create()
