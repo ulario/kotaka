@@ -38,12 +38,6 @@ static void create()
 	::set_tls_size(1);
 
 	registry = ([ ]);
-
-	if (find_object(STRINGD)) {
-		restore();
-	} else {
-		call_out("restore", 0);
-	}
 }
 
 int query_tls_access(string domain, string key, string user)
