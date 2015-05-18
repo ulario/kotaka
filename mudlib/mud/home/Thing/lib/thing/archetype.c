@@ -116,7 +116,7 @@ atomic nomask void clear_archetypes()
 
 	this = this_object();
 
-	for (sz = sizeof(archetypes -= ({ nil }) ); sz >= 0; ) {
+	for (sz = sizeof(archetypes -= ({ nil }) ); --sz >= 0; ) {
 		archetypes[sz]->thing_remove_instance(this);
 	}
 
