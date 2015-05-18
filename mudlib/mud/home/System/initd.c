@@ -48,25 +48,18 @@ private void check_versions();
 
 mapping suspends;
 
+private void load_core()
+{
+	load_object(LOGD);
+	load_object(OBJECTD);
+	load_object(TLSD);
+}
+
 private void load()
 {
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
 	load_dir("sys", 1);
-}
-
-private void reload()
-{
-	load_dir("lwo", 5);
-	load_dir("obj", 5);
-	load_dir("sys", 5);
-}
-
-private void load_core()
-{
-	load_object(ERRORD);
-	load_object(LOGD);
-	load_object(OBJECTD);
 }
 
 static void create()
@@ -75,25 +68,8 @@ static void create()
 	check_versions();
 
 	catch {
-		load_core();
-
-		remove_file("/log/session.log");
-
-		LOGD->post_message("system", LOG_INFO, "Welcome to Kotaka " + KOTAKA_VERSION);
-
-		load_object(KERNELD);
-
-		KERNELD->set_global_access("System", 1);
-
-		configure_klib();
-		configure_rsrc();
-		configure_logging();
-
-		load();
-
-		LOGD->post_message("system", LOG_INFO, "System loaded");
-
-		call_out("boot", 0);
+		DRIVER->fix_filequota();
+		call_out("boot", 0, 0);
 	} : {
 		LOGD->flush();
 		shutdown();
@@ -101,30 +77,54 @@ static void create()
 	}
 }
 
-static void boot()
+static void boot(int stage)
 {
 	catch {
-		MODULED->boot_module("Bigstruct");
+		switch(stage) {
+		case 0:
+			load_core();
 
-		PROGRAMD->setup_database();
-		OBJECTD->discover_objects();
-		CLONED->discover_clones();
+			remove_file("/log/session.log");
 
-		MODULED->boot_module("String");
-		MODULED->boot_module("Utility");
-		MODULED->boot_module("Channel");
+			load_object(KERNELD);
+			KERNELD->set_global_access("System", 1);
 
-		/* Booted up */
+			configure_klib();
+			configure_rsrc();
+			configure_logging();
+			call_out("boot", 0, 1);
+			break;
 
-		ERRORD->enable();
+		case 1:
+			load();
 
-		LOGD->post_message("system", LOG_INFO, "System ready");
+			LOGD->post_message("system", LOG_INFO, "System loaded");
 
-		MODULED->boot_module("Account");
-		MODULED->boot_module("Kotaka");
-		MODULED->boot_module("Game");
+			call_out("boot", 0, 2);
+			break;
 
-		call_out("audit_filequota", 0);
+		case 2:
+			MODULED->boot_module("Bigstruct");
+
+			PROGRAMD->setup_database();
+			OBJECTD->discover_objects();
+			CLONED->discover_clones();
+			call_out("boot", 0, 3);
+			break;
+
+		case 3:
+			MODULED->boot_module("String");
+			MODULED->boot_module("Utility");
+			MODULED->boot_module("Channel");
+
+			ERRORD->enable();
+
+			LOGD->post_message("system", LOG_INFO, "System ready");
+
+			MODULED->boot_module("Account");
+			MODULED->boot_module("Kotaka");
+			MODULED->boot_module("Game");
+		}
 	} : {
 		LOGD->flush();
 		shutdown();
@@ -387,11 +387,6 @@ private void check_versions()
 	if (minor < 3) {
 		error("Kernel library minor version " + major + "." + minor + " too low for this version of kotaka");
 	}
-}
-
-static void audit_filequota()
-{
-	DRIVER->fix_filequota();
 }
 
 void upgrade_system()
