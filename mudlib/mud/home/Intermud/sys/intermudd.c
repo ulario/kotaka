@@ -225,6 +225,8 @@ private void do_chanlist_reply(mixed *value)
 			channels[names[sz]] = values[sz];
 		}
 	}
+
+	save();
 }
 
 private void do_emoteto(mixed *value)
@@ -267,6 +269,8 @@ private void do_mudlist(mixed *value)
 			muds[names[sz]] = values[sz];
 		}
 	}
+
+	save();
 }
 
 private void do_startup_reply(mixed *value)
@@ -579,6 +583,17 @@ private void save()
 	SECRETD->write_file("intermud-tmp", buf + "\n");
 	SECRETD->remove_file("intermud");
 	SECRETD->rename_file("intermud-tmp", "intermud");
+
+	buf = STRINGD->hybrid_sprint( ([
+		"muds" : muds,
+		"channels" : channels
+	]) );
+
+	CONFIGD->make_dir(".");
+	CONFIGD->remove_file("intermud-tmp");
+	CONFIGD->write_file("intermud-tmp", buf + "\n");
+	CONFIGD->remove_file("intermud");
+	CONFIGD->rename_file("intermud-tmp", "intermud");
 }
 
 private void restore()
@@ -588,13 +603,22 @@ private void restore()
 
 	buf = SECRETD->read_file("intermud");
 
-	if (!buf) {
-		return;
+	if (buf) {
+		map = PARSER_VALUE->parse(buf);
 	}
-
-	map = PARSER_VALUE->parse(buf);
 
 	if (map["password"]) {
 		password = map["password"];
+	}
+
+	buf = CONFIGD->read_file("intermud");
+
+	if (buf) {
+		map = PARSER_VALUE->parse(buf);
+	}
+
+	if (map["muds"] && map["channels"]) {
+		muds = map["muds"];
+		channels = map["channels"];
 	}
 }
