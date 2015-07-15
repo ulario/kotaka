@@ -69,7 +69,11 @@ static void create()
 
 	catch {
 		DRIVER->fix_filequota();
-		call_out("boot", 0, 0);
+
+		load_core();
+		remove_file("/log/session.log");
+
+		call_out("boot", 0);
 	} : {
 		LOGD->flush();
 		shutdown();
@@ -77,54 +81,37 @@ static void create()
 	}
 }
 
-static void boot(int stage)
+static void boot()
 {
 	catch {
-		switch(stage) {
-		case 0:
-			load_core();
+		load_object(KERNELD);
+		KERNELD->set_global_access("System", 1);
 
-			remove_file("/log/session.log");
+		configure_klib();
+		configure_rsrc();
+		configure_logging();
 
-			load_object(KERNELD);
-			KERNELD->set_global_access("System", 1);
+		load();
 
-			configure_klib();
-			configure_rsrc();
-			configure_logging();
-			call_out("boot", 0, 1);
-			break;
+		LOGD->post_message("system", LOG_INFO, "System loaded");
 
-		case 1:
-			load();
+		MODULED->boot_module("Bigstruct");
 
-			LOGD->post_message("system", LOG_INFO, "System loaded");
+		PROGRAMD->setup_database();
+		OBJECTD->discover_objects();
+		CLONED->discover_clones();
 
-			call_out("boot", 0, 2);
-			break;
+		MODULED->boot_module("String");
+		MODULED->boot_module("Utility");
+		MODULED->boot_module("Channel");
 
-		case 2:
-			MODULED->boot_module("Bigstruct");
+		ERRORD->enable();
 
-			PROGRAMD->setup_database();
-			OBJECTD->discover_objects();
-			CLONED->discover_clones();
-			call_out("boot", 0, 3);
-			break;
+		LOGD->post_message("system", LOG_INFO, "System ready");
 
-		case 3:
-			MODULED->boot_module("String");
-			MODULED->boot_module("Utility");
-			MODULED->boot_module("Channel");
-
-			ERRORD->enable();
-
-			LOGD->post_message("system", LOG_INFO, "System ready");
-
-			MODULED->boot_module("Account");
-			MODULED->boot_module("Kotaka");
-			MODULED->boot_module("Game");
-		}
+		MODULED->boot_module("Account");
+		MODULED->boot_module("Kotaka");
+		MODULED->boot_module("Game");
 	} : {
 		LOGD->flush();
 		shutdown();
