@@ -88,6 +88,11 @@ void main(object actor, mapping roles)
 
 		mobiles = oldbody->query_property("mobiles");
 		mobiles -= ({ user, nil });
+
+		if (!sizeof(mobiles)) {
+			mobiles = nil;
+		}
+
 		oldbody->set_property("mobiles", mobiles);
 	}
 
