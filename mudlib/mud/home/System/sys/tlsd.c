@@ -29,9 +29,6 @@ private inherit API_TLS;
 
 mapping registry;	/*< ([ domain: ([ key: ([ user: access ]) ]) ]) */
 
-void restore();
-void save();
-
 static void create()
 {
 	::create();
@@ -119,8 +116,6 @@ mixed set_tls_access(string domain, string key, string user, int access)
 	}
 
 	registry[domain] = dmap;
-
-	save();
 }
 
 mixed query_tls_value(string domain, string key)
@@ -195,32 +190,4 @@ void set_tls_value(string domain, string key, mixed value)
 	}
 
 	set_tlvar(0, heap);
-}
-
-void save()
-{
-	string buf;
-
-	buf = STRINGD->hybrid_sprint( ([ "registry": registry ]) );
-
-	CONFIGD->make_dir(".");
-	CONFIGD->remove_file("tlsd-tmp");
-	CONFIGD->write_file("tlsd-tmp", buf + "\n");
-	CONFIGD->remove_file("tlsd");
-	CONFIGD->rename_file("tlsd-tmp", "tlsd");
-}
-
-void restore()
-{
-	string buf;
-
-	buf = CONFIGD->read_file("tlsd");
-
-	if (buf) {
-		mapping save;
-
-		save = PARSER_VALUE->parse(buf);
-
-		registry = save["registry"];
-	}
 }
