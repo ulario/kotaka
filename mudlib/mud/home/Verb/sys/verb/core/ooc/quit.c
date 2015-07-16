@@ -34,16 +34,15 @@ void main(object actor, mapping roles)
 	object user;
 
 	user = query_user();
+
 	body = user->query_body();
 
 	if (body) {
-		object *mobiles;
 		ASSERT(actor == body);
 
-		mobiles = body->query_property("mobiles");
-		body->set_property("mobiles", mobiles - ({ nil, user }));
-		user->set_body(nil);
-		send_out("You leave " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
+		user->inhabit_body(nil);
+
+		send_out("Departing " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	} else {
 		query_user()->quit();
 	}

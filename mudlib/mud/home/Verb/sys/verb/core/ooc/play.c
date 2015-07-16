@@ -82,25 +82,11 @@ void main(object actor, mapping roles)
 		send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	}
 
-	oldbody = user->query_body();
-
-	if (oldbody) {
-		send_out("Unselected " + TEXT_SUBD->generate_brief_definite(oldbody) + ".\n");
-
-		mobiles = oldbody->query_property("mobiles");
-		mobiles -= ({ user, nil });
-
-		if (!sizeof(mobiles)) {
-			mobiles = nil;
-		}
-
-		oldbody->set_property("mobiles", mobiles);
+	if (oldbody = user->query_body()) {
+		send_out("Departing " + TEXT_SUBD->generate_brief_definite(oldbody) + ".\n");
 	}
 
-	mobiles = body->query_property("mobiles");
-	mobiles |= ({ user });
-	body->set_property("mobiles", mobiles);
+	send_out("Inhabiting " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 
 	user->set_body(body);
-	send_out("Selected " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 }

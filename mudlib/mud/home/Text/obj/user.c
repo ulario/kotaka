@@ -96,9 +96,33 @@ object query_mobile()
 
 void set_body(object new_body)
 {
+	object *mobiles;
+
 	ACCESS_CHECK(TEXT() || GAME() || VERB());
 
+	if (body) {
+		mobiles = body->query_property("mobiles");
+		mobiles -= ({ this_object(), nil });
+
+		if (!sizeof(mobiles)) {
+			mobiles = nil;
+		}
+
+		body->set_property("mobiles", mobiles);
+	}
+
 	body = new_body;
+
+	if (body) {
+		mobiles = body->query_property("mobiles");
+
+		if (!mobiles) {
+			mobiles = ({ });
+		}
+
+		mobiles |= ({ this_object() });
+		body->set_property("mobiles", mobiles);
+	}
 }
 
 object query_body()
