@@ -37,8 +37,7 @@
 * *yatmim at 149.152.218.102 port 23
 * *adsr at 62.49.9.82 port 9000
 */
-/* i4
-*/
+/* i4 */
 #define ROUTER_NAME	"*i4"
 #define ROUTER_IP	"204.209.44.3"
 #define ROUTER_PORT	8080
