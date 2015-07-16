@@ -416,9 +416,10 @@ private void process_packet(mixed *value)
 		break;
 
 	/* we don't care about these right now */
-	case "finger-req":
-	case "ucache-update":
-	case "locate-req":
+	case "finger-req": /* ignored for privacy */
+	case "locate-req": /* ignored for privacy */
+	case "ucache-update": /* we don't implement ucache */
+	case "who-req": /* ignored for privacy */
 		break;
 
 	default:
