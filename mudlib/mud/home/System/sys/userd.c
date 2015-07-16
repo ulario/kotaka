@@ -363,11 +363,9 @@ object select(string str)
 	}
 
 	if (intercept = TLSD->query_tls_value("System", "redirect-intercept")) {
-		user = intercept;
+		TLSD->set_tls_value("System", "redirect-intercept", nil);
 
-		intercept = nil;
-
-		return user;
+		return intercept;
 	}
 
 	userd = query_manager(conn);
