@@ -61,6 +61,11 @@ void main(object actor, mapping roles)
 			])
 		);
 	} else {
+		if (!env->query_environment()) {
+			send_out("You're already at a root environment.\n");
+			return;
+		}
+
 		user = query_user();
 
 		if (user->query_class() < 2) {
