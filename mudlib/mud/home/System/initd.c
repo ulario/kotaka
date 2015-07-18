@@ -177,7 +177,7 @@ void reboot()
 	CALLOUTD->reboot();
 	ACCESSD->restore();
 
-	call_out("audit_filequota", 0);
+	DRIVER->fix_filequota();
 	MODULED->reboot_modules();
 }
 
@@ -196,8 +196,7 @@ void hotboot()
 	CALLOUTD->reboot();
 
 	MODULED->hotboot_modules();
-
-	call_out("audit_filequota", 0);
+	DRIVER->fix_filequota();
 }
 
 /* miscellaneous */
