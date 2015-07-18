@@ -28,8 +28,7 @@
 #include <status.h>
 #include <type.h>
 
-/* mud mode */
-/* (big endian 4 byte integer, length of the string) (string) (null) */
+#define MUDNAME		"Ulario"
 
 /*
 * *i4 at 204.209.44.3 port 8080
@@ -37,28 +36,29 @@
 * *yatmim at 149.152.218.102 port 23
 * *adsr at 62.49.9.82 port 9000
 */
+
 /* i4 */
 #define ROUTER_NAME	"*i4"
 #define ROUTER_IP	"204.209.44.3"
 #define ROUTER_PORT	8080
+
 /* wpr
 #define ROUTER_NAME	"*wpr"
 #define ROUTER_IP	"195.242.99.94"
 #define ROUTER_PORT	8080
 */
+
 /* yatmin
 #define ROUTER_NAME	"*yatmin"
 #define ROUTER_IP	"149.152.218.102"
 #define ROUTER_PORT	23
 */
+
 /* adsr
 #define ROUTER_NAME	"*adsr"
 #define ROUTER_IP	"62.49.9.82"
 #define ROUTER_PORT	9000
 */
-
-#define ROUTER_PORT	23
-#define MUDNAME		"Ulario"
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
