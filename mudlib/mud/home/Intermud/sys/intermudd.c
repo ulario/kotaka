@@ -608,17 +608,6 @@ private void save()
 	SECRETD->write_file("intermud-tmp", buf + "\n");
 	SECRETD->remove_file("intermud");
 	SECRETD->rename_file("intermud-tmp", "intermud");
-
-	buf = STRINGD->hybrid_sprint( ([
-		"muds" : muds,
-		"channels" : channels
-	]) );
-
-	CONFIGD->make_dir(".");
-	CONFIGD->remove_file("intermud-tmp");
-	CONFIGD->write_file("intermud-tmp", buf + "\n");
-	CONFIGD->remove_file("intermud");
-	CONFIGD->rename_file("intermud-tmp", "intermud");
 }
 
 private void restore()
@@ -634,16 +623,5 @@ private void restore()
 
 	if (map["password"]) {
 		password = map["password"];
-	}
-
-	buf = CONFIGD->read_file("intermud");
-
-	if (buf) {
-		map = PARSER_VALUE->parse(buf);
-	}
-
-	if (map["muds"] && map["channels"]) {
-		muds = map["muds"];
-		channels = map["channels"];
 	}
 }
