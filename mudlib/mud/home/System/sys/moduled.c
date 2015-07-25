@@ -206,19 +206,20 @@ private void wipe_module(string module)
 static void purge_module_tick(string module, varargs int reboot)
 {
 	int done;
+	int ticks;
 
-	rlimits(0; 200000) {
-		while (status(ST_TICKS) > 20000) {
-			object cursor;
+	ticks = status(ST_TICKS);
 
-			cursor = KERNELD->first_link(module);
+	while (ticks - status(ST_TICKS) < 50000) {
+		object cursor;
 
-			if (cursor) {
-				destruct_object(cursor);
-			} else {
-				done = 1;
-				break;
-			}
+		cursor = KERNELD->first_link(module);
+
+		if (cursor) {
+			destruct_object(cursor);
+		} else {
+			done = 1;
+			break;
 		}
 	}
 
