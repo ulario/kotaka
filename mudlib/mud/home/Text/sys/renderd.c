@@ -132,27 +132,6 @@ private void default_painter(object gc, object neighbor, object viewer)
 	}
 }
 
-private void draw_background(object gc)
-{
-	int x, y;
-
-	gc->set_layer("canvas");
-	gc->set_clip(0, 0, 79, 21);
-	gc->set_offset(0, 0);
-
-	for (y = 0; y < 22; y++) {
-		gc->move_pen(0, y);
-
-		for (x = 0; x < 80; x++) {
-			switch(random(10)) {
-			case 0 .. 8: gc->set_color(0x08); break;
-			case 9: gc->set_color(0x07);
-			}
-			gc->draw(".");
-		}
-	}
-}
-
 private string inventory_list(object *inv)
 {
 	string *desc;
@@ -453,7 +432,6 @@ private string draw_look_xyz(object viewer)
 	gc->set_clip(0, 0, 79, 21);
 	gc->set_offset(0, 0);
 
-	draw_background(gc);
 	draw_frame(gc);
 	draw_banner(gc, viewer ? viewer->query_environment() : nil);
 
