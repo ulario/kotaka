@@ -54,6 +54,10 @@ private void touch_scan_otable(string path)
 		for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 			object obj;
 
+			if (sz % 10000 == 0) {
+				DRIVER->message(sz + " clones left to touch.\n");
+			}
+
 			obj = find_object(path + "#" + sz);
 
 			if (obj) {
