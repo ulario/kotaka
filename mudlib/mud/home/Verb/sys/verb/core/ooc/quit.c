@@ -40,7 +40,7 @@ void main(object actor, mapping roles)
 	if (body) {
 		ASSERT(actor == body);
 
-		user->inhabit_body(nil);
+		user->set_body(nil);
 
 		send_out("Departing " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	} else {
