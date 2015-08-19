@@ -88,6 +88,16 @@ void set_size(int new_width, int new_height)
 	height = new_height;
 }
 
+int query_width()
+{
+	return width;
+}
+
+int query_height()
+{
+	return height;
+}
+
 void set_cell(int x, int y, int b)
 {
 	if (x < 0 || x >= width || y < 0 || y >= height) {
@@ -101,71 +111,15 @@ void set_cell(int x, int y, int b)
 	}
 }
 
-void set_row_bits(int row, int startbit, int endbit, int b)
+int query_cell(int x, int y)
 {
-	int startbyte, endbyte;
+	int s;
 
-	if (startbit >= endbit) {
-		error("Invalid range");
+	if (x < 0 || x >= width || y < 0 || y >= height) {
+		error("Coordinates out of bounds");
 	}
 
-	if (row < 0 || row >= height) {
-		error("Row out of range");
-	}
+	s = x & 7;
 
-	if (startbit < 0 || endbit >= width) {
-		error("Column out of range");
-	}
-
-	startbyte = startbit >> 3;
-	endbyte = (endbit + 1) >> 3;
-
-	if (startbyte < endbyte) {
-		int i;
-		int mask;
-
-		for (i = startbyte + 1; i < endbyte; i++) {
-			if (b) {
-				rows[row][i] = 255;
-			} else {
-				rows[row][i] = 0;
-			}
-		}
-
-		mask = 255 << (startbit & 7);
-
-		if (b) {
-			rows[row][startbyte] |= mask;
-		} else {
-			rows[row][startbyte] &= ~mask;
-		}
-
-		mask = 255 >> ((endbit + 1) & 7);
-
-		if (b) {
-			rows[row][endbyte] |= mask;
-		} else {
-			rows[row][endbyte] &= ~mask;
-		}
-	} else {
-		int mask;
-
-		mask = 255 << (startbit & 7);
-		mask &= 255 >> ((endbit + 1) & 7);
-
-		if (b) {
-			rows[row][startbyte] |= mask;
-		} else {
-			rows[row][startbyte] &= ~mask;
-		}
-	}
-}
-
-string query_row(int row)
-{
-	if (row < 0 || row >= height) {
-		error("Row out of range");
-	}
-
-	return rows[row];
+	return (rows[y][x >> 3] & (1 << s)) >> s;
 }
