@@ -497,13 +497,12 @@ private string draw_look_xyz(object viewer)
 
 			switch(csystem) {
 			case "xyz":
-				render += "Your coordinates are:";
 				{
 					int *d;
 
 					d = GEOMETRY_SUBD->query_position_difference(origin, viewer);
 
-					render += " ( " + d[0] + ", " + d[1] + ", " + d[2] + " )\n";
+					render += "Your coordinates are: (" + d[0] + ", " + d[1] + ", " + d[2] + ")\n";
 				}
 				break;
 
