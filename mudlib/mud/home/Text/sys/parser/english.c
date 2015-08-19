@@ -95,7 +95,7 @@ mixed *statement_vp_evoke_ppl(mixed *input)
 
 	evoke = input[1];
 
-	return input[0] + ({ ({ "E", evoke[1 .. strlen(evoke) - 2] }) }) + input[2 ..];
+	return input[0 .. 0] + ({ ({ "E", evoke[1 .. strlen(evoke) - 2] }) }) + input[2 ..];
 }
 
 mixed *vp_verb(mixed *input)
