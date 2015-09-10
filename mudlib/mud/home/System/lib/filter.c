@@ -206,6 +206,11 @@ void set_mode(int new_mode)
 		return;
 	}
 
+	/* we have to do it this way because set_mode is also called to handle return values for hooks in the user object */
+	/* this can happen more than once in a connection chain, so we need to intercept disconnects and do them */
+	/* in a 0 callout to avoid double destruction */
+
+	/* since network events are asynchronous anyway we aren't causing any actual harm */
 	if (new_mode == MODE_DISCONNECT) {
 		query_conn()->set_mode(MODE_BLOCK);
 		conn::close(nil, 1);
