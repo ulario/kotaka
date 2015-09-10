@@ -110,6 +110,8 @@ void upgrade_modules()
 
 static void recompile_initd(string module)
 {
+	ACCESS_CHECK(SYSTEM());
+
 	compile_object(USR_DIR + "/" + module + "/initd");
 
 	call_out("upgrade_module", 0, module);
@@ -117,6 +119,8 @@ static void recompile_initd(string module)
 
 static void upgrade_module(string module)
 {
+	ACCESS_CHECK(SYSTEM());
+
 	(USR_DIR + "/" + module + "/initd")->upgrade_module();
 }
 
