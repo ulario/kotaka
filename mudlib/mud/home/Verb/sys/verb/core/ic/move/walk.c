@@ -33,15 +33,26 @@ void main(object actor, mapping roles)
 {
 	int number;
 	int px, py;
+	object env;
+	string stepqueue;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
 		return;
 	}
 
+	env = actor->query_environment();
+
+	if (!env) {
+		send_out("You cannot walk without an environment.\n");
+		return;
+	}
+
 	roles["raw"] = STRINGD->to_lower(roles["raw"]);
 	px = actor->query_property("pos_x");
 	py = actor->query_property("pos_y");
+
+	stepqueue = "";
 
 	while (strlen(roles["raw"])) {
 		switch(roles["raw"][0]) {
@@ -52,36 +63,36 @@ void main(object actor, mapping roles)
 
 		case 'n':
 			if (number) {
-				py -= number;
+				stepqueue += STRINGD->chars('n', number);
 			} else {
-				py--;
+				stepqueue += "n";
 			}
 			number = 0;
 			break;
 
 		case 'e':
 			if (number) {
-				px += number;
+				stepqueue += STRINGD->chars('e', number);
 			} else {
-				px++;
+				stepqueue += "e";
 			}
 			number = 0;
 			break;
 
 		case 's':
 			if (number) {
-				py += number;
+				stepqueue += STRINGD->chars('s', number);
 			} else {
-				py++;
+				stepqueue += "s";
 			}
 			number = 0;
 			break;
 
 		case 'w':
 			if (number) {
-				px -= number;
+				stepqueue += STRINGD->chars('s', number);
 			} else {
-				px--;
+				stepqueue += "s";
 			}
 			number = 0;
 			break;
@@ -95,6 +106,32 @@ void main(object actor, mapping roles)
 		roles["raw"] = roles["raw"][1 ..];
 	}
 
-	actor->set_property("pos_x", px);
-	actor->set_property("pos_y", py);
+	px = actor->query_x_position();
+	py = actor->query_y_position();
+
+	while (strlen(stepqueue)) {
+		int step;
+
+		step = stepqueue[0];
+		stepqueue = stepqueue[1 ..];
+
+		switch(step) {
+		case 'n': py--; break;
+		case 'e': px++; break;
+		case 's': py++; break;
+		case 'w': px--; break;
+		}
+
+		/* todo: validate (px, py) */
+
+		/* We cannot go out of bounds if we're inside a hard object */
+		/* We cannot enter a hard object */
+
+		actor->set_x_position(px);
+		actor->set_y_position(py);
+
+		/* todo: check to see if we entered or exited a soft object */
+	}
+
+	/* check and make sure that the target position is allowed */
 }
