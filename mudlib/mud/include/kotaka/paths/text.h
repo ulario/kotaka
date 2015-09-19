@@ -29,6 +29,7 @@
 
 #define ALIASD			(USR_DIR + "/Text/sys/aliasd")
 #define BIND			(USR_DIR + "/Text/sys/bind")
+#define ENGLISHD		(USR_DIR + "/Text/sys/englishd")
 #define RENDERD			(USR_DIR + "/Text/sys/renderd")
 #define PARSER_ENGLISH		(USR_DIR + "/Text/sys/parser/english")
 #define TEXT_SUBD		(USR_DIR + "/Text/sys/subd")

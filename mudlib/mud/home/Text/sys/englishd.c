@@ -627,3 +627,8 @@ int do_verb(object verb, string command, string args)
 
 	return TRUE;
 }
+
+object query_current_ustate()
+{
+	return TLSD->query_tls_value("Text", "ustate");
+}

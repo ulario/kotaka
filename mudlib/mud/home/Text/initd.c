@@ -37,8 +37,6 @@ static void create()
 {
 	KERNELD->set_global_access("Text", 1);
 
-	TLSD->set_tls_access("Text", "ustate", "Verb", READ_ACCESS);
-
 	MODULED->boot_module("Ansi");
 	MODULED->boot_module("Verb");
 

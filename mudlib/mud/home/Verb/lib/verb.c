@@ -23,7 +23,7 @@
 
 static object query_ustate()
 {
-	return TLSD->query_tls_value("Text", "ustate");
+	return ENGLISHD->query_current_ustate();
 }
 
 static object query_user()
