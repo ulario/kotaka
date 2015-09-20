@@ -232,37 +232,39 @@ private string bind_raw(mixed **phrases)
 	return implode(build, " ");
 }
 
-private mixed *bind_english(mixed **phrases, object *initial)
+private mixed *bind_english(mixed **chunks, object *initial)
 {
 	int sz, i;
 	object *candidates;
 	string *adj;
 	string noun;
+	string prep;
 
-	sz = sizeof(phrases);
+	sz = sizeof(chunks);
 	candidates = initial;
 
 	for (i = sz - 1; i >= 0; i--) {
-		mixed *phrase;
-		string *np;
+		mixed *chunk;
+		mixed *np;
 		string *ordinals;
-		string prep;
 		mixed *result;
+		string *words;
 		int exact;
 		/* 1.  find np in candidates */
 		/* 2.  build new candidates using the preposition */
 
-		phrase = phrases[i];
+		chunk = chunks[i];
 
-		if (!phrase[1]) {
+		if (!chunk[1]) {
 			return ({ 0, "Bad grammar" });
 		}
 
-		prep = phrase[0];
-		np = phrase[1][1];
+		prep = chunk[0];
+		np = chunk[1];
 
-		noun = np[sizeof(np) - 1];
-		adj = np[0 .. sizeof(np) - 2];
+		words = np[1];
+		noun = words[sizeof(words) - 1];
+		adj = words[0 .. sizeof(words) - 2];
 
 		ordinals = select_ordinals(adj);
 		adj -= ordinals;
@@ -327,15 +329,15 @@ private mixed *bind_english(mixed **phrases, object *initial)
 				break;
 
 			default:
-				return ({ 0, "Cannot handle relation: " + phrase[0] });
+				return ({ 0, "Cannot handle relation: " + prep });
 			}
 		}
 	}
 
 	if (sizeof(candidates) > 1) {
-		return ({ 3, phrases[0][0], candidates });
+		return ({ 3, prep, candidates });
 	} else {
-		return ({ 3, phrases[0][0], candidates[0] });
+		return ({ 3, prep, candidates[0] });
 	}
 }
 
