@@ -19,6 +19,7 @@
  */
 #include <kotaka/assert.h>
 #include <kotaka/checkarg.h>
+#include <kotaka/paths/utility.h>
 #include <kotaka/privilege.h>
 
 private object *archetypes;
@@ -31,8 +32,6 @@ private mapping next_instance;
 static void create()
 {
 	archetypes = ({ });
-	prev_instance = ([ ]);
-	next_instance = ([ ]);
 }
 
 nomask void clean_archetypes()
@@ -186,15 +185,23 @@ nomask object query_next_instance(object archetype)
 
 nomask mapping query_prev_instances()
 {
-	return prev_instance[..];
+	if (prev_instance) {
+		return prev_instance[..];
+	} else {
+		return ([ ]);
+	}
 }
 
 nomask mapping query_next_instances()
 {
-	return next_instance[..];
+	if (next_instance) {
+		return next_instance[..];
+	} else {
+		return ([ ]);
+	}
 }
 
-nomask void thing_add_instance(object instance)
+atomic nomask void thing_add_instance(object instance)
 {
 	object this;
 	object prev;
@@ -218,7 +225,7 @@ nomask void thing_add_instance(object instance)
 	}
 }
 
-nomask void thing_remove_instance(object instance)
+atomic nomask void thing_remove_instance(object instance)
 {
 	object prev, next, this;
 
@@ -243,24 +250,16 @@ nomask void thing_remove_instance(object instance)
 	}
 }
 
-nomask void thing_set_prev_instance(object archetype, object instance)
+atomic nomask void thing_set_prev_instance(object archetype, object instance)
 {
 	ACCESS_CHECK(THING());
 
-	if (instance) {
-		prev_instance[archetype] = instance;
-	} else {
-		prev_instance[archetype] = nil;
-	}
+	prev_instance = SUBD->set_tiered_map(prev_instance, archetype, instance);
 }
 
-nomask void thing_set_next_instance(object archetype, object instance)
+atomic nomask void thing_set_next_instance(object archetype, object instance)
 {
 	ACCESS_CHECK(THING());
 
-	if (instance) {
-		next_instance[archetype] = instance;
-	} else {
-		next_instance[archetype] = nil;
-	}
+	next_instance = SUBD->set_tiered_map(next_instance, archetype, instance);
 }
