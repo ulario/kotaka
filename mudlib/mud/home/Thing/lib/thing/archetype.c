@@ -37,6 +37,14 @@ static void create()
 nomask void clean_archetypes()
 {
 	archetypes -= ({ nil });
+
+	if (prev_instance && !map_sizeof(prev_instance)) {
+		prev_instance = nil;
+	}
+
+	if (next_instance && !map_sizeof(next_instance)) {
+		next_instance = nil;
+	}
 }
 
 nomask int is_archetype_of(object test)

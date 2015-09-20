@@ -244,7 +244,7 @@ mixed query_tiered_map(mapping map, mixed args)
 	validate_key(key);
 
 	if (sizeof(args) == 1) {
-		return map[key];
+		return map ? map[key] : nil;
 	} else {
 		mapping submap;
 
