@@ -236,8 +236,6 @@ private mixed *bind_english(mixed **chunks, object *initial)
 {
 	int sz, i;
 	object *candidates;
-	string *adj;
-	string noun;
 	string prep;
 
 	sz = sizeof(chunks);
@@ -249,6 +247,8 @@ private mixed *bind_english(mixed **chunks, object *initial)
 		string *ordinals;
 		mixed *result;
 		string *words;
+		string *adj;
+		string noun;
 		int exact;
 		/* 1.  find np in candidates */
 		/* 2.  build new candidates using the preposition */
