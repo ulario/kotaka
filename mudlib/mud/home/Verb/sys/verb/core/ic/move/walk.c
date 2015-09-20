@@ -111,6 +111,7 @@ void main(object actor, mapping roles)
 
 	while (strlen(stepqueue)) {
 		int step;
+		object env;
 
 		step = stepqueue[0];
 		stepqueue = stepqueue[1 ..];
@@ -123,6 +124,20 @@ void main(object actor, mapping roles)
 		}
 
 		/* todo: validate (px, py) */
+
+		env = actor->query_environment();
+
+		if (!env) {
+			actor->set_x_position(px);
+			actor->set_y_position(py);
+
+			continue;
+		}
+
+		if (px < 0 || py < 0 || px >= env->query_x_size() || py >= env->query_y_size()) {
+			send_out("You could not complete your walk.\n");
+			return;
+		}
 
 		/* We cannot go out of bounds if we're inside a hard object */
 		/* We cannot enter a hard object */
