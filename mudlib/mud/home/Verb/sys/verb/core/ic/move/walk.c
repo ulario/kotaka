@@ -90,9 +90,9 @@ void main(object actor, mapping roles)
 
 		case 'w':
 			if (number) {
-				stepqueue += STRINGD->chars('s', number);
+				stepqueue += STRINGD->chars('w', number);
 			} else {
-				stepqueue += "s";
+				stepqueue += "w";
 			}
 			number = 0;
 			break;
@@ -117,10 +117,25 @@ void main(object actor, mapping roles)
 		stepqueue = stepqueue[1 ..];
 
 		switch(step) {
-		case 'n': py--; break;
-		case 'e': px++; break;
-		case 's': py++; break;
-		case 'w': px--; break;
+		case 'n':
+			py--;
+			break;
+
+		case 'e':
+			px++;
+			break;
+
+		case 's':
+			py++;
+			break;
+
+		case 'w':
+			px--;
+			break;
+
+		default:
+			send_out("Invalid step.\n");
+			break;
 		}
 
 		/* todo: validate (px, py) */
