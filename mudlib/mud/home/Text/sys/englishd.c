@@ -246,7 +246,7 @@ private mixed *bind_english(mixed **phrases, object *initial)
 		mixed *phrase;
 		string *np;
 		string *ordinals;
-		string pre;
+		string prep;
 		mixed *result;
 		int exact;
 		/* 1.  find np in candidates */
@@ -258,6 +258,7 @@ private mixed *bind_english(mixed **phrases, object *initial)
 			return ({ 0, "Bad grammar" });
 		}
 
+		prep = phrase[0];
 		np = phrase[1][1];
 
 		noun = np[sizeof(np) - 1];
@@ -319,7 +320,7 @@ private mixed *bind_english(mixed **phrases, object *initial)
 
 		/* todo:  allow multiple matches for the last part */
 		if (i > 0) {
-			switch(phrase[0]) {
+			switch(prep) {
 			case "from":
 			case "in":
 				candidates = candidates[0]->query_inventory();
