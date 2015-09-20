@@ -35,6 +35,7 @@ void main(object actor, mapping roles)
 	int px, py;
 	object env;
 	string stepqueue;
+	int boundflag;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
@@ -150,8 +151,12 @@ void main(object actor, mapping roles)
 		}
 
 		if (px < 0 || py < 0 || px >= env->query_x_size() || py >= env->query_y_size()) {
-			send_out("You could not complete your walk.\n");
-			return;
+			if (env->query_property("boundary_type") == 1) {
+				send_out("You could not complete your walk.\n");
+				return;
+			} else {
+				boundflag = 1;
+			}
 		}
 
 		/* We cannot go out of bounds if we're inside a hard object */
@@ -161,6 +166,10 @@ void main(object actor, mapping roles)
 		actor->set_y_position(py);
 
 		/* todo: check to see if we entered or exited a soft object */
+	}
+
+	if (boundflag) {
+		send_out("You notice that you're out of bounds.\n");
 	}
 
 	/* check and make sure that the target position is allowed */
