@@ -246,7 +246,7 @@ private mixed *bind_english(mixed **chunks, object *initial)
 		mixed *np;
 		string *ordinals;
 		mixed *result;
-		string *words;
+		string article;
 		string *adj;
 		string noun;
 		int exact;
@@ -262,9 +262,9 @@ private mixed *bind_english(mixed **chunks, object *initial)
 		prep = chunk[0];
 		np = chunk[1];
 
-		words = np[1];
-		noun = words[sizeof(words) - 1];
-		adj = words[0 .. sizeof(words) - 2];
+		article = np[1];
+		adj = np[2];
+		noun = np[3];
 
 		ordinals = select_ordinals(adj);
 		adj -= ordinals;

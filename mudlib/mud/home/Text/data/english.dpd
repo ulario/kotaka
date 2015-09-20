@@ -6,6 +6,7 @@
 
 whitespace = / +/
 prep = /in|on|from|at|with|to/
+article = /a|an|the/
 word = /[^ ,"]+/
 evoke = /"[^"]*"/
 junk = nomatch
@@ -24,6 +25,7 @@ pp: prep ? pp_prep
 pp: prep np ? pp_prep_np
 
 np: adjl noun ? np_adjl_noun
+np: article adjl noun ? np_article_adjl_noun
 
 adjl:
 adjl: adjl adjective

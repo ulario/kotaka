@@ -120,5 +120,18 @@ mixed *pp_prep(mixed *input)
 
 mixed *np_adjl_noun(mixed *input)
 {
-	return ({ ({ "N", input[..] }) });
+	int sz;
+
+	sz = sizeof(input);
+
+	return ({ ({ "N", nil, input[0 .. sz - 2], input[sz - 1] }) });
+}
+
+mixed *np_article_adjl_noun(mixed *input)
+{
+	int sz;
+
+	sz = sizeof(input);
+
+	return ({ ({ "N", input[0], input[1 .. sz - 2], input[sz - 1] }) });
 }
