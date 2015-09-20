@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/system.h>
+#include <kotaka/paths/text.h>
 
 static object query_ustate()
 {
-	return TLSD->query_tls_value("Text", "ustate");
+	return ENGLISHD->query_current_ustate();
 }
 
 static object query_user()
