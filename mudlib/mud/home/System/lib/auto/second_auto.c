@@ -31,6 +31,7 @@ inherit "file_guard";
 inherit "object";
 inherit "object_guard";
 inherit "touch";
+inherit "list";
 
 /**********/
 /* status */

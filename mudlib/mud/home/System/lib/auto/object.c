@@ -25,6 +25,7 @@
 
 inherit "call_guard";
 inherit "catalog";
+inherit "list";
 
 nomask int _F_sys_create(int clone)
 {
@@ -146,6 +147,7 @@ nomask void _F_sys_destruct()
 	}
 
 	set_object_name(nil);
+	clear_list();
 }
 
 void upgrading()
