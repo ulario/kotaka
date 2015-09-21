@@ -236,7 +236,7 @@ mapping set_tiered_map(mapping map, mixed args ...)
 	}
 }
 
-mixed query_tiered_map(mapping map, mixed args)
+mixed query_tiered_map(mapping map, mixed args ...)
 {
 	mixed key;
 
@@ -247,6 +247,10 @@ mixed query_tiered_map(mapping map, mixed args)
 		return map ? map[key] : nil;
 	} else {
 		mapping submap;
+
+		if (!map) {
+			return nil;
+		}
 
 		submap = map[key];
 
