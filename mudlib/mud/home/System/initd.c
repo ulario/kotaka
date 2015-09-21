@@ -390,9 +390,7 @@ void upgrade_system()
 	}
 
 	if (sz == -1) {
-		LOGD->post_message("system", LOG_INFO, "Cannot safely upgrade from version " + KOTAKA_VERSION);
-
-		return;
+		error("Cannot safely upgrade from version " + KOTAKA_VERSION);
 	}
 
 	compile_object("initd");
