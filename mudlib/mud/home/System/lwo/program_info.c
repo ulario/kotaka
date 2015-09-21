@@ -72,8 +72,6 @@ string *query_inherited_constructors();
 string *query_inherited_destructors();
 string *query_inherited_touchers();
 
-object query_first_clone();
-
 /***************/
 /* definitions */
 /***************/
