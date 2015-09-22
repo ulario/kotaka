@@ -36,7 +36,7 @@ void main(object actor, mapping roles)
 	conn = query_user();
 
 	while (conn) {
-		send_out(object_name(conn) + "\n");
+		send_out(object_name(conn) + " (owned by " + conn->query_owner() + ")\n");
 
 		if (conn <- LIB_USER) {
 			conn = conn->query_conn();
