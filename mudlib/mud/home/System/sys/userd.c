@@ -375,7 +375,7 @@ object select(string str)
 	user = userd->select(str);
 
 	if (!user) {
-		TLSD->set_tls_value("System", "userd-error", "Connection manager returned nil.");
+		TLSD->set_tls_value("System", "userd-error", "Connection manager returned nil");
 
 		return this_object();
 	}
@@ -443,6 +443,7 @@ void intercept_redirect(object user, string str)
 	if (!userd) {
 		TLSD->set_tls_value("System", "select-intercept", nil);
 		TLSD->set_tls_value("System", "abort-connection", 1);
+		TLSD->set_tls_value("System", "userd-error", "No connection manager during redirect");
 
 		start->system_redirect(this_object(), str);
 	}
