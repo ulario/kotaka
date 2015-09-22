@@ -362,8 +362,8 @@ object select(string str)
 		return clone_object("~/obj/filter/rlimits");
 	}
 
-	if (intercept = TLSD->query_tls_value("System", "redirect-intercept")) {
-		TLSD->set_tls_value("System", "redirect-intercept", nil);
+	if (intercept = TLSD->query_tls_value("System", "select-intercept")) {
+		TLSD->set_tls_value("System", "select-intercept", nil);
 
 		return intercept;
 	}
@@ -422,11 +422,11 @@ void intercept_redirect(object user, string str)
 
 		filter = clone_object("~/obj/filter/rlimits");
 
-		TLSD->set_tls_value("System", "redirect-intercept", user);
+		TLSD->set_tls_value("System", "select-intercept", user);
 
 		start->system_redirect(filter, str);
 
-		TLSD->set_tls_value("System", "redirect-intercept", nil);
+		TLSD->set_tls_value("System", "select-intercept", nil);
 
 		return;
 	}
