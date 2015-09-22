@@ -277,7 +277,7 @@ string query_banner(object LIB_CONN connection)
 	if (!userd) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 
-		return "Internal error: no connection manager.\n";
+		return "No connection manager.\n";
 	}
 
 	if (DRIVER->creator(object_name(userd)) == "System") {
@@ -301,7 +301,7 @@ string query_banner(object LIB_CONN connection)
 		catch {
 			return userd->query_overload_banner(connection);
 		} : {
-			return "Internal error: overload banner failed.\n";
+			return "Connection manager returned nil overload message.\n";
 		}
 	}
 
@@ -311,7 +311,7 @@ string query_banner(object LIB_CONN connection)
 		catch {
 			return userd->query_blocked_banner(connection);
 		} : {
-			return "Internal error: blocked banner failed.\n";
+			return "Connection manager returned nil blocked message.\n";
 		}
 	}
 
@@ -381,18 +381,26 @@ object select(string str)
 
 int login(string str)
 {
+	string errmsg;
+
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	previous_object()->message("Internal error: connection manager fault\n");
+	errmsg = TLSD->query_tls_value("System", "userd-error");
+
+	previous_object()->message(errmsg ? errmsg : "Unknown connection manager error\n");
 
 	return MODE_DISCONNECT;
 }
 
 int receive_message(string str)
 {
+	string errmsg;
+
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	previous_object()->message("Internal error: connection manager fault\n");
+	errmsg = TLSD->query_tls_value("System", "userd-error");
+
+	previous_object()->message(errmsg ? errmsg : "Unknown connection manager error\n");
 
 	return MODE_DISCONNECT;
 }
