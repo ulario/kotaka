@@ -37,10 +37,16 @@
 * *adsr at 62.49.9.82 port 9000
 */
 
-/* i4 */
+/* i4
 #define ROUTER_NAME	"*i4"
 #define ROUTER_IP	"204.209.44.3"
 #define ROUTER_PORT	8080
+*/
+
+/* dalet */
+#define ROUTER_NAME	"*dalet"
+#define ROUTER_IP	"97.107.133.86"
+#define ROUTER_PORT	8787
 
 /* wpr
 #define ROUTER_NAME	"*wpr"
