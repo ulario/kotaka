@@ -207,9 +207,14 @@ static void upgrade_objects()
 {
 	catch {
 		string path;
+		string *patches;
 
-		path = upgrades->query_back();
+		({ path, patches }) = upgrades->query_back();
 		upgrades->pop_back();
+
+		if (sizeof(patches)) {
+			TOUCHD->add_patches(path, patches);
+		}
 
 		if (upgrades->empty()) {
 			INITD->release_system("objectd-upgrade");
@@ -303,30 +308,51 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 
 	if (upgrading) {
-		mapping new_inherits;
-		int *new_programs;
-		int sz;
-
 		upgrading = 0;
 
-		new_inherits = ([ ]);
-
-		gather_inherits(new_inherits, index);
-
-		new_programs = map_indices(new_inherits) - map_indices(old_inherits);
-		new_programs |= ({ index });
-
-		old_inherits = nil;
-
 		if (!is_kernel) {
+			int *new_programs;
+			int sz;
+			string *patches;
+
+			mapping new_inherits;
+
+			new_inherits = ([ ]);
+
+			gather_inherits(new_inherits, index);
+
+			new_programs = map_indices(new_inherits) - map_indices(old_inherits);
+			new_programs |= ({ index });
+
+			patches = ({ });
+
+			for (sz = sizeof(new_programs) - 1; sz >= 0; --sz) {
+				object pinfo;
+				string toucher;
+
+				pinfo = PROGRAMD->query_program_info(new_programs[sz]);
+
+				if (!pinfo) {
+					continue;
+				}
+
+				toucher = pinfo->query_toucher();
+
+				if (toucher) {
+					patches |= ({ toucher });
+				}
+			}
+
 			if (!upgrades) {
 				call_out("upgrade_objects", 0);
 				upgrades = new_object(BIGSTRUCT_DEQUE_LWO);
 				INITD->suspend_system("objectd-upgrade");
 			}
 
-			upgrades->push_back(path);
+			upgrades->push_back( ({ path, patches }) );
 		}
+	} else {
+		old_inherits = nil;
 	}
 }
 

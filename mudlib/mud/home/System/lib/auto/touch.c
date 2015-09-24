@@ -38,7 +38,33 @@ static void touch()
 
 nomask void _F_touch(string function)
 {
+	object this;
+	string name;
+	string path;
+	string *patches;
+	int oindex;
+	int sz;
+
 	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	this = this_object();
+
+	name = object_name(this);
+
+	if (!sscanf(name, "%*s#%d", oindex)) {
+		oindex = status(this, O_INDEX);
+	}
+
+	patches = TOUCHD->query_patches(oindex);
+	TOUCHD->clear_patches(oindex);
+
+	if (patches) {
+		for (sz = sizeof(patches) - 1; sz >= 0; --sz) {
+			catch {
+				call_other(this_object(), patches[sz]);
+			}
+		}
+	}
 
 	touch();
 }
