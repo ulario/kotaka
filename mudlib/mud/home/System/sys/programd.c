@@ -135,7 +135,6 @@ object register_program(string path, string *inherits, string *includes)
 	int *oindices;
 	string *ctors;
 	string *dtors;
-	string *touchers;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
@@ -154,7 +153,6 @@ object register_program(string path, string *inherits, string *includes)
 	oindices = allocate(sz);
 	ctors = ({ });
 	dtors = ({ });
-	touchers = ({ });
 
 	for (i = 0; i < sz; i++) {
 		object subpinfo;
@@ -183,14 +181,6 @@ object register_program(string path, string *inherits, string *includes)
 			}
 
 			dtors |= ({ subpinfo->query_destructor() });
-
-			inh = subpinfo->query_inherited_touchers();
-
-			if (inh) {
-				touchers |= inh;
-			}
-
-			touchers |= ({ subpinfo->query_toucher() });
 		} else {
 			LOGD->post_message("debug", LOG_WARN, "No program info for inherited program " + inherits[i]);
 		}
@@ -198,7 +188,6 @@ object register_program(string path, string *inherits, string *includes)
 
 	ctors -= ({ nil });
 	dtors -= ({ nil });
-	touchers -= ({ nil });
 
 	pinfo = progdb->query_element(oindex);
 
@@ -219,7 +208,6 @@ object register_program(string path, string *inherits, string *includes)
 	pinfo->set_includes(includes);
 	pinfo->set_inherited_constructors(ctors);
 	pinfo->set_inherited_destructors(dtors);
-	pinfo->set_inherited_touchers(touchers);
 
 	index_inherits(oindex, oindices);
 	index_includes(oindex, includes);

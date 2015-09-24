@@ -38,45 +38,7 @@ static void touch()
 
 nomask void _F_touch(string function)
 {
-	int index;
-	int sz;
-	object pinfo;
-	object programd;
-	string base;
-	string toucher;
-	string *touchers;
-	string oname;
-
 	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	oname = object_name(this_object());
-	base = oname;
-	sscanf(base, "%s#%*d", base);
-
-	programd = find_object(PROGRAMD);
-
-	if (!programd) {
-		return;
-	}
-
-	pinfo = programd->query_program_info(status(this_object(), O_INDEX));
-
-	if (!pinfo) {
-		return;
-	}
-
-	touchers = pinfo->query_inherited_touchers();
-	toucher = pinfo->query_toucher();
-
-	sz = sizeof(touchers);
-
-	for (index = 0; index < sz; index++) {
-		call_other(this_object(), touchers[index]);
-	}
-
-	if (toucher) {
-		call_other(this_object(), toucher);
-	}
 
 	touch();
 }
