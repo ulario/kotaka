@@ -375,6 +375,11 @@ private void check_versions()
 	}
 }
 
+string query_version()
+{
+	return KOTAKA_VERSION;
+}
+
 void upgrade_system()
 {
 	string *safe_versions;
