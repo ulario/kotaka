@@ -33,6 +33,7 @@ inherit SECOND_AUTO;
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
+mapping old_inherits;	/* list of old inherits */
 int is_initd;		/* current compilation is for an initd */
 int is_kernel;		/* current compilation is for a kernel object */
 int is_auto;		/* current compilation is for a second auto support library */
@@ -228,13 +229,44 @@ static void upgrade_objects()
 
 /* klib hooks */
 
+void gather_inherits(mapping map, int oindex)
+{
+	int *inh;
+	int sz;
+	object pinfo;
+
+	pinfo = PROGRAMD->query_program_info(oindex);
+
+	if (!pinfo) {
+		return;
+	}
+
+	inh = pinfo->query_inherits();
+
+	for (sz = sizeof(inh) - 1; sz >= 0; --sz) {
+		int i;
+
+		i = inh[sz];
+
+		if (!map[i]) {
+			map[i] = 1;
+
+			gather_inherits(map, i);
+		}
+	}
+}
+
 void compiling(string path)
 {
 	ACCESS_CHECK(KERNEL());
 
 	includes = ({ "/include/std.h" });
 
+	old_inherits = ([ ]);
+
 	if (find_object(path)) {
+		gather_inherits(old_inherits, status(path, O_INDEX));
+
 		upgrading = 1;
 	}
 }
@@ -244,7 +276,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	string path;
 	string err;
 	int index;
-	object pinfo;
 
 	ACCESS_CHECK(KERNEL());
 
@@ -261,6 +292,8 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		return;
 	}
 
+	index = status(obj, O_INDEX);
+
 	compile_common(owner, path, source, inherited);
 
 	if (is_initd) {
@@ -270,7 +303,20 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 
 	if (upgrading) {
+		mapping new_inherits;
+		int *new_programs;
+		int sz;
+
 		upgrading = 0;
+
+		new_inherits = ([ ]);
+
+		gather_inherits(new_inherits, index);
+
+		new_programs = map_indices(new_inherits) - map_indices(old_inherits);
+		new_programs |= ({ index });
+
+		old_inherits = nil;
 
 		if (!is_kernel) {
 			if (!upgrades) {
@@ -307,6 +353,7 @@ void compile_failed(string owner, string path)
 
 	upgrading = 0;
 	includes = nil;
+	old_inherits = nil;
 }
 
 void clone(string owner, object obj)
