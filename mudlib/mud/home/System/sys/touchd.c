@@ -129,7 +129,5 @@ static void touch_tick()
 		call_out("touch_tick", 0);
 	} else {
 		queue = nil;
-
-		LOGD->post_message("system", LOG_INFO, "Global touch completed");
 	}
 }

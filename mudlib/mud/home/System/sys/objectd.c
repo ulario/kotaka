@@ -210,10 +210,6 @@ static void upgrade_objects()
 		path = upgrades->query_back();
 		upgrades->pop_back();
 
-		if (find_object(TOUCHD)) {
-			TOUCHD->touch_all_clones(path);
-		}
-
 		if (upgrades->empty()) {
 			INITD->release_system("objectd-upgrade");
 
@@ -277,12 +273,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		upgrading = 0;
 
 		if (!is_kernel) {
-			if (function_object("upgrading", obj)) {
-				catch {
-					obj->upgrading();
-				}
-			}
-
 			if (!upgrades) {
 				call_out("upgrade_objects", 0);
 				upgrades = new_object(BIGSTRUCT_DEQUE_LWO);

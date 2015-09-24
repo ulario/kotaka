@@ -154,3 +154,8 @@ void upgrading()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 }
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+}
