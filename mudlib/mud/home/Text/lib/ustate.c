@@ -274,9 +274,9 @@ static void terminate_account_state()
 	}
 }
 
-static int call_out(string function, mixed delay, mixed args ...)
+static int call_out(string func, mixed delay, mixed args ...)
 {
-	return user->ustate_call_out(this_object(), function, delay, args);
+	return user->ustate_call_out(this_object(), func, delay, args);
 }
 
 static mixed remove_call_out(int handle)
@@ -284,9 +284,9 @@ static mixed remove_call_out(int handle)
 	return user->ustate_remove_call_out(this_object(), handle);
 }
 
-nomask void ustate_callout(string function, mixed *args)
+nomask void ustate_callout(string func, mixed *args)
 {
 	ACCESS_CHECK(TEXT());
 
-	call_other(this_object(), function, args ...);
+	call_other(this_object(), func, args ...);
 }

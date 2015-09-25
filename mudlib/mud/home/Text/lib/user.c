@@ -597,17 +597,17 @@ void quit()
 	disconnect();
 }
 
-nomask int ustate_call_out(object ustate, string function, mixed delay, mixed *args)
+nomask int ustate_call_out(object ustate, string func, mixed delay, mixed *args)
 {
 	ACCESS_CHECK(TEXT());
 
-	return call_out("user_callout", delay, ustate, function, args);
+	return call_out("user_callout", delay, ustate, func, args);
 }
 
-static void user_callout(object ustate, string function, mixed *args)
+static void user_callout(object ustate, string func, mixed *args)
 {
 	if (ustate) {
-		ustate->ustate_callout(function, args);
+		ustate->ustate_callout(func, args);
 	}
 }
 

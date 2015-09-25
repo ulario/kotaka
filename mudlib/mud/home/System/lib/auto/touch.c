@@ -36,7 +36,7 @@ static void touch()
 {
 }
 
-nomask void _F_touch(string function)
+nomask void _F_touch(string func)
 {
 	object this;
 	string name;

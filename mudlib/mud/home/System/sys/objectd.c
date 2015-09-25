@@ -488,11 +488,11 @@ mixed include_file(string compiled, string from, string path)
 	return path;
 }
 
-int touch(varargs object obj, string function)
+int touch(varargs object obj, string func)
 {
 	if (previous_program() == DRIVER) {
 		if (!sscanf(object_name(obj), "/kernel/%*s")) {
-			obj->_F_touch(function);
+			obj->_F_touch(func);
 		}
 	} else if (sscanf(previous_program(), USR_DIR
 		+ "/System" + INHERITABLE_SUBDIR + "auto/%*s")) {
