@@ -145,8 +145,6 @@ nomask void _F_sys_destruct()
 				call_other(this, dtors[i]);
 			}
 		}
-	} else {
-		ASSERT(creator == "System" || creator == "Bigstruct");
 	}
 
 	set_object_name(nil);
