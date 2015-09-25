@@ -98,6 +98,7 @@ nomask void _F_sys_destruct()
 	object programd;
 
 	int clone;
+	int oindex;
 
 	ACCESS_CHECK(KERNEL() || SYSTEM());
 
@@ -106,7 +107,9 @@ nomask void _F_sys_destruct()
 
 	clone = !!sscanf(oname, "%*s#");
 
-	sscanf(oname, "%s#%*d", oname);
+	if (!sscanf(oname, "%s#%d", oname, oindex)) {
+		oindex = status(this, O_INDEX);
+	}
 
 	if (sscanf(oname, "%*s" + CLONABLE_SUBDIR) == 0 &&
 		sscanf(oname, "%*s" + LIGHTWEIGHT_SUBDIR) == 0) {
@@ -148,6 +151,7 @@ nomask void _F_sys_destruct()
 
 	set_object_name(nil);
 	clear_list();
+	TOUCHD->clear_patches(oindex);
 }
 
 void upgrading()
