@@ -192,3 +192,45 @@ mixed query_content(string topic)
 
 	return subnode->query_content();
 }
+
+void dump_topic(string topic)
+{
+	write_file("help/" + topic + ".hlp", query_content(topic));
+}
+
+void dump_category(varargs string category)
+{
+	int sz;
+	string *categories;
+	string *topics;
+
+	if (category) {
+		make_dir("help/" + category);
+	} else {
+		make_dir("help");
+	}
+
+	categories = query_categories(category);
+	topics = query_topics(category);
+
+	for (sz = sizeof(categories) - 1; sz >= 0; --sz) {
+		if (category) {
+			dump_category(category + "/" + categories[sz]);
+		} else {
+			dump_category(categories[sz]);
+		}
+	}
+
+	for (sz = sizeof(topics) - 1; sz >= 0; --sz) {
+		if (category) {
+			dump_topic(category + "/" + topics[sz]);
+		} else {
+			dump_topic(topics[sz]);
+		}
+	}
+}
+
+void dump()
+{
+	dump_category(nil);
+}
