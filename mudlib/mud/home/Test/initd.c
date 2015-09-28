@@ -25,13 +25,18 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	load_dir("sys", 1);
 }
 
 static void create()
 {
+	MODULED->boot_module("Bigstruct");
+
 	KERNELD->set_global_access("Test", 1);
 
 	load();
+
+	"sys/bigstruct"->test();
 }
 
 void upgrade_module()
@@ -41,4 +46,6 @@ void upgrade_module()
 	load();
 
 	purge_orphans("Test");
+
+	"sys/bigstruct"->test();
 }
