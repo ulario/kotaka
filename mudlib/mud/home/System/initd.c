@@ -218,8 +218,8 @@ private void configure_klib()
 
 void configure_rsrc()
 {
-	KERNELD->set_rsrc("stack", 1000, 0, 0);
-	KERNELD->set_rsrc("ticks", 10000000, 0, 0);
+	KERNELD->set_rsrc("stack", 50, 0, 0);
+	KERNELD->set_rsrc("ticks", 250000, 0, 0);
 	KERNELD->set_rsrc("tick usage", -1, 1, 60);
 }
 
