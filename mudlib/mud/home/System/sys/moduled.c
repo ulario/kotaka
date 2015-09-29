@@ -264,6 +264,9 @@ void boot_module(string module)
 	}
 
 	if (!sizeof(KERNELD->query_global_access() & ({ module }))) {
+		modules[module] = -1;
+		freeze_module(module);
+		call_out("purge_module_tick", 0, module);
 		error("Failure to grant global access by " + module);
 	}
 
