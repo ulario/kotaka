@@ -141,6 +141,7 @@ int restoring()
 
 void clear_admin()
 {
+	/* remove all admin quotas */
 	string *resources;
 	int index;
 
