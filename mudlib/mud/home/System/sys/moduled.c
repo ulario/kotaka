@@ -123,60 +123,6 @@ static void upgrade_module(string module)
 	(USR_DIR + "/" + module + "/initd")->upgrade_module();
 }
 
-void add_module(string module)
-{
-	string *others;
-	int sz;
-
-	ACCESS_CHECK(SYSTEM());
-
-	if (!find_object(USR_DIR + "/" + module + "/initd")) {
-		error("Module initd not loaded");
-	}
-
-	if (!sizeof(KERNELD->query_global_access() & ({ module }))) {
-		error("Failure to grant global access by " + module);
-	}
-
-	if (modules[module]) {
-		error("Module already ready");
-	}
-
-	others = map_indices(modules);
-	scramble(others);
-
-	modules[module] = 1;
-
-	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
-		catch {
-			find_object(USR_DIR + "/" + others[sz] + "/initd")
-			->booted_module(module);
-		}
-	}
-}
-
-void remove_module(string module)
-{
-	int sz;
-	string *others;
-
-	ACCESS_CHECK(SYSTEM());
-
-	KERNELD->remove_user(module);
-
-	modules[module] = nil;
-
-	others = map_indices(modules);
-	scramble(others);
-
-	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
-		catch {
-			find_object(USR_DIR + "/" + others[sz] + "/initd")
-			->shutdown_module(module);
-		}
-	}
-}
-
 private void wipe_module(string module)
 {
 	string *rsrc_names;
@@ -248,8 +194,51 @@ string *query_modules()
 
 /* commands */
 
+private void send_module_boot_signal(string module)
+{
+	int sz;
+	string *others;
+
+	others = map_indices(modules);
+	scramble(others);
+
+	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
+		if (modules[module] != 1) {
+			continue;
+		}
+
+		catch {
+			find_object(USR_DIR + "/" + others[sz] + "/initd")
+			->booted_module(module);
+		}
+	}
+}
+
+private void send_module_shutdown_signal(string module)
+{
+	int sz;
+	string *others;
+
+	others = map_indices(modules);
+	scramble(others);
+
+	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
+		if (modules[module] != 1) {
+			continue;
+		}
+
+		catch {
+			find_object(USR_DIR + "/" + others[sz] + "/initd")
+			->shutdown_module(module);
+		}
+	}
+}
+
 void boot_module(string module)
 {
+	string *others;
+	int sz;
+
 	if (!file_info(USR_DIR + "/" + module + "/initd.c")) {
 		error("No initd for module");
 	}
@@ -274,9 +263,15 @@ void boot_module(string module)
 		load_object(USR_DIR + "/" + module + "/initd");
 	}
 
-	add_module(module);
+	if (!sizeof(KERNELD->query_global_access() & ({ module }))) {
+		error("Failure to grant global access by " + module);
+	}
+
+	modules[module] = 1;
 
 	LOGD->post_message("system", LOG_NOTICE, "Booted " + module);
+
+	send_module_boot_signal(module);
 }
 
 void shutdown_module(string module)
@@ -298,6 +293,8 @@ void shutdown_module(string module)
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
 
+	send_module_shutdown_signal(module);
+
 	call_out("purge_module_tick", 0, module);
 }
 
@@ -317,6 +314,8 @@ void reboot_module(string module)
 	modules[module] = -1;
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
+
+	send_module_shutdown_signal(module);
 
 	call_out("purge_module_tick", 0, module, 1);
 }
