@@ -31,6 +31,9 @@ inherit UTILITY_COMPILE;
 
 mapping modules;
 
+/* 1: module is online */
+/* -1: module is shutting down */
+
 private void reset_modules_list();
 
 static void create()
@@ -228,6 +231,7 @@ static void purge_module_tick(string module, varargs int reboot)
 		return;
 	}
 
+	modules[module] = nil;
 	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + module);
 
 	wipe_module(module);
@@ -250,8 +254,11 @@ void boot_module(string module)
 		error("No initd for module");
 	}
 
-	if (modules[module]) {
-		/* module already loaded */
+	switch(modules[module]) {
+	case -1:
+		error("Module is being shut down");
+
+	case 1:
 		return;
 	}
 
@@ -287,7 +294,7 @@ void shutdown_module(string module)
 	}
 
 	freeze_module(module);
-	remove_module(module);
+	modules[module] = -1;
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
 
@@ -307,7 +314,7 @@ void reboot_module(string module)
 	}
 
 	freeze_module(module);
-	remove_module(module);
+	modules[module] = -1;
 
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
 
