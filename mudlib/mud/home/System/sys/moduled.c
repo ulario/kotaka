@@ -255,8 +255,13 @@ void boot_module(string module)
 		return;
 	}
 
-	KERNELD->add_user(module);
-	KERNELD->add_owner(module);
+	if (!sizeof(KERNELD->query_users() & ({ module }))) {
+		KERNELD->add_user(module);
+	}
+
+	if (!sizeof(KERNELD->query_owners() & ({ module }))) {
+		KERNELD->add_owner(module);
+	}
 
 	rlimits(100; -1) {
 		load_object(USR_DIR + "/" + module + "/initd");
