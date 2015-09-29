@@ -36,7 +36,7 @@ static void create()
 
 	load();
 
-	"sys/bigstruct"->test();
+	call_out("test", 0);
 }
 
 void upgrade_module()
@@ -47,5 +47,10 @@ void upgrade_module()
 
 	purge_orphans("Test");
 
+	call_out("test", 0);
+}
+
+static void test()
+{
 	"sys/bigstruct"->test();
 }
