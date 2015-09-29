@@ -515,7 +515,9 @@ void connect_failed(int refused)
 
 static void destruct()
 {
-	disconnect();
+	if (query_conn()) {
+		disconnect();
+	}
 }
 
 string *query_channels()
