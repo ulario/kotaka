@@ -407,6 +407,12 @@ static void upgrade_system_2()
 {
 	load();
 
+	OBJECTD->disable();
+	compile_object("sys/objectd");
+	compile_object("sys/programd");
+	compile_object("sys/touchd");
+	OBJECTD->enable();
+
 	purge_orphans("System");
 
 	call_out("upgrade_system_3", 0);
