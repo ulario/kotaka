@@ -96,11 +96,11 @@ void shutdown_module(string module)
 
 static void purge_orphans(string module)
 {
-	object list;
-
-	list = PROGRAMD->query_program_indices();
-
 	rlimits (0; -1) {
+		object list;
+
+		list = PROGRAMD->query_program_indices();
+
 		while (!list->empty()) {
 			int index;
 			object pinfo;
