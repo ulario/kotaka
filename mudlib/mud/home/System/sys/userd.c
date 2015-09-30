@@ -362,6 +362,7 @@ object select(string str)
 
 	if (!userd) {
 		TLSD->set_tls_value("System", "select-intercept", nil);
+		TLSD->set_tls_value("System", "userd-error", "No connection manager");
 
 		return this_object();
 	}
