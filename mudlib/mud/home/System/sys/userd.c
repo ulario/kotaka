@@ -423,7 +423,6 @@ void intercept_redirect(object user, string str)
 {
 	object start;
 	object conn;
-	object userd;
 	int has_rlimits;
 
 	ACCESS_CHECK(SYSTEM());
@@ -439,20 +438,10 @@ void intercept_redirect(object user, string str)
 		conn = conn->query_conn();
 	}
 
-	userd = query_manager(conn);
-
-	if (!userd) {
-		TLSD->set_tls_value("System", "select-intercept", nil);
-		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "userd-error", "No connection manager during redirect");
-
-		start->system_redirect(this_object(), str);
-	}
-
 	if (!has_rlimits) {
 		object filter;
 
-		filter = clone_object("~/obj/filter/rlimits", userd->query_owner());
+		filter = clone_object("~/obj/filter/rlimits", user->query_owner());
 
 		TLSD->set_tls_value("System", "select-intercept", user);
 
