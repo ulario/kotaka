@@ -19,7 +19,7 @@
  */
 #include <kotaka/paths/bigstruct.h>
 
-inherit LIB_BIGSTRUCT_MAP_NODE;
+inherit "../../lib/map/node";
 
 static void create(int clone)
 {

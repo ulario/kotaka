@@ -19,7 +19,7 @@
  */
 #include <kotaka/paths/bigstruct.h>
 
-inherit LIB_BIGSTRUCT_ARRAY_NODE;
+inherit "../../lib/array/node";
 
 static void create(int clone)
 {

@@ -19,7 +19,7 @@
  */
 #include <kotaka/paths/bigstruct.h>
 
-inherit LIB_BIGSTRUCT_DEQUE_NODE;
+inherit "../../lib/deque/node";
 
 static void create(int clone)
 {

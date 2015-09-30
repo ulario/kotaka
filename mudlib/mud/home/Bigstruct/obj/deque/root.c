@@ -19,8 +19,8 @@
  */
 #include <kotaka/paths/bigstruct.h>
 
-inherit LIB_BIGSTRUCT_ALLOC_OBJ;
-inherit LIB_BIGSTRUCT_DEQUE_ROOT;
+inherit "../../lib/alloc/obj";
+inherit "../../lib/deque/root";
 
 static void create(int clone)
 {

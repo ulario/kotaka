@@ -19,8 +19,8 @@
  */
 #include <kotaka/paths/bigstruct.h>
 
-inherit LIB_BIGSTRUCT_ALLOC_LWO;
-inherit LIB_BIGSTRUCT_MAP_ROOT;
+inherit "../../lib/alloc/lwo";
+inherit "../../lib/map/root";
 
 static void create(int clone)
 {
