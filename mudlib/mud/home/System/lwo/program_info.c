@@ -39,7 +39,6 @@ string toucher;			/* toucher */
 
 string *inherited_constructors;	/* constructors */
 string *inherited_destructors;	/* destructors */
-string *inherited_touchers;	/* touchers */
 
 /****************/
 /* Declarations */
@@ -57,7 +56,6 @@ void set_toucher(string toucher);
 
 void set_inherited_constructors(string *constructors);
 void set_inherited_destructors(string *destructors);
-void set_inherited_touchers(string *touchers);
 
 string query_path();
 int *query_inherits();
@@ -70,7 +68,6 @@ string query_toucher();
 
 string *query_inherited_constructors();
 string *query_inherited_destructors();
-string *query_inherited_touchers();
 
 /***************/
 /* definitions */
@@ -143,13 +140,6 @@ void set_inherited_destructors(string *destructors)
 	inherited_destructors = destructors[..];
 }
 
-void set_inherited_touchers(string *touchers)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	inherited_touchers = touchers[..];
-}
-
 string query_path()
 {
 	return path;
@@ -193,9 +183,4 @@ string *query_inherited_constructors()
 string *query_inherited_destructors()
 {
 	return inherited_destructors[..];
-}
-
-string *query_inherited_touchers()
-{
-	return inherited_touchers[..];
 }
