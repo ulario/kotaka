@@ -22,6 +22,12 @@
 
 inherit LIB_SYSTEM_USER;
 
+string request;
+
+string method;
+string path;
+string version;
+
 static void create(int clone)
 {
 	call_out("self_destruct", 5);
@@ -33,11 +39,27 @@ int login(string str)
 {
 	connection(previous_object());
 
+	request = str + "\n";
+
+	if (sscanf(str, "%s %s %s", method, path, version) != 3) {
+		object header;
+
+		header = new_object("~/lwo/http_response");
+		header->set_status(400, "Bad request");
+
+		message(header->generate_header()
+			+ read_file("~/data/error/400.html"));
+
+		return MODE_DISCONNECT;
+	}
+
 	return input(str);
 }
 
 int receive_message(string message)
 {
+	request += message + "\n";
+
 	return input(message);
 }
 
@@ -51,43 +73,63 @@ int message_done()
 	return MODE_DISCONNECT;
 }
 
+private void handle_get()
+{
+	object conn;
+	object header;
+
+	header = new_object("~/lwo/http_response");
+
+	header->set_status(503, "No handler");
+
+	message(header->generate_header());
+	message("<html>\n");
+	message("<head>\n");
+	message("<title>No handler</title>\n");
+	message("</head>\n");
+	message("<body>\n");
+	message("<h1 style=\"color: red\">No handler</h1>\n");
+	message("<table>\n");
+	message("<tr><td>Method</td><td>" + method + "</td></tr>\n");
+	message("<tr><td>Path</td><td>" + path + "</td></tr>\n");
+	message("<tr><td>Version</td><td>" + version + "</td></tr>\n");
+	message("</table>\n");
+	message("<p>There is no handler for that path.</p>\n");
+	message("<p>For the curious, here's a list of all objects involved in this connection:</p>\n");
+
+	conn = this_object();
+
+	message("<p style=\"color: darkgreen\">\n");
+
+	while(conn) {
+		message(object_name(conn) + "<br />\n");
+
+		if (conn <- LIB_USER) {
+			conn = conn->query_conn();
+		} else {
+			break;
+		}
+	}
+
+	message("</p>\n");
+	message("<p>And here is the request your browser sent:</p>");
+	message("<pre>\n");
+	message(request);
+	message("</pre>\n");
+	message("</body>\n");
+	message("</html>\n");
+}
+
 private int input(string message)
 {
 	if (message == "") {
-		object conn;
-		object header;
+		switch(method) {
+		case "GET":
+			handle_get();
+			break;
 
-		header = new_object("~/lwo/http_response");
-
-		header->set_status(503, "No handler");
-
-		message(header->generate_header());
-		message("<html>\n");
-		message("<head>\n");
-		message("<title>No handler</title>\n");
-		message("</head>\n");
-		message("<body>\n");
-		message("<h1 style=\"color: red\">No handler</h1>\n");
-		message("<p>There is no handler for that path.</p>\n");
-		message("<p>For the curious, here's a list of all objects involved in this connection:</p>\n");
-
-		conn = this_object();
-
-		message("<p style=\"color: darkgreen\">\n");
-
-		while(conn) {
-			message(object_name(conn) + "<br />\n");
-
-			if (conn <- LIB_USER) {
-				conn = conn->query_conn();
-			} else {
-				break;
-			}
 		}
 
-		message("</p>\n");
-		message("</body>\n");
-		message("</html>\n");
 		return MODE_DISCONNECT;
 	}
 
