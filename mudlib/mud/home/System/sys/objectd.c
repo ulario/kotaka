@@ -330,7 +330,9 @@ void compile(string owner, object obj, string *source, string inherited ...)
 				object pinfo;
 				string toucher;
 
-				pinfo = PROGRAMD->query_program_info(new_programs[sz]);
+				if (find_object(PROGRAMD)) {
+					pinfo = PROGRAMD->query_program_info(new_programs[sz]);
+				}
 
 				if (!pinfo) {
 					continue;
