@@ -31,7 +31,9 @@ string version;
 
 static void create(int clone)
 {
-	call_out("self_destruct", 5);
+	if (clone) {
+		call_out("self_destruct", 5);
+	}
 }
 
 private int input(string message);
