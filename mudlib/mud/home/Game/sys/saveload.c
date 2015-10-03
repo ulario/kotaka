@@ -29,6 +29,9 @@
 object oindex2onum;
 object objlist;	/* ({ idnum: obj, data }) */
 
+object dirputqueue;
+object objputqueue;
+
 /* public helper functions */
 
 object *parse_object(string input)
@@ -82,7 +85,7 @@ private void put_object(object obj)
 	inv = obj->query_inventory();
 
 	for (sz = sizeof(inv); --sz >= 0; ) {
-		put_object(inv[sz]);
+		objputqueue->push_back(inv[sz]);
 	}
 }
 
@@ -120,21 +123,81 @@ private void put_directory(string dir)
 	for (i = 0; i < sz; i++) {
 		if (keys[i] == 2) {
 			if (dir) {
-				put_directory(dir + ":" + names[i]);
+				dirputqueue->push_front(dir + ":" + names[i]);
 			} else {
-				put_directory(names[i]);
+				dirputqueue->push_front(names[i]);
 			}
 		} else {
 			if (dir) {
-				put_object(CATALOGD->lookup_object(dir + ":" + names[i]));
+				objputqueue->push_front(CATALOGD->lookup_object(dir + ":" + names[i]));
 			} else {
-				put_object(CATALOGD->lookup_object(names[i]));
+				objputqueue->push_front(CATALOGD->lookup_object(names[i]));
 			}
 		}
 	}
 }
 
-/* public functions */
+static void save_world_put()
+{
+	int ticks;
+	int done;
+
+	ticks = status(ST_TICKS);
+
+	while (!done && ticks - status(ST_TICKS) < 10000) {
+		if (!objputqueue->empty()) {
+			object obj;
+
+			obj = objputqueue->query_front();
+			objputqueue->pop_front();
+
+			put_object(obj);
+		} else if (!dirputqueue->empty()) {
+			string dir;
+
+			dir = dirputqueue->query_front();
+			dirputqueue->pop_front();
+
+			put_directory(dir);
+		} else {
+			done = 1;
+
+			break;
+		}
+	}
+
+	if (done) {
+		CONFIGD->make_dir(".");
+		CONFIGD->make_dir("save");
+
+		call_out("save_world_write", 0, objlist->query_size());
+	} else {
+		call_out("save_world_put", 0);
+	}
+}
+
+static void save_world_write(int i)
+{
+	int ticks;
+
+	ticks = status(ST_TICKS);
+
+	while (i > 0 && ticks - status(ST_TICKS) < 10000) {
+		i--;
+
+		CONFIGD->write_file("save/" + (i + 1) + ".obj",
+			STRINGD->hybrid_sprint(
+				objlist->query_element(i)[1]
+			) + "\n"
+		);
+	}
+
+	if (i > 0) {
+		call_out("save_world_write", 0, i);
+	} else {
+		LOGD->post_message("system", LOG_INFO, "World saved");
+	}
+}
 
 void save_world()
 {
@@ -144,19 +207,123 @@ void save_world()
 	oindex2onum->set_type(T_INT);
 
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
+	dirputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	objputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+
 	purge_savedir();
 
-	put_directory(nil);
+	dirputqueue->push_back(nil);
 
-	CONFIGD->make_dir(".");
-	CONFIGD->make_dir("save");
+	call_out("save_world_put", 0);
+}
 
-	for (sz = objlist->query_size(); --sz >= 0; ) {
-		CONFIGD->write_file("save/" + (sz + 1) + ".obj",
-			STRINGD->hybrid_sprint(
-				objlist->query_element(sz)[1]
-			) + "\n"
-		);
+static void load_world_purge(int i)
+{
+	int ticks;
+
+	ticks = status(ST_TICKS);
+
+	while (i >= 0 && ticks - status(ST_TICKS) < 10000) {
+		object obj;
+
+		if (obj = find_object("~Game/obj/thing#" + i)) {
+			destruct_object(obj);
+		}
+
+		i--;
+	}
+
+	if (i >= 0) {
+		call_out("load_world_purge", 0, i);
+	} else {
+		call_out("load_world_spawn", 0, 1);
+	}
+}
+
+static void load_world_spawn(int i)
+{
+	int done;
+	int ticks;
+
+	ticks = status(ST_TICKS);
+
+	while (ticks - status(ST_TICKS) < 10000) {
+		if (CONFIGD->file_info("save/" + i + ".obj")) {
+			object obj;
+			int j;
+
+			obj = clone_object("~Game/obj/thing");
+			sscanf(object_name(obj), "%*s#%d", j);
+
+			oindex2onum->set_element(j, i);
+
+			objlist->push_back( ({ obj,
+				CONFIGD->read_file("save/" + i + ".obj") }) );
+			i++;
+		} else {
+			done = 1;
+			break;
+		}
+	}
+
+	if (done) {
+		call_out("load_world_name", 0, i - 1);
+	} else {
+		call_out("load_world_spawn", 0, i);
+	}
+}
+
+static void load_world_name(int i)
+{
+	int ticks;
+
+	ticks = status(ST_TICKS);
+
+	while (i > 0 && ticks - status(ST_TICKS) < 10000) {
+		object obj;
+		mixed *arr;
+		mixed data;
+
+		({ obj, data }) = objlist->query_element(i - 1);
+
+		data = PARSER_VALUE->parse(data);
+
+		obj->move(data["environment"]);
+		data["environment"] = nil;
+
+		obj->set_object_name(data["name"]);
+		data["name"] = nil;
+
+		objlist->set_element(i - 1, ({ obj, data }) );
+
+		i--;
+	}
+
+	if (i > 0) {
+		call_out("load_world_name", 0, i);
+	} else {
+		call_out("load_world_set", 0, objlist->query_size() - 1);
+	}
+}
+
+static void load_world_set(int i)
+{
+	int ticks;
+
+	while (i > 0 && ticks - status(ST_TICKS) < 10000) {
+		object obj;
+		mixed data;
+
+		({ obj, data }) = objlist->query_element(i - 1);
+
+		obj->load(data);
+		i--;
+	}
+
+	if (i > 0) {
+		call_out("load_world_set", 0, i);
+	} else {
+		LOGD->post_message("system", LOG_INFO, "World loaded");
 	}
 }
 
@@ -170,59 +337,5 @@ void load_world()
 
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 
-	for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
-		object obj;
-
-		if (obj = find_object("~Game/obj/thing#" + sz)) {
-			destruct_object(obj);
-		}
-	}
-
-	sz = 1;
-
-	for (;;) {
-		if (CONFIGD->file_info("save/" + sz + ".obj")) {
-			object obj;
-			int i;
-			obj = clone_object("~Game/obj/thing");
-			sscanf(object_name(obj), "%*s#%d", i);
-
-			oindex2onum->set_element(i, sz);
-
-			objlist->push_back( ({ obj,
-				CONFIGD->read_file("save/" + sz + ".obj") }) );
-			sz++;
-		} else {
-			break;
-		}
-	}
-
-	count = sz;
-
-	for (sz = 1; sz < count; sz++) {
-		object obj;
-		mixed *arr;
-		mixed data;
-
-		({ obj, data }) = objlist->query_element(sz - 1);
-
-		data = PARSER_VALUE->parse(data);
-
-		obj->move(data["environment"]);
-		data["environment"] = nil;
-
-		obj->set_object_name(data["name"]);
-		data["name"] = nil;
-
-		objlist->set_element(sz - 1, ({ obj, data }) );
-	}
-
-	for (sz = 1; sz < count; sz++) {
-		object obj;
-		mixed data;
-
-		({ obj, data }) = objlist->query_element(sz - 1);
-
-		obj->load(data);
-	}
+	call_out("load_world_purge", 0, status(ST_OTABSIZE) - 1);
 }
