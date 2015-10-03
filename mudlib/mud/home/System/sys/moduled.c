@@ -257,6 +257,11 @@ private void send_module_shutdown_signal(string module)
 	}
 }
 
+static void load_module(string module)
+{
+	load_object(USR_DIR + "/" + module + "/initd");
+}
+
 void boot_module(string module)
 {
 	string *others;
@@ -282,8 +287,8 @@ void boot_module(string module)
 		KERNELD->add_owner(module);
 	}
 
-	rlimits(100; -1) {
-		load_object(USR_DIR + "/" + module + "/initd");
+	rlimits(0; 100000000) {
+		call_limited("load_module", module);
 	}
 
 	if (!sizeof(KERNELD->query_global_access() & ({ module }))) {
