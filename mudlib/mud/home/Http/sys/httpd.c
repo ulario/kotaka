@@ -27,6 +27,37 @@ static void create()
 	SYSTEM_USERD->set_binary_manager(2, this_object());
 }
 
+string generate_error_page(int status_code, string status_message, string lines...)
+{
+	string response;
+	object header;
+	int i, sz;
+
+	header = new_object("~/lwo/http_response");
+	header->set_status(status_code, status_message);
+
+	response = header->generate_header();
+
+	response += "<html>\n";
+	response += "<head>\n";
+	response += "<title>" + status_message + "</title>\n";
+	response += "</head>\n";
+
+	response += "<body>\n";
+	response += "<h1 style=\"color: red\">" + status_message + "</h1>\n";
+
+	for (sz = sizeof(lines); i < sz; i++) {
+		response += "<p>" + lines[i] + "</p>\n";
+	}
+
+	response += "</body>\n";
+	response += "</html>\n";
+
+	return response;
+}
+
+/* hooks */
+
 string query_banner(object connection)
 {
 	return "";
