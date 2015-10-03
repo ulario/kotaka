@@ -54,7 +54,7 @@ void nuke(string path, int index, object proxy)
 
 	ticks = status(ST_TICKS);
 
-	while (index >= 0 && ticks - status(ST_TICKS) < 100000) {
+	while (index >= 0 && ticks - status(ST_TICKS) < 10000) {
 		object obj;
 
 		if (obj = find_object(path + "#" + index)) {
