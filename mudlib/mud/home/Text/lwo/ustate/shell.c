@@ -118,6 +118,12 @@ private void do_plus_command(string input)
 	}
 
 	switch(first) {
+	case "help":
+		send_out("+ commands:\n");
+		send_out("atomic   Execute the command atomically.\n");
+		send_out("fixverbs Reboot the verb module, and reload all verbs.\n");
+		return;
+
 	case "fixverbs":
 		MODULED->reboot_module("Verb");
 		return;
