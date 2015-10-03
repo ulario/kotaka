@@ -159,7 +159,7 @@ static void purge_module_tick(string module, varargs int reboot)
 
 	ticks = status(ST_TICKS);
 
-	while (ticks - status(ST_TICKS) < 50000) {
+	while (ticks - status(ST_TICKS) < 10000) {
 		object cursor;
 
 		cursor = KERNELD->first_link(module);
