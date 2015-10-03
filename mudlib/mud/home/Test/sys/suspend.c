@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2010, 2011, 2012, 2013, 2014, 2015  Raymond Jennings
+ * Copyright (C) 2010, 2012, 2013, 2014, 2015  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,41 +17,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
+#include <kotaka/log.h>
+#include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <status.h>
+#include <type.h>
 
-inherit LIB_INITD;
-inherit UTILITY_COMPILE;
-
-private void load()
+void test()
 {
-	load_dir("sys", 1);
+	ACCESS_CHECK(TEST());
+
+	LOGD->post_message("debug", LOG_DEBUG, "Starting suspend test...");
+
+	SUSPENDD->suspend_system();
+	SUSPENDD->queue_work("work", 5);
 }
 
-static void create()
+void work(int ticks)
 {
-	MODULED->boot_module("Bigstruct");
+	LOGD->post_message("debug", LOG_DEBUG, "Suspend test worker thread: " + ticks + " cycles left.");
 
-	KERNELD->set_global_access("Test", 1);
-
-	load();
-
-	call_out("test", 0);
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	load();
-
-	purge_orphans("Test");
-
-	call_out("test", 0);
-}
-
-static void test()
-{
-	"sys/bigstruct"->test();
-	"sys/suspend"->test();
+	if (ticks) {
+		SUSPENDD->queue_work("work", ticks - 1);
+	}
 }
