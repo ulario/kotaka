@@ -139,63 +139,74 @@ private void put_directory(string dir)
 
 static void save_world_put()
 {
-	int ticks;
-	int done;
+	catch {
+		int ticks;
+		int done;
 
-	ticks = status(ST_TICKS);
+		ticks = status(ST_TICKS);
 
-	while (!done && ticks - status(ST_TICKS) < 10000) {
-		if (!objputqueue->empty()) {
-			object obj;
+		while (!done && ticks - status(ST_TICKS) < 10000) {
+			if (!objputqueue->empty()) {
+				object obj;
 
-			obj = objputqueue->query_front();
-			objputqueue->pop_front();
+				obj = objputqueue->query_front();
+				objputqueue->pop_front();
 
-			put_object(obj);
-		} else if (!dirputqueue->empty()) {
-			string dir;
+				put_object(obj);
+			} else if (!dirputqueue->empty()) {
+				string dir;
 
-			dir = dirputqueue->query_front();
-			dirputqueue->pop_front();
+				dir = dirputqueue->query_front();
+				dirputqueue->pop_front();
 
-			put_directory(dir);
-		} else {
-			done = 1;
+				put_directory(dir);
+			} else {
+				done = 1;
 
-			break;
+				break;
+			}
 		}
-	}
 
-	if (done) {
-		CONFIGD->make_dir(".");
-		CONFIGD->make_dir("save");
+		if (done) {
+			CONFIGD->make_dir(".");
+			CONFIGD->make_dir("save");
 
-		call_out("save_world_write", 0, objlist->query_size());
-	} else {
-		call_out("save_world_put", 0);
+			call_out("save_world_write", 0, objlist->query_size());
+		} else {
+			call_out("save_world_put", 0);
+		}
+	} : {
+		LOGD->post_message("system", LOG_INFO, "World save aborted");
+		INITD->release_system("saveworld");
 	}
 }
 
 static void save_world_write(int i)
 {
-	int ticks;
+	catch {
+		int ticks;
 
-	ticks = status(ST_TICKS);
+		ticks = status(ST_TICKS);
 
-	while (i > 0 && ticks - status(ST_TICKS) < 10000) {
-		i--;
+		while (i > 0 && ticks - status(ST_TICKS) < 10000) {
+			i--;
 
-		CONFIGD->write_file("save/" + (i + 1) + ".obj",
-			STRINGD->hybrid_sprint(
-				objlist->query_element(i)[1]
-			) + "\n"
-		);
-	}
+			CONFIGD->write_file("save/" + (i + 1) + ".obj",
+				STRINGD->hybrid_sprint(
+					objlist->query_element(i)[1]
+				) + "\n"
+			);
+		}
 
-	if (i > 0) {
-		call_out("save_world_write", 0, i);
-	} else {
-		LOGD->post_message("system", LOG_INFO, "World saved");
+		if (i > 0) {
+			call_out("save_world_write", 0, i);
+		} else {
+			INITD->release_system("saveworld");
+			LOGD->post_message("system", LOG_INFO, "World saved");
+		}
+	} : {
+		LOGD->post_message("system", LOG_INFO, "World save aborted");
+		INITD->release_system("saveworld");
 	}
 }
 
@@ -218,116 +229,139 @@ void save_world()
 
 	dirputqueue->push_back(nil);
 
+	INITD->suspend_system("saveworld");
 	call_out("save_world_put", 0);
 }
 
 static void load_world_purge(int i)
 {
-	int ticks;
+	catch {
+		int ticks;
 
-	ticks = status(ST_TICKS);
+		ticks = status(ST_TICKS);
 
-	while (i >= 0 && ticks - status(ST_TICKS) < 10000) {
-		object obj;
+		while (i >= 0 && ticks - status(ST_TICKS) < 10000) {
+			object obj;
 
-		if (obj = find_object("~Game/obj/thing#" + i)) {
-			destruct_object(obj);
+			if (obj = find_object("~Game/obj/thing#" + i)) {
+				destruct_object(obj);
+			}
+
+			i--;
 		}
 
-		i--;
-	}
-
-	if (i >= 0) {
-		call_out("load_world_purge", 0, i);
-	} else {
-		call_out("load_world_spawn", 0, 1);
+		if (i >= 0) {
+			call_out("load_world_purge", 0, i);
+		} else {
+			call_out("load_world_spawn", 0, 1);
+		}
+	} : {
+		LOGD->post_message("system", LOG_INFO, "World load aborted");
+		INITD->release_system("loadworld");
 	}
 }
 
 static void load_world_spawn(int i)
 {
-	int done;
-	int ticks;
+	catch {
+		int done;
+		int ticks;
 
-	ticks = status(ST_TICKS);
+		ticks = status(ST_TICKS);
 
-	while (ticks - status(ST_TICKS) < 10000) {
-		if (CONFIGD->file_info("save/" + i + ".obj")) {
-			object obj;
-			int j;
+		while (ticks - status(ST_TICKS) < 10000) {
+			if (CONFIGD->file_info("save/" + i + ".obj")) {
+				object obj;
+				int j;
 
-			obj = clone_object("~Game/obj/thing");
-			sscanf(object_name(obj), "%*s#%d", j);
+				obj = clone_object("~Game/obj/thing");
+				sscanf(object_name(obj), "%*s#%d", j);
 
-			oindex2onum->set_element(j, i);
+				oindex2onum->set_element(j, i);
 
-			objlist->push_back( ({ obj,
-				CONFIGD->read_file("save/" + i + ".obj") }) );
-			i++;
-		} else {
-			done = 1;
-			break;
+				objlist->push_back( ({ obj,
+					CONFIGD->read_file("save/" + i + ".obj") }) );
+				i++;
+			} else {
+				done = 1;
+				break;
+			}
 		}
-	}
 
-	if (done) {
-		call_out("load_world_name", 0, i - 1);
-	} else {
-		call_out("load_world_spawn", 0, i);
+		if (done) {
+			call_out("load_world_name", 0, i - 1);
+		} else {
+			call_out("load_world_spawn", 0, i);
+		}
+	} : {
+		LOGD->post_message("system", LOG_INFO, "World load aborted");
+		INITD->release_system("loadworld");
 	}
 }
 
 static void load_world_name(int i)
 {
-	int ticks;
+	catch {
+		int ticks;
 
-	ticks = status(ST_TICKS);
+		ticks = status(ST_TICKS);
 
-	while (i > 0 && ticks - status(ST_TICKS) < 10000) {
-		object obj;
-		mixed *arr;
-		mixed data;
+		while (i > 0 && ticks - status(ST_TICKS) < 10000) {
+			object obj;
+			mixed *arr;
+			mixed data;
 
-		({ obj, data }) = objlist->query_element(i - 1);
+			({ obj, data }) = objlist->query_element(i - 1);
 
-		data = PARSER_VALUE->parse(data);
+			data = PARSER_VALUE->parse(data);
 
-		obj->move(data["environment"]);
-		data["environment"] = nil;
+			obj->move(data["environment"]);
+			data["environment"] = nil;
 
-		obj->set_object_name(data["name"]);
-		data["name"] = nil;
+			obj->set_object_name(data["name"]);
+			data["name"] = nil;
 
-		objlist->set_element(i - 1, ({ obj, data }) );
+			objlist->set_element(i - 1, ({ obj, data }) );
 
-		i--;
-	}
+			i--;
+		}
 
-	if (i > 0) {
-		call_out("load_world_name", 0, i);
-	} else {
-		call_out("load_world_set", 0, objlist->query_size() - 1);
+		if (i > 0) {
+			call_out("load_world_name", 0, i);
+		} else {
+			call_out("load_world_set", 0, objlist->query_size() - 1);
+		}
+	} : {
+		LOGD->post_message("system", LOG_INFO, "World load aborted");
+		INITD->release_system("loadworld");
 	}
 }
 
 static void load_world_set(int i)
 {
-	int ticks;
+	catch {
+		int ticks;
 
-	while (i > 0 && ticks - status(ST_TICKS) < 10000) {
-		object obj;
-		mixed data;
+		while (i > 0 && ticks - status(ST_TICKS) < 10000) {
+			object obj;
+			mixed data;
 
-		({ obj, data }) = objlist->query_element(i - 1);
+			({ obj, data }) = objlist->query_element(i - 1);
 
-		obj->load(data);
-		i--;
-	}
+			obj->load(data);
+			i--;
+		}
 
-	if (i > 0) {
-		call_out("load_world_set", 0, i);
-	} else {
-		LOGD->post_message("system", LOG_INFO, "World loaded");
+		if (i > 0) {
+			call_out("load_world_set", 0, i);
+		} else {
+			LOGD->post_message("system", LOG_INFO, "World loaded");
+
+			INITD->release_system("loadworld");
+		}
+	} : {
+		LOGD->post_message("system", LOG_INFO, "World load aborted");
+		INITD->release_system("loadworld");
 	}
 }
 
@@ -342,6 +376,8 @@ void load_world()
 
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 	objlist->claim();
+
+	INITD->suspend_system("loadworld");
 
 	call_out("load_world_purge", 0, status(ST_OTABSIZE) - 1);
 }
