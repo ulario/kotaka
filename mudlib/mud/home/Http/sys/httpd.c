@@ -65,35 +65,28 @@ string query_banner(object connection)
 
 string query_blocked_banner(object connection)
 {
-	object header;
-
-	header = new_object("~/lwo/http_response");
-	header->set_status(503, "Server suspended");
-
-	return header->generate_header()
-		+ read_file("~/data/error/503-blocked.html");
+	return generate_error_page(503
+		, "Server suspended"
+		, "The server is suspended at the moment due to internal maintenance."
+		, "Please try again in 20 seconds."
+	);
 }
 
 string query_overload_banner(object connection)
 {
-	object header;
-
-	header = new_object("~/lwo/http_response");
-	header->set_status(503, "Server busy");
-
-	return header->generate_header()
-		+ read_file("~/data/error/503-overload.html");
+	return generate_error_page(503
+		, "Server busy"
+		, "The server has too many connections at the moment."
+		, "Please try again in 60 seconds."
+	);
 }
 
 string query_sitebanned_banner(object connection)
 {
-	object header;
-
-	header = new_object("~/lwo/http_response");
-	header->set_status(403, "Banned");
-
-	return header->generate_header()
-		+ read_file("~/data/error/403-banned.html");
+	return generate_error_page(403
+		, "Banned"
+		, "You are banned from this server."
+	);
 }
 
 int query_timeout(object connection)
