@@ -20,6 +20,8 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
+#define MIN_SPARE_CALLOUTS 10
+
 static int free_callouts()
 {
 	return status(ST_COTABSIZE) -
@@ -36,7 +38,7 @@ static int call_out(string func, mixed delay, mixed args...)
 		error("Call_out to undefined function " + func);
 	}
 
-	if (!SYSTEM() && free_callouts() < (status(ST_COTABSIZE) / 20)) {
+	if (!SYSTEM() && free_callouts() < MIN_SPARE_CALLOUTS) {
 		error("Too many callouts");
 	}
 
