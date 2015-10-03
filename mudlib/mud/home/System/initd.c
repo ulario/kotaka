@@ -51,8 +51,8 @@ mapping suspends;
 private void load_core()
 {
 	load_object(LOGD);
-	load_object(OBJECTD);
 	load_object(TLSD);
+	load_object(OBJECTD);
 }
 
 private void load()
@@ -313,7 +313,7 @@ private void check_config()
 		error("Array size setting is too small");
 	}
 
-	if (status(ST_UTABSIZE) < 3) {
+	if (status(ST_UTABSIZE) < 5) {
 		/* game, admin, and overflow burner */
 		error("Not enough user slots");
 	}
