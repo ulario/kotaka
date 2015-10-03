@@ -120,13 +120,7 @@ private void handle_get()
 		message("</body>\n");
 		message("</html>\n");
 	} : {
-		object header;
-
-		header = new_object("~/lwo/http_response");
-		header->set_status(503, "Internal server error");
-
-		message(header->generate_header()
-			+ read_file("~/data/error/500.html"));
+		message(HTTPD->generate_error_page(503, "Internal server error", "Unspecified server error."));
 	}
 }
 
