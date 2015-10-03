@@ -21,6 +21,8 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
+#define MIN_SPARE_OBJECTS 100
+
 static int free_objects()
 {
 	return status(ST_OTABSIZE) - status(ST_NOBJECTS);
@@ -34,7 +36,7 @@ static object compile_object(mixed args ...)
 
 	if (!SYSTEM() &&
 		DRIVER->creator(args[0]) != "System" &&
-		!obj && free_objects() < status(ST_OTABSIZE) / 20) {
+		!obj && free_objects() < MIN_SPARE_OBJECTS) {
 		error("Too many objects");
 	}
 
@@ -53,7 +55,7 @@ static object load_object(mixed args ...)
 
 	if (!SYSTEM() &&
 		DRIVER->creator(args[0]) != "System" &&
-		!obj && free_objects() < status(ST_OTABSIZE) / 20) {
+		!obj && free_objects() < MIN_SPARE_OBJECTS) {
 		error("Too many objects");
 	}
 
@@ -64,7 +66,7 @@ static object clone_object(mixed args ...)
 {
 	if (!SYSTEM() &&
 		query_owner() != "System" &&
-		free_objects() < status(ST_OTABSIZE) / 20) {
+		free_objects() < MIN_SPARE_OBJECTS) {
 		error("Too many objects");
 	}
 
