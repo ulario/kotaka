@@ -37,6 +37,7 @@
 #define PROXYD		(USR_DIR + "/System/sys/proxyd")
 #define SECRETD		(USR_DIR + "/System/sys/secretd")
 #define STATUSD		(USR_DIR + "/System/sys/statusd")
+#define SUSPENDD	(USR_DIR + "/System/sys/suspendd")
 #define SYSTEM_USERD	(USR_DIR + "/System/sys/userd")
 #define TESTD		(USR_DIR + "/System/sys/testd")
 #define TLSD		(USR_DIR + "/System/sys/tlsd")
