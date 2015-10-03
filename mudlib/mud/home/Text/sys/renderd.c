@@ -533,10 +533,15 @@ private string draw_void(object viewer)
 	output += prose(viewer);
 
 	origin = viewer->query_outer_origin();
-	csystem = origin->query_coordinate_system();
 
-	output += "Coordinate system: " + csystem + "\n";
-	output += "Origin: " + TEXT_SUBD->generate_brief_definite(origin) + "\n";
+	if (origin) {
+		csystem = origin->query_coordinate_system();
+
+		output += "Coordinate system: " + csystem + "\n";
+		output += "Origin: " + TEXT_SUBD->generate_brief_definite(origin) + "\n";
+	} else {
+		output += "No origin\n";
+	}
 
 	return output;
 }
