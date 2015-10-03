@@ -29,7 +29,41 @@
 object oindex2onum;
 object objlist;	/* ({ idnum: obj, data }) */
 
-static void put_object(object obj)
+/* public helper functions */
+
+object *parse_object(string input)
+{
+	int onum;
+
+	if (sscanf(input, "O:%d", onum)) {
+		return ({ objlist->query_element(onum - 1)[0] });
+	} else {
+		error("Cannot parse: " + input);
+	}
+}
+
+string sprint_object(object obj, varargs mapping seen)
+{
+	string path;
+	int oindex;
+
+	if (sscanf(object_name(obj), "%s#%d", path, oindex)) {
+		switch(path) {
+		case USR_DIR + "/Game/obj/thing":
+			return "<O:" + oindex2onum->query_element(oindex) + ">";
+		case USR_DIR + "/Text/obj/user":
+			return "nil";
+		default:
+			error("Clone is not a thing (" + path + ")");
+		}
+	} else {
+		return STRINGD->sprint_object(obj, seen);
+	}
+}
+
+/* private helper functions */
+
+private void put_object(object obj)
 {
 	int oindex;
 	int sz;
@@ -100,24 +134,7 @@ private void put_directory(string dir)
 	}
 }
 
-string sprint_object(object obj, varargs mapping seen)
-{
-	string path;
-	int oindex;
-
-	if (sscanf(object_name(obj), "%s#%d", path, oindex)) {
-		switch(path) {
-		case USR_DIR + "/Game/obj/thing":
-			return "<O:" + oindex2onum->query_element(oindex) + ">";
-		case USR_DIR + "/Text/obj/user":
-			return "nil";
-		default:
-			error("Clone is not a thing (" + path + ")");
-		}
-	} else {
-		return STRINGD->sprint_object(obj, seen);
-	}
-}
+/* public functions */
 
 void save_world()
 {
@@ -207,16 +224,5 @@ void load_world()
 		({ obj, data }) = objlist->query_element(sz - 1);
 
 		obj->load(data);
-	}
-}
-
-object *parse_object(string input)
-{
-	int onum;
-
-	if (sscanf(input, "O:%d", onum)) {
-		return ({ objlist->query_element(onum - 1)[0] });
-	} else {
-		error("Cannot parse: " + input);
 	}
 }
