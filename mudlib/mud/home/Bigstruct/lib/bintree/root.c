@@ -540,3 +540,10 @@ static void rebalance()
 	rebalance_step_gather(top, array);
 	rebalance_step_scatter(array, nil);
 }
+
+object query_top()
+{
+	ACCESS_CHECK(BIGSTRUCT());
+
+	return top;
+}

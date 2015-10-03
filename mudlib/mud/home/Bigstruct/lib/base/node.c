@@ -20,29 +20,6 @@
 #include <kotaka/assert.h>
 #include <kotaka/privilege.h>
 
-private object root;
-
-static void create()
-{
-	root = previous_object(1);
-}
-
-static void destruct()
-{
-}
-
-static void check_caller()
-{
-	ASSERT(root);
-
-	ACCESS_CHECK(previous_object() == root);
-}
-
-nomask object query_root()
-{
-	return root;
-}
-
 void self_destruct()
 {
 	ACCESS_CHECK(BIGSTRUCT());

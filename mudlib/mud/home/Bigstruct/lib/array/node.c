@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/assert.h>
+#include <kotaka/privilege.h>
 
 inherit "../base/node";
 
@@ -34,7 +35,7 @@ static void create()
 
 void set_level(int new_level)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	ASSERT(level == -1);
 
@@ -43,14 +44,14 @@ void set_level(int new_level)
 
 int query_level()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return level;
 }
 
 mixed *query_array()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return array;
 }

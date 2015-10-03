@@ -17,9 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-inherit "../bintree/node";
+#include <kotaka/privilege.h>
 
-/* only root may manipulate nodes */
+inherit "../bintree/node";
 
 mapping map;
 mixed low_key;
@@ -39,21 +39,21 @@ static void destruct()
 
 int query_mass()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return map_sizeof(map);
 }
 
 mixed query_low_key()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return low_key;
 }
 
 void set_low_key(mixed key)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	low_key = key;
 }
@@ -62,7 +62,7 @@ void reset_low_key()
 {
 	mixed *keys;
 
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	keys = map_indices(map);
 
@@ -75,42 +75,42 @@ void reset_low_key()
 
 mapping query_map()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return map;
 }
 
 void set_map(mapping new_map)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	map = new_map;
 }
 
 void insert_data(mapping data)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	map += data;
 }
 
 void delete_data(mixed *keys)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	map -= keys;
 }
 
 int query_size()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	return size;
 }
 
 void set_size(int new_size)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	size = new_size;
 }

@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
 #include <kotaka/assert.h>
 #include <status.h>
 
@@ -38,67 +39,77 @@ static void create()
 
 object query_prev()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return prev;
 }
 
 object query_next()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return next;
 }
 
 int query_mass()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return end - begin;
 }
 
 int empty()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return begin == end;
 }
 
 int query_begin()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return begin;
 }
 
 int query_end()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return end;
 }
 
 int full_front()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return begin == 0;
 }
 
 int full_back()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return end == sizeof(sub);
 }
 
 void set_prev(object new_prev)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	prev = new_prev;
 }
 
 void set_next(object new_next)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	next = new_next;
 }
 
 mixed query_front()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	if (begin >= end) {
 		error("Subscript out of range");
@@ -109,7 +120,7 @@ mixed query_front()
 
 mixed query_back()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	if (begin >= end) {
 		error("Subscript out of range");
@@ -120,7 +131,8 @@ mixed query_back()
 
 void set_front(mixed value)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	ASSERT(begin < end);
 
 	sub[begin] = value;
@@ -128,7 +140,8 @@ void set_front(mixed value)
 
 void set_back(mixed value)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	ASSERT(begin < end);
 
 	sub[end - 1] = value;
@@ -136,7 +149,7 @@ void set_back(mixed value)
 
 void push_front(mixed value)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	ASSERT(begin > 0);
 
@@ -145,7 +158,7 @@ void push_front(mixed value)
 
 void push_back(mixed value)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	ASSERT(end < sizeof(sub));
 
@@ -154,7 +167,8 @@ void push_back(mixed value)
 
 void pop_front()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	ASSERT(begin < end);
 
 	sub[begin++] = nil;
@@ -162,7 +176,8 @@ void pop_front()
 
 void pop_back()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	ASSERT(begin < end);
 
 	sub[--end] = nil;
@@ -170,7 +185,7 @@ void pop_back()
 
 mixed query_element(int index)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	if (index < begin || index >= end) {
 		error("Subscript out of range");
@@ -181,7 +196,7 @@ mixed query_element(int index)
 
 void set_element(int index, mixed data)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
 
 	if (index < begin || index >= end) {
 		error("Subscript out of range");

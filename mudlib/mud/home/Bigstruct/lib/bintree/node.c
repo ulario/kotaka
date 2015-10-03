@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
+
 inherit "../base/node";
 
 private object parent;
@@ -35,36 +37,42 @@ static void destruct()
 
 object query_parent()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return parent;
 }
 
 object query_left()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return left;
 }
 
 object query_right()
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	return right;
 }
 
 void set_parent(object new_parent)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	parent = new_parent;
 }
 
 void set_left(object new_left)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	left = new_left;
 }
 
 void set_right(object new_right)
 {
-	check_caller();
+	ACCESS_CHECK(BIGSTRUCT());
+
 	right = new_right;
 }

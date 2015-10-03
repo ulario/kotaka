@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
 #include <kernel/access.h>
 
 inherit "../base/root";
@@ -226,4 +227,11 @@ void set_element(int index, mixed value)
 	}
 
 	node->set_element(index, value);
+}
+
+object query_first()
+{
+	ACCESS_CHECK(BIGSTRUCT());
+
+	return first;
 }
