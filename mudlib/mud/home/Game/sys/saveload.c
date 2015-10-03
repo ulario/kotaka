@@ -20,6 +20,7 @@
 
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
+#include <kotaka/privilege.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
@@ -137,8 +138,10 @@ private void put_directory(string dir)
 	}
 }
 
-static void save_world_put()
+void save_world_put()
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	catch {
 		int ticks;
 		int done;
@@ -170,19 +173,19 @@ static void save_world_put()
 		if (done) {
 			CONFIGD->make_dir(".");
 			CONFIGD->make_dir("save");
-
-			call_out("save_world_write", 0, objlist->query_size());
+			SUSPENDD->queue_work("save_world_write", objlist->query_size());
 		} else {
-			call_out("save_world_put", 0);
+			SUSPENDD->queue_work("save_world_put");
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World save aborted");
-		INITD->release_system("saveworld");
 	}
 }
 
-static void save_world_write(int i)
+void save_world_write(int i)
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	catch {
 		int ticks;
 
@@ -199,14 +202,12 @@ static void save_world_write(int i)
 		}
 
 		if (i > 0) {
-			call_out("save_world_write", 0, i);
+			SUSPENDD->queue_work("save_world_write", i);
 		} else {
-			INITD->release_system("saveworld");
 			LOGD->post_message("system", LOG_INFO, "World saved");
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World save aborted");
-		INITD->release_system("saveworld");
 	}
 }
 
@@ -229,12 +230,14 @@ void save_world()
 
 	dirputqueue->push_back(nil);
 
-	INITD->suspend_system("saveworld");
-	call_out("save_world_put", 0);
+	SUSPENDD->suspend_system();
+	SUSPENDD->queue_work("save_world_put");
 }
 
-static void load_world_purge(int i)
+void load_world_purge(int i)
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	catch {
 		int ticks;
 
@@ -251,18 +254,19 @@ static void load_world_purge(int i)
 		}
 
 		if (i >= 0) {
-			call_out("load_world_purge", 0, i);
+			SUSPENDD->queue_work("load_world_purge", i);
 		} else {
-			call_out("load_world_spawn", 0, 1);
+			SUSPENDD->queue_work("load_world_spawn", 1);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
-		INITD->release_system("loadworld");
 	}
 }
 
-static void load_world_spawn(int i)
+void load_world_spawn(int i)
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	catch {
 		int done;
 		int ticks;
@@ -289,18 +293,19 @@ static void load_world_spawn(int i)
 		}
 
 		if (done) {
-			call_out("load_world_name", 0, i - 1);
+			SUSPENDD->queue_work("load_world_name", i - 1);
 		} else {
-			call_out("load_world_spawn", 0, i);
+			SUSPENDD->queue_work("load_world_spawn", i);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
-		INITD->release_system("loadworld");
 	}
 }
 
-static void load_world_name(int i)
+void load_world_name(int i)
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	catch {
 		int ticks;
 
@@ -327,18 +332,19 @@ static void load_world_name(int i)
 		}
 
 		if (i > 0) {
-			call_out("load_world_name", 0, i);
+			SUSPENDD->queue_work("load_world_name", i);
 		} else {
-			call_out("load_world_set", 0, objlist->query_size() - 1);
+			SUSPENDD->queue_work("load_world_set", objlist->query_size() - 1);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
-		INITD->release_system("loadworld");
 	}
 }
 
-static void load_world_set(int i)
+void load_world_set(int i)
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	catch {
 		int ticks;
 
@@ -353,15 +359,12 @@ static void load_world_set(int i)
 		}
 
 		if (i > 0) {
-			call_out("load_world_set", 0, i);
+			SUSPENDD->queue_work("load_world_set", i);
 		} else {
 			LOGD->post_message("system", LOG_INFO, "World loaded");
-
-			INITD->release_system("loadworld");
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
-		INITD->release_system("loadworld");
 	}
 }
 
@@ -377,7 +380,6 @@ void load_world()
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 	objlist->claim();
 
-	INITD->suspend_system("loadworld");
-
-	call_out("load_world_purge", 0, status(ST_OTABSIZE) - 1);
+	SUSPENDD->suspend_system();
+	SUSPENDD->queue_work("load_world_purge", status(ST_OTABSIZE) - 1);
 }
