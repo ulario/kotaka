@@ -203,8 +203,10 @@ private void set_flags(string path)
 	is_initd = creator ? (path == USR_DIR + "/" + creator + "/initd") : 0;
 }
 
-static void upgrade_objects()
+void upgrade_objects()
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	catch {
 		string path;
 		string *patches;
@@ -217,15 +219,11 @@ static void upgrade_objects()
 		}
 
 		if (upgrades->empty()) {
-			INITD->release_system("objectd-upgrade");
-
 			upgrades = nil;
 		} else {
-			call_out("upgrade_objects", 0);
+			SUSPENDD->queue_work("upgrade_objects");
 		}
 	} : {
-		INITD->release_system("objectd-upgrade");
-
 		upgrades = nil;
 	}
 }
@@ -346,10 +344,11 @@ void compile(string owner, object obj, string *source, string inherited ...)
 			}
 
 			if (!upgrades) {
-				call_out("upgrade_objects", 0);
+				SUSPENDD->suspend_system();
+				SUSPENDD->queue_work("upgrade_objects");
+
 				upgrades = new_object(BIGSTRUCT_DEQUE_LWO);
 				upgrades->claim();
-				INITD->suspend_system("objectd-upgrade");
 			}
 
 			upgrades->push_back( ({ path, patches }) );
