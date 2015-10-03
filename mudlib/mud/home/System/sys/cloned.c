@@ -165,6 +165,7 @@ atomic void discover_clones()
 		owners = KERNELD->query_owners();
 		sz = sizeof(owners);
 		queue = new_object(BIGSTRUCT_DEQUE_LWO);
+		queue->claim();
 
 		if (db) {
 			destruct_object(db);
@@ -173,6 +174,7 @@ atomic void discover_clones()
 		bmap = ([ ]);
 
 		db = clone_object(BIGSTRUCT_MAP_OBJ);
+		db->claim();
 		db->set_type(T_INT);
 
 		for (i = 0; i < sz; i++) {
@@ -231,6 +233,7 @@ void reset()
 	bmap = ([ ]);
 
 	db = clone_object(BIGSTRUCT_MAP_OBJ);
+	db->claim();
 	db->set_type(T_INT);
 }
 

@@ -346,6 +346,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 			if (!upgrades) {
 				call_out("upgrade_objects", 0);
 				upgrades = new_object(BIGSTRUCT_DEQUE_LWO);
+				upgrades->claim();
 				INITD->suspend_system("objectd-upgrade");
 			}
 
@@ -533,7 +534,9 @@ void discover_objects()
 		int sz;
 
 		libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+		libqueue->claim();
 		objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+		objqueue->claim();
 
 		scan_objects("/", libqueue, objqueue, nil);
 
@@ -556,6 +559,7 @@ atomic void full_reset()
 
 	ind = PROGRAMD->query_program_indices();
 	paths = new_object(BIGSTRUCT_ARRAY_LWO);
+	paths->claim();
 
 	while (!ind->empty()) {
 		object pinfo;
@@ -592,6 +596,7 @@ object query_dormant()
 	object notlist;
 
 	notlist = new_object(BIGSTRUCT_ARRAY_LWO);
+	notlist->claim();
 	notlist->grant_access(previous_object(), READ_ACCESS);
 
 	scan_objects("/", nil, nil, notlist);
@@ -606,6 +611,7 @@ object query_orphans()
 	int sz, i;
 
 	orphans = new_object(BIGSTRUCT_ARRAY_LWO);
+	orphans->claim();
 	orphans->grant_access(previous_object(), READ_ACCESS);
 
 	indices = PROGRAMD->query_program_indices();
@@ -640,8 +646,11 @@ void recompile_everything()
 	ASSERT(find_object(PROGRAMD));
 
 	libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+	libqueue->claim();
 	objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+	objqueue->claim();
 	initdqueue = new_object(BIGSTRUCT_ARRAY_LWO);
+	initdqueue->claim();
 
 	rlimits(0; -1) {
 		indices = PROGRAMD->query_program_indices();

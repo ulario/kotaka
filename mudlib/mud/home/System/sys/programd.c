@@ -39,21 +39,25 @@ void setup_database()
 
 	if (!progdb) {
 		progdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		progdb->claim();
 		progdb->set_type(T_INT);
 	}
 
 	if (!inhdb) {
 		inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		inhdb->claim();
 		inhdb->set_type(T_INT);
 	}
 
 	if (!incdb) {
 		incdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		incdb->claim();
 		incdb->set_type(T_STRING);
 	}
 
 	if (!pathdb) {
 		pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		pathdb->claim();
 		pathdb->set_type(T_STRING);
 	}
 }
@@ -100,6 +104,7 @@ private void index_inherits(int oindex, int *inh)
 
 		if (!submap) {
 			inhdb->set_element(inh[sz], submap = new_object(BIGSTRUCT_MAP_LWO));
+			submap->claim();
 			submap->set_type(T_INT);
 		}
 
@@ -119,6 +124,7 @@ private void index_includes(int oindex, string *inc)
 
 		if (!submap) {
 			incdb->set_element(inc[sz], submap = new_object(BIGSTRUCT_MAP_LWO));
+			submap->claim();
 			submap->set_type(T_INT);
 		}
 
@@ -275,6 +281,7 @@ object query_inheriters(int oindex)
 		list = list->query_indices();
 	} else {
 		list = new_object(BIGSTRUCT_ARRAY_LWO);
+		list->claim();
 	}
 
 	list->grant_access(previous_object(), FULL_ACCESS);
@@ -295,6 +302,7 @@ object query_includers(string path)
 		list = list->query_indices();
 	} else {
 		list = new_object(BIGSTRUCT_ARRAY_LWO);
+		list->claim();
 	}
 
 	list->grant_access(previous_object(), FULL_ACCESS);

@@ -536,6 +536,7 @@ static void rebalance()
 	object array;
 
 	array = new_object(BIGSTRUCT_ARRAY_LWO);
+	array->claim();
 
 	rebalance_step_gather(top, array);
 	rebalance_step_scatter(array, nil);

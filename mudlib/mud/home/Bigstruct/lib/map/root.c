@@ -309,6 +309,7 @@ object query_indices()
 	check_caller(READ_ACCESS);
 
 	array = new_object(BIGSTRUCT_ARRAY_LWO);
+	array->claim();
 
 	node = leftest(top);
 
@@ -345,6 +346,7 @@ object query_values()
 	check_caller(READ_ACCESS);
 
 	array = new_object(BIGSTRUCT_ARRAY_LWO);
+	array->claim();
 
 	node = leftest(top);
 
@@ -390,6 +392,7 @@ atomic void reindex()
 	check_caller(WRITE_ACCESS);
 
 	deque = new_object(BIGSTRUCT_DEQUE_LWO);
+	deque->claim();
 
 	node = leftest(top);
 

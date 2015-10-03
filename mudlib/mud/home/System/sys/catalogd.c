@@ -320,6 +320,7 @@ void fix()
 		object deque;
 
 		deque = new_object(BIGSTRUCT_DEQUE_LWO);
+		deque->claim();
 
 		gather(nil, root, deque);
 

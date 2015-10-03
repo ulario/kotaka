@@ -353,6 +353,7 @@ object slice(int lowindex, int highindex)
 	}
 
 	slice = new_object(BIGSTRUCT_ARRAY_LWO);
+	slice->claim();
 	slice->set_size(highindex - lowindex + 1);
 
 	for (i = lowindex; i <= highindex; i++) {

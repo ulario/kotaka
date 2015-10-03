@@ -61,6 +61,7 @@ void main(object actor, mapping roles)
 	}
 
 	hits = new_object(BIGSTRUCT_MAP_LWO);
+	hits->claim();
 	hits->set_type(T_INT);
 	hits->grant_access(find_object(SUBD), WRITE_ACCESS);
 
@@ -70,7 +71,9 @@ void main(object actor, mapping roles)
 	sz = list->query_size();
 
 	libs = new_object(BIGSTRUCT_ARRAY_LWO);
+	libs->claim();
 	objs = new_object(BIGSTRUCT_ARRAY_LWO);
+	objs->claim();
 
 	for (i = 0; i < sz; i++) {
 		int oindex;

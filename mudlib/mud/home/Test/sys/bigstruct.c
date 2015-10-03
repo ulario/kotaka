@@ -33,6 +33,7 @@ private void test_bigstruct_array()
 	i = 1;
 
 	arr = new_object(BIGSTRUCT_ARRAY_LWO);
+	arr->claim();
 	arr->set_size(0x40000000);
 
 	for (i = 1; i < 0x40000000; i <<= 1) {
@@ -98,6 +99,7 @@ private void test_bigstruct_deque()
 	object deque;
 
 	deque = new_object(BIGSTRUCT_DEQUE_LWO);
+	deque->claim();
 
 	for (x = 0; x < 1500; x++) {
 		deque->push_back(x);
@@ -178,6 +180,7 @@ private void test_bigstruct_map()
 	object map;
 
 	map = new_object(BIGSTRUCT_MAP_LWO);
+	map->claim();
 	map->set_type(T_STRING);
 
 	for (i = 0; i < 1000; i++) {
@@ -189,6 +192,7 @@ private void test_bigstruct_map()
 
 	map->clear();
 	map = new_object(BIGSTRUCT_MAP_LWO);
+	map->claim();
 	map->set_type(T_INT);
 
 	for (i = 0; i < 1000; i++) {

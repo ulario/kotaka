@@ -57,6 +57,7 @@ void main(object actor, mapping roles)
 	sz = status(ST_OTABSIZE);
 
 	list = new_object(BIGSTRUCT_DEQUE_LWO);
+	list->claim();
 
 	for (i = 0; i < sz; i++) {
 		object obj;

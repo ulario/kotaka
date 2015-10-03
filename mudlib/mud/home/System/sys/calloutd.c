@@ -75,7 +75,9 @@ private int object_index(object obj)
 private void alloc_queue()
 {
 	cmap = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	cmap->claim();
 	cqueue = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	cqueue->claim();
 
 	cmap->set_size(status(ST_OTABSIZE));
 	cqueue->set_size(0x40000000);

@@ -452,6 +452,7 @@ private string draw_look_xyz(object viewer)
 		env = viewer->query_environment();
 		oenv = env;
 		envstack = new_object(BIGSTRUCT_DEQUE_LWO);
+		envstack->claim();
 
 		while (env && env->query_property("is_transparent")) {
 			env = env->query_environment();

@@ -48,6 +48,7 @@ void main(object actor, mapping roles)
 	first = cinfo->query_first_clone();
 	obj = first;
 	list = new_object(BIGSTRUCT_ARRAY_LWO);
+	list->claim();
 
 	do {
 		if (!obj->query_environment() && !obj->query_object_name()) {

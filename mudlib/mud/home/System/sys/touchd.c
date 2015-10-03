@@ -41,6 +41,7 @@ void call_touch(object obj)
 
 	if (!queue || queue->empty()) {
 		queue = new_object(BIGSTRUCT_DEQUE_LWO);
+		queue->claim();
 		call_out("touch_tick", 0);
 	}
 
@@ -185,6 +186,7 @@ void add_patches(string path, string *patches)
 
 	if (!patch) {
 		patch = new_object(BIGSTRUCT_MAP_LWO);
+		patch->claim();
 		patch->set_type(T_INT);
 	}
 

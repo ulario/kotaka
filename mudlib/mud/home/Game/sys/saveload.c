@@ -204,11 +204,15 @@ void save_world()
 	int sz;
 
 	oindex2onum = new_object(BIGSTRUCT_MAP_LWO);
+	oindex2onum->claim();
 	oindex2onum->set_type(T_INT);
 
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
+	objlist->claim();
 	dirputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	dirputqueue->claim();
 	objputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	objputqueue->claim();
 
 	purge_savedir();
 
@@ -333,9 +337,11 @@ void load_world()
 	int count;
 
 	oindex2onum = new_object(BIGSTRUCT_MAP_LWO);
+	oindex2onum->claim();
 	oindex2onum->set_type(T_INT);
 
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
+	objlist->claim();
 
 	call_out("load_world_purge", 0, status(ST_OTABSIZE) - 1);
 }

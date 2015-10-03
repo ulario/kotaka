@@ -40,6 +40,7 @@ void push(string text)
 	if (strlen(tail) + strlen(text) > status(ST_STRSIZE)) {
 		if (!deque) {
 			deque = new_object(BIGSTRUCT_DEQUE_LWO);
+			deque->claim();
 		}
 
 		deque->push_back(tail);

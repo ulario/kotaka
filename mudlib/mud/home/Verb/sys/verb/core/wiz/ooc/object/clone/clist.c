@@ -79,6 +79,7 @@ void main(object actor, mapping roles)
 
 	obj = cinfo->query_first_clone();
 	arr = new_object(BIGSTRUCT_ARRAY_LWO);
+	arr->claim();
 
 	do {
 		arr->push_back(object_name(obj));

@@ -322,7 +322,9 @@ static void load_rootdir()
 	object tqueue;
 
 	cqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	cqueue->claim();
 	tqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	tqueue->claim();
 
 	dirlist = get_dir("~/data/help/*");
 
