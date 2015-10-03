@@ -559,36 +559,38 @@ atomic void full_reset()
 
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
-	ind = PROGRAMD->query_program_indices();
-	paths = new_object(BIGSTRUCT_ARRAY_LWO);
-	paths->claim();
+	rlimits(0; -1) {
+		ind = PROGRAMD->query_program_indices();
+		paths = new_object(BIGSTRUCT_ARRAY_LWO);
+		paths->claim();
 
-	while (!ind->empty()) {
-		object pinfo;
+		while (!ind->empty()) {
+			object pinfo;
 
-		pinfo = PROGRAMD->query_program_info(ind->query_back());
-		ind->pop_back();
+			pinfo = PROGRAMD->query_program_info(ind->query_back());
+			ind->pop_back();
 
-		paths->push_back(pinfo->query_path());
-	}
-
-	PROGRAMD->reset_program_database();
-
-	discover_objects();
-
-	while (!paths->empty()) {
-		string path;
-
-		path = paths->query_back();
-		paths->pop_back();
-
-		if (!status(path)) {
-			continue;
+			paths->push_back(pinfo->query_path());
 		}
 
-		if (PROGRAMD->query_program_index(path) == -1) {
-			LOGD->post_message("system", LOG_INFO, "Restoring orphaned program " + path);
-			PROGRAMD->register_program(path, ({ }), ({ }));
+		PROGRAMD->reset_program_database();
+
+		discover_objects();
+
+		while (!paths->empty()) {
+			string path;
+
+			path = paths->query_back();
+			paths->pop_back();
+
+			if (!status(path)) {
+				continue;
+			}
+
+			if (PROGRAMD->query_program_index(path) == -1) {
+				LOGD->post_message("system", LOG_INFO, "Restoring orphaned program " + path);
+				PROGRAMD->register_program(path, ({ }), ({ }));
+			}
 		}
 	}
 }
