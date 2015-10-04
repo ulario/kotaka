@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012, 2013, 2014, 2015  Raymond Jennings
+ * Copyright (C) 2015  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,13 +17,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <game/paths.h>
-#include <kotaka/paths/utility.h>
-#include <kotaka/paths/kotaka.h>
-#include <kotaka/paths/string.h>
+#include <kernel/version.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/utility.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/version.h>
+#include <game/paths.h>
+#include <status.h>
 
 inherit LIB_VERB;
 
@@ -35,45 +37,32 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	string name;
-	object world;
 	object body;
 	object user;
-	object oldbody;
-	object *inv;
-	object *mobiles;
 
 	user = query_user();
-
 	name = user->query_name();
 
-	if (!(name = user->query_name())) {
-		send_out("You aren't logged in.\n");
+	if (!name) {
+		send_out("You must log in before creating a character.\n");
 		return;
 	}
 
-	if (roles["raw"] != "") {
-		if (user->query_class() < 2) {
-			send_out("Only a wizard can play someone other than their default character.\n");
-			return;
-		}
-
-		body = CATALOGD->lookup_object(roles["raw"]);
-	}
-
-	if (!body) {
-		body = CATALOGD->lookup_object("players:" + name);
-	}
-
-	if (!body) {
-		send_out("You don't have a character.  Please use chargen to create one.\n");
+	if (CATALOGD->lookup_object("players:" + name)) {
+		send_out("You already have a character.\n");
 		return;
 	}
 
-	if (oldbody = user->query_body()) {
-		send_out("Departing " + TEXT_SUBD->generate_brief_definite(oldbody) + ".\n");
-	}
+	body = GAME_INITD->create_thing();
 
-	send_out("Inhabiting " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
+	body->set_density(1.0);
+	body->set_mass(100.0 + MATHD->rnd() * 10.0);
 
-	user->set_body(body);
+	body->set_property("id", name);
+	body->set_property("local_snouns", ({ name }) );
+	body->set_property("is_definite", 1);
+	body->set_property("brief", STRINGD->to_title(name));
+	body->add_archetype(CATALOGD->lookup_object("class:race:humanoid:human"));
+	body->set_object_name("players:" + name);
+	send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 }

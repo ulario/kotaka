@@ -39,8 +39,6 @@ inherit UTILITY_COMPILE;
 /* Variables */
 /*************/
 
-object world;
-
 int save_pending;
 int wsave_pending;
 
@@ -223,6 +221,7 @@ void destroy_object(object obj)
 
 void build_world()
 {
+	object world;
 	object master;
 	object trinket;
 
@@ -345,11 +344,6 @@ static void load_rootdir()
 	}
 
 	call_out("load_tick", 0, cqueue, tqueue);
-}
-
-object query_world()
-{
-	return world;
 }
 
 void load_help()
