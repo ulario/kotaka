@@ -152,62 +152,93 @@ void remove_program(int index)
 	}
 }
 
+void discover_clones_work_gather(string *owners, object queue)
+{
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
+	if (sizeof(owners)) {
+		string owner;
+		object first, obj;
+
+		owner = owners[0];
+		owners = owners[1 ..];
+
+		first = KERNELD->first_link(owner);
+
+		obj = first;
+
+		if (first) {
+			SUSPENDD->queue_work("discover_clones_work_gather_owner", owners, queue, first, obj);
+		} else {
+			SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
+		}
+	} else {
+		SUSPENDD->queue_work("discover_clones_work_link", queue);
+	}
+}
+
+void discover_clones_work_gather_owner(string *owners, object queue, object first, object obj)
+{
+	string name;
+
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
+	name = object_name(obj);
+
+	if (sscanf(name, "%*s#%*d")) {
+		queue->push_back(obj);
+	}
+
+	obj = KERNELD->next_link(obj);
+
+	if (obj == first) {
+		SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
+	} else {
+		SUSPENDD->queue_work("discover_clones_work_gather_owner", owners, queue, first, obj);
+	}
+}
+
+void discover_clones_work_link(object queue)
+{
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
+	if (!queue->empty()) {
+		object obj;
+
+		obj = queue->query_front();
+		queue->pop_front();
+		add_clone(obj);
+
+		SUSPENDD->queue_work("discover_clones_work_link", queue);
+	}
+}
+
 atomic void discover_clones()
 {
+	string *owners;
+	int i, sz;
+	int count;
+	object queue;
+
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
-	rlimits (0; -1) {
-		string *owners;
-		int i, sz;
-		int count;
-		object queue;
+	owners = KERNELD->query_owners();
+	sz = sizeof(owners);
+	queue = new_object(BIGSTRUCT_DEQUE_LWO);
+	queue->claim();
 
-		owners = KERNELD->query_owners();
-		sz = sizeof(owners);
-		queue = new_object(BIGSTRUCT_DEQUE_LWO);
-		queue->claim();
-
-		if (db) {
-			destruct_object(db);
-		}
-
-		bmap = ([ ]);
-
-		db = clone_object(BIGSTRUCT_MAP_OBJ);
-		db->claim();
-		db->set_type(T_INT);
-
-		for (i = 0; i < sz; i++) {
-			object first;
-
-			first = KERNELD->first_link(owners[i]);
-
-			if (first) {
-				object obj;
-				string name;
-
-				obj = first;
-
-				do {
-					name = object_name(obj);
-
-					if (sscanf(name, "%*s#%*d")) {
-						queue->push_back(obj);
-					}
-
-					obj = KERNELD->next_link(obj);
-				} while (obj != first);
-			}
-		}
-
-		while (!queue->empty()) {
-			object obj;
-
-			obj = queue->query_front();
-			queue->pop_front();
-			add_clone(obj);
-		}
+	if (db) {
+		destruct_object(db);
 	}
+
+	bmap = ([ ]);
+
+	db = clone_object(BIGSTRUCT_MAP_OBJ);
+	db->claim();
+	db->set_type(T_INT);
+
+	SUSPENDD->suspend_system();
+	SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
 }
 
 object query_clone_info(int index)
