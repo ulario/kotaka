@@ -301,13 +301,13 @@ static void do_release()
 			obj = callout[0];
 			ohandle = callout[1];
 
+			handle = call_out("do_release", 0);
+
 			if (obj) {
 				catch {
 					RSRCD->release_callout(obj, ohandle);
 				}
 			}
-
-			handle = call_out("do_release", 0);
 		} else {
 			RSRCD->release_callout(nil, 0);
 			LOGD->post_message("system", LOG_NOTICE, "Released callouts");
