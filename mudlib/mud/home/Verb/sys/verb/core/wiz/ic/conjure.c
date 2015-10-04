@@ -43,7 +43,7 @@ void main(object actor, mapping roles)
 
 	send_out("You conjure up a thing.\n");
 
-	thing = GAME_INITD->create_object();
+	thing = GAME_INITD->create_thing();
 	thing->move(actor);
 	thing->set_property("local_snouns", ({ "thing" }) );
 }
