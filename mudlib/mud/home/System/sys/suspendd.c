@@ -35,7 +35,7 @@ static void create()
 void suspend_system()
 {
 	if (suspend) {
-		error("System already suspended");
+		return;
 	}
 
 	suspend = 1;
