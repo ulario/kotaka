@@ -142,7 +142,11 @@ static void recompile_initd(string module)
 
 static void upgrade_module(string module)
 {
-	(USR_DIR + "/" + module + "/initd")->upgrade_module();
+	rlimits(0; -1) {
+		rlimits(0; 10000000) {
+			(USR_DIR + "/" + module + "/initd")->upgrade_module();
+		}
+	}
 }
 
 private void wipe_module(string module)
