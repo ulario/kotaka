@@ -31,6 +31,7 @@ inherit SECOND_AUTO;
 int suspend_count;		/* suspension count */
 int suspend;			/* callouts suspended */
 int handle;			/* releaser handle */
+int dead;			/* if we're being destroyed */
 
 object cmap;	/* ([ oindex : ([ handle : iterator ]) ]) */
 object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
@@ -52,9 +53,9 @@ static void create()
 
 static void destruct()
 {
-	if (suspend) {
-		error("Cannot destruct while callouts are suspended");
-	}
+	dead = 1;
+
+	RSRCD->release_callouts();
 }
 
 private int object_index(object obj)
@@ -104,6 +105,10 @@ int query_suspend_count()
 void suspend_callouts()
 {
 	if (previous_program() == RSRCD) {
+		if (dead) {
+			return;
+		}
+
 		LOGD->post_message("system", LOG_NOTICE, "Suspending callouts");
 
 		suspend = -1;
@@ -133,6 +138,10 @@ void suspend(object obj, int handle)
 	int oindex;
 
 	ACCESS_CHECK(previous_program() == RSRCD);
+
+	if (dead) {
+		return;
+	}
 
 	if (object_name(obj) == SUSPENDD) {
 		catch {
@@ -168,6 +177,10 @@ int remove_callout(object obj, int handle)
 
 	ACCESS_CHECK(previous_program() == RSRCD);
 
+	if (dead) {
+		return TRUE;
+	}
+
 	oindex = object_index(obj);
 
 	map = cmap->query_element(oindex);
@@ -199,6 +212,10 @@ void remove_callouts(object obj)
 
 	ACCESS_CHECK(previous_program() == RSRCD);
 
+	if (dead) {
+		return;
+	}
+
 	oindex = object_index(obj);
 
 	map = cmap->query_element(oindex);
@@ -221,6 +238,10 @@ void remove_callouts(object obj)
 void release_callouts()
 {
 	if (previous_program() == RSRCD) {
+		if (dead) {
+			return;
+		}
+
 		LOGD->post_message("system", LOG_NOTICE, "Releasing callouts");
 
 		suspend = 1;
