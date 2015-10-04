@@ -179,19 +179,30 @@ void discover_clones_work_gather(string *owners, object queue)
 
 void discover_clones_work_gather_owner(string *owners, object queue, object first, object obj)
 {
+	int ticks;
+	int done;
 	string name;
 
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
-	name = object_name(obj);
+	ticks = status(ST_TICKS);
 
-	if (sscanf(name, "%*s#%*d")) {
-		queue->push_back(obj);
+	while (!done && ticks - status(ST_TICKS) < 10000) {
+		name = object_name(obj);
+
+		if (sscanf(name, "%*s#%*d")) {
+			queue->push_back(obj);
+		}
+
+		obj = KERNELD->next_link(obj);
+
+		if (obj == first) {
+			done = 1;
+			break;
+		}
 	}
 
-	obj = KERNELD->next_link(obj);
-
-	if (obj == first) {
+	if (done) {
 		SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
 	} else {
 		SUSPENDD->queue_work("discover_clones_work_gather_owner", owners, queue, first, obj);
@@ -200,15 +211,27 @@ void discover_clones_work_gather_owner(string *owners, object queue, object firs
 
 void discover_clones_work_link(object queue)
 {
+	int done;
+	int ticks;
+
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
-	if (!queue->empty()) {
+	ticks = status(ST_TICKS);
+
+	while (ticks - status(ST_TICKS) < 10000) {
 		object obj;
+
+		if (queue->empty()) {
+			done = 1;
+			break;
+		}
 
 		obj = queue->query_front();
 		queue->pop_front();
 		add_clone(obj);
+	}
 
+	if (!done) {
 		SUSPENDD->queue_work("discover_clones_work_link", queue);
 	}
 }
