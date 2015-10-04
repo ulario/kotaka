@@ -304,9 +304,7 @@ static void do_release()
 			handle = call_out("do_release", 0);
 
 			if (obj) {
-				catch {
-					RSRCD->release_callout(obj, ohandle);
-				}
+				RSRCD->release_callout(obj, ohandle);
 			}
 		} else {
 			RSRCD->release_callout(nil, 0);
