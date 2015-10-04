@@ -36,7 +36,6 @@ object cmap;	/* ([ oindex : ([ handle : iterator ]) ]) */
 object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
 
 int begin, end;
-mapping bypass;
 
 private int bypass(object obj);
 int empty();
@@ -49,8 +48,6 @@ private void free_queue();
 
 static void create()
 {
-	bypass = ([ ]);
-
 	RSRCD->set_suspension_manager(this_object());
 }
 
@@ -256,25 +253,6 @@ int query_suspend()
 	return suspend;
 }
 
-void add_bypass(object obj)
-{
-	if (!bypass) {
-		bypass = ([ ]);
-	}
-
-	bypass[obj] = 1;
-}
-
-void clear_bypass()
-{
-	bypass = ([ ]);
-}
-
-object *query_bypass()
-{
-	return bypass ? map_indices(bypass) : ({ });
-}
-
 /* internal */
 
 static void do_release()
@@ -324,19 +302,11 @@ static void do_release()
 
 private int bypass(object obj)
 {
-	if (obj == this_object()) {
-		return 1;
-	}
-
-	if (obj->query_owner() == "System") {
-		return 1;
-	}
-
 	if (suspend == 1) {
 		return 1;
 	}
 
-	if (bypass && bypass[obj]) {
+	if (DRIVER->creator(object_name(obj)) == "System") {
 		return 1;
 	}
 
