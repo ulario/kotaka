@@ -48,10 +48,10 @@ void suspend_system()
 	SYSTEM_USERD->block_connections();
 }
 
-private void release_system()
+void release_system()
 {
 	if (!suspend) {
-		error("System not suspended");
+		return;
 	}
 
 	CALLOUTD->release_callouts();
