@@ -37,7 +37,6 @@ object cqueue;	/* ({ iterator : ({ obj, handle }) }) */
 
 int begin, end;
 
-private int bypass(object obj);
 int empty();
 
 private mixed *release();
@@ -135,7 +134,7 @@ void suspend(object obj, int handle)
 
 	ACCESS_CHECK(previous_program() == RSRCD);
 
-	if (bypass(obj)) {
+	if (object_name(obj) == SUSPENDD) {
 		catch {
 			RSRCD->release_callout(obj, handle);
 		}
@@ -298,19 +297,6 @@ static void do_release()
 
 		break;
 	}
-}
-
-private int bypass(object obj)
-{
-	if (suspend == 1) {
-		return 1;
-	}
-
-	if (DRIVER->creator(object_name(obj)) == "System") {
-		return 1;
-	}
-
-	return 0;
 }
 
 private mixed *release()
