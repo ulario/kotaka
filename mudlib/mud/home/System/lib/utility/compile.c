@@ -21,10 +21,14 @@
 
 inherit SECOND_AUTO;
 
-#define LOAD_RECURSE	1
-#define LOAD_NOFAIL	2
+#define CMD_DESTRUCT	1
+#define CMD_LOAD	2
+#define CMD_RECOMPILE	3
 
-static void load_dir(string dir, varargs int flags)
+#define FLAG_RECURSE	1
+#define FLAG_CATCH	2
+
+static void process_dir(string dir, int cmd, int flags)
 {
 	mixed **files;
 	string *names;
@@ -42,12 +46,8 @@ static void load_dir(string dir, varargs int flags)
 
 		info = file_info(dir + "/" + name);
 
-		if (info[2] && !(flags & 4)) {
-			continue;
-		}
-
 		if (info[0] == -2 && (flags & 1)) {
-			load_dir(dir + "/" + name, flags);
+			process_dir(dir + "/" + name, cmd, flags);
 			continue;
 		}
 
@@ -57,20 +57,48 @@ static void load_dir(string dir, varargs int flags)
 
 		name = name[ .. strlen(name) - 3];
 
-		if (flags & 2) {
-			catch {
-				if (flags & 4) {
-					compile_object(dir + "/" + name);
+		switch(cmd) {
+		case 1:
+			if (info[2]) {
+				if (flags & 2) {
+					catch {
+						destruct_object(dir + "/" + name);
+					}
 				} else {
-					load_object(dir + "/" + name);
+					destruct_object(dir + "/" + name);
 				}
 			}
-		} else {
-			if (flags & 4) {
-				compile_object(dir + "/" + name);
+			break;
+
+		case 2:
+			if (flags & 2) {
+				catch {
+					load_object(dir + "/" + name);
+				}
 			} else {
 				load_object(dir + "/" + name);
 			}
+			break;
+
+		case 3:
+			if (info[2]) {
+				compile_object(dir + "/" + name);
+			}
 		}
 	}
+}
+
+static void load_dir(string dir, varargs int flags)
+{
+	process_dir(dir, CMD_LOAD, flags);
+}
+
+static void destruct_dir(string dir, varargs int flags)
+{
+	process_dir(dir, CMD_DESTRUCT, flags);
+}
+
+static void recompile_dir(string dir, varargs int flags)
+{
+	process_dir(dir, CMD_RECOMPILE, flags);
 }
