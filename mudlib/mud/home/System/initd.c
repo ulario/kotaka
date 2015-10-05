@@ -57,7 +57,7 @@ private void load()
 {
 	load_dir("lwo", 1);
 	load_dir("obj", 1);
-	load_dir("sys", 1);
+	load_dir("sys");
 }
 
 static void create()
@@ -404,20 +404,24 @@ void upgrade_system()
 
 static void upgrade_system_2()
 {
-	load();
+	compile_object("sys/upgrade/1");
+}
 
-	OBJECTD->disable();
-	compile_object("sys/objectd");
-	compile_object("sys/programd");
-	compile_object("sys/touchd");
-	OBJECTD->enable();
+void upgrade_system_3()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	load();
 
 	purge_orphans("System");
 
-	call_out("upgrade_system_3", 0);
+	MODULED->upgrade_modules();
 }
 
-static void upgrade_system_3()
+void suspend_system(varargs mixed args...)
 {
-	MODULED->upgrade_modules();
+}
+
+void release_system(varargs mixed args...)
+{
 }

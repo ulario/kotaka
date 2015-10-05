@@ -18,41 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/bigstruct.h>
-
-/* system suspension manager */
+#include <kotaka/log.h>
+#include <status.h>
 
 inherit SECOND_AUTO;
-
-int suspend;
-int handle;
-object queue;
+inherit UTILITY_COMPILE;
 
 static void create()
 {
+	call_out("pass", 0);
 }
 
-void suspend_system()
+static void pass()
 {
-	if (suspend) {
-		return;
-	}
+	destruct_dir("~Bigstruct/lib", 1);
+	compile_dir("~Bigstruct/lwo", 1);
+	compile_dir("~Bigstruct/obj", 1);
+	compile_dir("~Bigstruct/sys", 1);
 
-	suspend = 1;
-
-	if (!handle) {
-		handle = call_out("process", 0);
-	}
-
-	CALLOUTD->suspend_callouts();
-	SYSTEM_USERD->block_connections();
-}
-
-void release_system()
-{
-	if (!suspend) {
-		return;
-	}
+	compile_object(PROGRAMD);
+	compile_object(CALLOUTD);
+	compile_object(SUSPENDD);
 
 	while (CALLOUTD->query_suspend_count()) {
 		CALLOUTD->release_callouts();
@@ -62,57 +48,35 @@ void release_system()
 		SYSTEM_USERD->unblock_connections();
 	}
 
-	suspend = 0;
+	call_out("pass_2", 0);
 }
 
-void queue_work(string func, mixed args...)
+static void pass_2()
 {
-	if (!handle) {
-		handle = call_out("process", 0);
-	}
+	mixed *callouts;
 
-	if (!queue) {
-		queue = new_object(BIGSTRUCT_DEQUE_LWO);
-		queue->claim();
-	}
+	callouts = status(OBJECTD, O_CALLOUTS);
 
-	queue->push_back( ({ previous_object(), func, args }) );
-}
+	if (sizeof(callouts)) {
+		LOGD->post_message("debug", LOG_DEBUG, "ObjectD is busy, waiting to rebuild it.");
 
-static void process()
-{
-	object obj;
-	string func;
-	mixed *args;
-
-	handle = 0;
-
-	catch {
-		handle = call_out("process", 0);
-	} : {
-		if (suspend) {
-			release_system();
-		}
-		return;
-	}
-
-	if (!queue || queue->empty()) {
-		queue = nil;
-
-		if (suspend) {
-			release_system();
-		}
-
-		remove_call_out(handle);
-		handle = 0;
+		call_out("pass_2", 0.1);
 
 		return;
 	}
 
-	({ obj, func, args }) = queue->query_front();
-	queue->pop_front();
+	OBJECTD->disable();
+	compile_object(OBJECTD);
+	OBJECTD->enable();
 
-	if (obj) {
-		call_other(obj, func, args...);
-	}
+	call_out("pass_3", 0);
+}
+
+static void pass_3()
+{
+	compile_object(OBJECTD);
+
+	INITD->upgrade_system_3();
+
+	destruct_object(this_object());
 }
