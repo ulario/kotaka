@@ -273,24 +273,6 @@ object query_clone_info(int index)
 	return db->query_element(index);
 }
 
-void reset()
-{
-	if (db) {
-		object turkey;
-
-		turkey = db;
-		db = nil;
-
-		destruct_object(turkey);
-	}
-
-	bmap = ([ ]);
-
-	db = clone_object(BIGSTRUCT_MAP_OBJ);
-	db->claim();
-	db->set_type(T_INT);
-}
-
 static void destruct()
 {
 	if (db) {
