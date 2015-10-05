@@ -274,7 +274,9 @@ void compiling(string path)
 	}
 
 	if (find_object(path)) {
-		gather_inherits(old_inherits, status(path, O_INDEX));
+		if (find_object(PROGRAMD)) {
+			gather_inherits(old_inherits, status(path, O_INDEX));
+		}
 
 		upgrading = 1;
 	}
@@ -323,7 +325,9 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 			new_inherits = ([ ]);
 
-			gather_inherits(new_inherits, index);
+			if (find_object(PROGRAMD)) {
+				gather_inherits(new_inherits, index);
+			}
 
 			new_programs = map_indices(new_inherits) - map_indices(old_inherits);
 			new_programs |= ({ index });
