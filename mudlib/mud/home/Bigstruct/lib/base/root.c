@@ -19,6 +19,7 @@
  */
 #include <config.h>
 #include <kernel/access.h>
+#include <kotaka/assert.h>
 #include <kotaka/privilege.h>
 
 private mapping grants;
@@ -44,7 +45,7 @@ private int access_of(object obj)
 
 void claim()
 {
-	ACCESS_CHECK(!grants);
+	ASSERT(!grants);
 
 	grants = ([ previous_object(): FULL_ACCESS ]);
 }
@@ -53,7 +54,7 @@ static void check_caller(int access)
 {
 	object pobj;
 
-	ACCESS_CHECK(grants);
+	ASSERT(grants);
 
 	pobj = previous_object();
 
