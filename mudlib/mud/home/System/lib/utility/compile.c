@@ -102,3 +102,9 @@ static void recompile_dir(string dir, varargs int flags)
 {
 	process_dir(dir, CMD_RECOMPILE, flags);
 }
+
+static void compile_dir(string dir, varargs int flags)
+{
+	process_dir(dir, CMD_RECOMPILE, flags);
+	process_dir(dir, CMD_LOAD, flags);
+}
