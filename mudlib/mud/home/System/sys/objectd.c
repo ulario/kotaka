@@ -267,6 +267,12 @@ void compiling(string path)
 
 	old_inherits = ([ ]);
 
+	if (!find_object(PROGRAMD)) {
+		if (DRIVER->creator(path) != "System") {
+			error("Cannot compile non system program without ProgramD");
+		}
+	}
+
 	if (find_object(path)) {
 		gather_inherits(old_inherits, status(path, O_INDEX));
 
