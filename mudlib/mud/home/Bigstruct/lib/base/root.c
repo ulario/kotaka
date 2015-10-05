@@ -27,14 +27,6 @@ private int global_access;
 static object new_node();
 static void discard_node(object node);
 
-static void create()
-{
-}
-
-static void destruct()
-{
-}
-
 private int access_of(object obj)
 {
 	int highest;

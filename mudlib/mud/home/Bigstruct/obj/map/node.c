@@ -27,10 +27,3 @@ static void create(int clone)
 		::create();
 	}
 }
-
-static void destruct(int clone)
-{
-	if (clone) {
-		::destruct();
-	}
-}

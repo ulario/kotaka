@@ -25,16 +25,6 @@ private object parent;
 private object left;
 private object right;
 
-static void create()
-{
-	::create();
-}
-
-static void destruct()
-{
-	::destruct();
-}
-
 object query_parent()
 {
 	ACCESS_CHECK(BIGSTRUCT());

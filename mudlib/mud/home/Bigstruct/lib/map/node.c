@@ -32,11 +32,6 @@ static void create()
 	map = ([ ]);
 }
 
-static void destruct()
-{
-	::destruct();
-}
-
 int query_mass()
 {
 	ACCESS_CHECK(BIGSTRUCT());
