@@ -32,7 +32,7 @@ static void create()
 	accounts = ([ ]);
 }
 
-atomic void register_account(string name, string password)
+void register_account(string name, string password)
 {
 	object account;
 
@@ -51,7 +51,7 @@ atomic void register_account(string name, string password)
 	accounts[name] = account;
 }
 
-atomic void unregister_account(string name)
+void unregister_account(string name)
 {
 	ACCESS_CHECK(TEXT() || VERB());
 
