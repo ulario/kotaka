@@ -73,24 +73,33 @@ private void queue_patches(object obj, string *patches)
 	patch->set_element(oindex, old);
 }
 
-private void touch_scan_otable(string path, string *patches)
+void touch_scan_otable(string path, int sz, string *patches)
 {
-	rlimits(0; -1) {
-		int sz;
+	int ticks;
 
-		for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
-			object obj;
+	ACCESS_CHECK(previous_program() == SUSPENDD);
 
-			obj = find_object(path + "#" + sz);
+	ticks = status(ST_TICKS);
 
-			if (obj) {
-				if (patches) {
-					queue_patches(obj, patches);
-				}
+	while (sz >= 0 && ticks - status(ST_TICKS) < 100000) {
+		object obj;
 
-				call_touch(obj);
+		obj = find_object(path + "#" + sz);
+
+		if (obj) {
+			if (patches) {
+				queue_patches(obj, patches);
 			}
+
+			call_touch(obj);
 		}
+
+		sz--;
+	}
+
+	if (sz >= 0) {
+		SUSPENDD->queue_work("touch_scan_otable", path, sz, patches);
+		LOGD->post_message("debug", LOG_DEBUG, "TouchD: Scanning object table, currently at slot " + sz);
 	}
 }
 
@@ -132,24 +141,26 @@ void touch_all(string path, varargs string *patches)
 		clones = cinfo->query_clones();
 
 		if (clones) {
-			int sz;
+			rlimits(0; -1) {
+				int sz;
 
-			for (sz = sizeof(clones); --sz >= 0; ) {
-				object clone;
-				string *old;
-				int oindex;
+				for (sz = sizeof(clones); --sz >= 0; ) {
+					object clone;
+					string *old;
+					int oindex;
 
-				clone = clones[sz];
-				oindex = status(clone, O_INDEX);
+					clone = clones[sz];
+					oindex = status(clone, O_INDEX);
 
-				if (patches) {
-					queue_patches(clone, patches);
+					if (patches) {
+						queue_patches(clone, patches);
+					}
+
+					call_touch(clone);
 				}
-
-				call_touch(clone);
 			}
 		} else {
-			touch_scan_otable(path, patches);
+			SUSPENDD->queue_work("touch_scan_otable", path, status(ST_OTABSIZE) - 1, patches);
 		}
 	}
 }
