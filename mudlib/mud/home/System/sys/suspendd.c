@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
+#include <status.h>
 
 /* system suspension manager */
 
@@ -77,6 +78,44 @@ void queue_work(string func, mixed args...)
 	}
 
 	queue->push_back( ({ previous_object(), func, args }) );
+}
+
+int queue_delayed_work(mixed delay, string func, mixed args...)
+{
+	return call_out("process_delayed", delay, previous_object(), func, args);
+}
+
+mixed dequeue_delayed_work(int handle)
+{
+	mixed *callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts) - 1; sz >= 0; --sz) {
+		mixed *callout;
+
+		callout = callouts[sz];
+
+		if (callout[CO_HANDLE] != handle) {
+			continue;
+		}
+
+		if (previous_object() != callout[CO_FIRSTXARG]) {
+			return -1;
+		}
+
+		return remove_call_out(handle);
+	}
+
+	return -1;
+}
+
+static void process_delayed(object obj, string func, mixed *args)
+{
+	if (obj) {
+		call_other(obj, func, args...);
+	}
 }
 
 static void process()
