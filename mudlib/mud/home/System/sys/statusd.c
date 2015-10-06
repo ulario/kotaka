@@ -139,7 +139,7 @@ int login(string str)
 	connections[conn] = ({
 		trusted ? 0.05 : 15.0,
 		trusted,
-		call_out("report", 0, conn)
+		SUSPENDD->queue_delayed_work(0, "report", conn)
 	});
 
 	redraw(conn);
@@ -174,7 +174,7 @@ int receive_message(string str)
 			break;
 
 		case "quit":
-			remove_call_out(connections[conn][2]);
+			SUSPENDD->dequeue_delayed_work(connections[conn][2]);
 			conn->message("\033c");
 			return MODE_DISCONNECT;
 
@@ -195,8 +195,8 @@ int receive_message(string str)
 				connections[conn][0] = interval;
 
 				if (connections[conn][2]) {
-					remove_call_out(connections[conn][2]);
-					connections[conn][2] = call_out("report", interval, conn);
+					SUSPENDD->dequeue_delayed_work(connections[conn][2]);
+					connections[conn][2] = SUSPENDD->queue_delayed_work(interval, "report", conn);
 				}
 			}
 
@@ -224,17 +224,19 @@ int message_done()
 	conn = previous_object();
 
 	if (!connections[conn][2]) {
-		connections[conn][2] = call_out("report",
-			connections[conn][0], conn
+		connections[conn][2] = SUSPENDD->queue_delayed_work(
+			connections[conn][0], "report", conn
 		);
 	}
 
 	return MODE_NOCHANGE;
 }
 
-static void report(object conn)
+void report(object conn)
 {
 	int status;
+
+	ACCESS_CHECK(previous_program() == SUSPENDD);
 
 	if (!conn) {
 		return;
