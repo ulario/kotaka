@@ -135,6 +135,8 @@ void upgrade_modules()
 
 static void recompile_initd(string module)
 {
+	LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + module);
+
 	compile_object(USR_DIR + "/" + module + "/initd");
 
 	call_out("upgrade_module", 0, module);
