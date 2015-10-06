@@ -60,6 +60,11 @@ private void load()
 	load_dir("sys");
 }
 
+private void set_limits()
+{
+	KERNELD->rsrc_set_limit("System", "ticks", 250000);
+}
+
 static void create()
 {
 	check_config();
@@ -84,6 +89,8 @@ static void boot()
 	catch {
 		load_object(KERNELD);
 		KERNELD->set_global_access("System", 1);
+
+		set_limits();
 
 		configure_klib();
 		configure_rsrc();
@@ -427,6 +434,8 @@ void upgrade_system_3()
 	ACCESS_CHECK(SYSTEM());
 
 	load();
+
+	set_limits();
 
 	purge_orphans("System");
 
