@@ -28,11 +28,18 @@ private void load()
 	load_dir("sys", 1);
 }
 
+private void set_limits()
+{
+	KERNELD->rsrc_set_limit("Test", "ticks", 100000000);
+}
+
 static void create()
 {
 	MODULED->boot_module("Bigstruct");
 
 	KERNELD->set_global_access("Test", 1);
+
+	set_limits();
 
 	load();
 
@@ -42,6 +49,8 @@ static void create()
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
 
 	load();
 
