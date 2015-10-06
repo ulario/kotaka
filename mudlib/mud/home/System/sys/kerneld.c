@@ -172,7 +172,11 @@ string *query_resources()
 
 void rsrc_set_limit(string owner, string name, int max)
 {
-	ACCESS_CHECK(SYSTEM());
+	if (!SYSTEM()) {
+		ACCESS_CHECK(owner);
+
+		ACCESS_CHECK(previous_program() == USR_DIR + "/" + owner + "/initd");
+	}
 
 	::rsrc_set_limit(owner, name, max);
 }
