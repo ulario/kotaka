@@ -33,12 +33,19 @@ void load()
 	load_dir("sys", 1);
 }
 
+private void set_limits()
+{
+	KERNELD->rsrc_set_limit("Text", "ticks", 1000000);
+}
+
 static void create()
 {
 	KERNELD->set_global_access("Text", 1);
 
 	MODULED->boot_module("Ansi");
 	MODULED->boot_module("Verb");
+
+	set_limits();
 
 	load();
 }
@@ -69,6 +76,8 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
+
+	set_limits();
 
 	purge_orphans("Text");
 }
