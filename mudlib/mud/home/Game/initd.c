@@ -184,9 +184,16 @@ void configure_properties()
 	/* right leg, right ankle, right foot */
 }
 
+private void set_limits()
+{
+	KERNELD->rsrc_set_limit("Game", "ticks", 1000000);
+}
+
 static void create()
 {
 	load();
+
+	set_limits();
 
 	configure_properties();
 	create_channels();
@@ -357,6 +364,8 @@ void load_help()
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
 
 	load();
 
