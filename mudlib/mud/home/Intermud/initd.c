@@ -26,6 +26,11 @@
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
+private void set_limits()
+{
+	KERNELD->rsrc_set_limit("Intermud", "ticks", 500000);
+}
+
 private void load()
 {
 	MODULED->boot_module("Channel");
@@ -37,12 +42,16 @@ static void create()
 {
 	KERNELD->set_global_access("Intermud", 1);
 
+	set_limits();
+
 	load();
 }
 
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
 
 	load();
 
