@@ -404,6 +404,21 @@ void upgrade_system()
 
 static void upgrade_system_2()
 {
+	mixed **dir;
+	string *names;
+	object *objs;
+	int sz;
+
+	dir = get_dir("sys/upgrade/*");
+	names = dir[0];
+	objs = dir[3];
+
+	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
+		if (objs[sz]) {
+			destruct_object(objs[sz]);
+		}
+	}
+
 	compile_object("sys/upgrade/1");
 }
 
