@@ -140,6 +140,7 @@ string *render_color()
 	for (i = 0; i < sz; i++) {
 		int sx, sy;
 		int px, py;
+		int mx, my;
 
 		string *lmask;
 		string *lchars;
@@ -156,8 +157,21 @@ string *render_color()
 		lchars = layer->query_chars();
 		lcolors = layer->query_colors();
 
-		for (y = 0; y < sy; y++) {
-			for (x = 0; x < sx; x++) {
+		if (px + sx > size_x) {
+			sx = size_x - px;
+		}
+		if (py + sy > size_y) {
+			sy = size_y - py;
+		}
+		if (px < 0) {
+			mx = -px;
+		}
+		if (py < 0) {
+			my = -py;
+		}
+
+		for (y = my; y < sy; y++) {
+			for (x = mx; x < sx; x++) {
 				if (lmask[y][x >> 3] & (1 << (x & 7))) {
 					if (lcolors[y][x] & 0x80) {
 						colors[y + py][x + px] =
