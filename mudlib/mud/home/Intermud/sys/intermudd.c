@@ -623,10 +623,16 @@ private void restore()
 	mapping map;
 	string buf;
 
+	muds = ([ ]);
+	channels = ([ ]);
+	password = 0;
+
 	buf = SECRETD->read_file("intermud");
 
 	if (buf) {
 		map = PARSER_VALUE->parse(buf);
+	} else {
+		return;
 	}
 
 	if (map["password"]) {
