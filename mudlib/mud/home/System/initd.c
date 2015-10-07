@@ -48,9 +48,12 @@ private void check_versions();
 
 private void load_core()
 {
-	load_object(LOGD);
-	load_object(TLSD);
-	load_object(OBJECTD);
+	load_object(LOGD);		/* we need to log any error messages */
+	load_object(TLSD);		/* depends on an updated tls size */
+	load_object(OBJECTD);		/* enforces static invariants */
+	load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
+	load_object(CALLOUTD);		/* suspends callouts */
+	load_object(SUSPENDD);		/* suspends system */
 }
 
 private void load()
@@ -80,7 +83,7 @@ static void create()
 	} : {
 		LOGD->flush();
 		shutdown();
-		error("System setup failed");
+		error("Failed to load system core");
 	}
 }
 
@@ -100,23 +103,45 @@ static void boot()
 
 		LOGD->post_message("system", LOG_INFO, "System loaded");
 
+		call_out("boot_2", 0);
+	} : {
+		LOGD->flush();
+		shutdown();
+		error("Failed to load system");
+	}
+}
+
+static void boot_2()
+{
+	catch {
 		MODULED->boot_module("Bigstruct");
 
 		PROGRAMD->setup_database();
 		OBJECTD->discover_objects();
 		CLONED->discover_clones();
 
+		call_out("boot_3", 0);
+	} : {
+		LOGD->flush();
+		shutdown();
+		error("Failed to initialize the program and clone databases");
+	}
+}
+
+static void boot_3()
+{
+	catch {
 		MODULED->boot_module("String");
 		MODULED->boot_module("Utility");
 		MODULED->boot_module("Channel");
-
-		ERRORD->enable();
 
 		LOGD->post_message("system", LOG_INFO, "System ready");
 
 		MODULED->boot_module("Account");
 		MODULED->boot_module("Kotaka");
 		MODULED->boot_module("Game");
+
+		ERRORD->enable();
 	} : {
 		LOGD->flush();
 		shutdown();
