@@ -29,6 +29,12 @@
 #define STAGE_PNOUN	4
 #define STAGE_ADJ	5
 
+#define STAGE_VIRTUAL	6
+#define STAGE_MASS	7
+#define STAGE_DENSITY	8
+#define STAGE_CAPACITY	9
+#define STAGE_MAX_MASS	10
+
 inherit TEXT_LIB_USTATE;
 
 int reading;
@@ -99,6 +105,44 @@ private void prompt()
 			send_out("Current adjectives: " + implode(data, ", ") + "\n");
 		}
 		send_out("Please give an adjective (blank to stop, - to reset): ");
+		break;
+
+	case STAGE_VIRTUAL:
+		data = obj->query_virtual();
+		if (data) {
+			send_out("Object is currently virtual.\n");
+		} else {
+			send_out("Object is currently not virtual.\n");
+		}
+		send_out("Should this object be virtual? ");
+		break;
+
+	case STAGE_MASS:
+		data = obj->query_mass();
+
+		send_out("Object's current mass: " + data + " kg.\n");
+		send_out("How massive should this object be? ");
+		break;
+
+	case STAGE_DENSITY:
+		data = obj->query_density();
+
+		send_out("Object's current mass: " + data + " kg/l.\n");
+		send_out("How dense should this object be? ");
+		break;
+
+	case STAGE_CAPACITY:
+		data = obj->query_capacity();
+
+		send_out("Object's current capacity: " + data + " m^3.\n");
+		send_out("How much in volume should this object be able to hold? ");
+		break;
+
+	case STAGE_MAX_MASS:
+		data = obj->query_max_mass();
+
+		send_out("Object's current max mass: " + data + " m^3.\n");
+		send_out("How much in mass should this object be able to hold? ");
 		break;
 	}
 }
@@ -219,14 +263,106 @@ private void do_input(string input)
 
 	case STAGE_ADJ:
 		if (input == "") {
-			stopped = 1;
-			pop_state();
+			stage = STAGE_VIRTUAL;
 		} else {
 			if (input[0] == '-') {
 				handle_word(input[1 ..], "local_adjectives", 1);
 			} else {
 				handle_word(input, "local_adjectives", 0);
 			}
+		}
+		break;
+
+	case STAGE_VIRTUAL:
+		switch(STRINGD->to_lower(input)) {
+		case "":
+			if (obj->query_virtual()) {
+				pop_state();
+				stopped = 1;
+			} else {
+				stage = STAGE_MASS;
+			}
+			break;
+
+		case "y":
+			obj->set_mass(0.0);
+			obj->set_density(1.0);
+			obj->set_capacity(0.0);
+			obj->set_max_mass(0.0);
+			obj->set_virtual(1);
+			pop_state();
+			stopped = 1;
+			break;
+
+		case "n":
+			obj->set_virtual(0);
+			stage = STAGE_MASS;
+			break;
+
+		default:
+			send_out("Yes, no, or blank to leave it alone.\n");
+		}
+		break;
+
+	case STAGE_MASS:
+		if (input == "") {
+			stage = STAGE_DENSITY;
+		} else {
+			float mass;
+
+			if (!sscanf(input, "%f", mass)) {
+				send_out("Not a floating point number.\n");
+			}
+
+			obj->set_mass(mass);
+			stage = STAGE_DENSITY;
+		}
+		break;
+
+	case STAGE_DENSITY:
+		if (input == "") {
+			stage = STAGE_CAPACITY;
+		} else {
+			float density;
+
+			if (!sscanf(input, "%f", density)) {
+				send_out("Not a floating point number.\n");
+			}
+
+			obj->set_density(density);
+			stage = STAGE_CAPACITY;
+		}
+		break;
+
+	case STAGE_CAPACITY:
+		if (input == "") {
+			stage = STAGE_MAX_MASS;
+		} else {
+			float capacity;
+
+			if (!sscanf(input, "%f", capacity)) {
+				send_out("Not a floating point number.\n");
+			}
+
+			obj->set_capacity(capacity);
+			stage = STAGE_MAX_MASS;
+		}
+		break;
+
+	case STAGE_MAX_MASS:
+		if (input == "") {
+			pop_state();
+			stopped = 1;
+		} else {
+			float max_mass;
+
+			if (!sscanf(input, "%f", max_mass)) {
+				send_out("Not a floating point number.\n");
+			}
+
+			obj->set_max_mass(max_mass);
+			pop_state();
+			stopped = 1;
 		}
 		break;
 	}
