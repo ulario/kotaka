@@ -162,17 +162,19 @@ string generate_brief_definite(object thing)
 
 	brief = thing->query_property("brief");
 
-	if (thing->query_property("is_definite")) {
-		return brief;
-	}
-
 	if (brief) {
+		if (thing->query_property("is_proper")) {
+			return brief;
+		}
 		return "the " + brief;
 	}
 
 	brief = thing->query_property("id");
 
 	if (brief) {
+		if (thing->query_property("is_proper")) {
+			return brief;
+		}
 		return "the " + brief;
 	}
 
@@ -183,10 +185,14 @@ string generate_brief_indefinite(object thing)
 {
 	string brief;
 
+	if (thing->query_property("is_definite")) {
+		return generate_brief_definite(thing);
+	}
+
 	brief = thing->query_property("brief");
 
 	if (brief) {
-		if (thing->query_property("is_definite")) {
+		if (thing->query_property("is_proper")) {
 			return brief;
 		}
 
@@ -207,6 +213,9 @@ string generate_brief_indefinite(object thing)
 	brief = thing->query_property("id");
 
 	if (brief) {
+		if (thing->query_property("is_proper")) {
+			return brief;
+		}
 		return "a " + brief;
 	}
 

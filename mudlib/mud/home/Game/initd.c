@@ -115,6 +115,7 @@ void configure_properties()
 	PROPERTYD->add_property("pronoun", T_STRING, PROP_INHERIT);
 
 	PROPERTYD->add_property("is_definite", T_INT, PROP_INHERIT, 0);
+	PROPERTYD->add_property("is_proper", T_INT, PROP_INHERIT, 0);
 	PROPERTYD->add_property("is_transparent", T_INT, PROP_INHERIT, 0);
 
 	/* inventory */
