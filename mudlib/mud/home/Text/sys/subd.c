@@ -156,70 +156,65 @@ int query_user_class(string username)
 	return 1;
 }
 
-string generate_brief_definite(object thing)
+private string primitive_brief(object thing)
 {
 	string brief;
 
 	brief = thing->query_property("brief");
 
 	if (brief) {
-		if (thing->query_property("is_proper")) {
-			return brief;
-		}
-		return "the " + brief;
+		return brief;
 	}
 
 	brief = thing->query_property("id");
 
 	if (brief) {
-		if (thing->query_property("is_proper")) {
-			return brief;
-		}
-		return "the " + brief;
+		return brief;
 	}
 
-	return "the nondescript thing";
+	return "nondescript object";
+}
+
+string generate_brief_proper(object thing)
+{
+	return primitive_brief(thing);
+}
+
+string generate_brief_definite(object thing)
+{
+	if (thing->query_property("is_proper")) {
+		return generate_brief_proper(thing);
+	}
+
+	return "the " + primitive_brief(thing);
 }
 
 string generate_brief_indefinite(object thing)
 {
 	string brief;
 
+	if (thing->query_property("is_proper")) {
+		return generate_brief_proper(thing);
+	}
+
 	if (thing->query_property("is_definite")) {
 		return generate_brief_definite(thing);
 	}
 
-	brief = thing->query_property("brief");
+	brief = primitive_brief(thing);
 
-	if (brief) {
-		if (thing->query_property("is_proper")) {
-			return brief;
+	if (strlen(brief) > 0) {
+		switch(STRINGD->to_lower(brief)[0]) {
+		case 'a':
+		case 'e':
+		case 'i':
+		case 'o':
+		case 'u':
+			return "an " + brief;
 		}
-
-		if (strlen(brief) > 0) {
-			switch(STRINGD->to_lower(brief)[0]) {
-			case 'a':
-			case 'e':
-			case 'i':
-			case 'o':
-			case 'u':
-				return "an " + brief;
-			}
-		}
-
-		return "a " + brief;
 	}
 
-	brief = thing->query_property("id");
-
-	if (brief) {
-		if (thing->query_property("is_proper")) {
-			return brief;
-		}
-		return "a " + brief;
-	}
-
-	return "a nondescript thing";
+	return "a " + brief;
 }
 
 string generate_list(string *phrases)

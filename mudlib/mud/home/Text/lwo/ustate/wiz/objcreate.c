@@ -24,16 +24,18 @@
 
 #define STAGE_NAME	0
 #define STAGE_BRIEF	1
-#define STAGE_LOOK	2
-#define STAGE_SNOUN	3
-#define STAGE_PNOUN	4
-#define STAGE_ADJ	5
+#define STAGE_PROPER	2
+#define STAGE_DEFINITE	3
+#define STAGE_LOOK	4
+#define STAGE_SNOUN	5
+#define STAGE_PNOUN	6
+#define STAGE_ADJ	7
 
-#define STAGE_VIRTUAL	6
-#define STAGE_MASS	7
-#define STAGE_DENSITY	8
-#define STAGE_CAPACITY	9
-#define STAGE_MAX_MASS	10
+#define STAGE_VIRTUAL	8
+#define STAGE_MASS	9
+#define STAGE_DENSITY	10
+#define STAGE_CAPACITY	11
+#define STAGE_MAX_MASS	12
 
 inherit TEXT_LIB_USTATE;
 
@@ -74,6 +76,27 @@ private void prompt()
 		}
 		send_out("Please give a brief (- to reset): ");
 		break;
+
+	case STAGE_PROPER:
+		data = obj->query_local_property("is_proper");
+		if (data) {
+			send_out("Object brief is currently proper.\n");
+		} else {
+			send_out("Object brief is currently not proper.\n");
+		}
+		send_out("Should this object's brief be proper? ");
+		break;
+
+	case STAGE_DEFINITE:
+		data = obj->query_local_property("is_definite");
+		if (data) {
+			send_out("Object brief is currently definite.\n");
+		} else {
+			send_out("Object brief is currently not definite.\n");
+		}
+		send_out("Should this object's brief be definite? ");
+		break;
+
 
 	case STAGE_LOOK:
 		data = obj->query_local_property("look");
@@ -225,7 +248,56 @@ private void do_input(string input)
 		} else if (input != "") {
 			obj->set_local_property("brief", input);
 		}
-		stage = STAGE_LOOK;
+		stage = STAGE_PROPER;
+		break;
+
+	case STAGE_PROPER:
+		switch(STRINGD->to_lower(input)) {
+		case "":
+			if (obj->query_local_property("is_proper")) {
+				obj->set_local_property("is_definite", nil);
+				stage = STAGE_LOOK;
+			} else {
+				stage = STAGE_DEFINITE;
+			}
+			break;
+
+		case "y":
+			obj->set_local_property("is_proper", 1);
+			obj->set_local_property("is_definite", nil);
+			stage = STAGE_LOOK;
+			break;
+
+		case "n":
+			obj->set_local_property("is_proper", nil);
+			stage = STAGE_DEFINITE;
+			break;
+
+		default:
+			send_out("Yes, no, or blank to leave it alone.\n");
+		}
+		break;
+
+	case STAGE_DEFINITE:
+		switch(STRINGD->to_lower(input)) {
+		case "":
+			stage = STAGE_LOOK;
+			break;
+
+		case "y":
+			obj->set_local_property("is_definite", 1);
+			stage = STAGE_LOOK;
+			break;
+
+		case "n":
+			obj->set_local_property("is_definite", nil);
+			stage = STAGE_LOOK;
+			break;
+
+		default:
+			send_out("Yes, no, or blank to leave it alone.\n");
+			break;
+		}
 		break;
 
 	case STAGE_LOOK:

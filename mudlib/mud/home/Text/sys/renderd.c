@@ -494,7 +494,7 @@ private string draw_look_xyz(object viewer)
 			csystem = origin->query_coordinate_system();
 
 			render += "Coordinate system: " + csystem + "\n";
-			render += "Origin: " + TEXT_SUBD->generate_brief_definite(origin) + "\n";
+			render += "Origin: " + TEXT_SUBD->generate_brief_proper(origin) + "\n";
 
 			switch(csystem) {
 			case "xyz":
@@ -527,7 +527,7 @@ private string draw_void(object viewer)
 	output = "";
 
 	if (env) {
-		output = TEXT_SUBD->generate_brief_definite(env) + "\n\n";
+		output = TEXT_SUBD->generate_brief_proper(env) + "\n\n";
 		output = STRINGD->to_upper(output[0 .. 0]) + output[1 ..];
 	}
 
@@ -539,7 +539,7 @@ private string draw_void(object viewer)
 		csystem = origin->query_coordinate_system();
 
 		output += "Coordinate system: " + csystem + "\n";
-		output += "Origin: " + TEXT_SUBD->generate_brief_definite(origin) + "\n";
+		output += "Origin: " + TEXT_SUBD->generate_brief_proper(origin) + "\n";
 	} else {
 		output += "No origin\n";
 	}
