@@ -160,6 +160,7 @@ private atomic void do_makeroom()
 	int px, py;
 
 	object env;
+	object creator;
 
 	bx = body->query_property("pos_x");
 	by = body->query_property("pos_y");
@@ -194,7 +195,13 @@ private atomic void do_makeroom()
 	room->set_y_size(sy);
 	room->set_capacity((float)(sx * sy * 3));
 	room->set_max_mass((float)(sx * sy * 1000));
+
+	creator = new_object("objcreate");
+	creator->set_object(room);
+
 	room = nil;
+
+	push_state(creator);
 }
 
 private atomic void do_linkroom(int offset)
@@ -268,6 +275,7 @@ private atomic void do_linkroom(int offset)
 		room2 = tmp;
 		break;
 	}
+
 	if (!room2) {
 		send_out("There is no room on the other side of the wall.\n");
 		return;
@@ -410,6 +418,21 @@ private void do_input(string input)
 		case "":
 			break;
 
+		case "help":
+			{
+				send_out("Commands:\n\n");
+				send_out("help           - this help message.\n");
+				send_out("walk           - walk around.\n");
+				send_out("look           - look around.\n");
+				send_out("quit           - Quit the simplebuilder.\n");
+				send_out("setroomarch    - Set the archetype for new rooms.\n");
+				send_out("setexitarch    - Set the archetype for new exits.\n");
+				send_out("setroompainter - Set the painter for new rooms.\n");
+				send_out("setexitpainter - Set the painter for new exits.\n");
+				send_out("makeroom       - Create a new room.\n");
+				send_out("linkroom       - Connect two rooms.\n");
+				break;
+			}
 		case "walk":
 		case "look":
 			{
