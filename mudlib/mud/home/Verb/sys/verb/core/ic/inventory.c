@@ -46,8 +46,9 @@ private string print_values(mapping values)
 	for (i = 0; i < sz; i++) {
 		switch(c[i]) {
 		case "us":
-			bits += ({ TEXT_SUBD->print_dollars(v[i]) });
+			bits += ({ TEXT_SUBD->print_us(v[i]) });
 			break;
+
 		case "fantasy":
 			bits += ({ TEXT_SUBD->print_fantasy(v[i]) });
 			break;
