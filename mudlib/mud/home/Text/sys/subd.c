@@ -234,7 +234,7 @@ string generate_list(string *phrases)
 	}
 }
 
-string print_dollars(int cents)
+string print_us(int cents)
 {
 	string centspart;
 	int dollars;
@@ -254,19 +254,6 @@ string print_dollars(int cents)
 	centspart = centspart[(strlen(centspart) - 2) ..];
 
 	return "$" + dollars + "." + centspart;
-}
-
-string print_gems(int gems)
-{
-	if (gems == 0) {
-		return "no gems";
-	}
-
-	if (gems == 1) {
-		return "a humble gem";
-	}
-
-	return "G" + gems;
 }
 
 string print_fantasy(int copper)
