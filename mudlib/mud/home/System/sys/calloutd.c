@@ -28,7 +28,6 @@
 
 inherit SECOND_AUTO;
 
-int suspend_count;		/* suspension count */
 int suspend;			/* callouts suspended */
 int handle;			/* releaser handle */
 int dead;			/* if we're being destroyed */
@@ -95,11 +94,6 @@ void reboot()
 	}
 }
 
-int query_suspend_count()
-{
-	return suspend_count;
-}
-
 /* rsrcd hooks */
 
 void suspend_callouts()
@@ -122,11 +116,7 @@ void suspend_callouts()
 			alloc_queue();
 		}
 	} else {
-		if (!suspend_count) {
-			RSRCD->suspend_callouts();
-		}
-
-		suspend_count++;
+		RSRCD->suspend_callouts();
 	}
 }
 
@@ -254,15 +244,7 @@ void release_callouts()
 			handle = call_out("do_release", 0);
 		}
 	} else {
-		if (!suspend_count) {
-			error("Callouts not suspended");
-		}
-
-		suspend_count--;
-
-		if (!suspend_count) {
-			RSRCD->release_callouts();
-		}
+		RSRCD->release_callouts();
 	}
 }
 
