@@ -148,7 +148,6 @@ void block_connections(varargs object except)
 	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
 
 	if (blocked) {
-		blocked++;
 		return;
 	}
 
@@ -185,11 +184,6 @@ void unblock_connections(varargs object except)
 	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
 
 	if (blocked == 0) {
-		error("Connections not blocked");
-	}
-
-	if (blocked > 1) {
-		blocked--;
 		return;
 	}
 
