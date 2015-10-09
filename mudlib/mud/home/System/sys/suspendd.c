@@ -51,17 +51,8 @@ void suspend_system()
 
 void release_system()
 {
-	if (!suspend) {
-		return;
-	}
-
-	while (CALLOUTD->query_suspend_count()) {
-		CALLOUTD->release_callouts();
-	}
-
-	while (SYSTEM_USERD->query_blocked()) {
-		SYSTEM_USERD->unblock_connections();
-	}
+	CALLOUTD->release_callouts();
+	SYSTEM_USERD->unblock_connections();
 
 	suspend = 0;
 }
