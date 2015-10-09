@@ -58,7 +58,7 @@ private mixed *filter_noun(object *candidates, string noun)
 		}
 	}
 
-	return ({ 3, scont | pcont, !sizeof(pcont) && sizeof(scont) });
+	return ({ 3, scont, pcont });
 }
 
 private mixed *filter_adjectives(object *candidates, string *adjectives)
@@ -232,6 +232,95 @@ private string bind_raw(mixed **phrases)
 	return implode(build, " ");
 }
 
+private mixed *filter_invisible(object *candidates)
+{
+	int sz;
+
+	for (sz = sizeof(candidates); --sz >= 0; ) {
+		if (candidates[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
+			candidates[sz] = nil;
+		}
+	}
+
+	candidates -= ({ nil });
+
+	return candidates;
+}
+
+private string demangle_noun_phrase(mixed *np)
+{
+	string *adj;
+	string noun;
+	string *ordinals;
+	mixed *result;
+	int exact;
+
+	adj = np[2];
+	noun = np[3];
+
+	return implode(adj + ({ noun }), " ");
+}
+
+private mixed *bind_noun_phrase(mixed *np, object *candidates)
+{
+	string article;
+	string *adj;
+	string noun;
+	string *ordinals;
+	mixed *result;
+	int exact;
+
+	article = np[1];
+	adj = np[2];
+	noun = np[3];
+
+	ordinals = select_ordinals(adj);
+	adj -= ordinals;
+
+	candidates = filter_invisible(candidates);
+
+	result = filter_adjectives(candidates, adj);
+
+	if (result[0] != 3) {
+		return result;
+	}
+
+	candidates = result[1];
+
+	result = filter_noun(candidates, noun);
+
+	if (result[0] != 3) {
+		return result;
+	}
+
+	candidates = result[1] | result[2];
+
+	result = filter_ordinals(candidates, ordinals);
+
+	if (result[0] != 3) {
+		return result;
+	}
+
+	candidates = result[1];
+
+	switch (article) {
+	case nil:
+	case "the":
+		/* require specific singular noun, but allow plural */
+		break;
+	case "a":
+	case "an":
+		/* allow a random choice */
+		break;
+	}
+
+	if (sizeof(candidates) == 0) {
+		return ({ 2, "There is no " + demangle_noun_phrase(np) + "." });
+	}
+
+	return ({ 3, candidates });
+}
+
 private mixed *bind_english(mixed **chunks, object *initial)
 {
 	int sz, i;
@@ -244,11 +333,7 @@ private mixed *bind_english(mixed **chunks, object *initial)
 	for (i = sz - 1; i >= 0; i--) {
 		mixed *chunk;
 		mixed *np;
-		string *ordinals;
 		mixed *result;
-		string article;
-		string *adj;
-		string noun;
 		int exact;
 		/* 1.  find np in candidates */
 		/* 2.  build new candidates using the preposition */
@@ -262,35 +347,7 @@ private mixed *bind_english(mixed **chunks, object *initial)
 		prep = chunk[0];
 		np = chunk[1];
 
-		article = np[1];
-		adj = np[2];
-		noun = np[3];
-
-		ordinals = select_ordinals(adj);
-		adj -= ordinals;
-
-		result = filter_adjectives(candidates, adj);
-
-		if (result[0] != 3) {
-			return result;
-		}
-
-		result = filter_noun(result[1], noun);
-		exact = result[2];
-
-		if (result[0] != 3) {
-			switch(result[1]) {
-			case "NOMATCH":
-				return ({ 2, "There is no " + implode(adj + ({ noun }), " ") });
-
-			case "MULTIPLE":
-				return ({ 2, "Be more specific, there is more than one " + implode(adj + ({ noun }), " ") });
-
-			}
-			return result;
-		}
-
-		result = filter_ordinals(result[1], ordinals);
+		result = bind_noun_phrase(np, candidates);
 
 		if (result[0] != 3) {
 			return result;
@@ -298,30 +355,14 @@ private mixed *bind_english(mixed **chunks, object *initial)
 
 		candidates = result[1];
 
-		{
-			int sz;
-
-			for (sz = sizeof(candidates); --sz >= 0; ) {
-				if (candidates[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
-					candidates[sz] = nil;
-				}
-			}
-
-			candidates -= ({ nil });
-		}
-
-		if (sizeof(candidates) == 0) {
-			return ({ 2, "There is no " + implode(adj + ({ noun }), " ") });
-		}
-
-		if (exact || i > 0) {
-			if (sizeof(candidates) > 1) {
-				return ({ 2, "Be more specific, there is more than one " + implode(adj + ({ noun }), " ") });
-			}
-		}
-
 		/* todo:  allow multiple matches for the last part */
 		if (i > 0) {
+			if (sizeof(candidates) == 0) {
+				return ({ 2, "There is no " + demangle_noun_phrase(np) + "." });
+			} else if (sizeof(candidates) > 1) {
+				return ({ 2, "There is more than one " + demangle_noun_phrase(np) + ", be more specific." });
+			}
+
 			switch(prep) {
 			case "from":
 			case "in":
