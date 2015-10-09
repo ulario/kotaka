@@ -31,51 +31,6 @@ static void create()
 
 static void pass()
 {
-	destruct_dir("~Bigstruct/lib", 1);
-	compile_dir("~Bigstruct/lwo", 1);
-	compile_dir("~Bigstruct/obj", 1);
-	compile_dir("~Bigstruct/sys", 1);
-
-	compile_object(PROGRAMD);
-	compile_object(CALLOUTD);
-	compile_object(SUSPENDD);
-
-	while (CALLOUTD->query_suspend_count()) {
-		CALLOUTD->release_callouts();
-	}
-
-	while (SYSTEM_USERD->query_blocked()) {
-		SYSTEM_USERD->unblock_connections();
-	}
-
-	call_out("pass_2", 0);
-}
-
-static void pass_2()
-{
-	mixed *callouts;
-
-	callouts = status(OBJECTD, O_CALLOUTS);
-
-	if (sizeof(callouts)) {
-		LOGD->post_message("debug", LOG_DEBUG, "ObjectD is busy, waiting to rebuild it.");
-
-		call_out("pass_2", 0.1);
-
-		return;
-	}
-
-	OBJECTD->disable();
-	compile_object(OBJECTD);
-	OBJECTD->enable();
-
-	call_out("pass_3", 0);
-}
-
-static void pass_3()
-{
-	compile_object(OBJECTD);
-
 	INITD->upgrade_system_3();
 
 	destruct_object(this_object());
