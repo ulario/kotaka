@@ -294,10 +294,12 @@ string query_banner(object LIB_CONN connection)
 		}
 	}
 
-	if (free_users() < 2) {
+	if (free_users() + 1 < 2) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 
-		/* one for the admin, and one for dumping overloads */
+		/* we need two slots kept free */
+		/* discarding this one will free it up so don't count it against the quota before we decide to accept it */
+
 		catch {
 			return userd->query_overload_banner(connection);
 		} : {
