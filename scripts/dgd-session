@@ -1,0 +1,39 @@
+#!/bin/bash
+
+cd ~/dgd/ulario
+
+DGDPID=0
+
+function sigterm
+{
+	kill -TERM $DGDPID
+	kill -KILL $MONPID
+	trap - SIGTERM
+	kill -TERM $$
+}
+
+function sigint
+{
+	kill -KILL $DGDPID
+	kill -KILL $MONPID
+	trap - SIGINT
+	kill -INT $$
+}
+
+trap sigterm SIGTERM
+trap sigint SIGINT
+
+while true
+do
+	if [ -f ulario.snapshot ]
+	then
+		echo "Warm booting dgd" >> ulario.err
+		~/bin/dgd ulario.dgd ulario.snapshot < /dev/null >> ulario.err 2>&1 &
+	else
+		echo "Cold booting dgd" >> ulario.err
+		~/bin/dgd ulario.dgd < /dev/null >> ulario.err 2>&1 &
+	fi
+
+	DGDPID=$!
+	wait
+done
