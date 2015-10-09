@@ -21,8 +21,11 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <kotaka/log.h>
 #include <status.h>
 #include <type.h>
+
+#define CLONE_RESET_BUDGET 200000
 
 inherit SECOND_AUTO;
 
@@ -152,6 +155,8 @@ void remove_program(int index)
 	}
 }
 
+int count;
+
 void discover_clones_work_gather(string *owners, object queue)
 {
 	ACCESS_CHECK(previous_program() == SUSPENDD);
@@ -187,10 +192,11 @@ void discover_clones_work_gather_owner(string *owners, object queue, object firs
 
 	ticks = status(ST_TICKS);
 
-	while (!done && ticks - status(ST_TICKS) < 10000) {
+	while (ticks - status(ST_TICKS) < CLONED_RESET_BUDGET) {
 		name = object_name(obj);
 
 		if (sscanf(name, "%*s#%*d")) {
+			count++;
 			queue->push_back(obj);
 		}
 
@@ -201,6 +207,8 @@ void discover_clones_work_gather_owner(string *owners, object queue, object firs
 			break;
 		}
 	}
+
+	LOGD->post_message("system", LOG_INFO, "CloneD reset: " + count + " clones discovered so far.");
 
 	if (done) {
 		SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
@@ -218,7 +226,7 @@ void discover_clones_work_link(object queue)
 
 	ticks = status(ST_TICKS);
 
-	while (ticks - status(ST_TICKS) < 10000) {
+	while (ticks - status(ST_TICKS) < CLONED_RESET_BUDGET) {
 		object obj;
 
 		if (queue->empty()) {
@@ -229,9 +237,12 @@ void discover_clones_work_link(object queue)
 		obj = queue->query_front();
 		queue->pop_front();
 		add_clone(obj);
+		count--;
 	}
 
 	if (!done) {
+		LOGD->post_message("system", LOG_INFO, "CloneD reset: " + count + " clones left to link.");
+
 		SUSPENDD->queue_work("discover_clones_work_link", queue);
 	}
 }
@@ -259,6 +270,8 @@ atomic void discover_clones()
 	db = clone_object(BIGSTRUCT_MAP_OBJ);
 	db->claim();
 	db->set_type(T_INT);
+
+	count = 0;
 
 	SUSPENDD->suspend_system();
 	SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
