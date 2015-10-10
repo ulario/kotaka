@@ -70,9 +70,9 @@ private int object_index(object obj)
 
 private void alloc_queue()
 {
-	cmap = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	cmap = new_object(BIGSTRUCT_ARRAY_LWO);
 	cmap->claim();
-	cqueue = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	cqueue = new_object(BIGSTRUCT_ARRAY_LWO);
 	cqueue->claim();
 
 	cmap->set_size(status(ST_OTABSIZE));
@@ -81,8 +81,17 @@ private void alloc_queue()
 
 private void free_queue()
 {
-	destruct_object(cmap);
-	destruct_object(cqueue);
+	if (!sscanf(object_name(cmap), "%*s#-1")) {
+		destruct_object(cmap);
+	} else {
+		cmap = nil;
+	}
+
+	if (!sscanf(object_name(cqueue), "%*s#-1")) {
+		destruct_object(cqueue);
+	} else {
+		cqueue = nil;
+	}
 }
 
 /* initd hooks */
