@@ -343,8 +343,10 @@ private void check_config()
 		error("Array size setting is too small");
 	}
 
-	if (status(ST_UTABSIZE) < 5) {
-		/* game, admin, and overflow burner */
+	if (status(ST_UTABSIZE) < 3) {
+		/* 1: reserved for regular logins */
+		/* 2: reserved for emergency logins */
+		/* 3: reserved for overflow burning */
 		error("Not enough user slots");
 	}
 }
