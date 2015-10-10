@@ -531,7 +531,7 @@ static void rebalance_step_scatter(object array, object ceiling)
 	}
 }
 
-static void rebalance()
+atomic static void rebalance()
 {
 	object array;
 

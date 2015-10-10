@@ -28,6 +28,7 @@ inherit "../bintree/root";
 #define MAX_MASS 256
 
 int type;
+int rebalance;
 
 atomic static void create()
 {
@@ -125,6 +126,8 @@ private void merge_node_left(object node)
 	prev->set_map( ([ ]) );
 	delete_node(prev);
 	/* todo: take care of the map emptying out */
+
+	rebalance = 1;
 }
 
 private void merge_node_right(object node)
@@ -141,6 +144,8 @@ private void merge_node_right(object node)
 
 	next->set_map( ([ ]) );
 	delete_node(next);
+
+	rebalance = 1;
 }
 
 private void split_node_right(object node)
@@ -176,6 +181,8 @@ private void split_node_right(object node)
 
 	node->set_low_key(keys[0]);
 	next->set_low_key(high_key);
+
+	rebalance = 1;
 }
 
 private int mass_check(object node);
@@ -270,6 +277,12 @@ atomic void set_element(mixed key, mixed value)
 		check_node(node);
 	} else if (change) {
 		node->set_size(size);
+	}
+
+	if (rebalance) {
+		rebalance = 0;
+
+		rebalance();
 	}
 }
 
