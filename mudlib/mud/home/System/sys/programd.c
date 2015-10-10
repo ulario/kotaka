@@ -33,6 +33,49 @@ object pathdb;	/* path database, filename -> latest index */
 object inhdb;	/* inherit database, filename -> inheriting objects */
 object incdb;	/* include database, filename -> including objects */
 
+/* create/destruct */
+
+static void create()
+{
+}
+
+static void destruct()
+{
+	int i, sz;
+	object *turkeys;
+
+	turkeys = ({ });
+
+	if (progdb) {
+		turkeys += ({ progdb });
+	}
+
+	if (inhdb) {
+		turkeys += ({ inhdb });
+	}
+
+	if (incdb) {
+		turkeys += ({ incdb });
+	}
+
+	if (pathdb) {
+		turkeys += ({ pathdb });
+	}
+
+	progdb = nil;
+	inhdb = nil;
+	incdb = nil;
+	pathdb = nil;
+
+	sz = sizeof(turkeys);
+
+	for (i = 0; i < sz; i++) {
+		destruct_object(turkeys[i]);
+	}
+}
+
+/* helpers */
+
 void setup_database()
 {
 	ACCESS_CHECK(SYSTEM());
@@ -60,10 +103,6 @@ void setup_database()
 		pathdb->claim();
 		pathdb->set_type(T_STRING);
 	}
-}
-
-static void create()
-{
 }
 
 private void deindex_inherits(int oindex, int *inh)
@@ -131,6 +170,8 @@ private void index_includes(int oindex, string *inc)
 		submap->set_element(oindex, 1);
 	}
 }
+
+/* objectd hooks */
 
 object register_program(string path, string *inherits, string *includes)
 {
@@ -220,6 +261,33 @@ object register_program(string path, string *inherits, string *includes)
 
 	return pinfo;
 }
+
+void remove_program(int index)
+{
+	object pinfo;
+	string path;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	ASSERT(progdb);
+
+	pinfo = query_program_info(index);
+
+	if (pinfo) {
+		path = pinfo->query_path();
+
+		deindex_inherits(index, pinfo->query_inherits());
+		deindex_includes(index, pinfo->query_includes());
+	}
+
+	if (path && pathdb->query_element(path) == index) {
+		pathdb->set_element(path, nil);
+	}
+
+	progdb->set_element(index, nil);
+}
+
+/* public functions */
 
 object query_program_indices()
 {
@@ -311,31 +379,6 @@ object query_includers(string path)
 	return list;
 }
 
-void remove_program(int index)
-{
-	object pinfo;
-	string path;
-
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	ASSERT(progdb);
-
-	pinfo = query_program_info(index);
-
-	if (pinfo) {
-		path = pinfo->query_path();
-
-		deindex_inherits(index, pinfo->query_inherits());
-		deindex_includes(index, pinfo->query_includes());
-	}
-
-	if (path && pathdb->query_element(path) == index) {
-		pathdb->set_element(path, nil);
-	}
-
-	progdb->set_element(index, nil);
-}
-
 atomic void reset_program_database()
 {
 	int i, sz;
@@ -373,39 +416,4 @@ atomic void reset_program_database()
 	}
 
 	setup_database();
-}
-
-static void destruct()
-{
-	int i, sz;
-	object *turkeys;
-
-	turkeys = ({ });
-
-	if (progdb) {
-		turkeys += ({ progdb });
-	}
-
-	if (inhdb) {
-		turkeys += ({ inhdb });
-	}
-
-	if (incdb) {
-		turkeys += ({ incdb });
-	}
-
-	if (pathdb) {
-		turkeys += ({ pathdb });
-	}
-
-	progdb = nil;
-	inhdb = nil;
-	incdb = nil;
-	pathdb = nil;
-
-	sz = sizeof(turkeys);
-
-	for (i = 0; i < sz; i++) {
-		destruct_object(turkeys[i]);
-	}
 }
