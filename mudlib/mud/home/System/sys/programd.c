@@ -294,6 +294,15 @@ void remove_program(int index)
 	progdb->set_element(index, nil);
 }
 
+atomic void reset_program_database()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	delete_database();
+
+	setup_database();
+}
+
 /* public functions */
 
 object query_program_indices()
@@ -384,13 +393,4 @@ object query_includers(string path)
 	list->grant_access(this_object(), 0);
 
 	return list;
-}
-
-atomic void reset_program_database()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	delete_database();
-
-	setup_database();
 }
