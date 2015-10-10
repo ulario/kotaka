@@ -33,13 +33,9 @@ object pathdb;	/* path database, filename -> latest index */
 object inhdb;	/* inherit database, filename -> inheriting objects */
 object incdb;	/* include database, filename -> including objects */
 
-/* create/destruct */
+/* declarations */
 
-static void create()
-{
-}
-
-static void destruct()
+private void delete_database()
 {
 	int i, sz;
 	object *turkeys;
@@ -72,6 +68,17 @@ static void destruct()
 	for (i = 0; i < sz; i++) {
 		destruct_object(turkeys[i]);
 	}
+}
+
+/* create/destruct */
+
+static void create()
+{
+}
+
+static void destruct()
+{
+	delete_database();
 }
 
 /* helpers */
@@ -381,39 +388,9 @@ object query_includers(string path)
 
 atomic void reset_program_database()
 {
-	int i, sz;
-	object *turkeys;
-
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	turkeys = ({ });
-
-	if (progdb) {
-		turkeys += ({ progdb });
-	}
-
-	if (inhdb) {
-		turkeys += ({ inhdb });
-	}
-
-	if (incdb) {
-		turkeys += ({ incdb });
-	}
-
-	if (pathdb) {
-		turkeys += ({ pathdb });
-	}
-
-	progdb = nil;
-	inhdb = nil;
-	incdb = nil;
-	pathdb = nil;
-
-	sz = sizeof(turkeys);
-
-	for (i = 0; i < sz; i++) {
-		destruct_object(turkeys[i]);
-	}
+	delete_database();
 
 	setup_database();
 }
