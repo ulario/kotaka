@@ -349,6 +349,10 @@ private void check_config()
 		/* 3: reserved for overflow burning */
 		error("Not enough user slots");
 	}
+
+	if (status(ST_STRSIZE) < 1024) {
+		error("String size limit too small (minimum 1024 bytes)");
+	}
 }
 
 /* shamelessly stolen from phantasmal, kudos to Noah Gibbs */
