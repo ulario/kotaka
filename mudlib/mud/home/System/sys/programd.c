@@ -180,7 +180,7 @@ private void index_includes(int oindex, string *inc)
 
 /* objectd hooks */
 
-object register_program(string path, string *inherits, string *includes)
+atomic object register_program(string path, string *inherits, string *includes)
 {
 	int i;
 	int sz;
@@ -269,7 +269,7 @@ object register_program(string path, string *inherits, string *includes)
 	return pinfo;
 }
 
-void remove_program(int index)
+atomic void remove_program(int index)
 {
 	object pinfo;
 	string path;
