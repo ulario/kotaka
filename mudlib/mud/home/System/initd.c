@@ -347,10 +347,6 @@ private void check_config()
 		/* game, admin, and overflow burner */
 		error("Not enough user slots");
 	}
-
-	if ((float)status(ST_SMEMSIZE) > 2.5 * (float)(1 << 30)) {
-		error("Too much memory used");
-	};
 }
 
 /* shamelessly stolen from phantasmal, kudos to Noah Gibbs */
