@@ -25,7 +25,7 @@
 #include <status.h>
 #include <type.h>
 
-#define CLONE_RESET_BUDGET 200000
+#define CLONED_RESET_BUDGET 200000
 
 inherit SECOND_AUTO;
 
