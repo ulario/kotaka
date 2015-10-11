@@ -20,8 +20,22 @@ function sigint
 	kill -INT $$
 }
 
+function crashed
+{
+	echo "Found a core dump!"
+
+	rm -rf crash
+	mkdir crash
+
+	gdb dgd mud/core -batch -ex bt > crash/trace
+	mv mud/core crash
+}
+
 trap sigterm SIGTERM
 trap sigint SIGINT
+
+rm -f mud/core
+rm -f namedump
 
 while true
 do
@@ -36,4 +50,8 @@ do
 
 	DGDPID=$!
 	wait
+
+	echo "dgd ended" >> ulario.err
+
+	[ -f mud/core ] && crashed
 done
