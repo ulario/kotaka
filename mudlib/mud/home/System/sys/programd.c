@@ -278,7 +278,7 @@ atomic void remove_program(int index)
 
 	ASSERT(progdb);
 
-	pinfo = query_program_info(index);
+	pinfo = progdb->query_element(index);
 
 	if (pinfo) {
 		path = pinfo->query_path();
