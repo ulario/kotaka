@@ -31,6 +31,13 @@ static void create()
 
 static void pass()
 {
+	compile_object(KERNELD);
+
+	call_out("pass_2", 0);
+}
+
+static void pass_2()
+{
 	INITD->upgrade_system_3();
 
 	destruct_object(this_object());
