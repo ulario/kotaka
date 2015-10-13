@@ -117,7 +117,7 @@ void upgrade_modules()
 	int sz;
 	string *list;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
 	list -= ({ "System" });
@@ -372,7 +372,7 @@ void prepare_reboot_modules()
 	int sz;
 	string *list;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
 	list -= ({ "System" });
@@ -390,7 +390,7 @@ void reboot_modules()
 	int sz;
 	string *list;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
 	list -= ({ "System" });
@@ -408,7 +408,7 @@ void hotboot_modules()
 	int sz;
 	string *list;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
 	list -= ({ "System" });
