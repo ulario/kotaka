@@ -469,11 +469,3 @@ void upgrade_system_3()
 
 	MODULED->upgrade_modules();
 }
-
-void suspend_system(varargs mixed args...)
-{
-}
-
-void release_system(varargs mixed args...)
-{
-}
