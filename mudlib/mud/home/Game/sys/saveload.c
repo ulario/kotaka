@@ -33,8 +33,6 @@ object objlist;	/* ({ idnum: obj, data }) */
 object dirputqueue;
 object objputqueue;
 
-/* public helper functions */
-
 object *parse_object(string input)
 {
 	int onum;
@@ -64,8 +62,6 @@ string sprint_object(object obj, varargs mapping seen)
 		return STRINGD->sprint_object(obj, seen);
 	}
 }
-
-/* private helper functions */
 
 private void put_object(object obj)
 {
@@ -383,3 +379,9 @@ void load_world()
 	SUSPENDD->suspend_system();
 	SUSPENDD->queue_work("load_world_purge", status(ST_OTABSIZE) - 1);
 }
+
+/* private helper functions */
+
+/* public helper functions */
+
+/* public functions */
