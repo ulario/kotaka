@@ -18,19 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;
 inherit UTILITY_COMPILE;
 
 static void create()
 {
-	call_out("pass", 0);
+	SUSPENDD->queue_work("pass");
 
 	destruct_object(UTILITY_COMPILE);
 }
 
-static void pass()
+void pass()
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	compile_object("2");
 
 	destruct_object(this_object());

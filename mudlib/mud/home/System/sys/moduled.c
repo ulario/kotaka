@@ -135,14 +135,17 @@ void upgrade_modules()
 			catch {
 				LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + module);
 				compile_object(USR_DIR + "/" + module + "/initd");
-				call_out("upgrade_module", 0, module);
+
+				SUSPENDD->queue_work("upgrade_module", module);
 			}
 		}
 	}
 }
 
-static void upgrade_module(string module)
+void upgrade_module(string module)
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	rlimits(0; -1) {
 		rlimits(0; 100000000) {
 			(USR_DIR + "/" + module + "/initd")->upgrade_module();

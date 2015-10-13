@@ -431,17 +431,21 @@ void upgrade_system()
 		error("Cannot safely upgrade from version " + KOTAKA_VERSION);
 	}
 
+	SUSPENDD->suspend_system();
+
 	compile_object("initd");
 
-	call_out("upgrade_system_2", 0);
+	SUSPENDD->queue_work("upgrade_system_2");
 }
 
-static void upgrade_system_2()
+void upgrade_system_2()
 {
 	mixed **dir;
 	string *names;
 	object *objs;
 	int sz;
+
+	ACCESS_CHECK(SYSTEM() || KERNEL());
 
 	dir = get_dir("sys/upgrade/*");
 	names = dir[0];

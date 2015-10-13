@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 #include <kotaka/log.h>
 #include <status.h>
 
@@ -26,18 +27,23 @@ inherit UTILITY_COMPILE;
 
 static void create()
 {
-	call_out("pass", 0);
+	SUSPENDD->queue_work("pass");
 }
 
-static void pass()
+void pass()
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	compile_object(KERNELD);
+	compile_object(MODULED);
 
-	call_out("pass_2", 0);
+	SUSPENDD->queue_work("pass_2");
 }
 
-static void pass_2()
+void pass_2()
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	INITD->upgrade_system_3();
 
 	destruct_object(this_object());
