@@ -462,6 +462,7 @@ void upgrade_system_3()
 
 	load();
 
+	configure_rsrc();
 	set_limits();
 
 	purge_orphans("System");
