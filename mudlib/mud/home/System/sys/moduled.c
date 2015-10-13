@@ -144,7 +144,7 @@ void upgrade_modules()
 static void upgrade_module(string module)
 {
 	rlimits(0; -1) {
-		rlimits(0; 10000000) {
+		rlimits(0; 100000000) {
 			(USR_DIR + "/" + module + "/initd")->upgrade_module();
 		}
 	}
