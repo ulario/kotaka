@@ -37,29 +37,92 @@ object objputqueue;
 
 /* - loading */
 
-void load_world_purge(int i)
+private void purge_object(object obj)
+{
+	int sz;
+	object *inv;
+	string name;
+
+	inv = obj->query_inventory();
+
+	for (sz = sizeof(inv); --sz >= 0; ) {
+		objputqueue->push_back(inv[sz]);
+	}
+
+	name = obj->query_object_name();
+
+	destruct_object(obj);
+}
+
+private void purge_directory(string dir)
+{
+	mapping list;
+	int *keys;
+	string *names;
+	int i, sz;
+
+	list = CATALOGD->list_directory(dir);
+
+	names = map_indices(list);
+	keys = map_values(list);
+
+	sz = sizeof(keys);
+
+	for (i = 0; i < sz; i++) {
+		if (keys[i] == 2) {
+			if (dir) {
+				dirputqueue->push_front(dir + ":" + names[i]);
+			} else {
+				dirputqueue->push_front(names[i]);
+			}
+		} else {
+			if (dir) {
+				objputqueue->push_front(CATALOGD->lookup_object(dir + ":" + names[i]));
+			} else {
+				objputqueue->push_front(CATALOGD->lookup_object(names[i]));
+			}
+		}
+	}
+}
+
+void load_world_purge()
 {
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
 	catch {
 		int ticks;
+		int done;
 
 		ticks = status(ST_TICKS);
 
-		while (i >= 0 && ticks - status(ST_TICKS) < 10000) {
-			object obj;
+		while (!done && ticks - status(ST_TICKS) < 10000) {
+			if (!dirputqueue->empty()) {
+				string dir;
 
-			if (obj = find_object("~Game/obj/thing#" + i)) {
-				destruct_object(obj);
+				dir = dirputqueue->query_front();
+				dirputqueue->pop_front();
+
+				purge_directory(dir);
+			} else if (!objputqueue->empty()) {
+				object obj;
+
+				obj = objputqueue->query_front();
+				objputqueue->pop_front();
+
+				if (obj) {
+					purge_object(obj);
+				}
+			} else {
+				done = 1;
+
+				break;
 			}
-
-			i--;
 		}
 
-		if (i >= 0) {
-			SUSPENDD->queue_work("load_world_purge", i);
-		} else {
+		if (done) {
 			SUSPENDD->queue_work("load_world_spawn", 1);
+		} else {
+			SUSPENDD->queue_work("load_world_purge");
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
@@ -363,8 +426,15 @@ void load_world()
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 	objlist->claim();
 
+	dirputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	dirputqueue->claim();
+	objputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	objputqueue->claim();
+
+	dirputqueue->push_back(nil);
+
 	SUSPENDD->suspend_system();
-	SUSPENDD->queue_work("load_world_purge", status(ST_OTABSIZE) - 1);
+	SUSPENDD->queue_work("load_world_purge");
 }
 
 void save_world()
@@ -377,6 +447,7 @@ void save_world()
 
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 	objlist->claim();
+
 	dirputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
 	dirputqueue->claim();
 	objputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
