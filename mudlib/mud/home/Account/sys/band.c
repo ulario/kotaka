@@ -55,10 +55,6 @@ void ban_site(string site, varargs string message)
 		error("Cannot ban localhost");
 	}
 
-	if (sitebans[site]) {
-		error("Site already banned");
-	}
-
 	sitebans[site] = message ? message : 1;
 
 	save();
@@ -84,10 +80,6 @@ void ban_user(string username, varargs string message)
 
 	if (username == "admin") {
 		error("Cannot ban admin");
-	}
-
-	if (bans[username]) {
-		error("Username already banned");
 	}
 
 	bans[username] = message ? message : 1;
