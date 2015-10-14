@@ -138,7 +138,7 @@ void receive_in(string input)
 			/* fail too much */
 			query_user()->quit();
 			return;
-		} else if (BAND->query_is_username_banned(name)) {
+		} else if (BAND->query_is_user_banned(name)) {
 			send_out("You are banned.\n");
 			query_user()->quit();
 			return;
@@ -171,7 +171,7 @@ void receive_in(string input)
 			send_out("Your password was just changed!\n");
 			query_user()->quit();
 			return;
-		} else if (BAND->query_is_username_banned(name)) {
+		} else if (BAND->query_is_user_banned(name)) {
 			send_out("Sorry, but you were just banned.\n");
 			query_user()->quit();
 			return;

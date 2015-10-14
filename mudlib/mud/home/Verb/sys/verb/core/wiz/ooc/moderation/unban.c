@@ -50,7 +50,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (!BAND->query_is_username_banned(username)) {
+	if (!BAND->query_is_user_banned(username)) {
 		send_out("That user is not banned.\n");
 		return;
 	}
@@ -76,7 +76,7 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	BAND->unban_username(username);
+	BAND->unban_user(username);
 
 	kicker_name = user->query_titled_name();
 	turkey_name = TEXT_SUBD->query_titled_name(username);

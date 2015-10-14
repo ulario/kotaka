@@ -76,7 +76,7 @@ void unban_site(string site)
 	save();
 }
 
-void ban_username(string username)
+void ban_user(string username)
 {
 	ACCESS_CHECK(INTERFACE() || GAME());
 
@@ -92,7 +92,7 @@ void ban_username(string username)
 	save();
 }
 
-void unban_username(string username)
+void unban_user(string username)
 {
 	ACCESS_CHECK(INTERFACE() || GAME());
 
@@ -104,7 +104,7 @@ void unban_username(string username)
 	save();
 }
 
-int query_is_username_banned(string username)
+int query_is_user_banned(string username)
 {
 	return !!bans[username];
 }
@@ -114,12 +114,12 @@ int query_is_site_banned(string site)
 	return !!sitebans[site];
 }
 
-string *query_username_bans()
+string *query_bans()
 {
 	return map_indices(bans);
 }
 
-string *query_site_bans()
+string *query_sitebans()
 {
 	return map_indices(sitebans);
 }

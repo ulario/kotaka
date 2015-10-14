@@ -39,7 +39,8 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	users = BAND->query_site_bans();
+	users = BAND->query_sitebans();
+
 	if (sizeof(users)) {
 		send_out("Banned sites: " + implode(users, ", ") + "\n");
 	} else {

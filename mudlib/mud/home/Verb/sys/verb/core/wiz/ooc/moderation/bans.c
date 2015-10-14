@@ -39,7 +39,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	users = BAND->query_username_bans();
+	users = BAND->query_bans();
 
 	if (sizeof(users)) {
 		send_out("Banned users: " + implode(users, ", ") + "\n");
