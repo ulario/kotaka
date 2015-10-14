@@ -91,7 +91,21 @@ string query_overload_banner(object LIB_CONN connection)
 
 string query_sitebanned_banner(object LIB_CONN connection)
 {
-	return "You are sitebanned.\n";
+	string ip;
+
+	while (connection && connection <- LIB_USER) {
+		connection = connection->query_conn();
+	}
+
+	ip = query_ip_number(connection);
+
+	ip = BAND->query_siteban_message(ip);
+
+	if (ip) {
+		return "Sitebanned\n\n" + ip + "\n";
+	} else {
+		return "Sitebanned\n";
+	}
 }
 
 string query_banner(object LIB_CONN connection)
