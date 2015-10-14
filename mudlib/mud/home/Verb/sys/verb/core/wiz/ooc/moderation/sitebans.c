@@ -29,7 +29,7 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	string *users;
+	string *sites;
 	object user;
 
 	user = query_user();
@@ -39,10 +39,10 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	users = BAND->query_sitebans();
+	sites = BAND->query_sitebans();
 
-	if (sizeof(users)) {
-		send_out("Banned sites: " + implode(users, ", ") + "\n");
+	if (sizeof(sites)) {
+		send_out("Banned sites: " + implode(sites, ", ") + "\n");
 	} else {
 		send_out("There are no banned sites.\n");
 	}
