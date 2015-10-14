@@ -32,6 +32,8 @@ void main(object actor, mapping roles)
 {
 	object turkey;
 	object user;
+
+	string args;
 	string username;
 	string kicker_name;
 	string turkey_name;
@@ -43,11 +45,21 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	username = roles["raw"];
+	args = roles["raw"];
 
-	if (username == "") {
-		send_out("Who do you wish to ban?\n");
-		return;
+	switch(sscanf(args, "%s %s", username, args)) {
+	case 0:
+		if (args == "") {
+			send_out("Usage: ban <username> <ban message, if any>\n");
+			return;
+		} else {
+			username = args;
+			args = nil;
+		}
+		break;
+
+	case 2:
+		break;
 	}
 
 	if (username == user->query_username()) {
@@ -86,7 +98,7 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	BAND->ban_user(username);
+	BAND->ban_user(username, args);
 
 	kicker_name = user->query_titled_name();
 	turkey_name = TEXT_SUBD->query_titled_name(username);
