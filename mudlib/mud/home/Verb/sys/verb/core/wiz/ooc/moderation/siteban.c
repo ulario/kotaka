@@ -34,6 +34,7 @@ void main(object actor, mapping roles)
 	object user, *users;
 	string kicker_name;
 	string site;
+	string args;
 	int sz;
 
 	user = query_user();
@@ -43,11 +44,21 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	site = roles["raw"];
+	args = roles["raw"];
 
-	if (site == "") {
-		send_out("What do you wish to siteban?\n");
-		return;
+	switch(sscanf(args, "%s %s", site, args)) {
+	case 0:
+		if (args == "") {
+			send_out("Usage: siteban <site> <ban message, if any>\n");
+			return;
+		} else {
+			site = args;
+			args = nil;
+		}
+		break;
+
+	case 2:
+		break;
 	}
 
 	if (sscanf(site, "127.%*s") || site == "::1") {
@@ -60,7 +71,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	BAND->ban_site(site);
+	BAND->ban_site(site, args);
 	users = TEXT_USERD->query_users();
 	users += TEXT_USERD->query_guests();
 
