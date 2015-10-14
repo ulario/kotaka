@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kernel/user.h>
 
@@ -83,10 +84,28 @@ string query_overload_banner(object connection)
 
 string query_sitebanned_banner(object connection)
 {
-	return generate_error_page(403
-		, "Banned"
-		, "You are banned from this server."
-	);
+	string ip;
+
+	while (connection && connection <- LIB_USER) {
+		connection = connection->query_conn();
+	}
+
+	ip = query_ip_number(connection);
+
+	ip = BAND->query_siteban_message(ip);
+
+	if (ip) {
+		return generate_error_page(403
+			, "Banned"
+			, "You are banned from this server."
+			, ip
+		);
+	} else {
+		return generate_error_page(403
+			, "Banned"
+			, "You are banned from this server."
+		);
+	}
 }
 
 int query_timeout(object connection)
