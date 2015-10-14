@@ -20,6 +20,7 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <type.h>
 
 /* keeps track of bans */
 
@@ -42,7 +43,7 @@ static void create()
 	}
 }
 
-void ban_site(string site)
+void ban_site(string site, varargs string message)
 {
 	ACCESS_CHECK(INTERFACE() || GAME());
 
@@ -58,7 +59,8 @@ void ban_site(string site)
 		error("Site already banned");
 	}
 
-	sitebans[site] = 1;
+	sitebans[site] = message ? message : 1;
+
 	save();
 
 	SYSTEM_USERD->check_sitebans();
@@ -76,7 +78,7 @@ void unban_site(string site)
 	save();
 }
 
-void ban_user(string username)
+void ban_user(string username, varargs string message)
 {
 	ACCESS_CHECK(INTERFACE() || GAME());
 
@@ -88,7 +90,7 @@ void ban_user(string username)
 		error("Username already banned");
 	}
 
-	bans[username] = 1;
+	bans[username] = message ? message : 1;
 	save();
 }
 
@@ -109,9 +111,35 @@ int query_is_user_banned(string username)
 	return !!bans[username];
 }
 
+string query_ban_message(string username)
+{
+	mixed message;
+
+	message = bans[username];
+
+	if (typeof(message) == T_STRING) {
+		return message;
+	} else {
+		return nil;
+	}
+}
+
 int query_is_site_banned(string site)
 {
 	return !!sitebans[site];
+}
+
+string query_siteban_message(string site)
+{
+	mixed message;
+
+	message = sitebans[site];
+
+	if (typeof(message) == T_STRING) {
+		return message;
+	} else {
+		return nil;
+	}
 }
 
 string *query_bans()
