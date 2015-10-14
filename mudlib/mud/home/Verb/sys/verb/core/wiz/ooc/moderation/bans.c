@@ -42,7 +42,27 @@ void main(object actor, mapping roles)
 	users = BAND->query_bans();
 
 	if (sizeof(users)) {
-		send_out("Banned users: " + implode(users, ", ") + "\n");
+		int i;
+		int sz;
+
+		send_out("Banned users:\n");
+
+		sz = sizeof(users);
+
+		for (i = 0; i < sz; i++) {
+			string username;
+			string message;
+
+			username = users[i];
+
+			message = BAND->query_ban_message(username);
+
+			if (message) {
+				send_out(username + ": " + message + "\n");
+			} else {
+				send_out(username + " (no message)\n");
+			}
+		}
 	} else {
 		send_out("There are no banned users.\n");
 	}
