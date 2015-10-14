@@ -42,7 +42,27 @@ void main(object actor, mapping roles)
 	sites = BAND->query_sitebans();
 
 	if (sizeof(sites)) {
-		send_out("Banned sites: " + implode(sites, ", ") + "\n");
+		int i;
+		int sz;
+
+		send_out("Banned sites:\n");
+
+		sz = sizeof(sites);
+
+		for (i = 0; i < sz; i++) {
+			string site;
+			string message;
+
+			site = sites[i];
+
+			message = BAND->query_siteban_message(site);
+
+			if (message) {
+				send_out(site + ": " + message + "\n");
+			} else {
+				send_out(site + " (no message)\n");
+			}
+		}
 	} else {
 		send_out("There are no banned sites.\n");
 	}
