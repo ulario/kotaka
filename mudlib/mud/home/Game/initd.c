@@ -234,7 +234,7 @@ void build_world()
 	object master;
 	object trinket;
 
-	world = create_object();
+	world = create_thing();
 	world->set_property("id", "world");
 	world->set_object_name("world");
 	world->set_mass(5.972e+24);
@@ -244,7 +244,7 @@ void build_world()
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/fill/grass");
 
-	master = create_object();
+	master = create_thing();
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");

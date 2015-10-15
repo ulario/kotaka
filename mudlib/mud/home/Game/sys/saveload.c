@@ -24,6 +24,7 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
+#include <game/paths.h>
 #include <status.h>
 #include <type.h>
 
@@ -144,7 +145,7 @@ void load_world_spawn(int i)
 				object obj;
 				int j;
 
-				obj = clone_object("~Game/obj/thing");
+				obj = GAME_INITD->create_thing();
 				sscanf(object_name(obj), "%*s#%d", j);
 
 				oindex2onum->set_element(j, i);
