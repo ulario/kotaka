@@ -1,4 +1,12 @@
-To upgrade to version 0.40 from version 0.39:
+How to upgrade your mud
+-----------------------
 
-rebuild
-upgrade
+Every upgrade now has the following sequence of events
+
+1.  upgrade
+
+Use the upgrade command to start the upgrade process.
+
+2.  obsolete
+
+Check for any objects that need to be recompiled because of changed inherits or includes.
