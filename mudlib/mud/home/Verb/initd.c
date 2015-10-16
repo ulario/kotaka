@@ -25,7 +25,7 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	load_dir("sys", 1);
+	load_dir("sys", 3);
 }
 
 static void create()
