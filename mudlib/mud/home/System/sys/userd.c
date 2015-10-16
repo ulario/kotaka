@@ -22,6 +22,7 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <kotaka/assert.h>
 #include <status.h>
 
 inherit SECOND_AUTO;
@@ -113,9 +114,22 @@ static void timeout(object conn)
 	}
 }
 
-private object query_manager(object base)
+private object conn_of(object obj)
+{
+	while (obj && obj<-LIB_USER) {
+		obj = obj->query_conn();
+	}
+
+	if (obj<-LIB_CONN) {
+		return obj;
+	}
+}
+
+private object query_manager(object LIB_CONN base)
 {
 	int port;
+
+	ASSERT(base);
 
 	port = base->query_port();
 
@@ -258,20 +272,16 @@ string query_banner(object LIB_CONN connection)
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
-	root = connection;
+	root = conn_of(connection);
 
-	while (root && root<-LIB_USER) {
-		root = root->query_conn();
-	}
+	ASSERT(root);
 
 	userd = query_manager(root);
-
-	TLSD->set_tls_value("System", "userd", userd);
 
 	if (!userd) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 
-		return "No connection manager.\n";
+		return "No connection manager\n";
 	}
 
 	if (DRIVER->creator(object_name(userd)) == "System") {
@@ -284,7 +294,8 @@ string query_banner(object LIB_CONN connection)
 		catch {
 			return userd->query_sitebanned_banner(connection);
 		} : {
-			return "Banned";
+			/* if they're sitebanned we don't need to give any details */
+			return "Sitebanned\n";
 		}
 	}
 
@@ -297,7 +308,7 @@ string query_banner(object LIB_CONN connection)
 		catch {
 			return userd->query_overload_banner(connection);
 		} : {
-			return "Connection manager returned nil overload message.\n";
+			return "Connectin manager fault\n\nSystem busy\n";
 		}
 	}
 
@@ -307,7 +318,7 @@ string query_banner(object LIB_CONN connection)
 		catch {
 			return userd->query_blocked_banner(connection);
 		} : {
-			return "Connection manager returned nil blocked message.\n";
+			return "Connection manager fault\n\nSystem suspended\n";
 		}
 	}
 
@@ -317,6 +328,7 @@ string query_banner(object LIB_CONN connection)
 int query_timeout(object LIB_CONN connection)
 {
 	object userd;
+	object root;
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
@@ -324,7 +336,11 @@ int query_timeout(object LIB_CONN connection)
 		return -1;
 	};
 
-	userd = TLSD->query_tls_value("System", "userd");
+	root = conn_of(connection);
+
+	ASSERT(root);
+
+	userd = query_manager(root);
 
 	if (!userd) {
 		return -1;
