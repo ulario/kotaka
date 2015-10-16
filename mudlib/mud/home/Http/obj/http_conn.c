@@ -45,13 +45,9 @@ int login(string str)
 	request = str + "\n";
 
 	if (sscanf(str, "%s %s %s", method, path, version) != 3) {
-		object header;
-
-		header = new_object("~/lwo/http_response");
-		header->set_status(400, "Bad request");
-
-		message(header->generate_header()
-			+ read_file("~/data/error/400.html"));
+		message(HTTPD->generate_error_page(400, "Bad request"
+			, "The request does not appear to be a valid HTTP/1.1 request.")
+		);
 
 		return MODE_DISCONNECT;
 	}
