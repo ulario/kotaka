@@ -67,45 +67,10 @@ void main(object actor, mapping roles)
 	}
 
 	if (BAND->query_is_site_banned(site)) {
-		send_out("That site is already banned.\n");
-		return;
-	}
-
-	BAND->ban_site(site, args);
-	users = TEXT_USERD->query_users();
-	users += TEXT_USERD->query_guests();
-
-	/* kick turkeys */
-
-	kicker_name = user->query_titled_name();
-
-	for (sz = sizeof(users) - 1; sz >= 0; --sz) {
-		object conn;
-		object turkey;
-		string turkey_name;
-
-		turkey = users[sz];
-		conn = turkey;
-
-		while (conn && conn <- LIB_USER) {
-			conn = conn->query_conn();
-		}
-
-		if (!conn) {
-			continue;
-		}
-
-		if (!BAND->check_siteban(query_ip_number(conn))) {
-			continue;
-		}
-
-		turkey_name = turkey->query_titled_name();
-
-		user->message("You siteban " + turkey_name + " from the mud.\n");
-
-		TEXT_SUBD->send_to_all_except(kicker_name + " sitebans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
-
-		turkey->message(kicker_name + " sitebans you from the mud.\n");
-		turkey->quit();
+		BAND->ban_site(site, args);
+		send_out("Updated siteban message.\n");
+	} else {
+		BAND->ban_site(site, args);
+		send_out("Banned site.\n");
 	}
 }
