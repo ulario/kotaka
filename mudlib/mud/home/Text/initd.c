@@ -35,7 +35,7 @@ void load()
 
 private void set_limits()
 {
-	KERNELD->rsrc_set_limit("Text", "ticks", 1000000);
+	KERNELD->rsrc_set_limit("Text", "ticks", 10000000);
 }
 
 static void create()
