@@ -231,10 +231,11 @@ private void send_module_boot_signal(string module)
 	string *others;
 
 	others = map_indices(modules);
+	others -= ({ module });
 	scramble(others);
 
 	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
-		if (modules[module] != 1) {
+		if (modules[others[sz]] != 1) {
 			continue;
 		}
 
@@ -251,10 +252,11 @@ private void send_module_shutdown_signal(string module)
 	string *others;
 
 	others = map_indices(modules);
+	others -= ({ module });
 	scramble(others);
 
 	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
-		if (modules[module] != 1) {
+		if (modules[others[sz]] != 1) {
 			continue;
 		}
 
