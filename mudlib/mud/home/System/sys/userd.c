@@ -290,6 +290,7 @@ string query_banner(object LIB_CONN connection)
 
 	if (BAND->check_siteban(query_ip_number(root))) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
+		TLSD->set_tls_value("System", "abort-delay", 0.1);
 
 		catch {
 			return userd->query_sitebanned_banner(connection);
@@ -301,6 +302,7 @@ string query_banner(object LIB_CONN connection)
 
 	if (free_users() + 1 < 2) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
+		TLSD->set_tls_value("System", "abort-delay", 0.1);
 
 		/* we need two slots kept free */
 		/* discarding this one will free it up so don't count it against the quota before we decide to accept it */
@@ -314,6 +316,7 @@ string query_banner(object LIB_CONN connection)
 
 	if (blocked) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
+		TLSD->set_tls_value("System", "abort-delay", 0.1);
 
 		catch {
 			return userd->query_blocked_banner(connection);
@@ -333,11 +336,19 @@ int query_timeout(object LIB_CONN connection)
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
 	if (TLSD->query_tls_value("System", "abort-connection")) {
+		mixed delay;
+
+		delay = TLSD->query_tls_value("System", "abort-delay");
+
+		if (!delay || (float)delay < 0.0) {
+			return -1;
+		}
+
 		connection->set_mode(MODE_BLOCK);
 
-		call_out("nuke_connection", 0.05, connection);
+		call_out("nuke_connection", delay, connection);
 
-		return 1;
+		return (int)(ceil((float)delay));
 	};
 
 	root = conn_of(connection);
