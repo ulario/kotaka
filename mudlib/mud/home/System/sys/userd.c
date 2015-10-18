@@ -284,6 +284,18 @@ string query_banner(object LIB_CONN connection)
 		return "No connection manager\n";
 	}
 
+	if (free_users() == 0) {
+		/* if we're full, close it immediately to avoid a DoS against the admin port */
+		TLSD->set_tls_value("System", "abort-connection", 1);
+		TLSD->set_tls_value("System", "abort-delay", -1);
+
+		catch {
+			return userd->query_overload_banner(connection);
+		} : {
+			return "Connectin manager fault\n\nSystem busy\n";
+		}
+	}
+
 	if (BAND->check_siteban(query_ip_number(root))) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 		TLSD->set_tls_value("System", "abort-delay", 0.1);
