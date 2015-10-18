@@ -23,19 +23,20 @@
 #include <kotaka/privilege.h>
 
 #define STAGE_NAME	0
-#define STAGE_BRIEF	1
-#define STAGE_PROPER	2
-#define STAGE_DEFINITE	3
-#define STAGE_LOOK	4
-#define STAGE_SNOUN	5
-#define STAGE_PNOUN	6
-#define STAGE_ADJ	7
+#define STAGE_ID	1
+#define STAGE_BRIEF	2
+#define STAGE_PROPER	3
+#define STAGE_DEFINITE	4
+#define STAGE_LOOK	5
+#define STAGE_SNOUN	6
+#define STAGE_PNOUN	7
+#define STAGE_ADJ	8
 
-#define STAGE_VIRTUAL	8
-#define STAGE_MASS	9
-#define STAGE_DENSITY	10
-#define STAGE_CAPACITY	11
-#define STAGE_MAX_MASS	12
+#define STAGE_VIRTUAL	9
+#define STAGE_MASS	10
+#define STAGE_DENSITY	11
+#define STAGE_CAPACITY	12
+#define STAGE_MAX_MASS	13
 
 inherit TEXT_LIB_USTATE;
 
@@ -66,7 +67,15 @@ private void prompt()
 		if (data) {
 			send_out("Object name: " + data + "\n");
 		}
-		send_out("Please name this object: ");
+		send_out("Please give this object a global name if you want (- to reset): ");
+		break;
+
+	case STAGE_ID:
+		data = obj->query_id();
+		if (data) {
+			send_out("Object id: " + data + "\n");
+		}
+		send_out("Please give this object a local id if you want (- to reset): ");
 		break;
 
 	case STAGE_BRIEF:
@@ -238,6 +247,15 @@ private void do_input(string input)
 			obj->set_object_name(nil);
 		} else if (input != "") {
 			obj->set_object_name(input);
+		}
+		stage = STAGE_ID;
+		break;
+
+	case STAGE_ID:
+		if (input == "-") {
+			obj->set_id(nil);
+		} else if (input != "") {
+			obj->set_id(input);
 		}
 		stage = STAGE_BRIEF;
 		break;
