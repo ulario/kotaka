@@ -1,7 +1,7 @@
 How to upgrade your mud
 -----------------------
 
-Every upgrade now has the following sequence of events
+Every upgrade now has the following sequence of events:
 
 1.  upgrade
 
@@ -10,3 +10,7 @@ Use the upgrade command to start the upgrade process.
 2.  obsolete
 
 Check for any objects that need to be recompiled because of changed inherits or includes.
+
+3.  rebuild
+
+For a quick method to rebuild everything, use the rebuild command.
