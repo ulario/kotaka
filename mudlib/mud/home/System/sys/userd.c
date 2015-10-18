@@ -284,10 +284,6 @@ string query_banner(object LIB_CONN connection)
 		return "No connection manager\n";
 	}
 
-	if (DRIVER->creator(object_name(userd)) == "System") {
-		return userd->query_banner(connection);
-	}
-
 	if (BAND->check_siteban(query_ip_number(root))) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 		TLSD->set_tls_value("System", "abort-delay", 0.1);
