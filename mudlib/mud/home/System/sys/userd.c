@@ -333,7 +333,11 @@ int query_timeout(object LIB_CONN connection)
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
 	if (TLSD->query_tls_value("System", "abort-connection")) {
-		return -1;
+		connection->set_mode(MODE_BLOCK);
+
+		call_out("nuke_connection", 0.05, connection);
+
+		return 1;
 	};
 
 	root = conn_of(connection);
@@ -480,5 +484,12 @@ void check_sitebans()
 		if (BAND->check_siteban(query_ip_number(conns[sz]))) {
 			conns[sz]->reboot();
 		}
+	}
+}
+
+static void nuke_connection(object conn)
+{
+	if (conn) {
+		conn->reboot();
 	}
 }
