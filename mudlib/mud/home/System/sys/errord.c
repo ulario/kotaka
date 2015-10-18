@@ -28,8 +28,6 @@
 
 inherit SECOND_AUTO;
 
-mixed **comperr;
-
 /* in atomic error, we throw a stringified mapping */
 /*
 ([
@@ -145,6 +143,7 @@ void runtime_error(string error, int caught, mixed **trace)
 	int atom;
 	int i;
 
+	string **comperr;
 	string *cerrstrs;
 
 	string compstr;
@@ -167,8 +166,11 @@ void runtime_error(string error, int caught, mixed **trace)
 			tracestr = thrown["tracestr"];
 			comperr = thrown["comperr"];
 		} else {
+			comperr = TLSD->query_tls_value("System", "compile-errors");
 			atom = -1;
 		}
+
+		TLSD->set_tls_value("System", "compile-errors", nil);
 
 		if (comperr) {
 			cerrstrs = allocate(sizeof(comperr));
@@ -255,7 +257,7 @@ void atomic_error(string error, int atom, mixed **trace)
 	throwme = ([ ]);
 
 	throwme["atom"] = atom;
-	throwme["comperr"] = comperr;
+	throwme["comperr"] = TLSD->query_tls_value("System", "compile-errors");
 	throwme["errstr"] = error;
 	throwme["tracestr"] = printstack(trace);
 
@@ -266,11 +268,17 @@ void atomic_error(string error, int atom, mixed **trace)
 
 void compile_error(string file, int line, string err)
 {
+	string **comperr;
+
 	ACCESS_CHECK(previous_program() == DRIVER);
+
+	comperr = TLSD->query_tls_value("System", "compile-errors");
 
 	if (!comperr) {
 		comperr = ({ });
 	}
 
 	comperr += ({ ({ file, line, err }) });
+
+	TLSD->set_tls_value("System", "compile-errors", comperr);
 }
