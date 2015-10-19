@@ -28,16 +28,6 @@
 
 inherit SECOND_AUTO;
 
-/* in atomic error, we throw a stringified mapping */
-/*
-([
-	"comperr" : list of compilation errors,
-	"atom" : frame at which code became atomic
- 	"errstr" : error message
-	"trace" : full stack trace
-])
-*/
-
 static void create()
 {
 }
