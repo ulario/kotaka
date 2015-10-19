@@ -90,7 +90,12 @@ static void create()
 static void boot()
 {
 	catch {
+		LOGD->post_message("system", LOG_INFO, "------------------");
+		LOGD->post_message("system", LOG_INFO, "System core loaded");
+		LOGD->post_message("system", LOG_INFO, "------------------");
+
 		load_object(KERNELD);
+
 		KERNELD->set_global_access("System", 1);
 
 		set_limits();
@@ -100,8 +105,6 @@ static void boot()
 		configure_logging();
 
 		load();
-
-		LOGD->post_message("system", LOG_INFO, "System loaded");
 
 		call_out("boot_2", 0);
 	} : {
@@ -114,6 +117,10 @@ static void boot()
 static void boot_2()
 {
 	catch {
+		LOGD->post_message("system", LOG_INFO, "-------------");
+		LOGD->post_message("system", LOG_INFO, "System loaded");
+		LOGD->post_message("system", LOG_INFO, "-------------");
+
 		MODULED->boot_module("Bigstruct");
 
 		PROGRAMD->setup_database();
@@ -131,14 +138,10 @@ static void boot_2()
 static void boot_3()
 {
 	catch {
-		MODULED->boot_module("String");
-		MODULED->boot_module("Utility");
-		MODULED->boot_module("Channel");
+		LOGD->post_message("system", LOG_INFO, "-----------------");
+		LOGD->post_message("system", LOG_INFO, "System discovered");
+		LOGD->post_message("system", LOG_INFO, "-----------------");
 
-		LOGD->post_message("system", LOG_INFO, "System ready");
-
-		MODULED->boot_module("Account");
-		MODULED->boot_module("Kotaka");
 		MODULED->boot_module("Game");
 
 		ERRORD->enable();
