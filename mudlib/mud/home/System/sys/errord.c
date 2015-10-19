@@ -47,7 +47,7 @@ void enable()
 }
 
 /* Shamelessly stolen from Dworkin's Klib */
-string sprintframe(mixed *frame, varargs int include_args)
+string print_frame(mixed *frame)
 {
 	string obj;
 	string prog;
@@ -99,14 +99,10 @@ string sprintframe(mixed *frame, varargs int include_args)
 		line = flags + " " + lineno + " " + func + " " + prog;
 	}
 
-	if (include_args) {
-		line += "\n" + STRINGD->mixed_sprint(frame[TRACE_FIRSTARG ..]);
-	}
-
 	return line;
 }
 
-string printstack(mixed **trace, varargs int include_args)
+string print_stack(mixed **trace)
 {
 	int i;
 	string tracestr;
@@ -122,7 +118,7 @@ string printstack(mixed **trace, varargs int include_args)
 			continue;
 		}
 
-		tracestr += sprintframe(trace[i], include_args) + "\n";
+		tracestr += print_frame(trace[i]) + "\n";
 	}
 
 	return tracestr;
@@ -153,7 +149,7 @@ void runtime_error(string error, int caught, mixed **trace)
 
 			error = thrown["errstr"];
 			atom = thrown["atom"];
-			tracestr = thrown["tracestr"];
+			trace = thrown["trace"];
 			comperr = thrown["comperr"];
 		} else {
 			comperr = TLSD->query_tls_value("System", "compile-errors");
@@ -189,9 +185,7 @@ void runtime_error(string error, int caught, mixed **trace)
 			errstr += " [atomic at " + atom + "]";
 		}
 
-		if (!tracestr) {
-			tracestr = printstack(trace);
-		}
+		tracestr = print_stack(trace);
 
 		if (find_object(LOGD)) {
 			if (compstr) {
@@ -249,7 +243,7 @@ void atomic_error(string error, int atom, mixed **trace)
 	throwme["atom"] = atom;
 	throwme["comperr"] = TLSD->query_tls_value("System", "compile-errors");
 	throwme["errstr"] = error;
-	throwme["tracestr"] = printstack(trace);
+	throwme["trace"] = trace;
 
 	throwstr = STRINGD->mixed_sprint(throwme);
 
