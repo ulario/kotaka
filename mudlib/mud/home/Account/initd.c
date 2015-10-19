@@ -32,6 +32,8 @@ private void load()
 
 static void create()
 {
+	MODULED->boot_module("String");
+
 	KERNELD->set_global_access("Account", 1);
 
 	load();
