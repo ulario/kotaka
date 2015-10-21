@@ -423,6 +423,7 @@ string mixed_sprint(mixed data, varargs mapping seen);
 string sprint_object(object obj, varargs mapping seen)
 {
 	string path;
+	string oname;
 
 	if (sscanf(object_name(obj), "%s#-1", path)) {
 		if (seen[obj] != nil) {
@@ -436,8 +437,8 @@ string sprint_object(object obj, varargs mapping seen)
 		} else {
 			return "<" + object_name(obj) + ">";
 		}
-	} else if (function_object("query_object_name", obj)) {
-		return "<" + obj->query_object_name() + ">";
+	} else if (function_object("query_object_name", obj) && (oname = obj->query_object_name())) {
+		return "<" + oname + ">";
 	} else {
 		return "<" + object_name(obj) + ">";
 	}
