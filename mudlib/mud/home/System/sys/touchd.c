@@ -206,7 +206,9 @@ void add_patches(string path, string *patches)
 
 string *query_patches(int oindex)
 {
-	return patch->query_element(oindex);
+	if (patch) {
+		return patch->query_element(oindex);
+	}
 }
 
 void clear_patches(int oindex)
