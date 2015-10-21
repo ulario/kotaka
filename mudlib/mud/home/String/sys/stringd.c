@@ -431,9 +431,13 @@ string sprint_object(object obj, varargs mapping seen)
 
 		seen[obj] = map_sizeof(seen);
 
-		return "(< <" + path + ">: " + mixed_sprint(obj->sprint_save(), seen) + ">)";
-	} else if (path = obj->query_object_name()) {
-		return "<" + path + ">";
+		if (function_object("sprint_save", obj)) {
+			return "(< <" + path + ">: " + mixed_sprint(obj->sprint_save(), seen) + ">)";
+		} else {
+			return "<" + object_name(obj) + ">";
+		}
+	} else if (function_object("query_object_name", obj)) {
+		return "<" + obj->query_object_name() + ">";
 	} else {
 		return "<" + object_name(obj) + ">";
 	}
