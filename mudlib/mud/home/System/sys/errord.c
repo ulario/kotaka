@@ -237,6 +237,12 @@ void atomic_error(string error, int atom, mixed **trace)
 
 		error(throwstr);
 	} : {
+		DRIVER->message("Error in atomic_error: " + error + "\n");
+
+		catch {
+			DRIVER->message("Stack trace: " + print_stack(trace) + "\n");
+		}
+
 		error("Error in atomic_error, check driver log");
 	}
 }
