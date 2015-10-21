@@ -40,7 +40,7 @@ void call_touch(object obj)
 	ACCESS_CHECK(SYSTEM());
 
 	if (!queue || queue->empty()) {
-		queue = new_object(BIGSTRUCT_DEQUE_LWO);
+		queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
 		queue->claim();
 		call_out("touch_tick", 0);
 	}
@@ -186,6 +186,9 @@ static void touch_tick()
 	} else {
 		LOGD->post_message("debug", LOG_DEBUG, "Touch queue empty");
 
+		call_out("purge_object", 0, patch);
+		call_out("purge_object", 0, queue);
+
 		patch = nil;
 		queue = nil;
 	}
@@ -196,9 +199,9 @@ void add_patches(string path, string *patches)
 	ACCESS_CHECK(SYSTEM());
 
 	if (!patch) {
-		patch = new_object(BIGSTRUCT_MAP_LWO);
+		patch = clone_object(BIGSTRUCT_ARRAY_OBJ);
 		patch->claim();
-		patch->set_type(T_INT);
+		patch->set_size(0x7fffffff);
 	}
 
 	touch_all(path, patches);
@@ -217,5 +220,16 @@ void clear_patches(int oindex)
 
 	if (patch) {
 		patch->set_element(oindex, nil);
+	}
+}
+
+static void purge_object(object obj)
+{
+	string oname;
+
+	oname = object_name(obj);
+
+	if (!sscanf(oname, "%*s#-1")) {
+		destruct_object(obj);
 	}
 }
