@@ -124,19 +124,23 @@ void upgrade_modules()
 
 	scramble(list);
 
-	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
-		string module;
+	rlimits(0; -1) {
+		for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+			string module;
 
-		module = list[sz];
+			module = list[sz];
 
-		if (!file_info(USR_DIR + "/" + module + "/initd.c")) {
-			call_out("shutdown_module", 0, module);
-		} else {
-			catch {
-				LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + module);
-				compile_object(USR_DIR + "/" + module + "/initd");
+			rlimits(0; 100000) {
+				if (!file_info(USR_DIR + "/" + module + "/initd.c")) {
+					call_out("shutdown_module", 0, module);
+				} else {
+					catch {
+						LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + module);
+						compile_object(USR_DIR + "/" + module + "/initd");
 
-				SUSPENDD->queue_work("upgrade_module", module);
+						SUSPENDD->queue_work("upgrade_module", module);
+					}
+				}
 			}
 		}
 	}
