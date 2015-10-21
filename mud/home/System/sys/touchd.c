@@ -81,7 +81,7 @@ void touch_scan_otable(string path, int sz, string *patches)
 
 	ticks = status(ST_TICKS);
 
-	while (sz >= 0 && ticks - status(ST_TICKS) < 100000) {
+	while (sz >= 0 && status(ST_TICKS) > 20000 && ticks - status(ST_TICKS) < 100000) {
 		object obj;
 
 		if (sz % 10000 == 0) {
