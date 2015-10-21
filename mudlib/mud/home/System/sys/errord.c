@@ -233,21 +233,25 @@ void runtime_error(string error, int caught, mixed **trace)
 
 void atomic_error(string error, int atom, mixed **trace)
 {
-	string throwstr;
-	mapping throwme;
+	catch {
+		string throwstr;
+		mapping throwme;
 
-	ACCESS_CHECK(previous_program() == DRIVER);
+		ACCESS_CHECK(previous_program() == DRIVER);
 
-	throwme = ([ ]);
+		throwme = ([ ]);
 
-	throwme["atom"] = atom;
-	throwme["comperr"] = TLSD->query_tls_value("System", "compile-errors");
-	throwme["errstr"] = error;
-	throwme["trace"] = trace;
+		throwme["atom"] = atom;
+		throwme["comperr"] = TLSD->query_tls_value("System", "compile-errors");
+		throwme["errstr"] = error;
+		throwme["trace"] = trace;
 
-	throwstr = STRINGD->mixed_sprint(throwme);
+		throwstr = STRINGD->mixed_sprint(throwme);
 
-	error(throwstr);
+		error(throwstr);
+	} : {
+		error("Error in atomic_error, check driver log");
+	}
 }
 
 void compile_error(string file, int line, string err)
