@@ -148,5 +148,8 @@ void main(object actor, mapping roles)
 			proxy->remove_user(args);
 		}
 		break;
+
+	default:
+		send_out("Not a valid kernel subcommand.\n");
 	}
 }
