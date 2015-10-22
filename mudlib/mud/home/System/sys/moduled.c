@@ -385,8 +385,16 @@ void prepare_reboot_modules()
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+		string module;
+
+		module = list[sz];
+
+		if (modules[module] == -1) {
+			continue;
+		}
+
 		catch {
-			(USR_DIR + "/" + list[sz] + "/initd")->prepare_reboot();
+			(USR_DIR + "/" + module + "/initd")->prepare_reboot();
 		}
 	}
 }
@@ -403,8 +411,16 @@ void reboot_modules()
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+		string module;
+
+		module = list[sz];
+
+		if (modules[module] == -1) {
+			continue;
+		}
+
 		catch {
-			(USR_DIR + "/" + list[sz] + "/initd")->reboot();
+			(USR_DIR + "/" + module + "/initd")->reboot();
 		}
 	}
 }
@@ -421,8 +437,16 @@ void hotboot_modules()
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+		string module;
+
+		module = list[sz];
+
+		if (modules[module] == -1) {
+			continue;
+		}
+
 		catch {
-			(USR_DIR + "/" + list[sz] + "/initd")->hotboot();
+			(USR_DIR + "/" + module + "/initd")->hotboot();
 		}
 	}
 }
