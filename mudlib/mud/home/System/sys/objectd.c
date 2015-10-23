@@ -268,8 +268,13 @@ void compiling(string path)
 	old_inherits = ([ ]);
 
 	if (!find_object(PROGRAMD)) {
-		if (DRIVER->creator(path) != "System") {
-			error("Cannot compile non system program without ProgramD");
+		switch(DRIVER->creator(path)) {
+		case "System":
+		case "Bigstruct":
+			break;
+
+		default:
+			error("Not allowed to compile " + path + " without ProgramD loaded.");
 		}
 	}
 
