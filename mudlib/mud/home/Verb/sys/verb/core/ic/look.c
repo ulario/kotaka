@@ -93,6 +93,7 @@ void main(object actor, mapping roles)
 		if (typeof(obj) == T_OBJECT) {
 		} else {
 			send_out("You have to be more specific to look inside something.\n");
+			return;
 		}
 
 		emit_from(actor, actor, " ", ({ "look", "looks" }), " in ", obj, ".");
