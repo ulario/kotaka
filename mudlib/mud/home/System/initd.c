@@ -46,16 +46,6 @@ void configure_rsrc();
 private void check_config();
 private void check_versions();
 
-private void load_core()
-{
-	load_object(LOGD);		/* we need to log any error messages */
-	load_object(TLSD);		/* depends on an updated tls size */
-	load_object(OBJECTD);		/* enforces static invariants */
-	load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
-	load_object(CALLOUTD);		/* suspends callouts */
-	load_object(SUSPENDD);		/* suspends system */
-}
-
 private void load()
 {
 	load_dir("lwo", 1);
@@ -76,7 +66,14 @@ static void create()
 	catch {
 		DRIVER->fix_filequota();
 
-		load_core();
+		load_object(LOGD);		/* we need to log any error messages */
+		load_object(OBJECTD);		/* enforces static invariants */
+		load_object(TLSD);		/* depends on an updated tls size */
+
+		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
+		load_object(CALLOUTD);		/* suspends callouts */
+		load_object(SUSPENDD);		/* suspends system */
+
 		remove_file("/log/session.log");
 
 		call_out("boot", 0);
@@ -104,6 +101,10 @@ static void boot()
 		configure_rsrc();
 		configure_logging();
 
+		load_object(MODULED);
+
+		MODULED->boot_module("Bigstruct");
+
 		load();
 
 		call_out("boot_2", 0);
@@ -121,9 +122,6 @@ static void boot_2()
 		LOGD->post_message("system", LOG_INFO, "System loaded");
 		LOGD->post_message("system", LOG_INFO, "-------------");
 
-		MODULED->boot_module("Bigstruct");
-
-		PROGRAMD->setup_database();
 		OBJECTD->discover_objects();
 		CLONED->discover_clones();
 
