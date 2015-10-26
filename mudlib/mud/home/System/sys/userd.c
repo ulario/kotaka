@@ -289,6 +289,8 @@ string query_banner(object LIB_CONN connection)
 		TLSD->set_tls_value("System", "abort-connection", 1);
 		TLSD->set_tls_value("System", "abort-delay", -1);
 
+		root->set_mode(MODE_BLOCK);
+
 		catch {
 			return userd->query_overload_banner(connection);
 		} : {
@@ -299,6 +301,8 @@ string query_banner(object LIB_CONN connection)
 	if (BAND->check_siteban(query_ip_number(root))) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 		TLSD->set_tls_value("System", "abort-delay", 0.1);
+
+		root->set_mode(MODE_BLOCK);
 
 		catch {
 			return userd->query_sitebanned_banner(connection);
@@ -311,6 +315,8 @@ string query_banner(object LIB_CONN connection)
 	if (free_users() + 1 < 2) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 		TLSD->set_tls_value("System", "abort-delay", 0.1);
+
+		root->set_mode(MODE_BLOCK);
 
 		/* we need two slots kept free */
 		/* discarding this one will free it up so don't count it against the quota before we decide to accept it */
@@ -325,6 +331,8 @@ string query_banner(object LIB_CONN connection)
 	if (blocked) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 		TLSD->set_tls_value("System", "abort-delay", 0.1);
+
+		root->set_mode(MODE_BLOCK);
 
 		catch {
 			return userd->query_blocked_banner(connection);
