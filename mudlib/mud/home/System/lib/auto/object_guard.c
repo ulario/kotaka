@@ -23,9 +23,23 @@
 
 #define MIN_SPARE_OBJECTS 100
 
-static int free_objects()
+private int enough_free_objects()
 {
-	return status(ST_OTABSIZE) - status(ST_NOBJECTS);
+	int used;
+	int total;
+
+	used = status(ST_NOBJECTS);
+	total = status(ST_OTABSIZE);
+
+	if (total - used < 100) {
+		return 0;
+	}
+
+	if ((float)used / (float)total > 0.95) {
+		return 0;
+	}
+
+	return 1;
 }
 
 static object compile_object(mixed args ...)
@@ -36,7 +50,7 @@ static object compile_object(mixed args ...)
 
 	if (!SYSTEM() &&
 		DRIVER->creator(args[0]) != "System" &&
-		!obj && free_objects() < MIN_SPARE_OBJECTS) {
+		!obj && !enough_free_objects()) {
 		error("Too many objects");
 	}
 
@@ -55,7 +69,7 @@ static object load_object(mixed args ...)
 
 	if (!SYSTEM() &&
 		DRIVER->creator(args[0]) != "System" &&
-		!obj && free_objects() < MIN_SPARE_OBJECTS) {
+		!obj && !enough_free_objects()) {
 		error("Too many objects");
 	}
 
@@ -66,7 +80,7 @@ static object clone_object(mixed args ...)
 {
 	if (!SYSTEM() &&
 		query_owner() != "System" &&
-		free_objects() < MIN_SPARE_OBJECTS) {
+		!enough_free_objects()) {
 		error("Too many objects");
 	}
 
