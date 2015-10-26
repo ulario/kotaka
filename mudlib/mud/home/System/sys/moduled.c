@@ -154,6 +154,10 @@ void upgrade_module(string module)
 {
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
+	if (modules[module] != 1) {
+		return;
+	}
+
 	rlimits(0; -1) {
 		rlimits(0; 100000000) {
 			(USR_DIR + "/" + module + "/initd")->upgrade_module();
