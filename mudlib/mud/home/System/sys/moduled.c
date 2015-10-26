@@ -130,6 +130,10 @@ void upgrade_modules()
 
 			module = list[sz];
 
+			if (modules[module] == -1) {
+				continue;
+			}
+
 			rlimits(0; 100000) {
 				if (!file_info(USR_DIR + "/" + module + "/initd.c")) {
 					call_out("shutdown_module", 0, module);
