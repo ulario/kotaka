@@ -71,7 +71,7 @@ void queue_work(string func, mixed args...)
 	queue->push_back( ({ previous_object(), func, args }) );
 }
 
-int queue_delayed_work(mixed delay, string func, mixed args...)
+int queue_delayed_work(string func, mixed delay, mixed args...)
 {
 	return call_out("process_delayed", delay, previous_object(), func, args);
 }

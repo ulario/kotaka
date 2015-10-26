@@ -139,7 +139,7 @@ int login(string str)
 	connections[conn] = ({
 		trusted ? 0.05 : 15.0,
 		trusted,
-		SUSPENDD->queue_delayed_work(0, "report", conn)
+		SUSPENDD->queue_delayed_work("report", 0, conn)
 	});
 
 	redraw(conn);
@@ -196,7 +196,7 @@ int receive_message(string str)
 
 				if (connections[conn][2]) {
 					SUSPENDD->dequeue_delayed_work(connections[conn][2]);
-					connections[conn][2] = SUSPENDD->queue_delayed_work(interval, "report", conn);
+					connections[conn][2] = SUSPENDD->queue_delayed_work("report", interval, conn);
 				}
 			}
 
@@ -224,8 +224,8 @@ int message_done()
 	conn = previous_object();
 
 	if (!connections[conn][2]) {
-		connections[conn][2] = SUSPENDD->queue_delayed_work(
-			connections[conn][0], "report", conn
+		connections[conn][2] = SUSPENDD->queue_delayed_work("report",
+			connections[conn][0], conn
 		);
 	}
 
