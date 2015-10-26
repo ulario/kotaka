@@ -84,6 +84,10 @@ void touch_scan_otable(string path, int sz, string *patches)
 	while (sz >= 0 && ticks - status(ST_TICKS) < 100000) {
 		object obj;
 
+		if (sz % 1000 == 0) {
+			LOGD->post_message("debug", LOG_DEBUG, "TouchD: Scanning object table for " + path + ", currently at slot " + sz);
+		}
+
 		obj = find_object(path + "#" + sz);
 
 		if (obj) {
@@ -99,7 +103,8 @@ void touch_scan_otable(string path, int sz, string *patches)
 
 	if (sz >= 0) {
 		SUSPENDD->queue_work("touch_scan_otable", path, sz, patches);
-		LOGD->post_message("debug", LOG_DEBUG, "TouchD: Scanning object table, currently at slot " + sz);
+	} else {
+		LOGD->post_message("debug", LOG_DEBUG, "TouchD: Finished object table scan for " + path);
 	}
 }
 
