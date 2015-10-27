@@ -39,5 +39,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	"~Game/initd"->configure_properties();
+	"~Game/sys/propertyd"->configure_properties();
 }
