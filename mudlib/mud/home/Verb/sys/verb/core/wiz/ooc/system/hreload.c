@@ -37,5 +37,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	"~Game/initd"->load_help();
+	"~Game/sys/helpd"->load_help();
 }
