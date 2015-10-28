@@ -22,10 +22,23 @@
 
 #define MIN_SPARE_CALLOUTS 10
 
-static int free_callouts()
+private int enough_free_callouts()
 {
-	return status(ST_COTABSIZE) -
-		(status(ST_NCOSHORT) + status(ST_NCOLONG));
+	int used;
+	int total;
+
+	used = status(ST_NCOSHORT) + status(ST_NCOLONG);
+	total = status(ST_COTABSIZE);
+
+	if (total - used < 10) {
+		return 0;
+	}
+
+	if ((float)used / (float)total > 0.98) {
+		return 0;
+	}
+
+	return 1;
 }
 
 static int call_out(string func, mixed delay, mixed args...)
@@ -38,7 +51,7 @@ static int call_out(string func, mixed delay, mixed args...)
 		error("Call_out to undefined function " + func);
 	}
 
-	if (!SYSTEM() && free_callouts() < MIN_SPARE_CALLOUTS) {
+	if (!SYSTEM() && !enough_free_callouts()) {
 		error("Too many callouts");
 	}
 
