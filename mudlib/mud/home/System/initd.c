@@ -129,7 +129,7 @@ static void boot_2()
 	} : {
 		LOGD->flush();
 		shutdown();
-		error("Failed to initialize the program and clone databases");
+		error("Failed to initialize the program database");
 	}
 }
 
