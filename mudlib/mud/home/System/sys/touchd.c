@@ -84,7 +84,7 @@ void touch_scan_otable(string path, int sz, string *patches)
 	while (sz >= 0 && ticks - status(ST_TICKS) < 100000) {
 		object obj;
 
-		if (sz % 1000 == 0) {
+		if (sz % 10000 == 0) {
 			LOGD->post_message("debug", LOG_DEBUG, "TouchD: Scanning object table for " + path + ", currently at slot " + sz);
 		}
 
