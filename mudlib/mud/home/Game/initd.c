@@ -99,6 +99,8 @@ static void create()
 	configure_channels();
 
 	build_world();
+
+	"sys/saveload"->load_world();
 }
 
 object create_thing()
