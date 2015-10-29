@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ~/dgd/ulario
+cd ~/git/kotaka
 
 DGDPID=0
 
@@ -35,23 +35,22 @@ trap sigterm SIGTERM
 trap sigint SIGINT
 
 rm -f mud/core
-rm -f namedump
 
 while true
 do
-	if [ -f ulario.snapshot ]
+	if [ -f dump ]
 	then
-		echo "Warm booting dgd" >> ulario.err
-		~/bin/dgd ulario.dgd ulario.snapshot < /dev/null >> ulario.err 2>&1 &
+		echo "Warm booting dgd" >> kotaka.err
+		~/bin/dgd kotaka.dgd dump < /dev/null >> ulario.err 2>&1 &
 	else
-		echo "Cold booting dgd" >> ulario.err
-		~/bin/dgd ulario.dgd < /dev/null >> ulario.err 2>&1 &
+		echo "Cold booting dgd" >> kotaka.err
+		~/bin/dgd kotaka.dgd < /dev/null >> ulario.err 2>&1 &
 	fi
 
 	DGDPID=$!
 	wait
 
-	echo "dgd ended" >> ulario.err
+	echo "dgd ended" >> kotaka.err
 
 	[ -f mud/core ] && crashed
 done
