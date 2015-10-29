@@ -146,8 +146,10 @@ void build_world()
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
-	master->set_local_property("nouns", ({ "human", "man" }) );
+	master->set_local_property("local_nouns", ({ "human", "man" }) );
 	master->set_object_name("class:race:humanoid:human");
+	master->set_local_property("brief", "simple man");
+	master->set_local_property("look", "A simple, boring man.");
 }
 
 void upgrade_module()

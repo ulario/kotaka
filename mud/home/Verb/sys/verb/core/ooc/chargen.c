@@ -60,8 +60,9 @@ void main(object actor, mapping roles)
 
 	body->set_property("id", name);
 	body->set_property("local_snouns", ({ name }) );
-	body->set_property("is_definite", 1);
+	body->set_property("is_proper", 1);
 	body->set_property("brief", STRINGD->to_title(name));
+
 	body->add_archetype(CATALOGD->lookup_object("class:race:humanoid:human"));
 	body->set_object_name("players:" + name);
 	send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
