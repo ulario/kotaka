@@ -27,6 +27,10 @@ To use kotaka:
 	The kernel library has a /kernel directory and an /include/kernel
 	directory, both of which are required to use kotaka.
 
+	By default, symlinks to the kernel library and its include files
+	are already in place that assume both kotaka and the kernel library
+	are neighbors.
+
 5.  Configure the kotaka.dgd file appropriately
 
 	Make sure the directory setting points to the absolute path of
