@@ -7,7 +7,7 @@ binary_port	= ([
 ]);		/* binary port number */
 directory	= "Please read INSTALL";/* base directory (MUST be absolute) */
 users		= 10;			/* max # of users */
-editors		= 5;			/* max # of editor sessions */
+editors		= 0;			/* max # of editor sessions */
 ed_tmpfile	= "../tmp/ed";		/* proto editor tmpfile */
 swap_file	= "../tmp/swap";	/* swap file */
 swap_size	= 2000;			/* # sectors in swap file */
