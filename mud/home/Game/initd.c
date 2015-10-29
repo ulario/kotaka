@@ -98,9 +98,11 @@ static void create()
 	create_channels();
 	configure_channels();
 
-	build_world();
-
-	"sys/saveload"->load_world();
+	if (CONFIGD->file_info("save")) {
+		"sys/saveload"->load_world();
+	} else {
+		build_world();
+	}
 }
 
 object create_thing()
