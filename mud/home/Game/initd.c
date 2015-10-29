@@ -141,6 +141,7 @@ void build_world()
 	world->set_max_mass(5.972e+24);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/fill/grass");
+	world->set_property("local_nouns", ({ "world" }) );
 
 	master = create_thing();
 	master->set_property("id", "human");
