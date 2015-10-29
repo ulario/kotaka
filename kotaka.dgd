@@ -1,8 +1,9 @@
-telnet_port	= ([ "*": 50000,
-	"*": 50001
+telnet_port	= ([
+	"*": 50000,	/* telnet login port */
+	"*": 50001	/* status port */
 ]);		/* telnet port number */
 binary_port	= ([
-	"localhost": 50010
+	"localhost": 50010	/* kernel library backdoor */
 ]);		/* binary port number */
 directory	= "Please read INSTALL";/* base directory (MUST be absolute) */
 users		= 10;			/* max # of users */
