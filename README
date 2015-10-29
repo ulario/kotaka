@@ -3,3 +3,35 @@ Kotaka mudlib
 
 Hopefully you'll have as much fun running a kotaka based mud as I did
 writing it.
+
+-----------------
+Table of contents
+-----------------
+
+INSTALL
+
+	Read this file to install kotaka and start using it
+
+COPYRIGHT
+
+	Copyright information.  In a nutshell, Kotaka is open source software under the AGPL
+
+UPGRADE
+
+	This shows how to deal with upgrades to new versions of kotaka
+
+WARRANTY
+
+	A big fat warning that this software is as is.
+
+kotaka.dgd
+
+	The dgd configuration file.
+
+mud
+
+	The actual mudlib.
+
+scripts
+
+	Useful scripts.
