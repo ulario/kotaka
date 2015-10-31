@@ -1,6 +1,6 @@
 #!/bin/bash
 
-find mudlib -type f -name "*.[ch]" | sort > checklist
+find mud -type f -name "*.[ch]" | sort > checklist
 
 function cleanup()
 {
