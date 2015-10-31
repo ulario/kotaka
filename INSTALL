@@ -43,4 +43,18 @@ To use kotaka:
 
 7.  (or)  Start dgd
 
-8.  Have fun
+8.  Connect
+
+	By default, kotaka.dgd tells dgd to listen to the following ports:
+
+	50000 Telnet login
+	50001 Live status updates
+	50010 Kernel library binary port emergency login
+
+	Connect to port 50000, and select "register a new account"
+
+	Then, pick the "admin" username.
+
+9.  You are now ready.
+
+	If you need more information, just read the in game help files.
