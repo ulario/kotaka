@@ -334,6 +334,8 @@ object query_program_info(int oindex)
 {
 	if (progdb) {
 		return progdb->query_element(oindex);
+	} else {
+		ASSERT(SYSTEM());
 	}
 }
 
