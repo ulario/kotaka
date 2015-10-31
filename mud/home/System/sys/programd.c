@@ -47,7 +47,7 @@ static void create()
 
 static void destruct()
 {
-	delete_database();
+	destruct_database();
 }
 
 /* helpers */
