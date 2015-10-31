@@ -141,13 +141,13 @@ void build_world()
 	world->set_max_mass(5.972e+24);
 	world->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/fill/grass");
-	world->set_property("local_nouns", ({ "world" }) );
+	world->set_property("local_snouns", ({ "world" }) );
 
 	master = create_thing();
 	master->set_property("id", "human");
 	master->set_property("event:paint",
 		USR_DIR + "/Game/sys/handler/paint/human");
-	master->set_local_property("local_nouns", ({ "human", "man" }) );
+	master->set_local_property("local_snouns", ({ "human", "man" }) );
 	master->set_object_name("class:race:humanoid:human");
 	master->set_local_property("brief", "simple man");
 	master->set_local_property("look", "A simple, boring man.");
