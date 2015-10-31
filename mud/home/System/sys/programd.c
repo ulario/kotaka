@@ -35,7 +35,45 @@ object incdb;	/* include database, filename -> including objects */
 
 /* declarations */
 
-private void delete_database()
+private void create_database();
+private void destruct_database();
+
+/* create/destruct */
+
+static void create()
+{
+	create_database();
+}
+
+static void destruct()
+{
+	delete_database();
+}
+
+/* helpers */
+
+private void create_database()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	progdb->claim();
+	progdb->set_type(T_INT);
+
+	inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	inhdb->claim();
+	inhdb->set_type(T_INT);
+
+	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	incdb->claim();
+	incdb->set_type(T_STRING);
+
+	pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
+	pathdb->claim();
+	pathdb->set_type(T_STRING);
+}
+
+private void destruct_database()
 {
 	int i, sz;
 	object *turkeys;
@@ -67,48 +105,6 @@ private void delete_database()
 
 	for (i = 0; i < sz; i++) {
 		destruct_object(turkeys[i]);
-	}
-}
-
-/* create/destruct */
-
-static void create()
-{
-}
-
-static void destruct()
-{
-	delete_database();
-}
-
-/* helpers */
-
-void setup_database()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	if (!progdb) {
-		progdb = clone_object(BIGSTRUCT_MAP_OBJ);
-		progdb->claim();
-		progdb->set_type(T_INT);
-	}
-
-	if (!inhdb) {
-		inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
-		inhdb->claim();
-		inhdb->set_type(T_INT);
-	}
-
-	if (!incdb) {
-		incdb = clone_object(BIGSTRUCT_MAP_OBJ);
-		incdb->claim();
-		incdb->set_type(T_STRING);
-	}
-
-	if (!pathdb) {
-		pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
-		pathdb->claim();
-		pathdb->set_type(T_STRING);
 	}
 }
 
