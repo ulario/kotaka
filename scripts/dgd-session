@@ -40,10 +40,10 @@ while true
 do
 	if [ -f dump ]
 	then
-		echo "Warm booting dgd" >> kotaka.err
+		echo "*** DGD warm booting ***" >> kotaka.err
 		~/bin/dgd kotaka.dgd dump < /dev/null >> ulario.err 2>&1 &
 	else
-		echo "Cold booting dgd" >> kotaka.err
+		echo "*** DGD cold booting ***" >> kotaka.err
 		~/bin/dgd kotaka.dgd < /dev/null >> ulario.err 2>&1 &
 	fi
 
@@ -52,5 +52,11 @@ do
 
 	echo "dgd ended" >> kotaka.err
 
-	[ -f mud/core ] && crashed
+	if [ -f mud/core ]
+	then
+		echo ">>> DGD crashed <<<" >> kotaka.err
+		crashed
+	else
+		echo "*** DGD terminated ***" >> kotaka.err
+	fi
 done
