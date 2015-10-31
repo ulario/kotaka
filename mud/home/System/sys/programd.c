@@ -273,7 +273,7 @@ atomic void remove_program(int index)
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	if (!progdb) {
-		return nil;
+		return;
 	}
 
 	pinfo = progdb->query_element(index);
