@@ -296,9 +296,8 @@ atomic void reset_program_database()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	delete_database();
-
-	setup_database();
+	destruct_database();
+	create_database();
 }
 
 /* public functions */
