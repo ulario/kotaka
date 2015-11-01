@@ -22,8 +22,6 @@ function sigint
 
 function crashed
 {
-	echo "Found a core dump!"
-
 	rm -rf crash
 	mkdir crash
 
@@ -41,16 +39,14 @@ do
 	if [ -f dump ]
 	then
 		echo "*** DGD warm booting ***" >> kotaka.err
-		~/bin/dgd kotaka.dgd dump < /dev/null >> ulario.err 2>&1 &
+		~/bin/dgd kotaka.dgd dump < /dev/null >> kotaka.err 2>&1 &
 	else
 		echo "*** DGD cold booting ***" >> kotaka.err
-		~/bin/dgd kotaka.dgd < /dev/null >> ulario.err 2>&1 &
+		~/bin/dgd kotaka.dgd < /dev/null >> kotaka.err 2>&1 &
 	fi
 
 	DGDPID=$!
 	wait
-
-	echo "dgd ended" >> kotaka.err
 
 	if [ -f mud/core ]
 	then
