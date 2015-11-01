@@ -36,10 +36,10 @@ rm -f mud/core
 
 while true
 do
-	if [ -f dump ]
+	if [ -f snapshot ]
 	then
 		echo "*** DGD warm booting ***" >> kotaka.err
-		~/bin/dgd kotaka.dgd dump < /dev/null >> kotaka.err 2>&1 &
+		~/bin/dgd kotaka.dgd snapshot < /dev/null >> kotaka.err 2>&1 &
 	else
 		echo "*** DGD cold booting ***" >> kotaka.err
 		~/bin/dgd kotaka.dgd < /dev/null >> kotaka.err 2>&1 &
