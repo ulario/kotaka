@@ -395,8 +395,10 @@ void boot_module(string module)
 		KERNELD->add_owner(module);
 	}
 
-	rlimits(0; 100000000) {
-		call_limited("load_module", module);
+	rlimits(0; -1) {
+		rlimits(0; 100000000) {
+			call_limited("load_module", module);
+		}
 	}
 
 	modules[module] = 1;
