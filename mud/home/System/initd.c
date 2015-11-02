@@ -339,14 +339,14 @@ int forbid_inherit(string from, string path, int priv)
 private void check_config()
 {
 	if (status(ST_ARRAYSIZE) < 256) {
-		error("Array size setting is too small");
+		error("Array size setting is too small (minimum 256 elements)");
 	}
 
 	if (status(ST_UTABSIZE) < 3) {
 		/* 1: reserved for regular logins */
 		/* 2: reserved for emergency logins */
 		/* 3: reserved for overflow burning */
-		error("Not enough user slots");
+		error("Not enough user slots (minimum is 3)");
 	}
 
 	if (status(ST_STRSIZE) < 1024) {
