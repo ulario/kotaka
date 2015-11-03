@@ -67,7 +67,9 @@ static void check_caller(int access)
 
 mapping query_grants()
 {
-	return grants[..];
+	if (grants) {
+		return grants[..];
+	}
 }
 
 int query_global_access()

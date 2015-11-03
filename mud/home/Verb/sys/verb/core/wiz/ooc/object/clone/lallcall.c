@@ -17,8 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/log.h>
 #include <status.h>
 
 inherit LIB_VERB;
@@ -54,39 +56,32 @@ void main(object actor, mapping roles)
 		return;
 	}
 
+	call_other(path, func);
+
 	sz = status(ST_OTABSIZE);
 
-	list = new_object(BIGSTRUCT_DEQUE_LWO);
-	list->claim();
+	call_out("lazy_allcall", 0, path, func, sz - 1);
+}
 
-	for (i = 0; i < sz; i++) {
+static void lazy_allcall(string path, string func, int oindex)
+{
+	while (status(ST_TICKS) > 20000) {
 		object obj;
 
-		obj = find_object(path + "#" + i);
+		obj = find_object(path + "#" + oindex);
+		oindex--;
 
 		if (obj) {
-			list->push_back(obj);
-			tcount++;
+			call_other(obj, func);
+		}
+
+		if (oindex == 0) {
+			LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall finished.");
+			return;
 		}
 	}
 
-	call_out("do_allcall", 0, list, func);
-
-	send_out(tcount + " object calls scheduled.\n");
-}
-
-static void do_allcall(object list, string func)
-{
-	object obj;
-
-	obj = list->query_front();
-	list->pop_front();
-
-	if (!list->empty()) {
-		call_out("do_allcall", 0, list, func);
-	}
-
-	if (obj) {
-		call_other(obj, func);
+	if (oindex > 0) {
+		LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall: " + oindex + " slots left to check.");
 	}
 }
