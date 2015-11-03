@@ -30,11 +30,18 @@ private void load()
 	load_dir("sys", 1);
 }
 
+private void set_limits()
+{
+	KERNELD->rsrc_set_limit("Channel", "callouts", 10);
+}
+
 static void create()
 {
 	KERNELD->set_global_access("Channel", 1);
 
 	MODULED->boot_module("String");
+
+	set_limits();
 
 	load();
 
@@ -58,6 +65,8 @@ void reboot()
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
 
 	load();
 
