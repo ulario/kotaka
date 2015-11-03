@@ -182,10 +182,10 @@ void discover_clones_work(string *owners, varargs object first, object obj)
 				}
 
 				if (!first) {
-					LOGD->post_message("system", LOG_INFO, "CloneD reset: skipping search for clones owned by " + owner + " (owns no objects)");
+					LOGD->post_message("debug", LOG_DEBUG, "CloneD reset: skipping search for clones owned by " + owner + " (owns no objects)");
 					continue;
 				} else {
-					LOGD->post_message("system", LOG_INFO, "CloneD reset: starting search for clones owned by " + owner);
+					LOGD->post_message("debug", LOG_DEBUG, "CloneD reset: starting search for clones owned by " + owner);
 				}
 			} else {
 				done = 1;
@@ -208,7 +208,7 @@ void discover_clones_work(string *owners, varargs object first, object obj)
 		}
 	}
 
-	LOGD->post_message("system", LOG_INFO, "CloneD reset: discovered and linked " + count + " clones so far.");
+	LOGD->post_message("debug", LOG_DEBUG, "CloneD reset: discovered and linked " + count + " clones so far.");
 
 	if (done) {
 		LOGD->post_message("system", LOG_INFO, "CloneD reset finished.");
@@ -240,12 +240,12 @@ void link_system_clones(object queue)
 		lcount++;
 	}
 
-	LOGD->post_message("system", LOG_INFO, "CloneD reset: linked " + lcount + " system clones so far.");
+	LOGD->post_message("debug", LOG_DEBUG, "CloneD reset: linked " + lcount + " system clones so far.");
 
 	if (done) {
 		string *owners;
 
-		LOGD->post_message("system", LOG_INFO, "CloneD reset: finished linking system clones.");
+		LOGD->post_message("debug", LOG_DEBUG, "CloneD reset: finished linking system clones.");
 
 		owners = KERNELD->query_owners();
 		owners -= ({ "System" });
@@ -282,7 +282,7 @@ void discover_system_clones(object queue, object first, object obj)
 		}
 	}
 
-	LOGD->post_message("system", LOG_INFO, "CloneD reset: discovered " + count + " clones so far.");
+	LOGD->post_message("debug", LOG_DEBUG, "CloneD reset: discovered " + count + " clones so far.");
 
 	if (done) {
 		lcount = 0;
@@ -320,6 +320,7 @@ atomic void discover_clones()
 	queue->claim();
 
 	SUSPENDD->queue_work("discover_system_clones", queue, first, first);
+	LOGD->post_message("system", LOG_INFO, "CloneD: Resetting clone database.");
 }
 
 object query_clone_info(int index)
