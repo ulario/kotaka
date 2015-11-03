@@ -29,8 +29,17 @@ int suspend;
 int handle;
 object queue;
 
+void release_system();
+
 static void create()
 {
+}
+
+static void destruct()
+{
+	if (suspend) {
+		release_system();
+	}
 }
 
 void suspend_system()
