@@ -128,6 +128,9 @@ void runtime_error(string error, int caught, mixed **trace)
 	DRIVER->set_error_manager(nil);
 
 	catch {
+		TLSD->set_tls_value("System", "error-string", error);
+		TLSD->set_tls_value("System", "error-trace", trace);
+
 		if (error[0] == '(') {
 			mapping thrown;
 			/* gift package thrown by atomic error */
@@ -138,12 +141,13 @@ void runtime_error(string error, int caught, mixed **trace)
 			atom = thrown["atom"];
 			trace = thrown["trace"];
 			comperr = thrown["comperr"];
+
+			TLSD->set_tls_value("System", "error-string", error);
+			TLSD->set_tls_value("System", "error-trace", trace);
 		} else {
 			comperr = TLSD->query_tls_value("System", "compile-errors");
 			atom = -1;
 		}
-
-		TLSD->set_tls_value("System", "compile-errors", nil);
 
 		if (comperr) {
 			cerrstrs = allocate(sizeof(comperr));
