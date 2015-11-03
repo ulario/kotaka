@@ -34,7 +34,7 @@ void garbage_check()
 	mapping grants;
 
 	if (!sscanf(object_name(this_object()), "%*s#%*d")) {
-		error("Cannot garbage collect a blueprint");
+		return;
 	}
 
 	grants = query_grants();
