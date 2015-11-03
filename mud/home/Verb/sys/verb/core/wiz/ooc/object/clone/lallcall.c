@@ -83,5 +83,6 @@ static void lazy_allcall(string path, string func, int oindex)
 
 	if (oindex > 0) {
 		LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall: " + oindex + " slots left to check.");
+		call_out("lazy_allcall", 0, path, func, oindex);
 	}
 }
