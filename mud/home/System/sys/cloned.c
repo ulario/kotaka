@@ -40,6 +40,10 @@ void discover_clones();
 static void create()
 {
 	bmap = ([ ]);
+
+	db = clone_object(BIGSTRUCT_MAP_OBJ);
+	db->claim();
+	db->set_type(T_INT);
 }
 
 void add_clone(object obj)
