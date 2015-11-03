@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+mapping query_grants();
+
 static object new_node()
 {
 	return clone_object("node");
@@ -29,16 +31,15 @@ static void discard_node(object node)
 
 void garbage_check()
 {
+	mapping grants;
+
 	if (!sscanf(object_name(this_object()), "%*s#%*d")) {
 		error("Cannot garbage collect a blueprint");
 	}
 
-	if (!map_sizeof(grants)) {
-		call_out("self_destruct", 0);
-	}
-}
+	grants = query_grants();
 
-static void self_destruct()
-{
-	destruct_object(this_object());
+	if (!grants || !map_sizeof(grants)) {
+		destruct_object(this_object());
+	}
 }
