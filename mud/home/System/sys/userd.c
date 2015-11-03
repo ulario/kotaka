@@ -362,7 +362,7 @@ int query_timeout(object LIB_CONN connection)
 
 		connection->set_mode(MODE_BLOCK);
 
-		call_out("nuke_connection", delay, connection);
+		SUSPENDD->queue_delayed_work("close_connection", delay, connection);
 
 		return (int)(ceil((float)delay));
 	};
@@ -514,8 +514,10 @@ void check_sitebans()
 	}
 }
 
-static void nuke_connection(object conn)
+void close_connection(object conn)
 {
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
 	if (conn) {
 		conn->reboot();
 	}
