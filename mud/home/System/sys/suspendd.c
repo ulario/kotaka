@@ -68,7 +68,7 @@ void queue_work(string func, mixed args...)
 		queue->claim();
 	}
 
-	queue->push_back( ({ previous_object(), func, args }) );
+	queue->push_front( ({ previous_object(), func, args }) );
 }
 
 int queue_delayed_work(string func, mixed delay, mixed args...)
