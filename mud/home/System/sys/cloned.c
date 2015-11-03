@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/kernel.h>
+#include <kotaka/assert.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
@@ -31,6 +32,8 @@ inherit SECOND_AUTO;
 
 mapping bmap;	/* keeping track of bigstruct clones */
 object db;	/* keeping track of other clones */
+int count;	/* running total of discovered clones */
+int lcount;	/* running total of linked system clones */
 
 void discover_clones();
 
@@ -155,34 +158,105 @@ void remove_program(int index)
 	}
 }
 
-int count;
-
-void discover_clones_work_gather(string *owners, object queue)
+void discover_clones_work(string *owners, varargs object first, object obj)
 {
+	int done;
+	int ticks;
+
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
-	if (sizeof(owners)) {
-		string owner;
-		object first, obj;
+	ticks = status(ST_TICKS);
 
-		owner = owners[0];
-		owners = owners[1 ..];
+	while (ticks - status(ST_TICKS) < CLONED_RESET_BUDGET) {
+		if (first == nil) {
+			if (sizeof(owners)) {
+				string owner;
 
-		first = KERNELD->first_link(owner);
+				owner = owners[0];
+				owners = owners[1 ..];
 
-		obj = first;
+				first = obj = KERNELD->first_link(owner);
 
-		if (first) {
-			SUSPENDD->queue_work("discover_clones_work_gather_owner", owners, queue, first, obj);
-		} else {
-			SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
+				if (!owner) {
+					owner = "Ecru";
+				}
+
+				if (!first) {
+					LOGD->post_message("system", LOG_INFO, "CloneD reset: skipping search for clones owned by " + owner + " (owns no objects)");
+					continue;
+				} else {
+					LOGD->post_message("system", LOG_INFO, "CloneD reset: starting search for clones owned by " + owner);
+				}
+			} else {
+				done = 1;
+				break;
+			}
 		}
+
+		ASSERT(first);
+		ASSERT(obj);
+
+		if (sscanf(object_name(obj), "%*s#%*d")) {
+			add_clone(obj);
+			count++;
+		}
+
+		obj = KERNELD->next_link(obj);
+
+		if (obj == first) {
+			first = nil;
+		}
+	}
+
+	LOGD->post_message("system", LOG_INFO, "CloneD reset: discovered and linked " + count + " clones so far.");
+
+	if (done) {
+		LOGD->post_message("system", LOG_INFO, "CloneD reset finished.");
 	} else {
-		SUSPENDD->queue_work("discover_clones_work_link", queue);
+		SUSPENDD->queue_work("discover_clones_work", owners, first, obj);
 	}
 }
 
-void discover_clones_work_gather_owner(string *owners, object queue, object first, object obj)
+void link_system_clones(object queue)
+{
+	int done;
+	int ticks;
+
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
+	ticks = status(ST_TICKS);
+
+	while (ticks - status(ST_TICKS) < CLONED_RESET_BUDGET) {
+		object obj;
+
+		if (queue->empty()) {
+			done = 1;
+			break;
+		}
+
+		obj = queue->query_front();
+		queue->pop_front();
+		add_clone(obj);
+		lcount++;
+	}
+
+	LOGD->post_message("system", LOG_INFO, "CloneD reset: linked " + lcount + " system clones so far.");
+
+	if (done) {
+		string *owners;
+
+		LOGD->post_message("system", LOG_INFO, "CloneD reset: finished linking system clones.");
+
+		owners = KERNELD->query_owners();
+		owners -= ({ "System" });
+
+		SUSPENDD->queue_work("discover_clones_work", owners);
+	} else {
+		SUSPENDD->queue_work("link_system_clones", queue);
+	}
+}
+
+void discover_system_clones(object queue, object first, object obj)
 {
 	int ticks;
 	int done;
@@ -208,58 +282,23 @@ void discover_clones_work_gather_owner(string *owners, object queue, object firs
 		}
 	}
 
-	LOGD->post_message("system", LOG_INFO, "CloneD reset: " + count + " clones discovered so far.");
+	LOGD->post_message("system", LOG_INFO, "CloneD reset: discovered " + count + " clones so far.");
 
 	if (done) {
-		SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
+		lcount = 0;
+
+		SUSPENDD->queue_work("link_system_clones", queue);
 	} else {
-		SUSPENDD->queue_work("discover_clones_work_gather_owner", owners, queue, first, obj);
-	}
-}
-
-void discover_clones_work_link(object queue)
-{
-	int done;
-	int ticks;
-
-	ACCESS_CHECK(previous_program() == SUSPENDD);
-
-	ticks = status(ST_TICKS);
-
-	while (ticks - status(ST_TICKS) < CLONED_RESET_BUDGET) {
-		object obj;
-
-		if (queue->empty()) {
-			done = 1;
-			break;
-		}
-
-		obj = queue->query_front();
-		queue->pop_front();
-		add_clone(obj);
-		count--;
-	}
-
-	if (!done) {
-		LOGD->post_message("system", LOG_INFO, "CloneD reset: " + count + " clones left to link.");
-
-		SUSPENDD->queue_work("discover_clones_work_link", queue);
+		SUSPENDD->queue_work("discover_system_clones", queue, first, obj);
 	}
 }
 
 atomic void discover_clones()
 {
-	string *owners;
-	int i, sz;
-	int count;
 	object queue;
+	object first;
 
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
-
-	owners = KERNELD->query_owners();
-	sz = sizeof(owners);
-	queue = new_object(BIGSTRUCT_DEQUE_LWO);
-	queue->claim();
 
 	if (db) {
 		destruct_object(db);
@@ -274,7 +313,13 @@ atomic void discover_clones()
 	count = 0;
 
 	SUSPENDD->suspend_system();
-	SUSPENDD->queue_work("discover_clones_work_gather", owners, queue);
+
+	first = KERNELD->first_link("System");
+
+	queue = new_object(BIGSTRUCT_DEQUE_LWO);
+	queue->claim();
+
+	SUSPENDD->queue_work("discover_system_clones", queue, first, first);
 }
 
 object query_clone_info(int index)
