@@ -26,3 +26,19 @@ static void discard_node(object node)
 {
 	destruct_object(node);
 }
+
+void garbage_check()
+{
+	if (!sscanf(object_name(this_object()), "%*s#%*d")) {
+		error("Cannot garbage collect a blueprint");
+	}
+
+	if (!map_sizeof(grants)) {
+		call_out("self_destruct", 0);
+	}
+}
+
+static void self_destruct()
+{
+	destruct_object(this_object());
+}
