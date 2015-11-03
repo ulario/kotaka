@@ -90,10 +90,3 @@ void grant_global_access(int access)
 
 	global_access = access;
 }
-
-void self_destruct()
-{
-	check_caller(FULL_ACCESS);
-
-	destruct_object(this_object());
-}
