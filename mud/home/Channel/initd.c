@@ -37,6 +37,8 @@ static void create()
 	MODULED->boot_module("String");
 
 	load();
+
+	CHANNELD->restore();
 }
 
 void prepare_reboot()
