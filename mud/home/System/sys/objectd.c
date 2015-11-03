@@ -218,6 +218,10 @@ void upgrade_objects()
 			TOUCHD->add_patches(path, patches);
 		}
 
+		catch {
+			path->upgrade();
+		}
+
 		if (upgrades->empty()) {
 			upgrades = nil;
 		} else {
@@ -367,6 +371,10 @@ void compile(string owner, object obj, string *source, string inherited ...)
 			}
 
 			upgrades->push_back( ({ path, patches }) );
+
+			catch {
+				obj->upgrading();
+			}
 		}
 	} else {
 		old_inherits = nil;
