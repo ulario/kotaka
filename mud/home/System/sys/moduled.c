@@ -142,7 +142,7 @@ private void send_module_shutdown_signal(string module)
 	}
 }
 
-private void wipe_module(string module)
+private void thaw_module(string module)
 {
 	string *rsrc_names;
 	int sz;
@@ -182,7 +182,7 @@ static void purge_module_tick(string module, int reboot)
 	modules[module] = nil;
 	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + module);
 
-	wipe_module(module);
+	thaw_module(module);
 
 	if (reboot) {
 		call_out("boot_module", 0, module);
