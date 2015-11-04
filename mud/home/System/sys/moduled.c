@@ -76,28 +76,6 @@ private void freeze_module(string module)
 	KERNELD->rsrc_set_limit(module, "ticks", 0);
 }
 
-private mapping save_module_limits(string module)
-{
-	mapping limits;
-
-	limits = ([ ]);
-
-	limits["objects"] = KERNELD->rsrc_get(module, "objects")[RSRC_MAX];
-	limits["callouts"] = KERNELD->rsrc_get(module, "callouts")[RSRC_MAX];
-	limits["stack"] = KERNELD->rsrc_get(module, "stack")[RSRC_MAX];
-	limits["ticks"] = KERNELD->rsrc_get(module, "ticks")[RSRC_MAX];
-
-	return limits;
-}
-
-private void thaw_module(string module, mapping limits)
-{
-	KERNELD->rsrc_set_limit(module, "objects", limits["objects"]);
-	KERNELD->rsrc_set_limit(module, "callouts", limits["callouts"]);
-	KERNELD->rsrc_set_limit(module, "stack", limits["stack"]);
-	KERNELD->rsrc_set_limit(module, "ticks", limits["ticks"]);
-}
-
 private void reset_modules_list()
 {
 	string *dirs;
@@ -180,7 +158,7 @@ private void wipe_module(string module)
 	}
 }
 
-static void purge_module_tick(string module, int reboot, mapping limits)
+static void purge_module_tick(string module, int reboot)
 {
 	int done;
 	int ticks;
@@ -201,7 +179,7 @@ static void purge_module_tick(string module, int reboot, mapping limits)
 	}
 
 	if (!done) {
-		call_out("purge_module_tick", 0, module, reboot, limits);
+		call_out("purge_module_tick", 0, module, reboot);
 		return;
 	}
 
@@ -209,7 +187,6 @@ static void purge_module_tick(string module, int reboot, mapping limits)
 	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + module);
 
 	wipe_module(module);
-	thaw_module(module, limits);
 
 	if (reboot) {
 		call_out("boot_module", 0, module);
@@ -408,7 +385,6 @@ void boot_module(string module)
 void reboot_module(string module)
 {
 	object cursor;
-	mapping limits;
 
 	ACCESS_CHECK(INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
 
@@ -418,7 +394,6 @@ void reboot_module(string module)
 		error("Cannot reboot " + module);
 	}
 
-	limits = save_module_limits(module);
 	freeze_module(module);
 	modules[module] = -1;
 
@@ -426,13 +401,12 @@ void reboot_module(string module)
 
 	send_module_shutdown_signal(module);
 
-	call_out("purge_module_tick", 0, module, 1, limits);
+	call_out("purge_module_tick", 0, module, 1);
 }
 
 void shutdown_module(string module)
 {
 	object cursor;
-	mapping limits;
 
 	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
 
@@ -444,7 +418,6 @@ void shutdown_module(string module)
 		error("Cannot shutdown " + module);
 	}
 
-	limits = save_module_limits(module);
 	freeze_module(module);
 	modules[module] = -1;
 
@@ -452,5 +425,5 @@ void shutdown_module(string module)
 
 	send_module_shutdown_signal(module);
 
-	call_out("purge_module_tick", 0, module, 0, limits);
+	call_out("purge_module_tick", 0, module, 0);
 }
