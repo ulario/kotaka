@@ -70,10 +70,14 @@ private void scramble(mixed *arr)
 
 private void freeze_module(string module)
 {
-	KERNELD->rsrc_set_limit(module, "objects", 0);
-	KERNELD->rsrc_set_limit(module, "callouts", 0);
-	KERNELD->rsrc_set_limit(module, "stack", 0);
-	KERNELD->rsrc_set_limit(module, "ticks", 0);
+	string *rsrc_names;
+	int sz;
+
+	rsrc_names = KERNELD->query_resources();
+
+	for (sz = sizeof(rsrc_names); --sz >= 0; ) {
+		KERNELD->rsrc_set_limit(module, rsrc_names[sz], 0);
+	}
 }
 
 private void reset_modules_list()
@@ -142,19 +146,11 @@ private void wipe_module(string module)
 {
 	string *rsrc_names;
 	int sz;
-	int clear;
-
-	clear = 1;
 
 	rsrc_names = KERNELD->query_resources();
 
 	for (sz = sizeof(rsrc_names); --sz >= 0; ) {
-		mixed *rsrc;
-		string rsrc_name;
-
-		rsrc_name = rsrc_names[sz];
-
-		KERNELD->rsrc_set_limit(module, rsrc_name, -1);
+		KERNELD->rsrc_set_limit(module, rsrc_names[sz], -1);
 	}
 }
 
