@@ -232,6 +232,10 @@ static void purge_object(object obj)
 {
 	string oname;
 
+	if (!obj) {
+		return;
+	}
+
 	oname = object_name(obj);
 
 	if (!sscanf(oname, "%*s#-1")) {
