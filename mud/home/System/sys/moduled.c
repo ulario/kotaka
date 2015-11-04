@@ -177,15 +177,6 @@ private void wipe_module(string module)
 		rsrc_name = rsrc_names[sz];
 
 		KERNELD->rsrc_set_limit(module, rsrc_name, -1);
-
-		if (KERNELD->rsrc_get(module, rsrc_name)
-			[RSRC_USAGE]) {
-			clear = 0;
-		}
-	}
-
-	if (clear) {
-		KERNELD->remove_owner(module);
 	}
 }
 
