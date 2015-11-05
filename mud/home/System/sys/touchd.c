@@ -31,8 +31,36 @@ inherit SECOND_AUTO;
 object queue;
 object patch;
 
+private void destruct_queue()
+{
+	int sz;
+	object *turkeys;
+
+	turkeys = ({ });
+
+	if (queue) {
+		turkeys += ({ queue });
+		queue = nil;
+	}
+
+	if (patch) {
+		turkeys  += ({ patch });
+		patch = nil;
+	}
+
+	for (sz = sizeof(turkeys) - 1; sz >= 0; --sz)
+	{
+		destruct_object(turkeys[sz]);
+	}
+}
+
 static void create()
 {
+}
+
+static void destruct()
+{
+	destruct_queue();
 }
 
 void call_touch(object obj)
@@ -191,11 +219,7 @@ static void touch_tick()
 	} else {
 		LOGD->post_message("debug", LOG_DEBUG, "Touch queue empty");
 
-		call_out("purge_object", 0, patch);
-		call_out("purge_object", 0, queue);
-
-		patch = nil;
-		queue = nil;
+		destruct_queue();
 	}
 }
 
