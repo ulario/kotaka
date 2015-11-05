@@ -30,6 +30,7 @@ inherit SECOND_AUTO;
 
 object queue;
 object patch;
+int qlen;
 
 private void destruct_queue()
 {
@@ -72,6 +73,8 @@ void call_touch(object obj)
 		queue->claim();
 		call_out("touch_tick", 0);
 	}
+
+	qlen++;
 
 	queue->push_back(obj);
 
@@ -206,6 +209,8 @@ static void touch_tick()
 
 	queue->pop_front();
 
+	qlen--;
+
 	if (obj) {
 		catch {
 			if (!sscanf(object_name(obj), "/kernel/%*s")) {
@@ -215,11 +220,16 @@ static void touch_tick()
 	}
 
 	if (!queue->empty()) {
+		if (qlen % 1000 == 0) {
+			LOGD->post_message("debug", LOG_DEBUG, "TouchD: " + qlen + " left in touch queue.");
+		}
+
 		call_out("touch_tick", 0);
 	} else {
 		LOGD->post_message("debug", LOG_DEBUG, "Touch queue empty");
 
 		destruct_queue();
+		qlen = 0;
 	}
 }
 
