@@ -26,16 +26,18 @@
 private int enough_free_objects()
 {
 	int used;
+	int free;
 	int total;
 
 	used = status(ST_NOBJECTS);
 	total = status(ST_OTABSIZE);
+	free = total - used;
 
-	if (total - used < 100) {
+	if (free < 100) {
 		return 0;
 	}
 
-	if ((float)used / (float)total > 0.95) {
+	if (free * 100 / total <= 5) {
 		return 0;
 	}
 
