@@ -52,19 +52,20 @@ void upgrade()
 
 private int delay()
 {
-	int time, goal;
+	int time;
+	int goal;
+	int delay;
 
 	time = time();
-
 	goal = time;
 	goal -= goal % INTERVAL;
+	goal += INTERVAL;
 	goal += OFFSET;
 
-	if (goal < time) {
-		goal += INTERVAL;
-	}
+	delay = goal - time;
+	delay %= INTERVAL;
 
-	return goal - time;
+	return delay;
 }
 
 static void dump()
