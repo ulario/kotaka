@@ -28,6 +28,10 @@ inherit SECOND_AUTO;
 
 int frag;
 
+#define K (1 << 10)
+#define M (1 << 20)
+#define G (1 << 30)
+
 static void create()
 {
 	call_out("check", 1);
@@ -43,6 +47,10 @@ static void check()
 	float dmem_used;
 	float dmem_free;
 
+	float mem_size;
+	float mem_used;
+	float mem_free;
+
 	call_out("check", 1);
 
 	smem_used = (float)status(ST_SMEMUSED);
@@ -53,13 +61,11 @@ static void check()
 	dmem_size = (float)status(ST_DMEMSIZE);
 	dmem_free = dmem_size - dmem_used;
 
-	if (dmem_used > (float)(1 << 30)) {
-		LOGD->post_message("system", LOG_NOTICE, "Memory full, swapping out");
-		swapout();
-		return;
-	}
+	mem_used = smem_used + dmem_size;
+	mem_size = smem_size + dmem_size;
+	mem_free = smem_free + dmem_free;
 
-	if (dmem_free > (float)(4 << 20) && dmem_free / dmem_size > 0.25) {
+	if (dmem_free > (float)M * 128.0 && mem_free / mem_size > 0.25) {
 		LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
 		swapout();
 	}
