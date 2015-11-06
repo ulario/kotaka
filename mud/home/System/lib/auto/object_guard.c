@@ -38,15 +38,15 @@ private int enough_free_objects(int clone)
 			return 0;
 		}
 
-		if (free * 100 / total <= 5) {
+		if (free * 100 / total <= 10) {
 			return 0;
 		}
 	} else {
-		if (free < 20) {
+		if (free < 50) {
 			return 0;
 		}
 
-		if (free * 100 / total <= 2) {
+		if (free * 100 / total <= 5) {
 			return 0;
 		}
 	}
