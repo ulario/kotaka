@@ -34,19 +34,19 @@ private int enough_free_objects(int clone)
 	free = total - used;
 
 	if (clone) {
-		if (free < 100) {
+		if (free <= 100) {
 			return 0;
 		}
 
-		if (free * 100 / total <= 10) {
+		if (used >= (total * 90 / 100)) {
 			return 0;
 		}
 	} else {
-		if (free < 50) {
+		if (free <= 50) {
 			return 0;
 		}
 
-		if (free * 100 / total <= 5) {
+		if (used >= (total * 95 / 100)) {
 			return 0;
 		}
 	}
