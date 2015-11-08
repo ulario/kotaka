@@ -26,17 +26,23 @@
 
 inherit SECOND_AUTO;
 
-#define INTERVAL 3600
-#define OFFSET 0
+#define FULL     86400 /* full dump every 24 hours */
+#define INTERVAL   600 /* incremental dump every 10 minutes */
+#define OFFSET       0 /* offset for each dump */
 
-private int delay();
+private int *delay();
+private void purge_callouts();
 
 static void create()
 {
-	call_out("dump", delay());
+	int delay, full;
+
+	({ delay, full }) = delay();
+
+	call_out("dump", delay, full);
 }
 
-void upgrade()
+private void purge_callouts()
 {
 	int sz;
 	mixed **callouts;
@@ -46,11 +52,33 @@ void upgrade()
 	for (sz = sizeof(callouts) - 1; sz >= 0; --sz) {
 		remove_call_out(callouts[sz][CO_HANDLE]);
 	}
-
-	call_out("dump", delay());
 }
 
-private int delay()
+void upgrade()
+{
+	int delay;
+	int full;
+
+	({ delay, full }) = delay();
+
+	purge_callouts();
+
+	call_out("dump", delay, full);
+}
+
+void reboot()
+{
+	int delay;
+	int full;
+
+	({ delay, full }) = delay();
+
+	purge_callouts();
+
+	call_out("dump", delay, full);
+}
+
+private int *delay()
 {
 	int time;
 	int goal;
@@ -59,18 +87,36 @@ private int delay()
 	time = time();
 	goal = time;
 	goal -= goal % INTERVAL;
-	goal += INTERVAL;
 	goal += OFFSET;
 
-	delay = goal - time;
-	delay %= INTERVAL;
+	while (goal <= time) {
+		goal += INTERVAL;
+	}
 
-	return delay;
+	while (goal - time > INTERVAL) {
+		goal -= INTERVAL;
+	}
+
+	delay = goal - time;
+
+	return ({ delay, (goal - OFFSET) % FULL == 0 });
 }
 
-static void dump()
+static void dump(int full)
 {
-	call_out("dump", delay());
+	int delay;
 
-	dump_state();
+	if (full) {
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Making a full snapshot");
+		dump_state();
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Making an incremental snapshot");
+		dump_state(1);
+	}
+
+	({ delay, full }) = delay();
+
+	purge_callouts();
+
+	call_out("dump", delay, full);
 }

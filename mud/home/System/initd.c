@@ -216,6 +216,7 @@ void reboot()
 	SYSTEM_USERD->reboot();
 	CALLOUTD->reboot();
 	ACCESSD->restore();
+	DUMPD->reboot();
 
 	DRIVER->fix_filequota();
 	MODULED->reboot_modules();
