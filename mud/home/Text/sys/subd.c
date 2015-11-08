@@ -19,7 +19,6 @@
  */
 #include <kernel/access.h>
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>

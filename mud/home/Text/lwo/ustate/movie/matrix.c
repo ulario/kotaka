@@ -19,7 +19,6 @@
  */
 #include <kotaka/paths/utility.h>
 #include <kotaka/paths/ansi.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/privilege.h>
 
 inherit "~/lib/animate";

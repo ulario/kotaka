@@ -20,7 +20,6 @@
 #include <kotaka/checkarg.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/intermud.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/utility.h>

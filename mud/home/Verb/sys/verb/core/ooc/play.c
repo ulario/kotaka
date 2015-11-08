@@ -19,7 +19,6 @@
  */
 #include <game/paths.h>
 #include <kotaka/paths/utility.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>

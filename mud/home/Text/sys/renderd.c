@@ -21,7 +21,6 @@
 #include <kotaka/paths/ansi.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/geometry.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>

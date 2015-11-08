@@ -20,7 +20,6 @@
 #include <kernel/access.h>
 #include <kernel/kernel.h>
 #include <kotaka/paths/bigstruct.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 #include <kotaka/paths/utility.h>

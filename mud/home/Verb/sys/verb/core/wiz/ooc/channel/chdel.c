@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/channel.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;

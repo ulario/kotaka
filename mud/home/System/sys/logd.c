@@ -21,7 +21,6 @@
 #include <kernel/kernel.h>
 #include <kotaka/assert.h>
 #include <kotaka/checkarg.h>
-#include <kotaka/paths/kotaka.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
