@@ -28,7 +28,9 @@
 #include <status.h>
 #include <type.h>
 
-#define MUDNAME		"Ulario"
+/* Enable and redefine to suit */
+/* Also inspect the query_banner function below to validate the information provided to the router */
+/* #define MUDNAME "Kotaka" */
 
 /*
 * *i4 at 204.209.44.3 port 8080
@@ -81,6 +83,16 @@ mapping channels;
 
 private void save();
 private void restore();
+
+#ifndef MUDNAME
+
+static void create()
+{
+	MODULED->shutdown_module("Intermud");
+	error("Intermud daemon not configured properly, please read ~Intermud/intermudd.c");
+}
+
+#else
 
 static void create()
 {
@@ -200,8 +212,8 @@ string query_banner(object LIB_CONN connection)
 		"Kotaka",
 		status(ST_VERSION),
 		"DGD",
-		"mudlib development",
-		"shentino@gmail.com",
+		"(fill in the purpose of the mud here)",
+		"(fill in your admin email here)",
 		([
 			"channel":1
 		]),
@@ -639,3 +651,5 @@ private void restore()
 		password = map["password"];
 	}
 }
+
+#endif
