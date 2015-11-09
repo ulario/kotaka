@@ -61,7 +61,7 @@ private void load()
 	MODULED->boot_module("Help");
 	MODULED->boot_module("Http");
 	MODULED->boot_module("Text");
-	MODULED->boot_module("Intermud");
+	/* MODULED->boot_module("Intermud"); */
 	MODULED->boot_module("Thing");
 
 	load_dir("lwo", 1);
