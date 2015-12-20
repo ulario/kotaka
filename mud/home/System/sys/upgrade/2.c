@@ -34,8 +34,11 @@ void pass()
 {
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
-	compile_object(KERNELD);
-	compile_object(MODULED);
+	destruct_object("~/sys/swapd");
+	destruct_object("~/sys/dumpd");
+
+	compile_object("~/sys/swapd");
+	compile_object("~/sys/dumpd");
 
 	SUSPENDD->queue_work("pass_2");
 }
