@@ -89,17 +89,16 @@ int authenticate(string trial_password)
 		return !trial_password;
 	}
 
+	if (password == hash_string("crypt", trial_password, password)) {
+		return TRUE;
+	}
+
 	if (password == hash_string("SHA1", trial_password)) {
 		set_password(trial_password);
 		return TRUE;
 	}
 
 	if (password == hash_string("MD5", trial_password)) {
-		set_password(trial_password);
-		return TRUE;
-	}
-
-	if (password == hash_string("crypt", trial_password, password)) {
 		set_password(trial_password);
 		return TRUE;
 	}
