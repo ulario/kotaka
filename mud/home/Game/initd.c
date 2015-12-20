@@ -34,13 +34,6 @@
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-/*************/
-/* Variables */
-/*************/
-
-int save_pending;
-int wsave_pending;
-
 /****************/
 /* Declarations */
 /****************/
