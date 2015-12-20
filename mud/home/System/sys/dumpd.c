@@ -107,10 +107,10 @@ static void dump(int full)
 	int delay;
 
 	if (full) {
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: Making a full snapshot");
+		LOGD->post_message("debug", LOG_DEBUG, "DumpD: Making a full snapshot");
 		dump_state();
 	} else {
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: Making an incremental snapshot");
+		LOGD->post_message("debug", LOG_DEBUG, "DumpD: Making an incremental snapshot");
 		dump_state(1);
 	}
 
