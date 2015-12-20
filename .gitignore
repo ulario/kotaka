@@ -1,5 +1,15 @@
 kotaka.err
+mud/home/Secret/Account/accounts/*
+mud/home/Secret/Intermud/*
+mud/home/Text/data/splash/telnet_banners/ansi/*
+mud/include/float.h
+mud/include/kfun.h
+mud/include/limits.h
+mud/include/status.h
+mud/include/trace.h
+mud/include/type.h
+mud/kernel/data/access.data
+mud/log/*.log
 snapshot
 tmp/ed
 tmp/swap
-mud/kernel/data/access.data
