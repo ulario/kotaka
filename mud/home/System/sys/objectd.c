@@ -92,10 +92,6 @@ private mixed query_include_file(string compiled, string from, string path)
 		return USR_DIR + "/System/include/second_auto.h";
 	}
 
-	if (initd = find_object(USR_DIR + "/" + creator + "/initd")) {
-		return initd->include_file(compiled, from, path);
-	}
-
 	return path;
 }
 
