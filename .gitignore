@@ -1,6 +1,6 @@
+!mud/home/Secret/.dummy
 kotaka.err
-mud/home/Secret/Account/accounts/*
-mud/home/Secret/Intermud/*
+mud/home/Secret/*
 mud/home/Text/data/splash/telnet_banners/ansi/*
 mud/include/float.h
 mud/include/kfun.h
