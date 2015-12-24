@@ -39,6 +39,8 @@ void main(object actor, mapping roles)
 	string name;
 	object body;
 	object user;
+	object human;
+	object world;
 
 	user = query_user();
 	name = user->query_name();
@@ -50,6 +52,20 @@ void main(object actor, mapping roles)
 
 	if (CATALOGD->lookup_object("players:" + name)) {
 		send_out("You already have a character.\n");
+		return;
+	}
+
+	human = CATALOGD->lookup_object("class:race:humanoid:human");
+
+	if (!human) {
+		send_out("Yell at a wizard, there's no human archetype to spawn your character from.\n");
+		return;
+	}
+
+	world = CATALOGD->lookup_object("world");
+
+	if (!world) {
+		send_out("Yell at a wizard, there's no world to put your character inside.\n");
 		return;
 	}
 
@@ -65,5 +81,6 @@ void main(object actor, mapping roles)
 
 	body->add_archetype(CATALOGD->lookup_object("class:race:humanoid:human"));
 	body->set_object_name("players:" + name);
+	body->move(world);
 	send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 }
