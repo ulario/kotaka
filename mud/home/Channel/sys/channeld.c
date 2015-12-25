@@ -44,10 +44,7 @@ static void create()
 	restore();
 
 	configure_channels();
-}
 
-void destruct()
-{
 	save();
 }
 
@@ -98,6 +95,8 @@ void add_channel(string channel)
 	}
 
 	channels[channel] = ([ ]);
+
+	save();
 }
 
 string *query_channels()
@@ -123,6 +122,8 @@ void del_channel(string channel)
 	} else {
 		error("No such channel");
 	}
+
+	save();
 }
 
 mixed query_channel_config(string channel, string key)
@@ -159,6 +160,8 @@ void set_channel_config(string channel, string key, mixed value)
 	}
 
 	config[key] = SUBD->deep_copy(value);
+
+	save();
 }
 
 int test_channel(string channel)
@@ -179,6 +182,8 @@ void set_intermud(string channel, int true)
 	} else {
 		intermud[channel] = nil;
 	}
+
+	save();
 }
 
 int query_intermud(string channel)
