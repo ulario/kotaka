@@ -158,6 +158,10 @@ void move(object new_env, varargs int force)
 		if (is_container_of(new_env)) {
 			error("Cyclic containment attempted");
 		}
+
+		if (sizeof(new_env->query_inventory()) >= 100) {
+			error("Destination object too cluttered");
+		}
 	}
 
 	move_core(new_env);
