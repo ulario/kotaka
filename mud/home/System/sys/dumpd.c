@@ -110,7 +110,6 @@ static void dump(int full)
 		LOGD->post_message("debug", LOG_DEBUG, "DumpD: Making a full snapshot");
 		dump_state();
 	} else {
-		LOGD->post_message("debug", LOG_DEBUG, "DumpD: Making an incremental snapshot");
 		dump_state(1);
 	}
 
