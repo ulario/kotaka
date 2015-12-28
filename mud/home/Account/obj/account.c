@@ -103,11 +103,6 @@ int authenticate(string trial_password)
 		return TRUE;
 	}
 
-	if (password == hash_string("crypt", trial_password)) {
-		set_password(trial_password);
-		return TRUE;
-	}
-
 	if (password == hash_string("crypt", trial_password, name)) {
 		set_password(trial_password);
 		return TRUE;
