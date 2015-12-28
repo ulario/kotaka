@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/thing.h>
 #include <kotaka/paths/http.h>
 #include <kotaka/paths/system.h>
 #include <kernel/user.h>
@@ -72,11 +73,216 @@ int message_done()
 	return MODE_DISCONNECT;
 }
 
+private void do_status()
+{
+}
+
+private string simplename(object obj)
+{
+	string name;
+
+	name = obj->query_object_name();
+
+	if (name) {
+		return name;
+	} else {
+		return object_name(obj);
+	}
+}
+
+private string object2string(object obj)
+{
+	string name;
+
+	name = "";
+
+	if (obj <- LIB_THING) {
+		object env;
+		string id;
+
+		name = obj->query_object_name();
+
+		if (name) {
+			return name;
+		}
+
+		env = obj->query_environment();
+
+		if (env) {
+			id = obj->query_id();
+
+			if (id) {
+				return object2string(env) + ";" + id;
+			} else {
+				return simplename(obj);
+			}
+		} else {
+			return simplename(obj);
+		}
+	} else {
+		return simplename(obj);
+	}
+}
+
+private void do_thing(object obj)
+{
+	mapping lprops;
+	object *archs;
+	object env;
+	object *inv;
+	int sz;
+
+	archs = obj->query_archetypes();
+	sz = sizeof(archs);
+
+	if (sz) {
+		int i;
+
+		message("<p>Archetypes:</p>\n");
+		message("<ul>\n");
+
+		for (i = 0; i < sz; i++) {
+			message("<li>" + object2string(archs[i]) + "</li>\n");
+		}
+
+		message("</ul>\n");
+	}
+
+	env = obj->query_environment();
+
+	if (env) {
+		message("<p>Environment: " + object2string(env) + "</p>\n");
+	}
+
+	inv = obj->query_inventory();
+	sz = sizeof(inv);
+
+	if (sz) {
+		int i;
+
+		message("<p>Inventory:</p>\n");
+		message("<ul>\n");
+
+		for (i = 0; i < sz; i++) {
+			message("<li>" + object2string(inv[i]) + "</li>\n");
+		}
+
+		message("</ul>\n");
+	}
+
+	
+}
+
+private void handle_get_object(string objectname)
+{
+	object header;
+	object obj;
+
+	obj = find_object(objectname);
+
+	if (!obj) {
+		obj = CATALOGD->lookup_object(objectname);
+	}
+
+	if (obj) {
+		header = new_object("~/lwo/http_response");
+
+		header->set_status(200, "Object report");
+
+		message(header->generate_header());
+		message("<html>\n");
+		message("<head>\n");
+		message("<title>Object report</title>\n");
+		message("</head>\n");
+		message("<body>\n");
+		message("<h1 style=\"color: green\">Object report</h1>\n");
+		message("<p>Object name: " + objectname);
+		message("<p>Object owner: " + obj->query_owner());
+
+		if (obj <- LIB_THING) {
+			do_thing(obj);
+		}
+
+		message("</body>\n");
+		message("</html>\n");
+	} else {
+		header = new_object("~/lwo/http_response");
+
+		header->set_status(404, "No such object");
+
+		message(header->generate_header());
+		message("<html>\n");
+		message("<head>\n");
+		message("<title>No such object</title>\n");
+		message("</head>\n");
+		message("<body>\n");
+		message("<h1 style=\"color: red\">No handler</h1>\n");
+		message("<p>" + objectname + " does not exist.");
+		message("</body>\n");
+		message("</html>\n");
+	}
+}
+
+private int handle_get_pattern(string path)
+{
+	string a, b;
+
+	if (sscanf(path, "/%s-%s", a, b) && a == "object") {
+		handle_get_object(b);
+		return 1;
+	}
+
+	return 0;
+}
+
+private void do_formtest()
+{
+	object header;
+
+	header = new_object("~/lwo/http_response");
+
+	header->set_status(200, "Ok");
+
+	message(header->generate_header());
+
+	message("<html>\n");
+	message("<head>\n");
+	message("<title>A test form.</title>\n");
+	message("</head>\n");
+	message("<body>\n");
+	message("<h1>Form test</h1>\n");
+	message("<form action=\"/formtest\" method=\"post\">\n");
+	message("<p>Test box: <input type=\"text\" name=\"testbox\"></p>");
+	message("<input type=\"submit\" name=\"Send\">");
+	message("</form>\n");
+	message("</body>\n");
+	message("</html>\n");
+}
+
+private void do_formtest_post()
+{
+}
+
 private void handle_get()
 {
 	catch {
 		object conn;
 		object header;
+
+		switch(path) {
+		case "/status":
+			do_status();
+			return;
+
+		case "/formtest":
+			do_formtest();
+			return;
+
+		}
+
+		if (handle_get_pattern(path)) {
+			return;
+		}
 
 		header = new_object("~/lwo/http_response");
 
@@ -131,6 +337,13 @@ private int input(string message)
 			handle_get();
 			break;
 
+		default:
+			message(
+				HTTPD->generate_error_page(
+					500, "Bad request",
+					"This server can't handle the " + method + " method yet.\n"
+				)
+			);
 		}
 
 		return MODE_DISCONNECT;
