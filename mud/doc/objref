@@ -1,0 +1,34 @@
+Ways to reference an object
+---------------------------
+
+(work in progress)
+
+First, absolute references:
+
+* Absolute object name
+
+This is the DGD wise name of the object
+
+Example:  /kernel/sys/driver
+
+* Catalog name
+
+References an item in the object catalog.
+
+Example: characters:shentino:spyro
+
+Ways to modify an object reference:
+
+* Containment via local id
+
+An absolute object name, specified either by catalog name or absolute
+name, can be further qualified with a sequence of local IDs that lead
+downward thorugh containment.
+
+Appending a semicolon and a local ID causes the reference to move from
+the object to the contained object with that local ID.  Further steps
+down the hierarchy can be made with further appendings.
+
+You can also go UP by using the reserved ID of ENV.
+
+Example: characters:shentino:spyro;satchel;gem
