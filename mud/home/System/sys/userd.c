@@ -197,7 +197,7 @@ void unblock_connections(varargs object except)
 
 	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
 
-	if (blocked == 0) {
+	if (!blocked) {
 		return;
 	}
 
