@@ -98,7 +98,6 @@ int authenticate(string name, string password)
 	}
 
 	if (accounts[name]->authenticate(password)) {
-		change_password(name, password);
 		return TRUE;
 	}
 
