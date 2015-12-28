@@ -21,14 +21,24 @@
 #include <kotaka/paths/http.h>
 #include <kotaka/paths/system.h>
 #include <kernel/user.h>
+#include <kotaka/log.h>
 
 inherit LIB_SYSTEM_USER;
 
+#define STATE_HEADERS		1
+#define STATE_ENTITY		2
+#define STATE_RESPONDING	3
+
 string request;
+int state;
+mapping headers;
 
 string method;
 string path;
 string version;
+
+string entity;
+int explen;
 
 static void create(int clone)
 {
@@ -38,44 +48,6 @@ static void create(int clone)
 }
 
 private int input(string message);
-
-int login(string str)
-{
-	connection(previous_object());
-
-	request = str + "\n";
-
-	if (sscanf(str, "%s %s %s", method, path, version) != 3) {
-		message(HTTPD->generate_error_page(400, "Bad request"
-			, "The request does not appear to be a valid HTTP/1.1 request.")
-		);
-
-		return MODE_DISCONNECT;
-	}
-
-	return input(str);
-}
-
-int receive_message(string message)
-{
-	request += message + "\n";
-
-	return input(message);
-}
-
-void logout(int quit)
-{
-	destruct_object(this_object());
-}
-
-int message_done()
-{
-	return MODE_DISCONNECT;
-}
-
-private void do_status()
-{
-}
 
 private string simplename(object obj)
 {
@@ -169,8 +141,6 @@ private void do_thing(object obj)
 
 		message("</ul>\n");
 	}
-
-	
 }
 
 private void handle_get_object(string objectname)
@@ -259,10 +229,6 @@ private void do_formtest()
 	message("</html>\n");
 }
 
-private void do_formtest_post()
-{
-}
-
 private void handle_get()
 {
 	catch {
@@ -270,10 +236,6 @@ private void handle_get()
 		object header;
 
 		switch(path) {
-		case "/status":
-			do_status();
-			return;
-
 		case "/formtest":
 			do_formtest();
 			return;
@@ -329,22 +291,42 @@ private void handle_get()
 	}
 }
 
+int receiving_entity;
+
 private int input(string message)
 {
-	if (message == "") {
-		switch(method) {
-		case "GET":
+	switch(method) {
+	case "GET":
+		if (message == "") {
 			handle_get();
 			break;
-
-		default:
-			message(
-				HTTPD->generate_error_page(
-					500, "Bad request",
-					"This server can't handle the " + method + " method yet.\n"
-				)
-			);
 		}
+		return MODE_NOCHANGE;
+
+	case "POST":
+		if (message == "") {
+			entity = "";
+			set_mode(MODE_RAW);
+			receiving_entity = 1;
+			break;
+		}
+
+		if (receiving_entity) {
+			entity += message;
+			
+		}
+
+		return MODE_NOCHANGE;
+
+	default:
+		message(
+			HTTPD->generate_error_page(
+				500, "Bad request",
+				"This server can't handle the " + method + " method yet.\n",
+				"Request:\n",
+				request
+			)
+		);
 
 		return MODE_DISCONNECT;
 	}
@@ -361,4 +343,114 @@ static void self_destruct()
 	if (this_object()) {
 		destruct_object(this_object());
 	}
+}
+
+void spill_post()
+{
+	message(
+		HTTPD->generate_error_page(
+			500, "Unimplemented",
+			"This server doesn't know how to handle POST yet, but got this:\n",
+			entity + "\n"
+		)
+	);
+}
+
+int login(string str)
+{
+	connection(previous_object());
+
+	request = str + "\n";
+
+	if (sscanf(str, "%s %s %s", method, path, version) != 3) {
+		message(HTTPD->generate_error_page(400, "Bad request"
+			, "The request does not appear to be a valid HTTP/1.1 request.")
+		);
+
+		return MODE_DISCONNECT;
+	}
+
+	headers = ([ ]);
+
+	state = STATE_HEADERS;
+
+	return input(str);
+}
+
+int receive_message(string message)
+{
+	switch(state) {
+	case STATE_HEADERS:
+		{
+			string name, value;
+
+			if (message == "") {
+				switch(method) {
+				case "GET":
+					state = STATE_RESPONDING;
+					handle_get();
+					return MODE_DISCONNECT;
+
+				case "POST":
+					LOGD->post_message("debug", LOG_DEBUG, "Collecting entity");
+					state = STATE_ENTITY;
+					entity = "";
+					set_mode(MODE_RAW);
+
+					{
+						string cl;
+
+						cl = headers["Content-Length"];
+
+						if (!cl) {
+							message(HTTPD->generate_error_page(400, "Bad request"
+								, "POST sent without a Content-Length header.")
+							);
+							return MODE_DISCONNECT;
+						}
+
+						if (!sscanf(cl, "%d", explen)) {
+							message(HTTPD->generate_error_page(400, "Bad request"
+								, "POST sent with malformed Content-Length header.")
+							);
+						}
+					}
+
+					return MODE_NOCHANGE;
+				}
+			}
+
+			if (sscanf(message, "%s: %s", name, value) != 2) {
+				message(HTTPD->generate_error_page(400, "Bad request"
+					, "Your browser sent malformed headers.")
+				);
+				return MODE_DISCONNECT;
+			}
+
+			headers[name] = value;
+			LOGD->post_message("debug", LOG_DEBUG, "Received header " + name + " with value " + value);
+		}
+		return MODE_NOCHANGE;
+
+	case STATE_ENTITY:
+		entity += message;
+
+		if (strlen(entity) >= explen) {
+			spill_post();
+			return MODE_DISCONNECT;
+		}
+
+		call_out("spill_post", 1.0);
+		return MODE_NOCHANGE;
+	}
+}
+
+void logout(int quit)
+{
+	destruct_object(this_object());
+}
+
+int message_done()
+{
+	return MODE_NOCHANGE;
 }
