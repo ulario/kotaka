@@ -22,6 +22,7 @@
 #include <kotaka/paths/system.h>
 #include <kernel/user.h>
 #include <kotaka/log.h>
+#include <kotaka/assert.h>
 
 inherit LIB_SYSTEM_USER;
 
@@ -42,6 +43,9 @@ int explen;
 
 static void create(int clone)
 {
+	explen = -1;
+	state = -1;
+
 	if (clone) {
 		call_out("self_destruct", 5);
 	}
@@ -313,7 +317,6 @@ private int input(string message)
 
 		if (receiving_entity) {
 			entity += message;
-			
 		}
 
 		return MODE_NOCHANGE;
@@ -354,6 +357,8 @@ void spill_post()
 			entity + "\n"
 		)
 	);
+
+	disconnect();
 }
 
 int login(string str)
@@ -392,7 +397,6 @@ int receive_message(string message)
 					return MODE_DISCONNECT;
 
 				case "POST":
-					LOGD->post_message("debug", LOG_DEBUG, "Collecting entity");
 					state = STATE_ENTITY;
 					entity = "";
 					set_mode(MODE_RAW);
@@ -428,19 +432,18 @@ int receive_message(string message)
 			}
 
 			headers[name] = value;
-			LOGD->post_message("debug", LOG_DEBUG, "Received header " + name + " with value " + value);
 		}
 		return MODE_NOCHANGE;
 
 	case STATE_ENTITY:
+		ASSERT(explen > 0);
+
 		entity += message;
 
 		if (strlen(entity) >= explen) {
 			spill_post();
-			return MODE_DISCONNECT;
 		}
 
-		call_out("spill_post", 1.0);
 		return MODE_NOCHANGE;
 	}
 }
