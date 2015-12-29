@@ -299,7 +299,6 @@ void upgrade_modules()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
-	list -= ({ "System" });
 
 	scramble(list);
 
