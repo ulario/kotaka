@@ -58,7 +58,7 @@ void upgrade_system_2()
 
 	compile_object(MODULED);
 
-	SUSPENDD->queue_work("upgrade_system_2");
+	SUSPENDD->queue_work("upgrade_system_3");
 }
 
 void upgrade_system_3()
