@@ -296,7 +296,7 @@ void upgrade_modules()
 	int sz;
 	string *list;
 
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(SYSTEM());
 
 	list = map_indices(modules);
 
