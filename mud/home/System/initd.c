@@ -414,49 +414,14 @@ string query_version()
 
 void upgrade_system()
 {
-	string *safe_versions;
-	string *users;
-	int sz;
+	compile_object("sys/upgraded");
 
-	safe_versions = explode(read_file("~/data/safe_upgrade_versions"), "\n");
-
-	for (sz = sizeof(safe_versions) - 1; sz >= 0; --sz) {
-		if (safe_versions[sz] == KOTAKA_VERSION) {
-			break;
-		}
-	}
-
-	if (sz == -1) {
-		error("Cannot safely upgrade from version " + KOTAKA_VERSION);
-	}
-
-	SUSPENDD->suspend_system();
-
-	compile_object("initd");
-
-	SUSPENDD->queue_work("upgrade_system_2");
+	"sys/upgraded"->upgrade_system();
 }
 
 void upgrade_system_2()
 {
-	mixed **dir;
-	string *names;
-	object *objs;
-	int sz;
-
-	ACCESS_CHECK(SYSTEM() || KERNEL());
-
-	dir = get_dir("sys/upgrade/*");
-	names = dir[0];
-	objs = dir[3];
-
-	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
-		if (objs[sz]) {
-			destruct_object(objs[sz]);
-		}
-	}
-
-	compile_object("sys/upgrade/1");
+	upgrade_system();
 }
 
 void upgrade_system_3()
