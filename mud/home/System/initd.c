@@ -424,7 +424,7 @@ void upgrade_system_2()
 	upgrade_system();
 }
 
-void upgrade_system_3()
+void upgrade_module()
 {
 	ACCESS_CHECK(SYSTEM());
 
