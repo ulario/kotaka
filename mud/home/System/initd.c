@@ -419,11 +419,6 @@ void upgrade_system()
 	"sys/upgraded"->upgrade_system();
 }
 
-void upgrade_system_2()
-{
-	upgrade_system();
-}
-
 void upgrade_module()
 {
 	ACCESS_CHECK(SYSTEM());
