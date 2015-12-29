@@ -48,6 +48,21 @@ void upgrade_system()
 	}
 
 	SUSPENDD->suspend_system();
+	SUSPENDD->queue_work("upgrade_system_2");
+}
+
+void upgrade_system_2()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	compile_object(MODULED);
+
+	SUSPENDD->queue_work("upgrade_system_2");
+}
+
+void upgrade_system_3()
+{
+	ACCESS_CHECK(SYSTEM());
 
 	MODULED->upgrade_modules();
 }
