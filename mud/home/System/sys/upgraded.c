@@ -33,6 +33,8 @@ void upgrade_system()
 	string *users;
 	int sz;
 
+	ACCESS_CHECK(SYSTEM());
+
 	safe_versions = explode(read_file("~/data/safe_upgrade_versions"), "\n");
 
 	for (sz = sizeof(safe_versions) - 1; sz >= 0; --sz) {
