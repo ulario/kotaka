@@ -23,6 +23,7 @@
 #include <kernel/user.h>
 #include <kotaka/log.h>
 #include <kotaka/assert.h>
+#include <type.h>
 
 inherit LIB_SYSTEM_USER;
 
@@ -147,18 +148,55 @@ private void do_thing(object obj)
 	}
 }
 
+private mixed string2object(string str)
+{
+	string semisuffix;
+	object obj;
+
+	if (sscanf(str, "%s;%s", str, semisuffix)) {
+		semisuffix = ";" + semisuffix;
+	}
+
+	obj = find_object(str);
+
+	if (!obj) {
+		obj = CATALOGD->lookup_object(str);
+	}
+
+	if (!obj) {
+		return "Could not find " + str;
+	}
+
+	if (semisuffix) {
+		string *parts;
+		int i;
+		int sz;
+
+		parts = explode(semisuffix[1 ..], ";");
+		sz = sizeof(parts);
+
+		for (i = 0; i < sz; i++) {
+			obj = obj->find_by_id(parts[i]);
+
+			if (!obj) {
+				return "Could not find " + parts[i] + " within " + str;
+			}
+
+			str += ";" + parts[i];
+		}
+	}
+
+	return obj;
+}
+
 private void handle_get_object(string objectname)
 {
 	object header;
-	object obj;
+	mixed obj;
 
-	obj = find_object(objectname);
+	obj = string2object(objectname);
 
-	if (!obj) {
-		obj = CATALOGD->lookup_object(objectname);
-	}
-
-	if (obj) {
+	if (typeof(obj) == T_OBJECT) {
 		header = new_object("~/lwo/http_response");
 
 		header->set_status(200, "Object report");
@@ -190,8 +228,8 @@ private void handle_get_object(string objectname)
 		message("<title>No such object</title>\n");
 		message("</head>\n");
 		message("<body>\n");
-		message("<h1 style=\"color: red\">No handler</h1>\n");
-		message("<p>" + objectname + " does not exist.");
+		message("<h1 style=\"color: red\">No such object</h1>\n");
+		message("<p>" + obj + "</p>");
 		message("</body>\n");
 		message("</html>\n");
 	}
