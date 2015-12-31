@@ -26,6 +26,8 @@
 #include <status.h>
 #include <type.h>
 
+#define MODULE_BOOT_TICKS 100000000
+
 inherit SECOND_AUTO;
 inherit UTILITY_COMPILE;
 
@@ -200,7 +202,7 @@ void upgrade_module(string module)
 	}
 
 	rlimits(0; -1) {
-		rlimits(0; 100000000) {
+		rlimits(0; MODULE_BOOT_TICKS) {
 			(USR_DIR + "/" + module + "/initd")->upgrade_module();
 		}
 	}
@@ -361,7 +363,7 @@ void boot_module(string module)
 	}
 
 	rlimits(0; -1) {
-		rlimits(0; 100000000) {
+		rlimits(0; MODULE_BOOT_TICKS) {
 			call_limited("load_module", module);
 		}
 	}
