@@ -112,8 +112,6 @@ void suspend_callouts()
 			return;
 		}
 
-		LOGD->post_message("system", LOG_NOTICE, "Suspending callouts");
-
 		suspend = -1;
 
 		if (handle) {
@@ -241,8 +239,6 @@ void release_callouts()
 			return;
 		}
 
-		LOGD->post_message("system", LOG_NOTICE, "Releasing callouts");
-
 		suspend = 1;
 
 		/* Don't send any more callouts our way */
@@ -297,7 +293,6 @@ static void do_release()
 			}
 		} else {
 			RSRCD->release_callout(nil, 0);
-			LOGD->post_message("system", LOG_NOTICE, "Released callouts");
 
 			if (cmap) {
 				free_queue();
