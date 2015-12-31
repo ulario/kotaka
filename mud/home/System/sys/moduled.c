@@ -98,6 +98,7 @@ private void reset_modules_list()
 
 	dirs = get_dir(USR_DIR + "/*")[0];
 	dirs -= ({ "System" });
+	dirs += ({ nil });
 
 	for (sz = sizeof(dirs) - 1; sz >= 0; --sz) {
 		string path;
