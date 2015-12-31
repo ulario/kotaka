@@ -307,6 +307,7 @@ void upgrade_modules()
 	ACCESS_CHECK(SYSTEM());
 
 	list = map_indices(modules);
+	list += ({ "System" });
 
 	scramble(list);
 
