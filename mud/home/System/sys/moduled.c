@@ -70,6 +70,15 @@ private void scramble(mixed *arr)
 	}
 }
 
+private string initd_of(string module)
+{
+	if (module) {
+		return USR_DIR + "/" + module + "/initd";
+	} else {
+		return "/initd";
+	}
+}
+
 private void freeze_module(string module)
 {
 	string *rsrc_names;
