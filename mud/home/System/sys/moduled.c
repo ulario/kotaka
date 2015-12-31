@@ -232,7 +232,6 @@ void prepare_reboot_modules()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
-	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -258,7 +257,6 @@ void reboot_modules()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
-	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -284,7 +282,6 @@ void hotboot_modules()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
-	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
