@@ -103,7 +103,7 @@ private void reset_modules_list()
 		string path;
 		string module;
 
-		path = USR_DIR + "/" + dirs[sz] + "/initd";
+		path = initd_of(dirs[sz]);
 
 		if (find_object(path)) {
 			modules[dirs[sz]] = 1;
@@ -126,7 +126,7 @@ private void send_module_boot_signal(string module)
 		}
 
 		catch {
-			find_object(USR_DIR + "/" + others[sz] + "/initd")
+			find_object(initd_of(others[sz]))
 			->booted_module(module);
 		}
 	}
@@ -147,7 +147,7 @@ private void send_module_shutdown_signal(string module)
 		}
 
 		catch {
-			find_object(USR_DIR + "/" + others[sz] + "/initd")
+			find_object(initd_of(others[sz]))
 			->shutdown_module(module);
 		}
 	}
@@ -212,14 +212,14 @@ void upgrade_module(string module)
 
 	rlimits(0; -1) {
 		rlimits(0; MODULE_BOOT_TICKS) {
-			(USR_DIR + "/" + module + "/initd")->upgrade_module();
+			initd_of(module)->upgrade_module();
 		}
 	}
 }
 
 static void load_module(string module)
 {
-	load_object(USR_DIR + "/" + module + "/initd");
+	load_object(initd_of(module));
 }
 
 /* initd hooks */
@@ -244,7 +244,7 @@ void prepare_reboot_modules()
 		}
 
 		catch {
-			(USR_DIR + "/" + module + "/initd")->prepare_reboot();
+			initd_of(module)->prepare_reboot();
 		}
 	}
 }
@@ -269,7 +269,7 @@ void reboot_modules()
 		}
 
 		catch {
-			(USR_DIR + "/" + module + "/initd")->reboot();
+			initd_of(module)->reboot();
 		}
 	}
 }
@@ -294,7 +294,7 @@ void hotboot_modules()
 		}
 
 		catch {
-			(USR_DIR + "/" + module + "/initd")->hotboot();
+			initd_of(module)->hotboot();
 		}
 	}
 }
@@ -322,12 +322,12 @@ void upgrade_modules()
 			}
 
 			rlimits(0; 100000) {
-				if (!file_info(USR_DIR + "/" + module + "/initd.c")) {
+				if (!file_info(initd_of(module) + ".c")) {
 					call_out("shutdown_module", 0, module);
 				} else {
 					catch {
 						LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + module);
-						compile_object(USR_DIR + "/" + module + "/initd");
+						compile_object(initd_of(module));
 
 						SUSPENDD->queue_work("upgrade_module", module);
 					}
@@ -349,7 +349,7 @@ void boot_module(string module)
 	string *others;
 	int sz;
 
-	if (!file_info(USR_DIR + "/" + module + "/initd.c")) {
+	if (!file_info(initd_of(module) + ".c")) {
 		error("No initd for module");
 	}
 
