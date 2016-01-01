@@ -78,20 +78,38 @@ void main(object actor, mapping roles)
 		if (!check_module_name(module)) {
 			return;
 		}
+
+		if (module == "Ecru") {
+			module = nil;
+		}
+
 		MODULED->boot_module(module);
 		break;
+
 	case "reboot":
 		if (!check_module_name(module)) {
 			return;
 		}
+
+		if (module == "Ecru") {
+			module = nil;
+		}
+
 		MODULED->reboot_module(module);
 		break;
+
 	case "shutdown":
 		if (!check_module_name(module)) {
 			return;
 		}
+
+		if (module == "Ecru") {
+			module = nil;
+		}
+
 		MODULED->shutdown_module(module);
 		break;
+
 	default:
 		usage();
 	}
