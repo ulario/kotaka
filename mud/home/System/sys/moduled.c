@@ -362,7 +362,7 @@ void boot_module(string module)
 		return;
 	}
 
-	if (!sizeof(KERNELD->query_users() & ({ module }))) {
+	if (module && !sizeof(KERNELD->query_users() & ({ module }))) {
 		KERNELD->add_user(module);
 	}
 
