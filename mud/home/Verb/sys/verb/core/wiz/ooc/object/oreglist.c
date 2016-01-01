@@ -38,16 +38,18 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	first = KERNELD->first_link(roles["raw"]);
+	owner = roles["raw"];
+
+	first = KERNELD->first_link(owner == "Ecru" ? nil : owner);
 
 	if (!first) {
-		send_out(roles["raw"] + " owns no objects.\n");
+		send_out(owner + " owns no objects.\n");
 		return;
 	}
 
 	obj = first;
 
-	send_out("Objects owned by " + roles["raw"] + ":\n");
+	send_out("Objects owned by " + owner + ":\n");
 
 	do {
 		send_out(object_name(obj) + "\n");
