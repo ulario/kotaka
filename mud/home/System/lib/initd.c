@@ -117,7 +117,7 @@ static void purge_orphans(string module)
 
 			file = pinfo->query_path();
 
-			if (!sscanf(file, USR_DIR + "/" + module + "/%*s")) {
+			if (DRIVER->creator(file) != module) {
 				continue;
 			}
 
