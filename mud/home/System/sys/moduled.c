@@ -194,7 +194,7 @@ static void purge_module_tick(string module, int reboot)
 	}
 
 	modules[module] = nil;
-	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + module);
+	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + (module ? module : "Ecru"));
 
 	thaw_module(module);
 
@@ -327,7 +327,7 @@ void upgrade_modules()
 					call_out("shutdown_module", 0, module);
 				} else {
 					catch {
-						LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + module);
+						LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + (module ? module : "Ecru"));
 						compile_object(initd_of(module));
 
 						SUSPENDD->queue_work("upgrade_module", module);
@@ -378,13 +378,13 @@ void boot_module(string module)
 
 	modules[module] = 1;
 
-	if (!sizeof(KERNELD->query_global_access() & ({ module }))) {
+	if (module && !sizeof(KERNELD->query_global_access() & ({ module }))) {
 		call_out("shutdown_module", 0, module);
 
 		error("Failure to grant global access by " + module);
 	}
 
-	LOGD->post_message("system", LOG_NOTICE, "Booted " + module);
+	LOGD->post_message("system", LOG_NOTICE, "Booted " + (module ? module : "Ecru"));
 
 	send_module_boot_signal(module);
 }
@@ -404,7 +404,7 @@ void reboot_module(string module)
 	freeze_module(module);
 	modules[module] = -1;
 
-	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
+	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + (module ? module : "Ecru"));
 
 	send_module_shutdown_signal(module);
 
@@ -428,7 +428,7 @@ void shutdown_module(string module)
 	freeze_module(module);
 	modules[module] = -1;
 
-	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + module);
+	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + (module ? module : "Ecru"));
 
 	send_module_shutdown_signal(module);
 
