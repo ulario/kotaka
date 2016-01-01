@@ -104,7 +104,11 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 
 	path = find_object(DRIVER)->normalize_path(path, "/");
 
-	dir = get_dir(path + "/*");
+	if (path[strlen(path) - 1] != '/') {
+		path += "/";
+	}
+
+	dir = get_dir(path + "*");
 	names = dir[0];
 	sizes = dir[1];
 
@@ -115,7 +119,7 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 		name = names[i];
 
 		if (sizes[i] == -2) {
-			scan_objects(path + "/" + name, libqueue, objqueue, notqueue);
+			scan_objects(path + name, libqueue, objqueue, notqueue);
 			continue;
 		}
 
@@ -124,7 +128,7 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 			mixed *status;
 			int oindex;
 
-			opath = path + "/" + name[0 .. strlen(name) - 3];
+			opath = path + name[0 .. strlen(name) - 3];
 
 			status = status(opath);
 
