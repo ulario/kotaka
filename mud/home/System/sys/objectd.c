@@ -169,8 +169,8 @@ private void compile_common(string owner, string path, string *source, string *i
 		error("Failure to inherit SECOND_AUTO: " + path);
 	}
 
-	if (pinfo && owner) {
-		initd = find_object(USR_DIR + "/" + owner + "/initd");
+	if (pinfo) {
+		initd = MODULED->initd_of(owner);
 	}
 
 	if (initd) {
@@ -196,7 +196,7 @@ private void set_flags(string path)
 
 	creator = DRIVER->creator(path);
 
-	is_initd = creator ? (path == USR_DIR + "/" + creator + "/initd") : 0;
+	is_initd = (path == MODULED->initd_of(creator));
 }
 
 void upgrade_objects()
@@ -533,7 +533,7 @@ int forbid_inherit(string from, string path, int priv)
 
 	ACCESS_CHECK(KERNEL());
 
-	initd = find_object(USR_DIR + "/" + DRIVER->creator(path) + "/initd");
+	initd = find_object(MODULED->initd_of(DRIVER->creator(path)));
 
 	if (initd) {
 		return initd->forbid_inherit(from, path, priv);
@@ -689,7 +689,7 @@ void recompile_everything()
 
 			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
 				libqueue->push_back(path);
-			} else if (sscanf(path, USR_DIR + "/%*s/initd")) {
+			} else if (sscanf(path, USR_DIR + "/%*s/initd") || path == "/initd") {
 				initdqueue->push_back(path);
 			} else {
 				objqueue->push_back(path);
