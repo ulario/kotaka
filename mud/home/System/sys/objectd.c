@@ -170,7 +170,7 @@ private void compile_common(string owner, string path, string *source, string *i
 	}
 
 	if (pinfo) {
-		initd = MODULED->initd_of(owner);
+		initd = find_object(MODULED->initd_of(owner));
 	}
 
 	if (initd) {
