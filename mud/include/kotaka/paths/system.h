@@ -55,6 +55,7 @@
 #define LIB_SYSTEM_WIZTOOL	(USR_DIR + "/System/lib/wiztool")
 #define LIB_USERD		(USR_DIR + "/System/lib/userd")
 #define LIB_INITD		(USR_DIR + "/System/lib/initd")
+#define LIB_SYSTEM		(USR_DIR + "/System/lib/system")
 #define SECOND_AUTO		(USR_DIR + "/System/lib/auto/second_auto")
 #define UTILITY_STRING		(USR_DIR + "/System/lib/utility/string")
 #define UTILITY_COMPILE		(USR_DIR + "/System/lib/utility/compile")

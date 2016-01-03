@@ -18,9 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/text.h>
-
+#include <kotaka/paths/system.h>
 #include <status.h>
 #include <type.h>
+
+inherit LIB_SYSTEM;
 
 string hex(int i);
 string bin(int i);
@@ -383,39 +385,6 @@ int strcmp(string s1, string s2)
 	}
 
 	return -1;
-}
-
-string replace(string input, string from, string to)
-{
-	string *arr;
-
-	arr = explode(from + input + from, from);
-
-	return implode(arr, to);
-}
-
-string quote_unescape(string input)
-{
-	input = replace(input, "\\t", "\t");
-	input = replace(input, "\\r", "\r");
-	input = replace(input, "\\n", "\n");
-	input = replace(input, "\\\"", "\"");
-	input = replace(input, "\\0", "\000");
-	input = replace(input, "\\\\", "\\");
-
-	return input;
-}
-
-string quote_escape(string input)
-{
-	input = replace(input, "\\", "\\\\");
-	input = replace(input, "\000", "\\0");
-	input = replace(input, "\"", "\\\"");
-	input = replace(input, "\n", "\\n");
-	input = replace(input, "\r", "\\r");
-	input = replace(input, "\t", "\\t");
-
-	return input;
 }
 
 string mixed_sprint(mixed data, varargs mapping seen);

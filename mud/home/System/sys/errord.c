@@ -26,6 +26,7 @@
 #include <trace.h>
 
 inherit SECOND_AUTO;
+inherit LIB_SYSTEM;
 
 static void create()
 {
@@ -236,7 +237,7 @@ void atomic_error(string error, int atom, mixed **trace)
 		throwme["errstr"] = error;
 		throwme["trace"] = trace;
 
-		throwstr = STRINGD->mixed_sprint(throwme);
+		throwstr = mixed_sprint(throwme);
 
 		error(throwstr);
 	} : {
