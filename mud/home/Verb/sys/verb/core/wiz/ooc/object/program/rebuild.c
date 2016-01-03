@@ -38,5 +38,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	OBJECTD->recompile_everything();
+	SYSTEM_SUBD->recompile_everything();
 }

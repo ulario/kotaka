@@ -38,6 +38,7 @@
 #define PROXYD		(USR_DIR + "/System/sys/proxyd")
 #define SECRETD		(USR_DIR + "/System/sys/secretd")
 #define STATUSD		(USR_DIR + "/System/sys/statusd")
+#define SYSTEM_SUBD	(USR_DIR + "/System/sys/subd")
 #define SUSPENDD	(USR_DIR + "/System/sys/suspendd")
 #define SWAPD		(USR_DIR + "/System/sys/swapd")
 #define SYSTEM_USERD	(USR_DIR + "/System/sys/userd")
