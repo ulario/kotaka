@@ -45,20 +45,6 @@ static void create()
 	DRIVER->set_object_manager(this_object());
 }
 
-void enable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
-
-	DRIVER->set_object_manager(this_object());
-}
-
-void disable()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN() || INTERFACE());
-
-	DRIVER->set_object_manager(nil);
-}
-
 /* private */
 
 private string *fetch_from_initd(object initd, string path)
