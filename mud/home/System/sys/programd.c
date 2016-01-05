@@ -270,7 +270,7 @@ atomic void remove_program(int index)
 	object pinfo;
 	string path;
 
-	ACCESS_CHECK(previous_program() == OBJECTD);
+	ACCESS_CHECK(SYSTEM());
 
 	if (!progdb) {
 		return;
