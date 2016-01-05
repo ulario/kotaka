@@ -54,19 +54,32 @@ void upgrade_system()
 
 void upgrade_system_2()
 {
+	compile_object(PROGRAMD);
+
+	SUSPENDD->queue_work("upgrade_system_3");
+}
+
+void upgrade_system_3()
+{
+	int oid, mid;
+
 	ACCESS_CHECK(SYSTEM());
 
-	DRIVER->set_object_manager(nil);
+	oid = status(OBJECTD, O_INDEX);
+	mid = status(MODULED, O_INDEX);
 
 	destruct_object(OBJECTD);
 	destruct_object(MODULED);
 
+	PROGRAMD->remove_program(oid);
+	PROGRAMD->remove_program(mid);
+
 	compile_object(MODULED);
 	compile_object(OBJECTD);
 	compile_object(MODULED);
 	compile_object(OBJECTD);
 
-	SUSPENDD->queue_work("upgrade_system_3");
+	SUSPENDD->queue_work("upgrade_system_4");
 }
 
 void upgrade_system_3()
