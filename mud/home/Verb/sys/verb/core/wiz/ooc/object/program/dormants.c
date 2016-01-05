@@ -37,7 +37,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	arr = OBJECTD->query_dormant();
+	arr = SYSTEM_SUBD->query_dormant();
 
 	if (!(sz = arr->query_size())) {
 		send_out("There are no dormant LPC source files.\n");

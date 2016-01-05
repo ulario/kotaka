@@ -38,5 +38,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	OBJECTD->full_reset();
+	SYSTEM_SUBD->full_reset();
 }
