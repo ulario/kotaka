@@ -20,6 +20,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <kotaka/version.h>
+#include <status.h>
 
 inherit SECOND_AUTO;
 
