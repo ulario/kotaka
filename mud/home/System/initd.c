@@ -429,6 +429,4 @@ void upgrade_module()
 	set_limits();
 
 	purge_orphans("System");
-
-	MODULED->upgrade_modules();
 }
