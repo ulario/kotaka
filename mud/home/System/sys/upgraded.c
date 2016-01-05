@@ -56,6 +56,7 @@ void upgrade_system_2()
 {
 	ACCESS_CHECK(SYSTEM());
 
+	destruct_object(MODULED);
 	compile_object(MODULED);
 
 	SUSPENDD->queue_work("upgrade_system_3");
