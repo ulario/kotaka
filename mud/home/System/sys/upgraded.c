@@ -56,8 +56,15 @@ void upgrade_system_2()
 {
 	ACCESS_CHECK(SYSTEM());
 
+	DRIVER->set_object_manager(nil);
+
+	destruct_object(OBJECTD);
 	destruct_object(MODULED);
+
 	compile_object(MODULED);
+	compile_object(OBJECTD);
+	compile_object(MODULED);
+	compile_object(OBJECTD);
 
 	SUSPENDD->queue_work("upgrade_system_3");
 }
