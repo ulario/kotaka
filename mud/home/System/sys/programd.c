@@ -294,7 +294,7 @@ atomic void remove_program(int index)
 
 atomic void reset_program_database()
 {
-	ACCESS_CHECK(previous_program() == OBJECTD);
+	ACCESS_CHECK(SYSTEM());
 
 	destruct_database();
 	create_database();
