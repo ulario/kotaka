@@ -97,7 +97,6 @@ private void reset_modules_list()
 	int sz;
 
 	dirs = get_dir(USR_DIR + "/*")[0];
-	dirs -= ({ "System" });
 	dirs += ({ nil });
 
 	for (sz = sizeof(dirs) - 1; sz >= 0; --sz) {
@@ -233,6 +232,7 @@ void prepare_reboot_modules()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
+	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -258,6 +258,7 @@ void reboot_modules()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
+	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -283,6 +284,7 @@ void hotboot_modules()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
+	list -= ({ "System" });
 	scramble(list);
 
 	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
@@ -308,7 +310,6 @@ void upgrade_modules()
 	ACCESS_CHECK(SYSTEM());
 
 	list = map_indices(modules);
-	list += ({ "System" });
 
 	scramble(list);
 
