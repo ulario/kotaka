@@ -74,15 +74,15 @@ void upgrade_system_3()
 	PROGRAMD->remove_program(oid);
 	PROGRAMD->remove_program(mid);
 
-	compile_object(MODULED);
-	compile_object(OBJECTD);
-	compile_object(MODULED);
-	compile_object(OBJECTD);
+	compile_object(MODULED);	/* required by objectd */
+	compile_object(OBJECTD);	/* restore object manager */
+	compile_object(MODULED);	/* compile for objectd witness */
+	compile_object(OBJECTD);	/* compile for objectd witness */
 
 	SUSPENDD->queue_work("upgrade_system_4");
 }
 
-void upgrade_system_3()
+void upgrade_system_4()
 {
 	ACCESS_CHECK(SYSTEM());
 
