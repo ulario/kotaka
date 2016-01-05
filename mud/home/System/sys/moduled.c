@@ -30,6 +30,7 @@
 
 inherit SECOND_AUTO;
 inherit UTILITY_COMPILE;
+inherit LIB_SYSTEM;
 
 mapping modules;
 
@@ -67,15 +68,6 @@ private void scramble(mixed *arr)
 		tmp = arr[i];
 		arr[i] = arr[j];
 		arr[j] = tmp;
-	}
-}
-
-string initd_of(string module)
-{
-	if (module) {
-		return USR_DIR + "/" + module + "/initd";
-	} else {
-		return "/initd";
 	}
 }
 

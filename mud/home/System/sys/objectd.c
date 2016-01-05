@@ -29,6 +29,7 @@
 #include <status.h>
 
 inherit SECOND_AUTO;
+inherit LIB_SYSTEM;
 
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
@@ -117,7 +118,7 @@ private void compile_common(string owner, string path, string *source, string *i
 	}
 
 	if (pinfo) {
-		initd = find_object(MODULED->initd_of(owner));
+		initd = find_object(initd_of(owner));
 	}
 
 	if (initd) {
@@ -143,7 +144,7 @@ private void set_flags(string path)
 
 	creator = DRIVER->creator(path);
 
-	is_initd = (path == MODULED->initd_of(creator));
+	is_initd = (path == initd_of(creator));
 }
 
 void upgrade_objects()
@@ -480,7 +481,7 @@ int forbid_inherit(string from, string path, int priv)
 
 	ACCESS_CHECK(KERNEL());
 
-	initd = find_object(MODULED->initd_of(DRIVER->creator(path)));
+	initd = find_object(initd_of(DRIVER->creator(path)));
 
 	if (initd) {
 		return initd->forbid_inherit(from, path, priv);

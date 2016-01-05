@@ -146,3 +146,12 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		return "<" + object_name(data) + ">";
 	}
 }
+
+string initd_of(string module)
+{
+	if (module) {
+		return USR_DIR + "/" + module + "/initd";
+	} else {
+		return "/initd";
+	}
+}
