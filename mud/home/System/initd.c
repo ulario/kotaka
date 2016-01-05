@@ -129,7 +129,7 @@ static void boot_2()
 		LOGD->post_message("system", LOG_INFO, "System loaded");
 		LOGD->post_message("system", LOG_INFO, "-------------");
 
-		OBJECTD->discover_objects();
+		SYSTEM_SUBD->discover_objects();
 		CLONED->discover_clones();
 
 		call_out("boot_3", 0);
