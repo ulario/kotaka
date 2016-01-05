@@ -21,6 +21,7 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
 inherit LIB_INITD;
@@ -80,4 +81,24 @@ void upgrade_module()
 	set_limits();
 
 	purge_orphans("Text");
+}
+
+private void booted_channel()
+{
+	object *users;
+	int sz;
+
+	users = TEXT_USERD->query_users() + TEXT_USERD->query_guests();
+
+	for (sz = sizeof(users); --sz >= 0; ) {
+		users[sz]->subscribe_channels();
+	}
+}
+
+void booted_module(string module)
+{
+	switch(module) {
+	case "Channel":
+		booted_channel();
+	}
 }

@@ -328,9 +328,6 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 void login_user(object user)
 {
 	string name;
-	string *channels;
-
-	int i, sz;
 
 	name = user->query_name();
 
@@ -341,20 +338,7 @@ void login_user(object user)
 	}
 
 	user->set_mode(MODE_ECHO);
-
-	channels = ACCOUNTD->query_account_property(name, "channels");
-
-	if (channels) {
-		sz = sizeof(channels);
-
-		for (i = 0; i < sz; i++) {
-			if (CHANNELD->test_channel(channels[i])) {
-				CHANNELD->subscribe_channel(channels[i], user);
-			} else {
-				user->message("Warning: " + channels[i] + " does not exist.\n");
-			}
-		}
-	}
+	user->subscribe_channels();
 }
 
 void send_login_message(string name)

@@ -19,6 +19,7 @@
  */
 #include <kernel/user.h>
 #include <kotaka/assert.h>
+#include <kotaka/paths/account.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/utility.h>
 #include <kotaka/paths/system.h>
@@ -207,5 +208,24 @@ void channel_message(string channel, string stamp, string sender, string message
 	} else {
 		send_out("[\033[1m" + channel + "\033[0m] \033[1;32m" + stamp +
 			"\033[0m " + message + "\n");
+	}
+}
+
+void subscribe_channels()
+{
+	string *channels;
+
+	channels = ACCOUNTD->query_account_property(username, "channels");
+
+	if (channels) {
+		int sz;
+
+		for (sz = sizeof(channels); --sz >= 0; ) {
+			if (CHANNELD->test_channel(channels[sz])) {
+				CHANNELD->subscribe_channel(channels[sz], this_object());
+			} else {
+				message("Warning: " + channels[sz] + " does not exist.\n");
+			}
+		}
 	}
 }
