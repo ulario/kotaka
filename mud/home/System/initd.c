@@ -430,3 +430,8 @@ void upgrade_module()
 
 	purge_orphans("System");
 }
+
+void queue_configure_logging()
+{
+	call_out("configure_logging", 0);
+}

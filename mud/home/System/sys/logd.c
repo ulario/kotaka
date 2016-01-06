@@ -56,10 +56,9 @@ kuser: message a klib user
 static void create()
 {
 	facilities = ([ ]);
-	filebufs = ([ ]);
 	callout = 0;
 
-	load_object("~/lwo/logbuf");
+	INITD->queue_configure_logging();
 }
 
 private void schedule()
@@ -155,6 +154,10 @@ private void append_node(string file, string fragment)
 
 	max = status(ST_STRSIZE);
 
+	if (max > 4096) {
+		max = 4096;
+	}
+
 	while (len = strlen(fragment)) {
 		int spare;
 
@@ -164,15 +167,18 @@ private void append_node(string file, string fragment)
 			node[1] += fragment;
 
 			return;
-		} else if (spare > 0) {
+		} else {
 			mixed *newnode;
 
-			node[1] += fragment[0 .. spare - 1];
-			fragment = fragment[spare ..];
+			if (spare > 0) {
+				node[1] += fragment[0 .. spare - 1];
+				fragment = fragment[spare ..];
+			}
 
 			newnode = ({ node, "", nil });
 			node[2] = newnode;
 			header[1] = newnode;
+			node = newnode;
 		}
 	}
 }
@@ -226,6 +232,8 @@ void flush()
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
 
 	rlimits(0; -1) {
+
+	while (filebufs) {
 		files = map_indices(filebufs);
 		text_deques = map_values(filebufs);
 
@@ -239,6 +247,11 @@ void flush()
 
 				if (!text) {
 					filebufs[files[i]] = nil;
+
+					if (!map_sizeof(filebufs)) {
+						filebufs = nil;
+					}
+
 					continue;
 				}
 
@@ -247,13 +260,13 @@ void flush()
 				}
 			}
 		}
+
+		if (filebufs && map_sizeof(filebufs)) {
+			schedule();
+		}
 	}
 
-	if (map_sizeof(filebufs)) {
-		schedule();
-	}
-
-	if (map_sizeof(buffers)) {
+	while (map_sizeof(buffers)) {
 		string *files;
 		int sz;
 
@@ -263,7 +276,9 @@ void flush()
 
 		write_node(files[random(sz)]);
 
-		call_out("flush", 0);
+		schedule();
+	}
+
 	}
 }
 
@@ -424,7 +439,6 @@ void post_message(string facility, int priority, string message)
 	CHECKARG(priority >= 0, 2, "post_message");
 	CHECKARG(priority <= 7, 2, "post_message");
 	CHECKARG(message, 3, "post_message");
-	CHECKARG(message != "", 3, "post_message");
 
 	catch {
 		timestamp = timestamp();
@@ -484,7 +498,16 @@ void post_message(string facility, int priority, string message)
 				send_to_target(targets[index], message);
 			}
 		} else {
-			DRIVER->message(message + "\n");
+			if (strlen(message) > 200) {
+				string head, tail;
+
+				head = message[.. 99];
+				tail = message[strlen(message) - 100 ..];
+
+				message = head + tail;
+			}
+
+			DRIVER->message(facility + " " + priority + ": " + message + "\n");
 		}
 	} : {
 		DRIVER->message("Error logging: " + creator + ": " + facility + ": " + message + "\n");
