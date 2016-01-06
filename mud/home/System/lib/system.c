@@ -155,3 +155,113 @@ string initd_of(string module)
 		return "/initd";
 	}
 }
+
+void validate_key(mixed key)
+{
+	switch(typeof(key)) {
+	case T_INT:
+	case T_FLOAT:
+	case T_STRING:
+		return;
+
+	case T_NIL:
+	case T_MAPPING:
+	case T_ARRAY:
+		error("Invalid key type");
+
+	case T_OBJECT:
+		if (sscanf(object_name(key), "%*s#-1")) {
+			error("Invalid key type");
+		}
+	}
+}
+
+mapping set_tiered_map(mapping map, mixed args ...)
+{
+	mixed key;
+
+	key = args[0];
+	validate_key(key);
+
+	if (sizeof(args) == 2) {
+		mixed value;
+
+		value = args[1];
+
+		if (value == nil) {
+			if (!map) {
+				return nil;
+			}
+
+			map[key] = nil;
+
+			if (map_sizeof(map) == 0) {
+				map = nil;
+			}
+		} else {
+			if (!map) {
+				map = ([ ]);
+			}
+
+			map[key] = value;
+		}
+
+		return map;
+	} else {
+		mapping submap;
+		mixed value;
+
+		args = args[1 ..];
+		value = args[sizeof(args) - 1];
+
+		if (!map) {
+			if (value == nil) {
+				return nil;
+			} else {
+				map = ([ ]);
+			}
+		}
+
+		submap = map[key];
+
+		if (!submap) {
+			submap = ([ ]);
+		}
+
+		submap = set_tiered_map(submap, args ...);
+
+		map[key] = submap;
+
+		if (!map_sizeof(map)) {
+			map = nil;
+		}
+
+		return map;
+	}
+}
+
+mixed query_tiered_map(mapping map, mixed args ...)
+{
+	mixed key;
+
+	key = args[0];
+	validate_key(key);
+
+	if (sizeof(args) == 1) {
+		return map ? map[key] : nil;
+	} else {
+		mapping submap;
+
+		if (!map) {
+			return nil;
+		}
+
+		submap = map[key];
+
+		if (submap) {
+			return query_tiered_map(submap, args[1 ..] ...);
+		} else {
+			return nil;
+		}
+	}
+}
