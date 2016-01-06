@@ -1,0 +1,16 @@
+Updates since 0.45:
+
+Features:
+
+* It is now possible to treat Ecru (aka, anything outside of a /home
+directory) as its own module.  The "initd" for the module is /initd.
+
+Internal:
+
+* ObjectD was slimmed down a bit and some functions not relevant to
+serving hooks for the kernel library were relocated to SubD.
+
+Fixes:
+
+* Callouts are no longer redirected in ustates if triggered by the master object
+

@@ -25,6 +25,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
+#include <kotaka/log.h>
 
 inherit "~/lib/user";
 
@@ -137,11 +138,8 @@ void logout(int quit)
 	::logout(quit);
 }
 
-int login(string str)
+private void do_login()
 {
-	ACCESS_CHECK(previous_program() == LIB_CONN);
-	ASSERT(str == nil);
-
 	connection(previous_object());
 
 	set_mode(MODE_ECHO);
@@ -149,17 +147,14 @@ int login(string str)
 	set_root_state(new_object("~/lwo/ustate/start"));
 
 	TEXT_USERD->add_guest(this_object());
-
-	return MODE_NOCHANGE;
 }
 
-int receive_message(string str)
+private int do_receive(string str)
 {
 	int ret;
 	object conn, conn2;
 	string ip, user;
 
-	ACCESS_CHECK(previous_program() == LIB_CONN);
 	conn = previous_object();
 
 	while (conn <- LIB_USER) {
@@ -186,6 +181,26 @@ int receive_message(string str)
 	set_mode(ret);
 
 	return ret;
+}
+
+int login(string str)
+{
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	do_login();
+
+	if (str != nil) {
+		return do_receive(str);
+	}
+
+	return MODE_NOCHANGE;
+}
+
+int receive_message(string str)
+{
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	return do_receive(str);
 }
 
 void quit()
