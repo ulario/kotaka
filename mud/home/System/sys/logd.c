@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <status.h>
 #include <kernel/access.h>
 #include <kernel/kernel.h>
 #include <kotaka/assert.h>
@@ -30,6 +31,8 @@ inherit SECOND_AUTO;
 mapping facilities;
 string timestamp;
 mapping filebufs;
+mapping buffers;
+/* ([ filename: ({ first, last }) ]), node: ({ prev, text, next }) */
 int callout;
 
 /*
@@ -129,6 +132,51 @@ private string timestamp()
 	return "[" + c + "]";
 }
 
+private void append_node(string file, string fragment)
+{
+	mixed *header;
+	mixed *node;
+	int max;
+	int len;
+
+	if (!buffers) {
+		buffers = ([ ]);
+	}
+
+	header = buffers[file];
+
+	if (!header) {
+		node = ({ nil, "", nil });
+		header = ({ node, node });
+		buffers[file] = header;
+	} else {
+		node = header[1];
+	}
+
+	max = status(ST_STRSIZE);
+
+	while (len = strlen(fragment)) {
+		int spare;
+
+		spare = max - strlen(node[1]);
+
+		if (spare >= len) {
+			node[1] += fragment;
+
+			return;
+		} else if (spare > 0) {
+			mixed *newnode;
+
+			node[1] += fragment[0 .. spare - 1];
+			fragment = fragment[spare ..];
+
+			newnode = ({ node, "", nil });
+			node[2] = newnode;
+			header[1] = newnode;
+		}
+	}
+}
+
 private void write_logfile(string file, string message)
 {
 	int i;
@@ -141,21 +189,30 @@ private void write_logfile(string file, string message)
 
 	sz = sizeof(lines);
 
-	if (!filebufs) {
-		filebufs = ([ ]);
-	}
-
-	if (!filebufs[file]) {
-		filebufs[file] = new_object("~/lwo/logbuf");
-	}
-
 	for (i = 0; i < sz; i++) {
-		line = timestamp + " " + lines[i] + "\n";
-
-		filebufs[file]->push(line);
+		append_node(file, timestamp + " " + lines[i] + "\n");
 	}
 
 	schedule();
+}
+
+private void write_node(string file)
+{
+	mixed *header;
+	mixed *node;
+
+	header = buffers[file];
+	node = header[0];
+
+	write_file(file, node[1]);
+
+	node[0] = nil;
+
+	if (node[2]) {
+		header[0] = node[2];
+	} else {
+		buffers[file] = nil;
+	}
 }
 
 void flush()
@@ -194,6 +251,19 @@ void flush()
 
 	if (map_sizeof(filebufs)) {
 		schedule();
+	}
+
+	if (map_sizeof(buffers)) {
+		string *files;
+		int sz;
+
+		files = map_indices(buffers);
+
+		sz = sizeof(files);
+
+		write_node(files[random(sz)]);
+
+		call_out("flush", 0);
 	}
 }
 
