@@ -10,7 +10,12 @@ Internal:
 * ObjectD was slimmed down a bit and some functions not relevant to
 serving hooks for the kernel library were relocated to SubD.
 
+* LogD now keeps its file buffers in a linked list rather than wasting
+a program for a special LWO.
+
 Fixes:
 
-* Callouts are no longer redirected in ustates if triggered by the master object
+* Callouts are no longer redirected in ustates if
+triggered by the master object
 
+* Rebooting the Text module
