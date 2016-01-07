@@ -173,11 +173,13 @@ void block_connections(varargs object except)
 
 	for (index = 0; index < sizeof(connections); index++) {
 		object conn;
+		object user;
 
 		conn = connections[index];
+		user = conn->query_user();
 
 		/* don't interfere with the failsafe */
-		if (conn->query_user() <- "/kernel/obj/user") {
+		if (user && user <- "/kernel/obj/user") {
 			continue;
 		}
 
