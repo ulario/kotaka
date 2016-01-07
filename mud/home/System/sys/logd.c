@@ -504,12 +504,21 @@ void post_message(string facility, int priority, string message)
 				head = message[.. 99];
 				tail = message[strlen(message) - 100 ..];
 
-				message = head + tail;
+				message = head + " ... " + tail;
 			}
 
 			DRIVER->message(facility + " " + priority + ": " + message + "\n");
 		}
 	} : {
+		if (strlen(message) > 200) {
+			string head, tail;
+
+			head = message[.. 99];
+			tail = message[strlen(message) - 100 ..];
+
+			message = head + " ... " + tail;
+		}
+
 		DRIVER->message("Error logging: " + creator + ": " + facility + ": " + message + "\n");
 	}
 }
