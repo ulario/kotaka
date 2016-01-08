@@ -238,53 +238,16 @@ void flush()
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
 
 	rlimits(0; -1) {
+		while (buffers && map_sizeof(buffers)) {
+			string *files;
+			int sz;
 
-	while (filebufs) {
-		files = map_indices(filebufs);
-		text_deques = map_values(filebufs);
+			files = map_indices(buffers);
 
-		for (i = sizeof(files) - 1; i >= 0; i--) {
-			catch {
-				string text;
-				mixed buf;
+			sz = sizeof(files);
 
-				buf = filebufs[files[i]];
-				text = buf->pop();
-
-				if (!text) {
-					filebufs[files[i]] = nil;
-
-					if (!map_sizeof(filebufs)) {
-						filebufs = nil;
-					}
-
-					continue;
-				}
-
-				if (!write_file(files[i], text)) {
-					DRIVER->message("LogD: error writing to " + files[i] + "\n");
-				}
-			}
+			write_node(files[random(sz)]);
 		}
-
-		if (filebufs && map_sizeof(filebufs)) {
-			schedule();
-		}
-	}
-
-	while (buffers && map_sizeof(buffers)) {
-		string *files;
-		int sz;
-
-		files = map_indices(buffers);
-
-		sz = sizeof(files);
-
-		write_node(files[random(sz)]);
-
-		schedule();
-	}
-
 	}
 }
 
