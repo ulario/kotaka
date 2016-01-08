@@ -7,7 +7,7 @@ Every upgrade now has the following sequence of events:
 
 Use the upgrade command to start the upgrade process.
 
-2.  obsolete
+2.  obsolete & stale
 
 Check for any objects that need to be recompiled because of changed inherits or includes.
 
