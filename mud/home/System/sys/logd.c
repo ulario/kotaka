@@ -266,7 +266,7 @@ void flush()
 		}
 	}
 
-	while (map_sizeof(buffers)) {
+	while (buffers && map_sizeof(buffers)) {
 		string *files;
 		int sz;
 
