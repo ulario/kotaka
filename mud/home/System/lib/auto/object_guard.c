@@ -33,25 +33,7 @@ private int enough_free_objects(int clone)
 	total = status(ST_OTABSIZE);
 	free = total - used;
 
-	if (clone) {
-		if (free <= 100) {
-			return 0;
-		}
-
-		if (used >= (total * 90 / 100)) {
-			return 0;
-		}
-	} else {
-		if (free <= 50) {
-			return 0;
-		}
-
-		if (used >= (total * 95 / 100)) {
-			return 0;
-		}
-	}
-
-	return 1;
+	return free > (clone ? 100 : 50);
 }
 
 static object compile_object(mixed args ...)

@@ -20,25 +20,17 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
-#define MIN_SPARE_CALLOUTS 10
-
 private int enough_free_callouts()
 {
 	int used;
 	int total;
+	int free;
 
 	used = status(ST_NCOSHORT) + status(ST_NCOLONG);
 	total = status(ST_COTABSIZE);
+	free = total - used;
 
-	if (total - used < 10) {
-		return 0;
-	}
-
-	if ((float)used / (float)total > 0.98) {
-		return 0;
-	}
-
-	return 1;
+	return free > 20;
 }
 
 static int call_out(string func, mixed delay, mixed args...)
