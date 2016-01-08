@@ -18,4 +18,4 @@ Fixes:
 * Callouts are no longer redirected in ustates if
 triggered by the master object
 
-* Rebooting the Text module
+* Rebooting the Text module now doesn't corrupt connections.
