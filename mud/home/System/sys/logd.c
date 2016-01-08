@@ -30,7 +30,6 @@ inherit SECOND_AUTO;
 
 mapping facilities;
 string timestamp;
-mapping filebufs;
 mapping buffers;
 /* ([ filename: ({ first, last }) ]), node: ({ prev, text, next }) */
 int callout;
