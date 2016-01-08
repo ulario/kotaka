@@ -56,16 +56,24 @@ kuser: message a klib user
 static void create()
 {
 	facilities = ([ ]);
-	callout = 0;
 
 	INITD->queue_configure_logging();
 }
 
 private void schedule()
 {
-	if (!callout) {
-		callout = call_out("flush", 0);
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		if (callouts[sz][CO_FUNCTION] == "flush") {
+			return;
+		}
 	}
+
+	call_out("flush", 0);
 }
 
 void clear_targets()
@@ -226,8 +234,6 @@ void flush()
 	string *files;
 	object *text_deques;
 	int i;
-
-	callout = 0;
 
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
 
