@@ -24,12 +24,18 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/utility.h>
 #include <kotaka/privilege.h>
+#include <status.h>
 
 #define SYSTEM_CHANNELS ({ "compile", "debug", "error", "system", "trace" })
 
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
+mapping buffers;
+
+/* buffers: ([ channel name: header ]) */
+/* header: ({ first, last }) */
+/* node: ({ prev, content, next }) */
 
 void configure_channels();
 void save();
@@ -46,6 +52,130 @@ static void create()
 	configure_channels();
 
 	save();
+}
+
+private void schedule()
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		if (callouts[sz][CO_FUNCTION] == "flush") {
+			return;
+		}
+	}
+
+	call_out("flush", 0);
+}
+
+private void append_node(string channel, string fragment)
+{
+	mixed *header;
+	mixed *node;
+	int max;
+	int len;
+
+	if (!buffers) {
+		buffers = ([ ]);
+	}
+
+	header = buffers[channel];
+
+	if (!header) {
+		node = ({ nil, "", nil });
+		header = ({ node, node });
+		buffers[channel] = header;
+	} else {
+		node = header[1];
+	}
+
+	max = status(ST_STRSIZE);
+
+	if (max > 4096) {
+		max = 4096;
+	}
+
+	while (len = strlen(fragment)) {
+		int spare;
+
+		spare = max - strlen(node[1]);
+
+		if (spare >= len) {
+			node[1] += fragment;
+
+			return;
+		} else {
+			mixed *newnode;
+
+			if (spare > 0) {
+				node[1] += fragment[0 .. spare - 1];
+				fragment = fragment[spare ..];
+			}
+
+			newnode = ({ node, "", nil });
+			node[2] = newnode;
+			header[1] = newnode;
+			node = newnode;
+		}
+	}
+}
+
+private void write_node(string channel)
+{
+	mixed *header;
+	mixed *node;
+
+	header = buffers[channel];
+	node = header[0];
+
+	{
+		mixed *info;
+
+		info = SECRETD->file_info("logs/" + channel + ".log");
+
+		if (info && info[0] >= 1 << 30) {
+			SECRETD->rename_file("logs/" + channel + ".dir", "logs/" + channel + ".dir.old");
+			SECRETD->make_dir("logs/" + channel + ".dir");
+			SECRETD->rename_file("logs/" + channel + ".dir.old", "logs/" + channel + ".dir/old.dir");
+			SECRETD->rename_file("logs/" + channel + ".log", "logs/" + channel + ".dir/old.log");
+		}
+	}
+
+	SECRETD->make_dir(".");
+	SECRETD->make_dir("logs");
+	SECRETD->write_file("logs/" + channel + ".log", node[1]);
+
+	node[0] = nil;
+
+	if (node[2]) {
+		header[0] = node[2];
+	} else {
+		buffers[channel] = nil;
+	}
+
+	if (!map_sizeof(buffers)) {
+		buffers = ([ ]);
+	}
+}
+
+static void flush()
+{
+	if (buffers && map_sizeof(buffers)) {
+		string *channels;
+		int sz;
+
+		channels = map_indices(buffers);
+
+		sz = sizeof(channels);
+
+		write_node(channels[random(sz)]);
+	}
+
+	if (buffers) {
+		schedule();
+	}
 }
 
 void save()
@@ -293,6 +423,21 @@ object *query_subscribers(string channel)
 /* message management */
 /**********************/
 
+private void paste_to_log(string channel, string stamp, string sender, string message)
+{
+	if (sender) {
+		if (message) {
+			append_node(channel, stamp + " " + sender + ": " + message + "\n");
+		} else {
+			append_node(channel, stamp + " " + sender + " (no message)\n");
+		}
+	} else {
+		append_node(channel, stamp + " " + message + "\n");
+	}
+
+	schedule();
+}
+
 void post_message(string channel, string sender, string message, varargs int norelay)
 {
 	object *send_list;
@@ -310,6 +455,8 @@ void post_message(string channel, string sender, string message, varargs int nor
 	time = time();
 
 	stamp = ctime(time)[11 .. 18];
+
+	paste_to_log(channel, stamp, sender, message);
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
