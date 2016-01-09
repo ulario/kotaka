@@ -12,7 +12,6 @@ mud/include/status.h
 mud/include/trace.h
 mud/include/type.h
 mud/kernel/data/access.data
-mud/log/*.log
 snapshot
 snapshot.old
 tmp/ed
