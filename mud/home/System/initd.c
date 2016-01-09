@@ -65,6 +65,10 @@ static void create()
 	catch {
 		DRIVER->fix_filequota();
 
+		load_object(KERNELD);		/* needed for LogD */
+		configure_klib();
+
+		load_object(SECRETD);		/* needed for LogD */
 		load_object(LOGD);		/* we need to log any error messages */
 		load_object(OBJECTD);		/* enforces static invariants */
 		load_object(TLSD);		/* depends on an updated tls size */
@@ -73,7 +77,7 @@ static void create()
 		load_object(CALLOUTD);		/* suspends callouts */
 		load_object(SUSPENDD);		/* suspends system */
 
-		remove_file("/log/session.log");
+		SECRETD->remove_file("logs/session.log");
 
 		call_out("boot", 0);
 	} : {
@@ -97,13 +101,10 @@ static void boot()
 		LOGD->post_message("system", LOG_INFO, "System core loaded");
 		LOGD->post_message("system", LOG_INFO, "------------------");
 
-		load_object(KERNELD);
-
 		KERNELD->set_global_access("System", 1);
 
 		set_limits();
 
-		configure_klib();
 		configure_rsrc();
 		configure_logging();
 
@@ -281,27 +282,27 @@ void configure_logging()
 	LOGD->set_target("trace", 255, "null");
 
 	/* general log gets everything */
-	LOGD->set_target("*", 255, "file:/log/general.log");
-	LOGD->set_target("debug", 255, "file:/log/general.log");
-	LOGD->set_target("compile", 255, "file:/log/general.log");
-	LOGD->set_target("trace", 63, "file:/log/general.log");
+	LOGD->set_target("*", 255, "file:general");
+	LOGD->set_target("debug", 255, "file:general");
+	LOGD->set_target("compile", 255, "file:general");
+	LOGD->set_target("trace", 63, "file:general");
 
 	/* error log gets errors and traces */
-	LOGD->set_target("error", 255, "file:/log/error.log");
-	LOGD->set_target("trace", 255, "file:/log/error.log");
-	LOGD->set_target("compile", 63, "file:/log/error.log");
+	LOGD->set_target("error", 255, "file:error");
+	LOGD->set_target("trace", 255, "file:error");
+	LOGD->set_target("compile", 63, "file:error");
 
 	/* session log gets only non debug */
-	LOGD->set_target("*", 127, "file:/log/session.log");
-	LOGD->set_target("debug", 0, "file:/log/session.log");
+	LOGD->set_target("*", 127, "file:session");
+	LOGD->set_target("debug", 0, "file:session");
 
 	/* debug log gets only debug */
-	LOGD->set_target("*", 128, "file:/log/debug.log");
-	LOGD->set_target("debug", 255, "file:/log/debug.log");
+	LOGD->set_target("*", 128, "file:debug");
+	LOGD->set_target("debug", 255, "file:debug");
 
 	/* general system log goes to general and logged in staff */
-	LOGD->set_target("system", 255, "file:/log/general.log");
-	LOGD->set_target("system", 255, "file:/log/session.log");
+	LOGD->set_target("system", 255, "file:general");
+	LOGD->set_target("system", 255, "file:session");
 
 	/* post these on the system channel */
 	LOGD->set_target("system", 255, "channel:system");

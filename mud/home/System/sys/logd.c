@@ -210,22 +210,41 @@ private void write_logfile(string file, string message)
 	schedule();
 }
 
-private void write_node(string file)
+private void write_node(string base)
 {
 	mixed *header;
 	mixed *node;
 
-	header = buffers[file];
+	header = buffers[base];
 	node = header[0];
 
-	write_file(file, node[1]);
+	{
+		mixed *info;
+
+		info = SECRETD->file_info("logs/" + base + ".log");
+
+		if (info && info[0] >= 1 << 30) {
+			SECRETD->rename_file("logs/" + base + ".dir", "logs/" + base + ".dir.old");
+			SECRETD->make_dir("logs/" + base + ".dir");
+			SECRETD->rename_file("logs/" + base + ".dir.old", "logs/" + base + ".dir/old.dir");
+			SECRETD->rename_file("logs/" + base + ".log", "logs/" + base + ".dir/old.log");
+		}
+	}
+
+	catch {
+		SECRETD->make_dir(".");
+		SECRETD->make_dir("logs");
+		SECRETD->write_file("logs/" + base + ".log", node[1]);
+	} : {
+		DRIVER->message("Error writing to " + base + "\n");
+	}
 
 	node[0] = nil;
 
 	if (node[2]) {
 		header[0] = node[2];
 	} else {
-		buffers[file] = nil;
+		buffers[base] = nil;
 	}
 }
 
