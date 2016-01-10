@@ -149,7 +149,7 @@ static void boot_3()
 		LOGD->post_message("system", LOG_INFO, "System discovered");
 		LOGD->post_message("system", LOG_INFO, "-----------------");
 
-		MODULED->boot_module("Game");
+		MODULED->boot_module(nil);
 	} : {
 		boot_error();
 		LOGD->flush();

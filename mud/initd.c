@@ -25,6 +25,7 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	MODULED->boot_module("Game");
 }
 
 static void create()
