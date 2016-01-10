@@ -25,4 +25,5 @@ void test()
 
 	"bigstruct"->test();
 	"suspend"->test();
+	"~System/sys/testd"->test();
 }
