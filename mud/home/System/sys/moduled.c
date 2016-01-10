@@ -414,7 +414,6 @@ void shutdown_module(string module)
 	case "Bigstruct":
 	case "String":
 	case "System":
-	case "Utility":
 		error("Cannot shutdown " + module);
 	}
 
