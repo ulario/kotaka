@@ -21,11 +21,11 @@
 #include <kotaka/privilege.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
-#include <kotaka/paths/utility.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
 
 inherit SECOND_AUTO;
+inherit LIB_SYSTEM;
 
 /* private functions */
 

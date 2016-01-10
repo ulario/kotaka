@@ -23,7 +23,6 @@
 #include <kernel/tls.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/string.h>
-#include <kotaka/paths/utility.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
 
@@ -69,7 +68,7 @@ object first_link(string domain, mixed key)
 		error("Access denied");
 	}
 
-	return SUBD->query_tiered_map(links, domain, key);
+	return SYSTEM_SUBD->query_tiered_map(links, domain, key);
 }
 
 object prev_link(string domain, mixed key, object obj)
@@ -107,7 +106,7 @@ void link(string domain, mixed key, object obj)
 {
 	object first;
 
-	first = SUBD->query_tiered_map(links, domain, key);
+	first = SYSTEM_SUBD->query_tiered_map(links, domain, key);
 
 	validate_key(key);
 
@@ -136,7 +135,7 @@ void link(string domain, mixed key, object obj)
 		obj->set_next_link(domain, key, obj);
 		obj->set_prev_link(domain, key, obj);
 
-		links = SUBD->set_tiered_map(links, domain, key, obj);
+		links = SYSTEM_SUBD->set_tiered_map(links, domain, key, obj);
 	}
 }
 
@@ -158,7 +157,7 @@ void unlink(string domain, mixed key, object obj)
 		}
 	}
 
-	first = SUBD->query_tiered_map(links, domain, key);
+	first = SYSTEM_SUBD->query_tiered_map(links, domain, key);
 
 	if (!first) {
 		error("Object not in list");
@@ -173,7 +172,7 @@ void unlink(string domain, mixed key, object obj)
 		obj->set_prev_link(domain, key, nil);
 		obj->set_next_link(domain, key, nil);
 
-		links = SUBD->set_tiered_map(links, domain, key, nil);
+		links = SYSTEM_SUBD->set_tiered_map(links, domain, key, nil);
 	} else {
 		ASSERT(prev);
 		ASSERT(next);
@@ -185,7 +184,7 @@ void unlink(string domain, mixed key, object obj)
 		obj->set_next_link(domain, key, nil);
 
 		if (first == obj) {
-			links = SUBD->set_tiered_map(links, domain, key, next);
+			links = SYSTEM_SUBD->set_tiered_map(links, domain, key, next);
 		}
 	}
 }

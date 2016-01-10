@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/user.h>
-#include <kotaka/paths/utility.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/log.h>
@@ -31,28 +30,28 @@ object query_prev_link(string domain, mixed key)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	return SUBD->query_tiered_map(prev, domain, key);
+	return SYSTEM_SUBD->query_tiered_map(prev, domain, key);
 }
 
 object query_next_link(string domain, mixed key)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	return SUBD->query_tiered_map(next, domain, key);
+	return SYSTEM_SUBD->query_tiered_map(next, domain, key);
 }
 
 void set_prev_link(string domain, mixed key, object obj)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	prev = SUBD->set_tiered_map(prev, domain, key, obj);
+	prev = SYSTEM_SUBD->set_tiered_map(prev, domain, key, obj);
 }
 
 void set_next_link(string domain, mixed key, object obj)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	next = SUBD->set_tiered_map(next, domain, key, obj);
+	next = SYSTEM_SUBD->set_tiered_map(next, domain, key, obj);
 }
 
 private void clear_list_domain(string domain)
