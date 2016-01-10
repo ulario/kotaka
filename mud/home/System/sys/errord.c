@@ -21,6 +21,7 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/paths/string.h>
 #include <kotaka/privilege.h>
 #include <trace.h>
 
@@ -134,12 +135,16 @@ void runtime_error(string error, int caught, mixed **trace)
 			mapping thrown;
 			/* gift package thrown by atomic error */
 
-			thrown = PARSER_VALUE->parse(error);
+			if (find_object(PARSER_VALUE)) {
+				thrown = PARSER_VALUE->parse(error);
 
-			error = thrown["errstr"];
-			atom = thrown["atom"];
-			trace = thrown["trace"];
-			comperr = thrown["comperr"];
+				error = thrown["errstr"];
+				atom = thrown["atom"];
+				trace = thrown["trace"];
+				comperr = thrown["comperr"];
+			} else {
+				error = "Unknown atomic error (please boot String module)";
+			}
 
 			TLSD->set_tls_value("System", "error-string", error);
 			TLSD->set_tls_value("System", "error-trace", trace);
