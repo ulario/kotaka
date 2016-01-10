@@ -22,7 +22,6 @@
 #include <kernel/kernel.h>
 #include <kernel/tls.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
 

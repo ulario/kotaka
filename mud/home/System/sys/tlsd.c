@@ -21,7 +21,6 @@
 #include <kernel/kernel.h>
 #include <kernel/tls.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/string.h>
 
 inherit SECOND_AUTO;
 

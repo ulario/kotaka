@@ -19,7 +19,6 @@
  */
 #include <kernel/kernel.h>
 #include <kotaka/log.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
