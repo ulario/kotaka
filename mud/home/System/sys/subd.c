@@ -201,9 +201,6 @@ void recompile_everything()
 			destruct_object(path);
 		}
 
-		objqueue->grant_access(find_object(SORTD), WRITE_ACCESS);
-		SORTD->qsort(objqueue, 0, objqueue->query_size() - 1);
-
 		while (!initdqueue->empty()) {
 			string path;
 
