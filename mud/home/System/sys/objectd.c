@@ -339,10 +339,6 @@ void compile_failed(string owner, string path)
 void clone(string owner, object obj)
 {
 	ACCESS_CHECK(KERNEL());
-
-	if (find_object(CLONED)) {
-		CLONED->add_clone(obj);
-	}
 }
 
 void destruct(varargs mixed owner, mixed obj)
@@ -386,11 +382,7 @@ void destruct(varargs mixed owner, mixed obj)
 		obj->_F_sys_destruct();
 	}
 
-	if (is_clone) {
-		if (find_object(CLONED)) {
-			CLONED->remove_clone(obj);
-		}
-	} else {
+	if (!is_clone) {
 		if (find_object(PROGRAMD)) {
 			pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
 		}
@@ -424,10 +416,6 @@ void remove_program(string owner, string path, int timestamp, int index)
 
 	if (find_object(PROGRAMD)) {
 		PROGRAMD->remove_program(index);
-	}
-
-	if (find_object(CLONED)) {
-		CLONED->remove_program(index);
 	}
 }
 

@@ -144,8 +144,6 @@ void touch_all(string path, varargs string *patches)
 
 	rlimits(0; -1) {
 		object obj;
-		object cinfo;
-		object *clones;
 
 		obj = find_object(path);
 
@@ -167,36 +165,7 @@ void touch_all(string path, varargs string *patches)
 			return;
 		}
 
-		cinfo = CLONED->query_clone_info(status(path, O_INDEX));
-
-		if (!cinfo) {
-			return;
-		}
-
-		clones = cinfo->query_clones();
-
-		if (clones) {
-			rlimits(0; -1) {
-				int sz;
-
-				for (sz = sizeof(clones); --sz >= 0; ) {
-					object clone;
-					string *old;
-					int oindex;
-
-					clone = clones[sz];
-					oindex = status(clone, O_INDEX);
-
-					if (patches) {
-						queue_patches(clone, patches);
-					}
-
-					call_touch(clone);
-				}
-			}
-		} else {
-			SUSPENDD->queue_work("touch_scan_otable", path, status(ST_OTABSIZE) - 1, patches);
-		}
+		SUSPENDD->queue_work("touch_scan_otable", path, status(ST_OTABSIZE) - 1, patches);
 	}
 }
 
