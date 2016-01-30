@@ -3,14 +3,29 @@ How to upgrade your mud
 
 Every upgrade now has the following sequence of events:
 
-1.  upgrade
+1.  upgrade kotaka
 
-Use the upgrade command to start the upgrade process.
+	Use the upgrade command to start the upgrade process.
+
+	This command is responsible for taking care of all of kotaka's
+	native code.
 
 2.  obsolete & stale
 
-Check for any objects that need to be recompiled because of changed inherits or includes.
+	Check for any objects that need to be recompiled because of
+	changed inherits or includes.
 
 3.  rebuild
 
-For a quick method to rebuild everything, use the rebuild command.
+	For a quick method to rebuild everything, use the rebuild
+	command.
+
+4.  prepare for changes
+
+	If there are any API changes in kotaka, they will be announced
+	at least one version in advance.
+
+Current API changes pending
+---------------------------
+
+None
