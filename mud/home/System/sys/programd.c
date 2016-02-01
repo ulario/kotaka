@@ -393,3 +393,28 @@ object query_includers(string path)
 
 	return list;
 }
+
+void patch_program_infos(varargs object list)
+{
+	int oindex;
+	object pinfo;
+
+	ACCESS_CHECK(SYSTEM());
+
+	if (!list) {
+		list = progdb->query_indices();
+	}
+
+	oindex = list->query_front();
+	list->pop_front();
+
+	pinfo = progdb->query_element(oindex);
+
+	pinfo->patch();
+
+	if (list->size()) {
+		call_out("patch_program_infos", 0, list);
+	} else {
+		LOGD->post_message("debug", LOG_DEBUG, "ProgramD database patching completed.");
+	}
+}
