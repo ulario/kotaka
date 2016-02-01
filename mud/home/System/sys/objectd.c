@@ -284,7 +284,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 			for (sz = sizeof(new_programs) - 1; sz >= 0; --sz) {
 				object pinfo;
-				string toucher;
+				string patcher;
 
 				if (find_object(PROGRAMD)) {
 					pinfo = PROGRAMD->query_program_info(new_programs[sz]);
@@ -294,10 +294,10 @@ void compile(string owner, object obj, string *source, string inherited ...)
 					continue;
 				}
 
-				toucher = pinfo->query_toucher();
+				patcher = pinfo->query_patcher();
 
-				if (toucher) {
-					patches |= ({ toucher });
+				if (patcher) {
+					patches |= ({ patcher });
 				}
 			}
 
