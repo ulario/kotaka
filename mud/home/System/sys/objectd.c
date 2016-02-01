@@ -48,11 +48,21 @@ static void create()
 
 private string *fetch_from_initd(object initd, string path)
 {
-	return ({
-		initd->query_constructor(path),
-		initd->query_destructor(path),
-		initd->query_toucher(path)
-	});
+	string ctor, dtor, patcher;
+
+	ctor = initd->query_constructor(path);
+	dtor = initd->query_destructor(path);
+
+	if (function_object("query_patcher", initd)) {
+		patcher = initd->query_patcher(path);
+	} else if (function_object("query_toucher", initd)) {
+		patcher = initd->query_toucher(path);
+
+		LOGD->post_message("debug", LOG_DEBUG,
+			object_name(initd) + " is using the obsolete query_toucher interface and needs recompiled");
+	}
+
+	return ({ ctor, dtor, patcher });
 }
 
 private mixed query_include_file(string compiled, string from, string path)
@@ -113,7 +123,7 @@ private void compile_common(string owner, string path, string *source, string *i
 
 		pinfo->set_constructor(ret[0]);
 		pinfo->set_destructor(ret[1]);
-		pinfo->set_toucher(ret[2]);
+		pinfo->set_patcher(ret[2]);
 	}
 
 	includes = nil;
