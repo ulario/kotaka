@@ -55,35 +55,14 @@ void upgrade_system()
 
 void upgrade_system_2()
 {
-	compile_object(PROGRAMD);
+	destruct_object(LIB_INITD);
+	compile_object(OBJECTD);
+	compile_object(PROGRAM_INFO);
 
 	SUSPENDD->queue_work("upgrade_system_3");
 }
 
 void upgrade_system_3()
-{
-	int oid, mid;
-
-	ACCESS_CHECK(SYSTEM());
-
-	oid = status(OBJECTD, O_INDEX);
-	mid = status(MODULED, O_INDEX);
-
-	destruct_object(OBJECTD);
-	destruct_object(MODULED);
-
-	PROGRAMD->remove_program(oid);
-	PROGRAMD->remove_program(mid);
-
-	compile_object(MODULED);	/* required by objectd */
-	compile_object(OBJECTD);	/* restore object manager */
-	compile_object(MODULED);	/* compile for objectd witness */
-	compile_object(OBJECTD);	/* compile for objectd witness */
-
-	SUSPENDD->queue_work("upgrade_system_4");
-}
-
-void upgrade_system_4()
 {
 	ACCESS_CHECK(SYSTEM());
 
