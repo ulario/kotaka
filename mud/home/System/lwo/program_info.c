@@ -35,7 +35,11 @@ int destructed;			/* destructed */
 
 string constructor;		/* constructor */
 string destructor;		/* destructor */
+
 string toucher;			/* toucher */
+string patcher;			/* patcher */
+
+int upgraded_to_patcher;	/* upgrade flag */
 
 string *inherited_constructors;	/* constructors */
 string *inherited_destructors;	/* destructors */
@@ -53,6 +57,8 @@ void set_destructed();
 void set_constructor(string constructor);
 void set_destructor(string destructor);
 void set_toucher(string toucher);
+void set_patcher(string patcher);
+void patch();
 
 void set_inherited_constructors(string *constructors);
 void set_inherited_destructors(string *destructors);
@@ -65,6 +71,7 @@ int query_destructed();
 string query_constructor();
 string query_destructor();
 string query_toucher();
+string query_patcher();
 
 string *query_inherited_constructors();
 string *query_inherited_destructors();
@@ -119,11 +126,34 @@ void set_destructor(string new_destructor)
 	destructor = new_destructor;
 }
 
-void set_toucher(string new_toucher)
+void set_toucher(string new_patcher)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	toucher = new_toucher;
+	if (!upgraded_to_patcher) {
+		patch();
+	}
+
+	patcher = new_patcher;
+}
+
+void set_patcher(string new_patcher)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (!upgraded_to_patcher) {
+		patch();
+	}
+
+	patcher = new_patcher;
+}
+
+void patch()
+{
+	if (!upgraded_to_patcher) {
+		upgraded_to_patcher = 1;
+		patcher = toucher;
+	}
 }
 
 void set_inherited_constructors(string *constructors)
@@ -172,7 +202,18 @@ string query_destructor()
 
 string query_toucher()
 {
-	return toucher;
+	if (!upgraded_to_patcher) {
+		patch();
+	}
+
+	return patcher;
+}
+
+string query_patcher()
+{
+	if (!upgraded_to_patcher) {
+		patch();
+	}
 }
 
 string *query_inherited_constructors()
