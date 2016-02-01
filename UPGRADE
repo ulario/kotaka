@@ -30,3 +30,28 @@ Every upgrade has the following sequence of events:
 
 Current API changes pending
 ---------------------------
+
+Rename in the toucher/patcher API
+
+	Because call_touch can be useful in areas other than upgrade
+	management, I've decided that touches used to handle upgrades should
+	be treated separately from manual touches, and it will be cleaner
+	to give them a new name.
+
+	Deprecations:
+
+	*
+		program_info->query_toucher is deprecated.
+		Please use program_info->query_patcher from now on.
+
+		Debug warnings will be emitted for code using the old way.
+
+	*
+		ObjectD will now ask initd's for patch functions using the
+		query_patcher hook, instead of the query_toucher hook.
+
+		Debug warning will be emitted for initds providing the old
+		hook in place of the new one.
+
+		UpgradeD will destruct LIB_INITD.  Any initd inheriting
+		this object should be recompiled.
