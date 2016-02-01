@@ -53,13 +53,13 @@ private string *fetch_from_initd(object initd, string path)
 	ctor = initd->query_constructor(path);
 	dtor = initd->query_destructor(path);
 
-	if (function_object("query_patcher", initd)) {
-		patcher = initd->query_patcher(path);
-	} else if (function_object("query_toucher", initd)) {
+	if (function_object("query_toucher", initd)) {
 		patcher = initd->query_toucher(path);
 
 		LOGD->post_message("debug", LOG_DEBUG,
-			object_name(initd) + " is using the obsolete query_toucher interface and needs recompiled");
+			object_name(initd) + " is using the obsolete query_toucher interface");
+	} else if (function_object("query_patcher", initd)) {
+		patcher = initd->query_patcher(path);
 	}
 
 	return ({ ctor, dtor, patcher });
