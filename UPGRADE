@@ -1,7 +1,7 @@
 How to upgrade your mud
 -----------------------
 
-Every upgrade now has the following sequence of events:
+Every upgrade has the following sequence of events:
 
 1.  upgrade kotaka
 
@@ -25,7 +25,8 @@ Every upgrade now has the following sequence of events:
 	If there are any API changes in kotaka, they will be announced
 	at least one version in advance.
 
+	Kotaka will (or at least should) be able to handle BOTH api's at
+	the same time until the old one has been deprecated and removed.
+
 Current API changes pending
 ---------------------------
-
-None
