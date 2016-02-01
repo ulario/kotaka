@@ -72,7 +72,7 @@ string query_destructor(string path)
 	return nil;
 }
 
-string query_toucher(string path)
+string query_patcher(string path)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
