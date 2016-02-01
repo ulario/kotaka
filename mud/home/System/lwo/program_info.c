@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <kotaka/log.h>
 
 inherit SECOND_AUTO;
 
