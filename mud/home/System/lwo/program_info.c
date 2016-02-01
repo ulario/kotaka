@@ -134,6 +134,8 @@ void set_toucher(string new_patcher)
 		patch();
 	}
 
+	LOGD->post_message("debug", LOG_DEBUG, previous_program() + " is using obsolete set_toucher.");
+
 	patcher = new_patcher;
 }
 
@@ -205,6 +207,8 @@ string query_toucher()
 	if (!upgraded_to_patcher) {
 		patch();
 	}
+
+	LOGD->post_message("debug", LOG_DEBUG, previous_program() + " is using obsolete query_toucher.");
 
 	return patcher;
 }
