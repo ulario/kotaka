@@ -110,8 +110,6 @@ void load_world_purge()
 			}
 		} else {
 			done = 1;
-
-			break;
 		}
 
 		if (done) {
@@ -145,7 +143,6 @@ void load_world_spawn(int i)
 			i++;
 		} else {
 			done = 1;
-			break;
 		}
 
 		if (done) {
@@ -310,8 +307,6 @@ void save_world_put()
 			put_directory(dir);
 		} else {
 			done = 1;
-
-			break;
 		}
 
 		if (done) {
