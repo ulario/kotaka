@@ -173,6 +173,10 @@ static void flush()
 		write_node(channels[random(sz)]);
 	}
 
+	if (!map_sizeof(buffers)) {
+		buffers = nil;
+	}
+
 	if (buffers) {
 		schedule();
 	}
