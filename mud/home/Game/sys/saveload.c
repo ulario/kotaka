@@ -90,33 +90,28 @@ void load_world_purge()
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
 	catch {
-		int ticks;
 		int done;
 
-		ticks = status(ST_TICKS);
+		if (!dirputqueue->empty()) {
+			string dir;
 
-		while (!done && ticks - status(ST_TICKS) < 10000) {
-			if (!dirputqueue->empty()) {
-				string dir;
+			dir = dirputqueue->query_front();
+			dirputqueue->pop_front();
 
-				dir = dirputqueue->query_front();
-				dirputqueue->pop_front();
+			purge_directory(dir);
+		} else if (!objputqueue->empty()) {
+			object obj;
 
-				purge_directory(dir);
-			} else if (!objputqueue->empty()) {
-				object obj;
+			obj = objputqueue->query_front();
+			objputqueue->pop_front();
 
-				obj = objputqueue->query_front();
-				objputqueue->pop_front();
-
-				if (obj) {
-					purge_object(obj);
-				}
-			} else {
-				done = 1;
-
-				break;
+			if (obj) {
+				purge_object(obj);
 			}
+		} else {
+			done = 1;
+
+			break;
 		}
 
 		if (done) {
@@ -135,27 +130,22 @@ void load_world_spawn(int i)
 
 	catch {
 		int done;
-		int ticks;
 
-		ticks = status(ST_TICKS);
+		if (CONFIGD->file_info("save/" + i + ".obj")) {
+			object obj;
+			int j;
 
-		while (ticks - status(ST_TICKS) < 10000) {
-			if (CONFIGD->file_info("save/" + i + ".obj")) {
-				object obj;
-				int j;
+			obj = GAME_INITD->create_thing();
+			sscanf(object_name(obj), "%*s#%d", j);
 
-				obj = GAME_INITD->create_thing();
-				sscanf(object_name(obj), "%*s#%d", j);
+			oindex2onum->set_element(j, i);
 
-				oindex2onum->set_element(j, i);
-
-				objlist->push_back( ({ obj,
-					CONFIGD->read_file("save/" + i + ".obj") }) );
-				i++;
-			} else {
-				done = 1;
-				break;
-			}
+			objlist->push_back( ({ obj,
+				CONFIGD->read_file("save/" + i + ".obj") }) );
+			i++;
+		} else {
+			done = 1;
+			break;
 		}
 
 		if (done) {
@@ -173,29 +163,23 @@ void load_world_name(int i)
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
 	catch {
-		int ticks;
+		object obj;
+		mixed *arr;
+		mixed data;
 
-		ticks = status(ST_TICKS);
+		({ obj, data }) = objlist->query_element(i - 1);
 
-		while (i > 0 && ticks - status(ST_TICKS) < 10000) {
-			object obj;
-			mixed *arr;
-			mixed data;
+		data = PARSER_VALUE->parse(data);
 
-			({ obj, data }) = objlist->query_element(i - 1);
+		obj->move(data["environment"]);
+		data["environment"] = nil;
 
-			data = PARSER_VALUE->parse(data);
+		obj->set_object_name(data["name"]);
+		data["name"] = nil;
 
-			obj->move(data["environment"]);
-			data["environment"] = nil;
+		objlist->set_element(i - 1, ({ obj, data }) );
 
-			obj->set_object_name(data["name"]);
-			data["name"] = nil;
-
-			objlist->set_element(i - 1, ({ obj, data }) );
-
-			i--;
-		}
+		i--;
 
 		if (i > 0) {
 			SUSPENDD->queue_work("load_world_name", i);
@@ -212,17 +196,13 @@ void load_world_set(int i)
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
 	catch {
-		int ticks;
+		object obj;
+		mixed data;
 
-		while (i > 0 && ticks - status(ST_TICKS) < 10000) {
-			object obj;
-			mixed data;
+		({ obj, data }) = objlist->query_element(i - 1);
 
-			({ obj, data }) = objlist->query_element(i - 1);
-
-			obj->load(data);
-			i--;
-		}
+		obj->load(data);
+		i--;
 
 		if (i > 0) {
 			SUSPENDD->queue_work("load_world_set", i);
@@ -312,31 +292,26 @@ void save_world_put()
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
 	catch {
-		int ticks;
 		int done;
 
-		ticks = status(ST_TICKS);
+		if (!objputqueue->empty()) {
+			object obj;
 
-		while (!done && ticks - status(ST_TICKS) < 10000) {
-			if (!objputqueue->empty()) {
-				object obj;
+			obj = objputqueue->query_front();
+			objputqueue->pop_front();
 
-				obj = objputqueue->query_front();
-				objputqueue->pop_front();
+			put_object(obj);
+		} else if (!dirputqueue->empty()) {
+			string dir;
 
-				put_object(obj);
-			} else if (!dirputqueue->empty()) {
-				string dir;
+			dir = dirputqueue->query_front();
+			dirputqueue->pop_front();
 
-				dir = dirputqueue->query_front();
-				dirputqueue->pop_front();
+			put_directory(dir);
+		} else {
+			done = 1;
 
-				put_directory(dir);
-			} else {
-				done = 1;
-
-				break;
-			}
+			break;
 		}
 
 		if (done) {
@@ -356,19 +331,13 @@ void save_world_write(int i)
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
 	catch {
-		int ticks;
+		i--;
 
-		ticks = status(ST_TICKS);
-
-		while (i > 0 && ticks - status(ST_TICKS) < 10000) {
-			i--;
-
-			CONFIGD->write_file("save/" + (i + 1) + ".obj",
-				STRINGD->hybrid_sprint(
-					objlist->query_element(i)[1]
-				) + "\n"
-			);
-		}
+		CONFIGD->write_file("save/" + (i + 1) + ".obj",
+			STRINGD->hybrid_sprint(
+				objlist->query_element(i)[1]
+			) + "\n"
+		);
 
 		if (i > 0) {
 			SUSPENDD->queue_work("save_world_write", i);
