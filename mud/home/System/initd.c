@@ -428,6 +428,8 @@ void upgrade_module()
 	configure_rsrc();
 	set_limits();
 
+	PROGRAMD->patch_program_infos();
+
 	purge_orphans("System");
 }
 

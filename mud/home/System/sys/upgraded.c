@@ -56,6 +56,7 @@ void upgrade_system()
 void upgrade_system_2()
 {
 	destruct_object(LIB_INITD);
+	compile_object(PROGRAMD);
 	compile_object(OBJECTD);
 	compile_object(PROGRAM_INFO);
 
