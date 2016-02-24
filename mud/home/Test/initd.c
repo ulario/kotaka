@@ -60,7 +60,7 @@ void upgrade_module()
 	"sys/testd"->test();
 }
 
-string query_toucher(string path)
+string query_patcher(string path)
 {
-	LOGD->post_message("debug", LOG_DEBUG, "Asked for toucher for " + path);
+	LOGD->post_message("debug", LOG_DEBUG, "Asked for patcher for " + path);
 }
