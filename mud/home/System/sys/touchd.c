@@ -105,31 +105,25 @@ private void queue_patches(object obj, string *patches)
 
 void touch_scan_otable(string path, int sz, string *patches)
 {
-	int ticks;
+	object obj;
 
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
-	ticks = status(ST_TICKS);
-
-	while (sz >= 0 && status(ST_TICKS) > 20000 && ticks - status(ST_TICKS) < 100000) {
-		object obj;
-
-		if (sz % 10000 == 0) {
-			LOGD->post_message("debug", LOG_DEBUG, "TouchD: Scanning object table for " + path + ", currently at slot " + sz);
-		}
-
-		obj = find_object(path + "#" + sz);
-
-		if (obj) {
-			if (patches) {
-				queue_patches(obj, patches);
-			}
-
-			call_touch(obj);
-		}
-
-		sz--;
+	if (sz % 10000 == 0) {
+		LOGD->post_message("debug", LOG_DEBUG, "TouchD: Scanning object table for " + path + ", currently at slot " + sz);
 	}
+
+	obj = find_object(path + "#" + sz);
+
+	if (obj) {
+		if (patches) {
+			queue_patches(obj, patches);
+		}
+
+		call_touch(obj);
+	}
+
+	sz--;
 
 	if (sz >= 0) {
 		SUSPENDD->queue_work("touch_scan_otable", path, sz, patches);
