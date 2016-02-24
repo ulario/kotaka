@@ -159,32 +159,18 @@ private void thaw_module(string module)
 
 static void purge_module_tick(string module, int reboot)
 {
-	int done;
-	int ticks;
+	object cursor;
 
-	ticks = status(ST_TICKS);
+	cursor = KERNELD->first_link(module);
 
-	rlimits(0; 50000 + random(200000)) {
-		while (status(ST_TICKS) > 50000) {
-			object cursor;
-
-			cursor = KERNELD->first_link(module);
-
-			if (cursor) {
-				destruct_object(cursor);
-			} else {
-				done = 1;
-				break;
-			}
-		}
-	}
-
-	if (!done) {
+	if (cursor) {
+		destruct_object(cursor);
 		call_out("purge_module_tick", 0, module, reboot);
 		return;
 	}
 
 	modules[module] = nil;
+
 	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + (module ? module : "Ecru"));
 
 	thaw_module(module);
