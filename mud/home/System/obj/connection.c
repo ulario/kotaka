@@ -119,8 +119,3 @@ static void message_done()
 {
 	::message_done(allocate(DRIVER->query_tls_size()));
 }
-
-void send_message(string str)
-{
-	::send_message(str);
-}
