@@ -51,24 +51,18 @@ void main(object actor, mapping roles)
 
 void nuke(string path, int index, object proxy)
 {
-	int ticks;
+	object obj;
 
 	if (!proxy) {
 		LOGD->post_message("system", LOG_ERROR, "Aborting clone nuke (proxy destructed)");
 		return;
 	}
 
-	ticks = status(ST_TICKS);
-
-	while (index >= 0 && ticks - status(ST_TICKS) < 10000) {
-		object obj;
-
-		if (obj = find_object(path + "#" + index)) {
-			proxy->destruct_object(obj);
-		}
-
-		--index;
+	if (obj = find_object(path + "#" + index)) {
+		proxy->destruct_object(obj);
 	}
+
+	--index;
 
 	if (index > 0) {
 		call_out("nuke", 0, path, index - 1, proxy);
