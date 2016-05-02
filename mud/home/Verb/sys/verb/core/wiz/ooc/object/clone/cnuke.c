@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 #include <status.h>
@@ -51,6 +52,11 @@ void main(object actor, mapping roles)
 void nuke(string path, int index, object proxy)
 {
 	int ticks;
+
+	if (!proxy) {
+		LOGD->post_message("system", LOG_ERROR, "Aborting clone nuke (proxy destructed)");
+		return;
+	}
 
 	ticks = status(ST_TICKS);
 
