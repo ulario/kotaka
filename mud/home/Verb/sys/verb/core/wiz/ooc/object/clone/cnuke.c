@@ -62,8 +62,6 @@ void nuke(string path, int index, object proxy)
 		proxy->destruct_object(obj);
 	}
 
-	--index;
-
 	if (index > 0) {
 		call_out("nuke", 0, path, index - 1, proxy);
 	}
