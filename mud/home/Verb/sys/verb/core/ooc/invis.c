@@ -47,7 +47,7 @@ void main(object actor, mapping roles)
 
 	case "off":
 		ACCOUNTD->set_account_property(user->query_username(), "invisible", nil);
-		send_out("You are now not invisible.\n");
+		send_out("You are now visible.\n");
 		break;
 
 	default:
