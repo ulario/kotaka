@@ -13,4 +13,5 @@ mud/include/status.h
 mud/include/trace.h
 mud/include/type.h
 mud/kernel/data/access.data
+mud/kernel/data/*.pwd
 state/*
