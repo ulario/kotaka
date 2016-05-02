@@ -65,24 +65,17 @@ void main(object actor, mapping roles)
 
 static void lazy_allcall(string path, string func, int oindex)
 {
-	while (status(ST_TICKS) > 20000) {
-		object obj;
+	object obj;
 
-		obj = find_object(path + "#" + oindex);
-		oindex--;
+	obj = find_object(path + "#" + oindex);
 
-		if (obj) {
-			call_other(obj, func);
-		}
-
-		if (oindex == 0) {
-			LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall finished.");
-			return;
-		}
+	if (obj) {
+		call_other(obj, func);
 	}
 
-	if (oindex > 0) {
-		LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall: " + oindex + " slots left to check.");
-		call_out("lazy_allcall", 0, path, func, oindex);
+	if (oindex == 0) {
+		LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall finished.");
+	} else {
+		call_out("lazy_allcall", 0, path, func, oindex - 1);
 	}
 }
