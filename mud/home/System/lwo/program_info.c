@@ -219,6 +219,8 @@ string query_patcher()
 	if (!upgraded_to_patcher) {
 		patch();
 	}
+
+	return patcher;
 }
 
 string *query_inherited_constructors()
