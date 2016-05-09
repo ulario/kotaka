@@ -60,10 +60,10 @@ void main(object actor, mapping roles)
 
 	sz = status(ST_OTABSIZE);
 
-	call_out("lazy_allcall", 0, path, func, sz - 1);
+	call_out("lazy_allcall", 0, path, func, sz - 1, time());
 }
 
-static void lazy_allcall(string path, string func, int oindex)
+static void lazy_allcall(string path, string func, int oindex, varargs int time)
 {
 	object obj;
 
@@ -76,6 +76,15 @@ static void lazy_allcall(string path, string func, int oindex)
 	if (oindex == 0) {
 		LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall finished.");
 	} else {
-		call_out("lazy_allcall", 0, path, func, oindex - 1);
+		int newtime;
+
+		newtime = time();
+
+		if (time < newtime) {
+			LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall: " + oindex + " slots left to check.");
+			time = time();
+		}
+
+		call_out("lazy_allcall", 0, path, func, oindex - 1, time);
 	}
 }
