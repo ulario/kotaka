@@ -46,7 +46,7 @@ void qsort(mixed arr, int begin, int end, varargs string compfunc)
 		mixed pivot;
 
 		low = begin;
-		mid = (begin + end) / 2;
+		mid = random(end - begin) + begin;
 		high = end - 1;
 
 		pivot = (type == T_ARRAY) ? arr[mid] : arr->query_element(mid);
