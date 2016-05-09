@@ -40,17 +40,15 @@ Rename in the toucher/patcher API
 
 	Deprecations:
 
-	*
-		program_info->query_toucher is deprecated.
+	*	program_info->query_toucher is deprecated.
 		Please use program_info->query_patcher from now on.
 
 		Debug warnings will be emitted for code using the old way.
 
-	*
-		ObjectD will now ask initd's for patch functions using the
+	*	ObjectD will now ask initd's for patch functions using the
 		query_patcher hook, instead of the query_toucher hook.
 
-		Debug warning will be emitted for initds providing the old
+		Debug warnings will be emitted for initds providing the old
 		hook in place of the new one.
 
 		UpgradeD will destruct LIB_INITD.  Any initd inheriting
