@@ -69,6 +69,8 @@ void stop()
 	query_user()->set_mode(MODE_ECHO);
 	remove_call_out(callout);
 
+	send_out("\033[1;1H\033[2J");
+
 	stopped = 1;
 }
 
@@ -81,6 +83,8 @@ void go()
 	callout = call_out("frame", 0);
 
 	reset_frame_info();
+
+	send_out("\033[1;1H\033[2J");
 
 	stopped = 0;
 }
