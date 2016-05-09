@@ -31,44 +31,12 @@ object queue;
 object patch;
 int qlen;
 
-private void destruct_queue()
-{
-	int sz;
-	object *turkeys;
-
-	turkeys = ({ });
-
-	if (queue) {
-		turkeys += ({ queue });
-		queue = nil;
-	}
-
-	if (patch) {
-		turkeys  += ({ patch });
-		patch = nil;
-	}
-
-	for (sz = sizeof(turkeys) - 1; sz >= 0; --sz)
-	{
-		destruct_object(turkeys[sz]);
-	}
-}
-
-static void create()
-{
-}
-
-static void destruct()
-{
-	destruct_queue();
-}
-
 void call_touch(object obj)
 {
 	ACCESS_CHECK(SYSTEM());
 
 	if (!queue || queue->empty()) {
-		queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
+		queue = new_object(BIGSTRUCT_DEQUE_LWO);
 		queue->claim();
 		call_out("touch_tick", 0);
 	}
@@ -190,7 +158,8 @@ static void touch_tick()
 	} else {
 		LOGD->post_message("debug", LOG_DEBUG, "Touch queue empty");
 
-		destruct_queue();
+		queue = nil;
+		patch = nil;
 		qlen = 0;
 	}
 }
@@ -221,20 +190,5 @@ void clear_patches(int oindex)
 
 	if (patch) {
 		patch->set_element(oindex, nil);
-	}
-}
-
-static void purge_object(object obj)
-{
-	string oname;
-
-	if (!obj) {
-		return;
-	}
-
-	oname = object_name(obj);
-
-	if (!sscanf(oname, "%*s#-1")) {
-		destruct_object(obj);
 	}
 }
