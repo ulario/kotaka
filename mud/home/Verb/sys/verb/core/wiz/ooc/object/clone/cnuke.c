@@ -33,7 +33,6 @@ void main(object actor, mapping roles)
 {
 	string path;
 	object proxy;
-	int i, sz;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do a clone nuke.\n");
@@ -41,20 +40,18 @@ void main(object actor, mapping roles)
 	}
 
 	path = roles["raw"];
-
-	sz = status(ST_OTABSIZE);
-
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
-	call_out("nuke", 0, path, sz - 1, proxy);
+	call_out("lazy_nuke", 0, path, status(ST_OTABSIZE) - 1, proxy);
 }
 
-void nuke(string path, int index, object proxy)
+void lazy_nuke(string path, int index, object proxy)
 {
 	object obj;
 
 	if (!proxy) {
 		LOGD->post_message("system", LOG_ERROR, "Aborting clone nuke (proxy destructed)");
+
 		return;
 	}
 
@@ -63,6 +60,6 @@ void nuke(string path, int index, object proxy)
 	}
 
 	if (index > 0) {
-		call_out("nuke", 0, path, index - 1, proxy);
+		call_out("lazy_nuke", 0, path, index - 1, proxy);
 	}
 }

@@ -49,18 +49,11 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	st = status(path);
-
-	if (!st) {
-		send_out("No such object.\n");
-		return;
+	if (find_object(path)) {
+		call_other(path, func);
 	}
 
-	call_other(path, func);
-
-	sz = status(ST_OTABSIZE);
-
-	call_out("lazy_allcall", 0, path, func, sz - 1, time());
+	call_out("lazy_allcall", 0, path, func, status(ST_OTABSIZE) - 1, time());
 }
 
 static void lazy_allcall(string path, string func, int oindex, varargs int time)

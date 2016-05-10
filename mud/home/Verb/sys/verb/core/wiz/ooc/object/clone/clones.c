@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/log.h>
 #include <status.h>
 
 inherit LIB_VERB;
@@ -41,22 +42,31 @@ void main(object actor, mapping roles)
 
 	path = roles["raw"];
 
-	st = status(path);
+	call_out("lazy_clones", 0, path, status(ST_OTABSIZE) - 1, time());
+}
 
-	if (!st) {
-		send_out("No such object.\n");
-		return;
+static void lazy_clones(string path, int oindex, varargs int time)
+{
+	object obj;
+
+	obj = find_object(path + "#" + oindex);
+
+	if (obj) {
+		LOGD->post_message("debug", LOG_DEBUG, "Found " + object_name(obj));
 	}
 
-	sz = status(ST_OTABSIZE);
+	if (oindex == 0) {
+		LOGD->post_message("debug", LOG_DEBUG, "Lazy clone enumeration finished.");
+	} else {
+		int newtime;
 
-	for (i = 0; i < sz; i++) {
-		object obj;
+		newtime = time();
 
-		obj = find_object(path + "#" + i);
-
-		if (obj) {
-			send_out(object_name(obj) + "\n");
+		if (time < newtime) {
+			LOGD->post_message("debug", LOG_DEBUG, "Lazy clone enumeration: " + oindex + " slots left to check.");
+			time = time();
 		}
+
+		call_out("lazy_clones", 0, path, oindex - 1, time);
 	}
 }
