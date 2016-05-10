@@ -216,6 +216,7 @@ void reboot()
 	CALLOUTD->reboot();
 	ACCESSD->restore();
 	DUMPD->reboot();
+	TOUCHD->reboot();
 
 	DRIVER->fix_filequota();
 	MODULED->reboot_modules();
@@ -234,6 +235,7 @@ void hotboot()
 
 	SYSTEM_USERD->hotboot();
 	CALLOUTD->reboot();
+	TOUCHD->reboot();
 
 	MODULED->hotboot_modules();
 	DRIVER->fix_filequota();
@@ -427,8 +429,6 @@ void upgrade_module()
 
 	configure_rsrc();
 	set_limits();
-
-	PROGRAMD->patch_program_infos();
 
 	purge_orphans("System");
 }

@@ -25,10 +25,12 @@ inherit "call_guard";
 
 static void call_touch(object obj)
 {
+	/* anyone can use call_touch */
+
 	if (previous_program() == TOUCHD) {
 		::call_touch(obj);
 	} else {
-		TOUCHD->call_touch(obj);
+		TOUCHD->touch_object(obj);
 	}
 }
 

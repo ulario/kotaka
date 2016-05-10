@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/channel.h>
@@ -27,37 +28,40 @@
 
 inherit SECOND_AUTO;
 
-object queue;
-object patch;
+object queue;	/* objects with outstanding upgrades needing to be bumped */
+object flags;	/* ([ oindex: 1 = upgrade, 2 = touch */
+object patch;	/* ([ oindex: patch functions ]) */
+
 int qlen;
+int hqueue;
 
-void call_touch(object obj)
+void touch_object(object obj)
 {
-	ACCESS_CHECK(SYSTEM());
-
-	if (!queue || queue->empty()) {
-		queue = new_object(BIGSTRUCT_DEQUE_LWO);
-		queue->claim();
-		call_out("touch_tick", 0);
-	}
-
-	qlen++;
-
-	queue->push_back(obj);
-
 	::call_touch(obj);
 }
 
-private void queue_patches(object obj, string *patches)
+private void queue_object(object obj)
 {
-	string name;
-	int oindex;
+	if (!queue) {
+		queue = new_object(BIGSTRUCT_ARRAY_LWO);
+		queue->claim();
+	}
+
+	queue->push_back(obj);
+	qlen++;
+
+	if (!hqueue) {
+		hqueue = call_out("process", 0);
+	}
+}
+
+private void queue_patches(int oindex, string *patches)
+{
 	string *old;
 
-	name = object_name(obj);
-
-	if (!sscanf(name, "%*s#%d", oindex)) {
-		oindex = status(obj, O_INDEX);
+	if (!patch) {
+		patch = new_object(BIGSTRUCT_ARRAY_LWO);
+		patch->claim();
 	}
 
 	old = patch->query_element(oindex);
@@ -66,115 +70,7 @@ private void queue_patches(object obj, string *patches)
 		old = ({ });
 	}
 
-	old |= patches;
-
-	patch->set_element(oindex, old);
-}
-
-void touch_scan_otable(string path, int sz, string *patches)
-{
-	object obj;
-
-	ACCESS_CHECK(previous_program() == SUSPENDD);
-
-	if (sz % 10000 == 0) {
-		LOGD->post_message("debug", LOG_DEBUG, "TouchD: Scanning object table for " + path + ", currently at slot " + sz);
-	}
-
-	obj = find_object(path + "#" + sz);
-
-	if (obj) {
-		if (patches) {
-			queue_patches(obj, patches);
-		}
-
-		call_touch(obj);
-	}
-
-	sz--;
-
-	if (sz >= 0) {
-		SUSPENDD->queue_work("touch_scan_otable", path, sz, patches);
-	} else {
-		LOGD->post_message("debug", LOG_DEBUG, "TouchD: Finished object table scan for " + path);
-	}
-}
-
-void touch_all(string path, varargs string *patches)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	rlimits(0; -1) {
-		object obj;
-
-		obj = find_object(path);
-
-		if (patches) {
-			queue_patches(obj, patches);
-		}
-
-		call_touch(find_object(path));
-
-		if (!sscanf(path, "%*s" + CLONABLE_SUBDIR)) {
-			return;
-		}
-
-		if (sscanf(path, "%*s" + LIGHTWEIGHT_SUBDIR)) {
-			return;
-		}
-
-		if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
-			return;
-		}
-
-		SUSPENDD->queue_work("touch_scan_otable", path, status(ST_OTABSIZE) - 1, patches);
-	}
-}
-
-static void touch_tick()
-{
-	object obj;
-
-	obj = queue->query_front();
-
-	queue->pop_front();
-
-	qlen--;
-
-	if (obj) {
-		catch {
-			if (!sscanf(object_name(obj), "/kernel/%*s")) {
-				obj->_F_dummy();
-			}
-		}
-	}
-
-	if (!queue->empty()) {
-		if (qlen % 1000 == 0) {
-			LOGD->post_message("debug", LOG_DEBUG, "TouchD: " + qlen + " left in touch queue.");
-		}
-
-		call_out("touch_tick", 0);
-	} else {
-		LOGD->post_message("debug", LOG_DEBUG, "Touch queue empty");
-
-		queue = nil;
-		patch = nil;
-		qlen = 0;
-	}
-}
-
-void add_patches(string path, string *patches)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	if (!patch) {
-		patch = clone_object(BIGSTRUCT_ARRAY_OBJ);
-		patch->claim();
-		patch->set_size(0x7fffffff);
-	}
-
-	touch_all(path, patches);
+	patch->set_element(oindex, old | patches);
 }
 
 string *query_patches(int oindex)
@@ -190,5 +86,87 @@ void clear_patches(int oindex)
 
 	if (patch) {
 		patch->set_element(oindex, nil);
+	}
+}
+
+void patch_tick(string path, int oindex, string *patches, int time)
+{
+	int curtime;
+	object obj;
+
+	ACCESS_CHECK(previous_program() == SUSPENDD);
+
+	obj = find_object(path + "#" + oindex);
+
+	if (obj) {
+		queue_patches(oindex, patches);
+		call_touch(obj);
+		queue_object(obj);
+	}
+
+	curtime = time();
+
+	if (time < curtime) {
+		time = curtime;
+
+		LOGD->post_message("debug", LOG_DEBUG,
+			"Queuing patches for clones of " + path
+			+ ", currently at " + oindex);
+	}
+
+	oindex--;
+
+	if (oindex >= 0) {
+		SUSPENDD->queue_work("patch_tick", path, oindex, patches, time);
+	} else {
+		LOGD->post_message("debug", LOG_DEBUG,
+			"Finished queuing patches for clones of " + path);
+	}
+}
+
+static void process()
+{
+	object obj;
+
+	hqueue = 0;
+
+	if (queue->empty()) {
+		queue = nil;
+		patch = nil;
+		qlen = 0;
+
+		LOGD->post_message("debug", LOG_DEBUG, "Finished patching");
+
+		return;
+	}
+
+	obj = queue->query_front();
+	queue->pop_front();
+
+	hqueue = call_out("process", 0);
+
+	obj->_F_dummy();
+}
+
+void touch_all(string path, string *patches)
+{
+	int oindex;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	SUSPENDD->suspend_system();
+	SUSPENDD->queue_work("patch_tick",
+		status(ST_OTABSIZE) - 1, patches, time());
+
+	queue_patches(status(path, O_INDEX), patches);
+	queue_object(find_object(path));
+}
+
+void reboot()
+{
+	ACCESS_CHECK(previous_program() == INITD);
+
+	if (patch) {
+		patch->set_size(status(ST_OTABSIZE));
 	}
 }
