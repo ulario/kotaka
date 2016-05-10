@@ -21,19 +21,27 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
-#define MIN_SPARE_OBJECTS 100
-
 private int enough_free_objects(int clone)
 {
 	int used;
 	int free;
 	int total;
+	int quota;
 
 	used = status(ST_NOBJECTS);
 	total = status(ST_OTABSIZE);
 	free = total - used;
+	quota = total / 50;
 
-	return free > (clone ? 100 : 50);
+	if (quota < 100) {
+		quota = 100;
+	}
+
+	if (clone) {
+		quota /= 2;
+	}
+
+	return free >= quota;
 }
 
 static object compile_object(mixed args ...)

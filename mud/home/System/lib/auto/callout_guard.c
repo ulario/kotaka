@@ -23,14 +23,20 @@
 private int enough_free_callouts()
 {
 	int used;
-	int total;
 	int free;
+	int total;
+	int quota;
 
 	used = status(ST_NCOSHORT) + status(ST_NCOLONG);
 	total = status(ST_COTABSIZE);
 	free = total - used;
+	quota = total / 50;
 
-	return free > 20;
+	if (quota < 10) {
+		quota = 10;
+	}
+
+	return free >= quota;
 }
 
 static int call_out(string func, mixed delay, mixed args...)
