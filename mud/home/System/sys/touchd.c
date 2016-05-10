@@ -40,10 +40,15 @@ void touch_object(object obj)
 	::call_touch(obj);
 }
 
+static void nuke_object(object obj)
+{
+	destruct_object(obj);
+}
+
 private void queue_object(object obj)
 {
 	if (!queue) {
-		queue = new_object(BIGSTRUCT_ARRAY_LWO);
+		queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
 		queue->claim();
 	}
 
@@ -51,7 +56,7 @@ private void queue_object(object obj)
 	qlen++;
 
 	if (!hqueue) {
-		hqueue = call_out("process", 0);
+		hqueue = call_out("process", 0, time());
 	}
 }
 
@@ -60,8 +65,9 @@ private void queue_patches(int oindex, string *patches)
 	string *old;
 
 	if (!patch) {
-		patch = new_object(BIGSTRUCT_ARRAY_LWO);
+		patch = clone_object(BIGSTRUCT_ARRAY_OBJ);
 		patch->claim();
+		patch->set_size(status(ST_OTABSIZE));
 	}
 
 	old = patch->query_element(oindex);
@@ -110,8 +116,8 @@ void patch_tick(string path, int oindex, string *patches, int time)
 		time = curtime;
 
 		LOGD->post_message("debug", LOG_DEBUG,
-			"Queuing patches for clones of " + path
-			+ ", currently at " + oindex);
+			"Patch queue for " + path
+			+ ", currently at slot " + oindex);
 	}
 
 	oindex--;
@@ -124,13 +130,22 @@ void patch_tick(string path, int oindex, string *patches, int time)
 	}
 }
 
-static void process()
+static void process(int time)
 {
 	object obj;
+	int curtime;
 
 	hqueue = 0;
 
 	if (queue->empty()) {
+		if (queue && !sscanf(object_name(queue), "%*s#-1")) {
+			call_out("nuke_object", 0, queue);
+		}
+
+		if (patch && !sscanf(object_name(patch), "%*s#-1")) {
+			call_out("nuke_object", 0, patch);
+		}
+
 		queue = nil;
 		patch = nil;
 		qlen = 0;
@@ -142,13 +157,25 @@ static void process()
 
 	obj = queue->query_front();
 	queue->pop_front();
+	qlen--;
 
-	hqueue = call_out("process", 0);
+	curtime = time();
 
-	obj->_F_dummy();
+	if (time < curtime) {
+		time = curtime;
+
+		LOGD->post_message("debug", LOG_DEBUG,
+			"Patch queue: " + qlen + " bumps left.");
+	}
+
+	hqueue = call_out("process", 0, time);
+
+	if (obj) {
+		obj->_F_dummy();
+	}
 }
 
-void touch_all(string path, string *patches)
+void add_patches(string path, string *patches)
 {
 	int oindex;
 
@@ -156,7 +183,7 @@ void touch_all(string path, string *patches)
 
 	SUSPENDD->suspend_system();
 	SUSPENDD->queue_work("patch_tick",
-		status(ST_OTABSIZE) - 1, patches, time());
+		path, status(ST_OTABSIZE) - 1, patches, time());
 
 	queue_patches(status(path, O_INDEX), patches);
 	queue_object(find_object(path));
