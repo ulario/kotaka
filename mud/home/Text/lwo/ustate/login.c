@@ -31,6 +31,7 @@ inherit TEXT_LIB_USTATE;
 
 string name;
 string password;
+int silent;
 
 int state;
 int stopped;
@@ -108,6 +109,11 @@ void receive_in(string input)
 	case STATE_GETNAME:
 		input = STRINGD->to_lower(input);
 
+		if (input[0] == '~') {
+			silent = 1;
+			input = input[1 ..];
+		}
+
 		if (!STRINGD->is_valid_username(input)) {
 			send_out("That is not a valid username.\n");
 			pop_state();
@@ -153,6 +159,10 @@ void receive_in(string input)
 			}
 
 			query_user()->set_username(name);
+
+			if (silent) {
+				ACCOUNTD->set_account_property(name, "invisible", 1);
+			}
 
 			TEXT_SUBD->login_user(query_user());
 			TEXT_SUBD->send_login_message(name);
