@@ -34,9 +34,11 @@ void load()
 	load_dir("sys", 1);
 }
 
+#define MILLION 1000000
+
 private void set_limits()
 {
-	KERNELD->rsrc_set_limit("Text", "ticks", 10000000);
+	KERNELD->rsrc_set_limit("Text", "ticks", 100 * MILLION);
 }
 
 static void create()
