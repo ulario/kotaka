@@ -134,6 +134,7 @@ void receive_in(string input)
 		send_out("\n");
 		query_user()->set_mode(MODE_ECHO);
 		password = input;
+
 		if (!ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, that account no longer exists.\n");
 			pop_state();
@@ -149,9 +150,6 @@ void receive_in(string input)
 			query_user()->quit();
 			return;
 		} else {
-			/* todo: detect duplicates and prepare to */
-			/* evict a linkdead user */
-
 			if (TEXT_USERD->find_user(name)) {
 				send_out("You are already logged in.\nDo you wish to disconnect your previous login? ");
 				state = STATE_CHKDUPE;
@@ -172,6 +170,7 @@ void receive_in(string input)
 			return;
 		}
 		break;
+
 	case STATE_CHKDUPE:
 		if (!ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, that account no longer exists.\n");
