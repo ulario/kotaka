@@ -73,7 +73,7 @@ void queue_work(string func, mixed args...)
 	}
 
 	if (!queue) {
-		queue = new_object(BIGSTRUCT_DEQUE_LWO);
+		queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
 		queue->claim();
 	}
 
@@ -135,9 +135,15 @@ static void process()
 		return;
 	}
 
-	if (!queue || queue->empty()) {
-		queue = nil;
+	if (queue && queue->empty()) {
+		if (!sscanf(object_name(queue), "%*s#-1")) {
+			destruct_object(queue);
+		} else {
+			queue = nil;
+		}
+	}
 
+	if (!queue) {
 		if (suspend) {
 			release_system();
 		}
