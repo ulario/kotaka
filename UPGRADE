@@ -3,35 +3,45 @@ How to upgrade your mud
 
 Every upgrade has the following sequence of events:
 
-1.  upgrade kotaka
+1.  advanced notice
+
+	Any API changes will be announced at least one version in advance.
+
+	Unless otherwise noted, until the old API is obsoleted, it will
+	remain valid to use both APIs at the same time, though warnings
+	may be issued if the old API is used.
+
+2.  preparation
+
+	If anything needs done to prepare for an upgrade, those
+	instructions will be provided, and should be completed before the
+	actual upgrade.
+
+3.  upgrade
 
 	Use the upgrade command to start the upgrade process.
 
 	This command is responsible for taking care of all of kotaka's
 	native code.
 
-2.  obsolete & stale
+4.  post upgrade work
 
-	Check for any objects that need to be recompiled because of
-	changed inherits or includes.
+	Instructions may be provided for things needing to be done after
+	the upgrade is completed.
 
-3.  rebuild
+5.  recompiling (optional)
 
-	For a quick method to rebuild everything, use the rebuild
-	command.
+	It is advisable to keep all objects up to date with reference to
+	their source code and inherits.
 
-4.  prepare for changes
-
-	If there are any API changes in kotaka, they will be announced
-	at least one version in advance.
-
-	Kotaka will (or at least should) be able to handle BOTH api's at
-	the same time until the old one has been deprecated and removed.
+	Anything that depends on a source or header file that has been
+	changed, or inherits a library that has been recompiled, should
+	be recompiled as well.
 
 Current API changes pending
 ---------------------------
 
-Rename in the toucher/patcher API
+Rename in the toucher/patcher API, data corruption fix
 
 	It's been found that using call_touch is useful in areas besides
 	object upgrading, so a few changes have been made:
