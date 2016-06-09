@@ -338,7 +338,7 @@ atomic void clear()
 	set_size(old_size);
 }
 
-object slice(int lowindex, int highindex)
+object slice(int lowindex, int highindex, varargs int heavy)
 {
 	int count;
 	int i;
@@ -352,7 +352,12 @@ object slice(int lowindex, int highindex)
 		error("Subscript out of range");
 	}
 
-	slice = new_object(BIGSTRUCT_ARRAY_LWO);
+	if (heavy) {
+		slice = clone_object(BIGSTRUCT_ARRAY_OBJ);
+	} else {
+		slice = new_object(BIGSTRUCT_ARRAY_LWO);
+	}
+
 	slice->claim();
 	slice->set_size(highindex - lowindex + 1);
 
