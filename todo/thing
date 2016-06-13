@@ -1,0 +1,16 @@
+Thing todo
+==========
+
+Reduce archetypes
+-----------------
+
+It's simpler if each object only has one archetype.
+
+When an object is converted to only one archetype, we pick its first one.
+
+* Reduce archetype system so that an object can have only a single archetype
+
+	- By default, an object's archetype will be the first of its archetypes
+
+	- When an object's archetype list is collapsed, its archetype will be
+	conformed as well
