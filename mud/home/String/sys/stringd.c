@@ -488,7 +488,7 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		arr = map_indices(data);
 		tmp = "([ ";
 		for (iter = 0; iter < sizeof(arr); iter++) {
-			tmp += mixed_sprint(arr[iter], seen) + " : " +
+			tmp += mixed_sprint(arr[iter], seen) + ":" +
 				mixed_sprint(data[arr[iter]], seen);
 			if (iter != sizeof(arr) - 1)
 				tmp += ", ";
@@ -544,6 +544,7 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 	case T_FLOAT:
 	case T_OBJECT:
 		return mixed_sprint(data, seen);
+
 	case T_ARRAY:
 		if (seen[data] != nil) {
 			return "@" + seen[data];
@@ -569,6 +570,7 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 			return "({\n" + ind + implode(parts,
 				",\n" + ind) + "\n" + ind + "})";
 		}
+
 	case T_MAPPING:
 		if (seen[data] != nil) {
 			return "@" + seen[data];
@@ -748,7 +750,7 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 			for (index = 0; index < map_sizeof(data); index++) {
 				parts[index] =
 					"  " + mixed_sprint(indices[index], seen) +
-					" :" + (is_simple(data[indices[index]]) ? " " : "\n" + ind + "    ") +
+					":" + (is_simple(data[indices[index]]) ? " " : "\n" + ind + "    ") +
 						hybrid_sprint(data[indices[index]],
 					indent + 4, seen);
 			}
