@@ -103,13 +103,16 @@ void set_body(object new_body)
 
 	if (body) {
 		mobiles = body->query_property("mobiles");
-		mobiles -= ({ this_object(), nil });
 
-		if (!sizeof(mobiles)) {
-			mobiles = nil;
+		if (mobiles) {
+			mobiles -= ({ this_object(), nil });
+
+			if (!sizeof(mobiles)) {
+				mobiles = nil;
+			}
+
+			body->set_property("mobiles", mobiles);
 		}
-
-		body->set_property("mobiles", mobiles);
 	}
 
 	body = new_body;
@@ -121,6 +124,7 @@ void set_body(object new_body)
 			mobiles = ({ });
 		}
 
+		mobiles -= ({ nil });
 		mobiles |= ({ this_object() });
 		body->set_property("mobiles", mobiles);
 	}
