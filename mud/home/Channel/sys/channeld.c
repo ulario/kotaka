@@ -458,9 +458,11 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	time = time();
 
-	stamp = ctime(time)[11 .. 18];
+	stamp = ctime(time);
 
 	paste_to_log(channel, stamp, sender, message);
+
+	stamp = ctime(time)[11 .. 18];
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
