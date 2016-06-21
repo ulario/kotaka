@@ -23,6 +23,7 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/paths/text.h>
 #include <game/paths.h>
 #include <status.h>
 #include <type.h>
@@ -349,9 +350,12 @@ void save_world_write(int i)
 object *parse_object(string input)
 {
 	int onum;
+	string uname;
 
 	if (sscanf(input, "O:%d", onum)) {
 		return ({ objlist->query_element(onum - 1)[0] });
+	} else if (sscanf(input, "U:%s", uname)) {
+		return ({ TEXT_USERD->find_user(uname) });
 	} else {
 		error("Cannot parse: " + input);
 	}
@@ -367,9 +371,9 @@ string sprint_object(object obj, varargs mapping seen)
 		case USR_DIR + "/Game/obj/thing":
 			return "<O:" + oindex2onum->query_element(oindex) + ">";
 		case USR_DIR + "/Text/obj/user":
-			return "nil";
+			return "<U:" + obj->query_name() + ">";
 		default:
-			error("Clone is not a thing (" + path + ")");
+			error("Unknown object type (" + path + ")");
 		}
 	} else {
 		return STRINGD->sprint_object(obj, seen);
