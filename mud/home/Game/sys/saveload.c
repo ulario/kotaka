@@ -31,8 +31,8 @@
 object oindex2onum;
 object objlist;	/* ({ idnum: obj, data }) */
 
-object dirputqueue;
-object objputqueue;
+object dirqueue;
+object objqueue;
 
 /* private helper functions */
 
@@ -47,7 +47,7 @@ private void purge_object(object obj)
 	inv = obj->query_inventory();
 
 	for (sz = sizeof(inv); --sz >= 0; ) {
-		objputqueue->push_back(inv[sz]);
+		objqueue->push_back(inv[sz]);
 	}
 
 	name = obj->query_object_name();
@@ -72,15 +72,15 @@ private void purge_directory(string dir)
 	for (i = 0; i < sz; i++) {
 		if (keys[i] == 2) {
 			if (dir) {
-				dirputqueue->push_front(dir + ":" + names[i]);
+				dirqueue->push_front(dir + ":" + names[i]);
 			} else {
-				dirputqueue->push_front(names[i]);
+				dirqueue->push_front(names[i]);
 			}
 		} else {
 			if (dir) {
-				objputqueue->push_front(CATALOGD->lookup_object(dir + ":" + names[i]));
+				objqueue->push_front(CATALOGD->lookup_object(dir + ":" + names[i]));
 			} else {
-				objputqueue->push_front(CATALOGD->lookup_object(names[i]));
+				objqueue->push_front(CATALOGD->lookup_object(names[i]));
 			}
 		}
 	}
@@ -93,18 +93,18 @@ void load_world_purge()
 	catch {
 		int done;
 
-		if (!dirputqueue->empty()) {
+		if (!dirqueue->empty()) {
 			string dir;
 
-			dir = dirputqueue->query_front();
-			dirputqueue->pop_front();
+			dir = dirqueue->query_front();
+			dirqueue->pop_front();
 
 			purge_directory(dir);
-		} else if (!objputqueue->empty()) {
+		} else if (!objqueue->empty()) {
 			object obj;
 
-			obj = objputqueue->query_front();
-			objputqueue->pop_front();
+			obj = objqueue->query_front();
+			objqueue->pop_front();
 
 			if (obj) {
 				purge_object(obj);
@@ -250,7 +250,7 @@ private void put_object(object obj)
 	inv = obj->query_inventory();
 
 	for (sz = sizeof(inv); --sz >= 0; ) {
-		objputqueue->push_back(inv[sz]);
+		objqueue->push_back(inv[sz]);
 	}
 }
 
@@ -271,15 +271,15 @@ private void put_directory(string dir)
 	for (i = 0; i < sz; i++) {
 		if (keys[i] == 2) {
 			if (dir) {
-				dirputqueue->push_front(dir + ":" + names[i]);
+				dirqueue->push_front(dir + ":" + names[i]);
 			} else {
-				dirputqueue->push_front(names[i]);
+				dirqueue->push_front(names[i]);
 			}
 		} else {
 			if (dir) {
-				objputqueue->push_front(CATALOGD->lookup_object(dir + ":" + names[i]));
+				objqueue->push_front(CATALOGD->lookup_object(dir + ":" + names[i]));
 			} else {
-				objputqueue->push_front(CATALOGD->lookup_object(names[i]));
+				objqueue->push_front(CATALOGD->lookup_object(names[i]));
 			}
 		}
 	}
@@ -292,18 +292,18 @@ void save_world_put()
 	catch {
 		int done;
 
-		if (!objputqueue->empty()) {
+		if (!objqueue->empty()) {
 			object obj;
 
-			obj = objputqueue->query_front();
-			objputqueue->pop_front();
+			obj = objqueue->query_front();
+			objqueue->pop_front();
 
 			put_object(obj);
-		} else if (!dirputqueue->empty()) {
+		} else if (!dirqueue->empty()) {
 			string dir;
 
-			dir = dirputqueue->query_front();
-			dirputqueue->pop_front();
+			dir = dirqueue->query_front();
+			dirqueue->pop_front();
 
 			put_directory(dir);
 		} else {
@@ -394,12 +394,12 @@ void load_world()
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 	objlist->claim();
 
-	dirputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	dirputqueue->claim();
-	objputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	objputqueue->claim();
+	dirqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	dirqueue->claim();
+	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	objqueue->claim();
 
-	dirputqueue->push_back(nil);
+	dirqueue->push_back(nil);
 
 	SUSPENDD->suspend_system();
 	SUSPENDD->queue_work("load_world_purge");
@@ -416,14 +416,14 @@ void save_world()
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 	objlist->claim();
 
-	dirputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	dirputqueue->claim();
-	objputqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	objputqueue->claim();
+	dirqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	dirqueue->claim();
+	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
+	objqueue->claim();
 
 	purge_savedir();
 
-	dirputqueue->push_back(nil);
+	dirqueue->push_back(nil);
 
 	SUSPENDD->suspend_system();
 	SUSPENDD->queue_work("save_world_put");
