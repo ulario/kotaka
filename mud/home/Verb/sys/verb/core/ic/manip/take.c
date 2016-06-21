@@ -137,7 +137,7 @@ void main(object actor, mapping roles)
 	}
 
 	if (from) {
-		emit_from(actor, actor, " ", ({ "take", "takes" }), dob, " from ", from, ".");
+		emit_from(actor, actor, " ", ({ "take", "takes" }), " ", dob, " from ", from, ".");
 	} else {
 		emit_from(actor, actor, " ", ({ "take", "takes" }), " ", dob, ".");
 	}
