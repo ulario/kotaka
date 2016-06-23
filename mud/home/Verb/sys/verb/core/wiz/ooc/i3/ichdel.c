@@ -35,4 +35,6 @@ void main(object actor, mapping roles)
 	}
 
 	INTERMUDD->remove_channel(roles["raw"]);
+
+	send_out("Channel removed from Intermud3.\n");
 }

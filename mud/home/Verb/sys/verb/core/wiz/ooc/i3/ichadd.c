@@ -40,4 +40,6 @@ void main(object actor, mapping roles)
 	}
 
 	INTERMUDD->add_channel(roles["raw"]);
+
+	send_out("Channel added to Intermud3.\n");
 }

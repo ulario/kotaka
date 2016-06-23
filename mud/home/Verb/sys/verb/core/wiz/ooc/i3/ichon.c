@@ -47,4 +47,6 @@ void main(object actor, mapping roles)
 
 	CHANNELD->set_intermud(roles["raw"], 1);
 	INTERMUDD->listen_channel(roles["raw"], 1);
+
+	send_out("Channel connected to Intermud3.\n");
 }
