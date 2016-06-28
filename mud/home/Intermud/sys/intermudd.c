@@ -342,7 +342,15 @@ private void do_tell(mixed *value)
 	object user;
 
 	if (user = TEXT_USERD->find_user(value[5])) {
-		user->message(value[6] + "@" + value[2] + " tells you: " + value[7]);
+		string msg;
+
+		msg = value[7];
+
+		if (msg[strlen(msg) - 1] != '\n') {
+			msg += "\n";
+		}
+
+		user->message(value[6] + "@" + value[2] + " tells you: " + msg);
 	} else {
 		message(make_packet( ({
 			"error",
