@@ -189,11 +189,23 @@ private string mudmode_sprint(mixed data)
 	}
 }
 
+/* logging */
+
+private void log_outbound(mixed *arr)
+{
+}
+
+private void log_inbound(mixed *arr)
+{
+}
+
 /* connection management */
 
 string query_banner(object LIB_CONN connection)
 {
-	return make_packet( ({
+	mixed *arr;
+
+	arr = ({
 		"startup-req-3",
 		5,
 		MUDNAME,
@@ -218,7 +230,11 @@ string query_banner(object LIB_CONN connection)
 			"channel":1
 		]),
 		([ ])
-	}) );
+	});
+
+	log_outbound(arr);
+
+	return make_packet(arr);
 }
 
 int query_timeout(object LIB_CONN connection)
@@ -233,7 +249,9 @@ object select(string input)
 
 void send_channel_message(string channel, string sender, string text)
 {
-	message(make_packet( ({
+	mixed *arr;
+
+	arr = ({
 		"channel-m",
 		5,
 		MUDNAME,
@@ -243,7 +261,11 @@ void send_channel_message(string channel, string sender, string text)
 		channel,
 		sender ? STRINGD->to_title(sender) : "(system)",
 		text
-	}) ));
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
 }
 
 private void do_chanlist_reply(mixed *value)
@@ -278,7 +300,9 @@ private void do_emoteto(mixed *value)
 	if (user = TEXT_USERD->find_user(value[5])) {
 		user->message(value[6] + "@" + value[2] + " emotes to you: " + value[7]);
 	} else {
-		message(make_packet( ({
+		mixed *arr;
+
+		arr = ({
 			"error",
 			5,
 			MUDNAME,
@@ -288,7 +312,11 @@ private void do_emoteto(mixed *value)
 			"unk-user",
 			"User not online: " + value[5],
 			value
-		}) ));
+		});
+
+		log_outbound(arr);
+
+		message(make_packet(arr));
 	}
 }
 
@@ -352,7 +380,9 @@ private void do_tell(mixed *value)
 
 		user->message(value[6] + "@" + value[2] + " tells you: " + msg);
 	} else {
-		message(make_packet( ({
+		mixed *arr;
+
+		arr = ({
 			"error",
 			5,
 			MUDNAME,
@@ -362,7 +392,11 @@ private void do_tell(mixed *value)
 			"unk-user",
 			"User not online: " + value[5],
 			value
-		}) ));
+		});
+
+		log_outbound(arr);
+
+		message(make_packet(arr));
 	}
 }
 
@@ -387,13 +421,16 @@ private void do_channel_e(mixed *value)
 
 private void bounce_packet(mixed *value)
 {
+	mixed *arr;
+
 	/* send back an error packet */
 	LOGD->post_message("intermud", LOG_INFO,
 		"Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
+
 	LOGD->post_message("intermud", LOG_INFO,
 		"Bouncing back an error to \"" + value[2] + "\"\n");
 
-	message(make_packet( ({
+	arr = ({
 		"error",
 		5,
 		MUDNAME,
@@ -403,7 +440,11 @@ private void bounce_packet(mixed *value)
 		"unk-type",
 		"Unhandled packet type: " + value[0],
 		value
-	}) ));
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
 }
 
 private void process_packet(mixed *value)
@@ -455,6 +496,7 @@ private void process_packet(mixed *value)
 
 static void process()
 {
+	mixed *arr;
 	int len;
 	string packet;
 
@@ -474,7 +516,11 @@ static void process()
 	packet = buffer[0 .. len - 2];
 	buffer = buffer[len ..];
 
-	process_packet(PARSER_MUDMODE->parse(packet));
+	arr = PARSER_MUDMODE->parse(packet);
+
+	log_inbound(arr);
+
+	process_packet(arr);
 
 	handle = call_out("process", 0);
 }
@@ -562,9 +608,11 @@ mixed *query_mud(string mud)
 
 void listen_channel(string channel, int on)
 {
+	mixed *arr;
+
 	ACCESS_CHECK(INTERFACE());
 
-	message(make_packet( ({
+	arr = ({
 		"channel-listen",
 		5,
 		MUDNAME,
@@ -573,11 +621,17 @@ void listen_channel(string channel, int on)
 		0,
 		channel,
 		on
-	}) ));
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
 }
 
 void add_channel(string channel)
 {
+	mixed *arr;
+
 	ACCESS_CHECK(INTERFACE());
 
 	if (channels[channel] && channels[channel][0] != MUDNAME) {
@@ -586,7 +640,7 @@ void add_channel(string channel)
 
 	channels[channel] = ({ MUDNAME, 0 });
 
-	message(make_packet( ({
+	arr = ({
 		"channel-add",
 		5,
 		MUDNAME,
@@ -595,11 +649,17 @@ void add_channel(string channel)
 		0,
 		channel,
 		0
-	}) ));
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
 }
 
 void remove_channel(string channel)
 {
+	mixed *arr;
+
 	ACCESS_CHECK(INTERFACE());
 
 	if (!channels[channel]) {
@@ -612,7 +672,7 @@ void remove_channel(string channel)
 
 	channels[channel] = nil;
 
-	message(make_packet( ({
+	arr = ({
 		"channel-remove",
 		5,
 		MUDNAME,
@@ -620,8 +680,14 @@ void remove_channel(string channel)
 		ROUTER_NAME,
 		0,
 		channel
-	}) ));
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
 }
+
+#endif
 
 private void save()
 {
@@ -659,5 +725,3 @@ private void restore()
 		password = map["password"];
 	}
 }
-
-#endif
