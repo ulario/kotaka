@@ -35,6 +35,7 @@ object patch;	/* ([ oindex: patch functions ]) */
 int qlen;
 int hqueue;
 
+/* Privileged bypass that allows anyone to touch any object */
 void touch_object(object obj)
 {
 	::call_touch(obj);
@@ -86,6 +87,7 @@ string *query_patches(int oindex)
 	}
 }
 
+/* Wipe an object's assigned patches */
 void clear_patches(int oindex)
 {
 	ACCESS_CHECK(SYSTEM());
@@ -95,6 +97,8 @@ void clear_patches(int oindex)
 	}
 }
 
+/* work function for assigning patches */
+/* to a freshly upgraded object and its clones */
 void patch_tick(string path, int oindex, string *patches, int time)
 {
 	int curtime;
@@ -130,6 +134,7 @@ void patch_tick(string path, int oindex, string *patches, int time)
 	}
 }
 
+/* work function for lazy triggering of object patches */
 static void process(int time)
 {
 	object obj;
@@ -175,6 +180,7 @@ static void process(int time)
 	}
 }
 
+/* assign a list of patches to a master object and its clones */
 void add_patches(string path, string *patches)
 {
 	int oindex;
@@ -189,6 +195,7 @@ void add_patches(string path, string *patches)
 	queue_object(find_object(path));
 }
 
+/* handle an enlarged object table after a reboot */
 void reboot()
 {
 	ACCESS_CHECK(previous_program() == INITD);
