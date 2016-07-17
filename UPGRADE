@@ -41,6 +41,16 @@ Every upgrade has the following sequence of events:
 Current API changes pending
 ---------------------------
 
+Deprecation of multiple archetypes
+
+	To avoid exponential complexity in a few areas, as well as encourage
+	neater data inheritance, multiple archetypes are deprecated.
+
+	They will be forcibly removed in the future.
+
+	To prepare for this change any object with multiple archetypes
+	should be reworked.
+
 Rename in the toucher/patcher API, data corruption fix
 
 	It's been found that using call_touch is useful in areas besides
