@@ -292,7 +292,7 @@ string query_banner(object LIB_CONN connection)
 		catch {
 			return userd->query_overload_banner(connection);
 		} : {
-			return "Connectin manager fault\n\nSystem busy\n";
+			return "Connection manager fault\n\nSystem busy\n";
 		}
 	}
 
@@ -322,7 +322,7 @@ string query_banner(object LIB_CONN connection)
 		catch {
 			return userd->query_overload_banner(connection);
 		} : {
-			return "Connectin manager fault\n\nSystem busy\n";
+			return "Connection manager fault\n\nSystem busy\n";
 		}
 	}
 
