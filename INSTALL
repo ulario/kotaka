@@ -59,6 +59,11 @@ To use kotaka:
 	50001 Live status updates
 	50010 Kernel library binary port emergency login
 
+9.  Administrative setup
+
+	Security and privileges for Kotaka are based on the underlying
+	kernel library.
+
 	Connect to port 50000, and select "register a new account"
 
 	Then, pick the "admin" username.
