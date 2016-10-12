@@ -1,0 +1,6 @@
+Distributed Universe
+====================
+
+Kotaka is (or will be) designed to run the entire game universe as a
+hierarchial collection of nodes each of which handles a specific part of
+the game world.
