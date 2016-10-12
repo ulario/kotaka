@@ -1,0 +1,12 @@
+Node merge
+----------
+
+If a parent node has low activity levels, it will merge in the child node
+with the lowest load.
+
+Low activity means the node has fewer than 2k objects and no callout lag.
+
+Nodes are not eligible to be merged unless they are at least one hour old
+and have been underloaded for at least 5 minutes.
+
+Nodes cannot absorb more than one node every 15 minutes.

@@ -1,0 +1,6 @@
+Node
+====
+
+A node is a slice of the game universe.
+
+Each node has an anchor, a physical object it represents.

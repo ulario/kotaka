@@ -1,0 +1,5 @@
+Node split
+==========
+
+When a node grows too large to sustain a comfortable performance
+standard, it will be split.

@@ -1,0 +1,32 @@
+Node system
+-----------
+
+Every node corresponds to an object in the game universe.
+
+Object distribution
+-------------------
+
+Every object that exists has a home node.
+
+- An object can be present on more than one node at a time for read access
+- An object can only be present on one node for write access
+
+Connections
+-----------
+
+A node retains connections to its parent node
+
+Global backup
+-------------
+
+Hierarchial object accounting
+-----------------------------
+
+Every object will keep aggregate counts of the number of objects
+contained inside, not counting objects diverted to subnodes.
+
+When an object leaves or enters another, the second object will have an
+audit event scheduled.  Within a random period of time between 0.5 and
+1.5 seconds, it will count up all objects inside itself and signal an
+audit to its parent if said parent does not already have an audit
+pending.  Thus, totals will percolate up the hierarchy.

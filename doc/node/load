@@ -1,0 +1,37 @@
+Load
+====
+
+A node's load is calculated on two factors:
+
+* Object count
+
+This is all objects hosted by the node, and is retrieved from status()
+
+Each object in the node also has a running total kept of its "masses",
+which is the object count of everything inside it.  We keep separate
+totals for total objects contained, as well as how many of those are
+local to the node.
+
+* Lag
+
+This is measured by having a 1.0 second callout repeating, and gathering
+the accumulated lag.
+
+First, we add the tardiness of the callout to the accumulated lag.
+
+Second, every cycle we forgive 0.05 seconds of accumulated lag.
+
+Fourth, each object keeps a hierarchial tally of the number of
+callout-using objects it contains.
+
+Levels
+------
+
+A node is considered OVERLOADED if:
+
+* There are more than 50000 objects
+
+* Accumulated lag goes over 1.0 seconds
+
+Whichever metric trips the overload detector is the same one that will be
+used in the splitting algorithm to find a good node to split off.
