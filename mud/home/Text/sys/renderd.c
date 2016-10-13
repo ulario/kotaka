@@ -453,7 +453,7 @@ private string draw_look_xyz(object viewer)
 		envstack = new_object(BIGSTRUCT_DEQUE_LWO);
 		envstack->claim();
 
-		while (env && env->query_property("is_transparent") || env->query_virtual()) {
+		while (env && (env->query_property("is_transparent") || env->query_virtual())) {
 			env = env->query_environment();
 
 			if (env) {
