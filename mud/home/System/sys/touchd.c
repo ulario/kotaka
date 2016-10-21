@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kernel/access.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
@@ -29,13 +30,10 @@
 inherit SECOND_AUTO;
 
 object queue;	/* objects with outstanding upgrades needing to be bumped */
-object flags;	/* ([ oindex: 1 = upgrade, 2 = touch */
 object patch;	/* ([ oindex: patch functions ]) */
 
-int qlen;
 int hqueue;
 
-/* Privileged bypass that allows anyone to touch any object */
 void touch_object(object obj)
 {
 	::call_touch(obj);
@@ -46,99 +44,25 @@ static void nuke_object(object obj)
 	destruct_object(obj);
 }
 
-private void queue_object(object obj)
+void queue_object(object obj)
 {
+	ACCESS_CHECK(SYSTEM());
+
 	if (!queue) {
 		queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
 		queue->claim();
 	}
 
 	queue->push_back(obj);
-	qlen++;
 
 	if (!hqueue) {
 		hqueue = call_out("process", 0, time());
 	}
 }
 
-private void queue_patches(int oindex, string *patches)
-{
-	string *old;
-
-	if (!patch) {
-		patch = clone_object(BIGSTRUCT_ARRAY_OBJ);
-		patch->claim();
-		patch->set_size(status(ST_OTABSIZE));
-	}
-
-	old = patch->query_element(oindex);
-
-	if (!old) {
-		old = ({ });
-	}
-
-	patch->set_element(oindex, old | patches);
-}
-
-string *query_patches(int oindex)
-{
-	if (patch) {
-		return patch->query_element(oindex);
-	}
-}
-
-/* Wipe an object's assigned patches */
-void clear_patches(int oindex)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	if (patch) {
-		patch->set_element(oindex, nil);
-	}
-}
-
-/* work function for assigning patches */
-/* to a freshly upgraded object and its clones */
-void patch_tick(string path, int oindex, string *patches, int time)
-{
-	int curtime;
-	object obj;
-
-	ACCESS_CHECK(previous_program() == SUSPENDD);
-
-	obj = find_object(path + "#" + oindex);
-
-	if (obj) {
-		queue_patches(oindex, patches);
-		call_touch(obj);
-		queue_object(obj);
-	}
-
-	curtime = time();
-
-	if (time < curtime) {
-		time = curtime;
-
-		LOGD->post_message("debug", LOG_DEBUG,
-			"Patch queue for " + path
-			+ ", currently at slot " + oindex);
-	}
-
-	oindex--;
-
-	if (oindex >= 0) {
-		SUSPENDD->queue_work("patch_tick", path, oindex, patches, time);
-	} else {
-		LOGD->post_message("debug", LOG_DEBUG,
-			"Finished queuing patches for clones of " + path);
-	}
-}
-
-/* work function for lazy triggering of object patches */
-static void process(int time)
+static void process(varargs int time)
 {
 	object obj;
-	int curtime;
 
 	hqueue = 0;
 
@@ -147,60 +71,74 @@ static void process(int time)
 			call_out("nuke_object", 0, queue);
 		}
 
-		if (patch && !sscanf(object_name(patch), "%*s#-1")) {
-			call_out("nuke_object", 0, patch);
-		}
-
 		queue = nil;
-		patch = nil;
-		qlen = 0;
 
 		LOGD->post_message("debug", LOG_DEBUG, "Finished patching");
+		PATCHD->cleanup_patch();
 
 		return;
 	}
 
 	obj = queue->query_front();
 	queue->pop_front();
-	qlen--;
 
-	curtime = time();
-
-	if (time < curtime) {
-		time = curtime;
-
-		LOGD->post_message("debug", LOG_DEBUG,
-			"Patch queue: " + qlen + " bumps left.");
-	}
-
-	hqueue = call_out("process", 0, time);
+	hqueue = call_out("process", 0);
 
 	if (obj) {
 		obj->_F_dummy();
 	}
 }
 
-/* assign a list of patches to a master object and its clones */
-void add_patches(string path, string *patches)
-{
-	int oindex;
+/* flopover */
 
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	SUSPENDD->suspend_system();
-	SUSPENDD->queue_work("patch_tick",
-		path, status(ST_OTABSIZE) - 1, patches, time());
-
-	queue_patches(status(path, O_INDEX), patches);
-	queue_object(find_object(path));
-}
-
-/* handle an enlarged object table after a reboot */
 void reboot()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(SYSTEM());
+
+	PATCHD->reboot();
+}
+
+object give_patch()
+{
+	ACCESS_CHECK(previous_program() == PATCHD);
 
 	if (patch) {
-		patch->set_size(status(ST_OTABSIZE));
+		patch->grant_access(find_object(PATCHD), FULL_ACCESS);
+
+		return patch;
 	}
+}
+
+void clear_patch()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	patch = nil;
+}
+
+string *query_patches(int oindex)
+{
+	return PATCHD->query_patches(oindex);
+}
+
+void clear_patches(int oindex)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	PATCHD->clear_patches(oindex);
+}
+
+void add_patches(string path, string *patches)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	PATCHD->add_patches(path, patches);
+}
+
+void patch_tick(string path, int oindex, string *patches, varargs mixed *junk...)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	PATCHD->takeover();
+	PATCHD->patch_tick(path, oindex, patches);
 }

@@ -216,7 +216,7 @@ void reboot()
 	CALLOUTD->reboot();
 	ACCESSD->restore();
 	DUMPD->reboot();
-	TOUCHD->reboot();
+	PATCHD->reboot();
 
 	DRIVER->fix_filequota();
 	MODULED->reboot_modules();
@@ -235,7 +235,7 @@ void hotboot()
 
 	SYSTEM_USERD->hotboot();
 	CALLOUTD->reboot();
-	TOUCHD->reboot();
+	PATCHD->reboot();
 
 	MODULED->hotboot_modules();
 	DRIVER->fix_filequota();

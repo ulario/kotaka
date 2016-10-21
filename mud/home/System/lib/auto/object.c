@@ -149,7 +149,7 @@ nomask void _F_sys_destruct()
 
 	set_object_name(nil);
 	clear_list();
-	TOUCHD->clear_patches(oindex);
+	PATCHD->clear_patches(oindex);
 }
 
 void upgrading()

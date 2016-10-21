@@ -42,7 +42,6 @@ nomask void _F_touch(string func)
 {
 	object this;
 	string name;
-	string path;
 	string *patches;
 	int oindex;
 	int sz;
@@ -50,15 +49,14 @@ nomask void _F_touch(string func)
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	this = this_object();
-
 	name = object_name(this);
 
 	if (!sscanf(name, "%*s#%d", oindex)) {
 		oindex = status(this, O_INDEX);
 	}
 
-	patches = TOUCHD->query_patches(oindex);
-	TOUCHD->clear_patches(oindex);
+	patches = PATCHD->query_patches(oindex);
+	PATCHD->clear_patches(oindex);
 
 	if (patches) {
 		for (sz = sizeof(patches) - 1; sz >= 0; --sz) {

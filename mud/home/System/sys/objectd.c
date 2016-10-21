@@ -164,7 +164,7 @@ void upgrade_objects()
 		upgrades->pop_back();
 
 		if (sizeof(patches)) {
-			TOUCHD->add_patches(path, patches);
+			PATCHD->add_patches(path, patches);
 		}
 
 		catch {

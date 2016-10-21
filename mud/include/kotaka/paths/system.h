@@ -33,6 +33,7 @@
 #define LOGD		(USR_DIR + "/System/sys/logd")
 #define MODULED		(USR_DIR + "/System/sys/moduled")
 #define OBJECTD		(USR_DIR + "/System/sys/objectd")
+#define PATCHD		(USR_DIR + "/System/sys/patchd")
 #define PROGRAMD	(USR_DIR + "/System/sys/programd")
 #define PROXYD		(USR_DIR + "/System/sys/proxyd")
 #define SECRETD		(USR_DIR + "/System/sys/secretd")
