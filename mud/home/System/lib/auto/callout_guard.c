@@ -39,6 +39,26 @@ private int enough_free_callouts()
 	return free >= quota;
 }
 
+static int find_call_out(string func)
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		mixed *callout;
+
+		callout = callouts[sz];
+
+		if (callout[CO_FUNCTION] == func) {
+			return callout[CO_HANDLE];
+		}
+	}
+
+	return 0;
+}
+
 static int call_out(string func, mixed delay, mixed args...)
 {
 	if (!this_object()) {
