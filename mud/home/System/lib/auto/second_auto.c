@@ -31,10 +31,6 @@ inherit "object_guard";
 inherit "touch";
 inherit "list";
 
-/**********/
-/* status */
-/**********/
-
 nomask void _F_dummy()
 {
 }
