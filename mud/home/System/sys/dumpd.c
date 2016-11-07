@@ -107,7 +107,6 @@ static void dump(int full)
 	int delay;
 
 	if (full) {
-		LOGD->post_message("debug", LOG_DEBUG, "DumpD: Making a full snapshot");
 		dump_state();
 	} else {
 		dump_state(1);
