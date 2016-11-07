@@ -212,14 +212,27 @@ void reboot()
 	configure_rsrc();
 	configure_logging();
 
-	SYSTEM_USERD->reboot();
-	CALLOUTD->reboot();
-	ACCESSD->restore();
-	DUMPD->reboot();
-	PATCHD->reboot();
-
-	DRIVER->fix_filequota();
-	MODULED->reboot_modules();
+	catch {
+		SYSTEM_USERD->reboot();
+	}
+	catch {
+		CALLOUTD->reboot();
+	}
+	catch {
+		ACCESSD->restore();
+	}
+	catch {
+		DUMPD->reboot();
+	}
+	catch {
+		PATCHD->reboot();
+	}
+	catch {
+		DRIVER->fix_filequota();
+	}
+	catch {
+		MODULED->reboot_modules();
+	}
 }
 
 void hotboot()
@@ -229,16 +242,30 @@ void hotboot()
 	check_config();
 	check_versions();
 
-	clear_admin();
-	configure_rsrc();
-	configure_logging();
-
-	SYSTEM_USERD->hotboot();
-	CALLOUTD->reboot();
-	PATCHD->reboot();
-
-	MODULED->hotboot_modules();
-	DRIVER->fix_filequota();
+	catch {
+		clear_admin();
+	}
+	catch {
+		configure_rsrc();
+	}
+	catch {
+		configure_logging();
+	}
+	catch {
+		SYSTEM_USERD->hotboot();
+	}
+	catch {
+		CALLOUTD->reboot();
+	}
+	catch {
+		PATCHD->reboot();
+	}
+	catch {
+		MODULED->hotboot_modules();
+	}
+	catch {
+		DRIVER->fix_filequota();
+	}
 }
 
 /* miscellaneous */
