@@ -197,6 +197,12 @@ void prepare_reboot()
 {
 	ACCESS_CHECK(KERNEL());
 
+	if (TLSD->query_tls_value("System", "incremental-snapshot")) {
+		LOGD->post_message("system", LOG_INFO, "Incremental snapshot");
+	} else {
+		LOGD->post_message("system", LOG_INFO, "Full snapshot");
+	}
+
 	MODULED->prepare_reboot_modules();
 	ACCESSD->save();
 }

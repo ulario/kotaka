@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
-
 #include <trace.h>
 #include <type.h>
 #include <status.h>
@@ -30,6 +30,15 @@ inherit "object";
 inherit "object_guard";
 inherit "touch";
 inherit "list";
+
+static void dump_state(int incr)
+{
+	if (incr) {
+		TLSD->set_tls_value("System", "incremental-snapshot", 1);
+	}
+
+	::dump_state(incr);
+}
 
 nomask void _F_dummy()
 {
