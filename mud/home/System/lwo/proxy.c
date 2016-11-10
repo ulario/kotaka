@@ -263,7 +263,7 @@ void swapout()
 void dump_state(varargs int increment)
 {
 	VERIFY();
-	::dump_state(increment);
+	wt::dump_state(increment);
 }
 
 void shutdown(varargs int hotboot)

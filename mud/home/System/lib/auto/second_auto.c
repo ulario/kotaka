@@ -31,7 +31,7 @@ inherit "object_guard";
 inherit "touch";
 inherit "list";
 
-static void dump_state(int incr)
+static void dump_state(varargs int incr)
 {
 	if (incr) {
 		TLSD->set_tls_value("System", "incremental-snapshot", 1);

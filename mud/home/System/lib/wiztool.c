@@ -61,3 +61,16 @@ static object clone_object(string path)
     }
     return auto::clone_object(path);
 }
+
+/*
+ * NAME:	dump_state()
+ * DESCRIPTION:	create a state dump
+ */
+static void dump_state(varargs int increment)
+{
+    if (!access(query_owner(), "/", FULL_ACCESS)) {
+	message("Permission denied.\n");
+    } else {
+	auto::dump_state(increment);
+    }
+}

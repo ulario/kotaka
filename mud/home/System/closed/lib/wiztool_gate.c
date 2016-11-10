@@ -37,3 +37,8 @@ static mixed compile_object(varargs mixed args...)
 {
 	error("Must override");
 }
+
+static mixed dump_state(varargs mixed args...)
+{
+	error("Must override");
+}
