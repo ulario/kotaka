@@ -38,6 +38,10 @@ void main(object actor, mapping roles)
 
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
+	send_out("Hotbooting...\n");
+
 	proxy->dump_state();
 	proxy->shutdown(1);
+
+	send_out("Hotboot scheduled\n");
 }
