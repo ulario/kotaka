@@ -153,3 +153,17 @@ void gather_inheriters(int oindex, object hits)
 		}
 	}
 }
+
+int idelay(int stamp, int interval, int offset)
+{
+	int goal;
+
+	goal = stamp;
+	goal -= (goal + interval - offset) % interval;
+
+	if (goal <= stamp) {
+		goal += interval;
+	}
+
+	return goal - stamp;
+}
