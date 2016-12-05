@@ -32,14 +32,31 @@ inherit SECOND_AUTO;
 
 private int *delay();
 private void purge_callouts();
+private void reschedule();
 
 static void create()
 {
-	int delay, full;
+	reschedule();
+}
 
-	({ delay, full }) = delay();
+private void reschedule()
+{
+	int idelay;
+	int fdelay;
+	int time;
 
-	call_out("dump", delay, full);
+	purge_callouts();
+
+	time = time();
+
+	idelay = SUBD->idelay(time, INTERVAL, OFFSET);
+	fdelay = SUBD->fdelay(time, FULL, OFFSET);
+
+	if (idelay == fdelay) {
+		call_out("dump", idelay, 1);
+	} else {
+		call_out("dump", idelay, 0);
+	}
 }
 
 private void purge_callouts()
@@ -56,50 +73,12 @@ private void purge_callouts()
 
 void upgrade()
 {
-	int delay;
-	int full;
-
-	({ delay, full }) = delay();
-
-	purge_callouts();
-
-	call_out("dump", delay, full);
+	reschedule();
 }
 
 void reboot()
 {
-	int delay;
-	int full;
-
-	({ delay, full }) = delay();
-
-	purge_callouts();
-
-	call_out("dump", delay, full);
-}
-
-private int *delay()
-{
-	int time;
-	int goal;
-	int delay;
-
-	time = time();
-	goal = time;
-	goal -= goal % INTERVAL;
-	goal += OFFSET;
-
-	while (goal <= time) {
-		goal += INTERVAL;
-	}
-
-	while (goal - time > INTERVAL) {
-		goal -= INTERVAL;
-	}
-
-	delay = goal - time;
-
-	return ({ delay, (goal - OFFSET) % FULL == 0 });
+	reschedule();
 }
 
 static void dump(int full)
@@ -112,9 +91,5 @@ static void dump(int full)
 		dump_state(1);
 	}
 
-	({ delay, full }) = delay();
-
-	purge_callouts();
-
-	call_out("dump", delay, full);
+	reschedule();
 }
