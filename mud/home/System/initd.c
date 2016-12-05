@@ -36,6 +36,8 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
+int booted;
+
 void console_post(string str, int level);
 void message(string str);
 
@@ -148,6 +150,8 @@ static void boot_3()
 		LOGD->post_message("system", LOG_INFO, "System discovered");
 		LOGD->post_message("system", LOG_INFO, "-----------------");
 
+		booted = 1;
+
 		MODULED->boot_module(nil);
 	} : {
 		boot_error();
@@ -165,6 +169,11 @@ int booting()
 
 	return frame[TRACE_PROGNAME] == DRIVER
 		&& frame[TRACE_FUNCTION] == "initialize";
+}
+
+int booted()
+{
+	return booted;
 }
 
 int restoring()
