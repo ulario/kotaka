@@ -20,6 +20,7 @@
 
 #include <kernel/kernel.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/paths/utility.h>
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 #include <status.h>
@@ -30,16 +31,21 @@ inherit SECOND_AUTO;
 #define INTERVAL   600 /* incremental dump every 10 minutes */
 #define OFFSET       0 /* offset for each dump */
 
-private int *delay();
 private void purge_callouts();
-private void reschedule();
+static void reschedule();
 
 static void create()
 {
+}
+
+void boot()
+{
+	ACCESS_CHECK(SYSTEM());
+
 	reschedule();
 }
 
-private void reschedule()
+static void reschedule()
 {
 	int idelay;
 	int fdelay;
@@ -50,7 +56,7 @@ private void reschedule()
 	time = time();
 
 	idelay = SUBD->idelay(time, INTERVAL, OFFSET);
-	fdelay = SUBD->fdelay(time, FULL, OFFSET);
+	fdelay = SUBD->idelay(time, FULL, OFFSET);
 
 	if (idelay == fdelay) {
 		call_out("dump", idelay, 1);
@@ -73,11 +79,18 @@ private void purge_callouts()
 
 void upgrade()
 {
-	reschedule();
+	ACCESS_CHECK(SYSTEM());
+
+	if (INITD->booted()) {
+		/* ignore if this is boot time object discovery */
+		reschedule();
+	}
 }
 
 void reboot()
 {
+	ACCESS_CHECK(SYSTEM());
+
 	reschedule();
 }
 

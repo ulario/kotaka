@@ -456,6 +456,14 @@ string query_version()
 	return KOTAKA_VERSION;
 }
 
+void booted_module(string module)
+{
+	if (module == "Utility") {
+		LOGD->post_message("system", LOG_INFO, "System received boot notification for Utility");
+		DUMPD->boot();
+	}
+}
+
 void upgrade_system()
 {
 	compile_object("sys/upgraded");
