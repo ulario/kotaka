@@ -297,6 +297,7 @@ string query_banner(object LIB_CONN connection)
 	}
 
 	if (BAND->check_siteban(query_ip_number(root))) {
+		/* check to see if the IP is sitebanned */
 		TLSD->set_tls_value("System", "abort-connection", 1);
 		TLSD->set_tls_value("System", "abort-delay", 0.1);
 
@@ -441,7 +442,7 @@ int login(string str)
 
 	errmsg = TLSD->query_tls_value("System", "userd-error");
 
-	previous_object()->message(errmsg ? errmsg : "Unknown connection manager error\n");
+	previous_object()->message(errmsg ? errmsg + "\n" : "Unknown connection manager error\n");
 
 	return MODE_DISCONNECT;
 }
