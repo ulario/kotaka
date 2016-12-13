@@ -137,6 +137,9 @@ void suspend(object obj, int handle)
 	ACCESS_CHECK(previous_program() == RSRCD);
 
 	if (dead) {
+		catch {
+			RSRCD->release_callout(obj, handle);
+		}
 		return;
 	}
 
