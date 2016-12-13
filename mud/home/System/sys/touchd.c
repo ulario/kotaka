@@ -56,7 +56,7 @@ void queue_object(object obj)
 	queue->push_back(obj);
 
 	if (!hqueue) {
-		hqueue = call_out("process", 0, time());
+		hqueue = call_out("process", 0);
 	}
 }
 
