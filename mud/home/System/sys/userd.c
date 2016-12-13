@@ -25,6 +25,10 @@
 #include <kotaka/assert.h>
 #include <status.h>
 
+#define SITEBAN_DELAY 0.25 /* linger time for dumping a sitebanned connection */
+#define OVERLOAD_DELAY 5.0 /* linger time for dumping an overloaded connection */
+#define BLOCK_DELAY 5.0 /* linger time for dumping a blocked connection */
+
 inherit SECOND_AUTO;
 inherit LIB_USERD;
 
@@ -297,9 +301,9 @@ string query_banner(object LIB_CONN connection)
 	}
 
 	if (BAND->check_siteban(query_ip_number(root))) {
-		/* check to see if the IP is sitebanned */
+		/* if the IP is sitebanned send it away */
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", 0.1);
+		TLSD->set_tls_value("System", "abort-delay", SITEBAN_DELAY);
 
 		root->set_mode(MODE_BLOCK);
 
@@ -312,13 +316,11 @@ string query_banner(object LIB_CONN connection)
 	}
 
 	if (free_users() + 1 < 2) {
+		/* we're too full, close the connection */
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", 0.1);
+		TLSD->set_tls_value("System", "abort-delay", OVERLOAD_DELAY);
 
 		root->set_mode(MODE_BLOCK);
-
-		/* we need two slots kept free */
-		/* discarding this one will free it up so don't count it against the quota before we decide to accept it */
 
 		catch {
 			return userd->query_overload_banner(connection);
@@ -328,8 +330,9 @@ string query_banner(object LIB_CONN connection)
 	}
 
 	if (blocked) {
+		/* check this after overloads.  overloads are more serious */
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", 0.1);
+		TLSD->set_tls_value("System", "abort-delay", BLOCK_DELAY);
 
 		root->set_mode(MODE_BLOCK);
 
