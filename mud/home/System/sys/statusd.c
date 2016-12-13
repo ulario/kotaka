@@ -161,6 +161,11 @@ int receive_message(string str)
 	string *params;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	if (!connections[conn]) {
+		return MODE_DISCONNECT;
+	}
+
 	ASSERT(str);
 
 	conn = previous_object();
@@ -223,6 +228,10 @@ int message_done()
 
 	conn = previous_object();
 
+	if (!connections[conn]) {
+		return MODE_DISCONNECT;
+	}
+
 	if (!connections[conn][2]) {
 		connections[conn][2] = SUSPENDD->queue_delayed_work("report",
 			connections[conn][0], conn
@@ -239,6 +248,10 @@ void report(object conn)
 	ACCESS_CHECK(previous_program() == SUSPENDD);
 
 	if (!conn) {
+		return;
+	}
+
+	if (!connections[conn]) {
 		return;
 	}
 
