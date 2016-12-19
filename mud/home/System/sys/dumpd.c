@@ -27,9 +27,9 @@
 
 inherit SECOND_AUTO;
 
-#define FULL     86400 /* full dump every 24 hours */
-#define INTERVAL   600 /* incremental dump every 10 minutes */
-#define OFFSET       0 /* offset for each dump */
+#define FULL     86400
+#define INTERVAL   600
+#define OFFSET       0
 
 private void purge_callouts();
 static void reschedule();
