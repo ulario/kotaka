@@ -21,11 +21,13 @@
 #include <kotaka/paths/ansi.h>
 #include <kotaka/privilege.h>
 
+#include <screen.h>
+
 inherit "~/lib/animate";
 
 float **particles;
 
-#define NPARTICLES 100
+#define NPARTICLES (WIDTH * HEIGHT / 100)
 
 static void create(int clone)
 {
@@ -51,7 +53,6 @@ void begin()
 
 	for (i = 0; i < NPARTICLES; i++) {
 		particles[i] = allocate_float(4);
-		particles[i][1] = 25.0;
 	}
 }
 
@@ -66,18 +67,18 @@ private void do_particles(object paint, float diff)
 		particle = particles[i];
 
 		ovy = particle[3];
-		nvy = ovy + diff * 40.0;
+		nvy = ovy + diff * (float)(WIDTH / 2);
 
 		particle[0] += particle[2] * diff;
 		particle[1] += (ovy + nvy) * 0.5 * diff;
 		particle[3] = nvy;
 
-		if (particle[1] >= 25.0) {
-			particle[0] = 20.0;
-			particle[1] = 25.0;
+		if (particle[1] >= (float)(HEIGHT)) {
+			particle[0] = (float)(WIDTH) / 4.0;
+			particle[1] = (float)(HEIGHT);
 
-			particle[2] = MATHD->bell_rnd(2) * 80.0 - 30.0;
-			particle[3] = MATHD->bell_rnd(2) * 40.0 - 60.0;
+			particle[2] = MATHD->bell_rnd(2) * (float)(WIDTH) - (float)(WIDTH) / 2.0;
+			particle[3] = MATHD->bell_rnd(2) * (float)(HEIGHT) * 2.0 - (float)(HEIGHT) * 3.0;
 		}
 
 		x = (int)floor(particle[0]);
@@ -104,13 +105,13 @@ static void do_frame(float diff)
 	object gc;
 
 	paint = new_object(LWO_PAINTER);
-	paint->set_size(80, 25);
+	paint->set_size(WIDTH, HEIGHT);
 	paint->add_layer("default");
-	paint->set_layer_size("default", 80, 25);
+	paint->set_layer_size("default", WIDTH, HEIGHT);
 
 	gc = paint->create_gc();
 	gc->set_layer("default");
-	gc->set_clip(0, 0, 79, 24);
+	gc->set_clip(0, 0, WIDTH - 1, HEIGHT - 1);
 
 	do_particles(gc, diff);
 

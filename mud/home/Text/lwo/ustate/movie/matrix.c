@@ -21,12 +21,14 @@
 #include <kotaka/paths/ansi.h>
 #include <kotaka/privilege.h>
 
+#include <screen.h>
+
 inherit "~/lib/animate";
 
 float **particles;
 float speed;
 
-#define NPARTICLES 100
+#define NPARTICLES (WIDTH * HEIGHT / 100)
 
 static void create(int clone)
 {
@@ -36,6 +38,27 @@ static void create(int clone)
 static void destruct(int clone)
 {
 	::destruct();
+}
+
+private void reset_particle(float *particle)
+{
+	particle[2] = MATHD->rnd() * 10.0 + 1.0;
+
+	particle[0] = (MATHD->rnd() - 0.5) * (float)(WIDTH) * particle[2];
+	particle[1] = -((float)(HEIGHT) * 0.5 + MATHD->rnd()) * particle[2];
+}
+
+private void initialize_particle(float *particle)
+{
+	/* particles reset when they hit the bottom of the screen, not the bottom of the field */
+	/* add a statistical bias so that particles start out evenly spread */
+
+	do {
+		particle[2] = (1.0 - pow(MATHD->rnd(), 2.0)) * 11.0;
+	} while (particle[2] < 1.0);
+
+	particle[0] = (MATHD->rnd() - 0.5) * (float)(WIDTH) * particle[2];
+	particle[1] = (MATHD->rnd() - 0.5) * (float)(HEIGHT) * particle[2];
 }
 
 void begin()
@@ -55,12 +78,7 @@ void begin()
 		float *particle;
 		particle = particles[i] = allocate_float(3);
 
-		do {
-			particle[2] = (1.0 - pow(MATHD->rnd(), 2.0)) * 11.0;
-		} while (particle[2] < 1.0);
-
-		particle[0] = (MATHD->rnd() * 80.0 - 40.0) * particle[2];
-		particle[1] = (MATHD->rnd() * 27.5 - 15.0) * particle[2];
+		initialize_particle(particle);
 	}
 }
 
@@ -81,10 +99,8 @@ private void do_particles(object paint, float diff)
 		particle = particles[i];
 		particle[1] += diff * 50.0;
 
-		if (particle[1] / particle[2] > 15.0) {
-			particle[2] = MATHD->rnd() * 10.0 + 1.0;
-			particle[0] = (MATHD->rnd() * 80.0 - 40.0) * particle[2];
-			particle[1] = -(12.5 + MATHD->rnd()) * particle[2];
+		if (particle[1] / particle[2] > (float)(HEIGHT) * 0.5) {
+			reset_particle(particle);
 		}
 	}
 
@@ -101,8 +117,8 @@ private void do_particles(object paint, float diff)
 		particle = particles[i];
 		depth = particle[2];
 
-		x = (int)floor(particle[0] / depth + 40.0);
-		y = (int)floor(particle[1] / depth + 10.0);
+		x = (int)floor(particle[0] / depth + (float)(WIDTH) * 0.5);
+		y = (int)floor(particle[1] / depth + (float)(HEIGHT) * 0.5);
 
 		paint->move_pen(x, y);
 
@@ -125,13 +141,13 @@ static void do_frame(float diff)
 	object gc;
 
 	paint = new_object(LWO_PAINTER);
-	paint->set_size(80, 25);
+	paint->set_size(WIDTH, HEIGHT);
 	paint->add_layer("default");
-	paint->set_layer_size("default", 80, 25);
+	paint->set_layer_size("default", WIDTH, HEIGHT);
 
 	gc = paint->create_gc();
 	gc->set_layer("default");
-	gc->set_clip(0, 0, 79, 24);
+	gc->set_clip(0, 0, WIDTH - 1, HEIGHT - 1);
 	gc->set_color(0xF);
 
 	do_particles(gc, diff);

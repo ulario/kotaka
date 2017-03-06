@@ -21,12 +21,14 @@
 #include <kotaka/paths/ansi.h>
 #include <kotaka/privilege.h>
 
+#include <screen.h>
+
 inherit "~/lib/animate";
 
 float **particles;
 float speed;
 
-#define NPARTICLES 150
+#define NPARTICLES (WIDTH * HEIGHT / 100)
 
 static void create(int clone)
 {
@@ -36,6 +38,24 @@ static void create(int clone)
 static void destruct(int clone)
 {
 	::destruct();
+}
+
+private void reset_particle_xy(float *particle)
+{
+	particle[0] = (MATHD->rnd() - 0.5) * (float)(WIDTH) * 10.0;
+	particle[1] = (MATHD->rnd() - 0.5) * (float)(HEIGHT) * 10.0;
+}
+
+private void reset_particle(float *particle)
+{
+	reset_particle_xy(particle);
+	particle[2] = MATHD->rnd() * 1.0 + 10.0;
+}
+
+private void initialize_particle(float *particle)
+{
+	reset_particle_xy(particle);
+	particle[2] = MATHD->rnd() * 10.0 + 1.0;
 }
 
 void begin()
@@ -53,9 +73,7 @@ void begin()
 
 	for (i = 0; i < NPARTICLES; i++) {
 		particles[i] = allocate_float(3);
-		particles[i][0] = MATHD->rnd() * 800.0 - 400.0;
-		particles[i][1] = MATHD->rnd() * 250.0 - 125.0;
-		particles[i][2] = MATHD->rnd() * 10.0 + 1.0;
+		initialize_particle(particles[i]);
 	}
 }
 
@@ -77,9 +95,7 @@ private void do_particles(object paint, float diff)
 		particle[2] -= diff * 5.0;
 
 		if (particle[2] < 1.0) {
-			particle[0] = MATHD->rnd() * 800.0 - 400.0;
-			particle[1] = MATHD->rnd() * 250.0 - 125.0;
-			particle[2] = MATHD->rnd() * 1.0 + 10.0;
+			reset_particle(particle);
 			sortflag = 1;
 		}
 	}
@@ -95,8 +111,8 @@ private void do_particles(object paint, float diff)
 		particle = particles[i];
 		depth = particle[2];
 
-		x = (int)floor(particle[0] / depth + 40.0);
-		y = (int)floor(particle[1] / depth + 12.5);
+		x = (int)floor(particle[0] / depth + (float)(WIDTH) / 2.0);
+		y = (int)floor(particle[1] / depth + (float)(HEIGHT) / 2.0);
 
 		paint->move_pen(x, y);
 
@@ -120,13 +136,13 @@ static void do_frame(float diff)
 	object gc;
 
 	paint = new_object(LWO_PAINTER);
-	paint->set_size(80, 25);
+	paint->set_size(WIDTH, HEIGHT);
 	paint->add_layer("default");
-	paint->set_layer_size("default", 80, 25);
+	paint->set_layer_size("default", WIDTH, HEIGHT);
 
 	gc = paint->create_gc();
 	gc->set_layer("default");
-	gc->set_clip(0, 0, 79, 24);
+	gc->set_clip(0, 0, WIDTH - 1, HEIGHT - 1);
 	gc->set_color(0xF);
 
 	do_particles(gc, diff);
