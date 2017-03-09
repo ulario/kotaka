@@ -1,6 +1,5 @@
 !mud/etc/.dummy
 !mud/home/Secret/.dummy
-!state/.dummy
 
 kotaka.err
 mud/etc/*
@@ -14,4 +13,3 @@ mud/include/trace.h
 mud/include/type.h
 mud/kernel/data/access.data
 mud/kernel/data/*.pwd
-state/*
