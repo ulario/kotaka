@@ -11,5 +11,4 @@ mud/include/limits.h
 mud/include/status.h
 mud/include/trace.h
 mud/include/type.h
-mud/kernel/data/access.data
-mud/kernel/data/*.pwd
+mud/kernel/data/*
