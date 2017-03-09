@@ -7,7 +7,7 @@ binary_port	= ([
 	"*": 50011,		/* binary login port */
 	"*": 50080		/* http */
 ]);		/* binary port number */
-directory	= "Please read INSTALL";/* base directory (MUST be absolute) */
+directory	= "/home/dgd/git/kotaka/mud";/* base directory (MUST be absolute) */
 users		= 10;			/* max # of users */
 editors		= 0;			/* max # of editor sessions */
 ed_tmpfile	= "../state/ed";	/* proto editor tmpfile */
