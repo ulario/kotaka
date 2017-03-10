@@ -30,7 +30,7 @@
 
 /* Enable and redefine to suit */
 /* Also inspect the query_banner function below to validate the information provided to the router */
-/* #define MUDNAME "Kotaka" */
+#define MUDNAME "Kotaka"
 
 /*
 * *i4 at 204.209.44.3 port 8080
