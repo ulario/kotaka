@@ -162,11 +162,16 @@ int receive_message(string str)
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
+	ASSERT(str);
+
+	conn = previous_object();
+
+	ASSERT(conn <- LIB_CONN);
+
 	if (!connections[conn]) {
+		conn->message("Connection not found, disconnecting.\n");
 		return MODE_DISCONNECT;
 	}
-
-	ASSERT(str);
 
 	conn = previous_object();
 
