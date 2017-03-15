@@ -66,6 +66,31 @@ void release_system()
 	suspend = 0;
 }
 
+mixed *query_callouts()
+{
+	object obj;
+	mixed **callouts;
+	int sz;
+
+	obj = previous_object();
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		mixed *callout;
+
+		callout = callouts[sz];
+
+		if (callout[CO_FUNCTION] != "process_delayed"
+			|| callout[CO_FIRSTXARG] != obj
+		) {
+			callouts[sz] = nil;
+		}
+	}
+
+	return callouts - ({ nil });
+}
+
 void queue_work(string func, mixed args...)
 {
 	if (!handle) {
