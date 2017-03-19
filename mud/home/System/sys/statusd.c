@@ -137,7 +137,7 @@ int login(string str)
 	}
 
 	connections[conn] = ({
-		trusted ? 5.0 : 15.0,
+		trusted ? 1.0 : 15.0,
 		trusted,
 		SUSPENDD->queue_delayed_work("report", 0, conn)
 	});
