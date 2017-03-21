@@ -109,7 +109,7 @@ void receive_in(string input)
 	case STATE_GETNAME:
 		input = STRINGD->to_lower(input);
 
-		if (input[0] == '~') {
+		if (strlen(input) && input[0] == '~') {
 			silent = 1;
 			input = input[1 ..];
 		}
