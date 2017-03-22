@@ -133,6 +133,8 @@ void save()
 	string *names;
 	int sz;
 
+	ACCESS_CHECK(VERB() || ACCOUNT());
+
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("accounts");
 
@@ -163,6 +165,8 @@ void restore()
 	string *remove;
 	string *names;
 	int sz;
+
+	ACCESS_CHECK(VERB() || ACCOUNT());
 
 	names = SECRETD->get_dir("accounts/*")[0];
 
