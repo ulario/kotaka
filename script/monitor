@@ -2,12 +2,29 @@
 
 cd ~/git/kotaka
 
-DGDPID=0
+exec < /dev/null
+exec >> kotaka.err
+exec 2>&1
+
+function nullio
+{
+	exec > /dev/null
+	exec 2>&1
+}
+
+function sigpipe
+{
+	nullio
+}
+
+function sighup
+{
+	nullio
+}
 
 function sigterm
 {
 	kill -TERM $DGDPID
-	kill -KILL $MONPID
 	trap - SIGTERM
 	kill -TERM $$
 }
@@ -15,44 +32,95 @@ function sigterm
 function sigint
 {
 	kill -KILL $DGDPID
-	kill -KILL $MONPID
 	trap - SIGINT
 	kill -INT $$
 }
 
+function boot
+{
+	if [ -f state/snapshot ]
+	then
+		echo "--- DGD warm booting ---"
+		if [ -f state/snapshot.old ]
+		then
+			# both are present, possible incremental snapshot
+			~/bin/dgd kotaka.dgd state/snapshot state/snapshot.old
+		else
+			# only the full one
+			~/bin/dgd kotaka.dgd state/snapshot
+		fi
+	else
+		if [ -f state/snapshot.old ]
+		then
+			# we only have the old one
+			echo "--- DGD cool booting ---"
+			~/bin/dgd kotaka.dgd state/snapshot.old
+		else
+			# complete cold start
+			echo "--- DGD cold booting ---"
+			~/bin/dgd kotaka.dgd
+		fi
+	fi
+	DGDPID=$!
+}
+
+function exited
+{
+	case $DGDEXIT in
+	0)
+		echo "--- DGD terminated normally ---"
+		;;
+	*)
+		echo "--- DGD terminated abnormally (code $DGDEXIT), monitor exiting ---"
+		exit
+		;;
+	esac
+}
+
 function crashed
 {
-	rm -rf crash
-	mkdir crash
+	if [ -f mud/core ]
+	then
+		rm -rf crash
+		mkdir crash
+		gdb dgd mud/core -batch -ex bt > crash/trace
+		mv mud/core crash
+		echo "+++ DGD terminated by SIG$SIGNAME (core dump processed) +++"
+	else
+		echo "+++ DGD terminated by SIG$SIGNAME +++"
+	fi
+}
 
-	gdb dgd mud/core -batch -ex bt > crash/trace
-	mv mud/core crash
+function signalled
+{
+	SIGNAME=`kill -l $(( DGDEXIT - 128 ))`
+
+	case $SIGNAME in
+	KILL|TERM|INT)
+		echo "+++ DGD terminated by SIG$SIGNAME, monitor exiting +++"
+		exit
+		;;
+	*)
+		crashed
+		;;
+	esac
 }
 
 trap sigterm SIGTERM
-trap sigint SIGINT
-
-rm -f mud/core
+trap slavesigint SIGINT
+trap sigpipe SIGPIPE
+trap sighup SIGHUP
 
 while true
 do
-	if [ -f snapshot ]
-	then
-		echo "*** DGD warm booting ***" >> kotaka.err
-		~/bin/dgd kotaka.dgd snapshot < /dev/null >> kotaka.err 2>&1 &
-	else
-		echo "*** DGD cold booting ***" >> kotaka.err
-		~/bin/dgd kotaka.dgd < /dev/null >> kotaka.err 2>&1 &
-	fi
+	boot
+	wait $DGDPID
+	DGDEXIT=$?
 
-	DGDPID=$!
-	wait
-
-	if [ -f mud/core ]
+	if (( DGDEXIT < 128 ))
 	then
-		echo ">>> DGD crashed <<<" >> kotaka.err
-		crashed
+		exited
 	else
-		echo "*** DGD terminated ***" >> kotaka.err
+		signalled
 	fi
 done
