@@ -1,45 +1,70 @@
 Modules
 -------
 
-Modules need to be made completely asynchronous and standalone.  It must be possible to start up or shut down a module at any time, completely asynchronously.
+Modules need to be made completely asynchronous and standalone.  It must
+be possible to start up or shut down a module at any time, completely
+asynchronously.
 
-A module is discouraged from depending on other modules.  It should be fully prepared to accept a shutdown notification and at that point cease and desist any attempts to use services provided by that module.
+A module is discouraged from depending on other modules.  It should be
+fully prepared to accept a shutdown notification and at that point cease
+and desist any attempts to use services provided by that module.
 
-Eventually, even the System module should be able to be arbitrarily shut down at any time.
+Eventually, even the System module should be able to be arbitrarily shut
+down at any time.  The only side effect should be that no other modules
+can shut down or boot up.
 
 Directives
 ----------
 
 shutdown
+
 	A shutdown directive is issued by the module manager.
 
-	It sends the shutdown signal to the other modules for the module being shut down.
+	It sends the shutdown signal to the other modules for the module
+	being shut down.
 
-	It instructs the module to perform an orderly shutdown and then report its status.
+	It instructs the module to perform an orderly shutdown and then
+	report its status.
 
 kill
+
 	A kill directive forcibly shuts down the module.
 
-	After sending out a shutdown signal, the module manager itself will destroy every object owned by the module.
+	After sending out a shutdown signal, the module manager itself
+	will destroy every object owned by the module.
 
 boot
-	The boot directive instructs a module to start up.  This involves compiling its objects, and doing whatever it needs to do to be ready to be put in service.
 
-	Once the module is ready, it should inform the module manager.  The module manager will then report a boot signal to the other modules.
+	The boot directive instructs a module to start up.  This involves
+	compiling its objects, and doing whatever it needs to do to be
+	ready to be put in service.
 
-upgrade
-	The upgrade directive instructs a module to upgrade itself.
+	Once the module is ready, it should inform the module manager.
+	The module manager will then report a boot signal to the other
+	modules.
 
 Signals
 -------
 
-shutdown
-	A shutdown signal indicates that a module is being removed from service.  Upon receipt of the signal, the module is to be considered dead.
+Signals are sent to report changes in the status of modules.
 
-	This signal is sent before the module's shutdown or kill process begins
+Important:
+
+	Signals are completely asynchronous and can be sent at any time
+
+shutdown
+
+	A shutdown signal indicates that a module is being removed from
+	service.  Upon receipt of the signal, the module is to be
+	considered dead immediately and no further attempts should be
+	made to rely on the module or its services.
+
+	This signal is sent before the module's shutdown or kill process
+	begins
 
 boot
-	A boot signal means the module has been placed into service.
 
-upgraded
-	This means that a module has completed an upgrade directive.
+	A boot signal means the module has been placed into service and
+	reported its readiness to the module manager.
+
+	This signal is sent asynchronously.
