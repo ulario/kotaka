@@ -202,7 +202,7 @@ static void load_module(string module)
 
 /* initd hooks */
 
-void prepare_reboot_modules()
+void prepare_reboot()
 {
 	int sz;
 	string *list;
@@ -228,7 +228,7 @@ void prepare_reboot_modules()
 	}
 }
 
-void reboot_modules()
+void reboot()
 {
 	int sz;
 	string *list;
@@ -254,7 +254,7 @@ void reboot_modules()
 	}
 }
 
-void hotboot_modules()
+void hotboot()
 {
 	int sz;
 	string *list;
@@ -317,13 +317,16 @@ void upgrade_modules()
 	}
 }
 
+/**********/
 /* public */
+/**********/
 
 string *query_modules()
 {
 	return map_indices(modules);
 }
 
+/* directive, start up a module */
 void boot_module(string module)
 {
 	string *others;

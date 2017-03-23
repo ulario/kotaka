@@ -212,8 +212,8 @@ void prepare_reboot()
 		LOGD->post_message("system", LOG_INFO, "Full snapshot");
 	}
 
-	MODULED->prepare_reboot_modules();
 	ACCESSD->save();
+	MODULED->prepare_reboot();
 }
 
 void reboot()
@@ -246,7 +246,7 @@ void reboot()
 		DRIVER->fix_filequota();
 	}
 	catch {
-		MODULED->reboot_modules();
+		MODULED->reboot();
 	}
 }
 
@@ -257,6 +257,9 @@ void hotboot()
 	check_config();
 	check_versions();
 
+	catch {
+		DRIVER->fix_filequota();
+	}
 	catch {
 		clear_admin();
 	}
@@ -276,10 +279,7 @@ void hotboot()
 		PATCHD->reboot();
 	}
 	catch {
-		MODULED->hotboot_modules();
-	}
-	catch {
-		DRIVER->fix_filequota();
+		MODULED->hotboot();
 	}
 }
 
