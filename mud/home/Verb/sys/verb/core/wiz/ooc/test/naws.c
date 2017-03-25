@@ -33,23 +33,8 @@ void main(object actor, mapping roles)
 	object conn;
 	string out;
 
-	send_out("Testing NAWS option...\n");
+	send_out("Activating NAWS option\n");
 
 	conn = query_user();
-
-	out = "   ";
-
-	out[0] = TELNET_IAC;
-	out[1] = TELNET_DO;
-	out[2] = 31;
-
-	while (conn && conn <- LIB_USER) {
-		if (conn <- "~Text/obj/filter/telnet") {
-			conn->send_raw(out);
-			return;
-		}
-		conn = conn->query_conn();
-	}
-
-	send_out(out);
+	conn->do_naws(1);
 }

@@ -35,7 +35,6 @@ int callout;
 
 int screen_width;
 int screen_height;
-int screen_callout;
 
 static void create()
 {
@@ -85,7 +84,6 @@ void go()
 	query_user()->set_mode(MODE_NOECHO);
 
 	callout = call_out("frame", 0);
-	screen_callout = call_out("do_naws", 0.1);
 
 	reset_frame_info();
 
@@ -210,21 +208,11 @@ static void check_screen()
 	telnet = telnet_obj();
 
 	if (telnet && telnet->query_naws_active()) {
-		screen_width = conn->query_naws_width();
-		screen_height = conn->query_naws_height();
+		screen_width = telnet->query_naws_width();
+		screen_height = telnet->query_naws_height();
 		return;
 	}
 
 	screen_width = 40;
 	screen_height = 10;
-}
-
-static void do_naws()
-{
-	string out;
-
-	out = "   ";
-
-	telnet_obj()->send_raw_text("\377\
-	screen_callout = call_out("do_naws", 0.1);
 }

@@ -188,8 +188,6 @@ private void do_subnegotiation()
 		}
 		break;
 	}
-
-	::message("\r\n");
 }
 
 private void process_do(int code)
