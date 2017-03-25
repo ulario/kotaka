@@ -46,7 +46,7 @@ static void create()
 
 static void configure()
 {
-	SYSTEM_USERD->set_telnet_manager(1, this_object());
+	SYSTEM_USERD->set_telnet_manager(0, this_object());
 }
 
 private float swap_used_ratio()

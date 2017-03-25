@@ -1,10 +1,9 @@
 telnet_port	= ([
-	"*": 50000,		/* telnet login port */
 	"*": 50001		/* status port */
 ]);		/* telnet port number */
 binary_port	= ([
 	"localhost": 50010,	/* kernel library backdoor */
-	"*": 50011,		/* binary login port */
+	"*": 50000,		/* binary login port */
 	"*": 50080		/* http */
 ]);		/* binary port number */
 directory	= "/home/dgd/git/kotaka/mud";/* base directory (MUST be absolute) */
