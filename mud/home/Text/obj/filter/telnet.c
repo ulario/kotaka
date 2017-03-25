@@ -66,7 +66,7 @@ int query_naws_height()
 	return naws_h;
 }
 
-private void send_will(int code)
+void send_will(int code)
 {
 	string out;
 	out = "   ";
@@ -76,7 +76,7 @@ private void send_will(int code)
 	::message(out);
 }
 
-private void send_wont(int code)
+void send_wont(int code)
 {
 	string out;
 	out = "   ";
@@ -86,7 +86,7 @@ private void send_wont(int code)
 	::message(out);
 }
 
-private void send_do(int code)
+void send_do(int code)
 {
 	string out;
 	out = "   ";
@@ -96,13 +96,28 @@ private void send_do(int code)
 	::message(out);
 }
 
-private void send_dont(int code)
+void send_dont(int code)
 {
 	string out;
 	out = "   ";
 	out[0] = TELNET_IAC;
 	out[1] = TELNET_DONT;
 	out[2] = code;
+	::message(out);
+}
+
+void send_subnegotiation(int code, string subnegotiation)
+{
+	string out;
+	out = "   ";
+	out[0] = TELNET_IAC;
+	out[1] = TELNET_SB;
+	out[2] = code;
+	::message(out);
+	message(subnegotiation);
+	out = "  ";
+	out[0] = TELNET_IAC;
+	out[1] = TELNET_SE;
 	::message(out);
 }
 
@@ -158,11 +173,6 @@ private void do_subnegotiation()
 			naws = 1;
 			naws_w = subbuf[1] + (subbuf[0] << 8);
 			naws_h = subbuf[3] + (subbuf[2] << 8);
-
-			::message("Your client sent back a new window size:\r\n");
-			::message(naws_w + " columns by " + naws_h + " rows.\r\n");
-
-			draw_nawsbox(naws_w, naws_h);
 		}
 		break;
 
