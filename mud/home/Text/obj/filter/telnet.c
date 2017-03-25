@@ -44,7 +44,9 @@ static void create(int clone)
 private void send_will(int code)
 {
 	string out;
-	out = "\377\373 ";
+	out = "   ";
+	out[0] = TELNET_IAC;
+	out[1] = TELNET_WILL;
 	out[2] = code;
 	::message(out);
 }
@@ -52,7 +54,9 @@ private void send_will(int code)
 private void send_wont(int code)
 {
 	string out;
-	out = "\377\374 ";
+	out = "   ";
+	out[0] = TELNET_IAC;
+	out[1] = TELNET_WONT;
 	out[2] = code;
 	::message(out);
 }
@@ -60,7 +64,9 @@ private void send_wont(int code)
 private void send_do(int code)
 {
 	string out;
-	out = "\377\375 ";
+	out = "   ";
+	out[0] = TELNET_IAC;
+	out[1] = TELNET_DO;
 	out[2] = code;
 	::message(out);
 }
@@ -68,7 +74,9 @@ private void send_do(int code)
 private void send_dont(int code)
 {
 	string out;
-	out = "\377\376 ";
+	out = "   ";
+	out[0] = TELNET_IAC;
+	out[1] = TELNET_DONT;
 	out[2] = code;
 	::message(out);
 }
@@ -135,26 +143,31 @@ int receive_message(string str)
 		if (sscanf(inbuf, "%s\377%s", prefix, suffix)) {
 			linebuf += prefix;
 			switch (suffix[0]) {
-			case 251: /* WILL */
-				inbuf = suffix[2..];
+			case TELNET_WILL:
+				inbuf = suffix[2 ..];
 				process_will(suffix[1]);
 				break;
-			case 252: /* WONT */
-				inbuf = suffix[2..];
+
+			case TELNET_WONT:
+				inbuf = suffix[2 ..];
 				process_wont(suffix[1]);
 				break;
-			case 253: /* DO */
-				inbuf = suffix[2..];
+
+			case TELNET_DO:
+				inbuf = suffix[2 ..];
 				process_do(suffix[1]);
 				break;
-			case 254: /* DONT */
-				inbuf = suffix[2..];
+
+			case TELNET_DONT:
+				inbuf = suffix[2 ..];
 				process_dont(suffix[1]);
 				break;
-			case 255: /* IAC */
-				inbuf = suffix[1..];
+
+			case TELNET_IAC: /* escaped IAC means a literal 255 */
+				inbuf = suffix[1 ..];
 				linebuf += "\377";
 				break;
+
 			default:
 				::message
 					("Unknown telnet command: "
