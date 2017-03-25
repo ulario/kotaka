@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/user.h>
+#include <kotaka/paths/ansi.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
@@ -86,15 +87,76 @@ private void send_dont(int code)
 	::message(out);
 }
 
+private void draw_nawsbox(int w, int h)
+{
+	object paint;
+	object gc;
+	int x, y;
+	string banner;
+
+	paint = new_object(LWO_PAINTER);
+	paint->set_size(w, h - 1);
+	paint->add_layer("default");
+	paint->set_layer_size("default", w, h - 1);
+
+	gc = paint->create_gc();
+	gc->set_layer("default");
+	gc->set_clip(0, 0, w - 1, h - 2);
+
+	gc->set_color(0x4f);
+
+	for (y = 0; y < h; y++) {
+		gc->move_pen(0, y);
+		gc->draw(STRINGD->spaces(w));
+		gc->move_pen(0, y);
+		gc->draw("*");
+		gc->move_pen(w - 1, y);
+		gc->draw("*");
+	}
+
+	gc->move_pen(0, 0);
+	gc->draw(STRINGD->chars('*', w));
+	gc->move_pen(0, h - 2);
+	gc->draw(STRINGD->chars('*', w));
+
+	banner = "NAWS test for " + w + " columns by " + h + " rows";
+
+	x = (w - strlen(banner)) / 2;
+	y = (h - 1) / 2;
+
+	gc->move_pen(x, y);
+	gc->draw(banner);
+
+	::message("\033[1;1H");
+	::message(implode(paint->render_color(), "\n"));
+}
+
 private void do_subnegotiation()
 {
-	int i;
-	int sz;
+	switch(subcode) {
+	case 31:
+		{
+			int x;
+			int y;
 
-	::message("Your client subnegotiated for option " + subcode + ":\r\n");
+			x = subbuf[1] + (subbuf[0] << 8);
+			y = subbuf[3] + (subbuf[2] << 8);
 
-	for (i = 0, sz = strlen(subbuf); i < sz; i++) {
-		::message(subbuf[i] + "\r\n");
+			draw_nawsbox(x, y);
+		}
+		break;
+
+	default:
+		{
+			int i, sz;
+
+			::message("Your client subnegotiated for unknown option " + subcode + ":\r\n");
+
+			for (i = 0, sz = strlen(subbuf); i < sz; i++) {
+				::message(subbuf[i] + "\r\n");
+			}
+		}
+		break;
 	}
 
 	::message("\r\n");
@@ -152,25 +214,9 @@ private void process_sb(int code)
 	subbuf = "";
 }
 
-private void process_se(int code)
+private void process_se()
 {
-	if (code != subcode) {
-		/* wtf? */
-		int sz, i;
-
-		::message("Debug: Your client sent a SE that did not match the pending SB\r\n");
-		::message("SB code " + subcode + "\r\n");
-		::message("SE code " + code + "\r\n");
-
-		::message("Subnegotiation buffer contents:\r\n");
-
-		for (i = 0, sz = strlen(subbuf); i < sz; i++) {
-			::message(subbuf[i] + "\r\n");
-		}
-
-	} else {
-		do_subnegotiation();
-	}
+	do_subnegotiation();
 
 	subcode = -1;
 	subbuf = nil;
