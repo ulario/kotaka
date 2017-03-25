@@ -6,38 +6,30 @@ exec < /dev/null
 exec >> kotaka.err
 exec 2>&1
 
-function nullio
-{
-	exec > /dev/null
-	exec 2>&1
-}
-
-function sigpipe
-{
-	nullio
-}
-
 function sighup
 {
-	nullio
+	echo "+++ Monitor received SIGHUP +++"
 }
 
 function sigterm
 {
-	kill -TERM $DGDPID
+	echo "+++ Monitor received SIGTERM +++"
 	trap - SIGTERM
+	kill -TERM $DGDPID
 	kill -TERM $$
 }
 
 function sigint
 {
-	kill -KILL $DGDPID
+	echo "+++ Monitor received SIGINT +++"
 	trap - SIGINT
+	kill -KILL $DGDPID
 	kill -INT $$
 }
 
 function boot
 {
+	rm state/swap
 	if [ -f state/snapshot ]
 	then
 		echo "--- DGD warm booting ---"
@@ -107,8 +99,7 @@ function signalled
 }
 
 trap sigterm SIGTERM
-trap slavesigint SIGINT
-trap sigpipe SIGPIPE
+trap sigint SIGINT
 trap sighup SIGHUP
 
 while true
