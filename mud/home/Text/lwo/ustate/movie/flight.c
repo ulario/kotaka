@@ -25,10 +25,9 @@
 
 inherit "~/lib/animate";
 
+int nparticles;
 float **particles;
 float speed;
-
-#define NPARTICLES (WIDTH * HEIGHT / 100)
 
 static void create(int clone)
 {
@@ -40,10 +39,15 @@ static void destruct(int clone)
 	::destruct();
 }
 
+private void set_nparticles()
+{
+	nparticles = screen_width * screen_height / 100;
+}
+
 private void reset_particle_xy(float *particle)
 {
-	particle[0] = (MATHD->rnd() - 0.5) * (float)(WIDTH) * 10.0;
-	particle[1] = (MATHD->rnd() - 0.5) * (float)(HEIGHT) * 10.0;
+	particle[0] = (MATHD->rnd() - 0.5) * (float)(screen_width) * 10.0;
+	particle[1] = (MATHD->rnd() - 0.5) * (float)(screen_height) * 10.0;
 }
 
 private void reset_particle(float *particle)
@@ -69,9 +73,12 @@ void begin()
 	speed = 5.0;
 	send_out("\033[1;1H\033[2J");
 
-	particles = allocate(NPARTICLES);
+	check_screen();
+	set_nparticles();
 
-	for (i = 0; i < NPARTICLES; i++) {
+	particles = allocate(nparticles);
+
+	for (i = 0; i < nparticles; i++) {
 		particles[i] = allocate_float(3);
 		initialize_particle(particles[i]);
 	}
@@ -88,7 +95,7 @@ private void do_particles(object paint, float diff)
 {
 	int x, y, i, sortflag;
 
-	for (i = 0; i < NPARTICLES; i++) {
+	for (i = 0; i < nparticles; i++) {
 		mixed *particle;
 
 		particle = particles[i];
@@ -101,18 +108,18 @@ private void do_particles(object paint, float diff)
 	}
 
 	if (sortflag) {
-		SORTD->qsort(particles, 0, NPARTICLES, "zcomp");
+		SORTD->qsort(particles, 0, nparticles, "zcomp");
 	}
 
-	for (i = NPARTICLES - 1; i >= 0; i--) {
+	for (i = nparticles - 1; i >= 0; i--) {
 		mixed *particle;
 		float depth;
 
 		particle = particles[i];
 		depth = particle[2];
 
-		x = (int)floor(particle[0] / depth + (float)(WIDTH) / 2.0);
-		y = (int)floor(particle[1] / depth + (float)(HEIGHT) / 2.0);
+		x = (int)floor(particle[0] / depth + (float)(screen_width) / 2.0);
+		y = (int)floor(particle[1] / depth + (float)(screen_height) / 2.0);
 
 		paint->move_pen(x, y);
 
@@ -136,14 +143,13 @@ static void do_frame(float diff)
 	object gc;
 
 	paint = new_object(LWO_PAINTER);
-	paint->set_size(WIDTH, HEIGHT);
+	paint->set_size(screen_width, screen_height);
 	paint->add_layer("default");
-	paint->set_layer_size("default", WIDTH, HEIGHT);
+	paint->set_layer_size("default", screen_width, screen_height);
 
 	gc = paint->create_gc();
 	gc->set_layer("default");
-	gc->set_clip(0, 0, WIDTH - 1, HEIGHT - 1);
-	gc->set_color(0xF);
+	gc->set_clip(0, 0, screen_width - 1, screen_height - 1);
 
 	do_particles(gc, diff);
 

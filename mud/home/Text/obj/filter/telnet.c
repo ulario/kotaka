@@ -35,6 +35,10 @@ int echo_status;	/* echo is enabled */
 int subcode;		/* subneg. code */
 string subbuf;		/* subneg. buffer */
 
+int naws;
+int naws_w;
+int naws_h;
+
 static void create(int clone)
 {
 	if (clone) {
@@ -45,6 +49,21 @@ static void create(int clone)
 
 		subcode = -1;
 	}
+}
+
+int query_naws_active()
+{
+	return naws;
+}
+
+int query_naws_width()
+{
+	return naws_w;
+}
+
+int query_naws_height()
+{
+	return naws_h;
 }
 
 private void send_will(int code)
@@ -136,13 +155,14 @@ private void do_subnegotiation()
 	switch(subcode) {
 	case 31:
 		{
-			int x;
-			int y;
+			naws = 1;
+			naws_w = subbuf[1] + (subbuf[0] << 8);
+			naws_h = subbuf[3] + (subbuf[2] << 8);
 
-			x = subbuf[1] + (subbuf[0] << 8);
-			y = subbuf[3] + (subbuf[2] << 8);
+			::message("Your client sent back a new window size:\r\n");
+			::message(naws_w + " columns by " + naws_h + " rows.\r\n");
 
-			draw_nawsbox(x, y);
+			draw_nawsbox(naws_w, naws_h);
 		}
 		break;
 

@@ -21,13 +21,10 @@
 #include <kotaka/paths/ansi.h>
 #include <kotaka/privilege.h>
 
-#include <screen.h>
-
 inherit "~/lib/animate";
 
+int nparticles;
 float **particles;
-
-#define NPARTICLES (WIDTH * HEIGHT / 100)
 
 static void create(int clone)
 {
@@ -37,6 +34,11 @@ static void create(int clone)
 static void destruct(int clone)
 {
 	::destruct();
+}
+
+private void set_nparticles()
+{
+	nparticles = screen_width * screen_height / 100;
 }
 
 void begin()
@@ -49,9 +51,12 @@ void begin()
 
 	send_out("\033[1;1H\033[2J");
 
-	particles = allocate(NPARTICLES);
+	check_screen();
+	set_nparticles();
 
-	for (i = 0; i < NPARTICLES; i++) {
+	particles = allocate(nparticles);
+
+	for (i = 0; i < nparticles; i++) {
 		particles[i] = allocate_float(4);
 	}
 }
@@ -60,25 +65,25 @@ private void do_particles(object paint, float diff)
 {
 	int x, y, i;
 
-	for (i = 0; i < NPARTICLES; i++) {
+	for (i = 0; i < nparticles; i++) {
 		float ovy, nvy;
 		mixed *particle;
 
 		particle = particles[i];
 
 		ovy = particle[3];
-		nvy = ovy + diff * (float)(WIDTH / 2);
+		nvy = ovy + diff * (float)(screen_width / 2);
 
 		particle[0] += particle[2] * diff;
 		particle[1] += (ovy + nvy) * 0.5 * diff;
 		particle[3] = nvy;
 
-		if (particle[1] >= (float)(HEIGHT)) {
-			particle[0] = (float)(WIDTH) / 4.0;
-			particle[1] = (float)(HEIGHT);
+		if (particle[1] >= (float)(screen_height)) {
+			particle[0] = (float)(screen_width) / 4.0;
+			particle[1] = (float)(screen_height);
 
-			particle[2] = MATHD->bell_rnd(2) * (float)(WIDTH) - (float)(WIDTH) / 2.0;
-			particle[3] = MATHD->bell_rnd(2) * (float)(HEIGHT) * 2.0 - (float)(HEIGHT) * 3.0;
+			particle[2] = MATHD->bell_rnd(2) * (float)(screen_width) - (float)(screen_width) / 2.0;
+			particle[3] = MATHD->bell_rnd(2) * (float)(screen_height) * 2.0 - (float)(screen_height) * 3.0;
 		}
 
 		x = (int)floor(particle[0]);
@@ -105,13 +110,13 @@ static void do_frame(float diff)
 	object gc;
 
 	paint = new_object(LWO_PAINTER);
-	paint->set_size(WIDTH, HEIGHT);
+	paint->set_size(screen_width, screen_height);
 	paint->add_layer("default");
-	paint->set_layer_size("default", WIDTH, HEIGHT);
+	paint->set_layer_size("default", screen_width, screen_height);
 
 	gc = paint->create_gc();
 	gc->set_layer("default");
-	gc->set_clip(0, 0, WIDTH - 1, HEIGHT - 1);
+	gc->set_clip(0, 0, screen_width - 1, screen_height - 1);
 
 	do_particles(gc, diff);
 

@@ -33,6 +33,9 @@ int tframe;
 int framerate;
 int callout;
 
+int screen_width;
+int screen_height;
+
 static void create()
 {
 	::create();
@@ -182,4 +185,25 @@ void receive_in(string input)
 	}
 
 	reading = 0;
+}
+
+void check_screen()
+{
+	object conn;
+
+	conn = query_user();
+
+	while (conn && conn <- LIB_USER) {
+		if (conn <- "~Text/obj/filter/telnet") {
+			if (conn->query_naws_active()) {
+				screen_width = conn->query_naws_width();
+				screen_height = conn->query_naws_height();
+			}
+			return;
+		}
+		conn = conn->query_conn();
+	}
+
+	screen_width = 40;
+	screen_height = 10;
 }
