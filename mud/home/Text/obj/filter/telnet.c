@@ -309,3 +309,8 @@ void set_mode(int newmode)
 		break;
 	}
 }
+
+void send_raw(string text)
+{
+	::message(text);
+}
