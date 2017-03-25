@@ -31,6 +31,9 @@ string linebuf;		/* processed input waiting to be line-carved */
 int echo_pending;	/* we are waiting for a DO ECHO from the client */
 int echo_status;	/* echo is enabled */
 
+int subcode;		/* subneg. code */
+string subbuf;		/* subneg. buffer */
+
 static void create(int clone)
 {
 	if (clone) {
@@ -38,6 +41,8 @@ static void create(int clone)
 
 		inbuf = "";
 		linebuf = "";
+
+		subcode = -1;
 	}
 }
 
@@ -79,6 +84,20 @@ private void send_dont(int code)
 	out[1] = TELNET_DONT;
 	out[2] = code;
 	::message(out);
+}
+
+private void do_subnegotiation()
+{
+	int i;
+	int sz;
+
+	::message("Your client subnegotiated for option " + subcode + ":\r\n");
+
+	for (i = 0, sz = strlen(subbuf); i < sz; i++) {
+		::message(subbuf[i] + "\r\n");
+	}
+
+	::message("\r\n");
 }
 
 private void process_do(int code)
@@ -127,6 +146,36 @@ private void process_wont(int code)
 	send_dont(code);
 }
 
+private void process_sb(int code)
+{
+	subcode = code;
+	subbuf = "";
+}
+
+private void process_se(int code)
+{
+	if (code != subcode) {
+		/* wtf? */
+		int sz, i;
+
+		::message("Debug: Your client sent a SE that did not match the pending SB\r\n");
+		::message("SB code " + subcode + "\r\n");
+		::message("SE code " + code + "\r\n");
+
+		::message("Subnegotiation buffer contents:\r\n");
+
+		for (i = 0, sz = strlen(subbuf); i < sz; i++) {
+			::message(subbuf[i] + "\r\n");
+		}
+
+	} else {
+		do_subnegotiation();
+	}
+
+	subcode = -1;
+	subbuf = nil;
+}
+
 int receive_message(string str)
 {
 	string line;
@@ -141,7 +190,11 @@ int receive_message(string str)
 		string prefix, suffix;
 
 		if (sscanf(inbuf, "%s\377%s", prefix, suffix)) {
-			linebuf += prefix;
+			if (subcode == -1) {
+				linebuf += prefix;
+			} else {
+				subbuf += prefix;
+			}
 
 			if (suffix[0] != TELNET_IAC && strlen(suffix) < 2) {
 				/* incomplete command, push back and wait for more input */
@@ -152,6 +205,16 @@ int receive_message(string str)
 			}
 
 			switch (suffix[0]) {
+			case TELNET_SB:
+				inbuf = suffix[2 ..];
+				process_sb(suffix[1]);
+				break;
+
+			case TELNET_SE:
+				inbuf = suffix[1 ..];
+				process_se();
+				break;
+
 			case TELNET_WILL:
 				inbuf = suffix[2 ..];
 				process_will(suffix[1]);
@@ -174,7 +237,11 @@ int receive_message(string str)
 
 			case TELNET_IAC: /* escaped IAC means a literal 255 */
 				inbuf = suffix[1 ..];
-				linebuf += "\377";
+				if (subcode == -1) {
+					linebuf += "\377";
+				} else {
+					subbuf += "\377";
+				}
 				break;
 
 			default:
