@@ -29,28 +29,28 @@ function sigint
 
 function boot
 {
-	rm state/swap
+	rm -f state/swap
 	if [ -f state/snapshot ]
 	then
 		echo "--- DGD warm booting ---"
 		if [ -f state/snapshot.old ]
 		then
 			# both are present, possible incremental snapshot
-			~/bin/dgd kotaka.dgd state/snapshot state/snapshot.old
+			~/bin/dgd kotaka.dgd state/snapshot state/snapshot.old &
 		else
 			# only the full one
-			~/bin/dgd kotaka.dgd state/snapshot
+			~/bin/dgd kotaka.dgd state/snapshot &
 		fi
 	else
 		if [ -f state/snapshot.old ]
 		then
 			# we only have the old one
 			echo "--- DGD cool booting ---"
-			~/bin/dgd kotaka.dgd state/snapshot.old
+			~/bin/dgd kotaka.dgd state/snapshot.old &
 		else
 			# complete cold start
 			echo "--- DGD cold booting ---"
-			~/bin/dgd kotaka.dgd
+			~/bin/dgd kotaka.dgd &
 		fi
 	fi
 	DGDPID=$!
