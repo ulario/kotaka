@@ -142,6 +142,15 @@ int receive_message(string str)
 
 		if (sscanf(inbuf, "%s\377%s", prefix, suffix)) {
 			linebuf += prefix;
+
+			if (suffix[0] != TELNET_IAC && strlen(suffix) < 3) {
+				/* incomplete command, push back and wait for more input */
+				inbuf = " ";
+				inbuf[0] = 255;
+				inbuf += suffix;
+				break;
+			}
+
 			switch (suffix[0]) {
 			case TELNET_WILL:
 				inbuf = suffix[2 ..];
