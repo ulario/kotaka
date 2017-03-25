@@ -31,10 +31,14 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	object conn;
-	string out;
-
-	send_out("Activating NAWS option\n");
 
 	conn = query_user();
-	conn->do_naws(1);
+	conn = conn->query_telnet_obj();
+
+	if (conn) {
+		send_out("Sending request for NAWS...\n");
+		conn->send_do(31);
+	} else {
+		send_out("Error: no telnet filter detected on this connection\n");
+	}
 }

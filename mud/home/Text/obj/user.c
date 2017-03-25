@@ -32,7 +32,6 @@ inherit "~/lib/user";
 object mobile;
 object body;
 int keepalive;
-int naws_callout;
 
 string username;
 
@@ -250,7 +249,7 @@ void subscribe_channels()
 	}
 }
 
-static object telnet_obj()
+object query_telnet_obj()
 {
 	object conn;
 
@@ -261,24 +260,5 @@ static object telnet_obj()
 			return conn;
 		}
 		conn = conn->query_conn();
-	}
-}
-
-static void process_naws()
-{
-	call_out("process_naws", 0.1);
-
-	telnet_obj()->send_do(31);
-}
-
-void do_naws(int enable)
-{
-	if (naws_callout) {
-		remove_call_out(naws_callout);
-		naws_callout = 0;
-	}
-
-	if (enable) {
-		naws_callout = call_out("process_naws", 0);
 	}
 }

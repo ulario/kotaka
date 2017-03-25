@@ -40,7 +40,6 @@ static void create()
 	users = ([ ]);
 	guests = ([ ]);
 
-	SYSTEM_USERD->set_telnet_manager(0, this_object());
 	SYSTEM_USERD->set_binary_manager(1, this_object());
 }
 

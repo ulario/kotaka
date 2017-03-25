@@ -84,12 +84,14 @@ void main(object actor, mapping roles)
 			return;
 		}
 		break;
+
 	case 2: /* wizard.  Only an administrator can ban them */
 		if (user->query_class() < 3) {
 			send_out("Only an administrator can ban a wizard.\n");
 			return;
 		}
 		break;
+
 	default:
 		if (user->query_class() < 2) {
 			send_out("Only a wizard can ban someone.\n");
