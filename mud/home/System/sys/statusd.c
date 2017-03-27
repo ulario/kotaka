@@ -129,6 +129,8 @@ int login(string str)
 		SUSPENDD->queue_delayed_work("report", 0, conn)
 	});
 
+	conn->message("\033[1;1H\033[2J");
+
 	return MODE_NOECHO;
 }
 
