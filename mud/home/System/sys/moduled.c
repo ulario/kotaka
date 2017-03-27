@@ -180,10 +180,8 @@ static void purge_module_tick(string module, int reboot)
 	}
 }
 
-void upgrade_module(string module)
+static void upgrade_module(string module)
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
-
 	if (modules[module] != 1) {
 		return;
 	}
@@ -309,7 +307,7 @@ void upgrade_modules()
 						LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + (module ? module : "Ecru"));
 						compile_object(initd_of(module));
 
-						SUSPENDD->queue_work("upgrade_module", module);
+						call_out("upgrade_module", 0, module);
 					}
 				}
 			}
