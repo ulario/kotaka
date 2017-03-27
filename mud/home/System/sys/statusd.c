@@ -99,19 +99,6 @@ object select(string input)
 	return this_object();
 }
 
-private void redraw(object conn)
-{
-	conn->message("\033c\033[2J");
-	conn->message("\033[14;1H\033[1m-----------------------------------------");
-	conn->message("\033[21;1H-----------------------------------------");
-	conn->message("\033[0m\033[15;20r\033[15;1H");
-}
-
-private void prompt(object conn)
-{
-	conn->message("[\033[1;34mstatus\033[0m] ");
-}
-
 int login(string str)
 {
 	object base_conn, conn;
@@ -142,16 +129,13 @@ int login(string str)
 		SUSPENDD->queue_delayed_work("report", 0, conn)
 	});
 
-	redraw(conn);
-	prompt(conn);
-
-	return MODE_NOCHANGE;
+	return MODE_NOECHO;
 }
 
 private int printstatus(object conn)
 {
 	if (conn) {
-		return conn->message("\0337\033[1;1H" + status_message() + "\n\0338");
+		return conn->message("\033[1;1H" + status_message());
 	}
 }
 
@@ -179,8 +163,8 @@ int receive_message(string str)
 
 	if (sizeof(params)) {
 		switch(params[0]) {
-		case "redraw":
-			redraw(conn);
+		case "clear":
+			call_out("clear", 0, conn);
 			break;
 
 		case "quit":
@@ -191,6 +175,7 @@ int receive_message(string str)
 		case "interval":
 			if (sizeof(params) < 2) {
 				conn->message("Usage: interval <interval>\n");
+				call_out("clear", 5.0, conn);
 				break;
 			} else {
 				float interval;
@@ -199,6 +184,7 @@ int receive_message(string str)
 
 				if (interval < 15.0 && !connections[conn][1]) {
 					conn->message("Intervals less than 15 seconds\nare only allowed for local connections.\n");
+					call_out("clear", 5.0, conn);
 					break;
 				}
 
@@ -210,17 +196,14 @@ int receive_message(string str)
 				}
 			}
 
-		case "":
-			break;
-
 		default:
-			conn->message("Commands: interval, quit, redraw\n");
+			conn->message("Commands: clear, interval, quit\n");
+			call_out("clear", 5.0, conn);
 			break;
 		}
-
+	} else {
+		call_out("clear", 5.0, conn);
 	}
-
-	prompt(conn);
 
 	return MODE_NOCHANGE;
 }
@@ -263,4 +246,13 @@ void report(object conn)
 	connections[conn][2] = 0;
 
 	printstatus(conn);
+}
+
+static void clear(object conn)
+{
+	if (!conn) {
+		return;
+	}
+
+	conn->message("\033[1;1H\033[2J");
 }
