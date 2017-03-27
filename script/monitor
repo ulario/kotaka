@@ -6,6 +6,8 @@ exec < /dev/null
 exec >> kotaka.err
 exec 2>&1
 
+echo "--- Monitor starting ---"
+
 function sighup
 {
 	echo "+++ Monitor received SIGHUP +++"
@@ -23,7 +25,7 @@ function sigint
 {
 	echo "+++ Monitor received SIGINT +++"
 	trap - SIGINT
-	kill -KILL $DGDPID
+	kill -KILL $DGDPID # DGD ignores SIGINT
 	kill -INT $$
 }
 
@@ -63,7 +65,7 @@ function exited
 		echo "--- DGD terminated normally ---"
 		;;
 	*)
-		echo "--- DGD terminated abnormally (code $DGDEXIT), monitor exiting ---"
+		echo "--- DGD terminated abnormally (code $DGDEXIT) ---"
 		exit
 		;;
 	esac
@@ -89,7 +91,7 @@ function signalled
 
 	case $SIGNAME in
 	KILL|TERM|INT)
-		echo "+++ DGD terminated by SIG$SIGNAME, monitor exiting +++"
+		echo "+++ DGD terminated by SIG$SIGNAME +++"
 		exit
 		;;
 	*)
