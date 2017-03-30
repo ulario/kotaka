@@ -1,6 +1,6 @@
 #!/bin/bash
 
-1>&2
+exec 1>&2
 
 cd ~/git/kotaka
 
@@ -17,6 +17,6 @@ then
 		exec ~/bin/dgd kotaka.dgd state/snapshot
 	fi
 else
-	echo "+++ Aborting hotboot (missing snapshot) +++"
+	echo "--- Aborting hotboot (missing snapshot) ---"
 	exit 2
 fi
