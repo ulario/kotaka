@@ -148,7 +148,8 @@ private void do_subnegotiation()
 
 private void process_do(int code)
 {
-	if (code == 1) {
+	switch(code) {
+	case 1:
 		if (echo_status) {
 			/* already "echoing", ignore */
 		} else if (echo_pending) {
@@ -159,16 +160,21 @@ private void process_do(int code)
 			/* client can't tell us what to do */
 			send_wont(code);
 		}
-	} else {
+		break;
+	default:
+		::message("Error: client requested unknown telnet option " + code + ", refusing.\r\n");
 		send_wont(code);
 	}
 }
 
 private void process_dont(int code)
 {
-	/* honoring a dont is mandatory */
-	/* however, for security reasons, we cannot be silent about it */
-	if (code == 1) {
+	send_wont(code);
+
+	switch(code) {
+	case 1:
+		/* honoring a dont is mandatory */
+		/* however, for security reasons, we cannot be silent about it */
 		if (echo_status) {
 			::message("Warning: Your client revoked echo off\r\n");
 		} else if (echo_pending) {
@@ -176,19 +182,26 @@ private void process_dont(int code)
 		}
 		echo_status = 0;
 		echo_pending = 0;
+		break;
 	}
-	send_wont(code);
 }
 
 private void process_will(int code)
 {
-	/* until we understand client side options, refuse to allow them */
-	send_dont(code);
+	switch(code) {
+	case 31:
+		/* client is offering to perform NAWS to set the screen size */
+		/* allow it */
+		send_do(code);
+		break;
+	default:
+		::message("Error: client offered unknown telnet option " + code + ", forbidding\r\n");
+		send_dont(code);
+	}
 }
 
 private void process_wont(int code)
 {
-	/* acknowledge all of the client's wont's */
 	send_dont(code);
 }
 
