@@ -192,7 +192,10 @@ private void process_will(int code)
 	case 31:
 		/* client is offering to perform NAWS to set the screen size */
 		/* allow it */
-		send_do(code);
+		if (!naws) {
+			send_do(code);
+			break;
+		}
 		break;
 	default:
 		::message("Error: client offered unknown telnet option " + code + ", forbidding\r\n");
@@ -217,6 +220,21 @@ private void process_se()
 
 	subcode = -1;
 	subbuf = nil;
+}
+
+int login(string str)
+{
+	int retval;
+
+	retval = ::login(str);
+
+	if (retval == MODE_DISCONNECT) {
+		return MODE_DISCONNECT;
+	}
+
+	send_do(31); /* attempt NAWS */
+
+	return retval;
 }
 
 int receive_message(string str)
