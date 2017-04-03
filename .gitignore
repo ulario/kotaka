@@ -1,7 +1,8 @@
 !mud/etc/.dummy
 !mud/home/Secret/.dummy
 
-kotaka.err
+/kotaka.err
+/namedump
 mud/etc/*
 mud/home/Secret/*
 mud/home/Text/data/splash/telnet_banners/ansi/*
