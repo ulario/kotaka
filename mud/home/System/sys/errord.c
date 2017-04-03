@@ -23,6 +23,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/privilege.h>
+#include <kotaka/assert.h>
 #include <trace.h>
 
 inherit SECOND_AUTO;
@@ -128,22 +129,27 @@ void runtime_error(string error, int caught, mixed **trace)
 	DRIVER->set_error_manager(nil);
 
 	catch {
+		string prefix, tag, suffix;
+
 		TLSD->set_tls_value("System", "error-string", error);
 		TLSD->set_tls_value("System", "error-trace", trace);
 
-		if (error[0] == '(') {
+		if (sscanf(error, "%s\000\000%s\000\000%s", prefix, tag, suffix)) {
 			mapping thrown;
+
+			error = prefix;
+
+			ASSERT(tag == "atomic");
 			/* gift package thrown by atomic error */
 
 			if (find_object(PARSER_VALUE)) {
-				thrown = PARSER_VALUE->parse(error);
+				thrown = PARSER_VALUE->parse(suffix);
 
-				error = thrown["errstr"];
 				atom = thrown["atom"];
 				trace = thrown["trace"];
 				comperr = thrown["comperr"];
 			} else {
-				error = "Unknown atomic error (please boot String module)";
+				error = "Atomic error \"" + error + "\" (please boot String module to get a trace)";
 			}
 
 			TLSD->set_tls_value("System", "error-string", error);
@@ -226,7 +232,7 @@ void runtime_error(string error, int caught, mixed **trace)
 	DRIVER->set_error_manager(this_object());
 }
 
-void atomic_error(string error, int atom, mixed **trace)
+string atomic_error(string error, int atom, mixed **trace)
 {
 	catch {
 		string throwstr;
@@ -238,12 +244,11 @@ void atomic_error(string error, int atom, mixed **trace)
 
 		throwme["atom"] = atom;
 		throwme["comperr"] = TLSD->query_tls_value("System", "compile-errors");
-		throwme["errstr"] = error;
 		throwme["trace"] = trace;
 
 		throwstr = mixed_sprint(throwme);
 
-		error(throwstr);
+		return error + "\000\000atomic\000\000" + throwstr;
 	} : {
 		DRIVER->message("Error in atomic_error: " + error + "\n");
 
