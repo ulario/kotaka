@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2012, 2013, 2014, 2015  Raymond Jennings
+ * Copyright (C) 2012, 2013, 2014, 2015, 2017  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/verb.h>
+#include <kotaka/ustate.h>
 
 inherit LIB_VERB;
 
@@ -28,5 +29,27 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	query_ustate()->push_state(new_object("~Text/lwo/ustate/movie/matrix"));
+	string demo;
+
+	if (roles["raw"] == "") {
+		send_out("Usage: ansidemo <demo>\n");
+		send_out("Available demos:\n");
+		send_out("matrix - Demonstrate a cascading field of ones and zeroes in eerie green hues\n");
+		send_out("spark  - Create a volcano of fiery sparks\n");
+		send_out("space  - Fly through a field of stars that slowly spins as you proceed\n");
+		return;
+	}
+
+	switch(roles["raw"]) {
+	case "matrix":
+	case "sparks":
+	case "space":
+		demo = roles["raw"];
+		break;
+	default:
+		send_out("No such ansi demo\n");
+		return;
+	}
+
+	query_ustate()->push_state(new_object(USTATE_DIR + "/movie/" + demo));
 }
