@@ -429,7 +429,6 @@ void swap_state(object old_state, object new_state)
 
 	ASSERT(old_state);
 	ASSERT(new_state);
-	ASSERT(!new_state->query_user());
 
 	parent = old_state->query_parent();
 
