@@ -22,6 +22,7 @@
 #include <kotaka/assert.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <kotaka/ustate.h>
 #include <status.h>
 
 inherit system_user LIB_SYSTEM_USER;
@@ -589,6 +590,16 @@ static void nuke_state_tree(varargs object base)
 			base->_F_set_user(nil);
 		}
 	}
+}
+
+object clone_ustate(string id)
+{
+	object ustate;
+
+	ustate = clone_object(USTATE_DIR + "/" + id);
+	ustate->set_user(this_object());
+
+	return ustate;
 }
 
 void quit()
