@@ -70,7 +70,7 @@ void main(object actor, mapping roles)
 
 	send_out("You start to recreate " + TEXT_SUBD->generate_brief_definite(dob) + ".\n");
 
-	creator = new_object("~Text/lwo/ustate/wiz/objcreate");
+	creator = query_user()->clone_ustate("wiz/objcreate");
 	creator->set_object(dob);
 	query_ustate()->push_state(creator);
 }

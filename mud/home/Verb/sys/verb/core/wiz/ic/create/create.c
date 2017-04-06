@@ -49,7 +49,7 @@ void main(object actor, mapping roles)
 	thing->move(actor);
 	thing->set_property("local_snouns", ({ "thing" }) );
 
-	creator = new_object("~Text/lwo/ustate/wiz/objcreate");
+	creator = query_user()->clone_ustate("wiz/objcreate");
 	creator->set_object(thing);
 	query_ustate()->push_state(creator);
 }

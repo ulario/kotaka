@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/verb.h>
-#include <kotaka/ustate.h>
 
 inherit LIB_VERB;
 
@@ -51,5 +50,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	query_ustate()->push_state(new_object(USTATE_DIR + "/movie/" + demo));
+	query_ustate()->push_state(query_user()->create_ustate("movie/" + demo));
 }

@@ -71,7 +71,7 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	passwd = new_object("~Text/lwo/ustate/passwd");
+	passwd = query_user()->clone_ustate("passwd");
 	passwd->set_name(target);
 	query_ustate()->push_state(passwd);
 }

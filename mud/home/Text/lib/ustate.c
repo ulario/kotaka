@@ -267,8 +267,8 @@ static void terminate_account_state()
 
 	parent = query_parent();
 
-	if (parent <- "~/lwo/ustate/start") {
-		parent->swap_state(new_object("shell"));
+	if (parent <- "start") {
+		parent->swap_state(clone_object("shell"));
 	} else {
 		pop_state();
 	}

@@ -26,6 +26,7 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
+#include <kotaka/ustate.h>
 
 inherit "~/lib/user";
 
@@ -148,7 +149,7 @@ private void do_login()
 
 	set_mode(MODE_ECHO);
 
-	set_root_state(new_object("~/lwo/ustate/start"));
+	set_root_state(clone_object(USTATE_DIR + "/start"));
 
 	TEXT_USERD->add_guest(this_object());
 }

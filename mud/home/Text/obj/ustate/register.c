@@ -175,7 +175,7 @@ void receive_in(string input)
 
 			TEXT_SUBD->send_register_message(name);
 
-			pager = new_object("~/lwo/ustate/page");
+			pager = clone_object("page");
 			text = read_file("~/data/quickstartguide");
 
 			pager->set_text(
@@ -188,7 +188,7 @@ void receive_in(string input)
 				object shell;
 
 				suspend_user();
-				shell = new_object("shell");
+				shell = clone_object("shell");
 				push_state(shell);
 				shell->push_state(pager);
 				release_user();

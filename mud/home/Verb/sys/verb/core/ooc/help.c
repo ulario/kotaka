@@ -239,7 +239,7 @@ void main(object actor, mapping roles)
 
 	if (header) {
 		object pager;
-		pager = new_object("~Text/lwo/ustate/page");
+		pager = query_user()->clone_ustate("page");
 		pager->set_text("[\033[1;34m " + header + "\033[0m ]\n\n" + text);
 		query_ustate()->push_state(pager);
 	}

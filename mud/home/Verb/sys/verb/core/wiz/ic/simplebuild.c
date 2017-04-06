@@ -45,7 +45,7 @@ void main(object actor, mapping roles)
 
 	send_out("You start to simplebuild.\n");
 
-	build = new_object("~Text/lwo/ustate/wiz/simplebuild");
+	build = query_user()->clone_ustate("wiz/simplebuild");
 	build->set_body(actor);
 	query_ustate()->push_state(build);
 }
