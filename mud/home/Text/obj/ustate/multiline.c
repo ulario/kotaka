@@ -54,3 +54,8 @@ static void input_over()
 {
 	prompt();
 }
+
+void end()
+{
+	destruct_object(this_object());
+}

@@ -99,6 +99,11 @@ void pre_end()
 	dead = 1;
 }
 
+void end()
+{
+	destruct_object(this_object());
+}
+
 void receive_in(string input)
 {
 	ACCESS_CHECK(previous_object() == query_user());

@@ -184,3 +184,8 @@ void receive_in(string input)
 		prompt();
 	}
 }
+
+void end()
+{
+	destruct_object(this_object());
+}

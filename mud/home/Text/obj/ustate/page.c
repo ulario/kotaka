@@ -75,3 +75,8 @@ void receive_in(string str)
 
 	pour();
 }
+
+void end()
+{
+	destruct_object(this_object());
+}

@@ -123,3 +123,8 @@ static void do_frame(float diff)
 	send_out("\033[1;1H");
 	send_out(implode(paint->render_color(), "\n"));
 }
+
+void end()
+{
+	destruct_object(this_object());
+}
