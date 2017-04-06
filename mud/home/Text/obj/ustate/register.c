@@ -184,7 +184,7 @@ void receive_in(string input)
 
 			parent = query_parent();
 
-			if (parent <- "start") {
+			if (instanceof(parent, "start")) {
 				object shell;
 
 				suspend_user();
