@@ -273,28 +273,3 @@ static void terminate_account_state()
 		pop_state();
 	}
 }
-
-static int call_out(string func, mixed delay, mixed args ...)
-{
-	if (sscanf(object_name(this_object()), "%*s#-1")) {
-		return user->ustate_call_out(this_object(), func, delay, args);
-	} else {
-		return ::call_out(func, delay, args ...);
-	}
-}
-
-static mixed remove_call_out(int handle)
-{
-	if (sscanf(object_name(this_object()), "%*s#-1")) {
-		return user->ustate_remove_call_out(this_object(), handle);
-	} else {
-		return ::remove_call_out(handle);
-	}
-}
-
-nomask void ustate_callout(string func, mixed *args)
-{
-	ACCESS_CHECK(TEXT());
-
-	call_other(this_object(), func, args ...);
-}
