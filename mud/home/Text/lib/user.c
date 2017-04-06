@@ -597,7 +597,6 @@ object clone_ustate(string id)
 	object ustate;
 
 	ustate = clone_object(USTATE_DIR + "/" + id);
-	ustate->set_user(this_object());
 
 	return ustate;
 }
