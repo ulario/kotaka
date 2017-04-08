@@ -24,6 +24,8 @@
 
 inherit LIB_VERB;
 
+int handle;
+
 string *query_parse_methods()
 {
 	return ({ "raw" });
@@ -42,7 +44,11 @@ void main(object actor, mapping roles)
 
 	path = roles["raw"];
 
-	call_out("lazy_clones", 0, path, status(ST_OTABSIZE) - 1, time());
+	if (handle) {
+		remove_call_out(handle);
+	}
+
+	handle = call_out("lazy_clones", 0, path, status(ST_OTABSIZE) - 1, time());
 }
 
 static void lazy_clones(string path, int oindex, varargs int time)
@@ -56,6 +62,7 @@ static void lazy_clones(string path, int oindex, varargs int time)
 	}
 
 	if (oindex == 0) {
+		handle = 0;
 		LOGD->post_message("debug", LOG_DEBUG, "Lazy clone enumeration finished.");
 	} else {
 		int newtime;
@@ -67,6 +74,6 @@ static void lazy_clones(string path, int oindex, varargs int time)
 			time = time();
 		}
 
-		call_out("lazy_clones", 0, path, oindex - 1, time);
+		handle = call_out("lazy_clones", 0, path, oindex - 1, time);
 	}
 }
