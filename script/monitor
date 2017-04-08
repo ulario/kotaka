@@ -1,21 +1,25 @@
 #!/bin/bash
 
-cd ~/git/kotaka
+# signal handlers
 
-exec < /dev/null
-exec >> kotaka.err
-exec 2>&1
-
-echo "--- Monitor starting ---"
-
-function sighup
+function sigchld
 {
-	echo "+++ Monitor received SIGHUP +++"
+	if (( CATCH == 1 ))
+	then
+		EXITED=1
+	fi
 }
+
+function sighandler
+{
+	SIGNALLED=1
+}
+
+# signal procedures
 
 function sigterm
 {
-	echo "+++ Monitor received SIGTERM +++"
+	echo "+++ Monitor received SIGTERM, terminating DGD +++"
 	trap - SIGTERM
 	kill -TERM $DGDPID
 	kill -TERM $$
@@ -23,10 +27,19 @@ function sigterm
 
 function sigint
 {
-	echo "+++ Monitor received SIGINT +++"
+	echo "+++ Monitor received SIGINT, killing DGD +++"
 	trap - SIGINT
 	kill -KILL $DGDPID # DGD ignores SIGINT
 	kill -INT $$
+}
+
+# subroutines
+
+function execdgd
+{
+	trap "" HUP
+	trap "" INT
+	exec ~/bin/dgd $*
 }
 
 function boot
@@ -38,21 +51,25 @@ function boot
 		if [ -f state/snapshot.old ]
 		then
 			# both are present, possible incremental snapshot
-			~/bin/dgd kotaka.dgd state/snapshot state/snapshot.old &
+			CATCH=1
+			execdgd kotaka.dgd state/snapshot state/snapshot.old &
 		else
 			# only the full one
-			~/bin/dgd kotaka.dgd state/snapshot &
+			CATCH=1
+			execdgd kotaka.dgd state/snapshot &
 		fi
 	else
 		if [ -f state/snapshot.old ]
 		then
 			# we only have the old one
 			echo "--- DGD cool booting ---"
-			~/bin/dgd kotaka.dgd state/snapshot.old &
+			CATCH=1
+			execdgd kotaka.dgd state/snapshot.old &
 		else
 			# complete cold start
 			echo "--- DGD cold booting ---"
-			~/bin/dgd kotaka.dgd &
+			CATCH=1
+			execdgd kotaka.dgd &
 		fi
 	fi
 	DGDPID=$!
@@ -60,12 +77,12 @@ function boot
 
 function exited
 {
-	case $DGDEXIT in
+	case $EXITCODE in
 	0)
 		echo "--- DGD terminated normally ---"
 		;;
 	*)
-		echo "--- DGD terminated abnormally (code $DGDEXIT) ---"
+		echo "--- DGD terminated abnormally (code $EXITCODE) ---"
 		exit
 		;;
 	esac
@@ -87,10 +104,10 @@ function crashed
 
 function signalled
 {
-	SIGNAME=`kill -l $(( DGDEXIT - 128 ))`
+	SIGNAME=`kill -l $(( EXITCODE - 128 ))`
 
 	case $SIGNAME in
-	KILL|TERM|INT)
+	KILL|TERM|INT|HUP)
 		echo "+++ DGD terminated by SIG$SIGNAME +++"
 		exit
 		;;
@@ -100,20 +117,74 @@ function signalled
 	esac
 }
 
-trap sigterm SIGTERM
-trap sigint SIGINT
-trap sighup SIGHUP
+function doeintr
+{
+	SIGNAME=`kill -l $(( EXITCODE - 128 ))`
 
-while true
-do
-	boot
-	wait $DGDPID
-	DGDEXIT=$?
+	case $SIGNAME in
+	TERM)
+		sigterm
+		;;
+	INT)
+		sigint
+		;;
+	HUP)
+		echo "+++ Monitor received SIG$SIGNAME (ignoring) +++"
+		;;
+	*)
+		echo "+++ Monitor received unexpected SIG$SIGNAME +++"
+		;;
+	esac
+}
 
-	if (( DGDEXIT < 128 ))
+function doexit
+{
+	BOOTED=0
+	if (( EXITCODE < 128 ))
 	then
 		exited
 	else
 		signalled
+	fi
+}
+
+exec < /dev/null
+exec >> kotaka.err
+exec 2>&1
+
+cd ~/git/kotaka
+
+trap sighandler SIGTERM
+trap sighandler SIGINT
+trap sighandler SIGHUP
+trap sigchld SIGCHLD
+
+set -m
+
+echo "--- Monitor starting ---"
+
+BOOTED=0
+SIGNALLED=0
+EXITED=0
+
+while true
+do
+	if (( BOOTED == 0 ))
+	then
+		BOOTED=1
+		EXITED=0
+		boot
+	fi
+
+	wait $DGDPID
+	EXITCODE=$?
+	CATCH=0
+
+	if (( EXITED == 1 ))
+	then
+		BOOTED=0
+		doexit
+	else
+		doeintr
 	fi
 done
