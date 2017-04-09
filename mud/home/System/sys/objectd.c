@@ -399,7 +399,13 @@ void destruct(varargs mixed owner, mixed obj)
 	}
 
 	if (!is_kernel) {
-		obj->_F_sys_destruct();
+		object force;
+
+		force = TLSD->query_tls_value("System", "destruct_force");
+
+		if (obj != force) {
+			obj->_F_sys_destruct();
+		}
 	}
 
 	if (!is_clone) {
@@ -481,4 +487,15 @@ int forbid_inherit(string from, string path, int priv)
 	} else if (!initd && DRIVER->creator(path) != "System") {
 		error("No initd loaded for " + path);
 	}
+}
+
+/* subroutines */
+
+void nuke_object(object obj)
+{
+	ACCESS_CHECK(VERB() || SYSTEM());
+
+	TLSD->set_tls_value("System", "destruct_force", obj);
+
+	destruct_object(obj);
 }
