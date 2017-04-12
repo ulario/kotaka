@@ -23,6 +23,7 @@
 #include <type.h>
 
 inherit LIB_SYSTEM;
+inherit "/lib/string/char";
 
 string hex(int i);
 string bin(int i);
@@ -68,36 +69,6 @@ string nulls(int count)
 }
 
 string replace(string input, string from, string to);
-
-/**************/
-/* Characters */
-/**************/
-
-int char_is_whitespace(int char)
-{
-	if ((char == '\n') || (char == '\t') || (char == ' ')) {
-		return 1;
-	}
-
-	return 0;
-}
-
-int char_to_lower(int char)
-{
-	if ((char <= 'Z') && (char >= 'A')) {
-		char |= 0x20;
-	}
-
-	return char;
-}
-
-int char_to_upper(int char)
-{
-	if ((char <= 'z') && (char >= 'a'))
-		char &= ~0x20;
-
-	return char;
-}
 
 /***********/
 /* strings */
