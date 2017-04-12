@@ -52,10 +52,6 @@ string chars(int code, int count)
 		error("Invalid character code");
 	}
 
-	if (count > status(ST_STRSIZE)) {
-		error("String too long (" + count + ")");
-	}
-
 	log = " ";
 	log[0] = code;
 
