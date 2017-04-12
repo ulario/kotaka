@@ -22,15 +22,7 @@
 
 inherit SECOND_AUTO;
 inherit "/lib/tier";
-
-string replace(string input, string from, string to)
-{
-	string *arr;
-
-	arr = explode(from + input + from, from);
-
-	return implode(arr, to);
-}
+inherit "/lib/string/replace";
 
 string quote_unescape(string input)
 {
