@@ -43,3 +43,39 @@ int char_to_upper(int char)
 
 	return char;
 }
+
+string chars(int code, int count)
+{
+	string log;
+
+	if (code < 0 || code > 0xFF) {
+		error("Invalid character code");
+	}
+
+	if (count > status(ST_STRSIZE)) {
+		error("String too long (" + count + ")");
+	}
+
+	log = " ";
+	log[0] = code;
+
+	while (strlen(log) < count) {
+		if (strlen(log) * 2 > count) {
+			log += log[0 .. count - strlen(log) - 1];
+		} else {
+			log += log;
+		}
+	}
+
+	return log[0 .. count - 1];
+}
+
+string spaces(int count)
+{
+	return chars(' ', count);
+}
+
+string nulls(int count)
+{
+	return chars('\0', count);
+}
