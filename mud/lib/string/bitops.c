@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+inherit "trim";
+
 string string_truncate(string line, int bits)
 {
 	int bytes;

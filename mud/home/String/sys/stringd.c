@@ -25,6 +25,7 @@
 inherit LIB_SYSTEM;
 inherit "/lib/string/char";
 inherit "/lib/string/bitops";
+inherit "/lib/string/trim";
 
 string hex(int i);
 string bin(int i);
@@ -112,58 +113,6 @@ int is_valid_username(string str)
 {
 	return str && strlen(str) >= 1 && strlen(str) <= 32 &&
 		regex_match(str, "[A-Za-z][_A-Za-z0-9]*");
-}
-
-string trim_whitespace(string str)
-{
-	int start, end;
-
-	if (!str || str == "")
-		return str;
-
-	start = 0;
-	end = strlen(str) - 1;
-
-	while ((start <= end) && char_is_whitespace(str[start])) {
-		start++;
-	}
-
-	while ((start <= end) && char_is_whitespace(str[end])) {
-		end--;
-	}
-
-	return str[start .. end];
-}
-
-string rtrim_null(string str)
-{
-	int end;
-
-	if (!str || str == "")
-		return str;
-
-	end = strlen(str) - 1;
-
-	while (end >= 0 && str[end] == 0)
-		end--;
-
-	return str[.. end];
-}
-
-string rtrim_whitespace(string str)
-{
-	int end;
-
-	if (!str || str == "")
-		return str;
-
-	end = strlen(str) - 1;
-
-	while ((end >= 0) && char_is_whitespace(str[end])) {
-		end--;
-	}
-
-	return str[.. end];
 }
 
 string to_lower(string text)
