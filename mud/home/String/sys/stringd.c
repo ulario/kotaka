@@ -24,6 +24,7 @@
 
 inherit LIB_SYSTEM;
 inherit "/lib/string/char";
+inherit "/lib/string/bitops";
 
 string hex(int i);
 string bin(int i);
@@ -808,126 +809,6 @@ string ip_to_string(int ip)
 	d = (ip) & 0xFF;
 
 	return a + "." + b + "." + c + "." + d;
-}
-
-string string_truncate(string line, int bits)
-{
-	int bytes;
-	int mask;
-
-	bytes = (bits + 7) >> 3;
-	mask = 0xFF >> ((8 - bits) & 0x7);
-
-	if (strlen(line) > bytes) {
-		line = line[0 .. bytes - 1];
-	} else while (strlen(line) < bytes) {
-		line += "\000";
-	}
-
-	if (strlen(line) == bytes) {
-		line[bytes - 1] &= mask;
-	}
-
-	return rtrim_null(line);
-}
-
-string string_rshift(string a, int bits)
-{
-	int buf;
-	int index;
-
-	a = a[bits / 8 ..];
-	bits %= 8;
-
-	buf = a[0];
-
-	for (index = 0; index < strlen(a); index++) {
-		buf |= ((index + 1) < strlen(a) ? a[index + 1] : 0) << 8;
-		a[index] = (buf >> bits) & 255;
-		buf >>= 8;
-	}
-
-	return rtrim_null(a);
-}
-
-string string_lshift(string a, int bits)
-{
-	a = nulls(bits / 8) + a;
-	bits %= 8;
-
-	return rtrim_null(string_rshift("\000" + a, 8 - bits));
-}
-
-string string_and(string a, string b)
-{
-	int i;
-
-	if (strlen(a) < strlen(b)) {
-		string c;
-		c = a;
-		a = b;
-		b = c;
-	}
-
-	for (i = 0; i <= strlen(b); i++) {
-		b[i] &= a[i];
-	}
-
-	return b;
-}
-
-string string_or(string a, string b)
-{
-	int i;
-
-	if (strlen(a) < strlen(b)) {
-		string c;
-		c = a;
-		a = b;
-		b = c;
-	}
-
-	for (i = 0; i <= strlen(b); i++) {
-		a[i] |= b[i];
-	}
-
-	return a;
-}
-
-string string_xor(string a, string b)
-{
-	int i;
-
-	if (strlen(a) < strlen(b)) {
-		string c;
-		c = a;
-		a = b;
-		b = c;
-	}
-
-	for (i = 0; i <= strlen(b); i++) {
-		a[i] ^= b[i];
-	}
-
-	return a;
-}
-
-string string_nand(string a, string b)
-{
-	int lim;
-	int i;
-
-	lim = strlen(a);
-
-	if (lim > strlen(b)) {
-		lim = strlen(b);
-	}
-
-	for (i = 0; i < lim; i++) {
-		a[i] &= ~b[i];
-	}
-
-	return a;
 }
 
 string string_patch(string canvas, string brush, int coff, int blen)
