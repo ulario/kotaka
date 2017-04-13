@@ -21,32 +21,7 @@
 #include <type.h>
 
 inherit SECOND_AUTO;
-inherit "/lib/tier";
-inherit "/lib/string/replace";
-
-string quote_unescape(string input)
-{
-	input = replace(input, "\\t", "\t");
-	input = replace(input, "\\r", "\r");
-	input = replace(input, "\\n", "\n");
-	input = replace(input, "\\\"", "\"");
-	input = replace(input, "\\0", "\000");
-	input = replace(input, "\\\\", "\\");
-
-	return input;
-}
-
-string quote_escape(string input)
-{
-	input = replace(input, "\\", "\\\\");
-	input = replace(input, "\000", "\\0");
-	input = replace(input, "\"", "\\\"");
-	input = replace(input, "\n", "\\n");
-	input = replace(input, "\r", "\\r");
-	input = replace(input, "\t", "\\t");
-
-	return input;
-}
+inherit "system/escape";
 
 string mixed_sprint(mixed data, varargs mapping seen)
 {
