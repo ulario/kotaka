@@ -25,7 +25,6 @@
 #include <kotaka/paths/system.h>
 
 inherit SECOND_AUTO;
-inherit LIB_SYSTEM;
 
 /* private functions */
 
