@@ -1,0 +1,22 @@
+#!/bin/bash
+
+1>&2
+
+cd ~/git/kotaka
+
+rm -f state/swap
+
+if [ -f state/snapshot ]
+then
+	if [ -f state/snapshot.old ]
+	then
+		echo "--- DGD hotbooting ---"
+		exec ~/bin/dgd kotaka.dgd state/snapshot state/snapshot.old
+	else
+		echo "--- DGD hotbooting ---"
+		exec ~/bin/dgd kotaka.dgd state/snapshot
+	fi
+else
+	echo "+++ Aborting hotboot (missing snapshot) +++"
+	exit 2
+fi
