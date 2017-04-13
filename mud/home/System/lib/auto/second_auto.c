@@ -29,7 +29,6 @@ inherit "catalog";
 inherit "object";
 inherit "object_guard";
 inherit "touch";
-inherit "list";
 
 static void dump_state(varargs int incr)
 {
