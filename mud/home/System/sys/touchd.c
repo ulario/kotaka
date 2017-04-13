@@ -30,7 +30,6 @@
 inherit SECOND_AUTO;
 
 object queue;	/* objects with outstanding upgrades needing to be bumped */
-object patch;	/* ([ oindex: patch functions ]) */
 
 int hqueue;
 
@@ -87,58 +86,4 @@ static void process(varargs int time)
 	if (obj) {
 		obj->_F_dummy();
 	}
-}
-
-/* flopover */
-
-void reboot()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	PATCHD->reboot();
-}
-
-object give_patch()
-{
-	ACCESS_CHECK(previous_program() == PATCHD);
-
-	if (patch) {
-		patch->grant_access(find_object(PATCHD), FULL_ACCESS);
-
-		return patch;
-	}
-}
-
-void clear_patch()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	patch = nil;
-}
-
-string *query_patches(int oindex)
-{
-	return PATCHD->query_patches(oindex);
-}
-
-void clear_patches(int oindex)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	PATCHD->clear_patches(oindex);
-}
-
-void add_patches(string path, string *patches)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	PATCHD->add_patches(path, patches);
-}
-
-void patch_tick(string path, int oindex, string *patches, varargs mixed *junk...)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	PATCHD->takeover();
-	PATCHD->patch_tick(path, oindex, patches);
 }

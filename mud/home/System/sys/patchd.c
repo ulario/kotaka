@@ -33,19 +33,6 @@ static void nuke_object(object obj)
 	destruct_object(obj);
 }
 
-atomic void takeover()
-{
-	object obj;
-
-	ACCESS_CHECK(SYSTEM());
-
-	if (obj = TOUCHD->give_patch()) {
-		TOUCHD->clear_patch();
-		patch = obj;
-		patch->ungrant_access(find_object(TOUCHD));
-	}
-}
-
 private void queue_patches(int oindex, string *patches)
 {
 	string *old;
@@ -93,8 +80,6 @@ void patch_tick(string path, int oindex, string *patches, varargs mixed *junk...
 
 string *query_patches(int oindex)
 {
-	takeover();
-
 	if (patch) {
 		return patch->query_element(oindex);
 	}
@@ -103,8 +88,6 @@ string *query_patches(int oindex)
 void clear_patches(int oindex)
 {
 	ACCESS_CHECK(SYSTEM());
-
-	takeover();
 
 	if (patch) {
 		patch->set_element(oindex, nil);
@@ -116,8 +99,6 @@ void add_patches(string path, string *patches)
 	int oindex;
 
 	ACCESS_CHECK(SYSTEM());
-
-	takeover();
 
 	SUSPENDD->suspend_system();
 	SUSPENDD->queue_work("patch_tick",
