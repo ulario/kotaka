@@ -17,5 +17,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/system.h>
 
-inherit "~System/lib/system/replace";
+inherit SECOND_AUTO;
+
+string replace(string input, string from, string to)
+{
+	string *arr;
+
+	arr = explode(from + input + from, from);
+
+	return implode(arr, to);
+}
