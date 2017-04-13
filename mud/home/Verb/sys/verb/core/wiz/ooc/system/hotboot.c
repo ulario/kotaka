@@ -40,7 +40,7 @@ void main(object actor, mapping roles)
 
 	send_out("Hotbooting...\n");
 
-	proxy->dump_state();
+	proxy->dump_state(1);
 	proxy->shutdown(1);
 
 	send_out("Hotboot scheduled\n");
