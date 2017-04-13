@@ -50,5 +50,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	query_ustate()->push_state(query_user()->create_ustate("movie/" + demo));
+	query_ustate()->push_state(query_user()->clone_ustate("movie/" + demo));
 }
