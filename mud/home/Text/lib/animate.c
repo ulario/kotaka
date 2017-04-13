@@ -129,11 +129,14 @@ static void frame()
 	do_frame(diff);
 }
 
+void pre_end()
+{
+	query_user()->set_mode(MODE_ECHO);
+}
+
 void end()
 {
 	ACCESS_CHECK(previous_object() == query_user());
-
-	query_user()->set_mode(MODE_ECHO);
 
 	remove_call_out(callout);
 
