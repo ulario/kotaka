@@ -29,7 +29,6 @@
 #define FILTERD		(USR_DIR + "/System/sys/filterd")
 #define INITD		(USR_DIR + "/System/initd")
 #define KERNELD		(USR_DIR + "/System/sys/kerneld")
-#define LISTD		(USR_DIR + "/System/sys/listd")
 #define LOGD		(USR_DIR + "/System/sys/logd")
 #define MODULED		(USR_DIR + "/System/sys/moduled")
 #define OBJECTD		(USR_DIR + "/System/sys/objectd")
