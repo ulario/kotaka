@@ -22,6 +22,7 @@
 #include <type.h>
 
 inherit LIB_SYSTEM;
+inherit "/lib/time";
 
 mixed deep_copy(mixed in, varargs mapping dupes)
 {
@@ -152,18 +153,4 @@ void gather_inheriters(int oindex, object hits)
 			gather_inheriters(lib, hits);
 		}
 	}
-}
-
-int idelay(int stamp, int interval, int offset)
-{
-	int goal;
-
-	goal = stamp;
-	goal -= (goal + interval - offset) % interval;
-
-	if (goal <= stamp) {
-		goal += interval;
-	}
-
-	return goal - stamp;
 }
