@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+inherit "char";
+
 string trim_whitespace(string str)
 {
 	int start, end;
