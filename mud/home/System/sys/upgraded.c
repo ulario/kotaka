@@ -56,26 +56,6 @@ void upgrade_system()
 atomic void upgrade_system_2()
 {
 	ACCESS_CHECK(SYSTEM());
-
-	destruct_object(LIB_INITD);
-
-	compile_object(PROGRAM_INFO);
-	compile_object(PROGRAMD);
-	compile_object(OBJECTD);
-
-	compile_object(TOUCHD);
-	compile_object(PATCHD);
-
-	destruct_object("~/lib/auto/touch");
-
-	SUSPENDD->queue_work("upgrade_system_3");
-}
-
-void upgrade_system_3()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	MODULED->upgrade_modules();
 }
 
 static void self_destruct()
