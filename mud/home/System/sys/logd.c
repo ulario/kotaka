@@ -27,10 +27,12 @@
 #include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;
+inherit "~/lib/system/list";
 
 mapping facilities;
 string timestamp;
 mapping buffers;
+
 /* buffers: ([ filename: header ]) */
 /* header: ({ first, last }) */
 /* node: ({ prev, text, next }) */
@@ -141,7 +143,7 @@ private string timestamp()
 
 private void append_node(string file, string fragment)
 {
-	mixed *header;
+	mixed **list;
 	mixed *node;
 	int max;
 	int len;
@@ -150,14 +152,11 @@ private void append_node(string file, string fragment)
 		buffers = ([ ]);
 	}
 
-	header = buffers[file];
+	list = buffers[file];
 
-	if (!header) {
-		node = ({ nil, "", nil });
-		header = ({ node, node });
-		buffers[file] = header;
-	} else {
-		node = header[1];
+	if (!list) {
+		list = ({ nil, nil });
+		buffers[file] = list;
 	}
 
 	max = status(ST_STRSIZE);
@@ -166,9 +165,14 @@ private void append_node(string file, string fragment)
 		max = 4096;
 	}
 
+	if (list_empty(list)) {
+		list_push_front(list, "");
+	}
+
 	while (len = strlen(fragment)) {
 		int spare;
 
+		node = list_back_node(list);
 		spare = max - strlen(node[1]);
 
 		if (spare >= len) {
@@ -176,17 +180,12 @@ private void append_node(string file, string fragment)
 
 			return;
 		} else {
-			mixed *newnode;
-
 			if (spare > 0) {
 				node[1] += fragment[0 .. spare - 1];
 				fragment = fragment[spare ..];
 			}
 
-			newnode = ({ node, "", nil });
-			node[2] = newnode;
-			header[1] = newnode;
-			node = newnode;
+			list_push_back(list, "");
 		}
 	}
 }
@@ -212,39 +211,37 @@ private void write_logfile(string file, string message)
 
 private void write_node(string base)
 {
-	mixed *header;
+	mixed **list;
 	mixed *node;
+	mixed *info;
 
-	header = buffers[base];
-	node = header[0];
+	list = buffers[base];
 
-	{
-		mixed *info;
+	info = SECRETD->file_info("logs/" + base + ".log");
 
-		info = SECRETD->file_info("logs/" + base + ".log");
-
-		if (info && info[0] >= 1 << 30) {
-			SECRETD->rename_file("logs/" + base + ".dir", "logs/" + base + ".dir.old");
-			SECRETD->make_dir("logs/" + base + ".dir");
-			SECRETD->rename_file("logs/" + base + ".dir.old", "logs/" + base + ".dir/old.dir");
-			SECRETD->rename_file("logs/" + base + ".log", "logs/" + base + ".dir/old.log");
-		}
+	if (info && info[0] >= 1 << 30) {
+		SECRETD->rename_file("logs/" + base + ".dir", "logs/" + base + ".dir.old");
+		SECRETD->make_dir("logs/" + base + ".dir");
+		SECRETD->rename_file("logs/" + base + ".dir.old", "logs/" + base + ".dir/old.dir");
+		SECRETD->rename_file("logs/" + base + ".log", "logs/" + base + ".dir/old.log");
 	}
 
 	catch {
 		SECRETD->make_dir(".");
 		SECRETD->make_dir("logs");
-		SECRETD->write_file("logs/" + base + ".log", node[1]);
+		SECRETD->write_file("logs/" + base + ".log", list_front(list));
 	} : {
 		DRIVER->message("Error writing to " + base + "\n");
 	}
 
-	node[0] = nil;
+	list_pop_front(list);
 
-	if (node[2]) {
-		header[0] = node[2];
-	} else {
+	if (list_empty(list)) {
 		buffers[base] = nil;
+
+		if (!map_sizeof(buffers)) {
+			buffers = nil;
+		}
 	}
 }
 
