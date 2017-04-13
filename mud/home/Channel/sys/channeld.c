@@ -28,14 +28,14 @@
 
 #define SYSTEM_CHANNELS ({ "compile", "debug", "error", "system", "trace" })
 
+inherit "/lib/linked_list";
+
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
 mapping buffers;
 
-/* buffers: ([ channel name: header ]) */
-/* header: ({ first, last }) */
-/* node: ({ prev, content, next }) */
+/* buffers: ([ channel name: linked list ]) */
 
 void configure_channels();
 void save();
@@ -72,7 +72,7 @@ private void schedule()
 
 private void append_node(string channel, string fragment)
 {
-	mixed *header;
+	mixed **list;
 	mixed *node;
 	int max;
 	int len;
@@ -81,14 +81,15 @@ private void append_node(string channel, string fragment)
 		buffers = ([ ]);
 	}
 
-	header = buffers[channel];
+	list = buffers[channel];
 
-	if (!header) {
-		node = ({ nil, "", nil });
-		header = ({ node, node });
-		buffers[channel] = header;
-	} else {
-		node = header[1];
+	if (!list) {
+		list = ({ nil, nil });
+		buffers[channel] = list;
+	}
+
+	if (list_empty(list)) {
+		list_push_back(list, "");
 	}
 
 	max = status(ST_STRSIZE);
@@ -98,7 +99,10 @@ private void append_node(string channel, string fragment)
 	}
 
 	while (len = strlen(fragment)) {
+		mixed *node;
 		int spare;
+
+		node = list_back_node(list);
 
 		spare = max - strlen(node[1]);
 
@@ -114,49 +118,35 @@ private void append_node(string channel, string fragment)
 				fragment = fragment[spare ..];
 			}
 
-			newnode = ({ node, "", nil });
-			node[2] = newnode;
-			header[1] = newnode;
-			node = newnode;
+			list_push_back(list, "");
 		}
 	}
 }
 
 private void write_node(string channel)
 {
-	mixed *header;
-	mixed *node;
+	mixed **list;
+	mixed *info;
 
-	header = buffers[channel];
-	node = header[0];
+	list = buffers[channel];
 
-	{
-		mixed *info;
+	info = SECRETD->file_info("logs/" + channel + ".log");
 
-		info = SECRETD->file_info("logs/" + channel + ".log");
-
-		if (info && info[0] >= 1 << 30) {
-			SECRETD->rename_file("logs/" + channel + ".dir", "logs/" + channel + ".dir.old");
-			SECRETD->make_dir("logs/" + channel + ".dir");
-			SECRETD->rename_file("logs/" + channel + ".dir.old", "logs/" + channel + ".dir/old.dir");
-			SECRETD->rename_file("logs/" + channel + ".log", "logs/" + channel + ".dir/old.log");
-		}
+	if (info && info[0] >= 1 << 30) {
+		SECRETD->rename_file("logs/" + channel + ".dir", "logs/" + channel + ".dir.old");
+		SECRETD->make_dir("logs/" + channel + ".dir");
+		SECRETD->rename_file("logs/" + channel + ".dir.old", "logs/" + channel + ".dir/old.dir");
+		SECRETD->rename_file("logs/" + channel + ".log", "logs/" + channel + ".dir/old.log");
 	}
 
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("logs");
-	SECRETD->write_file("logs/" + channel + ".log", node[1]);
+	SECRETD->write_file("logs/" + channel + ".log", list_front(list));
 
-	node[0] = nil;
+	list_pop_front(list);
 
-	if (node[2]) {
-		header[0] = node[2];
-	} else {
+	if (list_empty(list)) {
 		buffers[channel] = nil;
-	}
-
-	if (!map_sizeof(buffers)) {
-		buffers = ([ ]);
 	}
 }
 
