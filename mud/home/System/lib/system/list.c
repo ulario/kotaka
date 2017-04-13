@@ -39,7 +39,7 @@ static mixed list_back(mixed **list)
 	}
 }
 
-static void mixed *list_front_node(mixed **list)
+static mixed *list_front_node(mixed **list)
 {
 	if (list[0]) {
 		return list[0];
@@ -48,7 +48,7 @@ static void mixed *list_front_node(mixed **list)
 	}
 }
 
-static void mixed *list_back_node(mixed **list)
+static mixed *list_back_node(mixed **list)
 {
 	if (list[1]) {
 		return list[1];
@@ -57,12 +57,12 @@ static void mixed *list_back_node(mixed **list)
 	}
 }
 
-static void mixed *list_prev_node(mixed *node)
+static mixed *list_prev_node(mixed *node)
 {
 	return node[0];
 }
 
-static void mixed *list_next_node(mixed *node)
+static mixed *list_next_node(mixed *node)
 {
 	return node[1];
 }
@@ -96,6 +96,7 @@ static void list_push_back(mixed **list, mixed data)
 		list[0] = list[1] = node;
 	}
 }
+
 static void list_pop_front(mixed **list)
 {
 	if (!list[0]) {
