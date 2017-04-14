@@ -50,26 +50,3 @@ Deprecation of multiple archetypes
 
 	To prepare for this change any object with multiple archetypes
 	should be reworked.
-
-Rename in the toucher/patcher API, data corruption fix
-
-	It's been found that using call_touch is useful in areas besides
-	object upgrading, so a few changes have been made:
-
-	First, "toucher" has been renamed to "patcher" to reflect its
-	true purpose, and objects marked with call_touch manually will
-	retain their touched status.
-
-	Second, due to untraceable data corruption found to be provoked by
-	previous code, it has been decided that a clean rebuild of the
-	program database will be required.
-
-	To prepare for this, please:
-
-	1.  Make sure all existing objects are accounted for, either by a
-	corresponding LPC source file or otherwise noted.
-
-	2.  Run the system upgrade to cause the program database to be
-	wiped.
-
-	3.  Reset the object database with oreset.
