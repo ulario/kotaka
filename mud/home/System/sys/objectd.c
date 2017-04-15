@@ -26,9 +26,11 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <status.h>
+#include <type.h>
 
 inherit SECOND_AUTO;
 inherit LIB_SYSTEM;
+inherit "~/lib/system/list";
 
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
@@ -37,11 +39,29 @@ mapping old_inherits;	/* list of old inherits */
 int is_initd;		/* current compilation is for an initd */
 int is_kernel;		/* current compilation is for a kernel object */
 int is_auto;		/* current compilation is for a second auto support library */
-object upgrades;	/* list of objects needing upgrade */
+mixed upgrades;		/* list of objects needing upgrade */
 
 static void create()
 {
 	DRIVER->set_object_manager(this_object());
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (typeof(upgrades) == T_OBJECT) {
+		mixed **list;
+
+		list = ({ nil, nil });
+
+		while (!upgrades->empty()) {
+			list_push_back(list, upgrades->query_front());
+			upgrades->pop_front();
+		}
+
+		upgrades = list;
+	}
 }
 
 /* private */
@@ -160,8 +180,8 @@ void upgrade_objects()
 		string path;
 		string *patches;
 
-		({ path, patches }) = upgrades->query_back();
-		upgrades->pop_back();
+		({ path, patches }) = typeof(upgrades) == T_OBJECT ? upgrades->query_back() : list_back(upgrades);
+		typeof(upgrades) == T_OBJECT ? upgrades->pop_back() : list_pop_back(upgrades);
 
 		if (sizeof(patches)) {
 			PATCHD->add_patches(path, patches);
@@ -171,7 +191,7 @@ void upgrade_objects()
 			path->upgrade();
 		}
 
-		if (upgrades->empty()) {
+		if (typeof(upgrades) == T_OBJECT ? upgrades->empty() : list_empty(upgrades)) {
 			upgrades = nil;
 		} else {
 			SUSPENDD->queue_work("upgrade_objects");
@@ -315,11 +335,10 @@ void compile(string owner, object obj, string *source, string inherited ...)
 				SUSPENDD->suspend_system();
 				SUSPENDD->queue_work("upgrade_objects");
 
-				upgrades = new_object(BIGSTRUCT_DEQUE_LWO);
-				upgrades->claim();
+				upgrades = ({ nil, nil });
 			}
 
-			upgrades->push_back( ({ path, patches }) );
+			typeof(upgrades) == T_OBJECT ? upgrades->push_back( ({ path, patches }) ) : list_push_back(upgrades, ({ path, patches }) );
 
 			catch {
 				obj->upgrading();
