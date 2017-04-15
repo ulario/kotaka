@@ -50,7 +50,7 @@ Signals are sent to report changes in the status of modules.
 
 Important:
 
-	Signals are completely asynchronous and can be sent at any time
+	Signals are completely asynchronous and can be sent at any time.
 
 shutdown
 
@@ -60,7 +60,7 @@ shutdown
 	made to rely on the module or its services.
 
 	This signal is sent before the module's shutdown or kill process
-	begins
+	begins.
 
 boot
 
