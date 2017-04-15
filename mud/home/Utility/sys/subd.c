@@ -23,6 +23,7 @@
 
 inherit LIB_SYSTEM;
 inherit "/lib/time";
+inherit "/lib/tier";
 
 mixed deep_copy(mixed in, varargs mapping dupes)
 {
