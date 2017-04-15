@@ -185,7 +185,7 @@ void load_world_name(int i)
 			SUSPENDD->queue_work("load_world_set", objlist->query_size() - 1);
 		}
 	} : {
-		LOGD->post_message("system", LOG_INFO, "World load aborted");
+		LOGD->post_message("system", LOG_INFO, "World load aborted parsing data for object " + i);
 	}
 }
 
@@ -208,7 +208,7 @@ void load_world_set(int i)
 			LOGD->post_message("system", LOG_INFO, "World loaded");
 		}
 	} : {
-		LOGD->post_message("system", LOG_INFO, "World load aborted");
+		LOGD->post_message("system", LOG_INFO, "World load aborted loading data for object " + i);
 	}
 }
 
