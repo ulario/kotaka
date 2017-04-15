@@ -21,39 +21,6 @@
 #include <type.h>
 #include <trace.h>
 
-static mixed call_other(mixed obj, string func, varargs mixed args ...)
-{
-	string path;
-
-	if (!this_object()) {
-		error("Cannot call_other from destructed object");
-	}
-
-	switch(typeof(obj)) {
-	case T_STRING:
-		path = obj;
-		obj = find_object(path);
-		break;
-
-	case T_OBJECT:
-		path = object_name(obj);
-		break;
-
-	default:
-		error("Bad argument 1 for function call_other (type mismatch)");
-	}
-
-	if (!obj) {
-		error("Bad argument 1 for function call_other (target object " + path + " does not exist)");
-	}
-
-	if (!function_object(func, obj)) {
-		error("Call to undefined function " + func + " in object " + path);
-	}
-
-	return ::call_other(obj, func, args ...);
-}
-
 static string previous_program(varargs int n)
 {
 	int idx;
@@ -103,4 +70,37 @@ static object calling_object(varargs int steps)
 	trace = call_trace();
 
 	return find_object(trace[sizeof(trace) - (3 + steps)][TRACE_OBJNAME]);
+}
+
+static mixed call_other(mixed obj, string func, varargs mixed args ...)
+{
+	string path;
+
+	if (!this_object()) {
+		error("Cannot call_other from destructed object");
+	}
+
+	switch(typeof(obj)) {
+	case T_STRING:
+		path = obj;
+		obj = find_object(path);
+		break;
+
+	case T_OBJECT:
+		path = object_name(obj);
+		break;
+
+	default:
+		error("Bad argument 1 for function call_other (type mismatch)");
+	}
+
+	if (!obj) {
+		error("Bad argument 1 for function call_other (target object " + path + " does not exist)");
+	}
+
+	if (!function_object(func, obj)) {
+		error("Call to undefined function " + func + " in object " + path + " by program " + previous_program());
+	}
+
+	return ::call_other(obj, func, args ...);
 }
