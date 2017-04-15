@@ -3,6 +3,7 @@ obj = /<([^>\\]|\\.)*>/
 int = /\-?[0-9]+/
 flt = /\-?[0-9]+\.[0-9]+([Ee][-\+]?[0-9]+)?/
 nil = /nil/
+dup = /@[0-9]+/
 whitespace = / +/
 whitespace = /	+/
 whitespace = /
@@ -16,6 +17,7 @@ value: obj ? parse_obj
 value: lwo
 value: arr
 value: map
+value: dup ? parse_nil
 
 arr: '({' '})' ? make_empty_arr
 map: '([' '])' ? make_empty_map
