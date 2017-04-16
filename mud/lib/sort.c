@@ -59,7 +59,7 @@ void qsort(mixed arr, int begin, int end, varargs string compfunc)
 			le = (type == T_ARRAY) ? arr[low] : arr->query_element(low);
 
 			if (compfunc) {
-				sign = call_other(previous_program() == SORTD ? previous_object() : this_object(), compfunc, le, pivot);
+				sign = call_other(object_name(this_object()) == SORTD ? previous_object() : this_object(), compfunc, le, pivot);
 			} else if (le > pivot) {
 				sign = 1;
 			} else {
