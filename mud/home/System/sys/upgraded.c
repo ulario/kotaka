@@ -56,6 +56,15 @@ void upgrade_system()
 atomic void upgrade_system_2()
 {
 	ACCESS_CHECK(SYSTEM());
+
+	compile_object(OBJECTD);
+
+	SUSPENDD->queye_work("upgrade_system_3");
+}
+
+atomic void upgrade_system_3()
+{
+	MODULED->upgrade_modules();
 }
 
 static void self_destruct()
