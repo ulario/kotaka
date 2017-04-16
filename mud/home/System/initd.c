@@ -216,44 +216,8 @@ void prepare_reboot()
 	MODULED->prepare_reboot();
 }
 
-void reboot()
+private void reboot_common()
 {
-	ACCESS_CHECK(KERNEL());
-
-	check_config();
-	check_versions();
-
-	clear_admin();
-	configure_rsrc();
-	configure_logging();
-
-	catch {
-		SYSTEM_USERD->reboot();
-	}
-	catch {
-		CALLOUTD->reboot();
-	}
-	catch {
-		ACCESSD->restore();
-	}
-	catch {
-		DUMPD->reboot();
-	}
-	catch {
-		PATCHD->reboot();
-	}
-	catch {
-		DRIVER->fix_filequota();
-	}
-	catch {
-		MODULED->reboot();
-	}
-}
-
-void hotboot()
-{
-	ACCESS_CHECK(KERNEL());
-
 	check_config();
 	check_versions();
 
@@ -270,13 +234,41 @@ void hotboot()
 		configure_logging();
 	}
 	catch {
-		SYSTEM_USERD->hotboot();
-	}
-	catch {
 		CALLOUTD->reboot();
 	}
 	catch {
 		PATCHD->reboot();
+	}
+	catch {
+		DUMPD->reboot();
+	}
+}
+
+void reboot()
+{
+	ACCESS_CHECK(KERNEL());
+
+	reboot_common();
+
+	catch {
+		SYSTEM_USERD->reboot();
+	}
+	catch {
+		ACCESSD->restore();
+	}
+	catch {
+		MODULED->reboot();
+	}
+}
+
+void hotboot()
+{
+	ACCESS_CHECK(KERNEL());
+
+	reboot_common();
+
+	catch {
+		SYSTEM_USERD->hotboot();
 	}
 	catch {
 		MODULED->hotboot();
