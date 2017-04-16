@@ -59,7 +59,7 @@ atomic void upgrade_system_2()
 
 	compile_object(OBJECTD);
 
-	SUSPENDD->queye_work("upgrade_system_3");
+	SUSPENDD->queue_work("upgrade_system_3");
 }
 
 atomic void upgrade_system_3()
