@@ -19,6 +19,8 @@
  */
 #include <kotaka/privilege.h>
 #include <status.h>
+#include <kernel/rsrc.h>
+#include <kotaka/paths/system.h>
 
 private int enough_free_callouts()
 {
@@ -61,6 +63,10 @@ static int find_call_out(string func)
 
 static int call_out(string func, mixed delay, mixed args...)
 {
+	int handle;
+	mixed *rsrcp, rsrcc;
+	string owner;
+
 	if (!this_object()) {
 		error("Cannot call_out from destructed object");
 	}
@@ -73,5 +79,21 @@ static int call_out(string func, mixed delay, mixed args...)
 		error("Too many callouts");
 	}
 
-	return ::call_out(func, delay, args...);
+	handle = ::call_out(func, delay, args...);
+
+	owner = query_owner();
+
+	if (KERNELD->query_rsrc("callouts peak")) {
+	}
+
+	rsrcc = KERNELD->rsrc_get(owner, "callouts");
+	rsrcp = KERNELD->rsrc_get(owner, "callouts peak");
+
+	if (rsrcp[RSRC_USAGE] < rsrcc[RSRC_USAGE]) {
+		KERNELD->rsrc_incr(owner, "callouts peak", nil, rsrcc[RSRC_USAGE] - rsrcp[RSRC_USAGE]);
+	}
+
+	KERNELD->rsrc_incr(owner, "callouts usage", nil, 1);
+
+	return handle;
 }

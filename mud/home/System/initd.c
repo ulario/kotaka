@@ -69,6 +69,8 @@ static void create()
 
 		load_object(KERNELD);		/* needed for LogD */
 		configure_klib();
+		configure_rsrc();
+		set_limits();
 
 		load_object(SECRETD);		/* needed for LogD */
 		load_object(LOGD);		/* we need to log any error messages */
@@ -80,6 +82,8 @@ static void create()
 		load_object(SUSPENDD);		/* suspends system */
 
 		SECRETD->remove_file("logs/session.log");
+
+		configure_logging();
 
 		call_out("boot", 0);
 	} : {
@@ -104,11 +108,6 @@ static void boot()
 		LOGD->post_message("system", LOG_INFO, "------------------");
 
 		KERNELD->set_global_access("System", 1);
-
-		set_limits();
-
-		configure_rsrc();
-		configure_logging();
 
 		load_object(MODULED);
 
@@ -296,6 +295,9 @@ void configure_rsrc()
 	KERNELD->set_rsrc("stack", 50, 0, 0);
 	KERNELD->set_rsrc("ticks", 250000, 0, 0);
 	KERNELD->set_rsrc("tick usage", -1, 1, 60);
+
+	KERNELD->set_rsrc("callouts peak", -1, 0, 0);
+	KERNELD->set_rsrc("callouts usage", -1, 1, 60);
 }
 
 void configure_logging()
