@@ -26,6 +26,7 @@
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
+inherit "/lib/string/replace";
 
 mapping connections;	/* all connections */
 mapping users;		/* all logged in user objects */
@@ -149,6 +150,8 @@ string query_banner(object LIB_CONN connection)
 		};
 
 		splash++;
+
+		ansi = replace(ansi, "\n", "\r\n");
 
 		return ansi;
 	}
