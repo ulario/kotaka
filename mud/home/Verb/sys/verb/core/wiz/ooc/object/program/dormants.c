@@ -21,6 +21,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "/lib/linked_list";
 
 string *query_parse_methods()
 {
@@ -29,7 +30,7 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	object arr;
+	mixed **list;
 	int sz, i;
 
 	if (query_user()->query_class() < 2) {
@@ -37,16 +38,17 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	arr = SYSTEM_SUBD->query_dormant();
+	list = SYSTEM_SUBD->query_dormant();
 
-	if (!(sz = arr->query_size())) {
+	if (list_empty(list)) {
 		send_out("There are no dormant LPC source files.\n");
 		return;
 	}
 
 	send_out("These LPC files are not compiled:\n");
 
-	for (i = 0; i < sz; i++) {
-		send_out(arr->query_element(i) + ".c\n");
+	while (!list_empty(list)) {
+		send_out(list_front(list) + ".c\n");
+		list_pop_front(list);
 	}
 }

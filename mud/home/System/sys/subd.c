@@ -25,10 +25,11 @@
 #include <kotaka/paths/system.h>
 
 inherit SECOND_AUTO;
+inherit "~/lib/system/list";
 
 /* private functions */
 
-private void scan_objects(string path, object libqueue, object objqueue, object notqueue)
+private void scan_objects(string path, mixed **libs, mixed **objs, mixed **nots)
 {
 	string *names;
 	int *sizes;
@@ -52,7 +53,7 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 		name = names[i];
 
 		if (sizes[i] == -2) {
-			scan_objects(path + name, libqueue, objqueue, notqueue);
+			scan_objects(path + name, libs, objs, nots);
 			continue;
 		}
 
@@ -66,19 +67,19 @@ private void scan_objects(string path, object libqueue, object objqueue, object 
 			status = status(opath);
 
 			if (!status) {
-				if (notqueue) {
-					notqueue->push_back(opath);
+				if (nots) {
+					list_push_back(nots, opath);
 				}
 				continue;
 			}
 
 			if (sscanf(opath, "%*s" + INHERITABLE_SUBDIR)) {
-				if (libqueue) {
-					libqueue->push_back(opath);
+				if (libs) {
+					list_push_back(libs, opath);
 				}
 			} else {
-				if (objqueue) {
-					objqueue->push_back(opath);
+				if (objs) {
+					list_push_back(objs, opath);
 				}
 			}
 		}
@@ -151,9 +152,7 @@ void recompile_kernel_library()
 void recompile_everything()
 {
 	object indices;
-	object libqueue;
-	object objqueue;
-	object initdqueue;
+	mixed **libs, **objs, **initds;
 
 	int i;
 	int sz;
@@ -162,12 +161,9 @@ void recompile_everything()
 
 	ASSERT(find_object(PROGRAMD));
 
-	libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-	libqueue->claim();
-	objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-	objqueue->claim();
-	initdqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-	initdqueue->claim();
+	libs = ({ nil, nil });
+	objs = ({ nil, nil });
+	initds = ({ nil, nil });
 
 	rlimits(0; -1) {
 		indices = PROGRAMD->query_program_indices();
@@ -183,39 +179,39 @@ void recompile_everything()
 			path = pinfo->query_path();
 
 			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
-				libqueue->push_back(path);
+				list_push_back(libs, path);
 			} else if (sscanf(path, USR_DIR + "/%*s/initd") || path == "/initd") {
-				initdqueue->push_back(path);
+				list_push_back(initds, path);
 			} else {
-				objqueue->push_back(path);
+				list_push_back(objs, path);
 			}
 		}
 
-		while (!libqueue->empty()) {
+		while (!list_empty(libs)) {
 			string path;
 
-			path = libqueue->query_back();
-			libqueue->pop_back();
+			path = list_back(libs);
+			list_pop_back(libs);
 
 			destruct_object(path);
 		}
 
-		while (!initdqueue->empty()) {
+		while (!list_empty(initds)) {
 			string path;
 
-			path = initdqueue->query_back();
-			initdqueue->pop_back();
+			path = list_back(initds);
+			list_pop_back(initds);
 
 			catch {
 				compile_object(path);
 			}
 		}
 
-		while (!objqueue->empty()) {
+		while (!list_empty(objs)) {
 			string path;
 
-			path = objqueue->query_back();
-			objqueue->pop_back();
+			path = list_back(objs);
+			list_pop_back(objs);
 
 			catch {
 				compile_object(path);
@@ -256,23 +252,22 @@ void discover_objects()
 	ACCESS_CHECK(PRIVILEGED());
 
 	rlimits(0; -1) {
-		object libqueue;
-		object objqueue;
-		int sz;
+		mixed *libs;
+		mixed *objs;
 
-		libqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-		libqueue->claim();
-		objqueue = new_object(BIGSTRUCT_ARRAY_LWO);
-		objqueue->claim();
+		libs = ({ nil, nil });
+		objs = ({ nil, nil });
 
-		scan_objects("/", libqueue, objqueue, nil);
+		scan_objects("/", libs, objs, nil);
 
-		for (sz = libqueue->query_size(); --sz >= 0; ) {
-			destruct_object(libqueue->query_element(sz));
+		while (!list_empty(libs)) {
+			destruct_object(list_back(libs));
+			list_pop_back(libs);
 		}
 
-		for (sz = objqueue->query_size(); --sz >= 0; ) {
-			compile_object(objqueue->query_element(sz));
+		while (!list_empty(objs)) {
+			compile_object(list_back(objs));
+			list_pop_back(objs);
 		}
 	}
 }
@@ -320,15 +315,13 @@ atomic void full_reset()
 	}
 }
 
-object query_dormant()
+mixed **query_dormant()
 {
-	object notlist;
+	mixed **nots;
 
-	notlist = new_object(BIGSTRUCT_ARRAY_LWO);
-	notlist->claim();
-	notlist->grant_access(previous_object(), READ_ACCESS);
+	nots = ({ nil, nil });
 
-	scan_objects("/", nil, nil, notlist);
+	scan_objects("/", nil, nil, nots);
 
-	return notlist;
+	return nots;
 }
