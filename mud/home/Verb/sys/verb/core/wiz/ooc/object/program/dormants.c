@@ -33,7 +33,7 @@ void main(object actor, mapping roles)
 	mixed **list;
 	int sz, i;
 
-	if (query_user()->query_class() < 2) {
+	if (query_user()->query_class() < 3) {
 		send_out("You do not have sufficient access rights to list dormants.\n");
 		return;
 	}
