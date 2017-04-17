@@ -21,6 +21,8 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/privilege.h>
 
+inherit "/lib/linked_list";
+
 void load_help();
 
 static void create()
@@ -37,7 +39,7 @@ static void load_helpfile(string dir, string entry)
 	);
 }
 
-static void load_helpdir(string dir, object cqueue, object tqueue)
+static void load_helpdir(string dir, mixed **clist, mixed **tlist)
 {
 	mixed **dirlist;
 	string *names;
@@ -59,34 +61,34 @@ static void load_helpdir(string dir, object cqueue, object tqueue)
 		entry = names[i];
 
 		if (sizes[i] == -2) {
-			cqueue->push_back(dir + "/" + entry);
+			list_push_back(clist, dir + "/" + entry);
 		} else if (sscanf(entry, "%s.hlp", entry)) {
-			tqueue->push_back( ({ dir, entry }) );
+			list_push_back(tlist, ({ dir, entry }) );
 		}
 	}
 }
 
-static void load_tick(object cqueue, object tqueue)
+static void load_tick(mixed **clist, mixed **tlist)
 {
-	if (!cqueue->empty()) {
+	if (!list_empty(clist)) {
 		string category;
 
-		category = cqueue->query_front();
-		cqueue->pop_front();
+		category = list_front(clist);
+		list_pop_front(clist);
 
-		load_helpdir(category, cqueue, tqueue);
+		load_helpdir(category, clist, tlist);
 
-		call_out("load_tick", 0, cqueue, tqueue);
-	} else if (!tqueue->empty()) {
+		call_out("load_tick", 0, clist, tlist);
+	} else if (!tlist->empty()) {
 		string dir;
 		string entry;
 
-		({ dir, entry }) = tqueue->query_front();
-		tqueue->pop_front();
+		({ dir, entry }) = list_front(tlist);
+		list_pop_front(tlist);
 
 		load_helpfile(dir, entry);
 
-		call_out("load_tick", 0, cqueue, tqueue);
+		call_out("load_tick", 0, clist, tlist);
 	}
 }
 
@@ -98,13 +100,10 @@ static void load_rootdir()
 	int sz;
 	int i;
 
-	object cqueue;
-	object tqueue;
+	mixed **clist, **tlist;
 
-	cqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	cqueue->claim();
-	tqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	tqueue->claim();
+	clist = ({ nil, nil });
+	tlist = ({ nil, nil });
 
 	dirlist = get_dir("~/data/help/*");
 
@@ -118,13 +117,13 @@ static void load_rootdir()
 		entry = names[i];
 
 		if (sizes[i] == -2) {
-			cqueue->push_back(entry);
+			list_push_back(clist, entry);
 		} else if (sscanf(entry, "%s.hlp", entry)) {
-			tqueue->push_back( ({ nil, entry }) );
+			list_push_back(tlist, ({ nil, entry }) );
 		}
 	}
 
-	call_out("load_tick", 0, cqueue, tqueue);
+	call_out("load_tick", 0, clist, tlist);
 }
 
 void load_help()
