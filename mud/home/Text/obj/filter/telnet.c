@@ -240,14 +240,13 @@ int login(string str)
 int receive_message(string str)
 {
 	string line;
+	int pushback;
 
 	if (str) {
 		inbuf += str;
-	} else {
-		set_mode(::receive_message(nil));
 	}
 
-	while (strlen(inbuf)) {
+	while (strlen(inbuf) && !pushback) {
 		string prefix, suffix;
 
 		if (sscanf(inbuf, "%s\377%s", prefix, suffix)) {
@@ -257,8 +256,8 @@ int receive_message(string str)
 				subbuf += prefix;
 			}
 
-			if (!strlen(suffix) || (suffix[0] != TELNET_IAC && strlen(suffix) < 2)) {
-				/* incomplete command, push back and wait for more input */
+			if (!strlen(suffix)) {
+				/* incomplete command */
 				inbuf = " ";
 				inbuf[0] = 255;
 				inbuf += suffix;
@@ -267,15 +266,25 @@ int receive_message(string str)
 
 			switch (suffix[0]) {
 			case TELNET_SB:
-				inbuf = suffix[2 ..];
-				process_sb(suffix[1]);
+			case TELNET_WILL:
+			case TELNET_WONT:
+			case TELNET_DO:
+			case TELNET_DONT:
+				if (strlen(suffix) < 2) {
+					/* incomplete command */
+					inbuf = " ";
+					inbuf[0] = 255;
+					inbuf += suffix;
+					pushback = TRUE;
+				}
 				break;
+			}
 
-			case TELNET_SE:
-				inbuf = suffix[1 ..];
-				process_se();
+			if (pushback) {
 				break;
+			}
 
+			switch (suffix[0]) {
 			case TELNET_WILL:
 				inbuf = suffix[2 ..];
 				process_will(suffix[1]);
@@ -294,6 +303,16 @@ int receive_message(string str)
 			case TELNET_DONT:
 				inbuf = suffix[2 ..];
 				process_dont(suffix[1]);
+				break;
+
+			case TELNET_SB:
+				inbuf = suffix[2 ..];
+				process_sb(suffix[1]);
+				break;
+
+			case TELNET_SE:
+				inbuf = suffix[1 ..];
+				process_se();
 				break;
 
 			case TELNET_IAC: /* escaped IAC means a literal 255 */
