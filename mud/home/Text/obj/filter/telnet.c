@@ -35,7 +35,8 @@ int echo_status;	/* echo is enabled */
 int subcode;		/* subneg. code */
 string subbuf;		/* subneg. buffer */
 
-int naws;
+int naws_pending;
+int naws_active;
 int naws_w;
 int naws_h;
 
@@ -51,9 +52,14 @@ static void create(int clone)
 	}
 }
 
+int query_naws_pending()
+{
+	return naws_pending;
+}
+
 int query_naws_active()
 {
-	return naws;
+	return naws_active;
 }
 
 int query_naws_width()
@@ -94,6 +100,12 @@ void send_do(int code)
 	out[1] = TELNET_DO;
 	out[2] = code;
 	::message(out);
+
+	switch(code) {
+	case 31:
+		naws_pending = 1;
+		break;
+	}
 }
 
 void send_dont(int code)
@@ -104,6 +116,13 @@ void send_dont(int code)
 	out[1] = TELNET_DONT;
 	out[2] = code;
 	::message(out);
+
+	switch(code) {
+	case 31:
+		naws_pending = 0;
+		naws_active = 0;
+		break;
+	}
 }
 
 void send_subnegotiation(int code, string subnegotiation)
@@ -125,11 +144,9 @@ private void do_subnegotiation()
 {
 	switch(subcode) {
 	case 31:
-		{
-			naws = 1;
-			naws_w = subbuf[1] + (subbuf[0] << 8);
-			naws_h = subbuf[3] + (subbuf[2] << 8);
-		}
+		naws_active = 1;
+		naws_w = subbuf[1] + (subbuf[0] << 8);
+		naws_h = subbuf[3] + (subbuf[2] << 8);
 		break;
 
 	default:
@@ -192,9 +209,8 @@ private void process_will(int code)
 	case 31:
 		/* client is offering to perform NAWS to set the screen size */
 		/* allow it */
-		if (!naws) {
+		if (!naws_pending) {
 			send_do(code);
-			break;
 		}
 		break;
 	default:
