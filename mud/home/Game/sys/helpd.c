@@ -79,7 +79,7 @@ static void load_tick(mixed **clist, mixed **tlist)
 		load_helpdir(category, clist, tlist);
 
 		call_out("load_tick", 0, clist, tlist);
-	} else if (!tlist->empty()) {
+	} else if (list_empty(tlist)) {
 		string dir;
 		string entry;
 
