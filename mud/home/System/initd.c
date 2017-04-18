@@ -85,6 +85,11 @@ static void create()
 
 		configure_logging();
 
+		/* temporary console logging until boot is completed */
+		LOGD->set_target("debug", 255, "driver");
+		LOGD->set_target("compile", 255, "driver");
+		LOGD->set_target("trace", 255, "driver");
+
 		call_out("boot", 0);
 	} : {
 		LOGD->flush();
@@ -152,6 +157,11 @@ static void boot_3()
 		booted = 1;
 
 		MODULED->boot_module(nil);
+
+		/* reset to default */
+		LOGD->set_target("debug", 0, "driver");
+		LOGD->set_target("compile", 63, "driver");
+		LOGD->set_target("trace", 0, "driver");
 	} : {
 		boot_error();
 		LOGD->flush();
@@ -311,7 +321,7 @@ void configure_logging()
 	/* don't log these to the console */
 	LOGD->set_target("debug", 0, "driver");
 	LOGD->set_target("compile", 63, "driver");
-	/* LOGD->set_target("trace", 0, "driver"); */
+	LOGD->set_target("trace", 0, "driver");
 
 	/* prevent default logging */
 	LOGD->set_target("debug", 255, "null");
