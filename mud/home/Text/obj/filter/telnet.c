@@ -30,7 +30,7 @@ string inbuf;		/* raw input buffer */
 string linebuf;		/* processed input waiting to be line-carved */
 
 int echo_pending;	/* we are waiting for a DO ECHO from the client */
-int echo_status;	/* echo is enabled */
+int echo_enabled;	/* echo is enabled */
 
 int subcode;		/* subneg. code */
 string subbuf;		/* subneg. buffer */
@@ -80,6 +80,16 @@ void send_will(int code)
 	out[1] = TELNET_WILL;
 	out[2] = code;
 	::message(out);
+
+	switch(code)
+	{
+	case 1:
+		if (echo_enabled) {
+			return;
+		}
+		echo_pending = 1;
+		break;
+	}
 }
 
 void send_wont(int code)
@@ -90,6 +100,14 @@ void send_wont(int code)
 	out[1] = TELNET_WONT;
 	out[2] = code;
 	::message(out);
+
+	switch(code)
+	{
+	case 1:
+		echo_enabled = 0;
+		echo_pending = 0;
+		break;
+	}
 }
 
 void send_do(int code)
@@ -167,17 +185,18 @@ private void process_do(int code)
 {
 	switch(code) {
 	case 1:
-		if (echo_status) {
+		if (echo_enabled) {
 			/* already "echoing", ignore */
 		} else if (echo_pending) {
 			/* acknowledging our own "will echo" */
 			echo_pending = 0;
-			echo_status = 1;
+			echo_enabled = 1;
 		} else {
 			/* client can't tell us what to do */
 			send_wont(code);
 		}
 		break;
+
 	default:
 		::message("Error: client requested unknown telnet option " + code + ", refusing.\r\n");
 		send_wont(code);
@@ -186,19 +205,19 @@ private void process_do(int code)
 
 private void process_dont(int code)
 {
-	send_wont(code);
-
 	switch(code) {
 	case 1:
 		/* honoring a dont is mandatory */
 		/* however, for security reasons, we cannot be silent about it */
-		if (echo_status) {
+		if (echo_enabled) {
 			::message("Warning: Your client revoked echo off\r\n");
 		} else if (echo_pending) {
 			::message("Warning: Your client denied echo off\r\n");
+		} else {
+			/* um...we aren't echoing in the first place? */
+			break;
 		}
-		echo_status = 0;
-		echo_pending = 0;
+		send_wont(code);
 		break;
 	}
 }
@@ -210,9 +229,12 @@ private void process_will(int code)
 		/* client is offering to perform NAWS to set the screen size */
 		/* allow it */
 		if (!naws_pending) {
+			naws_pending = 1;
+			naws_active = 1;
 			send_do(code);
 		}
 		break;
+
 	default:
 		::message("Error: client offered unknown telnet option " + code + ", forbidding\r\n");
 		send_dont(code);
@@ -221,7 +243,21 @@ private void process_will(int code)
 
 private void process_wont(int code)
 {
-	send_dont(code);
+	switch(code) {
+	case 31:
+		/* client refused to allow or continue with NAWS */
+		if (naws_active) {
+			send_dont(code);
+		} else if (naws_pending) {
+			naws_pending = 0;
+		} else {
+			/* huh? */
+		}
+		break;
+
+	default:
+		break;
+	}
 }
 
 private void process_sb(int code)
@@ -384,14 +420,11 @@ void set_mode(int newmode)
 
 	switch (newmode) {
 	case MODE_ECHO:
-		if (echo_status || echo_pending) {
+		if (echo_enabled || echo_pending) {
 			send_wont(1);
 		}
-		echo_status = 0;
-		echo_pending = 0;
 		break;
 	case MODE_NOECHO:
-		echo_pending = 1;
 		send_will(1);
 		break;
 	case MODE_BLOCK:
