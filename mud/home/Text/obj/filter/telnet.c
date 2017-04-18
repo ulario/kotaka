@@ -257,7 +257,7 @@ int receive_message(string str)
 				subbuf += prefix;
 			}
 
-			if (suffix[0] != TELNET_IAC && strlen(suffix) < 2) {
+			if (!strlen(suffix) || (suffix[0] != TELNET_IAC && strlen(suffix) < 2)) {
 				/* incomplete command, push back and wait for more input */
 				inbuf = " ";
 				inbuf[0] = 255;
