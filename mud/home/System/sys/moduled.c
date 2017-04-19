@@ -31,6 +31,7 @@
 inherit SECOND_AUTO;
 inherit UTILITY_COMPILE;
 inherit LIB_SYSTEM;
+inherit "~/lib/system/list";
 
 mapping modules;
 
@@ -73,14 +74,18 @@ private void scramble(mixed *arr)
 
 private void freeze_module(string module)
 {
-	string *rsrc_names;
-	int sz;
+	KERNELD->rsrc_set_limit(module, "objects", 0);
+	KERNELD->rsrc_set_limit(module, "callouts", 0);
+	KERNELD->rsrc_set_limit(module, "ticks", 250000);
+	KERNELD->rsrc_set_limit(module, "stack", 50);
+}
 
-	rsrc_names = KERNELD->query_resources();
-
-	for (sz = sizeof(rsrc_names); --sz >= 0; ) {
-		KERNELD->rsrc_set_limit(module, rsrc_names[sz], 0);
-	}
+private void thaw_module(string module)
+{
+	KERNELD->rsrc_set_limit(module, "objects", -1);
+	KERNELD->rsrc_set_limit(module, "callouts", -1);
+	KERNELD->rsrc_set_limit(module, "ticks", -1);
+	KERNELD->rsrc_set_limit(module, "stack", -1);
 }
 
 private void reset_modules_list()
@@ -145,49 +150,112 @@ private void send_module_shutdown_signal(string module)
 	}
 }
 
-private void thaw_module(string module)
+private mixed **initial_purge_list(string module)
 {
-	string *rsrc_names;
-	int sz;
+	mixed **list;
 
-	rsrc_names = KERNELD->query_resources();
+	list = ({ nil, nil });
 
-	for (sz = sizeof(rsrc_names); --sz >= 0; ) {
-		KERNELD->rsrc_set_limit(module, rsrc_names[sz], -1);
+	if (module) {
+		mixed **dir;
+
+		string *names;
+		int *sizes;
+
+		int sz;
+
+		dir = get_dir(USR_DIR + "/" + module + "/*");
+		names = dir[0];
+		sizes = dir[1];
+
+		for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
+			list_push_back(list, USR_DIR + "/" + module + "/" + names[sz]);
+		}
+	} else {
+		mixed **dir;
+
+		string *names;
+		int *sizes;
+
+		int sz;
+
+		/* / */
+		dir = get_dir("/*");
+		names = dir[0];
+		sizes = dir[1];
+
+		for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
+			string name;
+
+			name = names[sz];
+
+			if ("/" + name == USR_DIR) {
+				/* skip /home */
+				continue;
+			}
+
+			list_push_back(list, "/" + names[sz]);
+		}
+
+		/* non-dirs in /home */
+		dir = get_dir(USR_DIR + "/*");
+		names = dir[0];
+		sizes = dir[1];
+
+		for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
+			string name;
+
+			name = names[sz];
+
+			if (sizes[sz] == -2) {
+				continue;
+			}
+
+			list_push_back(list, USR_DIR + "/" + names[sz]);
+		}
 	}
+
+	return list;
 }
 
-private void purge_directory(string path)
+static void purge_module_master_tick(string module, mixed **list, int reboot)
 {
-	mixed **dir;
+	string path;
+	mixed *info;
 
-	string *names;
-	int *sizes;
+	path = list_front(list);
+	list_pop_front(list);
 
-	int sz;
+	info = file_info(path);
 
-	dir = get_dir(path + "/*");
-	names = dir[0];
-	sizes = dir[1];
+	if (info[0] == -2) {
+		/* subdir */
+		mixed **dir;
 
-	for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
-		string name;
-		if (sizes[sz] == -2) {
-			purge_directory(path + "/" + names[sz]);
-			continue;
+		string *names;
+		int *sizes;
+
+		int sz;
+
+		dir = get_dir(path + "/*");
+		names = dir[0];
+		sizes = dir[1];
+
+		for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
+			list_push_front(list, path + "/" + names[sz]);
 		}
-
-		if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
-			continue;
+	} else if (info[2]) {
+		/* live object */
+		catch {
+			sscanf(path, "%s.c", path);
+			destruct_object(path);
 		}
+	}
 
-		name = names[sz];
-
-		if (!sscanf(name, "%s.c", name)) {
-			continue;
-		}
-
-		destruct_object(path + "/" + name);
+	if (list_empty(list)) {
+		call_out("purge_module_tick", 0, module, reboot);
+	} else {
+		call_out("purge_module_master_tick", 0, module, list, reboot);
 	}
 }
 
@@ -406,6 +474,7 @@ void boot_module(string module)
 void reboot_module(string module)
 {
 	object cursor;
+	mixed **list;
 
 	ACCESS_CHECK(INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
 
@@ -422,24 +491,19 @@ void reboot_module(string module)
 
 	send_module_shutdown_signal(module);
 
-	if (module) {
-		rlimits (100; -1) {
-			string path;
+	list = initial_purge_list(module);
 
-			path = USR_DIR + "/" + module;
-
-			LOGD->post_message("system", LOG_NOTICE, "Destructing master objects for " + module);
-			purge_directory(path);
-			LOGD->post_message("system", LOG_NOTICE, "Destructed master objects for " + module);
-		}
+	if (list_empty(list)) {
+		call_out("purge_module_tick", 0, module, nil, 0);
+	} else {
+		call_out("purge_module_master_tick", 0, module, list, 0);
 	}
-
-	call_out("purge_module_tick", 0, module, 1);
 }
 
 void shutdown_module(string module)
 {
 	object cursor;
+	mixed **list;
 
 	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
 
@@ -457,17 +521,11 @@ void shutdown_module(string module)
 
 	send_module_shutdown_signal(module);
 
-	if (module) {
-		rlimits (100; -1) {
-			string path;
+	list = initial_purge_list(module);
 
-			path = USR_DIR + "/" + module;
-
-			LOGD->post_message("system", LOG_NOTICE, "Destructing master objects for " + module);
-			purge_directory(path);
-			LOGD->post_message("system", LOG_NOTICE, "Destructed master objects for " + module);
-		}
+	if (list_empty(list)) {
+		call_out("purge_module_tick", 0, module, nil, 0);
+	} else {
+		call_out("purge_module_master_tick", 0, module, list, 0);
 	}
-
-	call_out("purge_module_tick", 0, module, 0);
 }
