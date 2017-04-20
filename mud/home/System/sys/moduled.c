@@ -494,9 +494,9 @@ void reboot_module(string module)
 	list = initial_purge_list(module);
 
 	if (list_empty(list)) {
-		call_out("purge_module_tick", 0, module, nil, 0);
+		call_out("purge_module_tick", 0, module, nil, 1);
 	} else {
-		call_out("purge_module_master_tick", 0, module, list, 0);
+		call_out("purge_module_master_tick", 0, module, list, 1);
 	}
 }
 
