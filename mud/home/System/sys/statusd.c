@@ -197,6 +197,7 @@ int receive_message(string str)
 					connections[conn][2] = SUSPENDD->queue_delayed_work("report", interval, conn);
 				}
 			}
+			break;
 
 		default:
 			conn->message("Commands: clear, interval, quit\n");
