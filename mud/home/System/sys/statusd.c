@@ -124,7 +124,7 @@ int login(string str)
 	}
 
 	connections[conn] = ({
-		trusted ? 1.0 : 15.0,
+		trusted ? 0.1 : 1.0,
 		trusted,
 		SUSPENDD->queue_delayed_work("report", 0, conn)
 	});
@@ -184,8 +184,8 @@ int receive_message(string str)
 
 				sscanf(params[1], "%f", interval);
 
-				if (interval < 15.0 && !connections[conn][1]) {
-					conn->message("Intervals less than 15 seconds\nare only allowed for local connections.\n");
+				if (interval < 1.0 && !connections[conn][1]) {
+					conn->message("Intervals less than 1 second\nare only allowed for local connections.\n");
 					call_out("clear", 5.0, conn);
 					break;
 				}
