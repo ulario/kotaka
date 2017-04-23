@@ -26,12 +26,10 @@
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
-inherit "/lib/string/replace";
 
 mapping connections;	/* all connections */
 mapping users;		/* all logged in user objects */
 mapping guests;		/* all guest user objects */
-int splash;
 
 static void create()
 {
@@ -110,51 +108,7 @@ string query_sitebanned_banner(object LIB_CONN connection)
 
 string query_banner(object LIB_CONN connection)
 {
-	string *files;
-	string ansi;
-	int sz;
-	int level;
-	object conn;
-
-	conn = connection;
-
-	while (conn && conn <- LIB_USER) {
-		level++;
-		conn = conn->query_conn();
-	}
-
-	if (!conn) {
-		return "";
-	}
-
-	if (level == 0) {
-		int rnd;
-
-		files = get_dir("~/data/splash/telnet_banners/chars/*")[0];
-		sz = sizeof(files);
-
-		if (splash >= sz) {
-			splash = 0;
-		}
-
-		ansi = read_file("~/data/splash/telnet_banners/ansi/" + files[splash]);
-
-		if (!ansi) {
-			ansi = ANSI_SUBD->simple_ansify(
-				read_file("~/data/splash/telnet_banners/chars/" + files[splash]),
-				read_file("~/data/splash/telnet_banners/fgcolor/" + files[splash]),
-				read_file("~/data/splash/telnet_banners/bgcolor/" + files[splash])
-			);
-
-			write_file("~/data/splash/telnet_banners/ansi/" + files[splash], ansi);
-		};
-
-		splash++;
-
-		ansi = replace(ansi, "\n", "\r\n");
-
-		return ansi;
-	}
+	return nil;
 }
 
 int query_timeout(object LIB_CONN connection)

@@ -19,6 +19,7 @@
  */
 #include <kernel/user.h>
 #include <kotaka/assert.h>
+#include <kotaka/paths/ansi.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/utility.h>
@@ -29,6 +30,7 @@
 #include <kotaka/ustate.h>
 
 inherit "~/lib/user";
+inherit "/lib/string/replace";
 
 object mobile;
 object body;
@@ -143,9 +145,43 @@ void logout(int quit)
 	::logout(quit);
 }
 
+private void do_banner()
+{
+	string *files;
+	string ansi;
+	int sz;
+	int level;
+	int rnd;
+	int splash;
+
+	files = get_dir("~/data/splash/telnet_banners/chars/*")[0];
+	sz = sizeof(files);
+	splash = random(sz);
+
+	ansi = read_file("~/data/splash/telnet_banners/ansi/" + files[splash]);
+
+	if (!ansi) {
+		ansi = ANSI_SUBD->simple_ansify(
+			read_file("~/data/splash/telnet_banners/chars/" + files[splash]),
+			read_file("~/data/splash/telnet_banners/fgcolor/" + files[splash]),
+			read_file("~/data/splash/telnet_banners/bgcolor/" + files[splash])
+		);
+
+		write_file("~/data/splash/telnet_banners/ansi/" + files[splash], ansi);
+	};
+
+	splash++;
+
+	ansi = replace(ansi, "\n", "\r\n");
+
+	send_out(ansi);
+}
+
 private void do_login()
 {
 	connection(previous_object());
+
+	do_banner();
 
 	set_mode(MODE_ECHO);
 
