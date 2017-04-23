@@ -45,6 +45,7 @@ static void create()
 object select(string str)
 {
 	int has_telnet;
+	int has_mudclient;
 	object conn;
 	object user;
 	string basename;
@@ -54,6 +55,9 @@ object select(string str)
 	while (conn && conn <- LIB_USER) {
 		if (conn <- "~/obj/filter/telnet") {
 			has_telnet = 1;
+		}
+		if (conn <- "~/obj/filter/mudclient") {
+			has_mudclient = 1;
 		}
 
 		conn = conn->query_conn();
@@ -70,9 +74,15 @@ object select(string str)
 		if (!has_telnet) {
 			return clone_object("~/obj/filter/telnet");
 		}
+		if (!has_mudclient) {
+			return clone_object("~/obj/filter/mudclient");
+		}
 		return clone_object("~/obj/user");
 
 	case TELNET_CONN:
+		if (!has_mudclient) {
+			return clone_object("~/obj/filter/mudclient");
+		}
 		return clone_object("~/obj/user");
 	}
 }
