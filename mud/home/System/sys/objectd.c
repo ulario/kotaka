@@ -470,9 +470,10 @@ mixed include_file(string compiled, string from, string path)
 
 	path = query_include_file(compiled, from, path);
 
-	includes |= ({ path });
-
-	return path;
+	if (file_info(path)) {
+		includes |= ({ path });
+		return path;
+	}
 }
 
 int touch(varargs object obj, string func)
