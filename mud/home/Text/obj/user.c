@@ -299,3 +299,17 @@ object query_telnet_obj()
 		conn = conn->query_conn();
 	}
 }
+
+object query_mudclient_obj()
+{
+	object conn;
+
+	conn = query_conn();
+
+	while (conn && conn <- LIB_USER) {
+		if (conn <- "~Text/obj/filter/mudclient") {
+			return conn;
+		}
+		conn = conn->query_conn();
+	}
+}

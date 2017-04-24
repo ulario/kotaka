@@ -168,7 +168,9 @@ private void do_subnegotiation()
 		break;
 
 	default:
-		{
+		if (function_object("telnet_subnegotiation", query_user())) {
+			query_user()->telnet_subnegotiation(subcode, subbuf);
+		} else {
 			int i, sz;
 
 			::message("Your client subnegotiated for unknown option " + subcode + ":\r\n");
@@ -198,8 +200,12 @@ private void process_do(int code)
 		break;
 
 	default:
-		::message("Error: client requested unknown telnet option " + code + ", refusing.\r\n");
-		send_wont(code);
+		if (function_object("telnet_do", query_user()) {
+			query_user()->telnet_do(code);
+		} else {
+			::message("Error: client requested unknown telnet option " + code + ", refusing.\r\n");
+			send_wont(code);
+		}
 	}
 }
 
@@ -219,6 +225,11 @@ private void process_dont(int code)
 		}
 		send_wont(code);
 		break;
+
+	default:
+		if (function_object("telnet_dont", query_user()) {
+			query_user()->telnet_dont(code);
+		}
 	}
 }
 
@@ -236,8 +247,12 @@ private void process_will(int code)
 		break;
 
 	default:
-		::message("Error: client offered unknown telnet option " + code + ", forbidding\r\n");
-		send_dont(code);
+		if (function_object("telnet_will", query_user()) {
+			query_user()->telnet_will(code);
+		} else {
+			::message("Error: client offered unknown telnet option " + code + ", forbidding\r\n");
+			send_dont(code);
+		}
 	}
 }
 
@@ -256,7 +271,9 @@ private void process_wont(int code)
 		break;
 
 	default:
-		break;
+		if (function_object("telnet_wont", query_user()) {
+			query_user()->telnet_wont(code);
+		}
 	}
 }
 
