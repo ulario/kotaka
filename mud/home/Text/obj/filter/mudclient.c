@@ -26,6 +26,9 @@
 
 inherit LIB_FILTER;
 
+int msp_pending;
+int msp_active;
+
 static void create(int clone)
 {
 	if (clone) {
@@ -38,4 +41,64 @@ int login(string str)
 	previous_object()->message("Welcome to Shentino's mudclient extension.\n");
 
 	return ::login(str);
+}
+
+void telnet_do(int code)
+{
+	switch(code) {
+	case 90:
+		if (msp_active) {
+			/* ignore */
+		} else if (msp_pending) {
+			msp_active = 1;
+			msp_pending = 0;
+		} else {
+			query_conn()->send_will(90);
+			msp_active = 1;
+		}
+		break;
+
+	default:
+		query_conn()->send_wont(code);
+	}
+}
+
+void telnet_dont(int code)
+{
+}
+
+void telnet_will(int code)
+{
+	switch(code) {
+	default:
+		query_conn()->send_dont(code);
+	}
+}
+
+void telnet_wont(int code)
+{
+}
+
+void telnet_subnegotiation(int code)
+{
+}
+
+void enable_msp()
+{
+	msp_pending = 1;
+
+	query_conn()->send_will(90);
+}
+
+void disable_msp()
+{
+	query_conn()->send_dont(90);
+
+	msp_pending = 0;
+	msp_active = 0;
+}
+
+void beep()
+{
+	message("!!SOUND(beep.wav)\n");
 }
