@@ -21,8 +21,6 @@
 #include <kotaka/paths/ansi.h>
 #include <kotaka/privilege.h>
 
-#include <screen.h>
-
 inherit "~/lib/animate";
 
 int nparticles;
