@@ -200,7 +200,7 @@ private void process_do(int code)
 		break;
 
 	default:
-		if (function_object("telnet_do", query_user()) {
+		if (function_object("telnet_do", query_user())) {
 			query_user()->telnet_do(code);
 		} else {
 			::message("Error: client requested unknown telnet option " + code + ", refusing.\r\n");
@@ -227,7 +227,7 @@ private void process_dont(int code)
 		break;
 
 	default:
-		if (function_object("telnet_dont", query_user()) {
+		if (function_object("telnet_dont", query_user())) {
 			query_user()->telnet_dont(code);
 		}
 	}
@@ -247,7 +247,7 @@ private void process_will(int code)
 		break;
 
 	default:
-		if (function_object("telnet_will", query_user()) {
+		if (function_object("telnet_will", query_user())) {
 			query_user()->telnet_will(code);
 		} else {
 			::message("Error: client offered unknown telnet option " + code + ", forbidding\r\n");
@@ -271,7 +271,7 @@ private void process_wont(int code)
 		break;
 
 	default:
-		if (function_object("telnet_wont", query_user()) {
+		if (function_object("telnet_wont", query_user())) {
 			query_user()->telnet_wont(code);
 		}
 	}
