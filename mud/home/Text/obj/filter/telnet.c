@@ -237,10 +237,14 @@ private void process_will(int code)
 {
 	switch(code) {
 	case 31:
-		/* client is offering to perform NAWS to set the screen size */
-		/* allow it */
-		if (!naws_pending) {
-			naws_pending = 1;
+		if (naws_active) {
+			/* ignore it, we're already doing naws */
+		} else if (naws_pending) {
+			/* our request was accepted */
+			naws_pending = 0;
+			naws_active = 1;
+		} else {
+			/* client is offering, accept */
 			naws_active = 1;
 			send_do(code);
 		}
