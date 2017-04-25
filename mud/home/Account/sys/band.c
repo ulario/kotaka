@@ -45,7 +45,7 @@ static void create()
 
 void ban_site(string site, varargs string message)
 {
-	ACCESS_CHECK(INTERFACE() || GAME());
+	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
 	if (sscanf(site, "127.%*s")) {
 		error("Cannot ban localhost");
@@ -56,15 +56,13 @@ void ban_site(string site, varargs string message)
 	}
 
 	sitebans[site] = message ? message : 1;
-
 	save();
-
 	SYSTEM_USERD->check_sitebans();
 }
 
 void unban_site(string site)
 {
-	ACCESS_CHECK(INTERFACE() || KADMIN() || GAME());
+	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
 	if (!sitebans[site]) {
 		error("Site not banned");
@@ -76,7 +74,7 @@ void unban_site(string site)
 
 void ban_user(string username, varargs string message)
 {
-	ACCESS_CHECK(INTERFACE() || GAME());
+	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
 	if (username == "admin") {
 		error("Cannot ban admin");
@@ -88,7 +86,7 @@ void ban_user(string username, varargs string message)
 
 void unban_user(string username)
 {
-	ACCESS_CHECK(INTERFACE() || GAME());
+	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
 	if (!bans[username]) {
 		error("Username not banned");
@@ -148,7 +146,7 @@ void save()
 {
 	string buf;
 
-	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN() || ACCOUNT());
+	ACCESS_CHECK(ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
 
 	buf = STRINGD->hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
 
@@ -163,7 +161,7 @@ void restore()
 {
 	string buf;
 
-	ACCESS_CHECK(INTERFACE() || GAME() || KADMIN() || ACCOUNT());
+	ACCESS_CHECK(ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
 
 	buf = CONFIGD->read_file("bans");
 
