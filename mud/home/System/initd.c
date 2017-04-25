@@ -302,8 +302,8 @@ private void configure_klib()
 
 void configure_rsrc()
 {
-	KERNELD->set_rsrc("stack", 250, 0, 0);
-	KERNELD->set_rsrc("ticks", 1250000, 0, 0);
+	KERNELD->set_rsrc("stack", 100, 0, 0);
+	KERNELD->set_rsrc("ticks", 500000, 0, 0);
 	KERNELD->set_rsrc("tick usage", -1, 1, 60);
 
 	KERNELD->set_rsrc("callouts peak", -1, 0, 0);
@@ -397,8 +397,8 @@ private void check_config()
 		error("Not enough user slots (minimum is 3)");
 	}
 
-	if (status(ST_STRSIZE) < 1024) {
-		error("String size limit too small (minimum 1024 bytes)");
+	if (status(ST_STRSIZE) < 4096) {
+		error("String size limit too small (minimum 4096 bytes)");
 	}
 }
 
