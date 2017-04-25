@@ -28,12 +28,14 @@ float **particles;
 float speed;
 
 float pi;
+int sortflag;
 
 static void create(int clone)
 {
 	::create();
 
 	pi = atan(1.0) * 4.0;
+	sortflag = 1;
 }
 
 static void destruct(int clone)
@@ -84,6 +86,8 @@ void begin()
 		particles[i] = allocate_float(3);
 		initialize_particle(particles[i]);
 	}
+
+	sortflag = 1;
 }
 
 int zcomp(mixed *a, mixed *b)
@@ -95,7 +99,7 @@ int zcomp(mixed *a, mixed *b)
 
 private void do_particles(object paint, float diff)
 {
-	int x, y, i, sortflag;
+	int x, y, i;
 
 	for (i = 0; i < nparticles; i++) {
 		mixed *particle;
@@ -124,6 +128,7 @@ private void do_particles(object paint, float diff)
 	}
 
 	if (sortflag) {
+		sortflag = 0;
 		SORTD->qsort(particles, 0, nparticles, "zcomp");
 	}
 
