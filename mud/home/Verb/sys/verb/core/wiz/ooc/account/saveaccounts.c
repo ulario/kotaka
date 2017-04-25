@@ -35,11 +35,11 @@ void main(object actor, mapping roles)
 	user = query_user();
 
 	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to save the account manager.\n");
+		send_out("Only an adminstrator can save accounts.\n");
 		return;
 	}
 
-	ACCOUNTD->restore();
+	ACCOUNTD->save();
 
-	send_out("Accounts restored.\n");
+	send_out("Accounts saved.\n");
 }
