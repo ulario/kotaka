@@ -349,7 +349,7 @@ private void do_startup_reply(mixed *value)
 	mixed *raw;
 	int sz;
 
-	LOGD->post_message("intermud", LOG_INFO, "Intermud: Received startup reply");
+	LOGD->post_message("system", LOG_INFO, "Intermud: Received startup reply");
 
 	password = value[7];
 
