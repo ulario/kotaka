@@ -54,7 +54,8 @@ static void destruct()
 
 private void create_database()
 {
-	ACCESS_CHECK(SYSTEM());
+	ASSERT(find_object(USR_DIR + "/Bigstruct/initd"));
+	ASSERT(find_object(BIGSTRUCT_MAP_OBJ));
 
 	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
 	progdb->claim();
