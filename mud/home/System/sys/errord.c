@@ -112,7 +112,7 @@ string print_stack(mixed **trace)
 	return tracestr;
 }
 
-void runtime_error(string error, int caught, mixed **trace)
+private void handle_error(string error, mixed **trace)
 {
 	int atom;
 	int i;
@@ -124,8 +124,6 @@ void runtime_error(string error, int caught, mixed **trace)
 	string errstr;
 	string tracestr;
 
-	ACCESS_CHECK(previous_program() == DRIVER);
-
 	DRIVER->set_error_manager(nil);
 
 	catch {
@@ -134,30 +132,7 @@ void runtime_error(string error, int caught, mixed **trace)
 		TLSD->set_tls_value("System", "error-string", error);
 		TLSD->set_tls_value("System", "error-trace", trace);
 
-		if (sscanf(error, "%s\000\000%s\000\000%s", prefix, tag, suffix)) {
-			mapping thrown;
-
-			error = prefix;
-
-			ASSERT(tag == "atomic");
-			/* gift package thrown by atomic error */
-
-			if (find_object(PARSER_VALUE)) {
-				thrown = PARSER_VALUE->parse(suffix);
-
-				atom = thrown["atom"];
-				trace = thrown["trace"];
-				comperr = thrown["comperr"];
-			} else {
-				error = "Atomic error \"" + error + "\" (please boot String module to get a trace)";
-			}
-
-			TLSD->set_tls_value("System", "error-string", error);
-			TLSD->set_tls_value("System", "error-trace", trace);
-		} else {
-			comperr = TLSD->query_tls_value("System", "compile-errors");
-			atom = -1;
-		}
+		comperr = TLSD->query_tls_value("System", "compile-errors");
 
 		if (comperr) {
 			cerrstrs = allocate(sizeof(comperr));
@@ -232,32 +207,26 @@ void runtime_error(string error, int caught, mixed **trace)
 	DRIVER->set_error_manager(this_object());
 }
 
+void runtime_error(string error, int caught, mixed **trace)
+{
+	ACCESS_CHECK(previous_program() == DRIVER);
+
+	if (caught) {
+		error += "(caught at frame " + caught + ")";
+	}
+
+	handle_error(error, trace);
+}
+
 string atomic_error(string error, int atom, mixed **trace)
 {
-	catch {
-		string throwstr;
-		mapping throwme;
+	ACCESS_CHECK(previous_program() == DRIVER);
 
-		ACCESS_CHECK(previous_program() == DRIVER);
-
-		throwme = ([ ]);
-
-		throwme["atom"] = atom;
-		throwme["comperr"] = TLSD->query_tls_value("System", "compile-errors");
-		throwme["trace"] = trace;
-
-		throwstr = mixed_sprint(throwme);
-
-		return error + "\000\000atomic\000\000" + throwstr;
-	} : {
-		DRIVER->message("Error in atomic_error: " + error + "\n");
-
-		catch {
-			DRIVER->message("Stack trace: " + print_stack(trace) + "\n");
-		}
-
-		error("Error in atomic_error, check driver log");
+	if (atom) {
+		error += "(atomic at frame " + atom + ")";
 	}
+
+	handle_error(error, trace);
 }
 
 void compile_error(string file, int line, string err)
