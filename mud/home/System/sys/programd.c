@@ -40,14 +40,18 @@ private void destruct_database();
 
 /* create/destruct */
 
-static void create()
+atomic static void create()
 {
-	create_database();
+	rlimits(0; -1) {
+		create_database();
+	}
 }
 
-static void destruct()
+atomic static void destruct()
 {
-	destruct_database();
+	rlimits(0; -1) {
+		destruct_database();
+	}
 }
 
 /* helpers */
