@@ -428,7 +428,7 @@ private void check_versions()
 		error("DGD major version " + major + " too high for this version of kotaka");
 	}
 
-	if (minor < 4) {
+	if (minor < 6) {
 		error("DGD minor version " + major + "." + minor + " too low for this version of kotaka");
 	}
 
@@ -450,8 +450,12 @@ private void check_versions()
 		error("Kernel library major version " + major + " too high for this version of kotaka");
 	}
 
-	if (minor < 3) {
+	if (minor < 6) {
 		error("Kernel library minor version " + major + "." + minor + " too low for this version of kotaka");
+	}
+
+	if (patch < 1) {
+		error("Kernel library patch version " + major + "." + minor + "." + patch + " too low for this version of kotaka");
 	}
 }
 
