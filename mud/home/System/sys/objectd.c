@@ -232,7 +232,7 @@ void gather_inherits(mapping map, int oindex)
 	}
 }
 
-void compiling(string path)
+atomic void compiling(string path)
 {
 	ACCESS_CHECK(KERNEL());
 
@@ -260,7 +260,7 @@ void compiling(string path)
 	}
 }
 
-void compile(string owner, object obj, string *source, string inherited ...)
+atomic void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
 	string err;
@@ -349,7 +349,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 }
 
-void compile_lib(string owner, string path, string *source, string inherited ...)
+atomic void compile_lib(string owner, string path, string *source, string inherited ...)
 {
 	string ctor;
 	string dtor;
@@ -366,7 +366,7 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	compile_common(owner, path, source, inherited);
 }
 
-void compile_failed(string owner, string path)
+atomic void compile_failed(string owner, string path)
 {
 	ACCESS_CHECK(KERNEL());
 
@@ -375,12 +375,12 @@ void compile_failed(string owner, string path)
 	old_inherits = nil;
 }
 
-void clone(string owner, object obj)
+atomic void clone(string owner, object obj)
 {
 	ACCESS_CHECK(KERNEL());
 }
 
-void destruct(varargs mixed owner, mixed obj)
+atomic void destruct(varargs mixed owner, mixed obj)
 {
 	int is_clone;
 	int is_initd;
@@ -438,7 +438,7 @@ void destruct(varargs mixed owner, mixed obj)
 	}
 }
 
-void destruct_lib(string owner, string path)
+atomic void destruct_lib(string owner, string path)
 {
 	object pinfo;
 
@@ -455,7 +455,7 @@ void destruct_lib(string owner, string path)
 	pinfo->set_destructed();
 }
 
-void remove_program(string owner, string path, int timestamp, int index)
+atomic void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(KERNEL());
 
@@ -464,7 +464,7 @@ void remove_program(string owner, string path, int timestamp, int index)
 	}
 }
 
-mixed include_file(string compiled, string from, string path)
+atomic mixed include_file(string compiled, string from, string path)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
 
@@ -476,7 +476,7 @@ mixed include_file(string compiled, string from, string path)
 	}
 }
 
-int touch(varargs object obj, string func)
+atomic int touch(varargs object obj, string func)
 {
 	if (previous_program() == DRIVER) {
 		if (!sscanf(object_name(obj), "/kernel/%*s")) {
@@ -489,12 +489,12 @@ int touch(varargs object obj, string func)
 	}
 }
 
-int forbid_call(string path)
+atomic int forbid_call(string path)
 {
 	ACCESS_CHECK(KERNEL());
 }
 
-int forbid_inherit(string from, string path, int priv)
+atomic int forbid_inherit(string from, string path, int priv)
 {
 	object initd;
 
