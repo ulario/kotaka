@@ -316,20 +316,6 @@ object query_program_indices()
 	return indices;
 }
 
-object query_includer_indices()
-{
-	object indices;
-
-	ASSERT(incdb);
-
-	indices = incdb->query_indices();
-
-	indices->grant_access(previous_object(), FULL_ACCESS);
-	indices->grant_access(this_object(), 0);
-
-	return indices;
-}
-
 object query_program_info(int oindex)
 {
 	if (progdb) {
