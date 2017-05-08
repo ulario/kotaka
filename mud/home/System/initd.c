@@ -136,6 +136,7 @@ static void boot_2()
 		LOGD->post_message("system", LOG_INFO, "System loaded");
 		LOGD->post_message("system", LOG_INFO, "-------------");
 
+		PROGRAMD->create_database();
 		SYSTEM_SUBD->discover_objects();
 
 		call_out("boot_3", 0);

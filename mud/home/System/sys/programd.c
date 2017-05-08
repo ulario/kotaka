@@ -33,83 +33,83 @@ object pathdb;	/* path database, filename -> latest index */
 object inhdb;	/* inherit database, filename -> inheriting objects */
 object incdb;	/* include database, filename -> including objects */
 
-/* declarations */
-
-private void create_database();
-private void destruct_database();
+atomic void create_database();
+atomic void destruct_database();
 
 /* create/destruct */
 
-atomic static void create()
+static void create()
 {
-	rlimits(0; -1) {
-		create_database();
-	}
 }
 
-atomic static void destruct()
+static void destruct()
 {
-	rlimits(0; -1) {
-		destruct_database();
-	}
+	destruct_database();
 }
 
 /* helpers */
 
-private void create_database()
+atomic void create_database()
 {
+	ACCESS_CHECK(SYSTEM());
 	ASSERT(find_object(USR_DIR + "/Bigstruct/initd"));
 	ASSERT(find_object(BIGSTRUCT_MAP_OBJ));
 
-	progdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	progdb->claim();
-	progdb->set_type(T_INT);
+	rlimits (0; -1) {
+		progdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		progdb->claim();
+		progdb->set_type(T_INT);
 
-	inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	inhdb->claim();
-	inhdb->set_type(T_INT);
+		inhdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		inhdb->claim();
+		inhdb->set_type(T_INT);
 
-	incdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	incdb->claim();
-	incdb->set_type(T_STRING);
+		incdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		incdb->claim();
+		incdb->set_type(T_STRING);
 
-	pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
-	pathdb->claim();
-	pathdb->set_type(T_STRING);
+		pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
+		pathdb->claim();
+		pathdb->set_type(T_STRING);
+	}
 }
 
-private void destruct_database()
+atomic void destruct_database()
 {
-	int i, sz;
-	object *turkeys;
+	ACCESS_CHECK(SYSTEM());
 
-	turkeys = ({ });
+	rlimits (0; -1) {
+		int i, sz;
+		object *turkeys;
 
-	if (progdb) {
-		turkeys += ({ progdb });
-	}
+		turkeys = ({ });
 
-	if (inhdb) {
-		turkeys += ({ inhdb });
-	}
+		if (progdb) {
+			turkeys += ({ progdb });
+		}
 
-	if (incdb) {
-		turkeys += ({ incdb });
-	}
+		if (inhdb) {
+			turkeys += ({ inhdb });
+		}
 
-	if (pathdb) {
-		turkeys += ({ pathdb });
-	}
+		if (incdb) {
+			turkeys += ({ incdb });
+		}
 
-	progdb = nil;
-	inhdb = nil;
-	incdb = nil;
-	pathdb = nil;
+		if (pathdb) {
+			turkeys += ({ pathdb });
+		}
 
-	sz = sizeof(turkeys);
+		progdb = nil;
+		inhdb = nil;
+		incdb = nil;
+		pathdb = nil;
 
-	for (i = 0; i < sz; i++) {
-		destruct_object(turkeys[i]);
+		sz = sizeof(turkeys);
+
+		for (i = 0; i < sz; i++) {
+			destruct_object(turkeys[i]);
+		}
 	}
 }
 
