@@ -153,22 +153,14 @@ private void handle_error(string error, mixed **trace)
 
 		errstr = "Runtime error: " + error;
 
-		if (caught) {
-			errstr += " [caught]";
-		}
-
-		if (atom >= 0) {
-			errstr += " [atomic at " + atom + "]";
-		}
-
 		tracestr = print_stack(trace);
 
 		if (find_object(LOGD)) {
 			if (compstr) {
-				LOGD->post_message("compile", caught ? LOG_NOTICE : LOG_ERR, compstr);
+				LOGD->post_message("compile", LOG_ERR, compstr);
 			}
 
-			LOGD->post_message("error", caught ? LOG_NOTICE : LOG_ERR, errstr);
+			LOGD->post_message("error", LOG_ERR, errstr);
 
 			if (!compstr) {
 				LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
@@ -212,7 +204,7 @@ void runtime_error(string error, int caught, mixed **trace)
 	ACCESS_CHECK(previous_program() == DRIVER);
 
 	if (caught) {
-		error += "(caught at frame " + caught + ")";
+		error += " [caught]";
 	}
 
 	handle_error(error, trace);
@@ -223,7 +215,7 @@ string atomic_error(string error, int atom, mixed **trace)
 	ACCESS_CHECK(previous_program() == DRIVER);
 
 	if (atom) {
-		error += "(atomic at frame " + atom + ")";
+		error += " [atomic]";
 	}
 
 	handle_error(error, trace);
