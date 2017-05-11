@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
 #include <status.h>
@@ -28,6 +29,7 @@ inherit SECOND_AUTO;
 int suspend;
 int handle;
 object queue;
+mapping suspenders;
 
 void release_system();
 
@@ -81,9 +83,11 @@ mixed *query_callouts()
 
 		callout = callouts[sz];
 
-		if (callout[CO_FUNCTION] != "process_delayed"
-			|| callout[CO_FIRSTXARG] != obj
-		) {
+		if (sizeof(callout) <= CO_FIRSTXARG) {
+			callouts[sz] = nil;
+		}
+
+		if (callout[CO_FIRSTXARG] != obj) {
 			callouts[sz] = nil;
 		}
 	}
@@ -107,7 +111,7 @@ void queue_work(string func, mixed args...)
 
 int queue_delayed_work(string func, mixed delay, mixed args...)
 {
-	return call_out("process_delayed", delay, previous_object(), func, args);
+	return call_out("call", delay, previous_object(), func, args);
 }
 
 mixed dequeue_delayed_work(int handle)
@@ -126,6 +130,10 @@ mixed dequeue_delayed_work(int handle)
 			continue;
 		}
 
+		if (sizeof(callout) <= CO_FIRSTXARG) {
+			return -1;
+		}
+
 		if (previous_object() != callout[CO_FIRSTXARG]) {
 			return -1;
 		}
@@ -136,10 +144,26 @@ mixed dequeue_delayed_work(int handle)
 	return -1;
 }
 
-static void process_delayed(object obj, string func, mixed *args)
+static void call(object obj, string func, mixed *args)
 {
 	if (obj) {
-		call_other(obj, func, args...);
+		string owner;
+
+		if (!suspenders) {
+			suspenders = ([ ]);
+		}
+
+		owner = obj->query_owner();
+
+		if (!suspenders[owner]) {
+			if (!find_object("~/obj/suspender")) {
+				compile_object("~/obj/suspender");
+			}
+
+			suspenders[owner] = clone_object("~/obj/suspender");
+		}
+
+		suspenders[owner]->call(obj, func, args);
 	}
 }
 
@@ -182,7 +206,5 @@ static void process()
 	({ obj, func, args }) = queue->query_front();
 	queue->pop_front();
 
-	if (obj) {
-		call_other(obj, func, args...);
-	}
+	call(obj, func, args);
 }
