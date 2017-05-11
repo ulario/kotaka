@@ -160,7 +160,7 @@ static void call(object obj, string func, mixed *args)
 				compile_object("~/obj/suspender");
 			}
 
-			suspenders[owner] = clone_object("~/obj/suspender");
+			suspenders[owner] = clone_object("~/obj/suspender", owner);
 		}
 
 		suspenders[owner]->call(obj, func, args);
