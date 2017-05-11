@@ -174,7 +174,7 @@ private void set_flags(string path)
 
 void upgrade_objects()
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		string path;

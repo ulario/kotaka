@@ -511,7 +511,7 @@ void check_sitebans()
 
 void close_connection(object conn)
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	if (conn) {
 		conn->reboot();

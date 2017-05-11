@@ -88,7 +88,7 @@ private void purge_directory(string dir)
 
 void load_world_purge()
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		int done;
@@ -125,7 +125,7 @@ void load_world_purge()
 
 void load_world_spawn(int i)
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		int done;
@@ -158,7 +158,7 @@ void load_world_spawn(int i)
 
 void load_world_name(int i)
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		object obj;
@@ -191,7 +191,7 @@ void load_world_name(int i)
 
 void load_world_set(int i)
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		object obj;
@@ -287,7 +287,7 @@ private void put_directory(string dir)
 
 void save_world_put()
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		int done;
@@ -324,7 +324,7 @@ void save_world_put()
 
 void save_world_write(int i)
 {
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		i--;

@@ -236,7 +236,7 @@ void report(object conn)
 {
 	int status;
 
-	ACCESS_CHECK(previous_program() == SUSPENDD);
+	ACCESS_CHECK(SYSTEM());
 
 	if (!conn) {
 		return;
