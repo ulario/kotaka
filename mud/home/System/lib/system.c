@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/system.h>
-#include <type.h>
 
 inherit SECOND_AUTO;
 inherit "system/escape";
