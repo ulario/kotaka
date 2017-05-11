@@ -63,7 +63,6 @@ int login(string str)
 		|| calling_object() == this_object());
 
 	connection(previous_object());
-	open(nil);
 
 	/* LIB_CONN does an implicit call to set_mode */
 	return conn::receive_message(nil, str);
