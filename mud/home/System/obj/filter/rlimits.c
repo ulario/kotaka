@@ -33,7 +33,6 @@ static void create(int clone)
 static int limited_login(string str)
 {
 	connection(previous_object(1));
-	::open(nil);
 
 	return ::receive_message(str);
 }
