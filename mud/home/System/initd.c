@@ -98,6 +98,13 @@ static void create()
 	}
 }
 
+void upgrade()
+{
+	ACCESS_CHECK(SYSTEM());
+	configure_logging();
+	configure_rsrc();
+}
+
 private void boot_error()
 {
 	LOGD->post_message("system", LOG_ERROR, "Runtime error during boot");
