@@ -310,12 +310,8 @@ private void configure_klib()
 
 void configure_rsrc()
 {
-	KERNELD->set_rsrc("stack", 100, 0, 0);
-	KERNELD->set_rsrc("ticks", 500000, 0, 0);
-	KERNELD->set_rsrc("tick usage", -1, 1, 60);
-
 	KERNELD->set_rsrc("callouts peak", -1, 0, 0);
-	KERNELD->set_rsrc("callouts usage", -1, 1, 60);
+	KERNELD->set_rsrc("callouts usage", -1, 10, 3600);
 }
 
 void configure_logging()
