@@ -226,7 +226,7 @@ void prepare_reboot()
 	if (TLSD->query_tls_value("System", "incremental-snapshot")) {
 		LOGD->post_message("system", LOG_INFO, "Incremental snapshot");
 	} else {
-		LOGD->post_message("system", LOG_INFO, "Full snapshot");
+		LOGD->post_message("system", LOG_NOTICE, "Full snapshot");
 	}
 
 	ACCESSD->save();
@@ -320,7 +320,7 @@ void configure_logging()
 	LOGD->clear_targets();
 
 	/* log to console by default */
-	LOGD->set_target("*", 127, "driver");
+	LOGD->set_target("*", 63, "driver"); /* omit info and debug */
 
 	/* don't log these to the console */
 	LOGD->set_target("debug", 0, "driver");
@@ -351,12 +351,15 @@ void configure_logging()
 	LOGD->set_target("*", 128, "file:debug");
 	LOGD->set_target("debug", 255, "file:debug");
 
+	/* debug log gets only debug */
+	LOGD->set_target("*", 64, "file:info");
+
 	/* general system log goes to general and logged in staff */
 	LOGD->set_target("system", 255, "file:general");
 	LOGD->set_target("system", 255, "file:session");
 
 	/* post these on the system channel */
-	LOGD->set_target("system", 255, "channel:system");
+	LOGD->set_target("system", 63, "channel:system");
 
 	LOGD->set_target("compile", 255, "channel:compile");
 	LOGD->set_target("error", 255, "channel:error");
