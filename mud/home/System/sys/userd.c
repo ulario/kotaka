@@ -82,7 +82,9 @@ private void register_with_klib_userd()
 	telnet_port_count = sizeof(status(ST_TELNETPORTS));
 	binary_port_count = sizeof(status(ST_BINARYPORTS));
 
-	for (index = 0; index < telnet_port_count; index++) {
+	USERD->set_telnet_manager(0, this);
+
+	for (index = 1; index < telnet_port_count; index++) {
 		USERD->set_telnet_manager(index, this);
 	}
 
