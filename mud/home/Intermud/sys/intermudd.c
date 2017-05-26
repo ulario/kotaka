@@ -557,7 +557,7 @@ int message_done()
 void logout(int quit)
 {
 	if (!quit) {
-		LOGD->post_message("intermud", LOG_INFO, "Intermud: Connection lost");
+		LOGD->post_message("intermud", LOG_NOTICE, "Intermud: Connection lost");
 
 		call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
 	}
@@ -574,7 +574,7 @@ void logout(int quit)
 
 void connect_failed(int refused)
 {
-	LOGD->post_message("intermud", LOG_INFO, "Intermud: Connection failed");
+	LOGD->post_message("intermud", LOG_NOTICE, "Intermud: Connection failed");
 
 	call_out("connect", 10, ROUTER_IP, ROUTER_PORT);
 }
