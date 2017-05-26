@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/system.h>
+#include <status.h>
 
 inherit SECOND_AUTO;
 
@@ -128,4 +129,41 @@ static void list_pop_back(mixed **list)
 static int list_empty(mixed **list)
 {
 	return !list[0];
+}
+
+static void list_append_string(mixed **list, string str)
+{
+	mixed *node;
+	int max;
+	int len;
+
+	max = status(ST_STRSIZE);
+
+	if (max > 4096) {
+		max = 4096;
+	}
+
+	if (list_empty(list)) {
+		list_push_front(list, "");
+	}
+
+	while (len = strlen(str)) {
+		int spare;
+
+		node = list_back_node(list);
+		spare = max - strlen(node[1]);
+
+		if (spare >= len) {
+			node[1] += str;
+
+			return;
+		} else {
+			if (spare > 0) {
+				node[1] += str[0 .. spare - 1];
+				str = str[spare ..];
+			}
+
+			list_push_back(list, "");
+		}
+	}
 }

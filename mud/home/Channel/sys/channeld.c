@@ -73,9 +73,6 @@ private void schedule()
 private void append_node(string channel, string fragment)
 {
 	mixed **list;
-	mixed *node;
-	int max;
-	int len;
 
 	if (!buffers) {
 		buffers = ([ ]);
@@ -88,39 +85,7 @@ private void append_node(string channel, string fragment)
 		buffers[channel] = list;
 	}
 
-	if (list_empty(list)) {
-		list_push_back(list, "");
-	}
-
-	max = status(ST_STRSIZE);
-
-	if (max > 4096) {
-		max = 4096;
-	}
-
-	while (len = strlen(fragment)) {
-		mixed *node;
-		int spare;
-
-		node = list_back_node(list);
-
-		spare = max - strlen(node[1]);
-
-		if (spare >= len) {
-			node[1] += fragment;
-
-			return;
-		} else {
-			mixed *newnode;
-
-			if (spare > 0) {
-				node[1] += fragment[0 .. spare - 1];
-				fragment = fragment[spare ..];
-			}
-
-			list_push_back(list, "");
-		}
-	}
+	list_append_string(list, fragment);
 }
 
 private void write_node(string channel)
