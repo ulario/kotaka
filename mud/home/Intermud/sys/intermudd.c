@@ -349,7 +349,7 @@ private void do_startup_reply(mixed *value)
 	mixed *raw;
 	int sz;
 
-	LOGD->post_message("system", LOG_INFO, "Intermud: Received startup reply");
+	LOGD->post_message("system", LOG_NOTICE, "Intermud: Received startup reply");
 
 	password = value[7];
 
@@ -467,7 +467,7 @@ private void process_packet(mixed *value)
 		break;
 
 	case "error":
-		CHANNELD->post_message("error", nil, "intermud error: " + STRINGD->mixed_sprint(value));
+		LOGD->post_message("error", LOG_ERR, "I3 error: " + STRINGD->mixed_sprint(value));
 		break;
 
 	case "mudlist":
