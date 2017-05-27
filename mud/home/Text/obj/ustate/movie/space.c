@@ -107,18 +107,6 @@ private void do_particles(object paint, float diff)
 
 		particle = particles[i];
 
-		p2 = allocate(2);
-
-		particle[1] *= 2.0;
-
-		p2[0] = cos(pi * 2.0 * diff * 0.125) * particle[0] - sin(pi * 2.0 * diff * 0.125) * particle[1];
-		p2[1] = sin(pi * 2.0 * diff * 0.125) * particle[0] + cos(pi * 2.0 * diff * 0.125) * particle[1];
-
-		particle[0] = p2[0];
-		particle[1] = p2[1];
-
-		particle[1] *= 0.5;
-
 		particle[2] -= diff * 5.0;
 
 		if (particle[2] < 1.0) {
