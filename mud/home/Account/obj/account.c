@@ -58,7 +58,7 @@ void set_password(string new_password)
 {
 	ACCESS_CHECK(ACCOUNT());
 
-	password = hash_string("crypt", new_password);
+	password = hash_string("crypt", new_password, name);
 
 	save();
 }
