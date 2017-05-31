@@ -24,7 +24,8 @@
 inherit "~/lib/animate";
 
 int nparticles;
-float **particles;
+mixed **particles;
+int color;
 
 static void create(int clone)
 {
@@ -39,6 +40,19 @@ static void destruct(int clone)
 private void set_nparticles()
 {
 	nparticles = screen_width * screen_height / 100;
+}
+
+private void reset_particle(mixed *particle)
+{
+	particle[0] = (float)(screen_width) / 4.0;
+	particle[1] = (float)(screen_height);
+
+	particle[2] = MATHD->bell_rnd(2) * (float)(screen_width) - (float)(screen_width) / 2.0;
+	particle[3] = MATHD->bell_rnd(2) * (float)(screen_height) * 2.0 - (float)(screen_height) * 3.0;
+	particle[4] = color;
+
+	color++;
+	color %= 7;
 }
 
 void begin()
@@ -57,7 +71,8 @@ void begin()
 	particles = allocate(nparticles);
 
 	for (i = 0; i < nparticles; i++) {
-		particles[i] = allocate_float(4);
+		particles[i] = allocate(5);
+		reset_particle(particles[i]);
 	}
 }
 
@@ -79,18 +94,14 @@ private void do_particles(object paint, float diff)
 		particle[3] = nvy;
 
 		if (particle[1] >= (float)(screen_height)) {
-			particle[0] = (float)(screen_width) / 4.0;
-			particle[1] = (float)(screen_height);
-
-			particle[2] = MATHD->bell_rnd(2) * (float)(screen_width) - (float)(screen_width) / 2.0;
-			particle[3] = MATHD->bell_rnd(2) * (float)(screen_height) * 2.0 - (float)(screen_height) * 3.0;
+			reset_particle(particle);
 		}
 
 		x = (int)floor(particle[0]);
 		y = (int)floor(particle[1]);
 		paint->move_pen(x, y);
 
-		switch(i % 7) {
+		switch(particle[4]) {
 		case 0: paint->set_color(0x8f); break;
 		case 1: paint->set_color(0x87); break;
 		case 2: paint->set_color(0x88); break;
