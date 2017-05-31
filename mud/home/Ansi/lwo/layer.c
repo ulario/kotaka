@@ -112,7 +112,7 @@ void draw(string brush, int pen_x, int pen_y, int color)
 	}
 }
 
-void erase(int length, int pen_x, int pen_y, int color)
+void erase(int length, int pen_x, int pen_y)
 {
 	int i;
 	int sz;
