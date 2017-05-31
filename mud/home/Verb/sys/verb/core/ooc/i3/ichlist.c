@@ -50,5 +50,99 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	send_out(STRINGD->wordwrap(implode(list, ", "), 60) + "\n");
+	switch(roles["raw"]) {
+	case "-m":
+		{
+			int i;
+			int sz;
+			mapping muds;
+			string *mlist;
+
+			muds = ([ ]);
+			sz = sizeof(list);
+
+			for (i = 0; i < sz; i++) {
+				string channel;
+				string mud;
+				int filter;
+
+				channel = list[i];
+				({ mud, filter }) = INTERMUDD->query_channel(channel);
+
+				if (!muds[mud]) {
+					muds[mud] = ({ channel });
+				} else {
+					muds[mud] += ({ channel });
+				}
+			}
+
+			mlist = map_indices(muds);
+			sz = sizeof(mlist);
+
+			for (i = 0; i < sz; i++) {
+				string mud;
+				string *clist;
+				int j, sz2;
+
+				mud = mlist[i];
+				send_out(mud + ":\n");
+
+				clist = muds[mud];
+				sz2 = sizeof(clist);
+
+				for (j = 0; j < sz2; j++) {
+					send_out("    " + clist[j] + "\n");
+				}
+			}
+		}
+		break;
+
+	case "-v":
+		{
+			int i;
+			int sz;
+			int max;
+			string word;
+			string line;
+
+			sz = sizeof(list);
+
+			for (i = 0; i < sz; i++) {
+				string channel;
+
+				channel = list[i];
+
+				if (strlen(channel) > max) {
+					max = strlen(channel);
+				}
+			}
+
+			word = "Channel";
+			line = word + STRINGD->spaces(2 + max - strlen(word));
+
+			word = "Owner";
+			line += word + STRINGD->spaces(2 + max - strlen(word));
+
+			send_out(line + "\n\n");
+
+			for (i = 0; i < sz; i++) {
+				string channel;
+				string mud;
+				mixed dummy;
+
+				channel = list[i];
+				({ mud, dummy }) = INTERMUDD->query_channel(channel);
+
+				line = channel + STRINGD->spaces(2 + max - strlen(channel));
+				line += mud;
+
+				send_out(line + "\n");
+			}
+		}
+		break;
+
+	default:
+		send_out(STRINGD->wordwrap(implode(list, ", "), 60) + "\n");
+		break;
+	}
 }
