@@ -35,6 +35,8 @@ mapping connections;
 
 static void create()
 {
+	message = "";
+
 	wiz::create(0);
 	userd::create();
 	user::create();
@@ -56,16 +58,9 @@ private float swap_used_ratio()
 
 static mixed message(string msg)
 {
-	message = msg;
+	message += msg;
 
 	return nil;
-}
-
-string status_message()
-{
-	cmd_status(nil, nil, nil);
-
-	return message;
 }
 
 /* I/O stuff */
@@ -137,7 +132,12 @@ int login(string str)
 private int printstatus(object conn)
 {
 	if (conn) {
-		return conn->message("\033[1;1H" + status_message());
+		message = "";
+
+		cmd_status(nil, nil, nil);
+		cmd_rsrc(nil, nil, "tick usage");
+
+		return conn->message("\033[1;1H" + message);
 	}
 }
 
