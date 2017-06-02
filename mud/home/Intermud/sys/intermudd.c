@@ -716,7 +716,13 @@ private void restore()
 	buf = SECRETD->read_file("intermud");
 
 	if (buf) {
-		map = PARSER_VALUE->parse(buf);
+		catch {
+			map = PARSER_VALUE->parse(buf);
+		} : {
+			LOGD->post_message("system", LOG_ERR, "Error parsing Intermud state, resetting");
+			SECRETD->remove_file("intermud-bad");
+			SECRETD->rename_file("intermud", "intermud-bad");
+		}
 	} else {
 		return;
 	}
