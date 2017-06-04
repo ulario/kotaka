@@ -178,6 +178,10 @@ void recompile_everything()
 			pinfo = PROGRAMD->query_program_info(oindex);
 			path = pinfo->query_path();
 
+			if (pinfo->query_destructed()) {
+				continue;
+			}
+
 			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
 				list_push_back(libs, path);
 			} else if (sscanf(path, USR_DIR + "/%*s/initd") || path == "/initd") {
