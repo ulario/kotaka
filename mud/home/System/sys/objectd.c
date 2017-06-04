@@ -100,21 +100,19 @@ private mixed query_include_file(string compiled, string from, string path)
 	string creator;
 	object initd;
 
-	/* don't allow bypass of standard file */
 	if (path == "/include/std.h") {
 		return path;
 	}
 
 	creator = find_object(DRIVER)->creator(compiled);
 
-	/* System has to be direct */
 	if (creator == "System") {
 		return path;
 	}
 
-	/* don't allow bypass of standard auto */
-	if (path == "/include/AUTO" &&
-		from == "/include/std.h") {
+	if (path == "/include/AUTO"
+		&& from == "/include/std.h"
+		&& compiled != USR_DIR + "/admin/_code") {
 		return USR_DIR + "/System/include/second_auto.h";
 	}
 
