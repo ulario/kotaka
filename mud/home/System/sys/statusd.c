@@ -129,18 +129,6 @@ int login(string str)
 	return MODE_NOECHO;
 }
 
-private int printstatus(object conn)
-{
-	if (conn) {
-		message = "";
-
-		cmd_status(nil, nil, nil);
-		cmd_rsrc(nil, nil, "tick usage");
-
-		return conn->message("\033[1;1H" + message);
-	}
-}
-
 int receive_message(string str)
 {
 	object conn;
@@ -235,6 +223,8 @@ int message_done()
 void report(object conn)
 {
 	int status;
+	string *lines;
+	int i, sz;
 
 	ACCESS_CHECK(SYSTEM());
 
@@ -248,7 +238,23 @@ void report(object conn)
 
 	connections[conn][2] = 0;
 
-	printstatus(conn);
+	message = "";
+
+	message += "Status:\n";
+	cmd_status(nil, nil, nil);
+	message += "\nResources:\n";
+	cmd_rsrc(nil, nil, nil);
+
+	lines = explode(message, "\n");
+	sz = sizeof(lines);
+
+	conn->message("\033[1;1H");
+
+	for (sz = sizeof(lines), i = 0; i < sz; i++) {
+		conn->message(lines[i] + "\033[K\n");
+	}
+
+	conn->message("\033[J");
 }
 
 static void clear(object conn)
