@@ -718,6 +718,10 @@ private void restore()
 	if (buf) {
 		catch {
 			map = PARSER_VALUE->parse(buf);
+
+			if (map && map["password"]) {
+				password = map["password"];
+			}
 		} : {
 			LOGD->post_message("system", LOG_ERR, "Error parsing Intermud state, resetting");
 			SECRETD->remove_file("intermud-bad");
@@ -725,9 +729,5 @@ private void restore()
 		}
 	} else {
 		return;
-	}
-
-	if (map["password"]) {
-		password = map["password"];
 	}
 }
