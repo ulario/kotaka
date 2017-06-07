@@ -217,22 +217,18 @@ private void write_node(string base)
 void flush()
 {
 	string *files;
-	object *text_deques;
-	int i;
+	int sz;
 
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
 
-	rlimits(0; -1) {
-		while (buffers && map_sizeof(buffers)) {
-			string *files;
-			int sz;
+	files = map_indices(buffers);
 
-			files = map_indices(buffers);
+	sz = sizeof(files);
 
-			sz = sizeof(files);
+	write_node(files[random(sz)]);
 
-			write_node(files[random(sz)]);
-		}
+	if (buffers || map_sizeof(buffers)) {
+		call_out("flush", 0);
 	}
 }
 
