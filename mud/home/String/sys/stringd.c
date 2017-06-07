@@ -26,6 +26,7 @@ inherit LIB_SYSTEM;
 inherit "/lib/string/char";
 inherit "/lib/string/bitops";
 inherit "/lib/string/trim";
+inherit "/lib/string/format";
 
 string hex(int i);
 string bin(int i);
@@ -1061,6 +1062,7 @@ string bin(int val)
 
 	return out;
 }
+
 string hex(int val)
 {
 	int index;
@@ -1087,64 +1089,4 @@ string hex(int val)
 	}
 
 	return out;
-}
-
-private string wordwrap_line(string line, int width)
-{
-	string *words;
-	string buffer;
-	int tail;
-	int length;
-	int i;
-	int sz;
-
-	buffer = "";
-	words = explode(line, " ") - ({ nil, "" });
-	sz = sizeof(words);
-
-	for (i = 0; i < sz; i++) {
-		string word;
-		int wlen;
-
-		word = words[i];
-		wlen = strlen(word);
-
-		if (length + tail + wlen > width) {
-			length = 0;
-			buffer += "\n";
-		} else {
-			buffer += spaces(tail);
-			length += tail;
-		}
-
-		buffer += word;
-		length += wlen;
-
-		switch(word[wlen - 1]) {
-		case '.':
-		case '?':
-		case '!':
-			tail = 2;
-			break;
-		default:
-			tail = 1;
-		}
-	}
-
-	return buffer;
-}
-
-string wordwrap(string text, int width)
-{
-	string *lines;
-	int i, sz;
-
-	lines = explode(text, "\n\n");
-	sz = sizeof(lines);
-
-	for (i = 0; i < sz; i++) {
-		lines[i] = wordwrap_line(lines[i], width);
-	}
-
-	return implode(lines, "\n\n");
 }
