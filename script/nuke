@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd ~/git/kotaka
+
+killall -KILL dgd monitor
+
+rm -f state/*
+rm -f kotaka.err
