@@ -61,7 +61,7 @@ static int find_call_out(string func)
 	return 0;
 }
 
-static int call_out(string func, mixed delay, mixed args...)
+atomic static int call_out(string func, mixed delay, mixed args...)
 {
 	int handle;
 	mixed *rsrcp, rsrcc;
