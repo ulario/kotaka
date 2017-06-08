@@ -30,30 +30,43 @@ inherit user LIB_USER;
 inherit SECOND_AUTO;
 
 string message;
-mapping connections;
-/* ([ connobj : ({ delay, trust, callout }) ]) */
+
+mapping delay; /* ([ obj: delay ]) */
+mapping handle; /* ([ obj: handle ]) */
+mapping ready; /* ([ obj: is_ready ]) */
+mapping pending; /* ([ obj: is_pending ]) */
+mapping last; /* ([ obj: last millitime ]) */
 
 static void create()
 {
 	message = "";
 
+	delay = ([ ]);
+	handle = ([ ]);
+	ready = ([ ]);
+	pending = ([ ]);
+	last = ([ ]);
+
 	wiz::create(0);
 	userd::create();
 	user::create();
 
-	connections = ([ ]);
-
 	call_out("configure", 0);
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	delay = ([ ]);
+	handle = ([ ]);
+	ready = ([ ]);
+	pending = ([ ]);
 }
 
 static void configure()
 {
 	SYSTEM_USERD->set_telnet_manager(0, this_object());
-}
-
-private float swap_used_ratio()
-{
-	return (float)status(ST_SWAPUSED) / (float)status(ST_SWAPSIZE);
 }
 
 static mixed message(string msg)
@@ -63,7 +76,132 @@ static mixed message(string msg)
 	return nil;
 }
 
-/* I/O stuff */
+private int is_trusted(object conn)
+{
+	while (conn && conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	switch(query_ip_number(conn)) {
+	case "::1":
+	case "127.0.0.1":
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+private void print_report(object conn)
+{
+	int status;
+	string *lines;
+	int i, sz;
+
+	message = "";
+
+	message += "Status:\n";
+	cmd_status(nil, nil, nil);
+
+	message += "\nResources:\n";
+	cmd_rsrc(nil, nil, nil);
+
+	message += "\nTick usage:\n";
+	cmd_rsrc(nil, nil, "tick usage");
+
+	message += "\nCallout usage:\n";
+	cmd_rsrc(nil, nil, "callout usage");
+
+	if (last[conn]) {
+		mixed *now;
+		float time;
+
+		now = millitime();
+
+		time = (float)now[0] + now[1];
+		time -= (float)last[conn][0] + last[conn][1];
+
+		message += "Delay since last report: " + time + "\n";
+	}
+
+	last[conn] = millitime();
+
+	lines = explode(message, "\n");
+	sz = sizeof(lines);
+
+	conn->message("\033[1;1H");
+
+	for (sz = sizeof(lines), i = 0; i < sz; i++) {
+		conn->message(lines[i] + "\033[K\n");
+	}
+
+	conn->message("\033[J");
+}
+
+private void schedule(object conn)
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = SUSPENDD->query_callouts();
+
+	for(sz = sizeof(callouts); --sz >= 0; ) {
+		mixed *callout;
+
+		callout = callouts[sz];
+
+		if (callout[CO_FUNCTION] != "report") {
+			continue;
+		}
+
+		if (callout[CO_FIRSTXARG] == conn) {
+			SUSPENDD->dequeue_delayed_work(callout[CO_HANDLE]);
+		}
+	}
+
+	if (delay[conn] == nil) {
+		delay[conn] = is_trusted(conn) ? 0.05 : 1.0;
+	}
+
+	handle[conn] = SUSPENDD->queue_delayed_work("report", delay[conn], conn);
+}
+
+void report(object conn)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (!conn) {
+		return;
+	}
+
+	handle[conn] = nil;
+
+	if (ready && ready[conn]) {
+		ready[conn] = nil;
+
+		print_report(conn);
+
+		schedule(conn);
+	} else {
+		if (!pending) {
+			pending = ([ ]);
+		}
+
+		pending[conn] = 1;
+
+		return;
+	}
+}
+
+static void clear(object conn)
+{
+	if (!conn) {
+		return;
+	}
+
+	conn->message("\033[1;1H\033[2J");
+}
+
+/* userd hooks */
 
 string query_banner(object conn)
 {
@@ -94,35 +232,28 @@ object select(string input)
 	return this_object();
 }
 
+/* user hooks */
+
 int login(string str)
 {
-	object base_conn, conn;
-
-	int trusted;
+	float delay;
+	object conn;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	ASSERT(str == nil);
+	if (str) {
+		return MODE_DISCONNECT;
+	}
 
 	conn = previous_object();
-	base_conn = conn;
 
-	while (base_conn && base_conn <- LIB_USER) {
-		base_conn = base_conn->query_conn();
+	if (is_trusted(conn)) {
+		delay = 0.05;
+	} else {
+		delay = 1.0;
 	}
 
-	switch(query_ip_number(base_conn)) {
-	case "::1":
-	case "127.0.0.1":
-		trusted = 1;
-		break;
-	}
-
-	connections[conn] = ({
-		trusted ? 0.1 : 1.0,
-		trusted,
-		SUSPENDD->queue_delayed_work("report", 0, conn)
-	});
+	handle[conn] = SUSPENDD->queue_delayed_work("report", delay / 2.0, conn);
 
 	conn->message("\033[1;1H\033[2J");
 
@@ -136,18 +267,12 @@ int receive_message(string str)
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	ASSERT(str);
-
-	conn = previous_object();
-
-	ASSERT(conn <- LIB_CONN);
-
-	if (!connections[conn]) {
-		conn->message("Connection not found, disconnecting.\n");
+	if (!str) {
 		return MODE_DISCONNECT;
 	}
 
 	conn = previous_object();
+	ASSERT(conn <- LIB_CONN);
 
 	params = explode(str, " ") - ({ "" });
 
@@ -158,7 +283,10 @@ int receive_message(string str)
 			break;
 
 		case "quit":
-			SUSPENDD->dequeue_delayed_work(connections[conn][2]);
+			if (handle[conn]) {
+				SUSPENDD->dequeue_delayed_work(handle[conn]);
+				handle[conn] = nil;
+			}
 			conn->message("\033c");
 			return MODE_DISCONNECT;
 
@@ -172,17 +300,17 @@ int receive_message(string str)
 
 				sscanf(params[1], "%f", interval);
 
-				if (interval < 1.0 && !connections[conn][1]) {
+				if (interval < 1.0 && !is_trusted(conn)) {
 					conn->message("Intervals less than 1 second\nare only allowed for local connections.\n");
 					call_out("clear", 5.0, conn);
 					break;
 				}
 
-				connections[conn][0] = interval;
+				delay[conn] = interval;
 
-				if (connections[conn][2]) {
-					SUSPENDD->dequeue_delayed_work(connections[conn][2]);
-					connections[conn][2] = SUSPENDD->queue_delayed_work("report", interval, conn);
+				if (handle[conn]) {
+					SUSPENDD->dequeue_delayed_work(handle[conn]);
+					schedule(conn);
 				}
 			}
 			break;
@@ -193,7 +321,7 @@ int receive_message(string str)
 			break;
 		}
 	} else {
-		call_out("clear", 5.0, conn);
+		call_out("clear", 0, conn);
 	}
 
 	return MODE_NOCHANGE;
@@ -207,61 +335,14 @@ int message_done()
 
 	conn = previous_object();
 
-	if (!connections[conn]) {
-		return MODE_DISCONNECT;
-	}
+	if (pending && pending[conn]) {
+		pending[conn] = nil;
+		print_report(conn);
 
-	if (!connections[conn][2]) {
-		connections[conn][2] = SUSPENDD->queue_delayed_work("report",
-			connections[conn][0], conn
-		);
+		schedule(conn);
+	} else {
+		ready[conn] = 1;
 	}
 
 	return MODE_NOCHANGE;
-}
-
-void report(object conn)
-{
-	int status;
-	string *lines;
-	int i, sz;
-
-	ACCESS_CHECK(SYSTEM());
-
-	if (!conn) {
-		return;
-	}
-
-	if (!connections[conn]) {
-		return;
-	}
-
-	connections[conn][2] = 0;
-
-	message = "";
-
-	message += "Status:\n";
-	cmd_status(nil, nil, nil);
-	message += "\nResources:\n";
-	cmd_rsrc(nil, nil, nil);
-
-	lines = explode(message, "\n");
-	sz = sizeof(lines);
-
-	conn->message("\033[1;1H");
-
-	for (sz = sizeof(lines), i = 0; i < sz; i++) {
-		conn->message(lines[i] + "\033[K\n");
-	}
-
-	conn->message("\033[J");
-}
-
-static void clear(object conn)
-{
-	if (!conn) {
-		return;
-	}
-
-	conn->message("\033[1;1H\033[2J");
 }
