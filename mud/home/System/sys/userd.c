@@ -439,24 +439,32 @@ object select(string str)
 
 /* connection hooks */
 
-int receive_message(string str)
+private void handle_message(object conn, string str)
 {
 	string errmsg;
-
-	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	errmsg = TLSD->query_tls_value("System", "userd-error");
 
 	previous_object()->message(errmsg ? errmsg  + "\r\n" : "Unknown connection manager error\r\n");
+}
+
+int receive_message(string str)
+{
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	handle_message(previous_object(), str);
 
 	return MODE_DISCONNECT;
 }
 
 int login(string str)
 {
-	return receive_message(str);
-}
+	ACCESS_CHECK(previous_program() == LIB_CONN);
 
+	handle_message(previous_object(), str);
+
+	return MODE_DISCONNECT;
+}
 
 /* interception */
 void intercept_redirect(object user, string str)
