@@ -101,8 +101,14 @@ static void create()
 void upgrade()
 {
 	ACCESS_CHECK(SYSTEM());
+
 	configure_logging();
 	configure_rsrc();
+
+	LOGD->post_message("debug", LOG_NOTICE, "Re-auditing filequota");
+	rlimits(0; -1) {
+		DRIVER->fix_filequota();
+	}
 }
 
 private void boot_error()
@@ -239,7 +245,10 @@ private void reboot_common()
 	check_versions();
 
 	catch {
-		DRIVER->fix_filequota();
+		LOGD->post_message("debug", LOG_NOTICE, "Re-auditing filequota");
+		rlimits(0; -1) {
+			DRIVER->fix_filequota();
+		}
 	}
 	catch {
 		clear_admin();
