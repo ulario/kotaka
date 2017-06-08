@@ -227,7 +227,7 @@ void flush()
 
 	write_node(files[random(sz)]);
 
-	if (buffers || map_sizeof(buffers)) {
+	if (buffers && map_sizeof(buffers)) {
 		call_out("flush", 0);
 	}
 }
