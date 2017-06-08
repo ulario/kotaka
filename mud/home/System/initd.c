@@ -65,8 +65,6 @@ static void create()
 	check_versions();
 
 	catch {
-		DRIVER->fix_filequota();
-
 		load_object(KERNELD);		/* needed for LogD */
 		configure_klib();
 		configure_rsrc();
