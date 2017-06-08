@@ -85,6 +85,7 @@ mixed *query_callouts()
 
 		if (sizeof(callout) <= CO_FIRSTXARG) {
 			callouts[sz] = nil;
+			continue;
 		}
 
 		if (callout[CO_FIRSTXARG] != obj) {
