@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+inherit "char";
+
 private string wordwrap_line(string line, int width)
 {
 	string *words;
@@ -76,4 +78,81 @@ string wordwrap(string text, int width)
 	}
 
 	return implode(lines, "\n\n");
+}
+
+string render_table(string **table, int colgap)
+{
+	int irow;
+	int icol;
+	int cols;
+
+	int tsz;
+
+	string *rows;
+
+	int *widths;
+	widths = ({ });
+	tsz = sizeof(table);
+	rows = allocate(tsz);
+
+	for (irow = 0; irow < tsz; irow++) {
+		string *row;
+		int rsz;
+
+		row = table[irow];
+
+		if (!row) {
+			continue;
+		}
+
+		rsz = sizeof(row);
+
+		if (cols < rsz) {
+			cols = rsz;
+		}
+
+		while (sizeof(widths) < cols) {
+			widths += ({ 0 });
+		}
+
+		for (icol = 0; icol < rsz; icol++) {
+			int sz;
+
+			sz = strlen(row[icol]);
+
+			if (widths[icol] < sz) {
+				widths[icol] = sz;
+			}
+		}
+	}
+
+	for (irow = 0; irow < tsz; irow++) {
+		string *row;
+		int rsz;
+
+		row = table[irow];
+
+		if (!row) {
+			row = ({ });
+		}
+
+		rsz = sizeof(row);
+
+		for (icol = 0; icol < rsz; icol++) {
+			string cell;
+			string piece;
+			string spaces;
+
+			piece = row[icol];
+			spaces = spaces(widths[icol] - strlen(piece));
+
+			cell = piece + spaces;
+
+			row[icol] = cell;
+		}
+
+		rows[irow] = implode(row, spaces(colgap));
+	}
+
+	return implode(rows, "\n") + "\n";
 }

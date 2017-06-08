@@ -48,7 +48,7 @@ string chars(int code, int count)
 {
 	string log;
 
-	if (code < 0 || code > 0xFF) {
+	if (code < 0 || code > 0xff) {
 		error("Invalid character code");
 	}
 
