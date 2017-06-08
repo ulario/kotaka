@@ -29,11 +29,17 @@ private void load()
 	load_dir("sys", 3);
 }
 
+private void set_limits()
+{
+	KERNELD->rsrc_set_limit("Verb", "ticks", 1000000);
+}
+
 static void create()
 {
 	KERNELD->set_global_access("Verb", 1);
 
 	load();
+	set_limits();
 }
 
 void upgrade_module()
@@ -41,6 +47,7 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
+	set_limits();
 
 	purge_orphans("Verb");
 }
