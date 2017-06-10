@@ -31,27 +31,23 @@ inherit SECOND_AUTO;
 #define INTERVAL   600
 #define OFFSET       0
 
-private void purge_callouts();
-static void reschedule();
-
-static void create()
+private void purge_callouts()
 {
+	int sz;
+	mixed **callouts;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts) - 1; sz >= 0; --sz) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
 }
 
-void boot()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	reschedule();
-}
-
-static void reschedule()
+private void reschedule()
 {
 	int idelay;
 	int fdelay;
 	int time;
-
-	purge_callouts();
 
 	time = time();
 
@@ -65,35 +61,6 @@ static void reschedule()
 	}
 }
 
-private void purge_callouts()
-{
-	int sz;
-	mixed **callouts;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts) - 1; sz >= 0; --sz) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
-	}
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	if (INITD->booted()) {
-		/* ignore if this is boot time object discovery */
-		reschedule();
-	}
-}
-
-void reboot()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	reschedule();
-}
-
 static void dump(int full)
 {
 	int delay;
@@ -103,6 +70,49 @@ static void dump(int full)
 	} else {
 		dump_state(1);
 	}
+
+	reschedule();
+}
+
+private int active()
+{
+	int sz;
+	mixed **callouts;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts) - 1; sz >= 0; --sz) {
+		if (callouts[sz][CO_FUNCTION] == "dump") {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+static void create()
+{
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (active()) {
+		reschedule();
+	}
+}
+
+void boot()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	reschedule();
+}
+
+void reboot()
+{
+	ACCESS_CHECK(SYSTEM());
 
 	reschedule();
 }
