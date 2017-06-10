@@ -36,7 +36,7 @@ To use kotaka:
 	Make sure the directory setting points to the absolute path of
 	where you installed kotaka.
 
-6.  (optional) Set up the dgd-session script
+6.  (optional) Set up the monitor script
 
 	This script can be used to keep dgd going and will automatically
 	restart it on termination if desired.
