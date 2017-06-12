@@ -98,10 +98,8 @@ private void write_node(string channel)
 	info = SECRETD->file_info("logs/" + channel + ".log");
 
 	if (info && info[0] >= 1 << 30) {
-		SECRETD->rename_file("logs/" + channel + ".dir", "logs/" + channel + ".dir.old");
-		SECRETD->make_dir("logs/" + channel + ".dir");
-		SECRETD->rename_file("logs/" + channel + ".dir.old", "logs/" + channel + ".dir/old.dir");
-		SECRETD->rename_file("logs/" + channel + ".log", "logs/" + channel + ".dir/old.log");
+		SECRETD->remove_file("logs/" + channel + ".log.old");
+		SECRETD->rename_file("logs/" + channel + ".log", "logs/" + channel + ".log.old");
 	}
 
 	SECRETD->make_dir(".");
