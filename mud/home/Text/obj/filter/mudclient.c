@@ -92,7 +92,7 @@ void enable_msp()
 
 void disable_msp()
 {
-	query_conn()->send_dont(90);
+	query_conn()->send_wont(90);
 
 	msp_pending = 0;
 	msp_active = 0;
