@@ -64,7 +64,6 @@ static int find_call_out(string func)
 atomic static int call_out(string func, mixed delay, mixed args...)
 {
 	int handle;
-	mixed *rsrcp, rsrcc;
 	string owner;
 
 	if (!this_object()) {
@@ -83,17 +82,20 @@ atomic static int call_out(string func, mixed delay, mixed args...)
 
 	owner = query_owner();
 
-	if (KERNELD->query_rsrc("callouts peak")) {
+	if (KERNELD->query_rsrc("callout peak")) {
+		mixed *rsrcp, rsrcc;
+
+		rsrcp = KERNELD->rsrc_get(owner, "callout peak");
+		rsrcc = KERNELD->rsrc_get(owner, "callouts");
+
+		if (rsrcp[RSRC_USAGE] < rsrcc[RSRC_USAGE]) {
+			KERNELD->rsrc_incr(owner, "callout peak", nil, rsrcc[RSRC_USAGE] - rsrcp[RSRC_USAGE]);
+		}
 	}
 
-	rsrcc = KERNELD->rsrc_get(owner, "callouts");
-	rsrcp = KERNELD->rsrc_get(owner, "callouts peak");
-
-	if (rsrcp[RSRC_USAGE] < rsrcc[RSRC_USAGE]) {
-		KERNELD->rsrc_incr(owner, "callouts peak", nil, rsrcc[RSRC_USAGE] - rsrcp[RSRC_USAGE]);
+	if (KERNELD->query_rsrc("callout usage")) {
+		KERNELD->rsrc_incr(owner, "callout usage", nil, 1);
 	}
-
-	KERNELD->rsrc_incr(owner, "callouts usage", nil, 1);
 
 	return handle;
 }
