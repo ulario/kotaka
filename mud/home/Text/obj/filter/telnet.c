@@ -23,6 +23,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/telnet.h>
+#include <kotaka/log.h>
 
 inherit LIB_FILTER;
 
