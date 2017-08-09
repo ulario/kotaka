@@ -40,6 +40,8 @@ int naws_active;
 int naws_w;
 int naws_h;
 
+private int debug;	/* debug flags: 1 = log to debug channel, 2 = echo it back */
+
 static void create(int clone)
 {
 	if (clone) {
@@ -72,14 +74,43 @@ int query_naws_height()
 	return naws_h;
 }
 
+int query_telnet_debug()
+{
+	return debug;
+}
+
+void set_telnet_debug(int new_debug)
+{
+	debug = new_debug;
+}
+
+private string ipof(object user)
+{
+	while (user && user <- LIB_USER) {
+		user = user->query_conn();
+	}
+
+	if (user) {
+		return query_ip_number(user);
+	}
+}
+
 void send_will(int code)
 {
 	string out;
+
 	out = "   ";
 	out[0] = TELNET_IAC;
 	out[1] = TELNET_WILL;
 	out[2] = code;
-	::message(out);
+
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC WILL " + code + " to " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Sent IAC WILL " + code + "\r\n");
+	}
 
 	switch(code)
 	{
@@ -95,11 +126,21 @@ void send_will(int code)
 void send_wont(int code)
 {
 	string out;
+
 	out = "   ";
 	out[0] = TELNET_IAC;
 	out[1] = TELNET_WONT;
 	out[2] = code;
+
 	::message(out);
+
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC WONT " + code + " to " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Sent IAC WONT " + code + "\r\n");
+	}
 
 	switch(code)
 	{
@@ -113,11 +154,21 @@ void send_wont(int code)
 void send_do(int code)
 {
 	string out;
+
 	out = "   ";
 	out[0] = TELNET_IAC;
 	out[1] = TELNET_DO;
 	out[2] = code;
+
 	::message(out);
+
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC DO " + code + " to " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Sent IAC DO " + code + "\r\n");
+	}
 
 	switch(code) {
 	case 31:
@@ -129,11 +180,21 @@ void send_do(int code)
 void send_dont(int code)
 {
 	string out;
+
 	out = "   ";
 	out[0] = TELNET_IAC;
 	out[1] = TELNET_DONT;
 	out[2] = code;
+
 	::message(out);
+
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC DONT " + code + " to " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Sent IAC DONT " + code + "\r\n");
+	}
 
 	switch(code) {
 	case 31:
@@ -147,15 +208,27 @@ void send_subnegotiation(int code, string subnegotiation)
 {
 	string out;
 	out = "   ";
+
 	out[0] = TELNET_IAC;
 	out[1] = TELNET_SB;
 	out[2] = code;
+
 	::message(out);
 	message(subnegotiation);
+
 	out = "  ";
 	out[0] = TELNET_IAC;
 	out[1] = TELNET_SE;
+
 	::message(out);
+
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC SB " + code + " and SE to " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Sent IAC SB " + code + " and SE\r\n");
+	}
 }
 
 private void do_subnegotiation()
@@ -185,6 +258,14 @@ private void do_subnegotiation()
 
 private void process_do(int code)
 {
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Received IAC DO " + code + " from " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Received IAC DO " + code + "\r\n");
+	}
+
 	switch(code) {
 	case 1:
 		if (echo_enabled) {
@@ -211,6 +292,14 @@ private void process_do(int code)
 
 private void process_dont(int code)
 {
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Received IAC DONT " + code + " from " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Received IAC DONT " + code + "\r\n");
+	}
+
 	switch(code) {
 	case 1:
 		/* honoring a dont is mandatory */
@@ -235,6 +324,14 @@ private void process_dont(int code)
 
 private void process_will(int code)
 {
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Received IAC WILL " + code + " from " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Received IAC WILL " + code + "\r\n");
+	}
+
 	switch(code) {
 	case 31:
 		if (naws_active) {
@@ -262,6 +359,14 @@ private void process_will(int code)
 
 private void process_wont(int code)
 {
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Received IAC WONT " + code + " from " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Received IAC WONT " + code + "\r\n");
+	}
+
 	switch(code) {
 	case 31:
 		/* client refused to allow or continue with NAWS */
@@ -283,12 +388,28 @@ private void process_wont(int code)
 
 private void process_sb(int code)
 {
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Received IAC SB " + code + " from " + ipof(this_user()));
+	}
+
+	if (debug & 1) {
+		::message("Received IAC SB " + code + "\r\n");
+	}
+
 	subcode = code;
 	subbuf = "";
 }
 
 private void process_se()
 {
+	if (debug & 1) {
+		LOGD->post_message("debug", LOG_DEBUG, "Received IAC SE from " + ipof(this_user()));
+	}
+
+	if (debug & 2) {
+		::message("Received IAC SE\r\n");
+	}
+
 	do_subnegotiation();
 
 	subcode = -1;
@@ -430,6 +551,7 @@ int message(string str)
 {
 	str = STRINGD->replace(str, "\377", "\377\377");
 	str = STRINGD->replace(str, "\n", "\r\n");
+
 	return ::message(str);
 }
 
