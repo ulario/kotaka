@@ -39,8 +39,8 @@ function sigint
 
 function execdgd
 {
-	trap "" HUP
-	trap "" INT
+	trap - SIGHUP
+	trap - SIGINT
 	exec ~/bin/dgd $*
 }
 
