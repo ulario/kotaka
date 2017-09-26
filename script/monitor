@@ -6,6 +6,8 @@ function sigchld
 {
 	if (( CATCH == 1 ))
 	then
+		# a SIGCHLD means dgd really did exit
+		# otherwise the wait got nailed by an EINTR
 		EXITED=1
 	fi
 }
@@ -182,9 +184,11 @@ do
 
 	if (( EXITED == 1 ))
 	then
+		# we got a SIGCHLD, dgd exited
 		BOOTED=0
 		doexit
 	else
+		# wait was interrupted because *we* got a signal
 		doeintr
 	fi
 done
