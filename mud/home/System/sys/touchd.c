@@ -59,7 +59,7 @@ void queue_object(object obj)
 	}
 }
 
-static void process(varargs int time)
+static void process()
 {
 	object obj;
 
