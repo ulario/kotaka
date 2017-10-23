@@ -2,22 +2,8 @@
 
 # signal handlers
 
-function sigchld
-{
-	if (( CATCH == 1 ))
-	then
-		# a SIGCHLD means dgd really did exit
-		# otherwise the wait got nailed by an EINTR
-		EXITED=1
-	fi
-}
-
-function sighandler
-{
-	SIGNALLED=1
-}
-
-# signal procedures
+# note: we don't CARE if wait gets interrupted
+# all handled signals are fatal for the script
 
 function sigterm
 {
@@ -35,12 +21,21 @@ function sigint
 	kill -INT $$
 }
 
+function sighup
+{
+	echo "+++ Monitor received SIGINT, killing DGD +++"
+	trap - SIGINT
+	kill -KILL $DGDPID # DGD ignores SIGINT
+	kill -INT $$
+}
+
 # subroutines
 
 function execdgd
 {
 	trap - SIGHUP
 	trap - SIGINT
+	trap - SIGTERM
 	exec ~/bin/dgd $*
 }
 
@@ -53,7 +48,6 @@ function boot
 		if [ -f state/snapshot.old ]
 		then
 			# both are present, possible incremental snapshot
-			CATCH=1
 			execdgd kotaka.dgd state/snapshot state/snapshot.old &
 		else
 			# only the full one
@@ -65,12 +59,10 @@ function boot
 		then
 			# we only have the old one
 			echo "--- DGD cool booting ---"
-			CATCH=1
 			execdgd kotaka.dgd state/snapshot.old &
 		else
 			# complete cold start
 			echo "--- DGD cold booting ---"
-			CATCH=1
 			execdgd kotaka.dgd &
 		fi
 	fi
@@ -119,29 +111,8 @@ function signalled
 	esac
 }
 
-function doeintr
-{
-	SIGNAME=`kill -l $(( EXITCODE - 128 ))`
-
-	case $SIGNAME in
-	TERM)
-		sigterm
-		;;
-	INT)
-		sigint
-		;;
-	HUP)
-		echo "+++ Monitor received SIG$SIGNAME (ignoring) +++"
-		;;
-	*)
-		echo "+++ Monitor received unexpected SIG$SIGNAME +++"
-		;;
-	esac
-}
-
 function doexit
 {
-	BOOTED=0
 	if (( EXITCODE < 128 ))
 	then
 		exited
@@ -156,39 +127,18 @@ exec 2>&1
 
 cd ~/git/kotaka
 
-trap sighandler SIGTERM
-trap sighandler SIGINT
-trap sighandler SIGHUP
-trap sigchld SIGCHLD
+trap sigterm SIGTERM
+trap sigint SIGINT
+trap sighup SIGHUP
 
 set -m
 
 echo "--- Monitor starting ---"
 
-BOOTED=0
-SIGNALLED=0
-EXITED=0
-
 while true
 do
-	if (( BOOTED == 0 ))
-	then
-		BOOTED=1
-		EXITED=0
-		boot
-	fi
-
+	boot
 	wait $DGDPID
 	EXITCODE=$?
-	CATCH=0
-
-	if (( EXITED == 1 ))
-	then
-		# we got a SIGCHLD, dgd exited
-		BOOTED=0
-		doexit
-	else
-		# wait was interrupted because *we* got a signal
-		doeintr
-	fi
+	doexit
 done
