@@ -98,6 +98,7 @@ void configure_properties()
 	PROPERTYD->add_property("size_z", T_INT, PROP_MAGIC, ({ "query_z_size", "set_z_size" }) );
 
 	PROPERTYD->add_property("coordinate_system", T_STRING, PROP_INHERIT);
+	PROPERTYD->add_property("boundary_type", T_INT, PROP_INHERIT);
 
 	/* catch all */
 	PROPERTYD->add_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );
