@@ -152,6 +152,8 @@ void upgrade_module()
 
 	set_limits();
 
+	destruct_object("sys/saveload");
+
 	load();
 
 	purge_orphans("Game");
