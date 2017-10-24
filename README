@@ -1,17 +1,10 @@
--------
-Support
--------
-
-For questions about dgd itself, please contact the dgd mailing list
-
-Questions about kotaka, or the kernel library, can be posted on the
-mailing list, or emailed to me directly.
-
-	shentino@gmail.com
-
 -----------------
 Table of contents
 -----------------
+
+README
+
+	This file
 
 INSTALL
 
@@ -41,3 +34,14 @@ mud
 scripts
 
 	Useful scripts.
+
+-------
+Support
+-------
+
+For questions about dgd itself, please contact the dgd mailing list
+
+Questions about kotaka, or the kernel library, can be posted on the
+mailing list, or emailed to me directly.
+
+	shentino@gmail.com
