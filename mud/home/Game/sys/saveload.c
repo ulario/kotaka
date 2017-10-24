@@ -28,17 +28,16 @@
 #include <status.h>
 #include <type.h>
 
-object oindex2onum;
-object objlist;	/* ({ idnum: obj, data }) */
+inherit "/lib/linked_list";
 
-object dirqueue;
-object objqueue;
+object oindex2onum; /* ([ oindex: idnum ]) */
+object objlist;	/* ({ idnum: obj, data }) */
 
 /* private helper functions */
 
 /* - loading */
 
-private void purge_object(object obj)
+private void purge_object(object obj, mixed **list)
 {
 	int sz;
 	object *inv;
@@ -47,7 +46,7 @@ private void purge_object(object obj)
 	inv = obj->query_inventory();
 
 	for (sz = sizeof(inv); --sz >= 0; ) {
-		objqueue->push_back(inv[sz]);
+		list_push_front(list, inv[sz]);
 	}
 
 	name = obj->query_object_name();
@@ -55,59 +54,61 @@ private void purge_object(object obj)
 	destruct_object(obj);
 }
 
-private void purge_directory(string dir)
+private void purge_directory(string dir, mixed **list)
 {
-	mapping list;
+	mapping dlist;
 	int *keys;
 	string *names;
 	int i, sz;
 
-	list = CATALOGD->list_directory(dir);
+	dlist = CATALOGD->list_directory(dir);
 
-	names = map_indices(list);
-	keys = map_values(list);
+	names = map_indices(dlist);
+	keys = map_values(dlist);
 
 	sz = sizeof(keys);
 
 	for (i = 0; i < sz; i++) {
 		if (keys[i] == 2) {
 			if (dir) {
-				dirqueue->push_front(dir + ":" + names[i]);
+				list_push_front(list, dir + ":" + names[i]);
 			} else {
-				dirqueue->push_front(names[i]);
+				list_push_front(list, names[i]);
 			}
 		} else {
 			if (dir) {
-				objqueue->push_front(CATALOGD->lookup_object(dir + ":" + names[i]));
+				list_push_front(list, CATALOGD->lookup_object(dir + ":" + names[i]));
 			} else {
-				objqueue->push_front(CATALOGD->lookup_object(names[i]));
+				list_push_front(list, CATALOGD->lookup_object(names[i]));
 			}
 		}
 	}
 }
 
-void load_world_purge()
+void load_world_purge(mixed **list)
 {
 	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		int done;
+		mixed data;
 
-		if (!dirqueue->empty()) {
-			string dir;
+		if (!list_empty(list)) {
+			data = list_front(list);
+			list_pop_front(list);
 
-			dir = dirqueue->query_front();
-			dirqueue->pop_front();
+			switch(typeof(data)) {
+			case T_STRING:
+				purge_directory(data, list);
+				break;
 
-			purge_directory(dir);
-		} else if (!objqueue->empty()) {
-			object obj;
+			case T_OBJECT:
+				purge_object(data, list);
+				break;
 
-			obj = objqueue->query_front();
-			objqueue->pop_front();
-
-			if (obj) {
-				purge_object(obj);
+			case T_NIL:
+				/* object already destructed */
+				break;
 			}
 		} else {
 			done = 1;
@@ -116,7 +117,7 @@ void load_world_purge()
 		if (done) {
 			SUSPENDD->queue_work("load_world_spawn", 1);
 		} else {
-			SUSPENDD->queue_work("load_world_purge");
+			SUSPENDD->queue_work("load_world_purge", list);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
@@ -161,25 +162,25 @@ void load_world_name(int i)
 	ACCESS_CHECK(SYSTEM());
 
 	catch {
-		object obj;
-		mixed *arr;
-		mixed data;
-
-		({ obj, data }) = objlist->query_element(i - 1);
-
-		data = PARSER_VALUE->parse(data);
-
-		obj->move(data["environment"]);
-		data["environment"] = nil;
-
-		obj->set_object_name(data["name"]);
-		data["name"] = nil;
-
-		objlist->set_element(i - 1, ({ obj, data }) );
-
-		i--;
-
 		if (i > 0) {
+			object obj;
+			mixed *arr;
+			mixed data;
+
+			({ obj, data }) = objlist->query_element(i - 1);
+
+			data = PARSER_VALUE->parse(data);
+
+			obj->move(data["environment"]);
+			data["environment"] = nil;
+
+			obj->set_object_name(data["name"]);
+			data["name"] = nil;
+
+			objlist->set_element(i - 1, ({ obj, data }) );
+
+			i--;
+
 			SUSPENDD->queue_work("load_world_name", i);
 		} else {
 			SUSPENDD->queue_work("load_world_set", objlist->query_size() - 1);
@@ -194,15 +195,15 @@ void load_world_set(int i)
 	ACCESS_CHECK(SYSTEM());
 
 	catch {
-		object obj;
-		mixed data;
-
-		({ obj, data }) = objlist->query_element(i - 1);
-
-		obj->load(data);
-		i--;
-
 		if (i > 0) {
+			object obj;
+			mixed data;
+
+			({ obj, data }) = objlist->query_element(i - 1);
+
+			obj->load(data);
+			i--;
+
 			SUSPENDD->queue_work("load_world_set", i);
 		} else {
 			LOGD->post_message("system", LOG_INFO, "World loaded");
@@ -231,11 +232,11 @@ private void purge_savedir()
 	} while (names && sizeof(names));
 }
 
-private void put_object(object obj)
+private void put_object(object obj, mixed **list)
 {
+	object *inv;
 	int oindex;
 	int sz;
-	object *inv;
 
 	ASSERT(sscanf(object_name(obj), "%*s#%d", oindex));
 
@@ -250,62 +251,63 @@ private void put_object(object obj)
 	inv = obj->query_inventory();
 
 	for (sz = sizeof(inv); --sz >= 0; ) {
-		objqueue->push_back(inv[sz]);
+		list_push_front(list, inv[sz]);
 	}
 }
 
-private void put_directory(string dir)
+private void put_directory(string dir, mixed **list)
 {
-	mapping list;
+	mapping dlist;
 	int *keys;
 	string *names;
 	int i, sz;
 
-	list = CATALOGD->list_directory(dir);
+	dlist = CATALOGD->list_directory(dir);
 
-	names = map_indices(list);
-	keys = map_values(list);
+	names = map_indices(dlist);
+	keys = map_values(dlist);
 
-	sz = sizeof(keys);
-
-	for (i = 0; i < sz; i++) {
-		if (keys[i] == 2) {
+	for (sz = sizeof(keys); --sz >= 0; ) {
+		if (keys[sz] == 2) {
 			if (dir) {
-				dirqueue->push_front(dir + ":" + names[i]);
+				list_push_front(list, dir + ":" + names[sz]);
 			} else {
-				dirqueue->push_front(names[i]);
+				list_push_front(list, names[sz]);
 			}
 		} else {
 			if (dir) {
-				objqueue->push_front(CATALOGD->lookup_object(dir + ":" + names[i]));
+				list_push_front(list, CATALOGD->lookup_object(dir + ":" + names[sz]));
 			} else {
-				objqueue->push_front(CATALOGD->lookup_object(names[i]));
+				list_push_front(list, CATALOGD->lookup_object(names[sz]));
 			}
 		}
 	}
 }
 
-void save_world_put()
+void save_world_put(mixed **list)
 {
 	ACCESS_CHECK(SYSTEM());
 
 	catch {
 		int done;
+		mixed data;
 
-		if (!objqueue->empty()) {
-			object obj;
+		if (!list_empty(list)) {
+			data = list_front(list);
+			list_pop_front(list);
 
-			obj = objqueue->query_front();
-			objqueue->pop_front();
+			switch(typeof(data)) {
+			case T_STRING:
+				put_directory(data, list);
+				break;
 
-			put_object(obj);
-		} else if (!dirqueue->empty()) {
-			string dir;
+			case T_OBJECT:
+				put_object(data, list);
+				break;
 
-			dir = dirqueue->query_front();
-			dirqueue->pop_front();
-
-			put_directory(dir);
+			case T_NIL:
+				ASSERT(0);
+			}
 		} else {
 			done = 1;
 		}
@@ -315,7 +317,7 @@ void save_world_put()
 			CONFIGD->make_dir("save");
 			SUSPENDD->queue_work("save_world_write", objlist->query_size());
 		} else {
-			SUSPENDD->queue_work("save_world_put");
+			SUSPENDD->queue_work("save_world_put", list);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World save aborted");
@@ -386,6 +388,7 @@ void load_world()
 {
 	int sz;
 	int count;
+	mixed **list;
 
 	oindex2onum = new_object(BIGSTRUCT_MAP_LWO);
 	oindex2onum->claim();
@@ -394,20 +397,19 @@ void load_world()
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 	objlist->claim();
 
-	dirqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	dirqueue->claim();
-	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	objqueue->claim();
-
-	dirqueue->push_back(nil);
+	list = ({ nil, nil });
 
 	SUSPENDD->suspend_system();
-	SUSPENDD->queue_work("load_world_purge");
+
+	purge_directory(nil, list);
+
+	SUSPENDD->queue_work("load_world_purge", list);
 }
 
 void save_world()
 {
 	int sz;
+	mixed **list;
 
 	oindex2onum = new_object(BIGSTRUCT_MAP_LWO);
 	oindex2onum->claim();
@@ -416,15 +418,13 @@ void save_world()
 	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
 	objlist->claim();
 
-	dirqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	dirqueue->claim();
-	objqueue = new_object(BIGSTRUCT_DEQUE_LWO);
-	objqueue->claim();
+	list = ({ nil, nil });
 
 	purge_savedir();
 
-	dirqueue->push_back(nil);
-
 	SUSPENDD->suspend_system();
-	SUSPENDD->queue_work("save_world_put");
+
+	put_directory(nil, list);
+
+	SUSPENDD->queue_work("save_world_put", list);
 }
