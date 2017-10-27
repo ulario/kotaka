@@ -17,13 +17,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <kotaka/privilege.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/log.h>
+
+inherit "/lib/sort";
+
+private void test_qsort()
+{
+	int *sortme;
+	int i;
+
+	sortme = allocate(500);
+
+	for (i = 0; i < 500; i++) {
+		sortme[i] = random(500);
+	}
+
+	qsort(sortme, 0, 500);
+
+	for (i = 0; i < 499; i++) {
+		ASSERT(sortme[i] <= sortme[i + 1]);
+	}
+}
 
 void test()
 {
 	ACCESS_CHECK(TEST());
 
-	"bigstruct"->test();
-	"sort"->test();
-	"suspend"->test();
+	LOGD->post_message("debug", LOG_DEBUG, "Starting sort test...");
+
+	LOGD->post_message("debug", LOG_DEBUG, "Testing qsort...");
+	test_qsort();
 }
