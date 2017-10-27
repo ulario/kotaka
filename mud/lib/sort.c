@@ -62,6 +62,8 @@ void qsort(mixed arr, int begin, int end, varargs string compfunc)
 				sign = call_other(object_name(this_object()) == SORTD ? previous_object() : this_object(), compfunc, le, pivot);
 			} else if (le > pivot) {
 				sign = 1;
+			} else if (le < pivot) {
+				sign = -1;
 			} else {
 				sign = 0;
 			}
