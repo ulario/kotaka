@@ -61,6 +61,11 @@ private void purge_directory(string dir, mixed **list)
 	string *names;
 	int i, sz;
 
+	if (CATALOGD->test_name(dir) != 2) {
+		/* if the directory's already empty, don't purge it */
+		return;
+	}
+
 	dlist = CATALOGD->list_directory(dir);
 
 	names = map_indices(dlist);
