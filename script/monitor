@@ -121,11 +121,11 @@ function doexit
 	fi
 }
 
+cd ~/git/kotaka
+
 exec < /dev/null
 exec >> kotaka.err
 exec 2>&1
-
-cd ~/git/kotaka
 
 trap sigterm SIGTERM
 trap sigint SIGINT
