@@ -7,6 +7,9 @@ Every upgrade has the following sequence of events:
 
 	Any API changes will be announced at least one version in advance.
 
+	For the purposes of this section, a change means anything that
+	will cause the old API to be unusable.
+
 	Unless otherwise noted, until the old API is obsoleted, it will
 	remain valid to use both APIs at the same time, though warnings
 	may be issued if the old API is used.
