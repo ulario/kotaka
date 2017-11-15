@@ -85,6 +85,10 @@ atomic nomask void set_archetypes(object *new_archs)
 
 	CHECKARG(sizeof(new_archs & ({ nil })) == 0, 1, "set_archetypes");
 
+	if (sizeof(new_archs) > 1) {
+		LOGD->post_message("debug", LOG_WARNING, "Attempting to assign multiple archetypes which is deprecated");
+	}
+
 	arch = query_archetypes();
 
 	removed = arch - new_archs;
@@ -137,6 +141,8 @@ atomic nomask void add_archetype(object new_arch)
 	if (is_archetype_of(new_arch)) {
 		error("Circular reference");
 	}
+
+	LOGD->post_message("debug", LOG_WARNING, "Attempting to assign multiple archetypes which is deprecated");
 
 	clean_archetypes();
 
