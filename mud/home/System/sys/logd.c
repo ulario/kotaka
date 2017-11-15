@@ -183,12 +183,15 @@ private void write_node(string base)
 	mixed **list;
 	mixed *node;
 	mixed *info;
+	string front;
 
 	list = buffers[base];
+	front = list_front(list);
+	list_pop_front(list);
 
 	info = SECRETD->file_info("logs/" + base + ".log");
 
-	if (info && info[0] >= 1 << 30) {
+	if (info && info[0] + strlen(front) > 1 << 30) {
 		SECRETD->rename_file("logs/" + base + ".dir", "logs/" + base + ".dir.old");
 		SECRETD->make_dir("logs/" + base + ".dir");
 		SECRETD->rename_file("logs/" + base + ".dir.old", "logs/" + base + ".dir/old.dir");
@@ -198,12 +201,10 @@ private void write_node(string base)
 	catch {
 		SECRETD->make_dir(".");
 		SECRETD->make_dir("logs");
-		SECRETD->write_file("logs/" + base + ".log", list_front(list));
+		SECRETD->write_file("logs/" + base + ".log", front);
 	} : {
 		DRIVER->message("Error writing to " + base + "\n");
 	}
-
-	list_pop_front(list);
 
 	if (list_empty(list)) {
 		buffers[base] = nil;
