@@ -17,6 +17,6 @@ then
 		exec ~/bin/dgd kotaka.dgd state/snapshot
 	fi
 else
-	echo "--- Aborting hotboot (missing snapshot) ---"
+	echo "+++ Hotboot aborted (missing snapshot) +++"
 	exit 2
 fi
