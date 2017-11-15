@@ -168,6 +168,8 @@ static void boot_3()
 
 		booted = 1;
 
+		DUMPD->set_parameters(3600, 0, 24);
+
 		MODULED->boot_module(nil);
 
 		/* reset to default */
