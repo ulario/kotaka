@@ -30,7 +30,6 @@ inherit SECOND_AUTO;
 inherit "~/lib/system/list";
 
 mapping facilities;
-string timestamp;
 mapping buffers;
 
 /* buffers: ([ filename: header ]) */
@@ -159,7 +158,7 @@ private void append_node(string file, string fragment)
 	list_append_string(list, fragment);
 }
 
-private void write_logfile(string file, string message)
+private void write_logfile(string file, string timestamp, string message)
 {
 	int i;
 	int sz;
@@ -233,7 +232,7 @@ void flush()
 	}
 }
 
-private void send_to_target(string target, string message)
+private void send_to_target(string target, string timestamp, string message)
 {
 	string prefix, info;
 	string *lines;
@@ -276,7 +275,7 @@ private void send_to_target(string target, string message)
 		ASSERT(info);
 
 		for (i = 0; i < sz; i++) {
-			write_logfile(info, lines[i]);
+			write_logfile(info, timestamp, lines[i]);
 		}
 
 		break;
@@ -384,6 +383,7 @@ void post_message(string facility, int priority, string message)
 {
 	string creator;
 	mapping hits;
+	string timestamp;
 
 	CHECKARG(facility, 1, "post_message");
 	CHECKARG(facility != "", 1, "post_message");
@@ -446,7 +446,7 @@ void post_message(string facility, int priority, string message)
 			sz = sizeof(targets);
 
 			for (index = 0; index < sz; index++) {
-				send_to_target(targets[index], message);
+				send_to_target(targets[index], timestamp, message);
 			}
 		} else {
 			if (strlen(message) > 200) {
