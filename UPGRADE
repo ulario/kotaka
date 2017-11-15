@@ -56,7 +56,7 @@ Deprecation of multiple archetypes
 	To avoid exponential complexity in a few areas, as well as encourage
 	neater data inheritance, multiple archetypes are deprecated.
 
-	They will be forcibly removed in the future.
+	They will be forbidden in the future, and later forcibly removed.
 
 	To prepare for this change any object with multiple archetypes
 	should be reworked.
