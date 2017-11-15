@@ -485,10 +485,6 @@ string query_version()
 void booted_module(string module)
 {
 	switch(module) {
-	case "Utility":
-		DUMPD->boot();
-		break;
-
 	case "Bigstruct":
 		LOGD->post_message("system", LOG_INFO, "System received boot notification for Bigstruct");
 		break;

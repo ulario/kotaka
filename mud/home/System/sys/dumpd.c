@@ -19,75 +19,59 @@
  */
 
 #include <kernel/kernel.h>
+#include <kotaka/assert.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/utility.h>
 #include <kotaka/privilege.h>
-#include <kotaka/log.h>
 #include <status.h>
 
 inherit SECOND_AUTO;
 
-#define FULL     86400
-#define INTERVAL   600
-#define OFFSET       0
+int offset;	/* the remainder when time is divided by the interval */
+int interval;	/* how long between dumps */
+int increments;	/* the N in every Nth dump being a full dump */
 
-private void purge_callouts()
+private void stop()
 {
-	int sz;
 	mixed **callouts;
+	int sz;
 
 	callouts = status(this_object(), O_CALLOUTS);
 
-	for (sz = sizeof(callouts) - 1; sz >= 0; --sz) {
+	for (sz = sizeof(callouts); --sz >= 0; ) {
 		remove_call_out(callouts[sz][CO_HANDLE]);
 	}
 }
 
-private void reschedule()
+private void start()
 {
-	int idelay;
-	int fdelay;
-	int time;
+	if (interval) {
+		int now;
+		int goal;
+		int incr;
 
-	time = time();
+		now = time();
 
-	idelay = SUBD->idelay(time, INTERVAL, OFFSET);
-	fdelay = SUBD->idelay(time, FULL, OFFSET);
+		goal = now;
+		goal -= goal % interval;
+		goal += offset;
 
-	if (idelay == fdelay) {
-		call_out("dump", idelay, 1);
-	} else {
-		call_out("dump", idelay, 0);
-	}
-}
-
-static void dump(int full)
-{
-	int delay;
-
-	if (full) {
-		dump_state();
-	} else {
-		dump_state(1);
-	}
-
-	reschedule();
-}
-
-private int active()
-{
-	int sz;
-	mixed **callouts;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts) - 1; sz >= 0; --sz) {
-		if (callouts[sz][CO_FUNCTION] == "dump") {
-			return 1;
+		if (goal <= now) {
+			goal += interval;
 		}
-	}
 
-	return 0;
+		call_out("dump", goal - now, goal % (interval * increments) != offset);
+	}
+}
+
+static void dump(int incr)
+{
+	if (incr) {
+		dump_state(1);
+		start();
+	} else {
+		dump_state();
+		start();
+	}
 }
 
 static void create()
@@ -98,21 +82,48 @@ void upgrade()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	if (active()) {
-		reschedule();
-	}
-}
-
-void boot()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	reschedule();
+	stop();
+	start();
 }
 
 void reboot()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	reschedule();
+	stop();
+	start();
+}
+
+void set_parameters(int new_interval, int new_offset, int new_increments)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (new_interval) {
+		ASSERT(new_offset < new_interval);
+	} else {
+		ASSERT(new_offset == 0 && new_increments == 0);
+	}
+
+	stop();
+
+	interval = new_interval;
+	offset = new_offset;
+	increments = new_increments;
+
+	start();
+}
+
+int query_interval()
+{
+	return interval;
+}
+
+int query_offset()
+{
+	return offset;
+}
+
+int query_increments()
+{
+	return increments;
 }
