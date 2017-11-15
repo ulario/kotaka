@@ -131,8 +131,6 @@ trap sigterm SIGTERM
 trap sigint SIGINT
 trap sighup SIGHUP
 
-set -m
-
 echo "--- Monitor starting ---"
 
 while true
