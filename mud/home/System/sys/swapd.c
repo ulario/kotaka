@@ -25,8 +25,6 @@
 
 inherit SECOND_AUTO;
 
-int frag;
-
 #define K (1 << 10)
 #define M (1 << 20)
 #define G (1 << 30)
