@@ -29,9 +29,21 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+private void i3tag(string *chlist)
+{
+	int sz;
+
+	for (sz = sizeof(chlist); --sz >= 0; ) {
+		if (CHANNELD->query_intermud(chlist[sz])) {
+			chlist[sz] += " (i3)";
+		}
+	}
+}
+
 void main(object actor, mapping roles)
 {
 	object user;
+	int sz;
 
 	string *channels;
 	string *subscriptions;
@@ -56,6 +68,9 @@ void main(object actor, mapping roles)
 	active = channels & subscriptions;
 	inactive = channels - subscriptions;
 	dead = subscriptions - channels;
+
+	i3tag(active);
+	i3tag(inactive);
 
 	if (sizeof(active)) {
 		send_out("Subscribed channels:\n\n");
