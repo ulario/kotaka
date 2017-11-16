@@ -270,6 +270,8 @@ void set_intermud(string channel, int true)
 		intermud[channel] = nil;
 	}
 
+	INTERMUDD->listen_channel(channel, true);
+
 	save();
 }
 
