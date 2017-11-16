@@ -287,6 +287,10 @@ private void do_chanlist_reply(mixed *value)
 			channels[names[sz]] = nil;
 		} else {
 			channels[names[sz]] = values[sz];
+
+			if (CHANNELD->query_intermud(names[sz])) {
+				listen_channel(names[sz], 1);
+			}
 		}
 	}
 
