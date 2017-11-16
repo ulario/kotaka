@@ -362,7 +362,7 @@ private void do_startup_reply(mixed *value)
 	ch = CHANNELD->query_channels();
 	sz = sizeof(ch);
 
-	for (sz = sizeof(ch) - 1; sz >= 0; --sz) {
+	for (sz = sizeof(ch); --sz >= 0; ) {
 		if (channels[ch[sz]]) {
 			listen_channel(ch[sz], CHANNELD->query_intermud(ch[sz]));
 		}
