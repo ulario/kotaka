@@ -19,7 +19,9 @@
  */
 #include <kotaka/assert.h>
 #include <kotaka/checkarg.h>
+#include <kotaka/log.h>
 #include <kotaka/paths/utility.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
 private object *archetypes;
