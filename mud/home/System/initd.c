@@ -72,8 +72,8 @@ static void create()
 
 		load_object(SECRETD);		/* needed for LogD */
 		load_object(LOGD);		/* we need to log any error messages */
-		load_object(OBJECTD);		/* enforces static invariants */
 		load_object(TLSD);		/* depends on an updated tls size */
+		load_object(OBJECTD);		/* enforces static invariants */
 
 		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
 		load_object(CALLOUTD);		/* suspends callouts */

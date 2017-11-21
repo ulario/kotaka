@@ -44,6 +44,10 @@ mixed upgrades;		/* list of objects needing upgrade */
 static void create()
 {
 	DRIVER->set_object_manager(this_object());
+
+	if (!find_object(TLSD)) {
+		error("TLSD not loaded");
+	}
 }
 
 void upgrade()
