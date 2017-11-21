@@ -110,7 +110,7 @@ void upgrade()
 	}
 }
 
-private void boot_error()
+private void log_boot_error()
 {
 	LOGD->post_message("system", LOG_ERROR, "Runtime error during boot");
 	LOGD->post_message("system", LOG_ERROR, TLSD->query_tls_value("System", "error-string"));
@@ -134,7 +134,7 @@ static void boot()
 
 		call_out("boot_2", 0);
 	} : {
-		boot_error();
+		log_boot_error();
 		LOGD->flush();
 		shutdown();
 		error("Failed to load system");
@@ -153,7 +153,7 @@ static void boot_2()
 
 		call_out("boot_3", 0);
 	} : {
-		boot_error();
+		log_boot_error();
 		LOGD->flush();
 		shutdown();
 		error("Failed to initialize the program database");
@@ -178,7 +178,7 @@ static void boot_3()
 		LOGD->set_target("compile", 63, "driver");
 		LOGD->set_target("trace", 0, "driver");
 	} : {
-		boot_error();
+		log_boot_error();
 		LOGD->flush();
 		shutdown();
 		error("System setup failed");
