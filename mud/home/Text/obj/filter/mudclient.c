@@ -65,6 +65,15 @@ void telnet_do(int code)
 
 void telnet_dont(int code)
 {
+	switch(code) {
+	case 90:
+		if (msp_active) {
+			query_conn()->send_wont(code);
+			msp_active = 0;
+		}
+		msp_pending = 0;
+		break;
+	}
 }
 
 void telnet_will(int code)
