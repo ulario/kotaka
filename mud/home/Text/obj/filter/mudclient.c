@@ -69,6 +69,9 @@ void telnet_do(int code)
 		break;
 
 	default:
+		if (general_debug) {
+			previous_object()->message("Your client sent a request for unknown telnet option " + code + ", refusing.\n");
+		}
 		query_conn()->send_wont(code);
 	}
 }
@@ -97,6 +100,9 @@ void telnet_will(int code)
 {
 	switch(code) {
 	default:
+		if (general_debug) {
+			previous_object()->message("Your client sent an offer for unknown telnet option " + code + ", forbidding.\n");
+		}
 		query_conn()->send_dont(code);
 	}
 }
