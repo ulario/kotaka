@@ -28,6 +28,7 @@ inherit LIB_FILTER;
 
 int msp_pending;
 int msp_active;
+int msp_debug;
 
 static void create(int clone)
 {
@@ -48,11 +49,20 @@ void telnet_do(int code)
 	switch(code) {
 	case 90:
 		if (msp_active) {
+			if (msp_debug) {
+				previous_object()->message("Your client told us to enable MSP but we're already doing it O_O.\n");
+			}
 			/* ignore */
 		} else if (msp_pending) {
+			if (msp_debug) {
+				previous_object()->message("Your client granted us permission to enable MSP :).\n");
+			}
 			msp_active = 1;
 			msp_pending = 0;
 		} else {
+			if (msp_debug) {
+				previous_object()->message("Your client told us to enable MSP :).\n");
+			}
 			query_conn()->send_will(90);
 			msp_active = 1;
 		}
@@ -68,10 +78,17 @@ void telnet_dont(int code)
 	switch(code) {
 	case 90:
 		if (msp_active) {
+			if (msp_debug) {
+				previous_object()->message("Your client disabled MSP :(.\n");
+			}
 			query_conn()->send_wont(code);
 			msp_active = 0;
+		} else if (msp_pending) {
+			if (msp_debug) {
+				previous_object()->message("Your client forbade MSP :(.\n");
+			}
+			msp_pending = 0;
 		}
-		msp_pending = 0;
 		break;
 	}
 }
