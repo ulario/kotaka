@@ -29,6 +29,7 @@ inherit LIB_FILTER;
 int msp_pending;
 int msp_active;
 int msp_debug;
+int general_debug;
 
 static void create(int clone)
 {
