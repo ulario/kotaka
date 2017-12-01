@@ -105,6 +105,8 @@ void send_will(int code)
 	out[1] = TELNET_WILL;
 	out[2] = code;
 
+	::message(out);
+
 	if (debug & 1) {
 		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC WILL " + code + " to " + ipof(this_user()));
 	}
