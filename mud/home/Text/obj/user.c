@@ -45,6 +45,45 @@ static void create(int clone)
 	}
 }
 
+private string whoami()
+{
+	object conn;
+	string ip, user;
+
+	if (username) {
+		return username;
+	}
+
+	conn = query_conn();
+
+	while (conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	ip = query_ip_number(conn);
+
+	if (!ip) {
+		ip = "(nil)";
+	}
+
+	return ip;
+}
+
+void send_out(string msg)
+{
+	string user;
+
+	ASSERT(msg);
+
+	user = whoami();
+
+	SECRETD->make_dir(".");
+	SECRETD->make_dir("log");
+	SECRETD->write_file("log/log-" + user + "-out", "[" + SUBD->pmtime(millitime()) + "] >>> " + msg + "\n");
+
+	::send_out(msg);
+}
+
 void dispatch_wiztool(string line)
 {
 	ACCESS_CHECK(TEXT());
@@ -174,6 +213,8 @@ private void do_banner()
 
 	ansi = replace(ansi, "\n", "\r\n");
 
+	ASSERT(ansi);
+
 	send_out(ansi);
 }
 
@@ -193,25 +234,13 @@ private void do_login()
 private int do_receive(string str)
 {
 	int ret;
-	object conn, conn2;
-	string ip, user;
+	string user;
 
-	conn = previous_object();
-
-	while (conn <- LIB_USER) {
-		conn = conn->query_conn();
-	}
-
-	ip = query_ip_number(conn);
-
-	if (!ip)
-		ip = "nil";
-
-	user = username ? username : ip;
+	user = whoami();
 
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
-	SECRETD->write_file("log/log-" + user, "[" + SUBD->pmtime(millitime()) + "] " + user + ": " + str + "\n");
+	SECRETD->write_file("log/log-" + user + "-in", "[" + SUBD->pmtime(millitime()) + "] " + user + ": " + str + "\n");
 
 	ret = ::receive_message(str);
 
