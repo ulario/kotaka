@@ -38,6 +38,10 @@ void connect(string addr, int port)
 {
 	ACCESS_CHECK(SYSTEM());
 
+	if (sscanf(addr, "%*d.%*d.%*d.%*d") != 4) {
+		error("Malformed IP address");
+	}
+
 	::connect(addr, port);
 }
 
