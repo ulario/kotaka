@@ -27,7 +27,7 @@ inherit UTILITY_COMPILE;
 
 private void set_limits()
 {
-	KERNELD->rsrc_set_limit("Intermud", "ticks", 1000000);
+	KERNELD->rsrc_set_limit("Intermud", "ticks", 2000000);
 }
 
 private void load()
