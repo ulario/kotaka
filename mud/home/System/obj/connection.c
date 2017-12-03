@@ -42,6 +42,10 @@ void connect(string addr, int port)
 		error("Malformed IP address");
 	}
 
+	if (BAND->check_siteban(addr)) {
+		error("Cannot connect to sitebanned IP");
+	}
+
 	::connect(addr, port);
 }
 
