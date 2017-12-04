@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <type.h>
 #include <kernel/access.h>
 #include <kotaka/privilege.h>
 #include <kotaka/assert.h>
@@ -328,4 +329,96 @@ mixed **query_dormant()
 	scan_objects("/", nil, nil, nots);
 
 	return nots;
+}
+
+private void gather_lpc_files(string dirname, mixed **list)
+{
+	mixed *info;
+
+	mixed **dir;
+	string *names;
+	int *sizes;
+	int sz;
+
+	info = file_info(dirname);
+
+	if (info[0] != -2) {
+		error("Not a directory");
+	}
+
+	dir = get_dir(dirname + "*");
+	names = dir[0];
+	sizes = dir[1];
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+
+		name = names[sz];
+
+		if (sizes[sz] == -2) {
+			gather_lpc_files(dirname + name + "/", list);
+		} else {
+			if (sscanf(name, "%*s.c")) {
+				if (!sscanf(dirname, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+					list_push_front(list, dirname + name);
+				}
+			}
+		}
+	}
+}
+
+void full_rebuild()
+{
+	rlimits (0; -1) {
+		int sz;
+		object indices;
+		mixed **list;
+
+		indices = PROGRAMD->query_program_indices();
+
+		list = ({ nil, nil });
+
+		/* purge libraries and orphans */
+		/* we have to do this BEFORE we compile so that the inheritance tree is pruned */
+		for (sz = indices->query_size(); --sz >= 0; ) {
+			object pinfo;
+			string path;
+
+			pinfo = PROGRAMD->query_program_info(indices->query_element(sz));
+			path = pinfo->query_path();
+
+			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+				LOGD->post_message("debug", LOG_NOTICE, "Destructing inheritable " + path);
+				list_push_back(list, path);
+			} else if (!file_info(path + ".c")) {
+				LOGD->post_message("debug", LOG_NOTICE, "Destructing orphaned program " + path);
+				list_push_back(list, path);
+			}
+		}
+
+		while (!list_empty(list)) {
+			string path;
+
+			path = list_front(list);
+			list_pop_front(list);
+
+			destruct_object(path);
+		}
+
+		list = ({ nil, nil });
+		gather_lpc_files("/", list);
+
+		while (!list_empty(list)) {
+			string path;
+
+			path = list_front(list);
+			list_pop_front(list);
+
+			LOGD->post_message("debug", LOG_NOTICE, "Compiling " + path);
+
+			sscanf(path, "%s.c", path);
+
+			compile_object(path);
+		}
+	}
 }
