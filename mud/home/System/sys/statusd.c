@@ -30,22 +30,23 @@ inherit user LIB_USER;
 inherit SECOND_AUTO;
 
 string message;
+mixed *last;
+float delay;
 
-mapping delay; /* ([ obj: delay ]) */
-mapping handle; /* ([ obj: handle ]) */
-mapping ready; /* ([ obj: is_ready ]) */
-mapping pending; /* ([ obj: is_pending ]) */
-mapping last; /* ([ obj: last millitime ]) */
+private void remove_call_outs()
+{
+	int sz;
+	mixed **callouts;
+
+	callouts = status(this_object(), O_CALLOUTS);
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
+}
 
 static void create()
 {
 	message = "";
-
-	delay = ([ ]);
-	handle = ([ ]);
-	ready = ([ ]);
-	pending = ([ ]);
-	last = ([ ]);
 
 	wiz::create(0);
 	userd::create();
@@ -58,10 +59,13 @@ void upgrade()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	delay = ([ ]);
-	handle = ([ ]);
-	ready = ([ ]);
-	pending = ([ ]);
+	message = "";
+	last = nil;
+	delay = 1.0;
+
+	remove_call_outs();
+
+	call_out("report", 0);
 }
 
 static void configure()
@@ -91,11 +95,14 @@ private int is_trusted(object conn)
 	}
 }
 
-private void print_report(object conn)
+private void print_report()
 {
 	int status;
 	string *lines;
 	int i, sz;
+	object conn;
+
+	conn = query_conn();
 
 	message = "";
 
@@ -111,19 +118,25 @@ private void print_report(object conn)
 	message += "\nCallout usage:\n";
 	cmd_rsrc(nil, nil, "callout usage");
 
-	if (last[conn]) {
+	if (last) {
 		mixed *now;
 		float time;
 
 		now = millitime();
 
 		time = (float)now[0] + now[1];
-		time -= (float)last[conn][0] + last[conn][1];
+		time -= (float)last[0] + last[1];
 
 		message += "Delay since last report: " + time + "\n";
+
+		if (time == 0.0) {
+			message += "(zero delay)\n";
+		} else {
+			message += "Reciprocal of delay since last report: " + (1.0 / time) + "\n";
+		}
 	}
 
-	last[conn] = millitime();
+	last = millitime();
 
 	lines = explode(message, "\n");
 	sz = sizeof(lines);
@@ -137,68 +150,15 @@ private void print_report(object conn)
 	conn->message("\033[J");
 }
 
-private void schedule(object conn)
+static void report()
 {
-	mixed **callouts;
-	int sz;
-
-	callouts = SUSPENDD->query_callouts();
-
-	for(sz = sizeof(callouts); --sz >= 0; ) {
-		mixed *callout;
-
-		callout = callouts[sz];
-
-		if (callout[CO_FUNCTION] != "report") {
-			continue;
-		}
-
-		if (callout[CO_FIRSTXARG] == conn) {
-			SUSPENDD->dequeue_delayed_work(callout[CO_HANDLE]);
-		}
-	}
-
-	if (delay[conn] == nil) {
-		delay[conn] = is_trusted(conn) ? 0.05 : 1.0;
-	}
-
-	handle[conn] = SUSPENDD->queue_delayed_work("report", delay[conn], conn);
+	print_report();
+	call_out("report", delay);
 }
 
-void report(object conn)
+static void clear()
 {
-	ACCESS_CHECK(SYSTEM());
-
-	if (!conn) {
-		return;
-	}
-
-	handle[conn] = nil;
-
-	if (ready && ready[conn]) {
-		ready[conn] = nil;
-
-		print_report(conn);
-
-		schedule(conn);
-	} else {
-		if (!pending) {
-			pending = ([ ]);
-		}
-
-		pending[conn] = 1;
-
-		return;
-	}
-}
-
-static void clear(object conn)
-{
-	if (!conn) {
-		return;
-	}
-
-	conn->message("\033[1;1H\033[2J");
+	query_conn()->message("\033[1;1H\033[2J");
 }
 
 /* userd hooks */
@@ -245,7 +205,8 @@ int login(string str)
 		return MODE_DISCONNECT;
 	}
 
-	conn = previous_object();
+	disconnect();
+	connection(conn = previous_object());
 
 	if (is_trusted(conn)) {
 		delay = 0.05;
@@ -253,11 +214,16 @@ int login(string str)
 		delay = 1.0;
 	}
 
-	handle[conn] = SUSPENDD->queue_delayed_work("report", delay / 2.0, conn);
+	call_out("report", delay);
 
 	conn->message("\033[1;1H\033[2J");
 
 	return MODE_NOECHO;
+}
+
+void logout(int quit)
+{
+	remove_call_outs();
 }
 
 int receive_message(string str)
@@ -279,21 +245,17 @@ int receive_message(string str)
 	if (sizeof(params)) {
 		switch(params[0]) {
 		case "clear":
-			call_out("clear", 0, conn);
+			call_out("clear", 0);
 			break;
 
 		case "quit":
-			if (handle[conn]) {
-				SUSPENDD->dequeue_delayed_work(handle[conn]);
-				handle[conn] = nil;
-			}
 			conn->message("\033c");
 			return MODE_DISCONNECT;
 
 		case "interval":
 			if (sizeof(params) < 2) {
 				conn->message("Usage: interval <interval>\n");
-				call_out("clear", 5.0, conn);
+				call_out("clear", 5.0);
 				break;
 			} else {
 				float interval;
@@ -302,46 +264,24 @@ int receive_message(string str)
 
 				if (interval < 1.0 && !is_trusted(conn)) {
 					conn->message("Intervals less than 1 second\nare only allowed for local connections.\n");
-					call_out("clear", 5.0, conn);
+					call_out("clear", 5.0);
 					break;
 				}
 
-				delay[conn] = interval;
+				delay = interval;
 
-				if (handle[conn]) {
-					SUSPENDD->dequeue_delayed_work(handle[conn]);
-					schedule(conn);
-				}
+				remove_call_outs();
+				call_out("report", delay);
 			}
 			break;
 
 		default:
 			conn->message("Commands: clear, interval, quit\n");
-			call_out("clear", 5.0, conn);
+			call_out("clear", 5.0);
 			break;
 		}
 	} else {
-		call_out("clear", 0, conn);
-	}
-
-	return MODE_NOCHANGE;
-}
-
-int message_done()
-{
-	object conn;
-
-	ACCESS_CHECK(previous_program() == LIB_CONN);
-
-	conn = previous_object();
-
-	if (pending && pending[conn]) {
-		pending[conn] = nil;
-		print_report(conn);
-
-		schedule(conn);
-	} else {
-		ready[conn] = 1;
+		call_out("clear", 0);
 	}
 
 	return MODE_NOCHANGE;
