@@ -76,12 +76,14 @@ void send_out(string msg)
 	ASSERT(msg);
 
 	user = whoami();
-
-	SECRETD->make_dir(".");
-	SECRETD->make_dir("log");
-	SECRETD->write_file("log/log-" + user + "-out", "[" + SUBD->pmtime(millitime()) + "] >>> " + msg + "\n");
-
 	::send_out(msg);
+
+	if (!sscanf(msg, "%*s\n")) {
+		msg += "\n";
+	}
+
+	"~/sys/logd"->post_message("log/log-" + user + "-out", "[" + SUBD->pmtime(millitime()) + "] >>> " + msg);
+	"~/sys/logd"->post_message("log/log-" + user + "-combo", "[" + SUBD->pmtime(millitime()) + "] >>> " + msg);
 }
 
 void dispatch_wiztool(string line)
@@ -231,22 +233,27 @@ private void do_login()
 	TEXT_USERD->add_guest(this_object());
 }
 
-private int do_receive(string str)
+private int do_receive(string msg)
 {
 	int ret;
 	string user;
+	string logmsg;
+	mixed *mtime;
 
 	user = whoami();
 
-	SECRETD->make_dir(".");
-	SECRETD->make_dir("log");
-	SECRETD->write_file("log/log-" + user + "-in", "[" + SUBD->pmtime(millitime()) + "] " + user + ": " + str + "\n");
+	logmsg = msg;
 
-	ret = ::receive_message(str);
-
-	if (ret == MODE_DISCONNECT) {
-		INITD->message("User is dying...");
+	if (!sscanf(logmsg, "%*s\n")) {
+		logmsg += "\n";
 	}
+
+	mtime = millitime();
+
+	"~/sys/logd"->post_message("log/log-" + user + "-in", "[" + SUBD->pmtime(mtime) + "] <<< " + logmsg);
+	"~/sys/logd"->post_message("log/log-" + user + "-combo", "[" + SUBD->pmtime(mtime) + "] <<< " + logmsg);
+
+	ret = ::receive_message(msg);
 
 	set_mode(ret);
 
