@@ -25,8 +25,8 @@
 #include <kotaka/assert.h>
 #include <status.h>
 
-#define SITEBAN_DELAY 0.25 /* linger time for dumping a sitebanned connection */
-#define OVERLOAD_DELAY 5.0 /* linger time for dumping an overloaded connection */
+#define SITEBAN_DELAY 0.05 /* linger time for dumping a sitebanned connection */
+#define OVERLOAD_DELAY 1.0 /* linger time for dumping an overloaded connection */
 #define BLOCK_DELAY 5.0 /* linger time for dumping a blocked connection */
 
 inherit SECOND_AUTO;
@@ -305,7 +305,7 @@ string query_banner(object LIB_CONN connection)
 	if (BAND->check_siteban(query_ip_number(root))) {
 		/* if the IP is sitebanned send it away */
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", SITEBAN_DELAY);
+		TLSD->set_tls_value("System", "abort-delay", free_users() > 5 ? SITEBAN_DELAY : 0);
 
 		root->set_mode(MODE_BLOCK);
 
