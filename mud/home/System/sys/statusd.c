@@ -152,6 +152,10 @@ private void print_report()
 
 static void report()
 {
+	if (!query_conn()) {
+		return;
+	}
+
 	print_report();
 	call_out("report", delay);
 }
