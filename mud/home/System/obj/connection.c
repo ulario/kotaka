@@ -19,6 +19,7 @@
  */
 #include <kernel/kernel.h>
 #include <kernel/user.h>
+#include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
