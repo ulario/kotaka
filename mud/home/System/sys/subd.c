@@ -387,11 +387,11 @@ void full_rebuild()
 			pinfo = PROGRAMD->query_program_info(indices->query_element(sz));
 			path = pinfo->query_path();
 
-			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
-				LOGD->post_message("debug", LOG_NOTICE, "Destructing inheritable " + path);
-				list_push_back(list, path);
-			} else if (!file_info(path + ".c")) {
+			if (!file_info(path + ".c")) {
+				/* orphaned?  Report it inheritable or not */
 				LOGD->post_message("debug", LOG_NOTICE, "Destructing orphaned program " + path);
+				list_push_back(list, path);
+			} else if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
 				list_push_back(list, path);
 			}
 		}
@@ -414,9 +414,11 @@ void full_rebuild()
 			path = list_front(list);
 			list_pop_front(list);
 
-			LOGD->post_message("debug", LOG_NOTICE, "Compiling " + path);
-
 			sscanf(path, "%s.c", path);
+
+			if (!find_object(path)) {
+				LOGD->post_message("debug", LOG_NOTICE, "Compiling new program " + path);
+			}
 
 			compile_object(path);
 		}
