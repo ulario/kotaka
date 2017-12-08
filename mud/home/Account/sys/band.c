@@ -56,8 +56,8 @@ void ban_site(string site, varargs string message)
 	}
 
 	sitebans[site] = message ? message : 1;
-	save();
 	SYSTEM_USERD->check_sitebans();
+	save();
 }
 
 void unban_site(string site)
