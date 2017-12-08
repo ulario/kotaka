@@ -97,7 +97,7 @@ string query_overload_banner(object LIB_CONN connection)
 	return "There are too many connections to this mud.\n";
 }
 
-string query_sitebanned_banner(object LIB_CONN connection)
+private string query_siteban_message(object LIB_CONN connection)
 {
 	string ip;
 
@@ -110,10 +110,32 @@ string query_sitebanned_banner(object LIB_CONN connection)
 	ip = BAND->query_siteban_message(ip);
 
 	if (ip) {
-		return "Sitebanned\n\n" + ip + "\n";
+		return "\033[1;37;41mSitebanned\033[0m\n\n\033[1;31m" + ip + "\033[0m\n";
 	} else {
-		return "Sitebanned\n";
+		return "\033[1;37;41mSitebanned\033[0m\n";
 	}
+}
+
+string query_sitebanned_banner(object LIB_CONN connection)
+{
+	return query_siteban_message(connection);
+}
+
+void siteban_notify(object LIB_CONN connection)
+{
+	object user;
+
+	user = connection->query_user();
+
+	while (user && user <- LIB_CONN) {
+		user = user->query_user();
+	}
+
+	if (!user) {
+		return;
+	}
+
+	user->message(query_siteban_message(connection));
 }
 
 string query_banner(object LIB_CONN connection)
