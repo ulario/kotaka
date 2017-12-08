@@ -30,6 +30,7 @@
 #include <kotaka/ustate.h>
 
 inherit "~/lib/user";
+inherit "~/lib/logging";
 inherit "/lib/string/replace";
 
 object mobile;
@@ -45,30 +46,6 @@ static void create(int clone)
 	}
 }
 
-private string whoami()
-{
-	object conn;
-	string ip, user;
-
-	if (username) {
-		return username;
-	}
-
-	conn = query_conn();
-
-	while (conn <- LIB_USER) {
-		conn = conn->query_conn();
-	}
-
-	ip = query_ip_number(conn);
-
-	if (!ip) {
-		ip = "(nil)";
-	}
-
-	return ip;
-}
-
 void send_out(string msg)
 {
 	string user;
@@ -82,8 +59,7 @@ void send_out(string msg)
 		msg += "\n";
 	}
 
-	"~/sys/logd"->post_message("log/log-" + user + "-out", "[" + SUBD->pmtime(millitime()) + "] >>> " + msg);
-	"~/sys/logd"->post_message("log/log-" + user + "-combo", "[" + SUBD->pmtime(millitime()) + "] >>> " + msg);
+	log_message_out(user, msg);
 }
 
 void dispatch_wiztool(string line)
@@ -248,10 +224,7 @@ private int do_receive(string msg)
 		logmsg += "\n";
 	}
 
-	mtime = millitime();
-
-	"~/sys/logd"->post_message("log/log-" + user + "-in", "[" + SUBD->pmtime(mtime) + "] <<< " + logmsg);
-	"~/sys/logd"->post_message("log/log-" + user + "-combo", "[" + SUBD->pmtime(mtime) + "] <<< " + logmsg);
+	log_message_in(user, logmsg);
 
 	ret = ::receive_message(msg);
 

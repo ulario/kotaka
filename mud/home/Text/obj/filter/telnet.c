@@ -26,6 +26,7 @@
 #include <kotaka/log.h>
 
 inherit LIB_FILTER;
+inherit "~/lib/logging";
 
 string inbuf;		/* raw input buffer */
 string linebuf;		/* processed input waiting to be line-carved */
@@ -107,6 +108,8 @@ void send_will(int code)
 
 	::message(out);
 
+	log_message_out(whoami(), code + "\n", "TELNET WILL");
+
 	if (debug & 1) {
 		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC WILL " + code + " to " + ipof(this_user()));
 	}
@@ -137,6 +140,8 @@ void send_wont(int code)
 
 	::message(out);
 
+	log_message_out(whoami(), code + "\n", "TELNET WONT");
+
 	if (debug & 1) {
 		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC WONT " + code + " to " + ipof(this_user()));
 	}
@@ -165,6 +170,8 @@ void send_do(int code)
 
 	::message(out);
 
+	log_message_out(whoami(), code + "\n", "TELNET DO");
+
 	if (debug & 1) {
 		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC DO " + code + " to " + ipof(this_user()));
 	}
@@ -190,6 +197,8 @@ void send_dont(int code)
 	out[2] = code;
 
 	::message(out);
+
+	log_message_out(whoami(), code + "\n", "TELNET DONT");
 
 	if (debug & 1) {
 		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC DONT " + code + " to " + ipof(this_user()));
@@ -224,6 +233,8 @@ void send_subnegotiation(int code, string subnegotiation)
 	out[1] = TELNET_SE;
 
 	::message(out);
+
+	log_message_out(whoami(), code + "\n", "TELNET SUBNEGOTIATION");
 
 	if (debug & 1) {
 		LOGD->post_message("debug", LOG_DEBUG, "Sent IAC SB " + code + " and SE to " + ipof(this_user()));
@@ -269,6 +280,8 @@ private void process_do(int code)
 		::message("Received IAC DO " + code + "\r\n");
 	}
 
+	log_message_in(whoami(), code + "\n", "TELNET DO");
+
 	switch(code) {
 	case 1:
 		if (echo_enabled) {
@@ -303,6 +316,8 @@ private void process_dont(int code)
 		::message("Received IAC DONT " + code + "\r\n");
 	}
 
+	log_message_in(whoami(), code + "\n", "TELNET DONT");
+
 	switch(code) {
 	case 1:
 		/* honoring a dont is mandatory */
@@ -334,6 +349,8 @@ private void process_will(int code)
 	if (debug & 2) {
 		::message("Received IAC WILL " + code + "\r\n");
 	}
+
+	log_message_in(whoami(), code + "\n", "TELNET WILL");
 
 	switch(code) {
 	case 31:
@@ -370,6 +387,8 @@ private void process_wont(int code)
 		::message("Received IAC WONT " + code + "\r\n");
 	}
 
+	log_message_in(whoami(), code + "\n", "TELNET WONT");
+
 	switch(code) {
 	case 31:
 		/* client refused to allow or continue with NAWS */
@@ -399,6 +418,8 @@ private void process_sb(int code)
 		::message("Received IAC SB " + code + "\r\n");
 	}
 
+	log_message_in(whoami(), code + "\n", "TELNET SB");
+
 	subcode = code;
 	subbuf = "";
 }
@@ -412,6 +433,8 @@ private void process_se()
 	if (debug & 2) {
 		::message("Received IAC SE\r\n");
 	}
+
+	log_message_in(whoami(), "\n", "TELNET SE");
 
 	do_subnegotiation();
 
