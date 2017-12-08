@@ -512,9 +512,23 @@ void check_sitebans()
 
 	conns = KERNELD->query_connections();
 
-	for (sz = sizeof(conns) - 1; sz >= 0; --sz) {
-		if (BAND->check_siteban(query_ip_number(conns[sz]))) {
-			conns[sz]->reboot();
+	for (sz = sizeof(conns); --sz >= 0; ) {
+		object conn;
+
+		conn = conns[sz];
+
+		if (BAND->check_siteban(query_ip_number(conn))) {
+			object manager;
+
+			manager = query_manager(conn);
+
+			if (manager && function_object("siteban_notify", manager)) {
+				catch {
+					manager->siteban_notify(conn);
+				}
+			}
+
+			conn->reboot();
 		}
 	}
 }
