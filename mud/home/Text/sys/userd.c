@@ -125,6 +125,8 @@ void siteban_notify(object LIB_CONN connection)
 {
 	object user;
 
+	ACCESS_CHECK(previous_program() == SYSTEM_USERD);
+
 	user = connection->query_user();
 
 	while (user && user <- LIB_CONN) {
