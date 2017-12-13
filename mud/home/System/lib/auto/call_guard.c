@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kernel/kernel.h>
 #include <kotaka/paths/system.h>
 #include <type.h>
 #include <trace.h>
@@ -74,33 +75,49 @@ static object calling_object(varargs int steps)
 
 static mixed call_other(mixed obj, string func, varargs mixed args ...)
 {
+	object callee;
 	string path;
+	string fullpath;
 
-	if (!this_object()) {
-		error("Cannot call_other from destructed object");
+	object this;
+	string thisname;
+	string thiscreator;
+	string prevprog;
+
+	prevprog = previous_program();
+	this = this_object();
+
+	if (!this) {
+		error("Cannot call_other from destructed object (call made from " + prevprog + ")");
 	}
+
+	thisname = object_name(this);
 
 	switch(typeof(obj)) {
 	case T_STRING:
 		path = obj;
-		obj = find_object(path);
+		callee = find_object(path);
 		break;
 
 	case T_OBJECT:
 		path = object_name(obj);
+		callee = obj;
 		break;
 
 	default:
-		error("Bad argument 1 for function call_other (type mismatch)");
+		error("Bad argument 1 for function call_other (type mismatch, call made from " + previous_program() + ")");
 	}
 
-	if (!obj) {
-		error("Bad argument 1 for function call_other (target object " + path + " does not exist)");
+	thiscreator = ::call_other(DRIVER, "creator", thisname);
+	fullpath = ::call_other(DRIVER, "normalize_path", path, thisname + "/..", thiscreator);
+
+	if (!callee) {
+		error("Bad argument 1 for function call_other (target object " + fullpath + " does not exist, called by object " + thisname + " from program " + prevprog + ")");
 	}
 
-	if (!function_object(func, obj)) {
-		error("Call to undefined function " + func + " in object " + path + " by program " + previous_program());
+	if (!function_object(func, callee)) {
+		error("Call to undefined function " + func + " in object " + fullpath + " by object " + thisname + " from program " + prevprog);
 	}
 
-	return ::call_other(obj, func, args ...);
+	return ::call_other(callee, func, args ...);
 }
