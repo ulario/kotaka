@@ -373,6 +373,7 @@ void full_rebuild()
 		int sz;
 		object indices;
 		mixed **list;
+		mapping initds;
 
 		indices = PROGRAMD->query_program_indices();
 
@@ -408,6 +409,57 @@ void full_rebuild()
 		list = ({ nil, nil });
 		gather_lpc_files("/", list);
 
+		initds = ([ ]);
+
+		/* to make sure patching works properly, we need to compile the initds first */
+		{
+			int sz;
+			mixed **dir;
+			int *sizes;
+			string *names;
+
+			dir = get_dir(USR_DIR + "/*");
+			names = dir[0];
+			sizes = dir[1];
+
+			for (sz = sizeof(names); --sz >= 0; ) {
+				string username;
+
+				username = names[sz];
+
+				if (file_info(USR_DIR + "/" + username + "/initd.c")) {
+					initds[USR_DIR + "/" + username + "/initd"] = 1;
+				}
+			}
+
+			if (file_info("/initd.c")) {
+				initds["/initd"] = 1;
+			}
+		}
+
+		{
+			string *indices;
+			int i, sz;
+
+			indices = map_indices(initds);
+
+			for (sz = sizeof(indices), i = 0; i < sz; i++) {
+				string path;
+
+				path = indices[i];
+
+				if (file_info(path + ".c")[1] != -2) {
+					if (!find_object(path)) {
+						LOGD->post_message("debug", LOG_NOTICE, "Compiling new initd " + path);
+					} else {
+						LOGD->post_message("debug", LOG_NOTICE, "Recompiling existing initd " + path);
+					}
+
+					compile_object(path);
+				}
+			}
+		}
+
 		while (!list_empty(list)) {
 			string path;
 
@@ -415,6 +467,10 @@ void full_rebuild()
 			list_pop_front(list);
 
 			sscanf(path, "%s.c", path);
+
+			if (initds[path]) {
+				continue;
+			}
 
 			if (!find_object(path)) {
 				LOGD->post_message("debug", LOG_NOTICE, "Compiling new program " + path);
