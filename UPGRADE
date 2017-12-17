@@ -20,13 +20,6 @@ Every upgrade has the following sequence of events:
 	instructions will be provided, and should be completed before the
 	actual upgrade.
 
-	Preparation required for v0.49:
-
-		/home/Game/sys/saveload will be destructed and compiled
-		from scratch. Please make sure that there are no world
-		saves or loads in progress or they will be aborted during
-		the upgrade.
-
 3.  upgrade
 
 	Use the upgrade command to start the upgrade process.
