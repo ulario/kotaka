@@ -455,7 +455,9 @@ void full_rebuild()
 						LOGD->post_message("debug", LOG_NOTICE, "Recompiling existing initd " + path);
 					}
 
-					compile_object(path);
+					catch {
+						compile_object(path);
+					}
 				}
 			}
 		}
@@ -476,7 +478,9 @@ void full_rebuild()
 				LOGD->post_message("debug", LOG_NOTICE, "Compiling new program " + path);
 			}
 
-			compile_object(path);
+			catch {
+				compile_object(path);
+			}
 		}
 	}
 }
