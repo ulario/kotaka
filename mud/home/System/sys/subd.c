@@ -369,6 +369,8 @@ private void gather_lpc_files(string dirname, mixed **list)
 
 void full_rebuild()
 {
+	ACCESS_CHECK(VERB() || KADMIN());
+
 	rlimits (0; -1) {
 		int sz;
 		object indices;
