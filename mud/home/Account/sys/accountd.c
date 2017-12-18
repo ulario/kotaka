@@ -24,6 +24,7 @@
 #include <kotaka/log.h>
 #include <kotaka/privilege.h>
 #include <type.h>
+#include <status.h>
 
 mapping accounts;
 
@@ -138,13 +139,15 @@ void save()
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("accounts");
 
-	names = SECRETD->get_dir("accounts/*")[0];
+	do {
+		names = SECRETD->get_dir("accounts/*")[0];
 
-	if (names) {
+		ASSERT(names);
+
 		for (sz = sizeof(names); --sz >= 0; ) {
 			SECRETD->remove_file("accounts/" + names[sz]);
 		}
-	}
+	} while (sizeof(names) == status(ST_ARRAYSIZE));
 
 	names = map_indices(accounts);
 
@@ -169,6 +172,10 @@ void restore()
 	ACCESS_CHECK(VERB() || ACCOUNT());
 
 	names = SECRETD->get_dir("accounts/*")[0];
+
+	if (sizeof(names) == ST_ARRAYSIZE) {
+		error("Account count overflow");
+	}
 
 	if (names) {
 		remove = map_indices(accounts) - names;
