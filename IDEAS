@@ -1,0 +1,28 @@
+Ideas
+=====
+
+Various ideas that come to me that might be helpful for kotaka
+
+Miscellaneous
+-------------
+
+Monitor mailbox
+
+	Something in ~System that can leave messages for external scripts
+
+	* Synchronization
+
+		Making sure there's coordination between mudlib and script.
+
+		Probably safe to assume renames are atomic
+
+		Use the double handshake protocol
+
+		* Sender raises request flag
+		* Receiver raises grant flag
+		* Sender puts data, raises sync flag
+		* Receiver gets data, raises ack flag
+
+	* Security
+
+		This is easy, just stuff them in ~Secret/System somewhere
