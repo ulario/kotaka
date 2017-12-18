@@ -1,0 +1,25 @@
+#!/bin/bash
+
+function reb
+{
+	echo "Rebasing branch \"$1\" onto branch \"$2\"..."
+
+	git checkout $1
+	git rebase $2 --interactive
+}
+
+echo "Rebasing kotaka repository..."
+
+cd ~/git/kotaka
+
+CURRENT=`git status | head -n 1 | cut -d" " -f3`
+
+git stash
+
+reb local master
+reb test local
+reb stress test
+reb siteban stress
+
+git checkout $CURRENT
+git stash pop
