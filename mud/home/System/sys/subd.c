@@ -457,6 +457,8 @@ void full_rebuild()
 
 					catch {
 						compile_object(path);
+					} : {
+						LOGD->post_message("debug", LOG_NOTICE, "Error trying to rebuild " + path);
 					}
 				}
 			}
@@ -480,6 +482,8 @@ void full_rebuild()
 
 			catch {
 				compile_object(path);
+			} : {
+				LOGD->post_message("debug", LOG_NOTICE, "Error trying to rebuild " + path);
 			}
 		}
 	}
