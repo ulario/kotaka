@@ -53,3 +53,11 @@ Deprecation of multiple archetypes
 
 	To prepare for this change any object with multiple archetypes
 	should be reworked.
+
+Deprecation of constructors and destructors
+
+	I just realized that inheritables can be added and removed from
+	an object's inheritance tree at will by anyone with access to the
+	object's source code.
+
+	They are therefore completely useless.
