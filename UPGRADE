@@ -61,3 +61,12 @@ Deprecation of constructors and destructors
 	object's source code.
 
 	They are therefore completely useless.
+
+	Effective as of version 0.49, the usage of constructors and
+	destructors is hereby formally deprecated.
+
+	* Eventually, initds will stop being asked about them, and calls
+	to them will no longer be made during object creation or destruction.
+
+	* After that, the program_info objects will eventually be purged
+	of this information.
