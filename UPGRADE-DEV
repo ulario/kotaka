@@ -1,0 +1,6 @@
+How to handle upgrades as a developer of Kotaka
+-----------------------------------------------
+
+Upgrading an end user's MUD is a required at times operation.
+
+Minimizing disruption of the end user's code is paramount.
