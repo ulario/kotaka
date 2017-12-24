@@ -132,16 +132,18 @@ private void compile_common(string owner, string path, string *source, string *i
 		pinfo = PROGRAMD->register_program(path, inherited, includes);
 	}
 
-	if (is_initd) {
+	/* we don't get to tell kernel objects what they inherit */
+	if (sscanf(path, "/kernel/%*s")) {
 		return;
 	}
 
-	if (is_kernel) {
-		return;
-	}
-
+	/* everyting outside auto must inherit it */
 	if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
 		error("Failure to inherit SECOND_AUTO: " + path);
+	}
+
+	if (is_initd) {
+		return;
 	}
 
 	if (pinfo) {
