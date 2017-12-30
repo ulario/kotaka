@@ -496,9 +496,19 @@ void booted_module(string module)
 
 void upgrade_system()
 {
-	compile_object("sys/upgraded");
+	compile_object(INITD);
 
-	"sys/upgraded"->upgrade_system();
+	call_out("upgrade_system_post_recompile", 0);
+}
+
+void upgrade_system_post_recompile()
+{
+	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled");
+}
+
+void upgrade_system_upgraded_hook()
+{
+	upgrade_system_post_recompile();
 }
 
 void upgrade_module()
