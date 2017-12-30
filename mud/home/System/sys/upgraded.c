@@ -29,42 +29,18 @@ static void create()
 	call_out("self_destruct", 0);
 }
 
-void upgrade_system()
-{
-	string *safe_versions;
-	string *users;
-	int sz;
-
-	ACCESS_CHECK(SYSTEM());
-
-	safe_versions = explode(read_file("~/data/safe_upgrade_versions"), "\n");
-
-	for (sz = sizeof(safe_versions) - 1; sz >= 0; --sz) {
-		if (safe_versions[sz] == KOTAKA_VERSION) {
-			break;
-		}
-	}
-
-	if (sz == -1) {
-		error("Cannot safely upgrade from version " + KOTAKA_VERSION);
-	}
-
-	SUSPENDD->suspend_system();
-	SUSPENDD->queue_work("upgrade_system_2");
-}
-
-atomic void upgrade_system_2()
+void upgrade_system(varargs int stage)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	compile_object(OBJECTD);
-
-	SUSPENDD->queue_work("upgrade_system_3");
-}
-
-atomic void upgrade_system_3()
-{
-	MODULED->upgrade_modules();
+	switch(stage) {
+	case 0:
+		compile_object(INITD);
+		SUSPENDD->queue_work("upgrade_system", 1);
+		break;
+	case 1:
+		INITD->upgrade_system_upgraded_hook();
+	}
 }
 
 static void self_destruct()
