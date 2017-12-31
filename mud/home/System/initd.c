@@ -504,10 +504,14 @@ void upgrade_system()
 void upgrade_system_post_recompile()
 {
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled");
+
+	/* first, ask all InitD's if we can upgrade */
+	/* if nobody says no, send the upgrade signal */
 }
 
 void upgrade_system_upgraded_hook()
 {
+	LOGD->post_message("system", LOG_NOTICE, "Received UpgradeD hook call, forwarding to upgrade handler");
 	upgrade_system_post_recompile();
 }
 
