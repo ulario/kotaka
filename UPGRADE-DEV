@@ -4,3 +4,7 @@ How to handle upgrades as a developer of Kotaka
 Upgrading an end user's MUD is a required at times operation.
 
 Minimizing disruption of the end user's code is paramount.
+
+General principles is, that each module's InitD is responsible first
+checking and then enforcing the upgrades for all of the code in its
+module.
