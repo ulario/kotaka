@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2017  Raymond Jennings
+ * Copyright (C) 2017, 2018  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -504,6 +504,8 @@ void upgrade_system()
 void upgrade_system_post_recompile()
 {
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled");
+
+	compile_object("sys/subd");
 
 	/* first, ask all InitD's if we can upgrade */
 	/* if nobody says no, send the upgrade signal */
