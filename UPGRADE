@@ -70,3 +70,16 @@ Deprecation of constructors and destructors
 
 	* After that, the program_info objects will eventually be purged
 	of this information.
+
+ModuleD will be official registry for modules
+
+	In the future, the existence of a module's InitD will no longer
+	be the official indication of the module's being online.
+
+	Effective as of version 0.50, booting and registration of a
+	module will be done exclusively through ModuleD being instructed
+	to boot or shutdown a module.
+
+	This also means that the status of a module is entirely the
+	province of ModuleD, and just because a module's initd happens to
+	be compiled will no longer count.
