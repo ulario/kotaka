@@ -144,13 +144,15 @@ atomic nomask void add_archetype(object new_arch)
 		error("Circular reference");
 	}
 
-	LOGD->post_message("debug", LOG_WARNING, "Attempting to assign multiple archetypes which is deprecated");
-
 	clean_archetypes();
 
 	archetypes += ({ new_arch });
 
 	new_arch->thing_add_instance(this_object());
+
+	if (sizeof(archetypes) > 1)) {
+		LOGD->post_message("debug", LOG_WARNING, "Attempting to assign multiple archetypes which is deprecated");
+	}
 }
 
 atomic nomask void add_archetype_at(object new_arch, int position)
@@ -173,6 +175,10 @@ atomic nomask void add_archetype_at(object new_arch, int position)
 	}
 
 	new_arch->thing_add_instance(this_object());
+
+	if (sizeof(archetypes) > 1)) {
+		LOGD->post_message("debug", LOG_WARNING, "Attempting to assign multiple archetypes which is deprecated");
+	}
 }
 
 atomic nomask void del_archetype(object old_arch)
