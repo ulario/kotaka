@@ -403,6 +403,7 @@ void upgrade_modules()
 
 			rlimits(0; 100000) {
 				if (!file_info(initd_of(module) + ".c")) {
+					LOGD->post_message("debug", LOG_DEBUG, "Initd missing for module " + module + ", shutting down");
 					call_out("shutdown_module", 0, module);
 				} else {
 					catch {

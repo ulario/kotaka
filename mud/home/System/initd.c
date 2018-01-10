@@ -494,6 +494,18 @@ void booted_module(string module)
 	}
 }
 
+void upgrade_module()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	load();
+
+	configure_rsrc();
+	set_limits();
+
+	purge_orphans("System");
+}
+
 void upgrade_system()
 {
 	compile_object(INITD);
@@ -516,18 +528,6 @@ void upgrade_system_upgraded_hook()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Received UpgradeD hook call, forwarding to upgrade handler");
 	upgrade_system_post_recompile();
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	load();
-
-	configure_rsrc();
-	set_limits();
-
-	purge_orphans("System");
 }
 
 void queue_configure_logging()
