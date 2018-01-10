@@ -279,3 +279,24 @@ atomic nomask void thing_set_next_instance(object archetype, object instance)
 
 	next_instance = SUBD->set_tiered_map(next_instance, archetype, instance);
 }
+
+nomask void set_archetype(object "archetype" new_arch)
+{
+	set_archetypes( ({ new_arch }) );
+}
+
+nomask object query_archetype()
+{
+	object *objs;
+
+	objs = query_archetypes();
+
+	switch(sizeof(objs)) {
+	case 0:
+		return nil;
+	case 1:
+		return objs[0];
+	default:
+		error("Attempted to query an object with multiple archetypes");
+	}
+}
