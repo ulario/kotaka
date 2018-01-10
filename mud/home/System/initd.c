@@ -498,6 +498,8 @@ void upgrade_module()
 {
 	ACCESS_CHECK(SYSTEM());
 
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module");
+
 	load();
 
 	configure_rsrc();
