@@ -150,7 +150,7 @@ atomic nomask void add_archetype(object new_arch)
 
 	new_arch->thing_add_instance(this_object());
 
-	if (sizeof(archetypes) > 1)) {
+	if (sizeof(archetypes) > 1) {
 		LOGD->post_message("debug", LOG_WARNING, "Attempting to assign multiple archetypes which is deprecated");
 	}
 }
@@ -176,7 +176,7 @@ atomic nomask void add_archetype_at(object new_arch, int position)
 
 	new_arch->thing_add_instance(this_object());
 
-	if (sizeof(archetypes) > 1)) {
+	if (sizeof(archetypes) > 1) {
 		LOGD->post_message("debug", LOG_WARNING, "Attempting to assign multiple archetypes which is deprecated");
 	}
 }
