@@ -28,6 +28,13 @@ static void create(int clone)
 	}
 }
 
+static void destruct(int clone)
+{
+	if (clone) {
+		::destruct();
+	}
+}
+
 mapping save()
 {
 	ACCESS_CHECK(GAME());
