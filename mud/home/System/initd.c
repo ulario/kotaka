@@ -519,6 +519,7 @@ void upgrade_system_post_recompile()
 
 	compile_object("sys/subd");
 	compile_object("sys/objectd");
+	compile_object("sys/moduled");
 
 	/* first, ask all InitD's if we can upgrade */
 	/* if nobody says no, send the upgrade signal */
