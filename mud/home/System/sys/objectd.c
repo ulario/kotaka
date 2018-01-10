@@ -96,6 +96,11 @@ private string *fetch_from_initd(object initd, string path)
 			object_name(initd) + " is using the obsolete query_toucher interface");
 	}
 
+	if (ctor || dtor) {
+		LOGD->post_message("debug", LOG_DEBUG,
+			object_name(initd) + " is returning a constructor or destructor, which is now deprecated");
+	}
+
 	return ({ ctor, dtor, patcher });
 }
 
