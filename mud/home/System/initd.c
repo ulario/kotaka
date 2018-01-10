@@ -506,6 +506,7 @@ void upgrade_system_post_recompile()
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled");
 
 	compile_object("sys/subd");
+	compile_object("sys/objectd");
 
 	/* first, ask all InitD's if we can upgrade */
 	/* if nobody says no, send the upgrade signal */
