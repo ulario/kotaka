@@ -47,7 +47,7 @@ int forbid_insert(object obj)
 	return destructing;
 }
 
-static nomask void thing_destruct()
+static void destruct()
 {
 	int sz;
 	int index;
