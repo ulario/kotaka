@@ -19,11 +19,16 @@
  */
 #include <kotaka/privilege.h>
 
+static void do_test(string test)
+{
+	test->test();
+}
+
 void test()
 {
 	ACCESS_CHECK(TEST());
 
-	"bigstruct"->test();
-	"sort"->test();
-	"suspend"->test();
+	call_out("do_test", 0, "bigstruct");
+	call_out("do_test", 0, "sort");
+	call_out("do_test", 0, "suspend");
 }
