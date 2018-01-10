@@ -54,6 +54,41 @@ Deprecation of multiple archetypes
 	To prepare for this change any object with multiple archetypes
 	should be reworked.
 
+	Version 0.50:
+
+		New API will be provided to query and set a single archetype.
+
+			For the time being, the interface will manipulate
+			the archetype array as if it had a single
+			element.
+
+			set_archetype will set this array to a single element array
+
+			query_archetype will return nil if the array is
+			empty or the only element if there is one, and
+			will raise an error if the object has multiple archetypes.
+
+		Formal deprecation.
+
+			Warnings will be logged if an attempt is made to assign
+			multiple archetypes to an object.
+
+	Version 0.51:
+
+		The old api will raise runtime errors if an attempt is
+		made to assign multiple archetypes to an object.
+
+		The old api will also issue warnings if it is used at all.
+
+	Version 0.52:
+
+		The new api will become mandatory
+
+		The old api will be completely removed
+
+		Any object with multiple archetypes will have their
+		archetype list truncated to the first archetype.
+
 Deprecation of constructors and destructors
 
 	I just realized that inheritables can be added and removed from
@@ -62,24 +97,50 @@ Deprecation of constructors and destructors
 
 	They are therefore completely useless.
 
-	Effective as of version 0.49, the usage of constructors and
-	destructors is hereby formally deprecated.
+	Version 0.50:
 
-	* Eventually, initds will stop being asked about them, and calls
-	to them will no longer be made during object creation or destruction.
+		Formal deprecation.
 
-	* After that, the program_info objects will eventually be purged
-	of this information.
+		Initds who return answers to the queries will flag
+		warning messages.
+
+	Version 0.51:
+
+		Initds will no longer be queried about them and calls to them
+		will no longer be made during creation or destruction.
+
+	Version 0.52:
+
+		the PROGRAM_INFO lwo will be purged of all related fields
+		and queries of such fields will trigger the standard
+		runtime error for calling an undefined function.
 
 ModuleD will be official registry for modules
 
 	In the future, the existence of a module's InitD will no longer
 	be the official indication of the module's being online.
 
-	Effective as of version 0.50, booting and registration of a
-	module will be done exclusively through ModuleD being instructed
-	to boot or shutdown a module.
+	Version 0.50
 
-	This also means that the status of a module is entirely the
-	province of ModuleD, and just because a module's initd happens to
-	be compiled will no longer count.
+		Usage of the module's initd's existence as an indication
+		of the module's status will be formally deprecated.
+
+		Going forward, ModuleD should be explicitly queried
+		regarding a module's state.
+
+		ModuleD's interface for booting and shutting down modules
+		should be used exclusively.
+
+	Version 0.51
+
+		ModuleD's record on the status of a particular module
+		will no longer automatically reflect the status of the
+		module's initd.
+
+		Modules will only be sent signals by ModuleD if they are
+		officially online according to ModuleD's records
+
+		A module registered as online, but whose initd is not
+		compiled, will be an anomalous state that will generate a
+		runtime error.  Such a detected status will cause the
+		defunct module's missing initd to be deprived of signals.
