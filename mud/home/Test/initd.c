@@ -31,7 +31,12 @@ private void load()
 
 private void set_limits()
 {
-	KERNELD->rsrc_set_limit("Test", "ticks", 100000000);
+	KERNELD->rsrc_set_limit("Test", "ticks", 500000000);
+}
+
+static void do_test()
+{
+	"sys/testd"->test();
 }
 
 static void create()
@@ -44,7 +49,7 @@ static void create()
 
 	load();
 
-	"sys/testd"->test();
+	call_out("do_test", 0);
 }
 
 void upgrade_module()
@@ -57,7 +62,7 @@ void upgrade_module()
 
 	purge_orphans("Test");
 
-	"sys/testd"->test();
+	call_out("do_test", 0);
 }
 
 string query_patcher(string path)
