@@ -29,6 +29,11 @@ static void create()
 	geometry::create();
 }
 
+static void destruct()
+{
+	thing::destruct();
+}
+
 static void move_notify(object old_env)
 {
 	thing::move_notify(old_env);
