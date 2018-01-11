@@ -502,6 +502,10 @@ void upgrade_module()
 
 	load();
 
+	compile_object("sys/subd");
+	compile_object("sys/objectd");
+	compile_object("sys/moduled");
+
 	configure_rsrc();
 	set_limits();
 
@@ -518,10 +522,6 @@ void upgrade_system()
 void upgrade_system_post_recompile()
 {
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled");
-
-	compile_object("sys/subd");
-	compile_object("sys/objectd");
-	compile_object("sys/moduled");
 
 	MODULED->upgrade_modules();
 
