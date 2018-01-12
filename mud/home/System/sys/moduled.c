@@ -194,6 +194,11 @@ private mixed **initial_purge_list(string module)
 				continue;
 			}
 
+			if (name == "kernel") {
+				/* we can't destruct kernel objects! */
+				continue;
+			}
+
 			list_push_back(list, "/" + names[sz]);
 		}
 
