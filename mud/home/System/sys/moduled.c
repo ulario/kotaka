@@ -82,10 +82,12 @@ private void freeze_module(string module)
 
 private void thaw_module(string module)
 {
-	KERNELD->rsrc_set_limit(module, "objects", -1);
-	KERNELD->rsrc_set_limit(module, "callouts", -1);
-	KERNELD->rsrc_set_limit(module, "ticks", -1);
-	KERNELD->rsrc_set_limit(module, "stack", -1);
+	int sz;
+	string *resources;
+
+	for (sz = sizeof(resources); --sz >= 0; ) {
+		KERNELD->rsrc_set_limit(module, resources[sz], -1);
+	}
 }
 
 private void reset_modules_list()
