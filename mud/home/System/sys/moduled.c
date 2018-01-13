@@ -75,9 +75,6 @@ private void scramble(mixed *arr)
 private void freeze_module(string module)
 {
 	KERNELD->rsrc_set_limit(module, "objects", 0);
-	KERNELD->rsrc_set_limit(module, "callouts", 0);
-	KERNELD->rsrc_set_limit(module, "ticks", 250000);
-	KERNELD->rsrc_set_limit(module, "stack", 50);
 }
 
 private void thaw_module(string module)
