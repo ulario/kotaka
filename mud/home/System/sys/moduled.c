@@ -82,6 +82,8 @@ private void thaw_module(string module)
 	int sz;
 	string *resources;
 
+	resources = KERNELD->query_resources();
+
 	for (sz = sizeof(resources); --sz >= 0; ) {
 		KERNELD->rsrc_set_limit(module, resources[sz], -1);
 	}
