@@ -155,6 +155,14 @@ private void do_pop(string input, int op)
 	}
 }
 
+private void do_help()
+{
+	send_out("Commands\n");
+	send_out("--------\n");
+	send_out("help, quit, pset, padd, pand, pdiv, pul, por, pradd, psub, pxor, pget\n");
+	send_out("walk, look\n");
+}
+
 private void do_input(string input)
 {
 	string args;
@@ -167,6 +175,10 @@ private void do_input(string input)
 
 	switch(first) {
 	case "":
+		break;
+
+	case "help":
+		do_help();
 		break;
 
 	case "quit":
