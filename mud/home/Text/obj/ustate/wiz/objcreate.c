@@ -173,7 +173,7 @@ private void prompt()
 	case STAGE_MAX_MASS:
 		data = obj->query_max_mass();
 
-		send_out("Object's current max mass: " + data + " m^3.\n");
+		send_out("Object's current max mass: " + data + " kg.\n");
 		send_out("How much in mass should this object be able to hold? ");
 		break;
 	}
