@@ -1,0 +1,29 @@
+Master TODO
+===========
+
+This is the master, active TODO list for kotaka development.
+
+Anything here is on the front burner to get done in the foreseeable future.
+
+Tasks should be listed in order of desired completion.
+
+Pending
+-------
+
+0.50
+
+	Introduce new archetype api, formally deprecate old one
+	Formal deprecation of constructors and destructors
+
+Ban system upgrade
+
+	The banning system needs to be upgraded
+
+	* Auditing of who issues a ban
+
+	* Temporary bans that expire
+
+	* Automatic bans by code
+
+Obstructed
+----------
