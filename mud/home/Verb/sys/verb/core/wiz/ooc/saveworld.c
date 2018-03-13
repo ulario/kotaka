@@ -34,7 +34,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	"~Game/sys/saveload"->save_world();
+	send_out("Saving world...\n");
 
-	send_out("Done.\n");
+	"~Game/sys/saveload"->save_world();
 }
