@@ -44,51 +44,6 @@ Every upgrade has the following sequence of events:
 Current API changes pending
 ---------------------------
 
-Deprecation of multiple archetypes
-
-	To avoid exponential complexity in a few areas, as well as encourage
-	neater data inheritance, multiple archetypes are deprecated.
-
-	They will be forbidden in the future, and later forcibly removed.
-
-	To prepare for this change any object with multiple archetypes
-	should be reworked.
-
-	Version 0.50:
-
-		New API will be provided to query and set a single archetype.
-
-			For the time being, the interface will manipulate
-			the archetype array as if it had a single
-			element.
-
-			set_archetype will set this array to a single element array
-
-			query_archetype will return nil if the array is
-			empty or the only element if there is one, and
-			will raise an error if the object has multiple archetypes.
-
-		Formal deprecation.
-
-			Warnings will be logged if an attempt is made to assign
-			multiple archetypes to an object.
-
-	Version 0.51:
-
-		The old api will raise runtime errors if an attempt is
-		made to assign multiple archetypes to an object.
-
-		The old api will also issue warnings if it is used at all.
-
-	Version 0.52:
-
-		The new api will become mandatory
-
-		The old api will be completely removed
-
-		Any object with multiple archetypes will have their
-		archetype list truncated to the first archetype.
-
 Deprecation of constructors and destructors
 
 	I just realized that inheritables can be added and removed from
@@ -114,6 +69,51 @@ Deprecation of constructors and destructors
 		the PROGRAM_INFO lwo will be purged of all related fields
 		and queries of such fields will trigger the standard
 		runtime error for calling an undefined function.
+
+Deprecation of multiple archetypes (depends on deprecation of constructors and destructors)
+
+	To avoid exponential complexity in a few areas, as well as encourage
+	neater data inheritance, multiple archetypes are deprecated.
+
+	They will be forbidden in the future, and later forcibly removed.
+
+	To prepare for this change any object with multiple archetypes
+	should be reworked.
+
+	Version 0.53
+
+		New API will be provided to query and set a single archetype.
+
+			For the time being, the interface will manipulate
+			the archetype array as if it had a single
+			element.
+
+			set_archetype will set this array to a single element array
+
+			query_archetype will return nil if the array is
+			empty or the only element if there is one, and
+			will raise an error if the object has multiple archetypes.
+
+		Formal deprecation.
+
+			Warnings will be logged if an attempt is made to assign
+			multiple archetypes to an object.
+
+	Version 0.54
+
+		The old api will raise runtime errors if an attempt is
+		made to assign multiple archetypes to an object.
+
+		The old api will also issue warnings if it is used at all.
+
+	Version 0.55
+
+		The new api will become mandatory
+
+		The old api will be completely removed
+
+		Any object with multiple archetypes will have their
+		archetype list truncated to the first archetype.
 
 ModuleD will be official registry for modules
 
