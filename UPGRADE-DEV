@@ -8,3 +8,21 @@ Minimizing disruption of the end user's code is paramount.
 General principles is, that each module's InitD is responsible first
 checking and then enforcing the upgrades for all of the code in its
 module.
+
+Principles:
+
+1.  System is special
+
+It is the heart of the system and holds rule over the other modules in
+the library, therefore it must be treated specially.
+
+Current upgrade procedure:
+
+1.  Recompile INITD
+
+	The INITD is the heart of the System module and also has a fixed
+	API that it must adhere to with the kernel library.
+
+2.  Have the upgraded INITD
+
+Prerequisites
