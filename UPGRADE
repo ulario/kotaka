@@ -131,6 +131,9 @@ ModuleD will be official registry for modules
 		ModuleD's interface for booting and shutting down modules
 		should be used exclusively.
 
+		A module can be nuked even if it's shut down to enforce a
+		complete purge of its owned objects.
+
 	Version 0.51
 
 		ModuleD's record on the status of a particular module
