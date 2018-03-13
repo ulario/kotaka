@@ -523,6 +523,8 @@ void upgrade_system_post_recompile()
 {
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled");
 
+	upgrade_module();
+
 	MODULED->upgrade_modules();
 
 	/* first, ask all InitD's if we can upgrade */
