@@ -416,12 +416,6 @@ atomic void destruct(varargs mixed owner, mixed obj)
 	set_flags(name);
 	is_clone = sscanf(name, "%s#%*d", path);
 
-	if (is_initd) {
-		if (sizeof(MODULED->query_modules() & ({ owner }))) {
-			error("Module must be shutdown before initd can be destroyed");
-		}
-	}
-
 	if (!path) {
 		path = name;
 	}
