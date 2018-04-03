@@ -191,9 +191,7 @@ private void write_node(string base)
 	info = SECRETD->file_info("logs/" + base + ".log");
 
 	if (info && info[0] + strlen(front) > 1 << 30) {
-		SECRETD->rename_file("logs/" + base + ".dir", "logs/" + base + ".dir.old");
-		SECRETD->make_dir("logs/" + base + ".dir");
-		SECRETD->rename_file("logs/" + base + ".dir.old", "logs/" + base + ".dir/old.dir");
+		SECRETD->remove_file("logs/" + base + ".dir.log");
 		SECRETD->rename_file("logs/" + base + ".log", "logs/" + base + ".dir/old.log");
 	}
 
