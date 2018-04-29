@@ -25,6 +25,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	MODULED->boot_module(nil);
+
 	load_dir("lwo", 1);
 	load_dir("sys", 1);
 }
