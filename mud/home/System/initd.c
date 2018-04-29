@@ -171,7 +171,7 @@ static void boot_3()
 
 		DUMPD->set_parameters(3600, 0, 24);
 
-		MODULED->boot_module(nil);
+		MODULED->boot_module("Game");
 
 		/* reset to default */
 		LOGD->set_target("debug", 0, "driver");
