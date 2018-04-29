@@ -52,19 +52,19 @@ Deprecation of constructors and destructors
 
 	They are therefore completely useless.
 
-	Version 0.50:
+	Step 1
 
 		Formal deprecation.
 
 		Initds who return answers to the queries will flag
 		warning messages.
 
-	Version 0.51:
+	Step 2
 
 		Initds will no longer be queried about them and calls to them
 		will no longer be made during creation or destruction.
 
-	Version 0.52:
+	Step 3
 
 		the PROGRAM_INFO lwo will be purged of all related fields
 		and queries of such fields will trigger the standard
@@ -80,7 +80,7 @@ Deprecation of multiple archetypes (depends on deprecation of constructors and d
 	To prepare for this change any object with multiple archetypes
 	should be reworked.
 
-	Version 0.53
+	Step 1
 
 		New API will be provided to query and set a single archetype.
 
@@ -99,14 +99,14 @@ Deprecation of multiple archetypes (depends on deprecation of constructors and d
 			Warnings will be logged if an attempt is made to assign
 			multiple archetypes to an object.
 
-	Version 0.54
+	Step 2
 
 		The old api will raise runtime errors if an attempt is
 		made to assign multiple archetypes to an object.
 
 		The old api will also issue warnings if it is used at all.
 
-	Version 0.55
+	Step 3
 
 		The new api will become mandatory
 
@@ -120,7 +120,7 @@ ModuleD will be official registry for modules
 	In the future, the existence of a module's InitD will no longer
 	be the official indication of the module's being online.
 
-	Version 0.50
+	Step 1
 
 		Usage of the module's initd's existence as an indication
 		of the module's status will be formally deprecated.
@@ -134,7 +134,7 @@ ModuleD will be official registry for modules
 		A module can be nuked even if it's shut down to enforce a
 		complete purge of its owned objects.
 
-	Version 0.51
+	Step 2
 
 		ModuleD's record on the status of a particular module
 		will no longer automatically reflect the status of the
