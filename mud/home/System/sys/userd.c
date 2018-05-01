@@ -507,28 +507,34 @@ void check_sitebans()
 {
 	object *conns;
 	int sz;
+	int ticks;
 
 	ACCESS_CHECK(ACCOUNT());
 
 	conns = KERNELD->query_connections();
+	ticks = status(ST_TICKS);
 
-	for (sz = sizeof(conns); --sz >= 0; ) {
-		object conn;
+	rlimits(0; -1) {
+		for (sz = sizeof(conns); --sz >= 0; ) {
+			object conn;
 
-		conn = conns[sz];
+			conn = conns[sz];
 
-		if (BAND->check_siteban(query_ip_number(conn))) {
-			object manager;
+			if (BAND->check_siteban(query_ip_number(conn))) {
+				object manager;
 
-			manager = query_manager(conn);
+				manager = query_manager(conn);
 
-			if (manager && function_object("siteban_notify", manager)) {
-				catch {
-					manager->siteban_notify(conn);
+				if (manager && function_object("siteban_notify", manager)) {
+					catch {
+						rlimits(0; ticks) {
+							manager->siteban_notify(conn);
+						}
+					}
 				}
-			}
 
-			conn->reboot();
+				conn->reboot();
+			}
 		}
 	}
 }
