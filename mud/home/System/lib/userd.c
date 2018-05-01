@@ -52,6 +52,11 @@ string query_sitebanned_banner(object LIB_CONN connection)
 	return "Banned.\n";
 }
 
+void siteban_notify(object LIB_CONN connection)
+{
+	/* the connection is from a source that just got sitebanned and is about to be closed */
+}
+
 int query_timeout(object LIB_CONN connection)
 {
 	ACCESS_CHECK(previous_program() == SYSTEM_USERD);
