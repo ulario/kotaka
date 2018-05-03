@@ -44,6 +44,26 @@ Every upgrade has the following sequence of events:
 Current API changes pending
 ---------------------------
 
+Patching
+
+	From now on, patching will be done as follows:
+
+		Any time an object is recompiled, it and all of its
+		clones will be marked with call_touch, and a dummy call
+		to the object will be arranged ASAP.
+
+		An object that has been marked that is accessed will have
+		patch() called on it before the access continues.
+
+	Caveats:
+
+		An object is responsible for forwarding patch() calls to
+		inherits if needed.
+
+		Inherits are responsible for being prepared not to
+		receive such calls.  They are at the discretion of the
+		inheriting object.
+
 Deprecation of constructors and destructors
 
 	I just realized that inheritables can be added and removed from
