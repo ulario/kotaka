@@ -10,7 +10,7 @@ Tasks should be listed in order of desired completion.
 Pending
 -------
 
-0.50
+Archetypes
 
 	Introduce new archetype api, formally deprecate old one
 	Formal deprecation of constructors and destructors
