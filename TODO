@@ -25,5 +25,11 @@ Ban system upgrade
 
 	* Automatic bans by code
 
+Change logging
+
+	Log spamming is a potential denial of service vector.
+
+	We need a way to flush logs
+
 Obstructed
 ----------
