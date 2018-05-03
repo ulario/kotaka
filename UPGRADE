@@ -94,7 +94,9 @@ Deprecation of patchers
 
 	Step 2
 
-		ObjectD will no longer
+		ObjectD will no longer ask for them.
+
+		They will no longer be called.
 
 Deprecation of multiple archetypes (depends on deprecation of constructors and destructors)
 
