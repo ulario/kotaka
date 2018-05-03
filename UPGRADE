@@ -52,7 +52,14 @@ Deprecation of constructors and destructors
 
 	They are therefore completely useless.
 
-	Step 1
+	From now on, an object's top level destructor should cooperate
+	and call the needed destructors itself up the inheritance tree.
+
+	It is strongly advised that inheritables are fully prepared to be
+	removed from an object's inheritance tree at any time at the will
+	of its inheritors.
+
+	Step 1 (completed)
 
 		Formal deprecation.
 
