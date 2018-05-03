@@ -110,7 +110,7 @@ Deprecation of patchers
 	Step 1 (completed)
 
 		Formal deprecation.  Any InitD that attempts to return
-		information
+		information will provoke a warning.
 
 	Step 2
 
@@ -118,7 +118,12 @@ Deprecation of patchers
 
 		They will no longer be called.
 
-Deprecation of multiple archetypes (depends on deprecation of constructors and destructors)
+	Step 3
+
+		The PROGRAM_INFO lwo will be stripped of information.
+
+Deprecation of multiple archetypes (depends on deprecation of
+constructors and destructors)
 
 	To avoid exponential complexity in a few areas, as well as encourage
 	neater data inheritance, multiple archetypes are deprecated.
@@ -156,9 +161,9 @@ Deprecation of multiple archetypes (depends on deprecation of constructors and d
 
 	Step 3
 
-		The new api will become mandatory
+		The new api will become mandatory.
 
-		The old api will be completely removed
+		The old api will be completely removed.
 
 		Any object with multiple archetypes will have their
 		archetype list truncated to the first archetype.
