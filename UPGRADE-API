@@ -34,30 +34,17 @@ Deprecation of constructors and destructors
 		and queries of such fields will trigger the standard
 		runtime error for calling an undefined function.
 
-Deprecation of patchers
+Amendment of patching
 
 	For the same reason as for constructors and destructors,
 	inheritors being able to rewrite the inheritance tree of their
 	objects at any time they see fit also makes guarantees for
 	patching impossible.
 
-	From now on, an inheritable must keep track of its own version
-	information for its data.
+	Therefore, going forward, we will simplify the regime, and the
+	responsibilities of affected programs will be amended.
 
-	Step 1 (completed)
-
-		Formal deprecation.  Any InitD that attempts to return
-		information will provoke a warning.
-
-	Step 2
-
-		ObjectD will no longer ask for them.
-
-		They will no longer be called.
-
-	Step 3
-
-		The PROGRAM_INFO lwo will be stripped of information.
+	Please see PATCHING for more information.
 
 Deprecation of multiple archetypes (depends on deprecation of
 constructors and destructors)
