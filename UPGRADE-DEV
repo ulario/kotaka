@@ -18,11 +18,34 @@ the library, therefore it must be treated specially.
 
 Current upgrade procedure:
 
-1.  Recompile INITD
+1.  Have INITD recompile itself
 
-	The INITD is the heart of the System module and also has a fixed
-	API that it must adhere to with the kernel library.
+	INITD is the heart of the System module and also has a fixed API
+	that it must adhere to with the kernel library.
 
-2.  Have the upgraded INITD
+	INITD's first move will be to fire a callout and then recompile itself.
 
-Prerequisites
+	The callout will run in the newly recompiled INITD and will handle the process.
+
+2.  Have the upgraded INITD upgrade System
+
+	The upgraded INITD will then do what it needs to upgrade the
+	System module and prepare for upgrades of the other modules.
+
+	Once INITD has finished upgrading the System module, ModuleD will
+	send an upgrade signal to the other modules.
+
+3.  Modules upgrade themselves.
+
+	Each module is responsible for upgrading itself.  This should probably be done:
+
+	1.  Each module should recompile itself
+
+	2.  Each module should then upgrade itself.
+
+	3.  If the module cannot upgrade itself, it should emit a diagnostic.
+
+	Upgrade signals are delivered in an undefined order and any
+	module must at any time be prepared to have another module in a
+	state before or after upgrading.  It should also be prepared to
+	be accessed both before and after it is upgraded.
