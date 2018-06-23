@@ -1,38 +1,21 @@
 Current API changes pending
 ---------------------------
 
-Deprecation of constructors and destructors
+Amendment of constructors and destructors
 
-	I just realized that inheritables can be added and removed from
-	an object's inheritance tree at will by anyone with access to the
-	object's source code.
+	Constructors and destructors are still useful, they are therefore being reinstated.
 
-	They are therefore completely useless.
+	However, due to the ability of a program to arbitrarily add and
+	remove inheritables on recompilation, a caveat is announced.
 
-	From now on, an object's top level destructor should cooperate
-	and call the needed destructors itself up the inheritance tree.
+	Inheritables are warned that their constructor might not be
+	properly called if an object inherits them after a clone has been
+	created.  It is advisable to have a patcher registered to check
+	for this.
 
-	It is strongly advised that inheritables are fully prepared to be
-	removed from an object's inheritance tree at any time at the will
-	of its inheritors.
-
-	Step 1 (completed)
-
-		Formal deprecation.
-
-		Initds who return answers to the queries will flag
-		warning messages.
-
-	Step 2
-
-		Initds will no longer be queried about them and calls to them
-		will no longer be made during creation or destruction.
-
-	Step 3
-
-		The PROGRAM_INFO lwo will be purged of all related fields
-		and queries of such fields will trigger the standard
-		runtime error for calling an undefined function.
+	Inheritables are also warned that they may be removed at any time
+	from an object before the object is destructed, and thus, that
+	the destructor might not be called.
 
 Amendment of patching
 
@@ -45,6 +28,10 @@ Amendment of patching
 	responsibilities of affected programs will be amended.
 
 	Please see PATCHING for more information.
+
+	When the new patching interface is built, any further
+	recompilations of an object will cause it and its clones to be
+	checked against the new patching api.
 
 Deprecation of multiple archetypes (depends on deprecation of
 constructors and destructors)
