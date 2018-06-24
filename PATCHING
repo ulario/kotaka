@@ -1,9 +1,11 @@
 Object patching
 ---------------
 
-Run time object upgrading is based on DGD's inherent ability to recompile an object in place.
+Run time object upgrading is based on DGD's inherent ability to recompile
+an object in place.
 
-Further enforced by the kernel library's policy of libraries being arbitrarily destructible.
+Further enforced by the kernel library's policy of libraries being
+arbitrarily destructible.
 
 1.  Collection of information
 
@@ -14,7 +16,8 @@ Further enforced by the kernel library's policy of libraries being arbitrarily d
 	The information is queried at compilation time and immutable
 	until the program is recompiled.
 
-	If the program being compiled is inheritable, the process stops here.
+	If the program being compiled is inheritable, the process stops
+	here.
 
 2.  Collection of patchers
 
