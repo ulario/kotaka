@@ -3,7 +3,8 @@ Current API changes pending
 
 Amendment of constructors and destructors
 
-	Constructors and destructors are still useful, they are therefore being reinstated.
+	Constructors and destructors are still useful, they are therefore
+	being reinstated.
 
 	However, due to the ability of a program to arbitrarily add and
 	remove inheritables on recompilation, a caveat is announced.
@@ -36,8 +37,9 @@ Amendment of patching
 Deprecation of multiple archetypes (depends on deprecation of
 constructors and destructors)
 
-	To avoid exponential complexity in a few areas, as well as encourage
-	neater data inheritance, multiple archetypes are deprecated.
+	To avoid exponential complexity in a few areas, as well as
+	encourage neater data inheritance, multiple archetypes are
+	deprecated.
 
 	They will be forbidden in the future, and later forcibly removed.
 
@@ -46,29 +48,33 @@ constructors and destructors)
 
 	Step 1
 
-		New API will be provided to query and set a single archetype.
+		New API will be provided to query and set a single
+		archetype.
 
 			For the time being, the interface will manipulate
 			the archetype array as if it had a single
 			element.
 
-			set_archetype will set this array to a single element array
+			set_archetype will set this array to a single
+			element array
 
 			query_archetype will return nil if the array is
 			empty or the only element if there is one, and
-			will raise an error if the object has multiple archetypes.
+			will raise an error if the object has multiple
+			archetypes.
 
 		Formal deprecation.
 
-			Warnings will be logged if an attempt is made to assign
-			multiple archetypes to an object.
+			Warnings will be logged if an attempt is made to
+			assign multiple archetypes to an object.
 
 	Step 2
 
 		The old api will raise runtime errors if an attempt is
 		made to assign multiple archetypes to an object.
 
-		The old api will also issue warnings if it is used at all.
+		The old api will also issue warnings if it is used at
+		all.
 
 	Step 3
 

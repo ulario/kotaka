@@ -31,10 +31,7 @@ Change logging
 
 	We need a way to flush logs
 
-Obstructed
-----------
+Remove System dependency on Bigstruct
 
-Remove PatchD
-
-	This no longer will have a use in the future.  So we need to
-	remember to have it removed after the old api is gone.
+	As a matter of principle System itself must not have any
+	dependencies on external code.

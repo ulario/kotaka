@@ -25,7 +25,8 @@ Current upgrade procedure:
 
 	INITD's first move will be to fire a callout and then recompile itself.
 
-	The callout will run in the newly recompiled INITD and will handle the process.
+	The callout will run in the newly recompiled INITD and will
+	handle the process.
 
 2.  Have the upgraded INITD upgrade System
 
@@ -49,3 +50,7 @@ Current upgrade procedure:
 	module must at any time be prepared to have another module in a
 	state before or after upgrading.  It should also be prepared to
 	be accessed both before and after it is upgraded.
+
+	Any modules that change the api exposed to other modules must be
+	prepared to accept access under the previous API.  The System
+	module will also be required to comply with this.
