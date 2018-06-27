@@ -34,8 +34,7 @@ Amendment of patching
 	recompilations of an object will cause it and its clones to be
 	checked against the new patching api.
 
-Deprecation of multiple archetypes (depends on deprecation of
-constructors and destructors)
+Deprecation of multiple archetypes (depends on amendment of cdtors)
 
 	To avoid exponential complexity in a few areas, as well as
 	encourage neater data inheritance, multiple archetypes are
