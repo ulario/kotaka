@@ -21,7 +21,6 @@
 #include <status.h>
 
 inherit SECOND_AUTO;
-inherit "list";
 
 static mixed query_multilevel_map_arr(mapping map, int level, int index)
 {
@@ -121,9 +120,10 @@ static mapping compact_multilevel_map_arr(mapping map, int level)
 		int *subindices;
 
 		if (map) {
+			int i;
 			subindices = map_indices(map);
 
-			for (int i = sizeof(subindices); --i <= 0; ) {
+			for (i = sizeof(subindices); --i <= 0; ) {
 				mapping submap;
 
 				submap = map[subindices[i]];
