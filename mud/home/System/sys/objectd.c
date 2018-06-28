@@ -481,14 +481,19 @@ atomic mixed include_file(string compiled, string from, string path)
 	}
 }
 
-atomic int touch(varargs object obj, string func)
+atomic int touch(varargs mixed obj, mixed func)
 {
 	if (previous_program() == DRIVER) {
+		ASSERT(typeof(obj) == T_OBJECT);
+		ASSERT(typeof(func) == T_STRING);
+
 		if (!sscanf(object_name(obj), "/kernel/%*s")) {
-			obj->_F_touch(func);
+			return obj->_F_touch(func);
 		}
 	} else if (sscanf(previous_program(), USR_DIR
 		+ "/System" + INHERITABLE_SUBDIR + "auto/%*s")) {
+		/* this is our own touch handler */
+		/* obj is func */
 	} else {
 		error("Access denied");
 	}
