@@ -132,7 +132,9 @@ void cleanup_patch()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	call_out("nuke_object", 0, patch);
+	if (patch) {
+		call_out("nuke_object", 0, patch);
+	}
 
 	patch = nil;
 	patchdb = nil;
