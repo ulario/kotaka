@@ -1,11 +1,17 @@
 #!/bin/bash
 
+function crash
+{
+	echo $*
+	exit 1
+}
+
 function reb
 {
 	echo "Rebasing branch \"$1\" onto branch \"$2\"..."
 
 	git checkout $1
-	git rebase $2 --interactive
+	git rebase $2 --interactive || crash "Rebase failed"
 }
 
 echo "Rebasing kotaka repository..."
