@@ -538,3 +538,10 @@ void queue_configure_logging()
 {
 	call_out("configure_logging", 0);
 }
+
+string query_patcher(string program)
+{
+	if (program == USR_DIR + "/System/lib/auto/touch") {
+		return "system_patcher";
+	}
+}
