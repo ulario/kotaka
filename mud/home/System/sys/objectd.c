@@ -139,12 +139,12 @@ void gather_inherits(mapping map, int oindex)
 	object pinfo;
 
 	pinfo = PROGRAMD->query_program_info(oindex);
+	inh = pinfo->query_inherits();
 
-	if (!pinfo) {
+	if (!inh) {
+		LOGD->post_message("system", LOG_WARNING, "Attempted to gather inherits for ghost program " + pinfo->query_path());
 		return;
 	}
-
-	inh = pinfo->query_inherits();
 
 	for (sz = sizeof(inh) - 1; sz >= 0; --sz) {
 		int i;
@@ -242,45 +242,36 @@ atomic void compile(string owner, object obj, string *source, string inherited .
 		upgrading = 0;
 
 		if (!is_kernel) {
-			int *programs;
-			int sz;
-			string *patchers;
-			mapping inherits;
+			if (find_object(PROGRAMD)) {
+				int *programs;
+				int sz;
+				string *patchers;
+				mapping inherits;
 
-			ASSERT(find_object(PROGRAMD));
+				inherits = ([ ]);
+				gather_inherits(inherits, index);
+				programs = map_indices(inherits) | ({ index });
 
-			inherits = ([ ]);
-			gather_inherits(inherits, index);
-			programs = map_indices(inherits) | ({ index });
+				patchers = ({ });
 
-			patchers = ({ });
+				for (sz = sizeof(programs) - 1; sz >= 0; --sz) {
+					object pinfo;
+					string patcher;
+					int program;
 
-			for (sz = sizeof(programs) - 1; sz >= 0; --sz) {
-				object pinfo;
-				string patcher;
-				int program;
+					program = programs[sz];
 
-				program = programs[sz];
-
-				if (find_object(PROGRAMD)) {
 					pinfo = PROGRAMD->query_program_info(program);
+					patcher = pinfo->query_patcher();
+
+					if (patcher) {
+						patchers |= ({ patcher });
+					}
 				}
 
-				catch {
-					ASSERT(pinfo);
-				} : {
-					continue;
+				if (sizeof(patchers)) {
+					PATCHD->enqueue_patchers(obj, patchers);
 				}
-
-				patcher = pinfo->query_patcher();
-
-				if (patcher) {
-					patchers |= ({ patcher });
-				}
-			}
-
-			if (sizeof(patchers)) {
-				PATCHD->enqueue_patchers(obj, patchers);
 			}
 
 			SUSPENDD->suspend_system();
