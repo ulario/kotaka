@@ -477,7 +477,12 @@ private void register_ghosts_dir(string dir)
 		if (sizes[sz] == -2) {
 			register_ghosts_dir(path);
 		} else {
+			if (!sscanf(path, "%*s.c", path)) {
+				continue;
+			}
+
 			if (objs[sz]) {
+				LOGD->post_message("system", LOG_NOTICE, "Registering ghost program " + path);
 				PROGRAMD->register_program(path, nil, nil);
 			}
 		}
