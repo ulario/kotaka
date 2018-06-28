@@ -36,7 +36,9 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-int booted;
+int version_major;
+int version_minor;
+int version_patch;
 
 void console_post(string str, int level);
 void message(string str);
@@ -168,8 +170,6 @@ static void boot_3()
 		LOGD->post_message("system", LOG_INFO, "System discovered");
 		LOGD->post_message("system", LOG_INFO, "-----------------");
 
-		booted = 1;
-
 		DUMPD->set_parameters(3600, 0, 24);
 
 		MODULED->boot_module("Game");
@@ -194,11 +194,6 @@ int booting()
 
 	return frame[TRACE_PROGNAME] == DRIVER
 		&& frame[TRACE_FUNCTION] == "initialize";
-}
-
-int booted()
-{
-	return booted;
 }
 
 int restoring()
@@ -495,6 +490,25 @@ void booted_module(string module)
 	}
 }
 
+private void upgrade_check_kotaka_version()
+{
+	if (!version_set) {
+		return;
+	}
+
+	if (version_major < 0) {
+		error("Current major version too low for safe upgrade");
+	}
+
+	if (version_minor < 49) {
+		error("Current minor version too low for safe upgrade");
+	}
+
+	if (version_patch < 1) {
+		error("Current patch version too low for safe upgrade");
+	}
+}
+
 void upgrade_system()
 {
 	compile_object(INITD);
@@ -504,6 +518,9 @@ void upgrade_system()
 
 void upgrade_system_post_recompile()
 {
+	string version;
+	string *bits;
+
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled for system upgrade");
 
 	/* first, upgrade System */
@@ -511,11 +528,36 @@ void upgrade_system_post_recompile()
 
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module");
 
+	upgrade_check_kotaka_version();
+
+	version = KOTAKA_VERSION;
+
+	bits = explode(".", version);
+
+	switch(sizeof(bits)) {
+	case 3:
+		version_patch = bits[2];
+	case 2:
+		version_minor = bits[1];
+	case 1:
+		version_major = bits[0];
+	}
+
+	version_set = 1;
+
 	load();
 
-	compile_object("sys/subd");
-	compile_object("sys/objectd");
-	compile_object("sys/moduled");
+	destruct_object(USR_DIR + "/System/lib/auto/touch");
+	destruct_object(USR_DIR + "/System/lib/list");
+	destruct_object(USR_DIR + "/System/lib/userd");
+
+	compile_object(LOGD);
+	compile_object(MODULED);
+	compile_object(OBJECTD);
+	compile_object(PATCHD);
+	compile_object(STATUSD);
+	compile_object(SYSTEM_SUBD);
+	compile_object(USERD);
 
 	configure_rsrc();
 	set_limits();
@@ -528,6 +570,7 @@ void upgrade_system_post_recompile()
 	/* if nobody says no, send the upgrade signal */
 }
 
+/* obsolete, only intercepted legacy call from now defunct UpgradeD */
 void upgrade_system_upgraded_hook()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Received UpgradeD hook call, forwarding to upgrade handler");
