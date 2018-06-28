@@ -42,10 +42,6 @@ int is_auto;		/* current compilation is for a second auto support library */
 static void create()
 {
 	DRIVER->set_object_manager(this_object());
-
-	if (!find_object(TLSD)) {
-		error("TLSD not loaded");
-	}
 }
 
 void upgrade()
