@@ -172,7 +172,7 @@ atomic void compiling(string path)
 		}
 	}
 
-	if (path == "/initd" || sscanf(path, USR_DIR + "/%*s/initd") {
+	if (path == "/initd" || sscanf(path, USR_DIR + "/%*s/initd")) {
 		/* this is an initd */
 	} else {
 		string creator;
