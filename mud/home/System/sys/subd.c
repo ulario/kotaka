@@ -514,7 +514,7 @@ void cross_module_inheritance_audit()
 			for (sz2 = sizeof(inherits); --sz2 >= 0; ) {
 				string path2;
 
-				pinfo = PROGRAMD->query_program_info(inherits[sz]2);
+				pinfo = PROGRAMD->query_program_info(inherits[sz]);
 				path2 = pinfo->query_path();
 
 				if (DRIVER->creator(path2) != creator) {
