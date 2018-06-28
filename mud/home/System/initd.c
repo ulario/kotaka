@@ -56,6 +56,7 @@ private void load()
 
 private void set_limits()
 {
+	KERNELD->rsrc_set_limit("System", "stack", 50);
 	KERNELD->rsrc_set_limit("System", "ticks", 250000);
 }
 
