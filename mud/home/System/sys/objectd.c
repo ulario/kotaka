@@ -35,11 +35,9 @@ inherit "~/lib/system/list";
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
-mapping old_inherits;	/* list of old inherits */
 int is_initd;		/* current compilation is for an initd */
 int is_kernel;		/* current compilation is for a kernel object */
 int is_auto;		/* current compilation is for a second auto support library */
-mixed upgrades;		/* list of objects needing upgrade */
 
 static void create()
 {
@@ -53,51 +51,9 @@ static void create()
 void upgrade()
 {
 	ACCESS_CHECK(SYSTEM());
-
-	if (typeof(upgrades) == T_OBJECT) {
-		mixed **list;
-
-		list = ({ nil, nil });
-
-		while (!upgrades->empty()) {
-			list_push_back(list, upgrades->query_front());
-			upgrades->pop_front();
-		}
-
-		upgrades = list;
-	}
 }
 
 /* private */
-
-private string *fetch_from_initd(object initd, string path)
-{
-	int has_toucher;
-	int has_patcher;
-	string ctor, dtor, patcher;
-
-	ctor = initd->query_constructor(path);
-	dtor = initd->query_destructor(path);
-
-	if (function_object("query_toucher", initd) == object_name(initd)) {
-		has_toucher = 1;
-	}
-
-	if (function_object("query_patcher", initd) == object_name(initd)) {
-		has_patcher = 1;
-	}
-
-	if (has_patcher) {
-		patcher = initd->query_patcher(path);
-	} else if (has_toucher) {
-		patcher = initd->query_toucher(path);
-
-		LOGD->post_message("system", LOG_WARNING,
-			object_name(initd) + " is using the obsolete query_toucher interface");
-	}
-
-	return ({ ctor, dtor, patcher });
-}
 
 private mixed query_include_file(string compiled, string from, string path)
 {
@@ -151,13 +107,9 @@ private void compile_common(string owner, string path, string *source, string *i
 	}
 
 	if (initd) {
-		string *ret;
-
-		ret = fetch_from_initd(initd, path);
-
-		pinfo->set_constructor(ret[0]);
-		pinfo->set_destructor(ret[1]);
-		pinfo->set_patcher(ret[2]);
+		pinfo->set_constructor(initd->query_constructor(path));
+		pinfo->set_destructor(initd->query_destructor(path));
+		pinfo->set_patcher(initd->query_patcher(path));
 	}
 
 	includes = nil;
@@ -174,36 +126,6 @@ private void set_flags(string path)
 	creator = DRIVER->creator(path);
 
 	is_initd = (path == initd_of(creator));
-}
-
-/* This function is obsolete and will be removed */
-void upgrade_objects()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	catch {
-		string path;
-		string *patches;
-
-		({ path, patches }) = typeof(upgrades) == T_OBJECT ? upgrades->query_back() : list_back(upgrades);
-		typeof(upgrades) == T_OBJECT ? upgrades->pop_back() : list_pop_back(upgrades);
-
-		if (sizeof(patches)) {
-			PATCHD->add_patches(path, patches);
-		}
-
-		catch {
-			path->upgrade();
-		}
-
-		if (typeof(upgrades) == T_OBJECT ? upgrades->empty() : list_empty(upgrades)) {
-			upgrades = nil;
-		} else {
-			SUSPENDD->queue_work("upgrade_objects");
-		}
-	} : {
-		upgrades = nil;
-	}
 }
 
 /* program management */
@@ -243,8 +165,6 @@ atomic void compiling(string path)
 
 	includes = ({ "/include/std.h" });
 
-	old_inherits = ([ ]);
-
 	if (!find_object(PROGRAMD)) {
 		switch(DRIVER->creator(path)) {
 		case "System":
@@ -257,10 +177,6 @@ atomic void compiling(string path)
 	}
 
 	if (find_object(path)) {
-		if (find_object(PROGRAMD)) {
-			gather_inherits(old_inherits, status(path, O_INDEX));
-		}
-
 		upgrading = 1;
 	}
 }
@@ -355,8 +271,6 @@ atomic void compile(string owner, object obj, string *source, string inherited .
 				obj->upgrading();
 			}
 		}
-	} else {
-		old_inherits = nil;
 	}
 }
 
@@ -528,11 +442,4 @@ void nuke_object(object obj)
 	TLSD->set_tls_value("System", "destruct_force", obj);
 
 	destruct_object(obj);
-}
-
-void check_upgradeable()
-{
-	if (upgrades && !list_empty(upgrades)) {
-		error("Pending upgrades on legacy tracker");
-	}
 }
