@@ -33,6 +33,10 @@ object patch;		/* old patchdb (deprecated) */
 mapping objdb;		/* ([ index : obj ]) */
 mapping patchdb;	/* ([ index : patchers ]) */
 
+static void create()
+{
+}
+
 static void nuke_object(object obj)
 {
 	destruct_object(obj);
