@@ -303,7 +303,6 @@ atomic void compile_failed(string owner, string path)
 
 	upgrading = 0;
 	includes = nil;
-	old_inherits = nil;
 }
 
 atomic void clone(string owner, object obj)
