@@ -529,3 +529,10 @@ void nuke_object(object obj)
 
 	destruct_object(obj);
 }
+
+void check_upgradeable()
+{
+	if (upgrades && !list_empty(upgrades)) {
+		error("Pending upgrades on legacy tracker");
+	}
+}
