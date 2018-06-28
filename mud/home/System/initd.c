@@ -78,7 +78,6 @@ static void create()
 		load_object(SECRETD);		/* needed for LogD */
 		load_object(LOGD);		/* we need to log any error messages */
 		load_object(TLSD);		/* depends on an updated tls size */
-		load_object(ERRORD);		/* handles runtime errors */
 		load_object(OBJECTD);		/* enforces static invariants */
 
 		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
@@ -95,6 +94,7 @@ static void create()
 		LOGD->set_target("trace", 255, "driver");
 
 		call_out("boot", 0);
+		load_object(ERRORD);		/* handles runtime errors */
 	} : {
 		LOGD->flush();
 		shutdown();
