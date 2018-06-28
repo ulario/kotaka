@@ -172,7 +172,26 @@ atomic void compiling(string path)
 			break;
 
 		default:
-			error("Not allowed to compile " + path + " without ProgramD loaded.");
+			error("Not allowed to compile " + path + " without ProgramD");
+		}
+	}
+
+	if (path == "/initd" || sscanf(path, USR_DIR + "/%*s/initd") {
+		/* this is an initd */
+	} else {
+		string creator;
+		string initd;
+
+		creator = DRIVER->creator(path);
+
+		if (creator) {
+			initd = USR_DIR + "/" + creator + "/initd";
+		} else {
+			initd = "/initd";
+		}
+
+		if (!find_object(initd)) {
+			error("Cannot compile " + path + " without " + initd);
 		}
 	}
 
