@@ -81,9 +81,6 @@ void patch_tick(string path, int oindex, string *patches, varargs mixed *junk...
 
 	if (oindex >= 0) {
 		SUSPENDD->queue_work("patch_tick", path, oindex, patches);
-	} else {
-		LOGD->post_message("debug", LOG_DEBUG,
-			"Finished queuing patches for clones of " + path);
 	}
 }
 
