@@ -265,6 +265,13 @@ atomic void compiling(string path)
 	}
 }
 
+void do_upgrade(object obj)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	obj->upgrade();
+}
+
 atomic void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string path;
@@ -300,50 +307,49 @@ atomic void compile(string owner, object obj, string *source, string inherited .
 		upgrading = 0;
 
 		if (!is_kernel) {
-			int *new_programs;
+			int *programs;
 			int sz;
-			string *patches;
+			string *patchers;
+			mapping inherits;
 
-			mapping new_inherits;
+			ASSERT(find_object(PROGRAMD));
 
-			new_inherits = ([ ]);
+			inherits = ([ ]);
+			gather_inherits(inherits, index);
+			programs = map_indices(inherits) | ({ index });
 
-			if (find_object(PROGRAMD)) {
-				gather_inherits(new_inherits, index);
-			}
+			patchers = ({ });
 
-			new_programs = map_indices(new_inherits) - map_indices(old_inherits);
-			new_programs |= ({ index });
-
-			patches = ({ });
-
-			for (sz = sizeof(new_programs) - 1; sz >= 0; --sz) {
+			for (sz = sizeof(programs) - 1; sz >= 0; --sz) {
 				object pinfo;
 				string patcher;
+				int program;
+
+				program = programs[sz];
 
 				if (find_object(PROGRAMD)) {
-					pinfo = PROGRAMD->query_program_info(new_programs[sz]);
+					pinfo = PROGRAMD->query_program_info(program);
 				}
 
-				if (!pinfo) {
+				catch {
+					ASSERT(pinfo);
+				} : {
 					continue;
 				}
 
 				patcher = pinfo->query_patcher();
 
 				if (patcher) {
-					patches |= ({ patcher });
+					patchers |= ({ patcher });
 				}
 			}
 
-			if (!upgrades) {
-				SUSPENDD->suspend_system();
-				SUSPENDD->queue_work("upgrade_objects");
-
-				upgrades = ({ nil, nil });
+			if (sizeof(patchers)) {
+				PATCHD->enqueue_patchers(obj, patchers);
 			}
 
-			typeof(upgrades) == T_OBJECT ? upgrades->push_back( ({ path, patches }) ) : list_push_back(upgrades, ({ path, patches }) );
+			SUSPENDD->suspend_system();
+			SUSPENDD->queue_work("do_upgrade", obj);
 
 			catch {
 				obj->upgrading();
