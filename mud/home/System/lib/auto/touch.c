@@ -53,26 +53,11 @@ nomask int _F_touch(string func)
 		oindex = status(this, O_INDEX);
 	}
 
-	patchers = ({ });
-
-	{
-		string *new_patchers;
-
-		new_patchers = PATCHD->query_patches(oindex);
-		if (new_patchers) {
-			patchers |= new_patchers;
-		}
-
-		new_patchers = PATCHD->query_patchers(this);
-		if (new_patchers) {
-			patchers |= new_patchers;
-		}
-	}
-
-	PATCHD->clear_patch(this);
-	PATCHD->clear_patches(oindex);
+	patchers = PATCHD->query_patchers(this);
 
 	if (patchers) {
+		PATCHD->clear_patch(this);
+
 		for (sz = sizeof(patchers) - 1; sz >= 0; --sz) {
 			string user;
 			string prog;
