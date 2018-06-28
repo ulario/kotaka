@@ -38,17 +38,16 @@ mapping modules;
 /* 1: module is online */
 /* -1: module is shutting down */
 
-/* declarations */
-
-private void reset_modules_list();
-
 /* creator */
 
 static void create()
 {
 	modules = ([ ]);
+}
 
-	reset_modules_list();
+static void upgrade()
+{
+	modules["System"] = nil;
 }
 
 /* helpers */
@@ -89,26 +88,6 @@ private void thaw_module(string module)
 	}
 }
 
-private void reset_modules_list()
-{
-	string *dirs;
-	int sz;
-
-	dirs = get_dir(USR_DIR + "/*")[0];
-	dirs += ({ nil });
-
-	for (sz = sizeof(dirs) - 1; sz >= 0; --sz) {
-		string path;
-		string module;
-
-		path = initd_of(dirs[sz]);
-
-		if (find_object(path)) {
-			modules[dirs[sz]] = 1;
-		}
-	}
-}
-
 private void send_module_boot_signal(string module)
 {
 	int sz;
@@ -116,6 +95,7 @@ private void send_module_boot_signal(string module)
 
 	others = map_indices(modules);
 	others -= ({ module });
+	others |= ({ "System" });
 	scramble(others);
 
 	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
@@ -137,6 +117,7 @@ private void send_module_shutdown_signal(string module)
 
 	others = map_indices(modules);
 	others -= ({ module });
+	others |= ({ "System" });
 	scramble(others);
 
 	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
@@ -394,6 +375,7 @@ void upgrade_modules()
 	ACCESS_CHECK(SYSTEM());
 
 	list = map_indices(modules);
+	list -= ({ "System" });
 
 	scramble(list);
 
@@ -430,7 +412,7 @@ void upgrade_modules()
 
 string *query_modules()
 {
-	return map_indices(modules);
+	return ({ "System" }) | map_indices(modules);
 }
 
 /* directive, start up a module */
