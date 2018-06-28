@@ -452,15 +452,15 @@ void nuke_object(object obj)
 private void register_ghosts_dir(string dir)
 {
 	string *names;
-	string *sizes;
+	int *sizes;
 	mixed *objs;
-	mixed **dir;
+	mixed **lists;
 	int sz;
 
-	dir = get_dir(dir + (dir == "/" ? "*" : "/*"));
-	names = dir[0];
-	sizes = dir[1];
-	objs = dir[3];
+	lists = get_dir(dir + (dir == "/" ? "*" : "/*"));
+	names = lists[0];
+	sizes = lists[1];
+	objs = lists[3];
 
 	for (sz = sizeof(names); --sz >= 0; ) {
 		string name;
@@ -486,7 +486,7 @@ private void register_ghosts_dir(string dir)
 
 void register_ghosts()
 {
-	ACCESS_CHECK(previous_program == INITD);
+	ACCESS_CHECK(previous_program() == INITD);
 
 	register_ghosts_dir("/");
 }
