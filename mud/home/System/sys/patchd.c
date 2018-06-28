@@ -158,22 +158,28 @@ atomic void enqueue_patchers(object master, string *patchers)
 	objdb = set_multilevel_map_arr(objdb, 3, index, master);
 	call_touch(master);
 
-	rlimits(0; -1) {
-		int sz;
+	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
+		rlimits(0; -1) {
+			int sz;
 
-		for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
-			object obj;
+			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
+				object obj;
 
-			if (obj = find_object(path + "#" + sz)) {
-				objdb = set_multilevel_map_arr(objdb, 3, sz, obj);
-				call_touch(obj);
-				TOUCHD->queue_object(obj);
-				touchcount++;
+				if (obj = find_object(path + "#" + sz)) {
+					objdb = set_multilevel_map_arr(objdb, 3, sz, obj);
+					call_touch(obj);
+					TOUCHD->queue_object(obj);
+					touchcount++;
+				}
 			}
 		}
 	}
 
-	LOGD->post_message("system", LOG_INFO, "Queued " + path + " and " + touchcount + " clones for patching.");
+	if (touchcount) {
+		LOGD->post_message("system", LOG_NOTICE, "Queued " + path + " and " + touchcount + " clones for patching");
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "Queued " + path + " for patching");
+	}
 }
 
 string *query_patchers(object obj)
