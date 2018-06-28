@@ -453,3 +453,40 @@ void nuke_object(object obj)
 
 	destruct_object(obj);
 }
+
+private void register_ghosts_dir(string dir)
+{
+	string *names;
+	string *sizes;
+	mixed *objs;
+	mixed **dir;
+	int sz;
+
+	dir = get_dir(dir + (dir == "/" ? "*" : "/*"));
+	names = dir[0];
+	sizes = dir[1];
+	objs = dir[3];
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+		string path;
+
+		name = names[sz];
+		path = (dir == "/" ? "" : "/") + name;
+
+		if (sizes[sz] == -2) {
+			register_ghosts_dir(path);
+		} else {
+			if (objs[sz]) {
+				PROGRAMD->register_program(path, nil, nil);
+			}
+		}
+	}
+}
+
+void register_ghosts()
+{
+	ACCESS_CHECK(previous_program == INITD);
+
+	register_ghosts_dir("/");
+}
