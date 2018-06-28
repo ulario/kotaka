@@ -24,6 +24,10 @@ inherit SECOND_AUTO;
 
 static mixed query_multilevel_map_arr(mapping map, int level, int index)
 {
+	if (!map) {
+		return nil;
+	}
+
 	if (level == 0) {
 		return map[index];
 	} else {
@@ -36,11 +40,7 @@ static mixed query_multilevel_map_arr(mapping map, int level, int index)
 
 		submap = map[subindex];
 
-		if (submap) {
-			return query_multilevel_map_arr(submap, level - 1, index);
-		} else {
-			return nil;
-		}
+		return submap ? query_multilevel_map_arr(submap, level - 1, index) : nil;
 	}
 }
 
@@ -116,6 +116,10 @@ static mapping set_multilevel_map_arr(mapping map, int level, int index, mixed v
 
 static mapping compact_multilevel_map_arr(mapping map, int level)
 {
+	if (!map) {
+		return nil;
+	}
+
 	if (level > 0) {
 		int *subindices;
 
