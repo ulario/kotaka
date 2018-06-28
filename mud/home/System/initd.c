@@ -495,9 +495,19 @@ void booted_module(string module)
 	}
 }
 
-void upgrade_module()
+void upgrade_system()
 {
-	ACCESS_CHECK(SYSTEM());
+	compile_object(INITD);
+
+	call_out("upgrade_system_post_recompile", 0);
+}
+
+void upgrade_system_post_recompile()
+{
+	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled for system upgrade");
+
+	/* first, upgrade System */
+	/* do NOT bother other modules for upgrades until after System itself is successfully upgraded */
 
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module");
 
@@ -511,20 +521,6 @@ void upgrade_module()
 	set_limits();
 
 	purge_orphans("System");
-}
-
-void upgrade_system()
-{
-	compile_object(INITD);
-
-	call_out("upgrade_system_post_recompile", 0);
-}
-
-void upgrade_system_post_recompile()
-{
-	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled");
-
-	upgrade_module();
 
 	MODULED->upgrade_modules();
 
