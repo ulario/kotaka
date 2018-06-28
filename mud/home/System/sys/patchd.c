@@ -28,8 +28,6 @@
 inherit SECOND_AUTO;
 inherit "~/lib/system/struct/maparr";
 
-object patch;		/* old patchdb (deprecated) */
-
 mapping objdb;		/* ([ index : obj ]) */
 mapping patchdb;	/* ([ index : patchers ]) */
 
@@ -37,106 +35,17 @@ static void create()
 {
 }
 
-static void nuke_object(object obj)
-{
-	destruct_object(obj);
-}
-
-/* obsolete */
-private void queue_patches(int oindex, string *patches)
-{
-	string *old;
-
-	if (!patch) {
-		patch = clone_object(BIGSTRUCT_ARRAY_OBJ);
-		patch->claim();
-		patch->set_size(status(ST_OTABSIZE));
-	}
-
-	old = patch->query_element(oindex);
-
-	if (!old) {
-		old = ({ });
-	}
-
-	patch->set_element(oindex, old | patches);
-}
-
-/* obsolete */
-void patch_tick(string path, int oindex, string *patches, varargs mixed *junk...)
-{
-	object obj;
-
-	ACCESS_CHECK(SYSTEM());
-
-	obj = find_object(path + "#" + oindex);
-
-	if (obj) {
-		queue_patches(oindex, patches);
-		call_touch(obj);
-		TOUCHD->queue_object(obj);
-	}
-
-	oindex--;
-
-	if (oindex >= 0) {
-		SUSPENDD->queue_work("patch_tick", path, oindex, patches);
-	}
-}
-
 /* hooks */
-
-/* obsolete */
-string *query_patches(int oindex)
-{
-	if (patch) {
-		return patch->query_element(oindex);
-	}
-}
-
-/* obsolete */
-void clear_patches(int oindex)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	if (patch) {
-		patch->set_element(oindex, nil);
-	}
-}
-
-/* obsolete */
-void add_patches(string path, string *patches)
-{
-	int oindex;
-
-	ACCESS_CHECK(SYSTEM());
-
-	SUSPENDD->suspend_system();
-	SUSPENDD->queue_work("patch_tick",
-		path, status(ST_OTABSIZE) - 1, patches, time());
-
-	queue_patches(status(path, O_INDEX), patches);
-	TOUCHD->queue_object(find_object(path));
-}
 
 void reboot()
 {
 	ACCESS_CHECK(SYSTEM());
-
-	if (patch) {
-		patch->set_size(status(ST_OTABSIZE));
-	}
 }
 
 void cleanup_patch()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	if (patch) {
-		call_out("nuke_object", 0, patch);
-	}
-
-	patch = nil;
 	patchdb = nil;
 	objdb = nil;
 }
