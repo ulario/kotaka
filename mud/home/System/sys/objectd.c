@@ -172,7 +172,7 @@ atomic void compiling(string path)
 			break;
 
 		default:
-			error("Not allowed to compile " + path + " without ProgramD");
+			error("Cannot compile " + path + " without ProgramD");
 		}
 	}
 
