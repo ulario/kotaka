@@ -490,3 +490,37 @@ void full_rebuild()
 		}
 	}
 }
+
+void cross_module_inheritance_audit()
+{
+	rlimits(0; -1) {
+		object plist;
+		int sz;
+
+		plist = PROGRAMD->query_program_indices();
+
+		for (sz = plist->query_size(); --sz >= 0; ) {
+			int *inherits;
+			int sz2;
+			object pinfo;
+			string path;
+			string creator;
+
+			pinfo = PROGRAMD->query_program_info(plist->query_element(sz));
+			path = pinfo->query_path();
+			inherits = pinfo->query_inherits();
+			creator = DRIVER->creator(path);
+
+			for (sz2 = sizeof(inherits); --sz2 >= 0; ) {
+				string path2;
+
+				pinfo = PROGRAMD->query_program_info(inherits[sz]2);
+				path2 = pinfo->query_path();
+
+				if (DRIVER->creator(path2) != creator) {
+					LOGD->post_message("system", LOG_WARNING, path + " is inheriting foreign inheritable " + path2);
+				}
+			}
+		}
+	}
+}
