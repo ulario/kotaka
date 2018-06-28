@@ -36,6 +36,8 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
+int version_set;
+
 int version_major;
 int version_minor;
 int version_patch;
@@ -536,11 +538,11 @@ void upgrade_system_post_recompile()
 
 	switch(sizeof(bits)) {
 	case 3:
-		version_patch = bits[2];
+		version_patch = (int)bits[2];
 	case 2:
-		version_minor = bits[1];
+		version_minor = (int)bits[1];
 	case 1:
-		version_major = bits[0];
+		version_major = (int)bits[0];
 	}
 
 	version_set = 1;
