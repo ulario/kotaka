@@ -36,7 +36,6 @@ int destructed;			/* destructed */
 
 string constructor;		/* constructor */
 string destructor;		/* destructor */
-
 string patcher;			/* patcher */
 
 string *inherited_constructors;	/* constructors */
@@ -54,7 +53,6 @@ void set_destructed();
 
 void set_constructor(string constructor);
 void set_destructor(string destructor);
-void set_toucher(string patcher);
 void set_patcher(string patcher);
 
 void set_inherited_constructors(string *constructors);
@@ -67,7 +65,6 @@ int query_destructed();
 
 string query_constructor();
 string query_destructor();
-string query_toucher();
 string query_patcher();
 
 string *query_inherited_constructors();
@@ -123,15 +120,6 @@ void set_destructor(string new_destructor)
 	destructor = new_destructor;
 }
 
-void set_toucher(string new_patcher)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	LOGD->post_message("system", LOG_WARN, previous_program() + " is using obsolete set_toucher.");
-
-	patcher = new_patcher;
-}
-
 void set_patcher(string new_patcher)
 {
 	ACCESS_CHECK(SYSTEM());
@@ -181,13 +169,6 @@ string query_constructor()
 string query_destructor()
 {
 	return destructor;
-}
-
-string query_toucher()
-{
-	LOGD->post_message("system", LOG_WARN, previous_program() + " is using obsolete query_toucher.");
-
-	return patcher;
 }
 
 string query_patcher()
