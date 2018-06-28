@@ -176,6 +176,7 @@ private void set_flags(string path)
 	is_initd = (path == initd_of(creator));
 }
 
+/* This function is obsolete and will be removed */
 void upgrade_objects()
 {
 	ACCESS_CHECK(SYSTEM());

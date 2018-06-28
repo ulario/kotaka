@@ -38,6 +38,7 @@ static void nuke_object(object obj)
 	destruct_object(obj);
 }
 
+/* obsolete */
 private void queue_patches(int oindex, string *patches)
 {
 	string *old;
@@ -57,6 +58,7 @@ private void queue_patches(int oindex, string *patches)
 	patch->set_element(oindex, old | patches);
 }
 
+/* obsolete */
 void patch_tick(string path, int oindex, string *patches, varargs mixed *junk...)
 {
 	object obj;
@@ -83,6 +85,7 @@ void patch_tick(string path, int oindex, string *patches, varargs mixed *junk...
 
 /* hooks */
 
+/* obsolete */
 string *query_patches(int oindex)
 {
 	if (patch) {
@@ -90,6 +93,7 @@ string *query_patches(int oindex)
 	}
 }
 
+/* obsolete */
 void clear_patches(int oindex)
 {
 	ACCESS_CHECK(SYSTEM());
@@ -99,6 +103,7 @@ void clear_patches(int oindex)
 	}
 }
 
+/* obsolete */
 void add_patches(string path, string *patches)
 {
 	int oindex;
