@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2017  Raymond Jennings
+ * Copyright (C) 2017, 2018  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,32 +17,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <config.h>
 #include <kotaka/privilege.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/log.h>
 #include <status.h>
+#include <limits.h>
 
 inherit "call_guard";
 
 static void call_touch(object obj)
 {
-	/* anyone can use call_touch */
-
-	if (previous_program() == TOUCHD) {
-		::call_touch(obj);
-	} else {
-		TOUCHD->touch_object(obj);
-	}
+	::call_touch(obj);
 }
 
-static void touch()
+static int touch(string func)
 {
+	return 0;
 }
 
-nomask void _F_touch(string func)
+nomask int _F_touch(string func)
 {
 	object this;
 	string name;
-	string *patches;
+	string *patchers;
 	int oindex;
 	int sz;
 
@@ -55,16 +53,48 @@ nomask void _F_touch(string func)
 		oindex = status(this, O_INDEX);
 	}
 
-	patches = PATCHD->query_patches(oindex);
+	patchers = ({ });
+
+	{
+		string *new_patchers;
+
+		new_patchers = PATCHD->query_patches(oindex);
+		if (new_patchers) {
+			patchers |= new_patchers;
+		}
+
+		new_patchers = PATCHD->query_patchers(this);
+		if (new_patchers) {
+			patchers |= new_patchers;
+		}
+	}
+
+	PATCHD->clear_patch(this);
 	PATCHD->clear_patches(oindex);
 
-	if (patches) {
-		for (sz = sizeof(patches) - 1; sz >= 0; --sz) {
-			catch {
-				call_other(this_object(), patches[sz]);
+	if (patchers) {
+		for (sz = sizeof(patchers) - 1; sz >= 0; --sz) {
+			string user;
+			string prog;
+			string patcher;
+
+			patcher = patchers[sz];
+
+			rlimits(INT_MAX / 2; -1) {
+				int stack;
+				int ticks;
+
+				catch {
+					call_limited(patcher);
+				}
 			}
 		}
 	}
 
-	touch();
+	return touch(func);
+}
+
+void system_patcher()
+{
+	LOGD->post_message("system", LOG_DEBUG, "System patcher called for " + object_name(this_object()));
 }
