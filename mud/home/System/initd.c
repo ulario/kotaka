@@ -550,17 +550,15 @@ void upgrade_system_post_recompile()
 
 	load();
 
-	destruct_object(USR_DIR + "/System/lib/auto/touch");
-	destruct_object(USR_DIR + "/System/lib/list");
-	destruct_object(USR_DIR + "/System/lib/userd");
+	destruct_object("~/lib/auto/object");
+	destruct_object("~/lib/auto/touch");
+	destruct_object("~/lib/system/struct/maparr");
 
-	compile_object(LOGD);
 	compile_object(MODULED);
+	compile_object(PROGRAM_INFO);
 	compile_object(OBJECTD);
 	compile_object(PATCHD);
-	compile_object(STATUSD);
 	compile_object(SYSTEM_SUBD);
-	compile_object(USERD);
 
 	configure_rsrc();
 	set_limits();
