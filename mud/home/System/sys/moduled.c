@@ -45,8 +45,10 @@ static void create()
 	modules = ([ ]);
 }
 
-static void upgrade()
+void upgrade()
 {
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
 	modules["System"] = nil;
 }
 
