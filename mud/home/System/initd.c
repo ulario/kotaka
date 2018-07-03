@@ -571,13 +571,6 @@ void upgrade_system_post_recompile()
 	/* if nobody says no, send the upgrade signal */
 }
 
-/* obsolete, only intercepted legacy call from now defunct UpgradeD */
-void upgrade_system_upgraded_hook()
-{
-	LOGD->post_message("system", LOG_NOTICE, "Received UpgradeD hook call, forwarding to upgrade handler");
-	upgrade_system_post_recompile();
-}
-
 void queue_configure_logging()
 {
 	call_out("configure_logging", 0);
