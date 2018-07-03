@@ -71,13 +71,15 @@ static void create()
 
 	catch {
 		load_object(KERNELD);		/* needed for LogD */
+		KERNELD->set_global_access("System", 1);
+
 		configure_klib();
 		configure_rsrc();
 		set_limits();
 
 		load_object(SECRETD);		/* needed for LogD */
 		load_object(LOGD);		/* we need to log any error messages */
-		load_object(TLSD);		/* depends on an updated tls size */
+		load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
 		load_object(OBJECTD);		/* enforces static invariants */
 
 		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
@@ -88,30 +90,15 @@ static void create()
 
 		configure_logging();
 
-		/* temporary console logging until boot is completed */
-		LOGD->set_target("debug", 255, "driver");
-		LOGD->set_target("compile", 255, "driver");
-		LOGD->set_target("trace", 255, "driver");
+		load_object(ERRORD);		/* handles runtime errors, load last in case the system core fails to boot */
 
 		call_out("boot", 0);
-		load_object(ERRORD);		/* handles runtime errors */
+
+		LOGD->post_message("system", LOG_INFO, "System core loaded");
 	} : {
 		LOGD->flush();
 		shutdown();
 		error("Failed to load system core");
-	}
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	configure_logging();
-	configure_rsrc();
-
-	LOGD->post_message("debug", LOG_NOTICE, "Re-auditing filequota");
-	rlimits(0; -1) {
-		DRIVER->fix_filequota();
 	}
 }
 
@@ -125,67 +112,41 @@ private void log_boot_error()
 static void boot()
 {
 	catch {
-		LOGD->post_message("system", LOG_INFO, "------------------");
-		LOGD->post_message("system", LOG_INFO, "System core loaded");
-		LOGD->post_message("system", LOG_INFO, "------------------");
-
-		KERNELD->set_global_access("System", 1);
-
 		load_object(MODULED);
 
 		MODULED->boot_module("Bigstruct");
 
 		load();
 
-		call_out("boot_2", 0);
-	} : {
-		log_boot_error();
-		LOGD->flush();
-		shutdown();
-		error("Failed to load system");
-	}
-}
-
-static void boot_2()
-{
-	catch {
-		LOGD->post_message("system", LOG_INFO, "-------------");
 		LOGD->post_message("system", LOG_INFO, "System loaded");
-		LOGD->post_message("system", LOG_INFO, "-------------");
 
 		PROGRAMD->create_database();
 		OBJECTD->register_ghosts();
 		SYSTEM_SUBD->discover_objects();
 
-		call_out("boot_3", 0);
-	} : {
-		log_boot_error();
-		LOGD->flush();
-		shutdown();
-		error("Failed to initialize the program database");
-	}
-}
-
-static void boot_3()
-{
-	catch {
-		LOGD->post_message("system", LOG_INFO, "-----------------");
 		LOGD->post_message("system", LOG_INFO, "System discovered");
-		LOGD->post_message("system", LOG_INFO, "-----------------");
 
 		DUMPD->set_parameters(3600, 0, 24);
 
 		MODULED->boot_module("Game");
-
-		/* reset to default */
-		LOGD->set_target("debug", 0, "driver");
-		LOGD->set_target("compile", 63, "driver");
-		LOGD->set_target("trace", 0, "driver");
 	} : {
 		log_boot_error();
 		LOGD->flush();
 		shutdown();
 		error("System setup failed");
+	}
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	configure_logging();
+	configure_rsrc();
+
+	LOGD->post_message("debug", LOG_NOTICE, "Re-auditing filequota");
+	rlimits(0; -1) {
+		DRIVER->fix_filequota();
 	}
 }
 
@@ -329,49 +290,34 @@ void configure_rsrc()
 
 void configure_logging()
 {
-	/* wipe the slate clean */
 	LOGD->clear_targets();
 
-	/* log to console by default */
-	LOGD->set_target("*", 63, "driver"); /* omit info and debug */
+	LOGD->set_target("*", 63, "driver");
 
-	/* don't log these to the console */
 	LOGD->set_target("debug", 0, "driver");
-	LOGD->set_target("compile", 63, "driver");
-	LOGD->set_target("trace", 0, "driver");
+	LOGD->set_target("compile", 255, "driver");
+	LOGD->set_target("error", 255, "driver");
+	LOGD->set_target("trace", 255, "driver");
 
-	/* prevent default logging */
 	LOGD->set_target("debug", 255, "null");
 	LOGD->set_target("compile", 255, "null");
 	LOGD->set_target("trace", 255, "null");
 
-	/* general log gets everything */
 	LOGD->set_target("*", 255, "file:general");
-	LOGD->set_target("debug", 255, "file:general");
-	LOGD->set_target("compile", 255, "file:general");
-	LOGD->set_target("trace", 63, "file:general");
 
-	/* error log gets errors and traces */
 	LOGD->set_target("error", 255, "file:error");
 	LOGD->set_target("trace", 255, "file:error");
-	LOGD->set_target("compile", 63, "file:error");
+	LOGD->set_target("compile", 255, "file:error");
 
-	/* session log gets only non debug */
 	LOGD->set_target("*", 127, "file:session");
 	LOGD->set_target("debug", 0, "file:session");
 
-	/* debug log gets only debug */
 	LOGD->set_target("*", 128, "file:debug");
 	LOGD->set_target("debug", 255, "file:debug");
 
-	/* debug log gets only debug */
-	LOGD->set_target("*", 64, "file:info");
-
-	/* general system log goes to general and logged in staff */
 	LOGD->set_target("system", 255, "file:general");
 	LOGD->set_target("system", 255, "file:session");
 
-	/* post these on the system channel */
 	LOGD->set_target("system", 63, "channel:system");
 
 	LOGD->set_target("compile", 255, "channel:compile");
