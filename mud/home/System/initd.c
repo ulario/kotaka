@@ -36,8 +36,6 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-int version_set;
-
 int version_major;
 int version_minor;
 int version_patch;
@@ -421,8 +419,6 @@ void booted_module(string module)
 
 private void upgrade_check_kotaka_version()
 {
-	ASSERT(version_set);
-
 	switch(version_major) {
 	case 0:
 		switch(version_minor) {
