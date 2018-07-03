@@ -30,7 +30,6 @@
 
 inherit SECOND_AUTO;
 inherit LIB_SYSTEM;
-inherit "~/lib/system/list";
 
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
