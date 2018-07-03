@@ -455,8 +455,7 @@ void upgrade_system()
 
 void upgrade_system_post_recompile()
 {
-	string version;
-	string *bits;
+	int major, minor, patch;
 
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled for system upgrade");
 
@@ -467,20 +466,15 @@ void upgrade_system_post_recompile()
 
 	upgrade_check_kotaka_version();
 
-	version = KOTAKA_VERSION;
-
-	bits = explode(".", version);
-
-	switch(sizeof(bits)) {
-	case 3:
-		version_patch = (int)bits[2];
-	case 2:
-		version_minor = (int)bits[1];
-	case 1:
-		version_major = (int)bits[0];
+	if (sscanf(KOTAKA_VERSION, "%d.%d.%d", version_major, version_minor, version_patch) != 3) {
+		version_patch = 0;
+		if (sscanf(KOTAKA_VERSION, "%d.%d", version_major, version_minor) != 2) {
+			version_minor = 0;
+			if(sscanf(KOTAKA_VERSION, "%d", version_major) != 1) {
+				error("Cannot parse Kotaka version");
+			}
+		}
 	}
-
-	version_set = 1;
 
 	load();
 
