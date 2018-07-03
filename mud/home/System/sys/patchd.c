@@ -31,11 +31,19 @@ inherit "~/lib/system/struct/maparr";
 mapping objdb;		/* ([ index : obj ]) */
 mapping patchdb;	/* ([ index : patchers ]) */
 
+mapping patcherdb;	/* ([ level : ([ index : patchers ]) ]) */
+mapping patchabledb;	/* ([ level : ([ index : obj ]) ]) */
+
 static void create()
 {
 }
 
 /* hooks */
+
+void upgrade()
+{
+	ACCESS_CHECK(SYSTEM());
+}
 
 void reboot()
 {
@@ -45,9 +53,74 @@ void reboot()
 void cleanup_patch()
 {
 	ACCESS_CHECK(SYSTEM());
+}
 
-	patchdb = nil;
-	objdb = nil;
+private void set_multimap(mapping multimap, int index, mixed value)
+{
+	int shift;
+	int level;
+
+	mapping submap;
+
+	shift = index;
+
+	while (shift & ~255) {
+		shift >>= 8;
+		level++;
+	}
+
+	submap = multimap[level];
+
+	if (!submap) {
+		multimap[level] = submap = ([ ]);
+	}
+
+	while (level) {
+		shift = index & (-1 << (level << 3));
+
+		if (!submap[shift]) {
+			submap[shift] = ([ ]);
+		}
+
+		submap = submap[shift];
+		level--;
+	}
+
+	submap[index] = value;
+}
+
+private mixed query_multimap(mapping multimap, int index)
+{
+	int shift;
+	int level;
+
+	mapping submap;
+
+	shift = index;
+
+	while (shift & ~255) {
+		shift >>= 8;
+		level++;
+	}
+
+	submap = multimap[level];
+
+	if (!submap) {
+		return nil;
+	}
+
+	while (level) {
+		shift = index & (-1 << (level << 3));
+
+		if (!submap[shift]) {
+			return nil;
+		}
+
+		submap = submap[shift];
+		level--;
+	}
+
+	return submap[index];
 }
 
 atomic void enqueue_patchers(object master, string *patchers)
@@ -62,26 +135,61 @@ atomic void enqueue_patchers(object master, string *patchers)
 	path = object_name(master);
 	index = status(master, O_INDEX);
 
-	patchdb = set_multilevel_map_arr(patchdb, 3, index, patchers);
+	if (!patcherdb) {
+		patcherdb = ([ ]);
+	}
+	if (!patchabledb) {
+		patchabledb = ([ ]);
+	}
 
-	objdb = set_multilevel_map_arr(objdb, 3, index, master);
+	set_multimap(patcherdb, index, patchers);
+	set_multimap(patchabledb, index, master);
+
 	call_touch(master);
 
 	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		rlimits(0; -1) {
 			int sz;
+			int time;
 
-			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
-				object obj;
+			sz = status(ST_OTABSIZE);
 
-				if (obj = find_object(path + "#" + sz)) {
-					objdb = set_multilevel_map_arr(objdb, 3, sz, obj);
-					call_touch(obj);
-					TOUCHD->queue_object(obj);
-					touchcount++;
+			LOGD->post_message("system", LOG_NOTICE, "Checking " + path);
+
+			time = time();
+
+			while (sz >= 0) {
+				int bsz;
+				int time2;
+
+				bsz = sz;
+				bsz -= 1;
+				bsz &= ~65535;
+
+				for (; --sz >= bsz; ) {
+					object obj;
+
+					if (obj = find_object(path + "#" + sz)) {
+						set_multimap(patchabledb, sz, obj);
+						call_touch(obj);
+						touchcount++;
+					}
+
+				}
+
+				time2 = time();
+
+				if (time != time2) {
+					time = time2;
+
+					LOGD->post_message("system", LOG_NOTICE, "Checked #" + sz);
 				}
 			}
 		}
+
+		call_out("sweep", 0, path);
+	} else {
+		call_out("nudge_object", 0, master);
 	}
 
 	if (touchcount) {
@@ -97,6 +205,7 @@ string *query_patchers(object obj)
 	string path;
 	int index;
 	int mindex;
+	string *patchers;
 
 	ACCESS_CHECK(SYSTEM());
 
@@ -107,15 +216,23 @@ string *query_patchers(object obj)
 		index = mindex;
 	}
 
-	odbv = query_multilevel_map_arr(objdb, 3, index);
-
-	if (odbv == nil) {
-		return nil;
+	if (!query_multimap(patchabledb, index)) {
+		if (!query_multilevel_map_arr(objdb, 3, index)) {
+			return nil;
+		}
 	}
 
-	ASSERT(odbv == obj);
+	patchers = query_multimap(patcherdb, mindex);
 
-	return query_multilevel_map_arr(patchdb, 3, mindex);
+	if (patchers) {
+		return patchers;
+	}
+
+	patchers = query_multilevel_map_arr(patchdb, 3, mindex);
+
+	if (patchers) {
+		return patchers;
+	}
 }
 
 void clear_patch(object obj)
@@ -132,4 +249,25 @@ void clear_patch(object obj)
 	}
 
 	objdb = set_multilevel_map_arr(objdb, 3, index, nil);
+	set_multimap(patchabledb, index, nil);
+}
+
+static void nudge_object(object obj)
+{
+	obj->_F_dummy();
+}
+
+static void sweep(string path, varargs int index)
+{
+	if (index < status(ST_OTABSIZE)) {
+		object obj;
+
+		call_out("sweep", 0, path, index + 1);
+
+		if (obj = find_object(path + "#" + index)) {
+			obj->_F_dummy();
+		}
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "Completed touch sweep for " + path);
+	}
 }
