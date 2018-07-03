@@ -150,39 +150,16 @@ atomic void enqueue_patchers(object master, string *patchers)
 	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		rlimits(0; -1) {
 			int sz;
-			int time;
-
-			sz = status(ST_OTABSIZE);
 
 			LOGD->post_message("system", LOG_NOTICE, "Checking " + path);
 
-			time = time();
+			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
+				object obj;
 
-			while (sz >= 0) {
-				int bsz;
-				int time2;
-
-				bsz = sz;
-				bsz -= 1;
-				bsz &= ~65535;
-
-				for (; --sz >= bsz; ) {
-					object obj;
-
-					if (obj = find_object(path + "#" + sz)) {
-						set_multimap(patchabledb, sz, obj);
-						call_touch(obj);
-						touchcount++;
-					}
-
-				}
-
-				time2 = time();
-
-				if (time != time2) {
-					time = time2;
-
-					LOGD->post_message("system", LOG_NOTICE, "Checked #" + sz);
+				if (obj = find_object(path + "#" + sz)) {
+					set_multimap(patchabledb, sz, obj);
+					call_touch(obj);
+					touchcount++;
 				}
 			}
 		}
