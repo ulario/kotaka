@@ -176,7 +176,7 @@ string query_banner(object conn)
 
 string query_sitebanned_banner(object conn)
 {
-	return "Access denied\nReason: blacklisted IP address";
+	return "Access denied (blacklisted IP address)";
 }
 
 int query_timeout(object conn)
