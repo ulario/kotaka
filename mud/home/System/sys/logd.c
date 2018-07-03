@@ -27,7 +27,7 @@
 #include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;
-inherit "~/lib/system/list";
+inherit "~/lib/system/struct/list";
 
 mapping facilities;
 mapping buffers;
