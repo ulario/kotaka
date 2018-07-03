@@ -21,7 +21,7 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/privilege.h>
 
-inherit "/lib/linked_list";
+inherit "~System/lib/struct/list";
 
 void load_help();
 

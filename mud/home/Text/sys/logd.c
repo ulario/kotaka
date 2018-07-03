@@ -22,7 +22,7 @@
 #include <status.h>
 #include <kotaka/privilege.h>
 
-inherit "/lib/linked_list";
+inherit "~System/lib/struct/list";
 
 mixed **buf;
 

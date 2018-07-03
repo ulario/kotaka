@@ -28,7 +28,7 @@
 
 #define SYSTEM_CHANNELS ({ "compile", "debug", "error", "system", "trace" })
 
-inherit "/lib/linked_list";
+inherit "~System/lib/struct/list";
 
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */

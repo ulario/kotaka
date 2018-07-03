@@ -28,7 +28,7 @@
 #include <status.h>
 #include <type.h>
 
-inherit "/lib/linked_list";
+inherit "~System/lib/struct/list";
 
 object oindex2onum; /* ([ oindex: idnum ]) */
 object objlist;	/* ({ idnum: obj, data }) */

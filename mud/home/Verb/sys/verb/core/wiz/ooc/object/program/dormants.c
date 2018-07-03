@@ -21,7 +21,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
-inherit "/lib/linked_list";
+inherit "~System/lib/struct/list";
 
 string *query_parse_methods()
 {
