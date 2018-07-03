@@ -153,12 +153,12 @@ static void purge_module_tick(string module, varargs int reboot)
 
 	modules[module] = nil;
 
-	LOGD->post_message("system", LOG_NOTICE, "Shutdown " + (module ? module : "Ecru"));
+	LOGD->post_message("system", LOG_NOTICE, "Shut down " + (module ? module : "Ecru"));
 
 	thaw_module(module);
 
 	if (reboot) {
-		call_out("boot_module", 0, module);
+		call_out("boot_module", 0, module, 1);
 	}
 }
 
@@ -309,7 +309,7 @@ string *query_modules()
 }
 
 /* directive, start up a module */
-void boot_module(string module)
+void boot_module(string module, varargs int reboot)
 {
 	string *others;
 	int sz;
@@ -348,7 +348,11 @@ void boot_module(string module)
 		error("Failure to grant global access by " + module);
 	}
 
-	LOGD->post_message("system", LOG_NOTICE, "Booted " + (module ? module : "Ecru"));
+	if (reboot) {
+		LOGD->post_message("system", LOG_NOTICE, "Rebooted " + (module ? module : "Ecru"));
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "Booted " + (module ? module : "Ecru"));
+	}
 
 	send_module_boot_signal(module);
 }
@@ -369,7 +373,7 @@ void reboot_module(string module)
 	freeze_module(module);
 	modules[module] = -1;
 
-	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + (module ? module : "Ecru"));
+	LOGD->post_message("system", LOG_NOTICE, "Rebooting " + (module ? module : "Ecru"));
 
 	send_module_shutdown_signal(module);
 	destruct_object(initd_of(module));
