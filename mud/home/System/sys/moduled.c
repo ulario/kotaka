@@ -31,7 +31,6 @@
 inherit SECOND_AUTO;
 inherit UTILITY_COMPILE;
 inherit LIB_SYSTEM;
-inherit "~/lib/system/list";
 
 mapping modules;
 
@@ -392,7 +391,7 @@ void shutdown_module(string module)
 	case "Bigstruct":
 	case "String":
 	case "System":
-		error("Cannot shutdown " + module);
+		error("Cannot shut down " + module);
 	}
 
 	freeze_module(module);
