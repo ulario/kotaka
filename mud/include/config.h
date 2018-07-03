@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2010, 2011, 2012, 2014, 2015  Raymond Jennings
+ * Copyright (C) 2010, 2011, 2012, 2014, 2015, 2018  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,3 @@
 # define SYS_PERSISTENT		/* off by default */
 
 # define CALLOUTRSRC	TRUE	/* don't have callouts as a resource */
-
-# if defined( __NETWORK_PACKAGE__ ) || defined( __NETWORK_EXTENSIONS__ )
-#  define SYS_NETWORKING	/* Network package is enabled */
-# endif

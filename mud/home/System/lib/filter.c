@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2017  Raymond Jennings
+ * Copyright (C) 2017, 2018  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -101,16 +101,6 @@ int message_done()
 
 	return MODE_NOCHANGE;
 }
-
-# ifndef SYS_NETWORKING
-void open_datagram()
-{
-	ACCESS_CHECK(previous_program() == LIB_CONN
-		|| calling_object() == this_object());
-
-	conn::open_datagram(nil);
-}
-# endif
 
 void receive_datagram(string packet)
 {
