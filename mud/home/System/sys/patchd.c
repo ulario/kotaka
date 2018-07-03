@@ -27,6 +27,7 @@
 
 inherit SECOND_AUTO;
 inherit "~/lib/system/struct/maparr";
+inherit "~/lib/struct/multimap";
 
 mapping objdb;		/* ([ index : obj ]) */
 mapping patchdb;	/* ([ index : patchers ]) */
@@ -53,74 +54,6 @@ void reboot()
 void cleanup_patch()
 {
 	ACCESS_CHECK(SYSTEM());
-}
-
-private void set_multimap(mapping multimap, int index, mixed value)
-{
-	int shift;
-	int level;
-
-	mapping submap;
-
-	shift = index;
-
-	while (shift & ~255) {
-		shift >>= 8;
-		level++;
-	}
-
-	submap = multimap[level];
-
-	if (!submap) {
-		multimap[level] = submap = ([ ]);
-	}
-
-	while (level) {
-		shift = index & (-1 << (level << 3));
-
-		if (!submap[shift]) {
-			submap[shift] = ([ ]);
-		}
-
-		submap = submap[shift];
-		level--;
-	}
-
-	submap[index] = value;
-}
-
-private mixed query_multimap(mapping multimap, int index)
-{
-	int shift;
-	int level;
-
-	mapping submap;
-
-	shift = index;
-
-	while (shift & ~255) {
-		shift >>= 8;
-		level++;
-	}
-
-	submap = multimap[level];
-
-	if (!submap) {
-		return nil;
-	}
-
-	while (level) {
-		shift = index & (-1 << (level << 3));
-
-		if (!submap[shift]) {
-			return nil;
-		}
-
-		submap = submap[shift];
-		level--;
-	}
-
-	return submap[index];
 }
 
 atomic void enqueue_patchers(object master, string *patchers)
