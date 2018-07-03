@@ -441,20 +441,28 @@ void booted_module(string module)
 
 private void upgrade_check_kotaka_version()
 {
-	if (!version_set) {
-		return;
-	}
+	ASSERT(version_set);
 
-	if (version_major < 0) {
-		error("Current major version too low for safe upgrade");
-	}
-
-	if (version_minor < 49) {
-		error("Current minor version too low for safe upgrade");
-	}
-
-	if (version_patch < 1) {
-		error("Current patch version too low for safe upgrade");
+	switch(version_major) {
+	case 0:
+		switch(version_minor) {
+		case 0 .. 49:
+			error("Please upgrade to 0.50.2 first");
+		case 50:
+			switch(version_patch) {
+			case 0:
+			case 1:
+				error("Please upgrade to 0.50.2 first");
+			case 2:
+				return;
+			default:
+				error("Bad version number");
+			}
+		default:
+			error("Bad version number");
+		}
+	default:
+		error("Bad version number");
 	}
 }
 
