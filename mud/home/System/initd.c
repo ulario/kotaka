@@ -150,26 +150,6 @@ void upgrade()
 	}
 }
 
-int booting()
-{
-	mixed *frame;
-
-	frame = call_trace()[0];
-
-	return frame[TRACE_PROGNAME] == DRIVER
-		&& frame[TRACE_FUNCTION] == "initialize";
-}
-
-int restoring()
-{
-	mixed *frame;
-
-	frame = call_trace()[0];
-
-	return frame[TRACE_PROGNAME] == DRIVER
-		&& frame[TRACE_FUNCTION] == "restored";
-}
-
 void clear_admin()
 {
 	/* remove all admin quotas */
