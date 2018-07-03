@@ -134,121 +134,12 @@ private void send_module_shutdown_signal(string module)
 	}
 }
 
-private mixed **initial_purge_list(string module)
-{
-	mixed **list;
-
-	list = ({ nil, nil });
-
-	if (module) {
-		mixed **dir;
-
-		string *names;
-		int *sizes;
-
-		int sz;
-
-		dir = get_dir(USR_DIR + "/" + module + "/*");
-		names = dir[0];
-		sizes = dir[1];
-
-		for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
-			list_push_back(list, USR_DIR + "/" + module + "/" + names[sz]);
-		}
-	} else {
-		mixed **dir;
-
-		string *names;
-		int *sizes;
-
-		int sz;
-
-		/* / */
-		dir = get_dir("/*");
-		names = dir[0];
-		sizes = dir[1];
-
-		for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
-			string name;
-
-			name = names[sz];
-
-			if ("/" + name == USR_DIR) {
-				/* skip /home */
-				continue;
-			}
-
-			if (name == "kernel") {
-				/* we can't destruct kernel objects! */
-				continue;
-			}
-
-			list_push_back(list, "/" + names[sz]);
-		}
-
-		/* non-dirs in /home */
-		dir = get_dir(USR_DIR + "/*");
-		names = dir[0];
-		sizes = dir[1];
-
-		for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
-			string name;
-
-			name = names[sz];
-
-			if (sizes[sz] == -2) {
-				continue;
-			}
-
-			list_push_back(list, USR_DIR + "/" + names[sz]);
-		}
-	}
-
-	return list;
-}
-
 static void purge_module_master_tick(string module, mixed **list, int reboot)
 {
-	string path;
-	mixed *info;
-
-	path = list_front(list);
-	list_pop_front(list);
-
-	info = file_info(path);
-
-	if (info[0] == -2) {
-		/* subdir */
-		mixed **dir;
-
-		string *names;
-		int *sizes;
-
-		int sz;
-
-		dir = get_dir(path + "/*");
-		names = dir[0];
-		sizes = dir[1];
-
-		for (sz = sizeof(sizes) - 1; sz >= 0; --sz) {
-			list_push_front(list, path + "/" + names[sz]);
-		}
-	} else if (info[2]) {
-		/* live object */
-		catch {
-			sscanf(path, "%s.c", path);
-			destruct_object(path);
-		}
-	}
-
-	if (list_empty(list)) {
-		call_out("purge_module_tick", 0, module, reboot);
-	} else {
-		call_out("purge_module_master_tick", 0, module, list, reboot);
-	}
+	call_out("purge_module_tick", 0, module, reboot);
 }
 
-static void purge_module_tick(string module, int reboot)
+static void purge_module_tick(string module, varargs int reboot)
 {
 	object cursor;
 
@@ -481,14 +372,9 @@ void reboot_module(string module)
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + (module ? module : "Ecru"));
 
 	send_module_shutdown_signal(module);
+	destruct_object(initd_of(module));
 
-	list = initial_purge_list(module);
-
-	if (list_empty(list)) {
-		call_out("purge_module_tick", 0, module, nil, 1);
-	} else {
-		call_out("purge_module_master_tick", 0, module, list, 1);
-	}
+	call_out("purge_module_tick", 0, module, 1);
 }
 
 void shutdown_module(string module)
@@ -511,12 +397,7 @@ void shutdown_module(string module)
 	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + (module ? module : "Ecru"));
 
 	send_module_shutdown_signal(module);
+	destruct_object(initd_of(module));
 
-	list = initial_purge_list(module);
-
-	if (list_empty(list)) {
-		call_out("purge_module_tick", 0, module, nil, 0);
-	} else {
-		call_out("purge_module_master_tick", 0, module, list, 0);
-	}
+	call_out("purge_module_tick", 0, module);
 }
