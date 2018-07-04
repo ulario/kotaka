@@ -37,6 +37,8 @@ mapping patchabledb;	/* ([ level : ([ index : obj ]) ]) */
 
 static void create()
 {
+	patcherdb = ([ ]);
+	patchabledb = ([ ]);
 }
 
 /* hooks */
@@ -44,6 +46,14 @@ static void create()
 void upgrade()
 {
 	ACCESS_CHECK(SYSTEM());
+
+	if (!patcherdb) {
+		patcherdb = ([ ]);
+	}
+
+	if (!patchabledb) {
+		patchabledb = ([ ]);
+	}
 }
 
 void reboot()
@@ -68,13 +78,6 @@ atomic void enqueue_patchers(object master, string *patchers)
 	path = object_name(master);
 	index = status(master, O_INDEX);
 
-	if (!patcherdb) {
-		patcherdb = ([ ]);
-	}
-	if (!patchabledb) {
-		patchabledb = ([ ]);
-	}
-
 	set_multimap(patcherdb, index, patchers);
 	set_multimap(patchabledb, index, master);
 
@@ -83,8 +86,6 @@ atomic void enqueue_patchers(object master, string *patchers)
 	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		rlimits(0; -1) {
 			int sz;
-
-			LOGD->post_message("system", LOG_NOTICE, "Checking " + path);
 
 			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 				object obj;
@@ -98,8 +99,6 @@ atomic void enqueue_patchers(object master, string *patchers)
 		}
 
 		call_out("sweep", 0, path);
-	} else {
-		call_out("nudge_object", 0, master);
 	}
 
 	if (touchcount) {
