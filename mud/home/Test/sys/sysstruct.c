@@ -61,7 +61,7 @@ private void test_multimap()
 
 	for (i = 1; i < (1 << 30); i *= 3) {
 		ASSERT(query_multimap(map, i) == i);
-		map = set_multimap(map, i, nil);
+		set_multimap(map, i, nil);
 
 		LOGD->post_message("system", LOG_WARNING, STRINGD->mixed_sprint(map));
 	}
