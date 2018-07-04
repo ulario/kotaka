@@ -26,7 +26,7 @@
 #include <status.h>
 
 inherit SECOND_AUTO;
-inherit "~/lib/system/struct/maparr";
+inherit "~/lib/struct/maparr";
 inherit "~/lib/struct/multimap";
 
 mapping objdb;		/* ([ index : obj ]) */

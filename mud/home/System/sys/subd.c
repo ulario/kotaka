@@ -26,7 +26,7 @@
 #include <kotaka/paths/system.h>
 
 inherit SECOND_AUTO;
-inherit "~/lib/system/struct/list";
+inherit "~/lib/struct/list";
 
 /* private functions */
 
