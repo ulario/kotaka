@@ -23,14 +23,14 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/log.h>
 
-inherit "~System/lib/system/struct/maparr";
+inherit "~System/lib/struct/multimap";
+inherit "~System/lib/struct/maparr";
+inherit "~System/lib/struct/list";
 
-void test()
+private void test_maparr()
 {
 	mapping map;
 	int i;
-
-	ACCESS_CHECK(TEST());
 
 	for (i = 1; i < (1 << 30); i *= 3) {
 		map = set_multilevel_map_arr(map, 3, i, i);
@@ -39,10 +39,38 @@ void test()
 	}
 
 	for (i = 1; i < (1 << 30); i *= 3) {
+		ASSERT(query_multilevel_map_arr(map, 3, i) == i);
 		map = set_multilevel_map_arr(map, 3, i, nil);
 
 		LOGD->post_message("system", LOG_WARNING, STRINGD->mixed_sprint(map));
 	}
+}
 
-	ASSERT(map == nil);
+private void test_multimap()
+{
+	mapping map;
+	int i;
+
+	map = ([ ]);
+
+	for (i = 1; i < (1 << 30); i *= 3) {
+		set_multimap(map, i, i);
+
+		LOGD->post_message("system", LOG_WARNING, STRINGD->mixed_sprint(map));
+	}
+
+	for (i = 1; i < (1 << 30); i *= 3) {
+		ASSERT(query_multimap(map, i) == i);
+		map = set_multimap(map, i, nil);
+
+		LOGD->post_message("system", LOG_WARNING, STRINGD->mixed_sprint(map));
+	}
+}
+
+void test()
+{
+	ACCESS_CHECK(TEST());
+
+	test_maparr();
+	test_multimap();
 }
