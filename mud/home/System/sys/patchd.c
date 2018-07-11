@@ -183,7 +183,7 @@ static void sweep(string path, varargs int index)
 		object obj;
 
 		if (obj = find_object(path + "#" + index++)) {
-			obj->_F_dummy();
+			call_out("nudge_object", 0, obj);
 			break;
 		}
 	}
