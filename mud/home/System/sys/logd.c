@@ -233,7 +233,6 @@ void flush()
 private void send_to_target(string target, string timestamp, string message)
 {
 	string prefix, info;
-	string *lines;
 	int sz, usz, i, j;
 	mixed users;
 
@@ -244,135 +243,134 @@ private void send_to_target(string target, string timestamp, string message)
 		prefix = target;
 	}
 
-	lines = explode(message, "\n");
-	sz = sizeof(lines);
-	users = ([ ]);
+	while (message) {
+		string line;
 
-	switch(prefix) {
-	case "null":
-		break;
-
-	case "driver":
-		for (i = 0; i < sz; i++) {
-			DRIVER->message(lines[i] + "\n");
+		if (!sscanf(message, "%s\n%s", line, message)) {
+			line = message;
+			message = nil;
 		}
-		break;
 
-	case "channel":
-		ASSERT(info);
+		users = ([ ]);
 
-		if (find_object(CHANNELD)) {
-			for (i = 0; i < sz; i++) {
-				CHANNELD->post_message(info, nil, lines[i]);
+		switch(prefix) {
+		case "null":
+			break;
+
+		case "driver":
+			DRIVER->message(line + "\n");
+			break;
+
+		case "channel":
+			ASSERT(info);
+
+			if (find_object(CHANNELD)) {
+				CHANNELD->post_message(info, nil, line);
 			}
-		}
 
-		break;
+			break;
 
-	case "file":
-		ASSERT(info);
+		case "file":
+			ASSERT(info);
 
-		for (i = 0; i < sz; i++) {
-			write_logfile(info, timestamp, lines[i]);
-		}
+			write_logfile(info, timestamp, line);
 
-		break;
+			break;
 
-	case "user":
-		if (this_user()) {
-			users[this_user()] = 1;
-		}
-		break;
-
-	case "kusers":
-		{
-			object *kusers;
-			int i;
-			int ksz;
-
-			kusers = users();
-
-			ksz = sizeof(users);
-
-			for (i = 0; i < ksz; i++) {
-				users[kusers[i]] = 1;
+		case "user":
+			if (this_user()) {
+				users[this_user()] = 1;
 			}
-		}
-		break;
+			break;
 
-	case "kwizards":
-		{
-			string *kwizards;
-			object *kusers;
-			int i;
-			int ksz;
+		case "kusers":
+			{
+				object *kusers;
+				int i;
+				int ksz;
 
-			kwizards = KERNELD->query_users();
-			kusers = users();
+				kusers = users();
 
-			ksz = sizeof(kusers);
+				ksz = sizeof(users);
 
-			for (i = 0; i < ksz; i++) {
-				if (
-					sizeof(
-						({ kusers[i]->query_name() })
-						& kwizards
-					)
-				) {
+				for (i = 0; i < ksz; i++) {
 					users[kusers[i]] = 1;
 				}
 			}
-		}
-		break;
+			break;
 
-	case "kadmins":
-		{
-			string *kwizards;
-			object *kusers;
-			int i;
-			int ksz;
+		case "kwizards":
+			{
+				string *kwizards;
+				object *kusers;
+				int i;
+				int ksz;
 
-			kusers = users();
-			ksz = sizeof(kusers);
+				kwizards = KERNELD->query_users();
+				kusers = users();
 
-			for (i = 0; i < ksz; i++) {
-				string username;
+				ksz = sizeof(kusers);
 
-				username = kusers[i]->query_name();
-
-				if (KERNELD->access(username, "/", FULL_ACCESS)) {
-					users[kusers[i]] = 1;
+				for (i = 0; i < ksz; i++) {
+					if (
+						sizeof(
+							({ kusers[i]->query_name() })
+							& kwizards
+						)
+					) {
+						users[kusers[i]] = 1;
+					}
 				}
 			}
-		}
-		break;
+			break;
 
-	case "kadmin":
-		{
-			object kadmin;
+		case "kadmins":
+			{
+				string *kwizards;
+				object *kusers;
+				int i;
+				int ksz;
 
-			kadmin = KERNELD->find_user("admin");
+				kusers = users();
+				ksz = sizeof(kusers);
 
-			if (kadmin) {
-				users[kadmin] = 1;
+				for (i = 0; i < ksz; i++) {
+					string username;
+
+					username = kusers[i]->query_name();
+
+					if (KERNELD->access(username, "/", FULL_ACCESS)) {
+						users[kusers[i]] = 1;
+					}
+				}
 			}
+			break;
+
+		case "kadmin":
+			{
+				object kadmin;
+
+				kadmin = KERNELD->find_user("admin");
+
+				if (kadmin) {
+					users[kadmin] = 1;
+				}
+			}
+			break;
+
+		default:
+			DRIVER->message("Unparseable log target: " + target + "\n");
 		}
-		break;
 
-	default:
-		DRIVER->message("Unparseable log target: " + target + "\n");
-	}
+		users = map_indices(users);
+		usz = sizeof(users);
 
-	users = map_indices(users);
-	usz = sizeof(users);
+		for (i = 0; i < usz; i++) {
+			object user;
 
-	for (i = 0; i < usz; i++) {
-		object user;
+			user = users[i];
 
-		user = users[i];
-
-		for (j = 0; j < sz; j++) {
-			user->message(lines[j] + "\n");
+			user->message(line + "\n");
 		}
 	}
 }
