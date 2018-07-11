@@ -24,8 +24,8 @@
 
 inherit "../bintree/root";
 
-#define MIN_MASS 64
-#define MAX_MASS 256
+#define MIN_MASS 32
+#define MAX_MASS 128
 
 int type;
 int rebalance;
