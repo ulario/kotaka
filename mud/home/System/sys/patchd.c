@@ -82,7 +82,7 @@ atomic void enqueue_patchers(object master, string *patchers)
 	set_multimap(patchabledb, index, master);
 
 	call_touch(master);
-	call_out("nudge_object", master);
+	call_out("nudge_object", 0, master);
 
 	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		rlimits(0; -1) {
