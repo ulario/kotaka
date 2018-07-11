@@ -169,15 +169,28 @@ static void nudge_object(object obj)
 
 static void sweep(string path, varargs int index)
 {
-	if (index < status(ST_OTABSIZE)) {
+	int max;
+	int end;
+
+	max = status(ST_OTABSIZE);
+	end = max;
+
+	if (end > index + 1000) {
+		end = index + 1000;
+	}
+
+	while (index < end) {
 		object obj;
 
-		call_out("sweep", 0, path, index + 1);
-
-		if (obj = find_object(path + "#" + index)) {
+		if (obj = find_object(path + "#" + index++)) {
 			obj->_F_dummy();
+			break;
 		}
+	}
+
+	if (index < max) {
+		call_out("sweep", 0, path, index);
 	} else {
-		LOGD->post_message("system", LOG_NOTICE, "Completed touch sweep for " + path);
+		LOGD->post_message("system", LOG_NOTICE, "Patch sweep completed for " + path);
 	}
 }
