@@ -31,4 +31,5 @@ void test()
 	call_out("do_test", 0, "bigstruct");
 	call_out("do_test", 0, "sort");
 	call_out("do_test", 0, "suspend");
+	call_out("do_test", 0, "sysstruct");
 }
