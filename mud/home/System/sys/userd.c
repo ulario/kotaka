@@ -270,7 +270,7 @@ void hotboot()
 
 string query_banner(object LIB_CONN connection)
 {
-	object userd;
+	object manager;
 	object root;
 	string ip;
 
@@ -280,77 +280,60 @@ string query_banner(object LIB_CONN connection)
 
 	ASSERT(root);
 
-	userd = query_manager(root);
+	manager = query_manager(root);
 
-	if (!userd) {
+	if (!manager) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
 
 		return "No connection manager\n";
 	}
 
-	if (free_users() == 0) {
-		/* if we're full, close it immediately to avoid a DoS against the admin port */
-		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", -1);
-
-		root->set_mode(MODE_BLOCK);
-
-		catch {
-			return userd->query_overload_banner(connection);
-		} : {
-			return "Connection manager fault\n\nSystem busy\n";
-		}
-	}
-
 	if (BAND->check_siteban(query_ip_number(root))) {
-		/* if the IP is sitebanned send it away */
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", free_users() > 5 ? SITEBAN_DELAY : 0);
+		TLSD->set_tls_value("System", "abort-delay", free_users() ? SITEBAN_DELAY : 0);
 
 		root->set_mode(MODE_BLOCK);
 
 		catch {
-			return userd->query_sitebanned_banner(connection);
+			return manager->query_sitebanned_banner(connection);
 		} : {
-			/* if they're sitebanned we don't need to give any details */
 			return "Sitebanned\n";
 		}
 	}
 
-	if (free_users() + 1 < 2) {
-		/* we're too full, close the connection */
-		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", OVERLOAD_DELAY);
-
-		root->set_mode(MODE_BLOCK);
-
-		catch {
-			return userd->query_overload_banner(connection);
-		} : {
-			return "Connection manager fault\n\nSystem busy\n";
-		}
-	}
-
 	if (blocked) {
-		/* check this after overloads.  overloads are more serious */
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", BLOCK_DELAY);
+		TLSD->set_tls_value("System", "abort-delay", free_users() ? BLOCK_DELAY : 0);
 
 		root->set_mode(MODE_BLOCK);
 
 		catch {
-			return userd->query_blocked_banner(connection);
+			return manager->query_blocked_banner(connection);
 		} : {
 			return "Connection manager fault\n\nSystem suspended\n";
 		}
 	}
 
-	return userd->query_banner(connection);
+	if (!free_users()) {
+		/* current connection is occupying the last slot */
+		TLSD->set_tls_value("System", "abort-connection", 1);
+		TLSD->set_tls_value("System", "abort-delay", 0);
+
+		root->set_mode(MODE_BLOCK);
+
+		catch {
+			return manager->query_overload_banner(connection);
+		} : {
+			return "Connection manager fault\n\nSystem busy\n";
+		}
+	}
+
+	return manager->query_banner(connection);
 }
 
 int query_timeout(object LIB_CONN connection)
 {
-	object userd;
+	object manager;
 	object root;
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
@@ -375,18 +358,18 @@ int query_timeout(object LIB_CONN connection)
 
 	ASSERT(root);
 
-	userd = query_manager(root);
+	manager = query_manager(root);
 
-	if (!userd) {
+	if (!manager) {
 		return -1;
 	}
 
-	return userd->query_timeout(connection);
+	return manager->query_timeout(connection);
 }
 
 object select(string str)
 {
-	object userd;
+	object manager;
 	object conn;
 	object user;
 	object intercept;
@@ -405,9 +388,9 @@ object select(string str)
 		conn = conn->query_conn();
 	}
 
-	userd = query_manager(conn);
+	manager = query_manager(conn);
 
-	if (!userd) {
+	if (!manager) {
 		TLSD->set_tls_value("System", "select-intercept", nil);
 		TLSD->set_tls_value("System", "userd-error", "No connection manager");
 
@@ -420,7 +403,7 @@ object select(string str)
 		return intercept;
 	}
 
-	user = userd->select(str);
+	user = manager->select(str);
 
 	if (!user) {
 		TLSD->set_tls_value("System", "userd-error", "Connection manager returned nil");
