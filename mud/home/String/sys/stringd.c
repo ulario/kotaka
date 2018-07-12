@@ -27,9 +27,7 @@ inherit "/lib/string/char";
 inherit "/lib/string/bitops";
 inherit "/lib/string/trim";
 inherit "/lib/string/format";
-
-string hex(int i);
-string bin(int i);
+inherit "/lib/string/base";
 
 static void create()
 {
@@ -956,56 +954,4 @@ int vunpack_int(string str, varargs int be)
 	}
 
 	return value;
-}
-
-string bin(int val)
-{
-	int index;
-	string out;
-	out = "";
-
-	if (!val) {
-		return "0";
-	}
-
-	while (val) {
-		int bit;
-
-		bit = val & 0x1;
-		val >>= 1;
-
-		out = " " + out;
-
-		out[0] = '0' + bit;
-	}
-
-	return out;
-}
-
-string hex(int val)
-{
-	int index;
-	string out;
-	out = "";
-
-	if (!val) {
-		return "0";
-	}
-
-	while (val) {
-		int nibble;
-
-		nibble = val & 0xF;
-		val >>= 4;
-
-		out = " " + out;
-
-		if (nibble > 9) {
-			out[0] = 'a' + (nibble - 10);
-		} else {
-			out[0] = '0' + nibble;
-		}
-	}
-
-	return out;
 }
