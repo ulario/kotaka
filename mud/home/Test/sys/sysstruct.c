@@ -34,15 +34,12 @@ private void test_maparr()
 
 	for (i = 1; i < (1 << 30); i *= 3) {
 		map = set_multilevel_map_arr(map, 3, i, i);
-
-		LOGD->post_message("system", LOG_WARNING, STRINGD->mixed_sprint(map));
 	}
 
 	for (i = 1; i < (1 << 30); i *= 3) {
 		ASSERT(query_multilevel_map_arr(map, 3, i) == i);
 		map = set_multilevel_map_arr(map, 3, i, nil);
-
-		LOGD->post_message("system", LOG_WARNING, STRINGD->mixed_sprint(map));
+		ASSERT(query_multilevel_map_arr(map, 3, i) == nil);
 	}
 }
 
@@ -55,22 +52,17 @@ private void test_multimap()
 
 	for (i = 1; i < (1 << 30); i *= 3) {
 		set_multimap(map, i, i);
-
-		LOGD->post_message("system", LOG_WARNING, STRINGD->hybrid_sprint(map));
 	}
-
-	LOGD->post_message("system", LOG_WARNING, STRINGD->hybrid_sprint(query_multimap_indices(map)));
 
 	for (i = 1; i < (1 << 30); i *= 3) {
 		ASSERT(query_multimap(map, i) == i);
 		set_multimap(map, i, nil);
-
-		LOGD->post_message("system", LOG_WARNING, STRINGD->hybrid_sprint(map));
+		ASSERT(query_multimap(map, i) == nil);
 	}
 
 	compact_multimap(map);
 
-	LOGD->post_message("system", LOG_WARNING, STRINGD->hybrid_sprint(map));
+	ASSERT(map_sizeof(map) == 0);
 }
 
 void test()

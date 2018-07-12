@@ -17,56 +17,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/system.h>
+#include <kotaka/assert.h>
 #include <kotaka/privilege.h>
+#include <kotaka/paths/string.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/log.h>
+#include <type.h>
 
-inherit LIB_INITD;
-inherit UTILITY_COMPILE;
-
-private void load()
+private void test_mapping()
 {
-	load_dir("lwo", 1);
-	load_dir("sys", 1);
+	object map;
+	int i;
+
+	map = new_object("~/lwo/mapping");
+	map->set_type(T_INT);
+
+	for (i = 1; i < 1 << 25; i *= 3) {
+		map->set_element(i, i);
+		ASSERT(map->query_element(i) == i);
+	}
+
+	for (i = 1; i < 1 << 25; i *= 3) {
+		ASSERT(map->query_element(i) == i);
+		map->set_element(i, nil);
+		LOGD->post_message("system", LOG_NOTICE, "Testing removal of " + i);
+		LOGD->post_message("system", LOG_NOTICE, "Map is " + STRINGD->hybrid_sprint(map->query_root()));
+		ASSERT(map->query_element(i) == nil);
+	}
 }
 
-private void set_limits()
+void test()
 {
-	KERNELD->rsrc_set_limit("Test", "ticks", 500000000);
-}
+	ACCESS_CHECK(TEST());
 
-static void do_test()
-{
-	"sys/testd"->test();
-}
-
-static void create()
-{
-	MODULED->boot_module("Bigstruct");
-
-	KERNELD->set_global_access("Test", 1);
-
-	set_limits();
-
-	load();
-
-	call_out("do_test", 0);
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	set_limits();
-
-	load();
-
-	purge_orphans("Test");
-
-	call_out("do_test", 0);
-}
-
-string query_patcher(string path)
-{
-	LOGD->post_message("debug", LOG_DEBUG, "Asked for patcher for " + path);
+	test_mapping();
 }
