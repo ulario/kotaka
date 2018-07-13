@@ -24,10 +24,15 @@
 #include <kotaka/log.h>
 #include <type.h>
 
+inherit "~System/lib/struct/multimap";
+
 private void test_mapping()
 {
+	mapping arr;
 	object map;
 	int i;
+
+	arr = ([ ]);
 
 	map = new_object("~/lwo/mapping");
 	map->set_type(T_INT);
@@ -37,13 +42,21 @@ private void test_mapping()
 		ASSERT(map->query_element(i) == i);
 	}
 
-	for (i = 1; i < 1 << 25; i *= 3) {
-		ASSERT(map->query_element(i) == i);
-		map->set_element(i, nil);
-		LOGD->post_message("system", LOG_NOTICE, "Testing removal of " + i);
-		LOGD->post_message("system", LOG_NOTICE, "Map is " + STRINGD->hybrid_sprint(map->query_root()));
-		ASSERT(map->query_element(i) == nil);
+	map->set_type(T_INT);
+
+	for (i = 5000; --i >= 0; ) {
+		int j, k;
+
+		j = random(1000000);
+		k = random(1000000);
+
+		set_multimap(arr, j, k);
+		map->set_element(j, k);
+
+		ASSERT(map->query_element(j) == k);
 	}
+
+	LOGD->post_message("system", LOG_NOTICE, "Dump of map: " + STRINGD->hybrid_sprint(map->query_root()));
 }
 
 void test()

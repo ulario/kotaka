@@ -51,28 +51,21 @@ private void split_node(mixed *supernode, int i)
 	mixed *subnode1;
 	mixed *subnode2;
 
-	keys = supernode[1];
-	map = supernode[2];
+	map = supernode[1];
+	keys = map_indices(map);
 
 	key = keys[i];
 
 	subnode = map[key];
-
-	if (subnode[0]) {
-		submap = subnode[1];
-		subkeys = map_indices(submap);
-	} else {
-		subkeys = subnode[1];
-		submap = subnode[2];
-	}
+	submap = subnode[1];
+	subkeys = map_indices(submap);
 
 	subsz = sizeof(subkeys);
 	subsz /= 2;
 
 	midkey = subkeys[subsz];
 
-	if (subnode[0]) {
-	} else {
+	if (!subnode[0]) {
 		lowkeys = subkeys[.. subsz - 1];
 		highkeys = subkeys[subsz ..];
 	}
@@ -81,15 +74,8 @@ private void split_node(mixed *supernode, int i)
 	highmap = submap[midkey ..];
 	lowmap[midkey] = nil;
 
-	if (subnode[0]) {
-		subnode1 = ({ 1, lowmap });
-		subnode2 = ({ 1, highmap });
-	} else {
-		subnode1 = ({ 0, lowkeys, lowmap });
-		subnode2 = ({ 0, highkeys, highmap });
-	}
-
-	supernode[1] = keys[.. i] + ({ midkey }) + keys[i + 1 ..];
+	subnode1 = ({ subnode[0], lowmap });
+	subnode2 = ({ subnode[0], highmap });
 
 	map[key] = subnode1;
 	map[midkey] = subnode2;
@@ -124,7 +110,8 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 		mixed *subnode;
 		mapping map;
 
-		keys = node[1];
+		map = node[1];
+		keys = map_indices(map);
 
 		i = binary_search_floor(keys, key);
 
@@ -134,7 +121,6 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 		}
 
 		subkey = keys[i];
-		map = node[2];
 		subnode = map[subkey];
 
 		ret = sub_set_element(subnode, key, value);
@@ -148,7 +134,7 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 
 			split_node(node, i);
 
-			keys = node[1];
+			keys = map_indices(node[1]);
 
 			if (keys[i + 1] <= key) {
 				/* the split scooped our target */
@@ -156,7 +142,7 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 			}
 
 			subkey = keys[i];
-			subnode = node[2][subkey];
+			subnode = node[1][subkey];
 
 			ret = sub_set_element(subnode, key, value);
 			ASSERT(ret != 1);
@@ -183,17 +169,10 @@ void set_element(mixed key, mixed value)
 	}
 
 	if (ret = sub_set_element(root, key, value) == 1) {
-		if (root[0]) {
-			mixed basekey;
+		mixed basekey;
 
-			basekey = map_indices(root[1])[0];
-			root = ({ 0, ({ basekey }), ([ basekey : root ]) });
-		} else {
-			mixed basekey;
-
-			basekey = root[1][0];
-			root = ({ 0, ({ basekey }), ([ basekey : root ]) });
-		}
+		basekey = map_indices(root[1])[0];
+		root = ({ 0, ([ basekey : root ]) });
 
 		ret = sub_set_element(root, key, value);
 	}
@@ -211,16 +190,19 @@ mixed query_element(mixed key)
 
 	while (!node[0]) {
 		int i;
-		mixed subkey;
+		mixed *keys;
+		mapping map;
 
-		i = binary_search_floor(node[1], key);
+		map = node[1];
+		keys = map_indices(map);
+
+		i = binary_search_floor(keys, key);
 
 		if (i == -1) {
 			return nil;
 		}
 
-		subkey = node[1][i];
-		node = node[2][subkey];
+		node = map[keys[i]];
 	}
 
 	return node[1][key];
