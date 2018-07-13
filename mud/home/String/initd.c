@@ -44,5 +44,7 @@ void upgrade_module()
 
 	load();
 
+	compile_object("sys/stringd");
+
 	purge_orphans("String");
 }

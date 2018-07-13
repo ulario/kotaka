@@ -68,6 +68,8 @@ void upgrade_module()
 
 	set_limits();
 
+	compile_object("sys/channeld");
+
 	load();
 
 	purge_orphans("Channel");

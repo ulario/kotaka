@@ -154,6 +154,9 @@ void upgrade_module()
 
 	load();
 
+	compile_object("sys/helpd");
+	compile_object("sys/saveload");
+
 	purge_orphans("Game");
 }
 

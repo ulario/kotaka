@@ -129,3 +129,13 @@ static void purge_orphans(string module)
 		}
 	}
 }
+
+void global_rebuild_destruct()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+}
+
+void global_rebuild_recompile()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+}

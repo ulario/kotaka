@@ -41,6 +41,8 @@ void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
+	destruct_object("lib/map/root");
+
 	load();
 
 	purge_orphans("Bigstruct");

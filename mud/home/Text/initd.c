@@ -81,6 +81,8 @@ void upgrade_module()
 
 	set_limits();
 
+	compile_object("sys/logd");
+
 	purge_orphans("Text");
 }
 
