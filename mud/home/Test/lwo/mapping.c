@@ -4,8 +4,8 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/log.h>
 
-#define MAX_BRANCH_SIZE 4
-#define MAX_LEAF_SIZE   4
+#define MAX_BRANCH_SIZE   8
+#define MAX_LEAF_SIZE   256
 
 inherit "/lib/search";
 
