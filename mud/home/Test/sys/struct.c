@@ -40,15 +40,11 @@ private void test_mapping()
 	for (i = 1; i < 1 << 25; i *= 3) {
 		map->set_element(i, i);
 
-		LOGD->post_message("system", LOG_NOTICE, STRINGD->hybrid_sprint(map->query_root()));
-
 		ASSERT(map->query_element(i) == i);
 	}
 
 	for (i = 1; i < 1 << 25; i *= 3) {
 		map->set_element(i, nil);
-
-		LOGD->post_message("system", LOG_NOTICE, STRINGD->hybrid_sprint(map->query_root()));
 
 		ASSERT(map->query_element(i) == nil);
 	}

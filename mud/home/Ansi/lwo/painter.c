@@ -160,12 +160,15 @@ string *render_color()
 		if (px + sx > size_x) {
 			sx = size_x - px;
 		}
+
 		if (py + sy > size_y) {
 			sy = size_y - py;
 		}
+
 		if (px < 0) {
 			mx = -px;
 		}
+
 		if (py < 0) {
 			my = -py;
 		}
@@ -180,6 +183,7 @@ string *render_color()
 					} else {
 						colors[y + py][x + px] = lcolors[y][x];
 					}
+
 					chars[y + py][x + px] = lchars[y][x];
 				}
 			}
@@ -202,25 +206,31 @@ string *render_color()
 
 			if (delta) {
 				buffer += "\033[";
+
 				if (delta & 0x8) {
 					dirty = 1;
+
 					if (new_color & 0x8) {
 						buffer += "1";
 					} else {
 						buffer += "22";
 					}
 				}
+
 				if (delta & 0x7) {
 					if (dirty) {
 						buffer += ";";
 					}
+
 					dirty = 1;
 					buffer += "3" + (new_color & 0x7);
 				}
+
 				if (delta & 0x70) {
 					if (dirty) {
 						buffer += ";";
 					}
+
 					dirty = 1;
 					buffer += "4" + ((new_color >> 4) & 0x7);
 				}
