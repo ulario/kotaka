@@ -39,24 +39,19 @@ private void test_mapping()
 
 	for (i = 1; i < 1 << 25; i *= 3) {
 		map->set_element(i, i);
+
+		LOGD->post_message("system", LOG_NOTICE, STRINGD->hybrid_sprint(map->query_root()));
+
 		ASSERT(map->query_element(i) == i);
 	}
 
-	map->set_type(T_INT);
+	for (i = 1; i < 1 << 25; i *= 3) {
+		map->set_element(i, nil);
 
-	for (i = 5000; --i >= 0; ) {
-		int j, k;
+		LOGD->post_message("system", LOG_NOTICE, STRINGD->hybrid_sprint(map->query_root()));
 
-		j = random(1000000);
-		k = random(1000000);
-
-		set_multimap(arr, j, k);
-		map->set_element(j, k);
-
-		ASSERT(map->query_element(j) == k);
+		ASSERT(map->query_element(i) == nil);
 	}
-
-	LOGD->post_message("system", LOG_NOTICE, "Dump of map: " + STRINGD->hybrid_sprint(map->query_root()));
 }
 
 void test()

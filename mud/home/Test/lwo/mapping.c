@@ -9,8 +9,9 @@
 
 inherit "/lib/search";
 
-mixed *root; /* ({ is_leaf, ({ keys }), ([ key : value/subnode ]) }) */
+mapping root; /* ({ is_leaf, ({ keys }), ([ key : value/submap ]) }) */
 int type;
+int levels;
 
 void set_type(int new_type)
 {
@@ -20,7 +21,8 @@ void set_type(int new_type)
 	case T_FLOAT:
 	case T_STRING:
 		type = new_type;
-		root = ({ 1, ([ ]) });
+		root = ([ ]);
+		levels = 1;
 		return;
 
 	default:
@@ -28,36 +30,25 @@ void set_type(int new_type)
 	}
 }
 
-private void split_node(mixed *supernode, int i)
+private void split_map(mapping map, int i)
 {
 	mixed *keys;
-	mapping map;
-
 	mixed key;
 
-	mixed *subnode;
 	mixed *subkeys;
 	mapping submap;
 
 	int subsz;
 
-	mixed *lowkeys;
-	mixed *highkeys;
 	mixed midkey;
 
 	mapping lowmap;
 	mapping highmap;
 
-	mixed *subnode1;
-	mixed *subnode2;
-
-	map = supernode[1];
 	keys = map_indices(map);
-
 	key = keys[i];
 
-	subnode = map[key];
-	submap = subnode[1];
+	submap = map[key];
 	subkeys = map_indices(submap);
 
 	subsz = sizeof(subkeys);
@@ -65,36 +56,24 @@ private void split_node(mixed *supernode, int i)
 
 	midkey = subkeys[subsz];
 
-	if (!subnode[0]) {
-		lowkeys = subkeys[.. subsz - 1];
-		highkeys = subkeys[subsz ..];
-	}
-
 	lowmap = submap[.. midkey];
 	highmap = submap[midkey ..];
 	lowmap[midkey] = nil;
 
-	subnode1 = ({ subnode[0], lowmap });
-	subnode2 = ({ subnode[0], highmap });
-
-	map[key] = subnode1;
-	map[midkey] = subnode2;
+	map[key] = lowmap;
+	map[midkey] = highmap;
 }
 
 /* 0 = success */
 /* 1 = element too full */
-private int sub_set_element(mixed *node, mixed key, mixed value)
+private int sub_set_element(mapping map, int level, mixed key, mixed value)
 {
 	int rebottom;
 
-	if (node[0]) {
-		mapping map;
-
-		map = node[1];
-
+	if (!level) {
 		if (map[key] == nil && value != nil) {
 			/* adding new element, check capacity */
-			if (map_sizeof(map) == MAX_LEAF_SIZE) {
+			if (map_sizeof(map) >= MAX_LEAF_SIZE) {
 				return 1;
 			}
 		}
@@ -107,10 +86,8 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 		mixed *keys;
 		int ret;
 		mixed subkey;
-		mixed *subnode;
-		mapping map;
+		mapping submap;
 
-		map = node[1];
 		keys = map_indices(map);
 
 		i = binary_search_floor(keys, key);
@@ -121,20 +98,20 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 		}
 
 		subkey = keys[i];
-		subnode = map[subkey];
+		submap = map[subkey];
 
-		ret = sub_set_element(subnode, key, value);
+		ret = sub_set_element(submap, level - 1, key, value);
 
 		if (ret == 1) {
-			/* subnode too big */
+			/* submap too big */
 			if (sizeof(keys) >= MAX_BRANCH_SIZE) {
 				/* we need to split but we're too big ourselves */
 				return 1;
 			}
 
-			split_node(node, i);
+			split_map(map, i);
 
-			keys = map_indices(node[1]);
+			keys = map_indices(map);
 
 			if (keys[i + 1] <= key) {
 				/* the split scooped our target */
@@ -142,9 +119,9 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 			}
 
 			subkey = keys[i];
-			subnode = node[1][subkey];
+			submap = map[subkey];
 
-			ret = sub_set_element(subnode, key, value);
+			ret = sub_set_element(submap, level - 1, key, value);
 			ASSERT(ret != 1);
 		}
 
@@ -168,32 +145,34 @@ void set_element(mixed key, mixed value)
 		error("Type mismatch");
 	}
 
-	if (ret = sub_set_element(root, key, value) == 1) {
+	if (ret = sub_set_element(root, levels - 1, key, value) == 1) {
 		mixed basekey;
 
-		basekey = map_indices(root[1])[0];
-		root = ({ 0, ([ basekey : root ]) });
+		basekey = map_indices(root)[0];
+		root = ([ basekey : root ]);
+		levels++;
 
-		ret = sub_set_element(root, key, value);
+		ret = sub_set_element(root, levels - 1, key, value);
 	}
 }
 
 mixed query_element(mixed key)
 {
-	mixed *node;
+	mapping map;
+	int level;
 
 	if (typeof(key) == 0 || typeof(key) != type) {
 		error("Type mismatch");
 	}
 
-	node = root;
+	map = root;
 
-	while (!node[0]) {
+	level = levels - 1;
+
+	while (level) {
 		int i;
 		mixed *keys;
-		mapping map;
 
-		map = node[1];
 		keys = map_indices(map);
 
 		i = binary_search_floor(keys, key);
@@ -202,13 +181,14 @@ mixed query_element(mixed key)
 			return nil;
 		}
 
-		node = map[keys[i]];
+		map = map[keys[i]];
+		level--;
 	}
 
-	return node[1][key];
+	return map[key];
 }
 
-mixed *query_root()
+mapping query_root()
 {
 	return root;
 }
