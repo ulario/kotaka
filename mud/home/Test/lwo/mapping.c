@@ -9,7 +9,7 @@
 
 inherit "/lib/search";
 
-mapping root; /* ({ is_leaf, ({ keys }), ([ key : value/submap ]) }) */
+mapping root;
 int type;
 int levels;
 
