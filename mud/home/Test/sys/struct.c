@@ -26,7 +26,7 @@
 
 inherit "~System/lib/struct/multimap";
 
-private void test_mapping()
+private void test_mapping_1()
 {
 	mapping arr;
 	object map;
@@ -50,9 +50,36 @@ private void test_mapping()
 	}
 }
 
+private void test_mapping_2()
+{
+	mapping arr;
+	object map;
+	int i;
+
+	arr = ([ ]);
+
+	map = new_object("~/lwo/mapping");
+	map->set_type(T_INT);
+
+	for (i = 1; i < 10000; i++) {
+		map->set_element(i, i);
+
+		ASSERT(map->query_element(i) == i);
+	}
+
+	for (i = 1; i < 10000; i++) {
+		map->set_element(i, nil);
+
+		ASSERT(map->query_element(i) == nil);
+	}
+
+	LOGD->post_message("system", LOG_NOTICE, STRINGD->hybrid_sprint(map->query_root()));
+}
+
 void test()
 {
 	ACCESS_CHECK(TEST());
 
-	test_mapping();
+	test_mapping_1();
+	test_mapping_2();
 }
