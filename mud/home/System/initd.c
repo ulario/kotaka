@@ -376,6 +376,8 @@ private void check_versions()
 		error("DGD minor version " + major + "." + minor + " too low for this version of kotaka");
 	}
 
+	DRIVER->message("Kernel library version: " + KERNEL_LIB_VERSION + "\n");
+
 	if (sscanf(KERNEL_LIB_VERSION, "%d.%d.%d", major, minor, patch) != 3) {
 		patch = 0;
 		if (sscanf(KERNEL_LIB_VERSION, "%d.%d", major, minor) != 2) {
