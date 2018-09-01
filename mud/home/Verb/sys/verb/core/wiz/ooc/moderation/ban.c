@@ -100,7 +100,7 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	BAND->ban_user(username, args);
+	BAND->ban_user(username, args, -1);
 
 	kicker_name = user->query_titled_name();
 	turkey_name = TEXT_SUBD->query_titled_name(username);
