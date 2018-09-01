@@ -29,7 +29,8 @@ mapping sitebans;
 
 void save();
 void restore();
-static void prune();
+static void prune_bans();
+static void prune_sitebans();
 
 static void create()
 {
@@ -227,14 +228,14 @@ string query_siteban_message(string site)
 
 string *query_bans()
 {
-	prune();
+	prune_bans();
 
 	return map_indices(bans);
 }
 
 string *query_sitebans()
 {
-	prune();
+	prune_sitebans();
 
 	return map_indices(sitebans);
 }
@@ -271,7 +272,8 @@ void restore()
 		sitebans = save["sitebans"];
 	}
 
-	call_out("prune", 0);
+	call_out("prune_bans", 0);
+	call_out("prune_sitebans", 0);
 }
 
 int check_siteban(string ip)
@@ -301,7 +303,7 @@ int check_siteban(string ip)
 	return 0;
 }
 
-static void prune()
+static void prune_bans()
 {
 	string *indices;
 	int sz;
@@ -338,6 +340,12 @@ static void prune()
 			}
 		}
 	}
+}
+
+static void prune_sitebans()
+{
+	string *indices;
+	int sz;
 
 	indices = map_indices(sitebans);
 
