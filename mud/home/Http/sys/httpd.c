@@ -94,7 +94,7 @@ string query_sitebanned_banner(object connection)
 
 	ip = query_ip_number(connection);
 
-	ip = BAND->query_siteban_message(ip);
+	ip = BAND->check_siteban_message(ip);
 
 	if (ip) {
 		return generate_error_page(403
