@@ -131,7 +131,7 @@ static void prune_sitebans()
 		mixed ban;
 		string site;
 
-		username = indices[sz];
+		site = indices[sz];
 		ban = sitebans[site];
 
 		switch(typeof(ban)) {
