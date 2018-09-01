@@ -64,10 +64,6 @@ void unban_site(string site)
 {
 	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
-	if (!sitebans[site]) {
-		error("Site not banned");
-	}
-
 	sitebans[site] = nil;
 	save();
 }
@@ -87,10 +83,6 @@ void ban_user(string username, varargs string message)
 void unban_user(string username)
 {
 	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
-
-	if (!bans[username]) {
-		error("Username not banned");
-	}
 
 	bans[username] = nil;
 	save();
