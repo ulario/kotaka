@@ -45,30 +45,120 @@ static void create()
 	}
 }
 
-void ban_site(string site, string message, int expiry)
+void save()
 {
-	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
+	string buf;
 
-	if (sscanf(site, "127.%*s")) {
-		error("Cannot ban localhost");
-	}
+	ACCESS_CHECK(KERNEL() || ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
 
-	if (site == "::1") {
-		error("Cannot ban localhost");
-	}
+	buf = STRINGD->hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
 
-	sitebans[site] = ({ message, expiry });
-	SYSTEM_USERD->check_sitebans();
-	call_out("save", 0);
+	CONFIGD->make_dir(".");
+	CONFIGD->remove_file("bans-tmp");
+	CONFIGD->write_file("bans-tmp", buf + "\n");
+	CONFIGD->remove_file("bans");
+	CONFIGD->rename_file("bans-tmp", "bans");
 }
 
-void unban_site(string site)
+void restore()
 {
-	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
+	string buf;
 
-	sitebans[site] = nil;
-	call_out("save", 0);
+	ACCESS_CHECK(ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
+
+	buf = CONFIGD->read_file("bans");
+
+	if (buf) {
+		mapping save;
+
+		save = PARSER_VALUE->parse(buf);
+
+		bans = save["bans"];
+		sitebans = save["sitebans"];
+	}
+
+	call_out("prune_bans", 0);
+	call_out("prune_sitebans", 0);
 }
+
+static void prune_bans()
+{
+	string *indices;
+	int sz;
+
+	indices = map_indices(bans);
+
+	for (sz = sizeof(indices); --sz >= 0; ) {
+		mixed ban;
+		string username;
+
+		username = indices[sz];
+
+		ban = bans[username];
+
+		switch(typeof(ban)) {
+		case T_NIL: /* no ban */
+		case T_INT: /* blank ban */
+		case T_STRING: /* ban with message */
+			continue;
+		case T_ARRAY: /* modern ban */
+			{
+				string message;
+				int expiry;
+
+				({ message, expiry }) = ban;
+
+				if (expiry != -1) {
+					if (time() >= expiry) {
+						/* expired */
+						bans[username] = nil;
+						call_out("save", 0);
+					}
+				}
+			}
+		}
+	}
+}
+
+static void prune_sitebans()
+{
+	string *indices;
+	int sz;
+
+	indices = map_indices(sitebans);
+
+	for (sz = sizeof(indices); --sz >= 0; ) {
+		mixed ban;
+		string site;
+
+		username = indices[sz];
+		ban = sitebans[site];
+
+		switch(typeof(ban)) {
+		case T_NIL: /* no ban */
+		case T_INT: /* blank ban */
+		case T_STRING: /* ban with message */
+			continue;
+		case T_ARRAY: /* modern ban */
+			{
+				string message;
+				int expiry;
+
+				({ message, expiry }) = ban;
+
+				if (expiry != -1) {
+					if (time() >= expiry) {
+						/* expired */
+						sitebans[site] = nil;
+						call_out("save", 0);
+					}
+				}
+			}
+		}
+	}
+}
+
+/* API */
 
 void ban_user(string username, string message, int expiry)
 {
@@ -158,6 +248,38 @@ string query_ban_message(string username)
 	}
 }
 
+string *query_bans()
+{
+	prune_bans();
+
+	return map_indices(bans);
+}
+
+void ban_site(string site, string message, int expiry)
+{
+	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
+
+	if (sscanf(site, "127.%*s")) {
+		error("Cannot ban localhost");
+	}
+
+	if (site == "::1") {
+		error("Cannot ban localhost");
+	}
+
+	sitebans[site] = ({ message, expiry });
+	SYSTEM_USERD->check_sitebans();
+	call_out("save", 0);
+}
+
+void unban_site(string site)
+{
+	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
+
+	sitebans[site] = nil;
+	call_out("save", 0);
+}
+
 int query_is_site_banned(string site)
 {
 	mixed ban;
@@ -226,54 +348,11 @@ string query_siteban_message(string site)
 	}
 }
 
-string *query_bans()
-{
-	prune_bans();
-
-	return map_indices(bans);
-}
-
 string *query_sitebans()
 {
 	prune_sitebans();
 
 	return map_indices(sitebans);
-}
-
-void save()
-{
-	string buf;
-
-	ACCESS_CHECK(KERNEL() || ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
-
-	buf = STRINGD->hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
-
-	CONFIGD->make_dir(".");
-	CONFIGD->remove_file("bans-tmp");
-	CONFIGD->write_file("bans-tmp", buf + "\n");
-	CONFIGD->remove_file("bans");
-	CONFIGD->rename_file("bans-tmp", "bans");
-}
-
-void restore()
-{
-	string buf;
-
-	ACCESS_CHECK(ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
-
-	buf = CONFIGD->read_file("bans");
-
-	if (buf) {
-		mapping save;
-
-		save = PARSER_VALUE->parse(buf);
-
-		bans = save["bans"];
-		sitebans = save["sitebans"];
-	}
-
-	call_out("prune_bans", 0);
-	call_out("prune_sitebans", 0);
 }
 
 int check_siteban(string ip)
@@ -303,79 +382,35 @@ int check_siteban(string ip)
 	return 0;
 }
 
-static void prune_bans()
+string check_siteban_message(string ip)
 {
-	string *indices;
-	int sz;
+	int o1, o2, o3, o4;
 
-	indices = map_indices(bans);
-
-	for (sz = sizeof(indices); --sz >= 0; ) {
-		mixed ban;
-		string username;
-
-		username = indices[sz];
-
-		ban = bans[username];
-
-		switch(typeof(ban)) {
-		case T_NIL: /* no ban */
-		case T_INT: /* blank ban */
-		case T_STRING: /* ban with message */
-			continue;
-		case T_ARRAY: /* modern ban */
-			{
-				string message;
-				int expiry;
-
-				({ message, expiry }) = ban;
-
-				if (expiry != -1) {
-					if (time() >= expiry) {
-						/* expired */
-						bans[username] = nil;
-						call_out("save", 0);
-					}
-				}
-			}
-		}
+	if (sscanf(ip, "%d.%d.%d.%d", o1, o2, o3, o4) < 4) {
+		error("Malformed IP address");
 	}
-}
 
-static void prune_sitebans()
-{
-	string *indices;
-	int sz;
+	ip = o1 + "." + o2 + "." + o3 + "." + o4;
 
-	indices = map_indices(sitebans);
+	if (query_is_site_banned(ip)) {
+		query_siteban_message(ip);
+	}
 
-	for (sz = sizeof(indices); --sz >= 0; ) {
-		mixed ban;
-		string site;
+	ip = o1 + "." + o2 + "." + o3 + ".*";
 
-		username = indices[sz];
-		ban = sitebans[site];
+	if (query_is_site_banned(ip)) {
+		query_siteban_message(ip);
+	}
 
-		switch(typeof(ban)) {
-		case T_NIL: /* no ban */
-		case T_INT: /* blank ban */
-		case T_STRING: /* ban with message */
-			continue;
-		case T_ARRAY: /* modern ban */
-			{
-				string message;
-				int expiry;
+	ip = o1 + "." + o2 + ".*.*";
 
-				({ message, expiry }) = ban;
+	if (query_is_site_banned(ip)) {
+		query_siteban_message(ip);
+	}
 
-				if (expiry != -1) {
-					if (time() >= expiry) {
-						/* expired */
-						sitebans[site] = nil;
-						call_out("save", 0);
-					}
-				}
-			}
-		}
+	ip = o1 + ".*.*.*";
+
+	if (query_is_site_banned(ip)) {
+		query_siteban_message(ip);
 	}
 }
