@@ -57,7 +57,7 @@ void ban_site(string site, varargs string message)
 
 	sitebans[site] = message ? message : 1;
 	SYSTEM_USERD->check_sitebans();
-	save();
+	call_out("save", 0);
 }
 
 void unban_site(string site)
@@ -65,7 +65,7 @@ void unban_site(string site)
 	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
 	sitebans[site] = nil;
-	save();
+	call_out("save", 0);
 }
 
 void ban_user(string username, varargs string message)
@@ -77,7 +77,7 @@ void ban_user(string username, varargs string message)
 	}
 
 	bans[username] = message ? message : 1;
-	save();
+	call_out("save", 0);
 }
 
 void unban_user(string username)
@@ -85,7 +85,7 @@ void unban_user(string username)
 	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
 	bans[username] = nil;
-	save();
+	call_out("save", 0);
 }
 
 int query_is_user_banned(string username)
@@ -138,7 +138,7 @@ void save()
 {
 	string buf;
 
-	ACCESS_CHECK(ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
+	ACCESS_CHECK(KERNEL() || ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
 
 	buf = STRINGD->hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
 
