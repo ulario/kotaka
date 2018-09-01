@@ -45,12 +45,14 @@ string generate_error_page(int status_code, string status_message, string lines.
 	response += "</head>\n";
 
 	response += "<body>\n";
-	response += "<h1 style=\"color: red\">" + status_message + "</h1>\n";
+	response += "<div style=\"text-align: center;\">";
+	response += "<h1 style=\"color: red;\">" + status_message + "</h1>\n";
 
 	for (sz = sizeof(lines); i < sz; i++) {
 		response += "<p>" + lines[i] + "</p>\n";
 	}
 
+	response += "</div>\n";
 	response += "</body>\n";
 	response += "</html>\n";
 
