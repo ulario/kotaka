@@ -169,11 +169,10 @@ void restore()
 
 int check_siteban(string ip)
 {
-	string o1, o2, o3, o4;
+	int o1, o2, o3, o4;
 
-	if (sscanf(ip, "%s.%s.%s.%s", o1, o2, o3, o4) < 4) {
-		/* weird IP? */
-		return 0;
+	if (sscanf(ip, "%d.%d.%d.%d", o1, o2, o3, o4) < 4) {
+		error("Malformed IP address");
 	}
 
 	if (query_is_site_banned(o1 + "." + o2 + "." + o3 + "." + o4)) {
