@@ -25,6 +25,7 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	destruct_dir("lib", 1);
 }
 
 static void create()
