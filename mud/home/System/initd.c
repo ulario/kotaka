@@ -421,26 +421,20 @@ void booted_module(string module)
 
 private void upgrade_check_kotaka_version()
 {
-	switch(version_major) {
-	case 0:
-		switch(version_minor) {
-		case 0 .. 49:
-			error("Please upgrade to 0.50.2 first");
-		case 50:
-			switch(version_patch) {
-			case 0:
-			case 1:
-				error("Please upgrade to 0.50.2 first");
-			case 2:
-				return;
-			default:
-				error("Bad version number");
-			}
-		default:
-			error("Bad version number");
-		}
-	default:
-		error("Bad version number");
+	if (version_major > 0) {
+		error("Downgrades not supported");
+	}
+
+	if (version_minor > 52) {
+		error("Downgrades not supported");
+	}
+
+	if (version_minor < 51) {
+		error("Can only upgrade from version 0.51");
+	}
+
+	if (version_patch > 0) {
+		error("Can only upgrade from version 0.51");
 	}
 }
 
