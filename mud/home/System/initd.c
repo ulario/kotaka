@@ -474,8 +474,6 @@ void upgrade_system_post_recompile()
 		}
 	}
 
-	load();
-
 	destruct_object("lib/auto/object");
 	destruct_object("lib/auto/touch");
 	destruct_object("lib/auto/catalog");
@@ -495,6 +493,8 @@ void upgrade_system_post_recompile()
 
 	configure_rsrc();
 	set_limits();
+
+	load();
 
 	purge_orphans("System");
 
