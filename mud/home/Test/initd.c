@@ -26,6 +26,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	destruct_dir("lwo", 1);
+	destruct_dir("sys", 1);
 	load_dir("lwo", 1);
 	load_dir("sys", 1);
 }
