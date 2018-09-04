@@ -498,10 +498,16 @@ void upgrade_system_post_recompile()
 
 	purge_orphans("System");
 
-	MODULED->upgrade_modules();
+	/* we are recompiling moduled, so don't call it yet */
+	call_out("upgrade_system_post_recompile_moduled", 0);
 
 	/* first, ask all InitD's if we can upgrade */
 	/* if nobody says no, send the upgrade signal */
+}
+
+void upgrade_system_post_recompile_moduled()
+{
+	MODULED->upgrade_modules();
 }
 
 void queue_configure_logging()
