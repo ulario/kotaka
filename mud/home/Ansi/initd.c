@@ -42,5 +42,7 @@ void upgrade_module()
 
 	load();
 
+	compile_object("lwo/painter");
+
 	purge_orphans("Ansi");
 }
