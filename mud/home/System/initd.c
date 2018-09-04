@@ -421,20 +421,28 @@ void booted_module(string module)
 
 private void upgrade_check_kotaka_version()
 {
-	if (version_major > 0) {
-		error("Downgrades not supported");
-	}
-
-	if (version_minor > 52) {
-		error("Downgrades not supported");
-	}
-
-	if (version_minor < 51) {
-		error("Can only upgrade from version 0.51");
-	}
-
-	if (version_patch > 0) {
-		error("Can only upgrade from version 0.51");
+	switch(version_major) {
+	case 0:
+		switch(version_minor) {
+		case 51:
+			switch(version_patch) {
+			case 0:
+			case 1:
+				return;
+			default:
+				error("Can only upgrade from versions 0.51 through 0.51.1");
+			}
+		case 52:
+			switch(version_patch) {
+			case 0:
+				return;
+			default:
+				error("Can only upgrade from versions 0.51 through 0.51.1");
+			}
+		}
+		break;
+	default:
+		error("Can only upgrade from versions 0.51 through 0.51.1");
 	}
 }
 
