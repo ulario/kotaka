@@ -478,6 +478,7 @@ void upgrade_system_post_recompile()
 	destruct_object("lib/auto/touch");
 	destruct_object("lib/auto/catalog");
 	destruct_object("lib/filter");
+	destruct_object("lib/system/struct/list");
 	destruct_object("lib/system/struct/maparr");
 
 	compile_object(MODULED);
