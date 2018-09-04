@@ -468,24 +468,6 @@ void upgrade_system_post_recompile()
 		}
 	}
 
-	destruct_object("lib/auto/object");
-	destruct_object("lib/auto/touch");
-	destruct_object("lib/auto/catalog");
-	destruct_object("lib/filter");
-	destruct_object("lib/system/struct/list");
-	destruct_object("lib/system/struct/maparr");
-
-	compile_object(MODULED);
-	compile_object(PROGRAM_INFO);
-	compile_object(OBJECTD);
-	compile_object(PATCHD);
-	compile_object(LOGD);
-	compile_object(STATUSD);
-	compile_object(USERD);
-	compile_object(SYSTEM_SUBD);
-	compile_object("obj/filter/atomic");
-	compile_object("obj/filter/rlimits");
-
 	configure_rsrc();
 	set_limits();
 
@@ -493,15 +475,8 @@ void upgrade_system_post_recompile()
 
 	purge_orphans("System");
 
-	/* we are recompiling moduled, so don't call it yet */
-	call_out("upgrade_system_post_recompile_moduled", 0);
-
 	/* first, ask all InitD's if we can upgrade */
 	/* if nobody says no, send the upgrade signal */
-}
-
-void upgrade_system_post_recompile_moduled()
-{
 	MODULED->upgrade_modules();
 }
 
