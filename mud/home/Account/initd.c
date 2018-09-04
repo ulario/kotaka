@@ -38,6 +38,8 @@ static void create()
 
 	load();
 
+	compile_object(BAND);
+
 	ACCOUNTD->restore();
 	BAND->restore();
 }
