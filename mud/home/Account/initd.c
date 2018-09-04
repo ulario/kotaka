@@ -38,8 +38,6 @@ static void create()
 
 	load();
 
-	compile_object(BAND);
-
 	ACCOUNTD->restore();
 	BAND->restore();
 }
@@ -65,6 +63,8 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	load();
+
+	compile_object(BAND);
 
 	purge_orphans("Account");
 }
