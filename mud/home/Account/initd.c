@@ -64,7 +64,5 @@ void upgrade_module()
 
 	load();
 
-	compile_object(BAND);
-
 	purge_orphans("Account");
 }
