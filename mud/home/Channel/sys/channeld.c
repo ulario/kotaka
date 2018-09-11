@@ -400,8 +400,9 @@ private void paste_to_log(string channel, string stamp, string sender, string me
 void post_message(string channel, string sender, string message, varargs int norelay)
 {
 	object *send_list;
-	int time;
+	mixed mtime;
 	string stamp;
+	string mstamp;
 
 	if (!norelay) {
 		if (intermud && intermud[channel]) {
@@ -411,13 +412,19 @@ void post_message(string channel, string sender, string message, varargs int nor
 		}
 	}
 
-	time = time();
+	mtime = millitime();
 
-	stamp = ctime(time);
+	stamp = ctime(mtime[0])[11 .. 18];
+
+	stamp += ".";
+
+	mstamp = "" + floor(mtime[1] * 1000.0 + 0.5);
+	mstamp = "000" + mstamp;
+	mstamp = mstamp[strlen(mstamp) - 3 ..];
+
+	stamp += mstamp;
 
 	paste_to_log(channel, stamp, sender, message);
-
-	stamp = ctime(time)[11 .. 18];
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
