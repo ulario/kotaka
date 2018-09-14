@@ -35,6 +35,8 @@ mapping patchdb;	/* ([ index : patchers ]) */
 mapping patcherdb;	/* ([ level : ([ index : patchers ]) ]) */
 mapping patchabledb;	/* ([ level : ([ index : obj ]) ]) */
 
+mixed *nudgelist;
+
 static void create()
 {
 	patcherdb = ([ ]);
@@ -66,6 +68,34 @@ void cleanup_patch()
 	ACCESS_CHECK(SYSTEM());
 }
 
+private void enqueue_nudge(object obj)
+{
+	if (!nudgelist) {
+		nudgelist = ({ nil, nil });
+		call_out("dequeue_nudge", 0);
+	}
+
+	list_push_back(nudgelist, obj);
+}
+
+static void dequeue_nudge()
+{
+	object obj;
+
+	obj = list_front(nudgelist);
+	list_pop_front(nudgelist);
+
+	if (list_empty(nudgelist)) {
+		nudgelist = nil;
+	} else {
+		call_out("dequeue_nudge", 0);
+	}
+
+	if (obj) {
+		obj->_F_dummy();
+	}
+}
+
 atomic void enqueue_patchers(object master, string *patchers)
 {
 	int index;
@@ -82,7 +112,7 @@ atomic void enqueue_patchers(object master, string *patchers)
 	set_multimap(patchabledb, index, master);
 
 	call_touch(master);
-	call_out("nudge_object", 0, master);
+	enqueue_nudge(master);
 
 	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		rlimits(0; -1) {
@@ -183,7 +213,7 @@ static void sweep(string path, varargs int index)
 		object obj;
 
 		if (obj = find_object(path + "#" + index++)) {
-			call_out("nudge_object", 0, obj);
+			enqueue_nudge(obj);
 			break;
 		}
 	}
