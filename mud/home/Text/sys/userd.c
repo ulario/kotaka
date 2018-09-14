@@ -107,7 +107,7 @@ private string query_siteban_message(object LIB_CONN connection)
 
 	ip = query_ip_number(connection);
 
-	ip = BAND->query_siteban_message(ip);
+	ip = BAND->check_siteban_message(ip);
 
 	if (ip) {
 		return "Sitebanned\n\n" + ip + "\n";
