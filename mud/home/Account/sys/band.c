@@ -169,6 +169,7 @@ void ban_user(string username, string message, int expiry)
 	}
 
 	bans[username] = ({ message, expiry });
+
 	call_out("save", 0);
 }
 
@@ -177,6 +178,7 @@ void unban_user(string username)
 	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
 	bans[username] = nil;
+
 	call_out("save", 0);
 }
 
@@ -393,24 +395,24 @@ string check_siteban_message(string ip)
 	ip = o1 + "." + o2 + "." + o3 + "." + o4;
 
 	if (query_is_site_banned(ip)) {
-		query_siteban_message(ip);
+		return query_siteban_message(ip);
 	}
 
 	ip = o1 + "." + o2 + "." + o3 + ".*";
 
 	if (query_is_site_banned(ip)) {
-		query_siteban_message(ip);
+		return query_siteban_message(ip);
 	}
 
 	ip = o1 + "." + o2 + ".*.*";
 
 	if (query_is_site_banned(ip)) {
-		query_siteban_message(ip);
+		return query_siteban_message(ip);
 	}
 
 	ip = o1 + ".*.*.*";
 
 	if (query_is_site_banned(ip)) {
-		query_siteban_message(ip);
+		return query_siteban_message(ip);
 	}
 }
