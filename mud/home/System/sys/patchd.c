@@ -131,12 +131,6 @@ atomic void enqueue_patchers(object master, string *patchers)
 
 		call_out("sweep", 0, path);
 	}
-
-	if (touchcount) {
-		LOGD->post_message("system", LOG_NOTICE, "Queued " + path + " and " + touchcount + " clones for patching");
-	} else {
-		LOGD->post_message("system", LOG_NOTICE, "Queued " + path + " for patching");
-	}
 }
 
 string *query_patchers(object obj)
@@ -220,7 +214,5 @@ static void sweep(string path, varargs int index)
 
 	if (index < max) {
 		call_out("sweep", 0, path, index);
-	} else {
-		LOGD->post_message("system", LOG_NOTICE, "Patch sweep completed for " + path);
 	}
 }
