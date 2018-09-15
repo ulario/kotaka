@@ -79,7 +79,4 @@ private void test_mapping_2()
 void test()
 {
 	ACCESS_CHECK(TEST());
-
-	test_mapping_1();
-	test_mapping_2();
 }
