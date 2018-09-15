@@ -28,6 +28,7 @@ inherit "/lib/string/bitops";
 inherit "/lib/string/trim";
 inherit "/lib/string/format";
 inherit "/lib/string/base";
+inherit "/lib/string/int";
 
 static void create()
 {
@@ -865,93 +866,4 @@ string string_from_seconds(int seconds, varargs int details)
 	}
 
 	return out;
-}
-
-string pack_int(int value, varargs int be)
-{
-	string out;
-
-	out = "    ";
-
-	if (be) {
-		out[0] = value & 0xFF;
-		out[1] = (value >> 8) & 0xFF;
-		out[2] = (value >> 16) & 0xFF;
-		out[3] = (value >> 24) & 0xFF;
-	} else {
-		out[3] = value & 0xFF;
-		out[2] = (value >> 8) & 0xFF;
-		out[1] = (value >> 16) & 0xFF;
-		out[0] = (value >> 24) & 0xFF;
-	}
-	return out;
-}
-
-int unpack_int(string str, varargs int be)
-{
-	int value;
-
-	if (be) {
-		value |= str[0];
-		value |= str[1] << 8;
-		value |= str[2] << 16;
-		value |= str[3] << 24;
-	} else {
-		value |= str[3];
-		value |= str[2] << 8;
-		value |= str[1] << 16;
-		value |= str[0] << 24;
-	}
-
-	return value;
-}
-
-string vpack_int(int value, varargs int be)
-{
-	string out;
-	string char;
-
-	char = " ";
-	out = "";
-
-	do {
-		char[0] = (value & 0x7F) | 0x80;
-
-		if (be) {
-			out = char + out;
-		} else {
-			out = out + char;
-		}
-
-		value >>= 7;
-	} while (value);
-
-	out[strlen(out) - 1] &= 0x7F;
-
-	return out;
-}
-
-int vunpack_int(string str, varargs int be)
-{
-	string char;
-	int value;
-	int index;
-
-	char = " ";
-
-	if (be) {
-		for (index = 0; index < strlen(str); index++) {
-			value <<= 7;
-			char[0] = str[index];
-			value = char[0] & 0x7F;
-		}
-	} else {
-		for (index = strlen(str) - 1; index >= 0; index--) {
-			value <<= 7;
-			char[0] = str[index];
-			value = char[0] & 0x7F;
-		}
-	}
-
-	return value;
 }
