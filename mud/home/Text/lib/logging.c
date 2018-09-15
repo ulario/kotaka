@@ -21,6 +21,8 @@
 #include <kernel/user.h>
 #include <kotaka/paths/utility.h>
 
+inherit "/lib/time";
+
 static string whoami()
 {
 	object user;
@@ -57,9 +59,9 @@ static void log_message_in(string source, string msg, varargs string key)
 	mtime = millitime();
 
 	"~/sys/logd"->post_message("log/log-" + source + "-in",
-		"[" + SUBD->pmtime(mtime) + "] " + (key ? key  + " " : "") + "<<< " + msg);
+		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + "<<< " + msg);
 	"~/sys/logd"->post_message("log/log-" + source + "-combo",
-		"[" + SUBD->pmtime(mtime) + "] " + (key ? key  + " " : "") + "<<< " + msg);
+		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + "<<< " + msg);
 }
 
 static void log_message_out(string source, string msg, varargs string key)
@@ -69,7 +71,7 @@ static void log_message_out(string source, string msg, varargs string key)
 	mtime = millitime();
 
 	"~/sys/logd"->post_message("log/log-" + source + "-out",
-		"[" + SUBD->pmtime(mtime) + "] " + (key ? key  + " " : "") + ">>> " + msg);
+		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + ">>> " + msg);
 	"~/sys/logd"->post_message("log/log-" + source + "-combo",
-		"[" + SUBD->pmtime(mtime) + "] " + (key ? key  + " " : "") + ">>> " + msg);
+		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + ">>> " + msg);
 }
