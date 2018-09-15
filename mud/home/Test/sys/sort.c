@@ -21,23 +21,27 @@
 #include <kotaka/privilege.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/log.h>
+#include <status.h>
 
 inherit "/lib/sort";
 
 private void test_qsort()
 {
+	int sz;
 	int *sortme;
 	int i;
 
-	sortme = allocate(500);
+	sz = status(ST_ARRAYSIZE);
 
-	for (i = 0; i < 500; i++) {
-		sortme[i] = random(500);
+	sortme = allocate(sz);
+
+	for (i = 0; i < sz; i++) {
+		sortme[i] = random(sz);
 	}
 
-	qsort(sortme, 0, 500);
+	qsort(sortme, 0, sz);
 
-	for (i = 0; i < 499; i++) {
+	for (i = 0; i < sz - 1; i++) {
 		ASSERT(sortme[i] <= sortme[i + 1]);
 	}
 }
