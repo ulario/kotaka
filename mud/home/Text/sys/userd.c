@@ -89,12 +89,12 @@ object select(string str)
 
 string query_blocked_banner(object LIB_CONN connection)
 {
-	return "Sorry, but due to system maintenance you cannot log in right now.\n";
+	return "Maintenance in progress.\n";
 }
 
 string query_overload_banner(object LIB_CONN connection)
 {
-	return "There are too many connections to this mud.\n";
+	return "Too many connections.\n";
 }
 
 private string query_siteban_message(object LIB_CONN connection)
