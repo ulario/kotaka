@@ -68,9 +68,9 @@ void main(object actor, mapping roles)
 
 	if (BAND->query_is_site_banned(site)) {
 		BAND->ban_site(site, args, -1);
-		send_out("Site banned.\n");
+		send_out("Ban message updated.\n");
 	} else {
 		BAND->ban_site(site, args, -1);
-		send_out("Ban message updated.\n");
+		send_out("Site banned.\n");
 	}
 }
