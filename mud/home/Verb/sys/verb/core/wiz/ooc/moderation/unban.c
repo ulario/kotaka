@@ -76,12 +76,16 @@ void main(object actor, mapping roles)
 		break;
 	}
 
+	if (!BAND->query_is_user_banned(username)) {
+		send_out("User not banned.\n");
+	}
+
 	BAND->unban_user(username);
 
 	kicker_name = user->query_titled_name();
 	turkey_name = TEXT_SUBD->query_titled_name(username);
 
-	user->message("You unban " + turkey_name + " from the mud.\n");
+	send_out("You unban " + turkey_name + " from the mud.\n");
 
 	TEXT_SUBD->send_to_all_except(kicker_name + " unbans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
 }

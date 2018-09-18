@@ -30,13 +30,10 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	object turkey;
 	object user;
 
 	string args;
 	string username;
-	string kicker_name;
-	string turkey_name;
 
 	user = query_user();
 
@@ -72,11 +69,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (BAND->query_is_user_banned(username)) {
-		send_out("That user is already banned.\n");
-		return;
-	}
-
 	switch(TEXT_SUBD->query_user_class(username)) {
 	case 3: /* administrator.  Only the mud owner can ban them */
 		if (user->query_username() != "admin") {
@@ -100,18 +92,29 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	BAND->ban_user(username, args, -1);
+	if (BAND->query_is_user_banned(username)) {
+		BAND->ban_user(username, args, -1);
 
-	kicker_name = user->query_titled_name();
-	turkey_name = TEXT_SUBD->query_titled_name(username);
+		send_out("Ban message updated.\n");
+	} else {
+		object turkey;
+		string kicker_name;
+		string turkey_name;
 
-	user->message("You ban " + turkey_name + " from the mud.\n");
-	turkey = TEXT_USERD->find_user(username);
+		BAND->ban_user(username, args, -1);
 
-	TEXT_SUBD->send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
+		kicker_name = user->query_titled_name();
+		turkey_name = TEXT_SUBD->query_titled_name(username);
 
-	if (turkey) {
-		turkey->message(kicker_name + " bans you from the mud.\n");
-		turkey->quit();
+		turkey = TEXT_USERD->find_user(username);
+
+		TEXT_SUBD->send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
+
+		if (turkey) {
+			turkey->message(kicker_name + " bans you from the mud.\n");
+			turkey->quit();
+		}
+
+		user->message("You ban " + turkey_name + " from the mud.\n");
 	}
 }

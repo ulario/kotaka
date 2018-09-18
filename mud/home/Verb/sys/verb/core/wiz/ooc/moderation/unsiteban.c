@@ -55,4 +55,6 @@ void main(object actor, mapping roles)
 	}
 
 	BAND->unban_site(site);
+
+	send_out("Site unbanned.\n");
 }
