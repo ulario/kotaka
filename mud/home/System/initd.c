@@ -62,6 +62,13 @@ private void set_limits()
 	KERNELD->rsrc_set_limit("System", "ticks", 250000);
 }
 
+private void log_boot_error()
+{
+	LOGD->post_message("system", LOG_ERROR, "Runtime error during boot");
+	LOGD->post_message("system", LOG_ERROR, TLSD->query_tls_value("System", "error-string"));
+	LOGD->post_message("system", LOG_ERROR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
+}
+
 static void create()
 {
 	check_config();
@@ -98,13 +105,6 @@ static void create()
 		shutdown();
 		error("Failed to load system core");
 	}
-}
-
-private void log_boot_error()
-{
-	LOGD->post_message("system", LOG_ERROR, "Runtime error during boot");
-	LOGD->post_message("system", LOG_ERROR, TLSD->query_tls_value("System", "error-string"));
-	LOGD->post_message("system", LOG_ERROR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
 }
 
 static void boot()
