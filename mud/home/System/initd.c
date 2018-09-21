@@ -124,8 +124,6 @@ static void boot()
 
 		LOGD->post_message("system", LOG_INFO, "System discovered");
 
-		DUMPD->set_parameters(3600, 0, 24);
-
 		MODULED->boot_module("Game");
 	} : {
 		log_boot_error();
