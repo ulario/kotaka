@@ -24,8 +24,7 @@ git stash
 
 reb local master
 reb test local
-reb stress test
-reb siteban stress
+reb siteban test
 
 git checkout $CURRENT
 git stash pop
