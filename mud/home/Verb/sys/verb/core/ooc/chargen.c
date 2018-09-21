@@ -62,13 +62,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	world = CATALOGD->lookup_object("world");
-
-	if (!world) {
-		send_out("Yell at a wizard, there's no world to put your character inside.\n");
-		return;
-	}
-
 	body = GAME_INITD->create_thing();
 
 	body->set_density(1.0);
@@ -81,6 +74,14 @@ void main(object actor, mapping roles)
 
 	body->add_archetype(CATALOGD->lookup_object("class:race:humanoid:human"));
 	body->set_object_name("players:" + name);
-	body->move(world);
+
 	send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
+
+	world = CATALOGD->lookup_object("start");
+
+	if (world) {
+		body->move(world);
+	} else {
+		send_out("Warning: start room not found, your character's body was spawned in the void.\n");
+	}
 }
