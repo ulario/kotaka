@@ -95,8 +95,6 @@ static void create()
 
 		configure_logging();
 
-		load_object(ERRORD);		/* handles runtime errors, load last in case the system core fails to boot */
-
 		call_out("boot", 0);
 
 		LOGD->post_message("system", LOG_INFO, "System core loaded");
@@ -110,6 +108,7 @@ static void create()
 static void boot()
 {
 	catch {
+		load_object(ERRORD);		/* depends on TLS */
 		load_object(MODULED);
 
 		MODULED->boot_module("Bigstruct");
