@@ -22,7 +22,7 @@
 #include <status.h>
 #include <type.h>
 
-inherit LIB_SYSTEM;
+inherit "~System/lib/string/escape";
 inherit "/lib/string/char";
 inherit "/lib/string/bitops";
 inherit "/lib/string/trim";
