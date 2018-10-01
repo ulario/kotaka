@@ -30,12 +30,6 @@ inherit "/lib/string/format";
 inherit "/lib/string/base";
 inherit "/lib/string/int";
 
-static void create()
-{
-}
-
-string replace(string input, string from, string to);
-
 /***********/
 /* strings */
 /***********/
@@ -147,22 +141,6 @@ string to_upper(string text)
 	return newword;
 }
 
-string yn_check(string str)
-{
-	if (str == nil || str == "") {
-		return "E";
-	}
-
-	switch(to_upper(str)[0]) {
-	case 'Y':
-		return "Y";
-	case 'N':
-		return "N";
-	default:
-		return "E";
-	}
-}
-
 string to_title(string text)
 {
 	string *words;
@@ -195,81 +173,6 @@ string to_title(string text)
 	}
 
 	return implode(words, " ");
-}
-
-/* If s1 is later in alphabetical order, return 1.  If s2 is later,
-   return -1.  If neither, return 0. */
-int stricmp(string s1, string s2)
-{
-	int tmp1, tmp2, len1, len2;
-	int len, iter;
-
-	len1 = strlen(s1);
-	len2 = strlen(s2);
-	len = len1 > len2 ? len2 : len1;
-
-	for (iter = 0; iter < len; iter++) {
-		tmp1 = s1[iter];
-		tmp2 = s2[iter];
-
-		if (tmp1 <= 'Z' && tmp1 >= 'A') {
-			tmp1 += 'a' - 'A';
-		}
-
-		if (tmp2 <= 'Z' && tmp2 >= 'A') {
-			tmp2 += 'a' - 'A';
-		}
-
-		if (tmp1 > tmp2) {
-			return 1;
-		}
-
-		if (tmp2 > tmp1) {
-			return -1;
-		}
-	}
-
-	if (len1 == len2) {
-		return 0;
-	}
-
-	if (len1 > len2) {
-		return 1;
-	}
-
-	return -1;
-}
-
-
-/* If s1 is later in alphabetical order, return 1.  If s2 is later,
-   return -1.  If neither, return 0. */
-int strcmp(string s1, string s2)
-{
-	int len1, len2;
-	int len, iter;
-
-	len1 = strlen(s1);
-	len2 = strlen(s2);
-	len = len1 > len2 ? len2 : len1;
-
-	for (iter = 0; iter < len; iter++) {
-		if (s1[iter] > s2[iter]) {
-			return 1;
-		}
-		if (s2[iter] > s1[iter]) {
-			return -1;
-		}
-	}
-
-	if (len1 == len2) {
-		return 0;
-	}
-
-	if (len1 > len2) {
-		return 1;
-	}
-
-	return -1;
 }
 
 string mixed_sprint(mixed data, varargs mapping seen);
@@ -487,19 +390,6 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 	}
 }
 
-int prefix_string(string prefix, string str)
-{
-	if (strlen(str) < strlen(prefix)) {
-		return 0;
-	}
-
-	if (str[0 .. strlen(prefix) - 1] == prefix) {
-		return 1;
-	}
-
-	return 0;
-}
-
 int is_simple(mixed data)
 {
 	int sz;
@@ -650,60 +540,6 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 /* formatting functions */
 /************************/
 
-string normalize_whitespace(string input, int maxwidth)
-{
-	string *words;
-	string *lines;
-
-	int index;
-	string line;
-
-	int linewidth;
-
-	input = replace(input, "\t", " ");
-	input = replace(input, "\n", " ");
-
-	words = explode(input, " ") - ({ "" });
-
-	line = "";
-	lines = ({ });
-
-	for(index = 0; index < sizeof(words); index++) {
-		string word;
-		int wordwidth;
-
-		word = words[index];
-		wordwidth = strlen(word) + 1;
-
-		switch(word[strlen(word) - 1]) {
-		case '.':
-		case '!':
-		case ';':
-		case '?':
-			wordwidth++;
-			word += "  ";
-			break;
-		default:
-			word += " ";
-		}
-
-		if (wordwidth + linewidth > maxwidth) {
-			lines += ({ trim_whitespace(line) });
-			linewidth = 0;
-			line = "";
-		}
-
-		line += word;
-		linewidth += wordwidth;
-	}
-
-	if (line != "") {
-		lines += ({ trim_whitespace(line) });
-	}
-
-	return implode(lines, "\n") + "\n";
-}
-
 string ralign(mixed item, int width)
 {
 	if (strlen("" + item) > width) {
@@ -720,150 +556,4 @@ string lalign(mixed item, int width)
 	}
 
 	return item + spaces(width - strlen("" + item));
-}
-
-string stime(int time)
-{
-	int ancient;
-	string timestr;
-
-	ancient = time() - 6 * 30 * 24 * 60 * 60;
-
-	timestr = ctime(time);
-
-	if (time >= ancient) {
-		timestr = timestr[4 .. 15];
-	} else {
-		timestr = timestr[4 .. 10] + timestr[19 .. 23];
-	}
-	return timestr;
-}
-
-int ip_to_number(string ip)
-{
-	int a, b, c, d;
-
-	sscanf(ip, "%d.%d.%d.%d", a, b, c, d);
-
-	return a << 24 | b << 16 | c << 8 | d;
-}
-
-string ip_to_string(int ip)
-{
-	int a, b, c, d;
-
-	a = (ip >> 24) & 0xFF;
-	b = (ip >> 16) & 0xFF;
-	c = (ip >> 8) & 0xFF;
-	d = (ip) & 0xFF;
-
-	return a + "." + b + "." + c + "." + d;
-}
-
-string string_patch(string canvas, string brush, int coff, int blen)
-{
-	int smask;
-	int emask;
-
-	int sbyte;
-	int ebyte;
-
-	int sbit;
-	int ebit;
-
-	int byte;
-
-	brush = string_lshift(brush, coff);
-
-	sbit = coff;
-	ebit = coff + blen - 1;
-
-	sbyte = sbit >> 3;
-	ebyte = ebit >> 3;
-
-	sbit &= 7;
-	ebit &= 7;
-
-	smask = (0xFF << sbit) & 0xFF;
-	emask = 0xFF >> (7 - ebit);
-
-	while(strlen(brush) <= ebyte) {
-		brush += "\000";
-	}
-
-	while(strlen(canvas) <= ebyte) {
-		canvas += "\000";
-	}
-
-	if (sbyte == ebyte) {
-		smask &= emask;
-	} else {
-		for (byte = sbyte + 1; byte < ebyte - 1; byte++) {
-			canvas[byte] = brush[byte];
-		}
-
-		canvas[ebyte] =
-			(canvas[ebyte] & ~emask) | (brush[ebyte] & emask);
-	}
-
-	canvas[sbyte] =
-		(canvas[sbyte] & ~smask)
-		| (brush[sbyte] & smask);
-
-	return canvas;
-}
-
-string string_from_seconds(int seconds, varargs int details)
-{
-	int count;
-	string unit;
-	string out;
-	int ago;
-
-	if (seconds == 0) {
-		return "now";
-	}
-
-	if (seconds < 0) {
-		ago = 1;
-		seconds = -seconds;
-	}
-
-	details++;
-
-	while (details-- && seconds) {
-		if (seconds >= 86400) {
-			count = seconds / 86400;
-			unit = "day";
-			seconds %= 86400;
-		} else if (seconds >= 3600) {
-			count = seconds / 3600;
-			unit = "hour";
-			seconds %= 3600;
-		} else if (seconds >= 60) {
-			count = seconds / 60;
-			unit = "minute";
-			seconds %= 60;
-		} else if (seconds >= 1) {
-			count = seconds;
-			unit = "second";
-			seconds = 0;
-		}
-
-		if (count > 1) {
-			unit += "s";
-		}
-
-		if (out) {
-			out += ", " + count + " " + unit;
-		} else {
-			out = count + " " + unit;
-		}
-	}
-
-	if (ago) {
-		out += " ago";
-	}
-
-	return out;
 }
