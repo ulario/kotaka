@@ -232,6 +232,10 @@ void flush()
 
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
 
+	if (!buffers) {
+		return;
+	}
+
 	files = map_indices(buffers);
 
 	sz = sizeof(files);
@@ -240,6 +244,8 @@ void flush()
 
 	if (buffers && map_sizeof(buffers)) {
 		call_out("flush", 0);
+	} else {
+		buffers = nil;
 	}
 }
 
