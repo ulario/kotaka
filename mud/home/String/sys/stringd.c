@@ -535,25 +535,3 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 		}
 	}
 }
-
-/************************/
-/* formatting functions */
-/************************/
-
-string ralign(mixed item, int width)
-{
-	if (strlen("" + item) > width) {
-		return "" + item;
-	}
-
-	return spaces(width - strlen("" + item)) + item;
-}
-
-string lalign(mixed item, int width)
-{
-	if (strlen("" + item) > width) {
-		return "" + item;
-	}
-
-	return item + spaces(width - strlen("" + item));
-}
