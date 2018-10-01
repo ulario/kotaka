@@ -20,8 +20,6 @@
 #include <kotaka/paths/system.h>
 
 inherit SECOND_AUTO;
-inherit "system/escape";
-inherit "system/sprint";
 
 string initd_of(string module)
 {
