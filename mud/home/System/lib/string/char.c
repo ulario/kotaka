@@ -17,35 +17,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-inherit "~System/lib/string/char";
+#include <kotaka/paths/system.h>
 
-int char_is_whitespace(int char)
+inherit SECOND_AUTO;
+
+string chars(int code, int count)
 {
-	if ((char == '\n') || (char == '\t') || (char == ' ')) {
-		return 1;
+	string log;
+
+	if (code < 0 || code > 0xff) {
+		error("Invalid character code");
 	}
 
-	return 0;
-}
+	log = " ";
+	log[0] = code;
 
-int char_to_lower(int char)
-{
-	if ((char <= 'Z') && (char >= 'A')) {
-		char |= 0x20;
+	while (strlen(log) < count) {
+		if (strlen(log) * 2 > count) {
+			log += log[0 .. count - strlen(log) - 1];
+		} else {
+			log += log;
+		}
 	}
 
-	return char;
+	return log[0 .. count - 1];
 }
 
-int char_to_upper(int char)
+string spaces(int count)
 {
-	if ((char <= 'z') && (char >= 'a'))
-		char &= ~0x20;
-
-	return char;
-}
-
-string nulls(int count)
-{
-	return chars('\0', count);
+	return chars(' ', count);
 }
