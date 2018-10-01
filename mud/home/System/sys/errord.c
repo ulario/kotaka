@@ -27,6 +27,7 @@
 #include <trace.h>
 
 inherit SECOND_AUTO;
+inherit "~/lib/string/align";
 inherit LIB_SYSTEM;
 
 static void create()
@@ -34,60 +35,44 @@ static void create()
 	DRIVER->set_error_manager(this_object());
 }
 
-/* Shamelessly stolen from Dworkin's Klib */
 string print_frame(mixed *frame)
 {
-	string obj;
-	string prog;
+	string str;
+	mixed line;
 	string func;
-	string lineno;
-	int lnum;
-	int ext;
-	int len;
-	string line;
+	string prog;
+	string obj;
 
-	string flags;
+	line = (string)frame[TRACE_LINE];
 
-	/* GE */
-	/* G = Guard */
-	/* E = External */
-	flags = "  ";
-
-	obj = frame[TRACE_OBJNAME];
-	prog = frame[TRACE_PROGNAME];
-	func = frame[TRACE_FUNCTION];
-	lnum = frame[TRACE_LINE];
-	ext = frame[TRACE_EXTERNAL];
-
-	if (ext) {
-		flags[1] = 'E';
-	}
-
-	if (lnum == 0) {
-		lineno = "    ";
+	if (line == 0) {
+		line = "";
 	} else {
-		lineno = "    " + lnum;
-		lineno = lineno[strlen(lineno) - 4 ..];
+		line = "" + line;
 	}
 
-	len = strlen(func);
+	func = frame[TRACE_FUNCTION];
+	prog = frame[TRACE_PROGNAME];
+	obj = frame[TRACE_OBJNAME];
 
-	if (len < 15) {
-		func += "               "[len..];
-	}
+	str = ralign(line, 5) + " " + lalign(func, 16) + " " + prog;
 
 	if (prog != obj) {
-		len = strlen(prog);
-		if (len < strlen(obj) && prog == obj[..len - 1] &&
-			obj[len] == '#') {
-			obj = obj[len..];
+		string path;
+		int index;
+
+		if (sscanf(obj, "%s#%d", path, index)) {
+			if (prog == path) {
+				str += " (#" + index;
+			} else {
+				str += " (" + path + "#" + index + ")";
+			}
+		} else {
+			str += " (" + obj + ")";
 		}
-		line = flags + " " + lineno + " " + func + " " + prog + " (" + obj + ")";
-	} else {
-		line = flags + " " + lineno + " " + func + " " + prog;
 	}
 
-	return line;
+	return str;
 }
 
 string print_stack(mixed **trace)
