@@ -133,11 +133,6 @@ private void send_module_shutdown_signal(string module)
 	}
 }
 
-static void purge_module_master_tick(string module, mixed **list, int reboot)
-{
-	call_out("purge_module_tick", 0, module, reboot);
-}
-
 static void purge_module_tick(string module, varargs int reboot)
 {
 	object cursor;
