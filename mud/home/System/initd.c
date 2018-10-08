@@ -427,23 +427,22 @@ private void upgrade_check_kotaka_version()
 		switch(version_minor) {
 		case 51:
 			switch(version_patch) {
-			case 0:
 			case 1:
 				return;
 			default:
-				error("Can only upgrade from versions 0.51 through 0.51.1");
+				error("Can only upgrade from versions 0.51.1 or 0.52");
 			}
 		case 52:
 			switch(version_patch) {
 			case 0:
 				return;
 			default:
-				error("Can only upgrade from versions 0.51 through 0.51.1");
+				error("Can only upgrade from versions 0.51.1 or 0.52");
 			}
 		}
 		break;
 	default:
-		error("Can only upgrade from versions 0.51 through 0.51.1");
+		error("Can only upgrade from versions 0.51.1 or 0.52");
 	}
 }
 
