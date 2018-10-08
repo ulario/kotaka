@@ -32,7 +32,9 @@ inherit "~/lib/struct/multimap";
 mapping patcherdb;	/* ([ level : ([ index : patchers ]) ]) */
 mapping patchabledb;	/* ([ level : ([ index : obj ]) ]) */
 
-mixed *nudgelist;
+int handle;
+mixed *sweep_list;
+mixed *nudge_list;
 
 static void create()
 {
@@ -55,6 +57,20 @@ void upgrade()
 	}
 }
 
+atomic void reset_callout()
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
+
+	handle = call_out("process", 0);
+}
+
 void reboot()
 {
 	ACCESS_CHECK(SYSTEM());
@@ -65,31 +81,29 @@ void cleanup_patch()
 	ACCESS_CHECK(SYSTEM());
 }
 
-private void enqueue_nudge(object obj)
+private void enqueue_sweep(string path)
 {
-	if (!nudgelist) {
-		nudgelist = ({ nil, nil });
-		call_out("dequeue_nudge", 0);
+	if (!sweep_list) {
+		sweep_list = ({ nil, nil });
 	}
 
-	list_push_back(nudgelist, obj);
+	list_push_back(sweep_list, ({ path, status(ST_OTABSIZE) }) );
+
+	if (!handle) {
+		handle = call_out("process", 0);
+	}
 }
 
-static void dequeue_nudge()
+private void enqueue_nudge(object obj)
 {
-	object obj;
-
-	obj = list_front(nudgelist);
-	list_pop_front(nudgelist);
-
-	if (list_empty(nudgelist)) {
-		nudgelist = nil;
-	} else {
-		call_out("dequeue_nudge", 0);
+	if (!nudge_list) {
+		nudge_list = ({ nil, nil });
 	}
 
-	if (obj) {
-		obj->_F_dummy();
+	list_push_back(nudge_list, obj);
+
+	if (!handle) {
+		handle = call_out("process", 0);
 	}
 }
 
@@ -126,7 +140,7 @@ atomic void enqueue_patchers(object master, string *patchers)
 			}
 		}
 
-		call_out("sweep", 0, path);
+		enqueue_sweep(path);
 	}
 }
 
@@ -148,9 +162,7 @@ string *query_patchers(object obj)
 	}
 
 	if (!query_multimap(patchabledb, index)) {
-		if (!query_multilevel_map_arr(objdb, 3, index)) {
-			return nil;
-		}
+		return nil;
 	}
 
 	patchers = query_multimap(patcherdb, mindex);
@@ -181,28 +193,41 @@ static void nudge_object(object obj)
 	obj->_F_dummy();
 }
 
-static void sweep(string path, varargs int index)
+static void process()
 {
-	int max;
-	int end;
+	handle = 0;
 
-	max = status(ST_OTABSIZE);
-	end = max;
-
-	if (end > index + 1000) {
-		end = index + 1000;
-	}
-
-	while (index < end) {
+	if (!list_empty(nudge_list)) {
 		object obj;
 
-		if (obj = find_object(path + "#" + index++)) {
-			enqueue_nudge(obj);
-			break;
-		}
-	}
+		handle = call_out("process", 0);
 
-	if (index < max) {
-		call_out("sweep", 0, path, index);
+		obj = list_front(nudge_list);
+		list_pop_front(nudge_list);
+
+		obj->_F_dummy();
+	} else if (!list_empty(sweep_list)) {
+		object obj;
+		string path;
+		mixed *head;
+		int index;
+
+		handle = call_out("process", 0);
+
+		head = list_front(sweep_list);
+		({ path, index }) = head;
+
+		if (obj = find_object(path + "#" + index)) {
+			enqueue_nudge(obj);
+		}
+
+		if (index) {
+			head[1]--;
+		} else {
+			list_pop_front(sweep_list);
+		}
+	} else {
+		sweep_list = nil;
+		nudge_list = nil;
 	}
 }
