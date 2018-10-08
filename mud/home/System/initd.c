@@ -328,18 +328,22 @@ int forbid_inherit(string from, string path, int priv)
 private void check_config()
 {
 	if (status(ST_ARRAYSIZE) < 256) {
-		error("Array size setting is too small (minimum 256 elements)");
+		error("Array size too small (minimum 256)");
+	}
+
+	if (status(ST_COTABSIZE) < 5) {
+		error("Callout table too small (minimum 5)");
 	}
 
 	if (status(ST_UTABSIZE) < 3) {
 		/* 1: reserved for regular logins */
 		/* 2: reserved for emergency logins */
 		/* 3: reserved for overflow burning */
-		error("Not enough user slots (minimum is 3)");
+		error("User table too small (minimum 3)");
 	}
 
 	if (status(ST_STRSIZE) < 4096) {
-		error("String size limit too small (minimum 4096 bytes)");
+		error("String size too small (minimum 4096)");
 	}
 }
 
