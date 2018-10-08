@@ -29,9 +29,6 @@ inherit SECOND_AUTO;
 inherit "~/lib/struct/maparr";
 inherit "~/lib/struct/multimap";
 
-mapping objdb;		/* ([ index : obj ]) */
-mapping patchdb;	/* ([ index : patchers ]) */
-
 mapping patcherdb;	/* ([ level : ([ index : patchers ]) ]) */
 mapping patchabledb;	/* ([ level : ([ index : obj ]) ]) */
 
@@ -161,12 +158,6 @@ string *query_patchers(object obj)
 	if (patchers) {
 		return patchers;
 	}
-
-	patchers = query_multilevel_map_arr(patchdb, 3, mindex);
-
-	if (patchers) {
-		return patchers;
-	}
 }
 
 void clear_patch(object obj)
@@ -182,7 +173,6 @@ void clear_patch(object obj)
 		index = status(obj, O_INDEX);
 	}
 
-	objdb = set_multilevel_map_arr(objdb, 3, index, nil);
 	set_multimap(patchabledb, index, nil);
 }
 
