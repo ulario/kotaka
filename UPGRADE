@@ -43,14 +43,12 @@ Every upgrade has the following sequence of events:
 	changed, or inherits a library that has been recompiled, should
 	be recompiled as well.
 
-Caveats for v0.51
+Caveats for v0.52
 -----------------
 
-ObjectD and PatchD
+PatchD
 
-	The patching process introduced in v0.50 accomodated outstanding
-	patches from previous versions.
+	PatchD has internal changes in handling patches.
 
-	The code handling this is now obsolete and will be removed in
-	v0.51, so please make sure that all patches for versions prior to
-	v0.50 are completed.
+	Please ensure that any object patches for versions prior to v0.51
+	have been completed.
