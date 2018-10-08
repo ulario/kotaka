@@ -59,7 +59,7 @@ nomask int _F_touch(string func)
 		PATCHD->clear_patch(this);
 
 		for (sz = sizeof(patchers) - 1; sz >= 0; --sz) {
-			call_limited(patcher[sz]);
+			call_limited(patchers[sz]);
 		}
 	}
 
