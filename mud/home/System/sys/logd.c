@@ -58,7 +58,7 @@ static void create()
 {
 	facilities = ([ ]);
 
-	INITD->queue_configure_logging();
+	INITD->configure_logging();
 }
 
 private void schedule()

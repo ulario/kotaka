@@ -93,8 +93,6 @@ static void create()
 
 		SECRETD->remove_file("logs/session.log");
 
-		configure_logging();
-
 		call_out("boot", 0);
 
 		LOGD->post_message("system", LOG_INFO, "System core loaded");
@@ -263,8 +261,10 @@ void configure_rsrc()
 	KERNELD->set_rsrc("callout usage", -1, 1, 1);
 }
 
-void configure_logging()
+atomic void configure_logging()
 {
+	ACCESS_CHECK(SYSTEM());
+
 	LOGD->clear_targets();
 
 	LOGD->set_target("*", 63, "driver");
@@ -483,11 +483,6 @@ void upgrade_system_post_recompile()
 	/* first, ask all InitD's if we can upgrade */
 	/* if nobody says no, send the upgrade signal */
 	MODULED->upgrade_modules();
-}
-
-void queue_configure_logging()
-{
-	call_out("configure_logging", 0);
 }
 
 string query_patcher(string program)
