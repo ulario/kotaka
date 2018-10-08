@@ -63,7 +63,7 @@ string print_frame(mixed *frame)
 
 		if (sscanf(obj, "%s#%d", path, index)) {
 			if (prog == path) {
-				str += " (#" + index;
+				str += " (#" + index + ")";
 			} else {
 				str += " (" + path + "#" + index + ")";
 			}
