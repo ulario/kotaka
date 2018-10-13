@@ -193,6 +193,28 @@ static void nudge_object(object obj)
 	obj->_F_dummy();
 }
 
+private int sweep(string path, int index)
+{
+	int goal;
+
+	goal = index - 1000;
+
+	if (goal < 0) {
+		goal = 0;
+	}
+
+	while (--index > goal) {
+		object obj;
+
+		if (obj = find_object(path + "#" + index)) {
+			enqueue_nudge(obj);
+			break;
+		}
+	}
+
+	return index;
+}
+
 static void process()
 {
 	handle = 0;
@@ -217,12 +239,10 @@ static void process()
 		head = list_front(sweep_list);
 		({ path, index }) = head;
 
-		if (obj = find_object(path + "#" + index)) {
-			enqueue_nudge(obj);
-		}
+		index = sweep(path, index);
 
 		if (index) {
-			head[1]--;
+			head[1] = index;
 		} else {
 			list_pop_front(sweep_list);
 		}
