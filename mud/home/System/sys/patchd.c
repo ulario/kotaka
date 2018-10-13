@@ -227,9 +227,10 @@ static void process()
 		obj = list_front(nudge_list);
 		list_pop_front(nudge_list);
 
-		obj->_F_dummy();
+		if (obj) {
+			obj->_F_dummy();
+		}
 	} else if (!list_empty(sweep_list)) {
-		object obj;
 		string path;
 		mixed *head;
 		int index;
