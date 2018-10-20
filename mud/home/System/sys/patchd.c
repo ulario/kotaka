@@ -38,24 +38,9 @@ mixed *nudge_list;
 
 static void create()
 {
-	patcherdb = ([ ]);
-	patchabledb = ([ ]);
 }
 
 /* hooks */
-
-void upgrade()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	if (!patcherdb) {
-		patcherdb = ([ ]);
-	}
-
-	if (!patchabledb) {
-		patchabledb = ([ ]);
-	}
-}
 
 atomic void reset_callout()
 {
@@ -119,7 +104,16 @@ atomic void enqueue_patchers(object master, string *patchers)
 	path = object_name(master);
 	index = status(master, O_INDEX);
 
+	if (!patcherdb) {
+		patcherdb = ([ ]);
+	}
+
 	set_multimap(patcherdb, index, patchers);
+
+	if (!patchabledb) {
+		patchabledb = ([ ]);
+	}
+
 	set_multimap(patchabledb, index, master);
 
 	call_touch(master);
@@ -161,14 +155,16 @@ string *query_patchers(object obj)
 		index = mindex;
 	}
 
-	if (!query_multimap(patchabledb, index)) {
+	if (!patchabledb || !query_multimap(patchabledb, index)) {
 		return nil;
 	}
 
-	patchers = query_multimap(patcherdb, mindex);
+	if (patcherdb) {
+		patchers = query_multimap(patcherdb, mindex);
 
-	if (patchers) {
-		return patchers;
+		if (patchers) {
+			return patchers;
+		}
 	}
 }
 
@@ -183,6 +179,10 @@ void clear_patch(object obj)
 
 	if (!sscanf(path, "%s#%d", path, index)) {
 		index = status(obj, O_INDEX);
+	}
+
+	if (!patchabledb) {
+		patchabledb = ([ ]);
 	}
 
 	set_multimap(patchabledb, index, nil);
@@ -219,7 +219,7 @@ static void process()
 {
 	handle = 0;
 
-	if (!list_empty(nudge_list)) {
+	if (nudge_list && !list_empty(nudge_list)) {
 		object obj;
 
 		handle = call_out("process", 0);
@@ -230,7 +230,7 @@ static void process()
 		if (obj) {
 			obj->_F_dummy();
 		}
-	} else if (!list_empty(sweep_list)) {
+	} else if (sweep_list && !list_empty(sweep_list)) {
 		string path;
 		mixed *head;
 		int index;
@@ -250,5 +250,26 @@ static void process()
 	} else {
 		sweep_list = nil;
 		nudge_list = nil;
+	}
+}
+
+void reset()
+{
+	mixed **callouts;
+	int sz;
+
+	ACCESS_CHECK(SYSTEM() || KADMIN());
+
+	handle = 0;
+
+	sweep_list = nil;
+	nudge_list = nil;
+	patcherdb = nil;
+	patchabledb = nil;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
 	}
 }
