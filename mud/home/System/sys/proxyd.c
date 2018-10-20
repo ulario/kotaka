@@ -36,6 +36,15 @@ void check_security(string user, string creator)
 	PERMISSION_CHECK(user != "System");
 
 	if (user[0] >= 'a' && user[0] <= 'z') {
+		object this_user;
+
+		/* may be set by interface objects or filter objects */
+		this_user = TLSD->query_tls_value("System", "this-user");
+
+		if (!this_user) {
+			this_user = this_user();
+		}
+
 		/* Proxies for users must be initiated by that user */
 		PERMISSION_CHECK(this_user());
 		PERMISSION_CHECK(this_user()->query_name() == user);

@@ -67,6 +67,8 @@ static void create()
 
 	reblocked = ([ ]);
 
+	load_object(TLSD);
+
 	register_with_klib_userd();
 }
 
@@ -529,4 +531,16 @@ void close_connection(object conn)
 	if (conn) {
 		conn->reboot();
 	}
+}
+
+object query_this_user()
+{
+	return TLSD->query_tls_value("System", "this-user");
+}
+
+void set_this_user(object LIB_USER user)
+{
+	ACCESS_CHECK(INTERFACE());
+
+	TLSD->set_tls_value("System", "this-user", user);
 }
