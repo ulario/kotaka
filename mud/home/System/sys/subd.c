@@ -367,6 +367,37 @@ private void gather_lpc_files(string dirname, mixed **list)
 	}
 }
 
+static void full_rebuild_tick(mixed **list, mapping initds)
+{
+	string path;
+
+	if (list_empty(list)) {
+		return;
+	}
+
+	path = list_front(list);
+	list_pop_front(list);
+
+	call_out("full_rebuild_tick", 0, list, initds);
+
+	sscanf(path, "%s.c", path);
+
+	if (initds[path]) {
+		return;
+	}
+
+	if (!file_info(path + ".c")) {
+		LOGD->post_message("debug", LOG_NOTICE, "Skipping " + path + " because source vanished");
+		return;
+	}
+
+	if (!find_object(path)) {
+		LOGD->post_message("debug", LOG_NOTICE, "Compiling " + path + " ...");
+	}
+
+	compile_object(path);
+}
+
 void full_rebuild()
 {
 	ACCESS_CHECK(VERB() || KADMIN());
@@ -452,9 +483,7 @@ void full_rebuild()
 
 				if (file_info(path + ".c")[1] != -2) {
 					if (!find_object(path)) {
-						LOGD->post_message("debug", LOG_NOTICE, "Compiling new initd " + path);
-					} else {
-						LOGD->post_message("debug", LOG_NOTICE, "Recompiling existing initd " + path);
+						LOGD->post_message("debug", LOG_NOTICE, "Compiling new initd " + path + " ...");
 					}
 
 					catch {
@@ -466,28 +495,7 @@ void full_rebuild()
 			}
 		}
 
-		while (!list_empty(list)) {
-			string path;
-
-			path = list_front(list);
-			list_pop_front(list);
-
-			sscanf(path, "%s.c", path);
-
-			if (initds[path]) {
-				continue;
-			}
-
-			if (!find_object(path)) {
-				LOGD->post_message("debug", LOG_NOTICE, "Compiling new program " + path);
-			}
-
-			catch {
-				compile_object(path);
-			} : {
-				LOGD->post_message("debug", LOG_NOTICE, "Error trying to rebuild " + path);
-			}
-		}
+		call_out("full_rebuild_tick", 0, list, initds);
 	}
 }
 
