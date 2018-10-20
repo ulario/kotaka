@@ -46,6 +46,8 @@ static void destruct()
 
 void suspend_system()
 {
+	LOGD->post_message("system", LOG_WARN, "System suspension is deprecated.");
+
 	if (suspend) {
 		return;
 	}
@@ -62,6 +64,8 @@ void suspend_system()
 
 void release_system()
 {
+	LOGD->post_message("system", LOG_WARN, "System suspension is deprecated.");
+
 	CALLOUTD->release_callouts();
 	SYSTEM_USERD->unblock_connections();
 

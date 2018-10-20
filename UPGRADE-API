@@ -123,3 +123,34 @@ Deprecation of multiple archetypes (depends on amendment of cdtors)
 
 		Any object with multiple archetypes will have their
 		archetype list truncated to the first archetype.
+
+Deprecation of system wide suspension
+
+	It has been brought to my attention that the callout suspension
+	API is bugged, namely that if a callout goes off during a
+	suspension it could change its handle without this being properly
+	reflected to the function handling the callout.  This, combined
+	with the propensity for a connection suspension to go awry, has
+	led me to conclude that system wide suspension is a no go.
+
+	Please note that separate suspension of connections, by rejecting
+	new connections and blocking existing ones, will remain supported
+	via the System UserD.  It is required to prevent logins during
+	boot and may also be useful in other cases.
+
+	Step 1 (completed)
+
+		Formal deprecation.
+
+		Attempts to use the suspension API will result in warning
+		messages.
+
+	Step 2
+
+		Forbid further usage of SuspendD.
+
+		Allow previous usage to flush out and get processed.
+
+	Step 3
+
+		Remove SuspendD from service.
