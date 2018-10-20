@@ -74,7 +74,9 @@ Amendment of patching
 	It's also possible to use a patcher to intercept objects that
 	newly inherit an inheritable after being originally created.
 
-Deprecation of multiple archetypes (depends on amendment of cdtors)
+Deprecation of multiple archetypes
+
+	(depends on amendment of cdtors)
 
 	To avoid exponential complexity in a few areas, as well as
 	encourage neater data inheritance, multiple archetypes are
@@ -151,6 +153,29 @@ Deprecation of system wide suspension
 
 		Allow previous usage to flush out and get processed.
 
+		Any system that is suspended at this point will be forcibly released.
+
 	Step 3
 
 		Remove SuspendD from service.
+
+Deprecation of callout suspension
+
+	(depends on deprecation of system wide suspension)
+
+	Due to the aforementioned bug, callout suspension is being
+	removed.  Which is fine, it was always a royal pain in the ass.
+
+	Step 1 (completed)
+
+		Formal deprecation.
+
+	Step 2
+
+		Forbid further usage of CalloutD.
+
+		Forcibly release callouts.
+
+	Step 3
+
+		Remove CalloutD from service.
