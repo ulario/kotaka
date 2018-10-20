@@ -50,19 +50,20 @@ static void destruct(int clone)
 private void prompt()
 {
 	send_out("Welcome to Ulario.\n");
-	send_out("Please choose one of the following options:\n");
-	send_out("1. login\n");
+	send_out("Please choose one of the following options:\n\n");
+	send_out("1. log in\n");
 	send_out("2. register a new account\n");
-	send_out("3. connect as a guest\n");
+	send_out("3. log in as a guest\n");
 	send_out("4. get help for this menu\n");
-	send_out("5. disconnect\n> ");
+	send_out("5. disconnect\n");
+	send_out("> ");
 }
 
 static void timeout()
 {
 	callout = 0;
 
-	send_out("\n\nSorry, but you took too long.\n");
+	send_out("\n\nSorry, but you took too long.\n\nYou need to log in within 120 seconds of connecting.\n");
 
 	query_user()->quit();
 }
