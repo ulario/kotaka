@@ -23,9 +23,9 @@ function sigint
 
 function sighup
 {
-	echo "+++ Monitor received SIGINT, killing DGD +++"
+	echo "+++ Monitor received SIGHUP, killing DGD +++"
 	trap - SIGINT
-	kill -KILL $DGDPID # DGD ignores SIGINT
+	kill -KILL $DGDPID # DGD ignores SIGHUP
 	kill -INT $$
 }
 
