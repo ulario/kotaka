@@ -123,7 +123,9 @@ void suspend_callouts()
 			alloc_queue();
 		}
 	} else {
-		LOGD->post_message("system", LOG_WARNING, "Callout suspension is deprecated");
+		if (!SYSTEM()) {
+			LOGD->post_message("system", LOG_WARNING, "Callout suspension is deprecated");
+		}
 		RSRCD->suspend_callouts();
 	}
 }
@@ -253,8 +255,6 @@ void release_callouts()
 			handle = call_out("do_release", 0);
 		}
 	} else {
-		LOGD->post_message("system", LOG_WARNING, "Callout suspension is deprecated");
-
 		RSRCD->release_callouts();
 	}
 }
