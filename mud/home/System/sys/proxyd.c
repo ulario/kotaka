@@ -46,8 +46,8 @@ void check_security(string user, string creator)
 		}
 
 		/* Proxies for users must be initiated by that user */
-		PERMISSION_CHECK(this_user());
-		PERMISSION_CHECK(this_user()->query_name() == user);
+		PERMISSION_CHECK(this_user);
+		PERMISSION_CHECK(this_user->query_name() == user);
 	} else {
 		/* Infrastructure can only be proxied by itself */
 		PERMISSION_CHECK(creator == user);
