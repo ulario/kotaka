@@ -25,8 +25,6 @@ object parent;
 object current;
 object *children;
 
-int events;
-
 /* we need to prevent reentry during tree manipulation */
 
 nomask void _F_set_current(object state);
