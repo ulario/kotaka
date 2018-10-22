@@ -24,6 +24,7 @@
 #include <status.h>
 
 inherit SECOND_AUTO;
+inherit "~/lib/string/align";
 
 #define K (1 << 10)
 #define M (1 << 20)
@@ -38,32 +39,67 @@ static void check()
 {
 	float smem_size;
 	float smem_used;
-	float smem_free;
-
 	float dmem_size;
 	float dmem_used;
-	float dmem_free;
-
-	float mem_size;
-	float mem_used;
-	float mem_free;
+	int swap;
+	int full;
 
 	call_out("check", 1);
 
-	smem_used = (float)status(ST_SMEMUSED);
 	smem_size = (float)status(ST_SMEMSIZE);
-	smem_free = smem_size - smem_used;
-
-	dmem_used = (float)status(ST_DMEMUSED);
+	smem_used = (float)status(ST_SMEMUSED);
 	dmem_size = (float)status(ST_DMEMSIZE);
-	dmem_free = dmem_size - dmem_used;
+	dmem_used = (float)status(ST_DMEMUSED);
 
-	mem_used = smem_used + dmem_size;
-	mem_size = smem_size + dmem_size;
-	mem_free = smem_free + dmem_free;
+	if (smem_size + dmem_size > (float)G) {
+		swap = 1;
+		full = 1;
+	} else if ((smem_size + dmem_used) / (smem_size + dmem_size) < 0.75) {
+		swap = 1;
+	}
 
-	if (dmem_free > (float)M * 128.0 && mem_free / mem_size > 0.25) {
-		LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
+	if (swap) {
+		int len;
+		int sz;
+
+		string ss, su;
+		string ds, du;
+
+		ss = "" + floor(smem_size / (float)M);
+		su = "" + floor(smem_used / (float)M);
+		ds = "" + floor(dmem_size / (float)M);
+		du = "" + floor(dmem_used / (float)M);
+
+		len = strlen(ds);
+
+		sz = strlen(du);
+
+		if (sz > len) {
+			len = sz;
+		}
+
+		sz = strlen(ss);
+
+		if (sz > len) {
+			len = sz;
+		}
+
+		sz = strlen(su);
+
+		if (sz > len) {
+			len = sz;
+		}
+
+		if (full) {
+			LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
+		} else {
+			LOGD->post_message("system", LOG_NOTICE, "Memory full, swapping out");
+		}
+
+		LOGD->post_message("system", LOG_NOTICE, "Static memory allocated:  " + ralign(ss, len) + " MiB");
+		LOGD->post_message("system", LOG_NOTICE, "Static memory used:       " + ralign(su, len) + " MiB");
+		LOGD->post_message("system", LOG_NOTICE, "Dynamic memory allocated: " + ralign(ds, len) + " MiB");
+		LOGD->post_message("system", LOG_NOTICE, "Dynamic memory used:      " + ralign(du, len) + " MiB");
 		swapout();
 	}
 }
