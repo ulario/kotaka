@@ -56,13 +56,22 @@ int receive_message(string str)
 
 static void trickle()
 {
-	::receive_message(lines[0]);
+	string line;
 
+	if (!lines || !sizeof(lines)) {
+		return;
+	}
+
+	line = lines[0];
 	lines = lines[1 ..];
 
 	if (sizeof(lines)) {
 		call_out("trickle", 0);
 	} else {
 		lines = nil;
+	}
+
+	catch {
+		::receive_message(line);
 	}
 }
