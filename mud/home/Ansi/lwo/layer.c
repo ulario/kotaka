@@ -27,6 +27,15 @@ string *mask;
 int pos_x, pos_y;
 int size_x, size_y;
 
+static void create(int clone)
+{
+	if (!chars) {
+		chars = ({ });
+		colors = ({ });
+		mask = ({ });
+	}
+}
+
 void set_position(int x, int y)
 {
 	ACCESS_CHECK(ANSI());
@@ -42,24 +51,73 @@ int *query_position()
 	return ({ pos_x, pos_y });
 }
 
-void set_size(int dx, int dy)
+private void change_length(int h, int o, int n)
+{
+	int i;
+	int ob, nb;
+
+	ob = (o + 7) >> 3;
+	nb = (n + 7) >> 3;
+
+	if (n > o) {
+		/* lengthen */
+		for (i = 0; i < h; i++) {
+			chars[i] += STRINGD->chars('?', n - o);
+			colors[i] += STRINGD->chars(0x87, n - o);
+			mask[i] += STRINGD->nulls(nb - ob);
+			/* new bits are supposed to be null anyway */
+		}
+	} else {
+		/* shorten */
+		for (i = 0; i < h; i++) {
+			chars[i] = chars[i][0 .. n - 1];
+			colors[i] = colors[i][0 .. n - 1];
+			mask[i] = mask[i][0 .. nb - 1];
+		}
+
+		if (n & 7 != 0) {
+			for (i = 0; i < h; i++) {
+				mask[i][nb - 1] &= 255 >> (8 - (n & 7));
+			}
+		}
+	}
+}
+
+void set_size(int x, int y)
 {
 	int i;
 
 	ACCESS_CHECK(ANSI());
 
-	size_x = dx;
-	size_y = dy;
-
-	chars = allocate(size_y);
-	colors = allocate(size_y);
-	mask = allocate(size_y);
-
-	for (i = 0; i < size_y; i++) {
-		chars[i] = STRINGD->spaces(size_x);
-		colors[i] = STRINGD->chars(0x87, size_x);
-		mask[i] = STRINGD->nulls((size_x + 7) >> 3);
+	if (!chars) {
+		chars = ({ });
+		colors = ({ });
+		mask = ({ });
 	}
+
+	if (y > size_y) {
+		change_length(size_y, size_x, x);
+
+		chars += allocate(y - size_y);
+		colors += allocate(y - size_y);
+		mask += allocate(y - size_y);
+
+		for (i = size_y; i < y; i++) {
+			chars[i] = STRINGD->spaces(x);
+			colors[i] = STRINGD->chars(0x87, x);
+			mask[i] = STRINGD->nulls((x + 7) >> 3);
+		}
+	} else if (y < size_y) {
+		chars = chars[0 .. y - 1];
+		colors = colors[0 .. y - 1];
+		mask = mask[0 .. y - 1];
+		change_length(y, size_x, x);
+	} else {
+		change_length(y, size_x, x);
+	}
+
+	size_x = x;
+	size_y = y;
 }
 
 int *query_size()
