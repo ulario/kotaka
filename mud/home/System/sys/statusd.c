@@ -30,47 +30,29 @@ inherit user LIB_USER;
 inherit SECOND_AUTO;
 
 string message;
-mixed *last;
-float delay;
-
-private void remove_call_outs()
-{
-	int sz;
-	mixed **callouts;
-
-	callouts = status(this_object(), O_CALLOUTS);
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
-	}
-}
+mapping connections; /* ([ connection : ({ interval, handle }) ]) */
 
 static void create()
 {
 	message = "";
+	connections = ([ ]);
 
 	wiz::create(0);
 	userd::create();
 	user::create();
 
-	call_out("configure", 0);
+	load_object(SYSTEM_USERD);
+
+	SYSTEM_USERD->set_telnet_manager(0, this_object());
 }
 
 void upgrade()
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	message = "";
-	last = nil;
-	delay = 1.0;
-
-	remove_call_outs();
-
-	call_out("report", 0);
-}
-
-static void configure()
-{
-	SYSTEM_USERD->set_telnet_manager(0, this_object());
+	if (!connections) {
+		connections = ([ ]);
+	}
 }
 
 static mixed message(string msg)
@@ -95,7 +77,7 @@ private int is_trusted(object conn)
 	}
 }
 
-private void print_report()
+private string print_report()
 {
 	int status;
 	string *lines;
@@ -115,31 +97,34 @@ private void print_report()
 	message += "\nTick usage:\n";
 	cmd_rsrc(nil, nil, "tick usage");
 
+	message += "\nCallouts:\n";
+	cmd_rsrc(nil, nil, "callouts");
+
 	message += "\nCallout usage:\n";
 	cmd_rsrc(nil, nil, "callout usage");
 
-	if (last) {
-		mixed *now;
-		float time;
+	return message;
+}
 
-		now = millitime();
+static void report(object conn)
+{
+	string message;
+	string *lines;
+	int sz, i;
 
-		time = (float)now[0] + now[1];
-		time -= (float)last[0] + last[1];
-
-		message += "Delay since last report: " + time + "\n";
-
-		if (time == 0.0) {
-			message += "(zero delay)\n";
-		} else {
-			message += "Reciprocal of delay since last report: " + (1.0 / time) + "\n";
-		}
+	if (!conn) {
+		return;
 	}
 
-	last = millitime();
+	if (!connections[conn]) {
+		return;
+	}
+
+	connections[conn][1] = 0;
+
+	message = print_report();
 
 	lines = explode(message, "\n");
-	sz = sizeof(lines);
 
 	conn->message("\033[1;1H");
 
@@ -148,21 +133,17 @@ private void print_report()
 	}
 
 	conn->message("\033[J");
+
+	/* don't start a callout, wait for message_done */
 }
 
-static void report()
+static void clear(object conn)
 {
-	if (!query_conn()) {
+	if (!conn) {
 		return;
 	}
 
-	print_report();
-	call_out("report", delay);
-}
-
-static void clear()
-{
-	query_conn()->message("\033[1;1H\033[2J");
+	conn->message("\033[1;1H\033[2J");
 }
 
 /* userd hooks */
@@ -200,25 +181,28 @@ object select(string input)
 
 int login(string str)
 {
-	float delay;
+	float interval;
+	int handle;
 	object conn;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	if (str) {
+		LOGD->post_message("system", LOG_WARNING, "StatusD login line not nil");
+
 		return MODE_DISCONNECT;
 	}
 
-	disconnect();
-	connection(conn = previous_object());
+	conn = previous_object();
 
 	if (is_trusted(conn)) {
-		delay = 0.05;
+		interval = 0.05;
 	} else {
-		delay = 1.0;
+		interval = 1.0;
 	}
 
-	call_out("report", delay);
+	handle = call_out("report", interval, conn);
+	connections[conn] = ({ interval, handle });
 
 	conn->message("\033[1;1H\033[2J");
 
@@ -227,7 +211,16 @@ int login(string str)
 
 void logout(int quit)
 {
-	remove_call_outs();
+	int interval, handle;
+	object conn;
+
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	conn = previous_object();
+
+	({ interval, handle }) = connections[conn];
+
+	remove_call_out(handle);
 }
 
 int receive_message(string str)
@@ -238,18 +231,18 @@ int receive_message(string str)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	if (!str) {
+		LOGD->post_message("system", LOG_WARNING, "Spurious receive_message, terminating connection");
+
 		return MODE_DISCONNECT;
 	}
 
 	conn = previous_object();
-	ASSERT(conn <- LIB_CONN);
-
 	params = explode(str, " ") - ({ "" });
 
 	if (sizeof(params)) {
 		switch(params[0]) {
 		case "clear":
-			call_out("clear", 0);
+			conn->message("\033c");
 			break;
 
 		case "quit":
@@ -259,34 +252,64 @@ int receive_message(string str)
 		case "interval":
 			if (sizeof(params) < 2) {
 				conn->message("Usage: interval <interval>\n");
-				call_out("clear", 5.0);
+				call_out("clear", 5.0, conn);
 				break;
 			} else {
 				float interval;
+				int handle;
 
 				sscanf(params[1], "%f", interval);
 
 				if (interval < 1.0 && !is_trusted(conn)) {
 					conn->message("Intervals less than 1 second\nare only allowed for local connections.\n");
-					call_out("clear", 5.0);
+					call_out("clear", 5.0, conn);
 					break;
 				}
 
-				delay = interval;
+				handle = connections[conn][1];
 
-				remove_call_outs();
-				call_out("report", delay);
+				if (handle) {
+					remove_call_out(handle);
+				}
+
+				handle = call_out("report", interval, conn);
+				connections[conn] = ({ interval, handle });
 			}
 			break;
 
 		default:
 			conn->message("Commands: clear, interval, quit\n");
-			call_out("clear", 5.0);
+			call_out("clear", 5.0, conn);
 			break;
 		}
 	} else {
-		call_out("clear", 0);
+		call_out("clear", 0, conn);
 	}
+
+	return MODE_NOCHANGE;
+}
+
+int message_done()
+{
+	object conn;
+	float interval;
+	int handle;
+
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	conn = previous_object();
+
+	if (!connections[conn]) {
+		LOGD->post_message("system", LOG_WARNING, "Spurious message_done, terminating connection");
+
+		return MODE_DISCONNECT;
+	}
+
+	({ interval, handle }) = connections[conn];
+
+	handle = call_out("report", interval, conn);
+
+	connections[conn][1] = handle;
 
 	return MODE_NOCHANGE;
 }
