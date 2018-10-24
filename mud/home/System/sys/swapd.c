@@ -35,6 +35,22 @@ static void create()
 	call_out("check", 1);
 }
 
+void upgrade()
+{
+	mixed **callouts;
+	int sz;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
+
+	call_out("check", 0);
+}
+
 static void check()
 {
 	float smem_size;
@@ -109,7 +125,7 @@ static void check()
 
 		swapout();
 
-		call_out("check", 60);
+		call_out("check", 30);
 	} else {
 		call_out("check", 1);
 	}
