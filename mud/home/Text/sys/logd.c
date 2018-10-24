@@ -45,6 +45,8 @@ void upgrade()
 	for (sz = sizeof(callouts); --sz >= 0; ) {
 		remove_call_out(callouts[sz][CO_HANDLE]);
 	}
+
+	call_out("flush", 0);
 }
 
 void post_message(string file, string msg)
