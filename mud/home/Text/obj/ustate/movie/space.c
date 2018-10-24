@@ -27,14 +27,12 @@ int nparticles;
 float **particles;
 float speed;
 
-float pi;
 int sortflag;
 
 static void create(int clone)
 {
 	::create();
 
-	pi = atan(1.0) * 4.0;
 	sortflag = 1;
 }
 
