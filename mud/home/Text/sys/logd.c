@@ -21,6 +21,7 @@
 #include <kotaka/paths/utility.h>
 #include <status.h>
 #include <kotaka/privilege.h>
+#include <kotaka/log.h>
 
 inherit "~System/lib/struct/list";
 
