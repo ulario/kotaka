@@ -94,15 +94,6 @@ private string print_report()
 	message += "\nResources:\n";
 	cmd_rsrc(nil, nil, nil);
 
-	message += "\nTick usage:\n";
-	cmd_rsrc(nil, nil, "tick usage");
-
-	message += "\nCallouts:\n";
-	cmd_rsrc(nil, nil, "callouts");
-
-	message += "\nCallout usage:\n";
-	cmd_rsrc(nil, nil, "callout usage");
-
 	return message;
 }
 
