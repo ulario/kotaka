@@ -57,6 +57,7 @@ int receive_message(string str)
 static void trickle()
 {
 	string line;
+	object this_user;
 
 	if (!lines || !sizeof(lines)) {
 		return;
@@ -71,7 +72,21 @@ static void trickle()
 		lines = nil;
 	}
 
+	this_user = SYSTEM_USERD->query_this_user();
+
 	catch {
+		object user;
+
+		user = this_object();
+
+		while (user && user <- LIB_CONN) {
+			user = user->query_user();
+		}
+
+		SYSTEM_USERD->set_this_user(user);
+
 		::receive_message(line);
 	}
+
+	SYSTEM_USERD->set_this_user(this_user());
 }
