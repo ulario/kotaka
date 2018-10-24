@@ -271,3 +271,13 @@ static void terminate_account_state()
 		pop_state();
 	}
 }
+
+int forbid_log_inbound()
+{
+	return 0;
+}
+
+int forbid_log_outbound()
+{
+	return 0;
+}

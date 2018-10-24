@@ -219,3 +219,8 @@ static void check_screen()
 	screen_width = 40;
 	screen_height = 10;
 }
+
+int forbid_log_outbound()
+{
+	return 1;
+}

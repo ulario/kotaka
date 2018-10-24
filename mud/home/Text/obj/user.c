@@ -52,14 +52,21 @@ void send_out(string msg)
 
 	ASSERT(msg);
 
-	user = whoami();
 	::send_out(msg);
 
 	if (!sscanf(msg, "%*s\n")) {
 		msg += "\n";
 	}
 
-	log_message_out(user, msg);
+	user = whoami();
+
+	if (!user) {
+		user = "(anonymous)";
+	}
+
+	if (!query_top_state()->forbid_log_outbound()) {
+		log_message_out(user, msg);
+	}
 }
 
 void dispatch_wiztool(string line)
@@ -193,7 +200,7 @@ private void do_banner()
 
 	ASSERT(ansi);
 
-	send_out(ansi);
+	::message(ansi);
 }
 
 private void do_login()
@@ -224,7 +231,9 @@ private int do_receive(string msg)
 		logmsg += "\n";
 	}
 
-	log_message_in(user, logmsg);
+	if (!query_top_state()->forbid_log_inbound()) {
+		log_message_in(user, logmsg);
+	}
 
 	ret = ::receive_message(msg);
 

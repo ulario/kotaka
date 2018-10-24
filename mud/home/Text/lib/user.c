@@ -605,3 +605,8 @@ void quit()
 {
 	disconnect();
 }
+
+static object query_top_state()
+{
+	return root->query_top();
+}
