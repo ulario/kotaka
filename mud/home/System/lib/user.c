@@ -35,15 +35,3 @@ static void set_mode(int new_mode)
 		query_conn()->set_mode(new_mode);
 	}
 }
-
-static void redirect(object user, string str)
-{
-	SYSTEM_USERD->intercept_redirect(user, str);
-}
-
-void system_redirect(object user, string str)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	::redirect(user, str);
-}

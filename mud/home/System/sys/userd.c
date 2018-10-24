@@ -371,36 +371,15 @@ int query_timeout(object LIB_CONN connection)
 
 object select(string str)
 {
-	object manager;
-	object conn;
-	object user;
-	object intercept;
-
-	int has_rlimits;
+	object manager, user, conn;
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
 	conn = previous_object(1);
-	user = conn;
-
-	while (conn && conn <- LIB_USER) {
-		if (conn <- "~/obj/filter/rlimits") {
-			has_rlimits = 1;
-		}
-
-		conn = conn->query_conn();
-	}
-
-	if (intercept = TLSD->query_tls_value("System", "select-intercept")) {
-		TLSD->set_tls_value("System", "select-intercept", nil);
-
-		return intercept;
-	}
 
 	manager = query_manager(conn);
 
 	if (!manager) {
-		TLSD->set_tls_value("System", "select-intercept", nil);
 		TLSD->set_tls_value("System", "userd-error", "No connection manager");
 
 		return this_object();
@@ -412,12 +391,6 @@ object select(string str)
 		TLSD->set_tls_value("System", "userd-error", "Connection manager returned nil");
 
 		return this_object();
-	}
-
-	if (!has_rlimits) {
-		TLSD->set_tls_value("System", "select-intercept", user);
-
-		return clone_object("~/obj/filter/rlimits", user->query_owner());
 	}
 
 	return user;
@@ -450,44 +423,6 @@ int login(string str)
 	handle_message(previous_object(), str);
 
 	return MODE_DISCONNECT;
-}
-
-/* interception */
-void intercept_redirect(object user, string str)
-{
-	object start;
-	object conn;
-
-	int has_rlimits;
-
-	ACCESS_CHECK(SYSTEM());
-
-	conn = previous_object();
-	start = conn;
-
-	while (conn && conn <- LIB_USER) {
-		if (conn <- "~/obj/filter/rlimits") {
-			has_rlimits = 1;
-		}
-
-		conn = conn->query_conn();
-	}
-
-	if (!has_rlimits) {
-		object filter;
-
-		filter = clone_object("~/obj/filter/rlimits", user->query_owner());
-
-		TLSD->set_tls_value("System", "select-intercept", user);
-
-		start->system_redirect(filter, str);
-
-		TLSD->set_tls_value("System", "select-intercept", nil);
-
-		return;
-	}
-
-	start->system_redirect(user, str);
 }
 
 void check_sitebans()
