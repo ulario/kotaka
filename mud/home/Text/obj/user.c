@@ -200,7 +200,7 @@ private void do_banner()
 
 	ASSERT(ansi);
 
-	::message(ansi);
+	::send_out(ansi);
 }
 
 private void do_login()
