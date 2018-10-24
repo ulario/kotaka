@@ -19,6 +19,7 @@
  */
 #include <kotaka/privilege.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/log.h>
 #include <kotaka/paths/bigstruct.h>
 #include <status.h>
 
