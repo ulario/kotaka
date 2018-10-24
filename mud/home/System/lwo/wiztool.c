@@ -36,7 +36,12 @@ static void create(int clone)
 {
     if (clone) {
 	::create(200);
+
 	user = this_user();
+
+	if (!user) {
+	    user = SYSTEM_USERD->query_this_user();
+	}
     }
 }
 
