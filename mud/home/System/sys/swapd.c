@@ -41,10 +41,11 @@ static void check()
 	float smem_used;
 	float dmem_size;
 	float dmem_used;
+
 	int swap;
 	int full;
-
-	call_out("check", 1);
+	int frag;
+	int slack;
 
 	smem_size = (float)status(ST_SMEMSIZE);
 	smem_used = (float)status(ST_SMEMUSED);
@@ -52,13 +53,18 @@ static void check()
 	dmem_used = (float)status(ST_DMEMUSED);
 
 	if (smem_size + dmem_size > (float)G) {
-		swap = 1;
 		full = 1;
-	} else if ((smem_size + dmem_used) / (smem_size + dmem_size) < 0.75) {
-		swap = 1;
 	}
 
-	if (swap) {
+	if ((smem_size + dmem_used) / (smem_size + dmem_size) < 0.75) {
+		frag = 1;
+	}
+
+	if (dmem_size - dmem_used > (float)M * 64.0) {
+		slack = 1;
+	}
+
+	if (full || (frag && slack)) {
 		int len;
 		int sz;
 
@@ -91,15 +97,20 @@ static void check()
 		}
 
 		if (full) {
-			LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
-		} else {
 			LOGD->post_message("system", LOG_NOTICE, "Memory full, swapping out");
+		} else {
+			LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
 		}
 
 		LOGD->post_message("system", LOG_NOTICE, "Static memory allocated:  " + ralign(ss, len) + " MiB");
 		LOGD->post_message("system", LOG_NOTICE, "Static memory used:       " + ralign(su, len) + " MiB");
 		LOGD->post_message("system", LOG_NOTICE, "Dynamic memory allocated: " + ralign(ds, len) + " MiB");
 		LOGD->post_message("system", LOG_NOTICE, "Dynamic memory used:      " + ralign(du, len) + " MiB");
+
 		swapout();
+
+		call_out("check", 60);
+	} else {
+		call_out("check", 1);
 	}
 }
