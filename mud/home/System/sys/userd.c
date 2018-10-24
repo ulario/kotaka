@@ -381,6 +381,7 @@ object select(string str)
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
 	conn = previous_object(1);
+	user = conn;
 
 	while (conn && conn <- LIB_USER) {
 		if (conn <- "~/obj/filter/rlimits") {
@@ -388,6 +389,12 @@ object select(string str)
 		}
 
 		conn = conn->query_conn();
+	}
+
+	if (intercept = TLSD->query_tls_value("System", "select-intercept")) {
+		TLSD->set_tls_value("System", "select-intercept", nil);
+
+		return intercept;
 	}
 
 	manager = query_manager(conn);
@@ -399,12 +406,6 @@ object select(string str)
 		return this_object();
 	}
 
-	if (intercept = TLSD->query_tls_value("System", "select-intercept")) {
-		TLSD->set_tls_value("System", "select-intercept", nil);
-
-		return intercept;
-	}
-
 	user = manager->select(str);
 
 	if (!user) {
@@ -413,13 +414,13 @@ object select(string str)
 		return this_object();
 	}
 
-	if (has_rlimits) {
-		return user;
-	} else {
+	if (!has_rlimits) {
 		TLSD->set_tls_value("System", "select-intercept", user);
 
 		return clone_object("~/obj/filter/rlimits", user->query_owner());
 	}
+
+	return user;
 }
 
 /* connection hooks */
@@ -456,6 +457,7 @@ void intercept_redirect(object user, string str)
 {
 	object start;
 	object conn;
+
 	int has_rlimits;
 
 	ACCESS_CHECK(SYSTEM());
