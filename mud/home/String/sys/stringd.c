@@ -23,6 +23,7 @@
 #include <type.h>
 
 inherit "~System/lib/string/escape";
+inherit "~System/lib/string/sprint";
 inherit "/lib/string/char";
 inherit "/lib/string/bitops";
 inherit "/lib/string/trim";
@@ -213,36 +214,10 @@ string mixed_sprint(mixed data, varargs mapping seen)
 
 	switch (typeof(data)) {
 	case T_NIL:
-		return "nil";
-
 	case T_STRING:
-		return "\"" + quote_escape(data) + "\"";
-
 	case T_INT:
-		return (string)data;
-
 	case T_FLOAT:
-		/* decimal point is required */
-		{
-			string mantissa;
-			string exponent;
-			string str;
-
-			str = (string)data;
-
-			if (!sscanf(str, "%se%s", mantissa, exponent)) {
-				mantissa = str;
-				exponent = "";
-			} else {
-				exponent = "e" + exponent;
-			}
-
-			if (!sscanf(mantissa, "%*s.")) {
-				mantissa += ".0";
-			}
-
-			return mantissa + exponent;
-		}
+		return simple_sprint(data, seen);
 
 	case T_ARRAY:
 		if (seen[data] != nil) {
