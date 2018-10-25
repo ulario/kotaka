@@ -17,10 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/privilege.h>
 #include <status.h>
+#include <type.h>
 #include <kernel/rsrc.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 
 private int enough_free_callouts()
 {
@@ -61,6 +62,13 @@ static int find_call_out(string func)
 	return 0;
 }
 
+static void _F_sys_callout(string func, mixed *args)
+{
+	call_other(this_object(), func, args...);
+
+	INITD->end_task();
+}
+
 atomic static int call_out(string func, mixed delay, mixed args...)
 {
 	int handle;
@@ -78,7 +86,7 @@ atomic static int call_out(string func, mixed delay, mixed args...)
 		error("Too many callouts");
 	}
 
-	handle = ::call_out(func, delay, args...);
+	handle = ::call_out("_F_sys_callout", delay, func, args);
 
 	owner = query_owner();
 
@@ -98,4 +106,58 @@ atomic static int call_out(string func, mixed delay, mixed args...)
 	}
 
 	return handle;
+}
+
+private mixed **convert_callouts(mixed **callouts)
+{
+	int sz;
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		mixed *callout;
+
+		callout = callouts[sz];
+
+		if (callout[CO_FUNCTION] == "_F_sys_callout") {
+			callouts[sz] = ({ callout[CO_HANDLE], callout[CO_FIRSTXARG], callout[CO_DELAY] }) + callout[CO_FIRSTXARG + 1];
+		}
+	}
+
+	return callouts;
+}
+
+static mixed status(varargs mixed obj, mixed index)
+{
+	mixed status;
+
+	switch(typeof(obj)) {
+	case T_NIL:
+		return ::status();
+
+	case T_INT:
+		return ::status(obj);
+
+	case T_STRING:
+	case T_OBJECT:
+		switch(typeof(index)) {
+		case T_NIL:
+			status = ::status(obj);
+			if (status) {
+				status[O_CALLOUTS] = convert_callouts(status[O_CALLOUTS]);
+			}
+			return status;
+
+		case T_INT:
+			status = ::status(obj, index);
+			if (index == O_CALLOUTS) {
+				status = convert_callouts(status);
+			}
+			return status;
+
+		default:
+			error("Bad argument 2");
+		}
+
+	default:
+		error("Bad argument 1");
+	}
 }
