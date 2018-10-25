@@ -62,37 +62,31 @@ void post_message(string file, string msg)
 
 static void flush()
 {
-	string file;
-	string msg;
-	mixed *info;
-
-	if (list_empty(buf)) {
-		return;
-	}
-
-	({ file, msg }) = list_front(buf);
-	list_pop_front(buf);
-
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
 
-	if (info = SECRETD->file_info(file)) {
-		/* ({ file size, file modification time, object }) */
-		int size;
-		int time;
-		mixed obj;
+	while (!list_empty(buf)) {
+		string file;
+		string msg;
+		mixed *info;
 
-		({ size, time, obj }) = info;
+		({ file, msg }) = list_front(buf);
+		list_pop_front(buf);
 
-		if (size + strlen(msg) > (32 << 20)) {
-			SECRETD->remove_file(file + ".old");
-			SECRETD->rename_file(file, file + ".old");
+		if (info = SECRETD->file_info(file)) {
+			/* ({ file size, file modification time, object }) */
+			int size;
+			int time;
+			mixed obj;
+
+			({ size, time, obj }) = info;
+
+			if (size + strlen(msg) > (32 << 20)) {
+				SECRETD->remove_file(file + ".old");
+				SECRETD->rename_file(file, file + ".old");
+			}
 		}
-	}
 
-	SECRETD->write_file(file, msg);
-
-	if (!list_empty(buf)) {
-		call_out("flush", 0);
+		SECRETD->write_file(file, msg);
 	}
 }
