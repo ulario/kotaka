@@ -65,6 +65,8 @@ static void create()
 	reblocked = ([ ]);
 
 	load_object(TLSD);
+
+	enable();
 }
 
 void enable()
