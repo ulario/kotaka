@@ -18,16 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/user.h>
-#include <kotaka/log.h>
+#include <kotaka/assert.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
-#include <kotaka/assert.h>
 #include <status.h>
 
-#define SITEBAN_DELAY  0.1 /* linger time for dumping a sitebanned connection */
-#define OVERLOAD_DELAY 0.1 /* linger time for dumping an overloaded connection */
-#define BLOCK_DELAY    0.1 /* linger time for dumping a blocked connection */
+#define SITEBAN_DELAY  0.5 /* linger time for dumping a sitebanned connection */
+#define OVERLOAD_DELAY 0.5 /* linger time for dumping an overloaded connection */
+#define BLOCK_DELAY    0.5 /* linger time for dumping a blocked connection */
 
 inherit SECOND_AUTO;
 inherit LIB_USERD;
