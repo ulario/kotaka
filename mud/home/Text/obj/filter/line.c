@@ -86,6 +86,10 @@ static void trickle()
 		SYSTEM_USERD->set_this_user(user);
 
 		::receive_message(line);
+
+		if (!this_object()) {
+			return;
+		}
 	}
 
 	SYSTEM_USERD->set_this_user(this_user());
