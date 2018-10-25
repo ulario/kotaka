@@ -160,6 +160,11 @@ atomic void compiling(string path)
 
 	includes = ({ "/include/std.h" });
 
+	if (sscanf(path, USR_DIR + "/%*s/_code")) {
+		/* klib wiztool "code" command, ignore */
+		return;
+	}
+
 	if (!find_object(PROGRAMD)) {
 		switch(DRIVER->creator(path)) {
 		case "System":
