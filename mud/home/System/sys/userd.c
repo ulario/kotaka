@@ -43,10 +43,8 @@ object *connections;
 mapping telnet_managers;	/* managers assigned to logical telnet ports */
 mapping binary_managers;	/* managers assigned to logical binary ports */
 
-int binary_port_count;	/* number of ports currently registered */
-int telnet_port_count;	/* number of ports currently registered */
-int blocked;		/* connection blocking is active */
-mapping reblocked;	/* objects that were already manually blocked */
+int blocked;			/* connection blocking is active */
+mapping reblocked;		/* objects that were already manually blocked */
 
 /***************/
 /* Definitions */
@@ -54,7 +52,7 @@ mapping reblocked;	/* objects that were already manually blocked */
 
 /* internal */
 
-private void register_with_klib_userd();
+void enable();
 
 static void create()
 {
@@ -67,50 +65,36 @@ static void create()
 	reblocked = ([ ]);
 
 	load_object(TLSD);
-
-	register_with_klib_userd();
 }
 
-private void register_with_klib_userd()
+void enable()
 {
-	mixed *status;
-	int index;
+	int sz;
 	object this;
+
+	ACCESS_CHECK(SYSTEM());
+
 	this = this_object();
 
-	status = status();
-
-	telnet_port_count = sizeof(status(ST_TELNETPORTS));
-	binary_port_count = sizeof(status(ST_BINARYPORTS));
-
-	USERD->set_telnet_manager(0, this);
-
-	for (index = 1; index < telnet_port_count; index++) {
-		USERD->set_telnet_manager(index, this);
+	for (sz = sizeof(status(ST_TELNETPORTS)); --sz >= 0; ) {
+		USERD->set_telnet_manager(sz, this);
 	}
 
-	for (index = 1; index < binary_port_count; index++) {
-		USERD->set_binary_manager(index, this);
+	for (sz = sizeof(status(ST_BINARYPORTS)); --sz >= 1; ) {
+		USERD->set_binary_manager(sz, this);
 	}
 }
 
-private void unregister_with_klib_userd()
+void disable()
 {
-	mixed *status;
-	int index;
+	int sz;
 
-	status = status();
+	ACCESS_CHECK(SYSTEM());
 
-	for (index = 0; index < telnet_port_count; index++) {
-		USERD->set_telnet_manager(index, nil);
+	for (sz = status(ST_ARRAYSIZE); --sz >= 0; ) {
+		USERD->set_telnet_manager(sz, nil);
+		USERD->set_binary_manager(sz, nil);
 	}
-
-	for (index = 0; index < binary_port_count; index++) {
-		USERD->set_binary_manager(index, nil);
-	}
-
-	telnet_port_count = 0;
-	binary_port_count = 0;
 }
 
 static void timeout(object conn)
@@ -255,16 +239,16 @@ void reboot()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	unregister_with_klib_userd();
-	register_with_klib_userd();
+	disable();
+	enable();
 }
 
 void hotboot()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	unregister_with_klib_userd();
-	register_with_klib_userd();
+	disable();
+	enable();
 }
 
 /* userd hooks */
