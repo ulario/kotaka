@@ -371,29 +371,112 @@ int query_timeout(object LIB_CONN connection)
 
 object select(string str)
 {
-	object manager, user, conn;
+	object manager, user, conn, root;
 
-	ACCESS_CHECK(SYSTEM() || KERNEL());
+	object intercept;
+
+	int has_rlimits;
+	int has_task;
+
+	object target;
+
+	/* input was received before the connection was assigned to a user object */
+
+	ACCESS_CHECK(KERNEL());
 
 	conn = previous_object(1);
 
-	manager = query_manager(conn);
+	while (conn <- LIB_USER) {
+		if (conn <- "~/obj/filter/rlimits") {
+			has_rlimits = 1;
+		}
 
-	if (!manager) {
-		TLSD->set_tls_value("System", "userd-error", "No connection manager");
+		if (conn <- "~/obj/filter/task") {
+			has_task = 1;
+		}
 
-		return this_object();
+		conn = conn->query_conn();
 	}
 
-	user = manager->select(str);
+	intercept = TLSD->query_tls_value("System", "select-intercept");
 
-	if (!user) {
-		TLSD->set_tls_value("System", "userd-error", "Connection manager returned nil");
+	if (intercept) {
+		if (!has_task) {
+			return clone_object("~/obj/filter/task");
+		}
 
-		return this_object();
+		if (!has_rlimits) {
+			return clone_object("~/obj/filter/rlimits");
+		}
+
+		TLSD->set_tls_value("System", "select-intercept", nil);
+
+		return intercept;
+	} else {
+		root = conn;
+
+		manager = query_manager(root);
+
+		if (!manager) {
+			TLSD->set_tls_value("System", "userd-error", "No connection manager");
+
+			return this_object();
+		}
+
+		user = manager->select(str);
+
+		if (!user) {
+			TLSD->set_tls_value("System", "userd-error", "Connection manager returned nil");
+
+			return this_object();
+		}
+
+		if (!has_rlimits || !has_task) {
+			TLSD->set_tls_value("System", "select-intercept", user);
+
+			return clone_object("~/obj/filter/task");
+		}
+
+		return user;
+	}
+}
+
+void intercept_redirect(object new_user, string str)
+{
+	int has_task;
+	int has_rlimits;
+
+	object conn;
+	object user;
+
+	ACCESS_CHECK(SYSTEM());
+
+	conn = previous_object();
+	user = conn;
+
+	while (conn <- LIB_USER) {
+		if (conn <- "~/obj/filter/rlimits") {
+			has_rlimits = 1;
+		}
+
+		if (conn <- "~/obj/filter/task") {
+			has_task = 1;
+		}
+
+		conn = conn->query_conn();
 	}
 
-	return user;
+	if (!has_task) {
+		TLSD->set_tls_value("System", "select-intercept", new_user);
+
+		new_user = clone_object("~/obj/filter/task");
+	} else if (!has_rlimits) {
+		TLSD->set_tls_value("System", "select-intercept", new_user);
+
+		new_user = clone_object("~/obj/filter/rlimits");
+	}
+
+	user->_F_sys_redirect(new_user, str);
 }
 
 /* connection hooks */
