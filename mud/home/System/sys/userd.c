@@ -387,11 +387,11 @@ object select(string str)
 
 	if (intercept) {
 		if (!has_task) {
-			return clone_object("~/obj/filter/task");
+			return clone_object("~/obj/filter/task", intercept->query_owner());
 		}
 
 		if (!has_rlimits) {
-			return clone_object("~/obj/filter/rlimits");
+			return clone_object("~/obj/filter/rlimits", intercept->query_owner());
 		}
 
 		TLSD->set_tls_value("System", "select-intercept", nil);
@@ -419,7 +419,7 @@ object select(string str)
 		if (!has_rlimits || !has_task) {
 			TLSD->set_tls_value("System", "select-intercept", user);
 
-			return clone_object("~/obj/filter/task");
+			return clone_object("~/obj/filter/task", user->query_owner());
 		}
 
 		return user;
@@ -454,11 +454,11 @@ void intercept_redirect(object new_user, string str)
 	if (!has_task) {
 		TLSD->set_tls_value("System", "select-intercept", new_user);
 
-		new_user = clone_object("~/obj/filter/task");
+		new_user = clone_object("~/obj/filter/task", user->query_owner());
 	} else if (!has_rlimits) {
 		TLSD->set_tls_value("System", "select-intercept", new_user);
 
-		new_user = clone_object("~/obj/filter/rlimits");
+		new_user = clone_object("~/obj/filter/rlimits", user->query_owner());
 	}
 
 	user->_F_sys_redirect(new_user, str);
