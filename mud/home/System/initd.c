@@ -494,3 +494,7 @@ string query_patcher(string program)
 		return "system_patcher";
 	}
 }
+
+void end_task()
+{
+}
