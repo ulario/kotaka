@@ -232,20 +232,12 @@ void flush()
 
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
 
-	if (!buffers) {
-		return;
-	}
+	while (buffers) {
+		files = map_indices(buffers);
 
-	files = map_indices(buffers);
+		sz = sizeof(files);
 
-	sz = sizeof(files);
-
-	write_node(files[random(sz)]);
-
-	if (buffers && map_sizeof(buffers)) {
-		call_out("flush", 0);
-	} else {
-		buffers = nil;
+		write_node(files[random(sz)]);
 	}
 }
 
