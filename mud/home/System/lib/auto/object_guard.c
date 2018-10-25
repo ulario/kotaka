@@ -44,41 +44,41 @@ private int enough_free_objects(int clone)
 	return free >= quota;
 }
 
-static object compile_object(mixed args ...)
+static object compile_object(string path, string source...)
 {
 	object obj;
 
-	obj = find_object(args[0]);
+	obj = find_object(path);
 
 	if (!SYSTEM() &&
-		DRIVER->creator(args[0]) != "System" &&
+		DRIVER->creator(path) != "System" &&
 		!obj && !enough_free_objects(0)) {
 		error("Too many objects");
 	}
 
-	return ::compile_object(args ...);
+	return ::compile_object(path, source...);
 }
 
-static object load_object(mixed args ...)
+static object load_object(string path)
 {
 	object obj;
 
-	obj = find_object(args[0]);
+	obj = find_object(path);
 
 	if (obj) {
 		return obj;
 	}
 
 	if (!SYSTEM() &&
-		DRIVER->creator(args[0]) != "System" &&
+		DRIVER->creator(path) != "System" &&
 		!obj && !enough_free_objects(0)) {
 		error("Too many objects");
 	}
 
-	return ::compile_object(args ...);
+	return ::compile_object(path);
 }
 
-static object clone_object(mixed args ...)
+static object clone_object(string path, varargs string uid)
 {
 	if (!SYSTEM() &&
 		query_owner() != "System" &&
@@ -86,5 +86,5 @@ static object clone_object(mixed args ...)
 		error("Too many objects");
 	}
 
-	return ::clone_object(args ...);
+	return ::clone_object(path, uid);
 }
