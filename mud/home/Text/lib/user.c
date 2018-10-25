@@ -185,7 +185,7 @@ private void do_escape(string str)
 		parent = this_object();
 
 		while(parent) {
-			::message(object_name(parent) + "\n");
+			::message(object_name(parent) + " (owned by " + parent->query_owner() + ")\n");
 
 			if (parent <- LIB_USER) {
 				parent = parent->query_conn();
