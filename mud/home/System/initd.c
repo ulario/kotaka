@@ -497,6 +497,12 @@ string query_patcher(string program)
 	}
 }
 
+void begin_task()
+{
+	ACCESS_CHECK(SYSTEM());
+}
+
 void end_task()
 {
+	ACCESS_CHECK(SYSTEM());
 }

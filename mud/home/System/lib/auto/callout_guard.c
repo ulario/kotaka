@@ -64,7 +64,11 @@ static int find_call_out(string func)
 
 static void _F_sys_callout(string func, mixed *args)
 {
-	call_other(this_object(), func, args...);
+	INITD->begin_task();
+
+	catch {
+		call_other(this_object(), func, args...);
+	}
 
 	INITD->end_task();
 }

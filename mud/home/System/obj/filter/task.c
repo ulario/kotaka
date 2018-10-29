@@ -38,7 +38,13 @@ int login(string str)
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	retval = ::login(str);
+	retval = MODE_NOCHANGE;
+
+	INITD->begin_task();
+
+	catch {
+		retval = ::login(str);
+	}
 
 	INITD->end_task();
 
@@ -49,9 +55,13 @@ void logout(int quit)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	INITD->end_task();
+	INITD->begin_task();
 
-	::logout(quit);
+	catch {
+		::logout(quit);
+	}
+
+	INITD->end_task();
 }
 
 int receive_message(string str)
@@ -60,7 +70,13 @@ int receive_message(string str)
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	retval = ::receive_message(str);
+	INITD->begin_task();
+
+	retval = MODE_NOCHANGE;
+
+	catch {
+		retval = ::receive_message(str);
+	}
 
 	INITD->end_task();
 
@@ -73,7 +89,13 @@ int message_done()
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	retval = ::message_done();
+	INITD->begin_task();
+
+	retval = MODE_NOCHANGE;
+
+	catch {
+		retval = ::message_done();
+	}
 
 	INITD->end_task();
 
@@ -84,7 +106,11 @@ void receive_datagram(string packet)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	::receive_datagram(packet);
+	INITD->begin_task();
+
+	catch {
+		::receive_datagram(packet);
+	}
 
 	INITD->end_task();
 }
