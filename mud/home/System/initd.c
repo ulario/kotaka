@@ -95,7 +95,7 @@ static void create()
 
 		call_out("boot", 0);
 
-		LOGD->post_message("system", LOG_INFO, "System core loaded");
+		LOGD->post_message("system", LOG_NOTICE, "System core loaded");
 	} : {
 		LOGD->flush();
 		shutdown();
@@ -113,13 +113,13 @@ static void boot()
 
 		load();
 
-		LOGD->post_message("system", LOG_INFO, "System loaded");
+		LOGD->post_message("system", LOG_NOTICE, "System loaded");
 
 		PROGRAMD->create_database();
 		OBJECTD->register_ghosts();
 		SYSTEM_SUBD->discover_objects();
 
-		LOGD->post_message("system", LOG_INFO, "System discovered");
+		LOGD->post_message("system", LOG_NOTICE, "System discovered");
 
 		DUMPD->set_parameters(3600, 0, 24);
 
@@ -166,7 +166,7 @@ void prepare_reboot()
 	ACCESS_CHECK(KERNEL());
 
 	if (TLSD->query_tls_value("System", "incremental-snapshot")) {
-		LOGD->post_message("system", LOG_INFO, "Incremental snapshot");
+		LOGD->post_message("system", LOG_NOTICE, "Incremental snapshot");
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "Full snapshot");
 	}
@@ -417,7 +417,7 @@ void booted_module(string module)
 {
 	switch(module) {
 	case "Bigstruct":
-		LOGD->post_message("system", LOG_INFO, "System received boot notification for Bigstruct");
+		LOGD->post_message("system", LOG_NOTICE, "System received boot notification for Bigstruct");
 		break;
 	}
 }
