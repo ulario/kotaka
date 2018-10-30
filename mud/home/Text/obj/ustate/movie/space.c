@@ -43,7 +43,7 @@ static void destruct(int clone)
 
 private void set_nparticles()
 {
-	nparticles = screen_width * screen_height / 100;
+	nparticles = screen_width * screen_height / 50;
 }
 
 private void reset_particle_xy(float *particle)
