@@ -137,7 +137,7 @@ private void handle_error(string error, mixed **trace)
 
 		errstr = "Runtime error: " + error;
 
-		tracestr = print_stack(trace);
+		tracestr = print_stack(trace[0 .. sizeof(trace) - 2]);
 
 		if (find_object(LOGD)) {
 			if (compstr) {
