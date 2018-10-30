@@ -75,20 +75,19 @@ string print_frame(mixed *frame)
 	return str;
 }
 
-string print_stack(mixed **trace)
+string print_stack(mixed **trace, varargs int raw)
 {
 	int i;
 	string tracestr;
 
 	tracestr = "";
 
-	for (i = 0; i < sizeof(trace) - 1; i++) {
+	for (i = 0; i < sizeof(trace); i++) {
 		mixed *frame;
 
 		frame = trace[i];
 
-		if (frame[TRACE_PROGNAME] == CALL_GUARD) {
-			continue;
+		if (frame[TRACE_PROGNAME] == CALL_GUARD && !raw) {
 		}
 
 		tracestr += print_frame(trace[i]) + "\n";
