@@ -71,7 +71,7 @@ static object calling_object(varargs int steps)
 
 	trace = call_trace();
 
-	return find_object(trace[sizeof(trace) - (3 + steps)][TRACE_OBJNAME]);
+	return find_object(trace[sizeof(trace) - (2 + steps)][TRACE_OBJNAME]);
 }
 
 static mixed call_other(mixed obj, string func, varargs mixed args ...)
