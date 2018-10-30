@@ -64,13 +64,21 @@ static int find_call_out(string func)
 
 static void _F_sys_callout(string func, mixed *args)
 {
-	INITD->begin_task();
+	int ticks;
 
-	catch {
-		call_other(this_object(), func, args...);
+	ticks = status(ST_TICKS);
+
+	rlimits (0; -1) {
+		INITD->begin_task();
+
+		catch {
+			rlimits(0; ticks) {
+				call_other(this_object(), func, args...);
+			}
+		}
+
+		INITD->end_task();
 	}
-
-	INITD->end_task();
 }
 
 atomic static int call_out(string func, mixed delay, mixed args...)
