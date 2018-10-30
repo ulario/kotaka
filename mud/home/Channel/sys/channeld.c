@@ -404,6 +404,10 @@ void post_message(string channel, string sender, string message, varargs int nor
 	string stamp;
 	string mstamp;
 
+	if (!channels[channel]) {
+		error("No such channel");
+	}
+
 	if (!norelay) {
 		if (intermud && intermud[channel]) {
 			INTERMUDD->send_channel_message(channel, sender, message);
