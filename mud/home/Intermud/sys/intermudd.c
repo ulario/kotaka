@@ -353,7 +353,7 @@ private void do_startup_reply(mixed *value)
 	mixed *raw;
 	int sz;
 
-	LOGD->post_message("system", LOG_NOTICE, "Intermud: Received startup reply");
+	LOGD->post_message("intermud", LOG_INFO, "IntermudD: Received startup reply");
 
 	password = value[7];
 
@@ -428,11 +428,11 @@ private void bounce_packet(mixed *value)
 	mixed *arr;
 
 	/* send back an error packet */
-	LOGD->post_message("intermud", LOG_INFO,
-		"Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
+	LOGD->post_message("intermud", LOG_ERR,
+		"IntermudD: Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
 
-	LOGD->post_message("intermud", LOG_INFO,
-		"Bouncing back an error to \"" + value[2] + "\"\n");
+	LOGD->post_message("intermud", LOG_ERR,
+		"IntermudD: Bouncing back an error to \"" + value[2] + "\"\n");
 
 	arr = ({
 		"error",
@@ -471,7 +471,7 @@ private void process_packet(mixed *value)
 		break;
 
 	case "error":
-		LOGD->post_message("error", LOG_ERR, "I3 error: " + STRINGD->mixed_sprint(value));
+		LOGD->post_message("intermud", LOG_ERR, "IntermudD: I3 error: " + STRINGD->mixed_sprint(value));
 		break;
 
 	case "mudlist":
@@ -561,7 +561,7 @@ int message_done()
 void logout(int quit)
 {
 	if (!quit) {
-		LOGD->post_message("intermud", LOG_NOTICE, "Intermud: Connection lost");
+		LOGD->post_message("intermud", LOG_NOTICE, "IntermudD: Connection lost");
 
 		call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
 	}
@@ -578,7 +578,7 @@ void logout(int quit)
 
 void connect_failed(int refused)
 {
-	LOGD->post_message("intermud", LOG_NOTICE, "Intermud: Connection failed");
+	LOGD->post_message("intermud", LOG_NOTICE, "IntermudD: Connection failed");
 
 	call_out("connect", 10, ROUTER_IP, ROUTER_PORT);
 }
@@ -727,7 +727,7 @@ private void restore()
 				password = map["password"];
 			}
 		} : {
-			LOGD->post_message("system", LOG_ERR, "Error parsing Intermud state, resetting");
+			LOGD->post_message("intermud", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
 			SECRETD->remove_file("intermud-bad");
 			SECRETD->rename_file("intermud", "intermud-bad");
 		}
