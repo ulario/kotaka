@@ -49,7 +49,8 @@ static mixed **call_trace()
 	int sz;
 
 	trace = ::call_trace();
-	sz = sizeof(trace);
+	sz = sizeof(trace) - 2; /* one for AUTO, one for us */
+	trace = trace[0 .. sz - 1];
 
 	for (index = 0; index < sz; index++) {
 		mixed *frame;
