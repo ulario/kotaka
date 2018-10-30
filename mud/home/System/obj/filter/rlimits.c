@@ -60,7 +60,6 @@ static void limited_receive_datagram(string packet)
 int login(string str)
 {
 	ACCESS_CHECK(previous_object() <- LIB_CONN);
-	ACCESS_CHECK(previous_object()->query_user() == this_object());
 
 	return call_limited("limited_login", str);
 }
@@ -68,7 +67,6 @@ int login(string str)
 void logout(int quit)
 {
 	ACCESS_CHECK(previous_object() <- LIB_CONN);
-	ACCESS_CHECK(previous_object()->query_user() == this_object());
 
 	call_limited("limited_logout", quit);
 }
@@ -76,7 +74,6 @@ void logout(int quit)
 int receive_message(string str)
 {
 	ACCESS_CHECK(previous_object() <- LIB_CONN);
-	ACCESS_CHECK(previous_object()->query_user() == this_object());
 
 	return call_limited("limited_receive_message", str);
 }
@@ -84,7 +81,6 @@ int receive_message(string str)
 int message_done()
 {
 	ACCESS_CHECK(previous_object() <- LIB_CONN);
-	ACCESS_CHECK(previous_object()->query_user() == this_object());
 
 	return call_limited("limited_message_done");
 }
@@ -92,7 +88,6 @@ int message_done()
 void receive_datagram(string packet)
 {
 	ACCESS_CHECK(previous_object() <- LIB_CONN);
-	ACCESS_CHECK(previous_object()->query_user() == this_object());
 
 	call_limited("limited_receive_datagram", packet);
 }
