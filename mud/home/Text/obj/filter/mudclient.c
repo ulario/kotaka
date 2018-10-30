@@ -22,6 +22,7 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
+#include <kotaka/privilege.h>
 #include <kotaka/telnet.h>
 
 inherit LIB_FILTER;
@@ -40,6 +41,8 @@ static void create(int clone)
 
 int login(string str)
 {
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
 	previous_object()->message("Welcome to Shentino's mudclient extension.\n");
 
 	return ::login(str);

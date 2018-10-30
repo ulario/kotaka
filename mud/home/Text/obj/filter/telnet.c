@@ -18,12 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/user.h>
+#include <kotaka/log.h>
 #include <kotaka/paths/ansi.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
+#include <kotaka/privilege.h>
 #include <kotaka/telnet.h>
-#include <kotaka/log.h>
 
 inherit LIB_FILTER;
 inherit "~/lib/logging";
@@ -446,6 +447,8 @@ int login(string str)
 {
 	int retval;
 
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
 	retval = ::login(str);
 
 	if (retval == MODE_DISCONNECT) {
@@ -461,6 +464,8 @@ int receive_message(string str)
 {
 	string line;
 	int pushback;
+
+	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	if (str) {
 		inbuf += str;
@@ -575,6 +580,8 @@ int receive_message(string str)
 
 int message(string str)
 {
+	ACCESS_CHECK(previous_program() == LIB_USER || previous_object() == query_user());
+
 	str = STRINGD->replace(str, "\377", "\377\377");
 	str = STRINGD->replace(str, "\n", "\r\n");
 
@@ -593,15 +600,19 @@ void set_mode(int newmode)
 			send_wont(1);
 		}
 		break;
+
 	case MODE_NOECHO:
 		send_will(1);
 		break;
+
 	case MODE_BLOCK:
 	case MODE_UNBLOCK:
 	case MODE_DISCONNECT:
 		::set_mode(newmode);
+
 	case MODE_NOCHANGE:
 		return;
+
 	default:
 		::message("Unknown mode change: " + newmode + "\n");
 		break;

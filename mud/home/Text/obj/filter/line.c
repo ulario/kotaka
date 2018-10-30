@@ -38,11 +38,15 @@ static void create(int clone)
 
 int login(string str)
 {
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
 	return ::login(str);
 }
 
 int receive_message(string str)
 {
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
 	if (!lines) {
 		lines = ({ });
 
