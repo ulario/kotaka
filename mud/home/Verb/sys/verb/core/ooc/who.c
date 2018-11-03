@@ -24,6 +24,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "/lib/sort";
 
 string *query_parse_methods()
 {
@@ -112,7 +113,7 @@ void main(object actor, mapping roles)
 
 			list = lists[i];
 			sz = sizeof(list);
-			SORTD->qsort(list, 0, sz);
+			qsort(list, 0, sz);
 
 			switch(i) {
 			case 4: send_out("Owners:\n"); break;

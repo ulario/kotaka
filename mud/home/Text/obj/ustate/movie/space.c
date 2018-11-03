@@ -22,6 +22,7 @@
 #include <kotaka/privilege.h>
 
 inherit "~/lib/animate";
+inherit "/lib/sort";
 
 int nparticles;
 float **particles;
@@ -115,7 +116,7 @@ private void do_particles(object paint, float diff)
 
 	if (sortflag) {
 		sortflag = 0;
-		SORTD->qsort(particles, 0, nparticles, "zcomp");
+		qsort(particles, 0, nparticles, "zcomp");
 	}
 
 	for (i = nparticles - 1; i >= 0; i--) {

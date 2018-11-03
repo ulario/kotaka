@@ -25,6 +25,8 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
+inherit "/lib/sort";
+
 private void draw_object(object gc, object viewer, object obj);
 private void draw_contents(object gc, object viewer, object obj);
 
@@ -376,7 +378,7 @@ private void draw_contents(object gc, object viewer, object obj)
 	inv -= ({ nil });
 	sz = sizeof(inv);
 
-	SORTD->qsort(inv, 0, sizeof(inv), "position_sort");
+	qsort(inv, 0, sizeof(inv), "position_sort");
 
 	for (i = 0; i < sz; i++) {
 		if (inv[i] == viewer) {

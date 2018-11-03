@@ -21,6 +21,8 @@
 #include <kotaka/paths/utility.h>
 #include <status.h>
 
+inherit "/lib/sort";
+
 static void create()
 {
 }
@@ -31,7 +33,7 @@ static void test_qsort(int *arr)
 
 	sz = sizeof(arr);
 
-	SORTD->qsort(arr, 0, sz);
+	qsort(arr, 0, sz);
 
 	for (i = 0; i < sz - 1; i++) {
 		ASSERT(arr[i] <= arr[i + 1]);

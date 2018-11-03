@@ -23,6 +23,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "/lib/sort";
 
 string *query_parse_methods()
 {
@@ -66,7 +67,7 @@ void main(object actor, mapping roles)
 
 	subscriptions += ({ roles["raw"] });
 
-	SORTD->qsort(subscriptions, 0, sizeof(subscriptions));
+	qsort(subscriptions, 0, sizeof(subscriptions));
 
 	ACCOUNTD->set_account_property(name, "channels", subscriptions);
 
