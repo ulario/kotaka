@@ -23,6 +23,7 @@
 
 inherit "~/lib/animate";
 inherit "/lib/sort";
+inherit "/lib/math/random";
 
 int nparticles;
 float **particles;
@@ -49,20 +50,20 @@ private void set_nparticles()
 
 private void reset_particle_xy(float *particle)
 {
-	particle[0] = (MATHD->rnd() - 0.5) * (float)(screen_width) * 10.0;
-	particle[1] = (MATHD->rnd() - 0.5) * (float)(screen_height) * 10.0;
+	particle[0] = (rnd() - 0.5) * (float)(screen_width) * 10.0;
+	particle[1] = (rnd() - 0.5) * (float)(screen_height) * 10.0;
 }
 
 private void reset_particle(float *particle)
 {
 	reset_particle_xy(particle);
-	particle[2] = MATHD->rnd() * 1.0 + 10.0;
+	particle[2] = rnd() * 1.0 + 10.0;
 }
 
 private void initialize_particle(float *particle)
 {
 	reset_particle_xy(particle);
-	particle[2] = MATHD->rnd() * 10.0 + 1.0;
+	particle[2] = rnd() * 10.0 + 1.0;
 }
 
 void begin()

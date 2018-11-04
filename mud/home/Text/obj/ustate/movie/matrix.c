@@ -22,6 +22,7 @@
 #include <kotaka/privilege.h>
 
 inherit "/lib/sort";
+inherit "/lib/math/random";
 inherit "~/lib/animate";
 
 int nparticles;
@@ -45,10 +46,10 @@ private void set_nparticles()
 
 private void reset_particle(float *particle)
 {
-	particle[2] = MATHD->rnd() * 10.0 + 1.0;
+	particle[2] = rnd() * 10.0 + 1.0;
 
-	particle[0] = (MATHD->rnd() - 0.5) * (float)(screen_width) * particle[2];
-	particle[1] = -((float)(screen_height) * 0.5 + MATHD->rnd()) * particle[2];
+	particle[0] = (rnd() - 0.5) * (float)(screen_width) * particle[2];
+	particle[1] = -((float)(screen_height) * 0.5 + rnd()) * particle[2];
 }
 
 private void initialize_particle(float *particle)
@@ -57,11 +58,11 @@ private void initialize_particle(float *particle)
 	/* add a statistical bias so that particles start out evenly spread */
 
 	do {
-		particle[2] = (1.0 - pow(MATHD->rnd(), 2.0)) * 11.0;
+		particle[2] = (1.0 - pow(rnd(), 2.0)) * 11.0;
 	} while (particle[2] < 1.0);
 
-	particle[0] = (MATHD->rnd() - 0.5) * (float)(screen_width) * particle[2];
-	particle[1] = (MATHD->rnd() - 0.5) * (float)(screen_height) * particle[2];
+	particle[0] = (rnd() - 0.5) * (float)(screen_width) * particle[2];
+	particle[1] = (rnd() - 0.5) * (float)(screen_height) * particle[2];
 }
 
 void begin()

@@ -22,6 +22,7 @@
 #include <kotaka/privilege.h>
 
 inherit "~/lib/animate";
+inherit "/lib/math/random";
 
 int nparticles;
 mixed **particles;
@@ -47,8 +48,8 @@ private void reset_particle(mixed *particle)
 	particle[0] = (float)(screen_width) / 2.0;
 	particle[1] = (float)(screen_height);
 
-	particle[2] = (MATHD->bell_rnd(2) - 0.5) * (float)(screen_width);
-	particle[3] = MATHD->bell_rnd(2) * (float)(screen_height) * 2.0 - (float)(screen_height) * 2.0;
+	particle[2] = (bell_rnd(2) - 0.5) * (float)(screen_width);
+	particle[3] = bell_rnd(2) * (float)(screen_height) * 2.0 - (float)(screen_height) * 2.0;
 	particle[4] = color;
 
 	color++;

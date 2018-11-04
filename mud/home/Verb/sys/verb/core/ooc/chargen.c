@@ -27,6 +27,7 @@
 #include <game/paths.h>
 #include <status.h>
 
+inherit "/lib/math/random";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -65,7 +66,7 @@ void main(object actor, mapping roles)
 	body = GAME_INITD->create_thing();
 
 	body->set_density(1.0);
-	body->set_mass(100.0 + MATHD->rnd() * 10.0);
+	body->set_mass(100.0 + rnd() * 10.0);
 
 	body->set_property("id", name);
 	body->set_property("local_snouns", ({ name }) );
