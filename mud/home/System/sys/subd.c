@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <type.h>
+#include <status.h>
 #include <kernel/access.h>
 #include <kotaka/privilege.h>
 #include <kotaka/assert.h>
@@ -505,8 +506,15 @@ void cross_module_inheritance_audit()
 	rlimits(0; -1) {
 		object plist;
 		int sz;
+		int *autos;
+		mapping libs;
+
+		mixed *lind;
 
 		plist = PROGRAMD->query_program_indices();
+
+		autos = ({ status(AUTO, O_INDEX), status(SECOND_AUTO, O_INDEX) });
+		libs = ([ ]);
 
 		for (sz = plist->query_size(); --sz >= 0; ) {
 			int *inherits;
@@ -520,16 +528,37 @@ void cross_module_inheritance_audit()
 			inherits = pinfo->query_inherits();
 			creator = DRIVER->creator(path);
 
+			inherits -= autos;
+
 			for (sz2 = sizeof(inherits); --sz2 >= 0; ) {
 				string path2;
 
-				pinfo = PROGRAMD->query_program_info(inherits[sz]);
+				pinfo = PROGRAMD->query_program_info(inherits[sz2]);
 				path2 = pinfo->query_path();
 
+				if (DRIVER->creator(path2) == nil || DRIVER->creator(path2) == "System") {
+					continue;
+				}
+
 				if (DRIVER->creator(path2) != creator) {
-					LOGD->post_message("system", LOG_WARNING, path + " is inheriting foreign inheritable " + path2);
+					if (!libs[path2]) {
+						libs[path2] = ([ ]);
+					}
+
+					libs[path2][path] = 1;
 				}
 			}
+		}
+
+		lind = map_indices(libs);
+
+		for (sz = sizeof(lind); --sz >= 0; ) {
+			string lib;
+
+			lib = lind[sz];
+
+			LOGD->post_message("system", LOG_NOTICE, "Library " + lib + " inherited by: "
+				+ implode(map_indices(libs[lib]), ", "));
 		}
 	}
 }
