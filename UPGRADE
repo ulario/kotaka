@@ -34,21 +34,23 @@ Every upgrade has the following sequence of events:
 	Instructions may be provided for things needing to be done after
 	the upgrade is completed.
 
-5.  recompiling (optional)
+5.  full rebuild
 
-	It is advisable to keep all objects up to date with reference to
-	their source code and inherits.
+	Effective as of version 0.53, it will be assumed that a full
+	rebuild will be done after an upgrade is made.  This implies
+	destruction of all inheritable objects, followed by recompilation
+	of all other objects.  It is advised to also ensure that objects
+	whose source code has been removed, or orphans, are also
+	destructed.
 
-	Anything that depends on a source or header file that has been
-	changed, or inherits a library that has been recompiled, should
-	be recompiled as well.
+	A call to ~System/sys/subd->full_rebuild() will accomplish this conveniently.
 
-Caveats for v0.52
+		Caveat: It will destruct all inheritables, as well as all
+		orphaned objects missing their source code, and then it
+		will background compile all other source files, including
+		those which have not yet been compiled.  For the latter
+		part, please ensure that there are no stray LPC source
+		files.
+
+Caveats for v0.53
 -----------------
-
-PatchD
-
-	PatchD has internal changes in handling patches.
-
-	Please ensure that any object patches for versions prior to v0.51
-	have been completed.
