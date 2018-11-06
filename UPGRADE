@@ -43,7 +43,8 @@ Every upgrade has the following sequence of events:
 	whose source code has been removed, or orphans, are also
 	destructed.
 
-	A call to ~System/sys/subd->full_rebuild() will accomplish this conveniently.
+	A call to ~System/sys/subd->full_rebuild() will accomplish this
+	conveniently.
 
 		Caveat: It will destruct all inheritables, as well as all
 		orphaned objects missing their source code, and then it
