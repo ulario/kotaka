@@ -72,6 +72,7 @@ inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 
 int handle;
+int keepalive;
 string buffer;
 
 string routername;
@@ -324,6 +325,17 @@ private void do_emoteto(mixed *value)
 	}
 }
 
+private void do_error(mixed *value)
+{
+	if (value[2] == MUDNAME) {
+		if (value[6] == "keepalive") {
+			return;
+		}
+	}
+
+	LOGD->post_message("system", LOG_ERR, "IntermudD: I3 error: " + STRINGD->mixed_sprint(value));
+}
+
 private void do_mudlist(mixed *value)
 {
 	mapping delta;
@@ -367,6 +379,8 @@ private void do_startup_reply(mixed *value)
 			listen_channel(ch[sz], CHANNELD->query_intermud(ch[sz]));
 		}
 	}
+
+	keepalive = call_out("keepalive", 0);
 }
 
 private void do_tell(mixed *value)
@@ -471,7 +485,7 @@ private void process_packet(mixed *value)
 		break;
 
 	case "error":
-		LOGD->post_message("system", LOG_ERR, "IntermudD: I3 error: " + STRINGD->mixed_sprint(value));
+		do_error(value);
 		break;
 
 	case "mudlist":
@@ -527,6 +541,29 @@ static void process()
 	process_packet(arr);
 
 	handle = call_out("process", 0);
+}
+
+static void keepalive()
+{
+	mixed *arr;
+
+	keepalive = call_out("keepalive", 10);
+
+	arr = ({
+		"error",
+		5,
+		MUDNAME,
+		0,
+		0,
+		0,
+		"keepalive",
+		"Keepalive message",
+		0
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
 }
 
 /* communication */
