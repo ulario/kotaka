@@ -21,6 +21,4 @@
 
 /* daemons */
 
-#define MATHD		(USR_DIR + "/Utility/sys/mathd")
-#define SORTD		(USR_DIR + "/Utility/sys/sortd")
 #define SUBD		(USR_DIR + "/Utility/sys/subd")
