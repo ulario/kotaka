@@ -46,6 +46,27 @@ private void test_qsort()
 	}
 }
 
+private void test_gnomesort()
+{
+	int sz;
+	int *sortme;
+	int i;
+
+	sz = status(ST_ARRAYSIZE);
+
+	sortme = allocate(sz);
+
+	for (i = 0; i < sz; i++) {
+		sortme[i] = random(sz);
+	}
+
+	gnomesort(sortme, 0, sz);
+
+	for (i = 0; i < sz - 1; i++) {
+		ASSERT(sortme[i] <= sortme[i + 1]);
+	}
+}
+
 void test()
 {
 	ACCESS_CHECK(TEST());
@@ -54,4 +75,7 @@ void test()
 
 	LOGD->post_message("debug", LOG_DEBUG, "Testing qsort...");
 	test_qsort();
+
+	LOGD->post_message("debug", LOG_DEBUG, "Testing gnome sort...");
+	test_gnomesort();
 }

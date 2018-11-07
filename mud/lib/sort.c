@@ -87,3 +87,51 @@ void qsort(mixed arr, int begin, int end, varargs string compfunc)
 		}
 	}
 }
+
+void quicksort(mixed arr, int begin, int end, varargs string compfunc)
+{
+	qsort(arr, begin, end, compfunc);
+}
+
+void gnomesort(mixed arr, int begin, int end, varargs string compfunc)
+{
+	int type;
+	int cursor;
+
+	type = typeof(arr);
+
+	cursor = begin;
+
+	while (cursor + 1 < end) {
+		mixed le, he;
+		int sign;
+
+		if (type == T_ARRAY) {
+			le = arr[cursor];
+			he = arr[cursor + 1];
+		} else {
+			le = arr->query_element(cursor);
+			he = arr->query_element(cursor + 1);
+		}
+
+		if (compfunc) {
+			sign = call_other(this_object(), compfunc, le, he);
+		} else if (le > he) {
+			sign = 1;
+		} else if (le < he) {
+			sign = -1;
+		} else {
+			sign = 0;
+		}
+
+		if (sign == 1) {
+			aswap(arr, cursor, cursor + 1);
+
+			if (cursor > begin) {
+				cursor--;
+			}
+		} else {
+			cursor++;
+		}
+	}
+}
