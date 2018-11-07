@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/intermud.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/format";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -67,5 +67,5 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	send_out(STRINGD->wordwrap(implode(list, ", "), width) + "\n");
+	send_out(wordwrap(implode(list, ", "), width) + "\n");
 }

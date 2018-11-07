@@ -19,6 +19,58 @@
  */
 inherit "char";
 
+string trim_whitespace(string str)
+{
+	int start, end;
+
+	if (!str || str == "")
+		return str;
+
+	start = 0;
+	end = strlen(str) - 1;
+
+	while ((start <= end) && char_is_whitespace(str[start])) {
+		start++;
+	}
+
+	while ((start <= end) && char_is_whitespace(str[end])) {
+		end--;
+	}
+
+	return str[start .. end];
+}
+
+string rtrim_null(string str)
+{
+	int end;
+
+	if (!str || str == "")
+		return str;
+
+	end = strlen(str) - 1;
+
+	while (end >= 0 && str[end] == 0)
+		end--;
+
+	return str[.. end];
+}
+
+string rtrim_whitespace(string str)
+{
+	int end;
+
+	if (!str || str == "")
+		return str;
+
+	end = strlen(str) - 1;
+
+	while ((end >= 0) && char_is_whitespace(str[end])) {
+		end--;
+	}
+
+	return str[.. end];
+}
+
 private string wordwrap_line(string line, int width)
 {
 	string *words;

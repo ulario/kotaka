@@ -131,8 +131,6 @@ void compact_multimap(mapping multimap)
 
 private void build_list(mixed **list, int level, mapping map, int values)
 {
-	LOGD->post_message("system", LOG_NOTICE, "Checking level " + level + " for " + STRINGD->hybrid_sprint(map));
-
 	if (level) {
 		int *levels;
 		mapping *maps;

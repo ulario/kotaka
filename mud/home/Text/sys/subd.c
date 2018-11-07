@@ -20,11 +20,11 @@
 #include <kernel/access.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/channel.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
+inherit "/lib/string/case";
 inherit LIB_EMIT;
 
 int query_user_class(string username);
@@ -36,7 +36,7 @@ string query_titled_name(string username)
 	int class;
 
 	if (username) {
-		name = STRINGD->to_title(username);
+		name = to_title(username);
 	} else {
 		name = "guest";
 	}
@@ -203,7 +203,7 @@ string generate_brief_indefinite(object thing)
 	brief = primitive_brief(thing);
 
 	if (strlen(brief) > 0) {
-		switch(STRINGD->to_lower(brief)[0]) {
+		switch(to_lower(brief)[0]) {
 		case 'a':
 		case 'e':
 		case 'i':

@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/log.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/privilege.h>
+
+inherit "/lib/string/char";
 
 string *stack;
 mapping layers;
@@ -131,8 +132,8 @@ string *render_color()
 	colors = allocate(size_y);
 
 	for (y = 0; y < size_y; y++) {
-		chars[y] = STRINGD->spaces(size_x);
-		colors[y] = STRINGD->chars(0x07, size_x);
+		chars[y] = spaces(size_x);
+		colors[y] = chars(0x07, size_x);
 	}
 
 	sz = sizeof(stack);

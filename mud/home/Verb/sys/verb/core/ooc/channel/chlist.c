@@ -19,9 +19,9 @@
  */
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/channel.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/format";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -74,19 +74,19 @@ void main(object actor, mapping roles)
 
 	if (sizeof(active)) {
 		send_out("Subscribed channels:\n\n");
-		send_out(STRINGD->wordwrap(implode(active, ", "), 60));
+		send_out(wordwrap(implode(active, ", "), 60));
 		send_out("\n\n");
 	}
 
 	if (sizeof(inactive)) {
 		send_out("Unsubscribed channels:\n\n");
-		send_out(STRINGD->wordwrap(implode(inactive, ", "), 60));
+		send_out(wordwrap(implode(inactive, ", "), 60));
 		send_out("\n\n");
 	}
 
 	if (sizeof(dead)) {
 		send_out("Orphaned channels:\n\n");
-		send_out(STRINGD->wordwrap(implode(dead, ", "), 60));
+		send_out(wordwrap(implode(dead, ", "), 60));
 		send_out("\n\n");
 	}
 }

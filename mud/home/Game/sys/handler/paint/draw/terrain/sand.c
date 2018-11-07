@@ -18,13 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/geometry.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 
 #define RED	1
 #define GREEN	2
 #define BLUE	4
 #define BOLD	8
+
+inherit "/lib/string/char";
 
 void on_paint_text(object gc, object obj, object viewer)
 {
@@ -60,6 +61,6 @@ void on_paint_text(object gc, object obj, object viewer)
 
 	for (i = ly; i <= hy; i++) {
 		gc->move_pen(lx, i);
-		gc->draw(STRINGD->chars('.', sx));
+		gc->draw(chars('.', sx));
 	}
 }

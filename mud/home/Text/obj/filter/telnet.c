@@ -28,6 +28,7 @@
 
 inherit LIB_FILTER;
 inherit "~/lib/logging";
+inherit "/lib/string/replace";
 
 string inbuf;		/* raw input buffer */
 string linebuf;		/* processed input waiting to be line-carved */
@@ -582,8 +583,8 @@ int message(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_USER || previous_object() == query_user());
 
-	str = STRINGD->replace(str, "\377", "\377\377");
-	str = STRINGD->replace(str, "\n", "\r\n");
+	str = replace(str, "\377", "\377\377");
+	str = replace(str, "\n", "\r\n");
 
 	return ::message(str);
 }

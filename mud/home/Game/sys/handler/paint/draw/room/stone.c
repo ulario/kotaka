@@ -18,13 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/geometry.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 
 #define RED	1
 #define GREEN	2
 #define BLUE	4
 #define BOLD	8
+
+inherit "/lib/string/char";
 
 void on_paint_text(object gc, object obj, object viewer)
 {
@@ -57,14 +58,14 @@ void on_paint_text(object gc, object obj, object viewer)
 		gc->set_color(0x08);
 		for (i = -8; i <= 8; i++) {
 			gc->move_pen(-8, i);
-			gc->draw(STRINGD->chars('#', 17));
+			gc->draw(chars('#', 17));
 		}
 
 		/* floor */
 		gc->set_color(0x08);
 		for (i = ly; i <= hy; i++) {
 			gc->move_pen(lx, i);
-			gc->draw(STRINGD->chars('.', sx));
+			gc->draw(chars('.', sx));
 		}
 
 		/* corners */
@@ -80,9 +81,9 @@ void on_paint_text(object gc, object obj, object viewer)
 
 		/* walls */
 		gc->move_pen(lx, ly - 1);
-		gc->draw(STRINGD->chars('-', sx));
+		gc->draw(chars('-', sx));
 		gc->move_pen(lx, hy + 1);
-		gc->draw(STRINGD->chars('-', sx));
+		gc->draw(chars('-', sx));
 
 		for (i = ly; i <= hy; i++) {
 			gc->move_pen(lx - 1, i);
@@ -107,9 +108,9 @@ void on_paint_text(object gc, object obj, object viewer)
 		/* walls */
 		if (sx > 2) {
 			gc->move_pen(lx + 1, ly);
-			gc->draw(STRINGD->chars('-', sx - 2));
+			gc->draw(chars('-', sx - 2));
 			gc->move_pen(lx + 1, hy);
-			gc->draw(STRINGD->chars('-', sx - 2));
+			gc->draw(chars('-', sx - 2));
 		}
 
 		if (sy > 2) {
@@ -126,7 +127,7 @@ void on_paint_text(object gc, object obj, object viewer)
 		if (sx > 2 && sy > 2) {
 			for (i = ly + 1; i <= hy - 1; i++) {
 				gc->move_pen(lx + 1, i);
-				gc->draw(STRINGD->spaces(sx - 2));
+				gc->draw(spaces(sx - 2));
 			}
 		}
 	}

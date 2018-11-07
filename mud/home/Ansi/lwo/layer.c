@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/string.h>
 #include <kotaka/privilege.h>
+
+inherit "/lib/string/char";
 
 string *chars;
 string *colors;
@@ -62,9 +63,9 @@ private void change_length(int h, int o, int n)
 	if (n > o) {
 		/* lengthen */
 		for (i = 0; i < h; i++) {
-			chars[i] += STRINGD->chars('?', n - o);
-			colors[i] += STRINGD->chars(0x87, n - o);
-			mask[i] += STRINGD->nulls(nb - ob);
+			chars[i] += chars('?', n - o);
+			colors[i] += chars(0x87, n - o);
+			mask[i] += nulls(nb - ob);
 			/* new bits are supposed to be null anyway */
 		}
 	} else {
@@ -103,9 +104,9 @@ void set_size(int x, int y)
 		mask += allocate(y - size_y);
 
 		for (i = size_y; i < y; i++) {
-			chars[i] = STRINGD->spaces(x);
-			colors[i] = STRINGD->chars(0x87, x);
-			mask[i] = STRINGD->nulls((x + 7) >> 3);
+			chars[i] = spaces(x);
+			colors[i] = chars(0x87, x);
+			mask[i] = nulls((x + 7) >> 3);
 		}
 	} else if (y < size_y) {
 		chars = chars[0 .. y - 1];

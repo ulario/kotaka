@@ -29,6 +29,7 @@
 #include <type.h>
 
 inherit "~System/lib/struct/list";
+inherit "/lib/string/sprint";
 
 object oindex2onum; /* ([ oindex: idnum ]) */
 object objlist;	/* ({ idnum: obj, data }) */
@@ -337,7 +338,7 @@ void save_world_write(int i)
 		i--;
 
 		CONFIGD->write_file("save/" + (i + 1) + ".obj",
-			STRINGD->hybrid_sprint(
+			hybrid_sprint(
 				objlist->query_element(i)[1]
 			) + "\n"
 		);
@@ -383,7 +384,7 @@ string sprint_object(object obj, varargs mapping seen)
 			error("Unknown object type (" + path + ")");
 		}
 	} else {
-		return STRINGD->sprint_object(obj, seen);
+		return ::sprint_object(obj, seen);
 	}
 }
 

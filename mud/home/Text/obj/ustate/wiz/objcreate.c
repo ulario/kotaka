@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 #include <kotaka/privilege.h>
@@ -38,6 +37,7 @@
 #define STAGE_CAPACITY	12
 #define STAGE_MAX_MASS	13
 
+inherit "/lib/string/case";
 inherit TEXT_LIB_USTATE;
 
 int reading;
@@ -270,7 +270,7 @@ private void do_input(string input)
 		break;
 
 	case STAGE_PROPER:
-		switch(STRINGD->to_lower(input)) {
+		switch(to_lower(input)) {
 		case "":
 			if (obj->query_local_property("is_proper")) {
 				obj->set_local_property("is_definite", nil);
@@ -297,7 +297,7 @@ private void do_input(string input)
 		break;
 
 	case STAGE_DEFINITE:
-		switch(STRINGD->to_lower(input)) {
+		switch(to_lower(input)) {
 		case "":
 			stage = STAGE_LOOK;
 			break;
@@ -364,7 +364,7 @@ private void do_input(string input)
 		break;
 
 	case STAGE_VIRTUAL:
-		switch(STRINGD->to_lower(input)) {
+		switch(to_lower(input)) {
 		case "":
 			if (obj->query_virtual()) {
 				pop_state();

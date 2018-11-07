@@ -21,6 +21,8 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
+inherit "/lib/string/sprint";
+
 mapping aliases;
 
 void save();
@@ -58,7 +60,7 @@ void save()
 
 	ACCESS_CHECK(INTERFACE());
 
-	buf = STRINGD->hybrid_sprint(aliases);
+	buf = hybrid_sprint(aliases);
 
 	CONFIGD->make_dir(".");
 	CONFIGD->remove_file("aliases-tmp");

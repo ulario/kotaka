@@ -18,16 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
-
-inherit TEXT_LIB_USTATE;
 
 #define STATE_GETNAME	1
 #define STATE_GETPASS	2
 #define STATE_CHKPASS	3
 #define STATE_CHKDUPE	4
+
+inherit "/lib/string/validate";
+inherit TEXT_LIB_USTATE;
 
 string name;
 string password;
@@ -112,14 +112,14 @@ void receive_in(string input)
 
 	switch(state) {
 	case STATE_GETNAME:
-		input = STRINGD->to_lower(input);
+		input = to_lower(input);
 
 		if (strlen(input) && input[0] == '~') {
 			silent = 1;
 			input = input[1 ..];
 		}
 
-		if (!STRINGD->is_valid_username(input)) {
+		if (!is_valid_username(input)) {
 			send_out("That is not a valid username.\n");
 			pop_state();
 			return;

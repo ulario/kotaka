@@ -17,11 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
-inherit SECOND_AUTO;
+inherit "/lib/string/replace";
 
 string grammar;
 
@@ -61,10 +60,10 @@ static string *parse_str(string *input)
 	str = input[0];
 	str = str[1 .. strlen(str) - 2];
 
-	str = STRINGD->replace(str, "\\t", "\t");
-	str = STRINGD->replace(str, "\\n", "\n");
-	str = STRINGD->replace(str, "\\\"", "\"");
-	str = STRINGD->replace(str, "\\\\", "\\");
+	str = replace(str, "\\t", "\t");
+	str = replace(str, "\\n", "\n");
+	str = replace(str, "\\\"", "\"");
+	str = replace(str, "\\\\", "\\");
 
 	return ({ str });
 }

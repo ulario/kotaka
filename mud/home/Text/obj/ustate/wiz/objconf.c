@@ -32,6 +32,8 @@
 #define POP_SUB		7
 #define POP_XOR		8
 
+inherit "/lib/string/format";
+inherit "/lib/string/sprint";
 inherit TEXT_LIB_USTATE;
 
 int reading;
@@ -224,7 +226,7 @@ private void do_input(string input)
 
 	case "pget":
 		if (args != "") {
-			send_out(STRINGD->mixed_sprint(obj->query_property(args)) + "\n");
+			send_out(mixed_sprint(obj->query_property(args)) + "\n");
 		} else {
 			send_out("What property?\n");
 		}
@@ -252,7 +254,7 @@ private void do_input(string input)
 
 			props = obj->list_local_properties();
 
-			send_out(STRINGD->wordwrap(implode(props, ", "), 60) + "\n");
+			send_out(wordwrap(implode(props, ", "), 60) + "\n");
 		}
 
 		break;

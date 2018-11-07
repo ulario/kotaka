@@ -17,23 +17,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/string.h>
+#define ID(x, y) (((y) > 1) ? ((x) + "#" + (y)) : (x))
+
+inherit "/lib/string/validate";
 
 object query_environment();
 object *query_inventory();
 
-#define ID(x, y) (((y) > 1) ? ((x) + "#" + (y)) : (x))
-
 private string id_base;
 private int id_number;
 
-static void create()
-{
-}
-
 static void validate_base_id(string new_base)
 {
-	if (!STRINGD->is_valid_base_id(new_base)) {
+	if (!is_valid_base_id(new_base)) {
 		error("Bad base ID");
 	}
 

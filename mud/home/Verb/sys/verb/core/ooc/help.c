@@ -19,9 +19,10 @@
  */
 #include <kotaka/assert.h>
 #include <kotaka/paths/help.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/replace";
+inherit "/lib/string/format";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -169,10 +170,10 @@ private string list_category(string category)
 		}
 
 		line = implode(topics, ",");
-		line = STRINGD->replace(line, " ", "_");
-		line = STRINGD->replace(line, ",", ", ");
-		line = STRINGD->wordwrap(line, 72);
-		line = STRINGD->replace(line, "\n", "\n    ");
+		line = replace(line, " ", "_");
+		line = replace(line, ",", ", ");
+		line = wordwrap(line, 72);
+		line = replace(line, "\n", "\n    ");
 		buf += "    " + line + "\n\n";
 	}
 
@@ -190,8 +191,8 @@ void main(object actor, mapping roles)
 	string text;
 	int sz, i;
 
-	roles["raw"] = STRINGD->trim_whitespace(roles["raw"]);
-	roles["raw"] = STRINGD->replace(roles["raw"], " ", "_");
+	roles["raw"] = trim_whitespace(roles["raw"]);
+	roles["raw"] = replace(roles["raw"], " ", "_");
 
 	if (roles["raw"] == "") {
 		/* list root category */

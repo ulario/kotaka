@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 #include <type.h>
 
+inherit "/lib/string/format";
 inherit LIB_EMIT;
 inherit LIB_VERB;
 
@@ -67,7 +67,7 @@ void main(object actor, mapping roles)
 		if (typeof(obj) == T_OBJECT) {
 			emit_from(actor, actor, " ", ({ "look", "looks" }), " at ", obj, ".");
 			look = obj->query_property("look");
-			send_out(look ? STRINGD->wordwrap(look, 60) : "a bland object");
+			send_out(look ? wordwrap(look, 60) : "a bland object");
 			send_out("\n");
 		} else {
 			int sz, i;

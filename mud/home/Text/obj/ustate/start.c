@@ -71,7 +71,7 @@ static void timeout()
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
-	callout = call_out("timeout", 120);
+	callout = call_out("timeout", 60);
 	state = STATE_GETCHOICE;
 }
 

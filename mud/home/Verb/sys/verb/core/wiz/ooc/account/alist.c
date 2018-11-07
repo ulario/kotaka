@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/format";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -46,5 +46,5 @@ void main(object actor, mapping roles)
 
 	users = ACCOUNTD->query_accounts();
 
-	send_out("Users:\n" + STRINGD->wordwrap(implode(users, ", "), 60) + "\n");
+	send_out("Users:\n" + wordwrap(implode(users, ", "), 60) + "\n");
 }

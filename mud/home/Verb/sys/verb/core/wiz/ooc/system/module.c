@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/validate";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -30,7 +30,7 @@ string *query_parse_methods()
 
 private int check_module_name(string module)
 {
-	if (!STRINGD->is_alpha(module)) {
+	if (!is_alpha(module)) {
 		send_out("Invalid module name.\n");
 		return 0;
 	}

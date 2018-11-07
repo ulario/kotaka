@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/sprint";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -55,5 +55,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	send_out(STRINGD->hybrid_sprint(ACCOUNTD->query_account_property(username, pname)) + "\n");
+	send_out(hybrid_sprint(ACCOUNTD->query_account_property(username, pname)) + "\n");
 }

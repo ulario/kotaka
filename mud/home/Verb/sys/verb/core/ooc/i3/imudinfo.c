@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/intermud.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/sprint";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -40,5 +40,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	send_out(STRINGD->hybrid_sprint(INTERMUDD->query_mud(roles["raw"])) + "\n");
+	send_out(hybrid_sprint(INTERMUDD->query_mud(roles["raw"])) + "\n");
 }

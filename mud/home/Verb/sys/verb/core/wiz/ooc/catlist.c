@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/char";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -44,7 +44,7 @@ private void list_directory(string dir, int level)
 
 	for (i = 0; i < sz; i++) {
 		if (keys[i] == 2) {
-			send_out(STRINGD->spaces(level * 4) + names[i] + " {\n");
+			send_out(spaces(level * 4) + names[i] + " {\n");
 
 			if (dir) {
 				list_directory(dir + ":" + names[i], level + 1);
@@ -52,9 +52,9 @@ private void list_directory(string dir, int level)
 				list_directory(names[i], level + 1);
 			}
 
-			send_out(STRINGD->spaces(level * 4) + "}\n");
+			send_out(spaces(level * 4) + "}\n");
 		} else {
-			send_out(STRINGD->spaces(level * 4) + names[i] + "\n");
+			send_out(spaces(level * 4) + names[i] + "\n");
 		}
 	}
 }

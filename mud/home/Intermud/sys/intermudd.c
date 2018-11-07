@@ -38,8 +38,9 @@
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
-inherit "~System/lib/string/sprint";
 inherit "/lib/string/case";
+inherit "/lib/string/sprint";
+inherit "/lib/string/replace";
 
 int handle;
 int keepalive;
@@ -113,7 +114,7 @@ private string mudmode_sprint(mixed data)
 		return "0";
 
 	case T_STRING:
-		return "\"" + STRINGD->quote_escape(data) + "\"";
+		return "\"" + quote_escape(data) + "\"";
 
 	case T_INT:
 		return (string)data;
@@ -309,7 +310,7 @@ private void do_error(mixed *value)
 		}
 	}
 
-	LOGD->post_message("system", LOG_ERR, "IntermudD: I3 error: " + STRINGD->mixed_sprint(value));
+	LOGD->post_message("system", LOG_ERR, "IntermudD: I3 error: " + mixed_sprint(value));
 }
 
 private void do_mudlist(mixed *value)
@@ -412,7 +413,7 @@ private void do_channel_e(mixed *value)
 	if (CHANNELD->test_channel(value[6])) {
 		string text;
 
-		text = STRINGD->replace(
+		text = replace(
 			value[8], "$N", value[7] + "@" + value[2]);
 
 		CHANNELD->post_message(value[6], text, nil, 1);
@@ -425,7 +426,7 @@ private void bounce_packet(mixed *value)
 
 	/* send back an error packet */
 	LOGD->post_message("system", LOG_ERR,
-		"IntermudD: Unhandled packet:\n" + STRINGD->hybrid_sprint(value) + "\n");
+		"IntermudD: Unhandled packet:\n" + hybrid_sprint(value) + "\n");
 
 	LOGD->post_message("system", LOG_ERR,
 		"IntermudD: Bouncing back an error to \"" + value[2] + "\"\n");
@@ -757,7 +758,7 @@ static void save()
 {
 	string buf;
 
-	buf = STRINGD->hybrid_sprint( ([
+	buf = hybrid_sprint( ([
 		"password" : password,
 		"mudlistid" : mudlistid,
 		"chanlistid" : chanlistid
@@ -769,7 +770,7 @@ static void save()
 	SECRETD->remove_file("intermud");
 	SECRETD->rename_file("intermud-tmp", "intermud");
 
-	buf = STRINGD->hybrid_sprint( ([
+	buf = hybrid_sprint( ([
 		"muds" : muds,
 		"channels" : channels
 	]) );

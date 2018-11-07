@@ -20,7 +20,6 @@
 #include <kernel/version.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/utility.h>
 #include <kotaka/paths/verb.h>
 #include <kotaka/version.h>
@@ -28,6 +27,7 @@
 #include <status.h>
 
 inherit "/lib/math/random";
+inherit "/lib/string/case";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -71,7 +71,7 @@ void main(object actor, mapping roles)
 	body->set_property("id", name);
 	body->set_property("local_snouns", ({ name }) );
 	body->set_property("is_proper", 1);
-	body->set_property("brief", STRINGD->to_title(name));
+	body->set_property("brief", to_title(name));
 
 	body->add_archetype(CATALOGD->lookup_object("class:race:humanoid:human"));
 	body->set_object_name("players:" + name);

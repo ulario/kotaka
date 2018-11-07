@@ -18,13 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <game/paths.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 
 #define RED	1
 #define GREEN	2
 #define BLUE	4
 #define BOLD	8
+
+inherit "/lib/string/char";
 
 private void draw_starpatch(object gc, int x, int y)
 {
@@ -53,7 +54,7 @@ void on_paint_text(object gc, object obj, object viewer)
 	gc->set_color(0x07);
 
 	for (my = -8; my <= 8; my++) {
-		gc->draw(STRINGD->spaces(17));
+		gc->draw(spaces(17));
 	}
 
 	draw_starpatch(gc, -5, -5);

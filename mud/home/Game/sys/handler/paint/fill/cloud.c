@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <game/paths.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
+
+inherit "/lib/string/char";
 
 #define RED	1
 #define GREEN	2
@@ -41,6 +42,6 @@ void on_paint_text(object gc, object obj, object viewer)
 
 	for (my = -8; my <= 8; my++) {
 		gc->move_pen(-8, my);
-		gc->draw(STRINGD->chars('\'', 17));
+		gc->draw(chars('\'', 17));
 	}
 }

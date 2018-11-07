@@ -18,12 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/kernel.h>
-#include <kotaka/paths/string.h>
+#include <kotaka/checkarg.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
-#include <kotaka/checkarg.h>
 
 inherit SECOND_AUTO;
+inherit "/lib/string/validate";
 
 int audit;
 
@@ -66,7 +66,7 @@ object get_proxy(string user)
 	creator = DRIVER->creator(previous_program());
 
 	CHECKARG(user && user != "" &&
-		STRINGD->is_valid_username(user), 1, "get_proxy");
+		is_valid_username(user), 1, "get_proxy");
 
 	check_security(user, creator);
 
@@ -96,7 +96,7 @@ object get_wiztool(string user)
 	creator = DRIVER->creator(previous_program());
 
 	CHECKARG(user && user != "" &&
-		STRINGD->is_valid_username(user), 1, "get_proxy");
+		is_valid_username(user), 1, "get_proxy");
 
 	check_security(user, creator);
 

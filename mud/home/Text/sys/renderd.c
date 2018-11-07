@@ -21,11 +21,13 @@
 #include <kotaka/paths/ansi.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/geometry.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
 inherit "/lib/sort";
+inherit "/lib/string/case";
+inherit "/lib/string/char";
+inherit "/lib/string/format";
 
 private void draw_object(object gc, object viewer, object obj);
 private void draw_contents(object gc, object viewer, object obj);
@@ -171,7 +173,7 @@ private string prose(object viewer)
 			desc = "This place is boring.";
 		}
 
-		desc = STRINGD->wordwrap(desc, 55) + "\n";
+		desc = wordwrap(desc, 55) + "\n";
 
 		inv = env->query_inventory() - ({ viewer });
 
@@ -188,7 +190,7 @@ private string prose(object viewer)
 		}
 
 		if (sizeof(inv)) {
-			desc += "\n" + STRINGD->wordwrap("You see " + inventory_list(inv) + ".", 55) + "\n";
+			desc += "\n" + wordwrap("You see " + inventory_list(inv) + ".", 55) + "\n";
 		}
 
 		return desc;
@@ -232,10 +234,10 @@ private void draw_frame(object gc)
 	gc->set_color(0x07);
 
 	gc->move_pen(1, 0);
-	gc->draw(STRINGD->chars('-', 78));
+	gc->draw(chars('-', 78));
 
 	gc->move_pen(1, 20);
-	gc->draw(STRINGD->chars('-', 78));
+	gc->draw(chars('-', 78));
 
 	for (y = 1; y < 20; y++) {
 		gc->move_pen(0, y);
@@ -269,7 +271,7 @@ private void draw_banner(object gc, object env)
 
 	gc->set_color(0x08);
 	gc->move_pen(1, 1);
-	gc->draw(STRINGD->chars('-', 58));
+	gc->draw(chars('-', 58));
 	gc->set_color(0x07);
 	gc->move_pen(2, 0);
 
@@ -329,7 +331,7 @@ private void draw_bsod(object gc)
 
 	for (y = -8; y <= 8; y++) {
 		gc->move_pen(-8, y);
-		gc->draw(STRINGD->chars(' ', 17));
+		gc->draw(chars(' ', 17));
 	}
 
 	gc->move_pen(-3, -1);
@@ -529,7 +531,7 @@ private string draw_void(object viewer)
 
 	if (env) {
 		output = TEXT_SUBD->generate_brief_proper(env) + "\n\n";
-		output = STRINGD->to_upper(output[0 .. 0]) + output[1 ..];
+		output = to_upper(output[0 .. 0]) + output[1 ..];
 	}
 
 	output += prose(viewer);

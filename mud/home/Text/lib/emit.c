@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 #include <type.h>
+
+inherit "/lib/string/case";
 
 private string from_object(object obj, mapping seen, object viewer)
 {
@@ -104,9 +105,9 @@ void emit_to(object actor, object viewer, mixed chain ...)
 	}
 
 	if (strlen(buffer) > 1) {
-		buffer = STRINGD->to_upper(buffer[0 .. 0]) + buffer[1 ..];
+		buffer = to_upper(buffer[0 .. 0]) + buffer[1 ..];
 	} else {
-		buffer = STRINGD->to_upper(buffer);
+		buffer = to_upper(buffer);
 	}
 
 	mobiles = viewer->query_property("mobiles");

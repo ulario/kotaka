@@ -19,11 +19,12 @@
  */
 #include <kotaka/checkarg.h>
 #include <kotaka/privilege.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 #include <type.h>
+
+inherit "/lib/string/case";
 
 private mixed *filter_noun(object *candidates, string noun)
 {
@@ -34,7 +35,7 @@ private mixed *filter_noun(object *candidates, string noun)
 
 	sz = sizeof(candidates);
 
-	noun = STRINGD->to_lower(noun);
+	noun = to_lower(noun);
 
 	/* singular nouns must match one and only one object */
 	/* plural nouns can match multiples */

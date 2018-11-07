@@ -18,12 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/ansi.h>
-#include <kotaka/paths/text.h>
 #include <kotaka/paths/string.h>
+#include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
 inherit LIB_VERB;
+inherit "/lib/string/char";
 
 string *query_parse_methods()
 {
@@ -45,9 +46,9 @@ string make_bar(int cur, int max, int len)
 		buf = "\033[1;32m";
 	}
 
-	buf += STRINGD->chars('=', pips);
+	buf += chars('=', pips);
 	buf += "\033[0m";
-	buf += STRINGD->spaces(len - pips);
+	buf += spaces(len - pips);
 
 	return buf;
 }
@@ -60,9 +61,9 @@ string make_xp_bar(int cur, int max, int len)
 	pips = (cur * len / max);
 
 	buf = "\033[1;36m";
-	buf += STRINGD->chars('=', pips);
+	buf += chars('=', pips);
 	buf += "\033[0m";
-	buf += STRINGD->spaces(len - pips);
+	buf += spaces(len - pips);
 
 	return buf;
 }

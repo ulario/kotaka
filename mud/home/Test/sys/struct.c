@@ -18,13 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/assert.h>
-#include <kotaka/privilege.h>
-#include <kotaka/paths/string.h>
-#include <kotaka/paths/system.h>
 #include <kotaka/log.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/privilege.h>
 #include <type.h>
 
 inherit "~System/lib/struct/multimap";
+inherit "/lib/string/sprint";
 
 private void test_mapping_1()
 {
@@ -73,7 +73,7 @@ private void test_mapping_2()
 		ASSERT(map->query_element(i) == nil);
 	}
 
-	LOGD->post_message("system", LOG_NOTICE, STRINGD->hybrid_sprint(map->query_root()));
+	LOGD->post_message("system", LOG_NOTICE, hybrid_sprint(map->query_root()));
 }
 
 void test()

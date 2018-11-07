@@ -19,12 +19,12 @@
  */
 #include <config.h>
 #include <kernel/access.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 #include <kotaka/privilege.h>
 
+inherit "/lib/string/format";
 inherit TEXT_LIB_USTATE;
 
 int stopped;
@@ -132,7 +132,7 @@ private void handle_input(string input, varargs mapping dup)
 	string first;
 	string alias;
 
-	input = STRINGD->trim_whitespace(input);
+	input = trim_whitespace(input);
 
 	if (strlen(input) > 0) {
 		switch(input[0]) {

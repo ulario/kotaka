@@ -24,6 +24,8 @@
 
 /* keeps track of bans */
 
+inherit "/lib/string/sprint";
+
 mapping bans;
 mapping sitebans;
 
@@ -51,7 +53,7 @@ void save()
 
 	ACCESS_CHECK(KERNEL() || ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
 
-	buf = STRINGD->hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
+	buf = hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
 
 	CONFIGD->make_dir(".");
 	CONFIGD->remove_file("bans-tmp");

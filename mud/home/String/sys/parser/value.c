@@ -21,7 +21,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
-inherit SECOND_AUTO;
+inherit "~System/lib/string/escape";
 
 string grammar;
 
@@ -56,7 +56,7 @@ mixed parse(string input)
 
 static string *parse_str(string *input)
 {
-	return ({ STRINGD->quote_unescape(input[0][1 .. strlen(input[0]) - 2]) });
+	return ({ quote_unescape(input[0][1 .. strlen(input[0]) - 2]) });
 }
 
 static int *parse_int(string *input)

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/string.h>
+inherit "/lib/string/char";
 
 string *rows;
 int width, height;
@@ -43,7 +43,7 @@ void set_size(int new_width, int new_height)
 		string nulls;
 
 		rows += allocate(new_height - height);
-		nulls = STRINGD->nulls(new_bytes);
+		nulls = nulls(new_bytes);
 
 		for (i = height; i < new_height; i++) {
 			rows[i] = nulls;
@@ -61,7 +61,7 @@ void set_size(int new_width, int new_height)
 		string suffix;
 
 		/* extend each row */
-		suffix = STRINGD->nulls(new_bytes - bytes);
+		suffix = nulls(new_bytes - bytes);
 
 		for (i = 0; i < top; i++) {
 			rows[i] += suffix;

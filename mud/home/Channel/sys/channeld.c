@@ -30,6 +30,7 @@
 #define SYSTEM_CHANNELS ({ "compile", "debug", "error", "system", "trace" })
 
 inherit "~System/lib/struct/list";
+inherit "/lib/string/sprint";
 
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
@@ -142,7 +143,7 @@ void save()
 
 	CONFIGD->make_dir(".");
 
-	buf = STRINGD->hybrid_sprint( ([
+	buf = hybrid_sprint( ([
 		"channels": channels,
 		"intermud": intermud
 	]) );

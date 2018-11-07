@@ -18,11 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/text.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
 
 inherit LIB_EMIT;
 inherit LIB_VERB;
+inherit "/lib/string/char";
+inherit "/lib/string/case";
 
 string *query_parse_methods()
 {
@@ -49,7 +50,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	roles["raw"] = STRINGD->to_lower(roles["raw"]);
+	roles["raw"] = to_lower(roles["raw"]);
 	px = actor->query_property("pos_x");
 	py = actor->query_property("pos_y");
 
@@ -64,7 +65,7 @@ void main(object actor, mapping roles)
 
 		case 'n':
 			if (number) {
-				stepqueue += STRINGD->chars('n', number);
+				stepqueue += chars('n', number);
 			} else {
 				stepqueue += "n";
 			}
@@ -73,7 +74,7 @@ void main(object actor, mapping roles)
 
 		case 'e':
 			if (number) {
-				stepqueue += STRINGD->chars('e', number);
+				stepqueue += chars('e', number);
 			} else {
 				stepqueue += "e";
 			}
@@ -82,7 +83,7 @@ void main(object actor, mapping roles)
 
 		case 's':
 			if (number) {
-				stepqueue += STRINGD->chars('s', number);
+				stepqueue += chars('s', number);
 			} else {
 				stepqueue += "s";
 			}
@@ -91,7 +92,7 @@ void main(object actor, mapping roles)
 
 		case 'w':
 			if (number) {
-				stepqueue += STRINGD->chars('w', number);
+				stepqueue += chars('w', number);
 			} else {
 				stepqueue += "w";
 			}

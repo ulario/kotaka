@@ -17,11 +17,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/system.h>
 #include <kotaka/paths/string.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 #include <kotaka/assert.h>
+
+inherit "/lib/string/sprint";
 
 string name;
 string password; /* hashed */
@@ -151,9 +153,11 @@ void save()
 
 	ACCESS_CHECK(ACCOUNT());
 
-	buf = STRINGD->hybrid_sprint(
-		([ "properties" : properties,
-		"password" : password ])
+	buf = hybrid_sprint(
+		([
+			"properties" : properties,
+			"password" : password
+		])
 	);
 
 	SECRETD->make_dir(".");
