@@ -582,9 +582,6 @@ void logout(int quit)
 		remove_call_out(handle);
 	}
 
-	muds = ([ ]);
-	channels = ([ ]);
-
 	buffer = nil;
 }
 
