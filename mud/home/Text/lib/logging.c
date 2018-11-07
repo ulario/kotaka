@@ -41,7 +41,7 @@ static string whoami()
 
 	conn = this_object()->query_conn();
 
-	while (conn <- LIB_USER) {
+	while (conn && conn <- LIB_USER) {
 		conn = conn->query_conn();
 	}
 
