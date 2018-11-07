@@ -112,7 +112,7 @@ void main(object actor, mapping roles)
 
 		if (turkey) {
 			turkey->message(kicker_name + " bans you from the mud.\n");
-			turkey->quit();
+			turkey->quit("banned");
 		}
 
 		user->message("You ban " + turkey_name + " from the mud.\n");

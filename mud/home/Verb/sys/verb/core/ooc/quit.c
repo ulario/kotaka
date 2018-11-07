@@ -44,6 +44,6 @@ void main(object actor, mapping roles)
 
 		send_out("Departing " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	} else {
-		query_user()->quit();
+		query_user()->quit("quit");
 	}
 }

@@ -36,6 +36,7 @@ inherit "/lib/string/replace";
 object mobile;
 object body;
 int keepalive;
+int quitting;
 
 string username;
 
@@ -162,11 +163,69 @@ object query_body()
 	return body;
 }
 
-void logout(int quit)
+object query_base_conn()
+{
+	object conn;
+
+	conn = query_conn();
+
+	while (conn && conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	return conn;
+}
+
+void quit(string cause)
+{
+	quitting = 1;
+
+	switch(cause) {
+	case "quit": /* user logged out */
+		message("Come back soon.\n");
+		break;
+	case "banned": /* user was banned */
+		/* user's message handled by ban command */
+		break;
+	case "sitebanned": /* user was sitebanned */
+		message(BAND->query_siteban_message(query_base_conn()) + "\n");
+		break;
+	case "bumped": /* user logged in on another connection */
+		/* handled by new user's login */
+		break;
+	case "badpass": /* password authentication failed */
+		break;
+	case "kicked": /* user was kicked */
+		break; /* kick will handle this */
+	case "nuked": /* user's account was nuked */
+		break;
+	case "timeout": /* user timed out at login process */
+		break; /* handled by start ustate */
+	case "idle": /* user idled out */
+		break;
+	}
+
+	disconnect();
+}
+
+void logout(int dest)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	::logout(quit);
+	if (!username || quitting) {
+		return;
+	}
+
+	if (dest) {
+		/* connection object was destructed, manual logout */
+		message("Come back soon.\n");
+		TEXT_SUBD->send_logout_message(username, " gets disconnected.");
+	} else {
+		/* remote closure, we're linkdead */
+		TEXT_SUBD->send_logout_message(username, " goes linkdead.");
+	}
+
+	::logout(dest);
 }
 
 private void do_banner()
@@ -260,11 +319,6 @@ int receive_message(string str)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	return do_receive(str);
-}
-
-void quit()
-{
-	disconnect();
 }
 
 void channel_message(string channel, string stamp, string sender, string message)

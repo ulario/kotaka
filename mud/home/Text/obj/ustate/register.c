@@ -135,7 +135,8 @@ void receive_in(string input)
 			return;
 		} else if (BAND->query_is_user_banned(name)) {
 			send_out("That name is banned.\n");
-			query_user()->quit();
+			send_out(BAND->query_ban_message(name));
+			query_user()->quit("banned");
 			return;
 		} else {
 			password = input;
@@ -153,7 +154,8 @@ void receive_in(string input)
 			return;
 		} else if (BAND->query_is_user_banned(name)) {
 			send_out("Whoops, the username you picked just got banned.\n");
-			query_user()->quit();
+			send_out(BAND->query_ban_message(name));
+			query_user()->quit("banned");
 			return;
 		} else if (input != password) {
 			send_out("Password mismatch.\n");

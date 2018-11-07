@@ -147,7 +147,7 @@ void siteban_notify(object LIB_CONN connection)
 		return;
 	}
 
-	user->message(query_siteban_message(connection));
+	user->quit("sitebanned");
 }
 
 string query_banner(object LIB_CONN connection)

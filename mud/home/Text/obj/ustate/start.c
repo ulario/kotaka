@@ -65,7 +65,7 @@ static void timeout()
 
 	send_out("\n\nSorry, but you took too long.\n\nYou need to log in within 120 seconds of connecting.\n");
 
-	query_user()->quit();
+	query_user()->quit("timeout");
 }
 
 void begin()
@@ -136,7 +136,7 @@ void receive_in(string input)
 
 		case "5":
 			send_out("Thanks for visiting.\n");
-			query_user()->quit();
+			query_user()->quit("quit");
 			return;
 
 		default:

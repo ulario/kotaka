@@ -148,11 +148,12 @@ void receive_in(string input)
 			send_out("Password mismatch.\n");
 			/* we will eventually want to ban IPs that */
 			/* fail too much */
-			query_user()->quit();
+			query_user()->quit("badpass");
 			return;
 		} else if (BAND->query_is_user_banned(name)) {
 			send_out("You are banned.\n");
-			query_user()->quit();
+			send_out(BAND->query_ban_message(name));
+			query_user()->quit("banned");
 			return;
 		} else {
 			if (TEXT_USERD->find_user(name)) {
@@ -183,11 +184,12 @@ void receive_in(string input)
 			return;
 		} else if (!ACCOUNTD->authenticate(name, password)) {
 			send_out("Your password was just changed!\n");
-			query_user()->quit();
+			query_user()->quit("badpass");
 			return;
 		} else if (BAND->query_is_user_banned(name)) {
 			send_out("Sorry, but you were just banned.\n");
-			query_user()->quit();
+			send_out(BAND->query_ban_message(name));
+			query_user()->quit("banned");
 			return;
 		} else if (input == "yes") {
 			object user;
@@ -196,7 +198,7 @@ void receive_in(string input)
 
 			if (user) {
 				send_out("Evicting previous connection.\n");
-				user->quit();
+				user->quit("bumped");
 			} else {
 				send_out("Your previous connection went away before I could evict it.\n");
 

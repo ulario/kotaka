@@ -94,5 +94,5 @@ void main(object actor, mapping roles)
 	TEXT_SUBD->send_to_all_except(kicker_name + " kicked " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
 	turkey->message(kicker_name + " kicked you from the mud.\n");
 
-	turkey->quit();
+	turkey->quit("kicked");
 }

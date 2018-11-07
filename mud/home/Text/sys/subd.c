@@ -359,7 +359,7 @@ void send_login_message(string name)
 	}
 }
 
-void send_logout_message(string name)
+void send_logout_message(string name, string cause)
 {
 	string *users;
 	int sz;
@@ -370,9 +370,24 @@ void send_logout_message(string name)
 		if (users[sz] == name) {
 			continue;
 		} else {
-			ooc_emit_to(name, users[sz],
-				query_titled_name(name)
-				+ " logs out.\n");
+			switch(cause) {
+			case "quit":
+				ooc_emit_to(name, users[sz],
+					query_titled_name(name)
+					+ " logs out.\n");
+				break;
+			case "disconnect":
+				ooc_emit_to(name, users[sz],
+					query_titled_name(name)
+					+ " goes linkdead.\n");
+				break;
+			case "ban":
+				/* handled by the ban command */
+				break;
+			case "siteban":
+				/* handled by text userd during siteban */
+				break;
+			}
 		}
 	}
 }

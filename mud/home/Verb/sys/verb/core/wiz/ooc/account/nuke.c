@@ -67,7 +67,7 @@ void main(object actor, mapping roles)
 
 		if (turkey) {
 			turkey->message("You have been nuked from the mud by " + kicker_name + "!\n");
-			turkey->quit();
+			turkey->quit("nuked");
 		}
 	}
 

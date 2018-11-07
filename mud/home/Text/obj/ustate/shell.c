@@ -88,17 +88,6 @@ void go()
 
 void pre_end()
 {
-	object user;
-	string name;
-
-	user = query_user();
-
-	ACCESS_CHECK(previous_object() == user);
-
-	if (user->query_username()) {
-		TEXT_SUBD->send_logout_message(user->query_username());
-	}
-	send_out("Come back soon.\n");
 }
 
 private void handle_input(string input, varargs mapping dup);
