@@ -529,7 +529,7 @@ static void keepalive()
 		5,
 		MUDNAME,
 		0,
-		0,
+		MUDNAME,
 		0,
 		"keepalive",
 		"Keepalive message",
