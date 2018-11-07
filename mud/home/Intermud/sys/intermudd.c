@@ -529,7 +529,7 @@ static void keepalive()
 {
 	mixed *arr;
 
-	keepalive = call_out("keepalive", 10);
+	keepalive = call_out("keepalive", 300);
 
 	arr = ({
 		"error",
