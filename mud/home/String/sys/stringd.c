@@ -25,6 +25,7 @@
 inherit "~System/lib/string/escape";
 inherit "~System/lib/string/sprint";
 inherit "/lib/string/char";
+inherit "/lib/string/case";
 inherit "/lib/string/bitops";
 inherit "/lib/string/trim";
 inherit "/lib/string/format";
@@ -108,72 +109,6 @@ int is_valid_username(string str)
 {
 	return str && strlen(str) >= 1 && strlen(str) <= 32 &&
 		regex_match(str, "[A-Za-z][_A-Za-z0-9]*");
-}
-
-string to_lower(string text)
-{
-	int ctr;
-	int len;
-	string newword;
-
-	newword = text;
-	len = strlen(newword);
-
-	for (ctr = 0; ctr < len; ctr++) {
-		newword[ctr] = char_to_lower(newword[ctr]);
-	}
-
-	return newword;
-}
-
-string to_upper(string text)
-{
-	int ctr;
-	int len;
-	string newword;
-
-	newword = text;
-	len = strlen(newword);
-
-	for (ctr = 0; ctr < len; ctr++) {
-		newword[ctr] = char_to_upper(newword[ctr]);
-	}
-
-	return newword;
-}
-
-string to_title(string text)
-{
-	string *words;
-	int index;
-
-	words = explode(text, " ") - ({ "" });
-
-	for (index = 0; index < sizeof(words); index++) {
-		string word;
-
-		word = to_lower(words[index]);
-
-		if (index == 0 || index == (sizeof(words) - 1)) {
-			word[0] = char_to_upper(word[0]);
-		} else {
-			switch(word) {
-			case "and":
-			case "auf":
-			case "de":
-			case "of":
-			case "or":
-			case "the":
-				break;
-			default:
-				word[0] = char_to_upper(word[0]);
-			}
-		}
-
-		words[index] = word;
-	}
-
-	return implode(words, " ");
 }
 
 string mixed_sprint(mixed data, varargs mapping seen);
