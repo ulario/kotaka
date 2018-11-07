@@ -52,7 +52,7 @@ int mudlistid;
 mapping muds;
 mapping channels;
 
-private void save();
+static void save();
 private void restore();
 
 #ifndef MUDNAME
@@ -268,7 +268,7 @@ private void do_chanlist_reply(mixed *value)
 		}
 	}
 
-	save();
+	call_out("save", 0);
 }
 
 private void do_emoteto(mixed *value)
@@ -331,7 +331,7 @@ private void do_mudlist(mixed *value)
 		}
 	}
 
-	save();
+	call_out("save", 0);
 }
 
 private void do_startup_reply(mixed *value)
@@ -344,7 +344,7 @@ private void do_startup_reply(mixed *value)
 
 	password = value[7];
 
-	save();
+	call_out("save", 0);
 
 	ch = CHANNELD->query_channels();
 	sz = sizeof(ch);
@@ -705,7 +705,7 @@ void remove_channel(string channel)
 
 #endif
 
-private void save()
+static void save()
 {
 	string buf;
 
