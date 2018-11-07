@@ -754,9 +754,7 @@ static void save()
 	buf = STRINGD->hybrid_sprint( ([
 		"password" : password,
 		"mudlistid" : mudlistid,
-		"muds" : muds,
-		"chanlistid" : chanlistid,
-		"channels" : channels
+		"chanlistid" : chanlistid
 	]) );
 
 	SECRETD->make_dir(".");
@@ -764,6 +762,17 @@ static void save()
 	SECRETD->write_file("intermud-tmp", buf + "\n");
 	SECRETD->remove_file("intermud");
 	SECRETD->rename_file("intermud-tmp", "intermud");
+
+	buf = STRINGD->hybrid_sprint( ([
+		"muds" : muds,
+		"channels" : channels
+	]) );
+
+	SECRETD->make_dir(".");
+	SECRETD->remove_file("intermud-aux-tmp");
+	SECRETD->write_file("intermud-aux-tmp", buf + "\n");
+	SECRETD->remove_file("intermud-aux");
+	SECRETD->rename_file("intermud-aux-tmp", "intermud-aux");
 }
 
 private void restore()
