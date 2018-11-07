@@ -22,6 +22,7 @@
 #include <kotaka/paths/intermud.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/paths/text.h>
 #include <kotaka/paths/utility.h>
 #include <kotaka/privilege.h>
 #include <status.h>
@@ -410,7 +411,15 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	if (!norelay) {
 		if (intermud && intermud[channel]) {
-			INTERMUDD->send_channel_message(channel, sender, message);
+			object user;
+
+			user = TEXT_USERD->find_user(sender);
+
+			if (user) {
+				INTERMUDD->send_channel_message(channel, sender, user->query_titled_name(), message);
+			} else {
+				INTERMUDD->send_channel_message(channel, sender, sender, message);
+			}
 
 			return;
 		}

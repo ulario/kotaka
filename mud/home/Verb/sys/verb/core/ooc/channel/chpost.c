@@ -55,5 +55,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	CHANNELD->post_message(channel, user->query_titled_name(), text);
+	CHANNELD->post_message(channel, user->query_name(), text);
 }

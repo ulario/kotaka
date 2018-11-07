@@ -38,6 +38,8 @@
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
+inherit "~System/lib/string/sprint";
+inherit "/lib/string/case";
 
 int handle;
 int keepalive;
@@ -222,7 +224,7 @@ object select(string input)
 	return this_object();
 }
 
-void send_channel_message(string channel, string sender, string text)
+void send_channel_message(string channel, string sender, string visible, string text)
 {
 	mixed *arr;
 
@@ -230,11 +232,11 @@ void send_channel_message(string channel, string sender, string text)
 		"channel-m",
 		5,
 		MUDNAME,
-		sender ? sender : "system",
+		sender ? sender : 0,
 		0,
 		0,
 		channel,
-		sender ? STRINGD->to_title(sender) : "(system)",
+		visible,
 		text
 	});
 
@@ -633,7 +635,7 @@ void send_tell(string from, string decofrom, string mud, string user, string mes
 		from,
 		mud,
 		user,
-		decofrom + "@" + MUDNAME,
+		decofrom,
 		message
 	});
 
