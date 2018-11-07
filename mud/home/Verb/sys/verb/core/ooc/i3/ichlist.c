@@ -22,6 +22,8 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "~System/lib/string/char";
+inherit "~System/lib/string/align";
 
 string *query_parse_methods()
 {
@@ -32,8 +34,11 @@ void main(object actor, mapping roles)
 {
 	string name;
 	string *list;
+	object user;
 
-	if (query_user()->query_class() < 2) {
+	user = query_user();
+
+	if (user->query_class() < 2) {
 		send_out("You have insufficient access to list i3 channels.\n");
 		return;
 	}
@@ -102,8 +107,6 @@ void main(object actor, mapping roles)
 			int i;
 			int sz;
 			int max;
-			string word;
-			string line;
 
 			sz = sizeof(list);
 
@@ -117,13 +120,8 @@ void main(object actor, mapping roles)
 				}
 			}
 
-			word = "Channel";
-			line = word + STRINGD->spaces(2 + max - strlen(word));
-
-			word = "Owner";
-			line += word + STRINGD->spaces(2 + max - strlen(word));
-
-			send_out(line + "\n\n");
+			send_out(lalign("Channel", max) + "   Owner" + "\n");
+			send_out(lalign("-------", max) + "   -----" + "\n");
 
 			for (i = 0; i < sz; i++) {
 				string channel;
@@ -133,16 +131,29 @@ void main(object actor, mapping roles)
 				channel = list[i];
 				({ mud, dummy }) = INTERMUDD->query_channel(channel);
 
-				line = channel + STRINGD->spaces(2 + max - strlen(channel));
-				line += mud;
-
-				send_out(line + "\n");
+				send_out(lalign(channel, max) + " - " + mud + "\n");
 			}
 		}
 		break;
 
 	default:
-		send_out(STRINGD->wordwrap(implode(list, ", "), 60) + "\n");
+		{
+			object telnet;
+			int width;
+
+			telnet = user->query_telnet_obj();
+
+			width = 80;
+
+			if (telnet) {
+				if (telnet->query_naws_active()) {
+					width = telnet->query_naws_width();
+				}
+			}
+
+			send_out(STRINGD->wordwrap(implode(list, ", "), width) + "\n");
+		}
+
 		break;
 	}
 }

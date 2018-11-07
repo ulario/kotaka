@@ -33,7 +33,14 @@ void main(object actor, mapping roles)
 	string name;
 	string *list;
 
-	if (query_user()->query_class() < 2) {
+	object telnet;
+	int width;
+
+	object user;
+
+	user = query_user();
+
+	if (user->query_class() < 2) {
 		send_out("You have insufficient access to list i3 muds.\n");
 		return;
 	}
@@ -50,5 +57,15 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	send_out(STRINGD->wordwrap(implode(list, ", "), 60) + "\n");
+	telnet = user->query_telnet_obj();
+
+	width = 80;
+
+	if (telnet) {
+		if (telnet->query_naws_active()) {
+			width = telnet->query_naws_width();
+		}
+	}
+
+	send_out(STRINGD->wordwrap(implode(list, ", "), width) + "\n");
 }
