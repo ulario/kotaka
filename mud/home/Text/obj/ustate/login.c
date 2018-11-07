@@ -151,8 +151,16 @@ void receive_in(string input)
 			query_user()->quit("badpass");
 			return;
 		} else if (BAND->query_is_user_banned(name)) {
+			string msg;
+
 			send_out("You are banned.\n");
-			send_out(BAND->query_ban_message(name));
+
+			msg = BAND->query_ban_message(name);
+
+			if (msg) {
+				send_out(msg);
+			}
+
 			query_user()->quit("banned");
 			return;
 		} else {
@@ -187,8 +195,16 @@ void receive_in(string input)
 			query_user()->quit("badpass");
 			return;
 		} else if (BAND->query_is_user_banned(name)) {
+			string msg;
+
 			send_out("Sorry, but you were just banned.\n");
-			send_out(BAND->query_ban_message(name));
+
+			msg = BAND->query_ban_message(name);
+
+			if (msg) {
+				send_out(msg);
+			}
+
 			query_user()->quit("banned");
 			return;
 		} else if (input == "yes") {

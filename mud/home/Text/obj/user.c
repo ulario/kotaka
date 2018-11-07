@@ -188,7 +188,15 @@ void quit(string cause)
 		/* user's message handled by ban command */
 		break;
 	case "sitebanned": /* user was sitebanned */
-		message(BAND->query_siteban_message(query_base_conn()) + "\n");
+		{
+			string msg;
+
+			msg = BAND->check_siteban_message(query_base_conn());
+
+			if (msg) {
+				message(msg + "\n");
+			}
+		}
 		break;
 	case "bumped": /* user logged in on another connection */
 		/* handled by new user's login */
