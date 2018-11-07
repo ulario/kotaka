@@ -46,6 +46,8 @@ string buffer;
 string routername;
 
 int password;
+int chanlistid;
+int mudlistid;
 
 mapping muds;
 mapping channels;
@@ -65,6 +67,9 @@ static void create()
 
 static void create()
 {
+	mudlistid = 0;
+	chanlistid = 0;
+
 	muds = ([ ]);
 	channels = ([ ]);
 
@@ -244,11 +249,11 @@ private void do_chanlist_reply(mixed *value)
 	mixed *values;
 	int sz;
 
+	chanlistid = value[6];
 	delta = value[7];
 
 	names = map_indices(delta);
 	values = map_values(delta);
-
 	sz = sizeof(names);
 
 	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
@@ -311,12 +316,14 @@ private void do_mudlist(mixed *value)
 	mixed *values;
 	int sz;
 
+	mudlistid = value[6];
 	delta = value[7];
 
 	names = map_indices(delta);
 	values = map_values(delta);
+	sz = sizeof(names);
 
-	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
+	for ( ; --sz >= 0; ) {
 		if (values[sz] == 0) {
 			muds[names[sz]] = nil;
 		} else {
@@ -703,7 +710,11 @@ private void save()
 	string buf;
 
 	buf = STRINGD->hybrid_sprint( ([
-		"password" : password
+		"password" : password,
+		"mudlistid" : mudlistid,
+		"muds" : muds,
+		"chanlistid" : chanlistid,
+		"channels" : channels
 	]) );
 
 	SECRETD->make_dir(".");
@@ -719,7 +730,11 @@ private void restore()
 	string buf;
 
 	muds = ([ ]);
+	mudlistid = 0;
+
 	channels = ([ ]);
+	chanlistid = 0;
+
 	password = 0;
 
 	buf = SECRETD->read_file("intermud");
