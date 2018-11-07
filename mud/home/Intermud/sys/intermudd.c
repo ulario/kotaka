@@ -399,7 +399,11 @@ private void do_tell(mixed *value)
 private void do_channel_m(mixed *value)
 {
 	if (CHANNELD->test_channel(value[6])) {
-		CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
+		if (to_lower(value[3]) == to_lower(value[7])) {
+			CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
+		} else {
+			CHANNELD->post_message(value[6], value[7] + " (" + value[3] + ")@" + value[2], value[8], 1);
+		}
 	}
 }
 
