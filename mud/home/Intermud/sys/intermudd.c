@@ -201,7 +201,8 @@ string query_banner(object LIB_CONN connection)
 		"(fill in the purpose of the mud here)",
 		"(fill in your admin email here)",
 		([
-			"channel":1
+			"channel" : 1,
+			"tell" : 1
 		]),
 		([ ])
 	});
@@ -617,6 +618,50 @@ string *query_muds()
 mixed *query_mud(string mud)
 {
 	return SUBD->deep_copy(muds[mud]);
+}
+
+void send_tell(string from, string decofrom, string mud, string user, string message)
+{
+	mixed *arr;
+
+	ACCESS_CHECK(INTERFACE() || VERB());
+
+	arr = ({
+		"tell",
+		5,
+		MUDNAME,
+		from,
+		mud,
+		user,
+		decofrom + "@" + MUDNAME,
+		message
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
+}
+
+void send_emote(string from, string decofrom, string mud, string user, string message)
+{
+	mixed *arr;
+
+	ACCESS_CHECK(INTERFACE() || VERB());
+
+	arr = ({
+		"emoteto",
+		5,
+		MUDNAME,
+		from,
+		mud,
+		user,
+		decofrom + "@" + MUDNAME,
+		message
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
 }
 
 void listen_channel(string channel, int on)
