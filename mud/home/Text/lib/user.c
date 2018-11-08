@@ -118,27 +118,17 @@ int login(string method)
 	return MODE_NOCHANGE;
 }
 
-void logout(int quit)
+void logout()
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| LOCAL());
 
-	disconnecting = 1;
-
 	call_limited("nuke_state_tree", root);
-
-	if (!destructing) {
-		destruct_object(this_object());
-	}
 }
 
 static void destruct()
 {
-	destructing = 1;
-
-	if (!disconnecting) {
-		disconnect();
-	}
+	disconnect();
 }
 
 private void do_escape(string str)

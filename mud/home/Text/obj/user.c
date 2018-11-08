@@ -214,6 +214,10 @@ void quit(string cause)
 	}
 
 	disconnect();
+
+	if (this_object()) {
+		destruct_object(this_object());
+	}
 }
 
 void logout(int dest)
@@ -221,19 +225,22 @@ void logout(int dest)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	if (!username || quitting) {
-		return;
-	}
-
-	if (dest) {
-		/* connection object was destructed, manual logout */
-		message("Come back soon.\n");
-		TEXT_SUBD->send_logout_message(username, " gets disconnected.");
 	} else {
-		/* remote closure, we're linkdead */
-		TEXT_SUBD->send_logout_message(username, " goes linkdead.");
+		if (dest) {
+			/* connection object was destructed, manual logout */
+			message("Come back soon.\n");
+			TEXT_SUBD->send_logout_message(username, " gets disconnected.");
+		} else {
+			/* remote closure, we're linkdead */
+			TEXT_SUBD->send_logout_message(username, " goes linkdead.");
+		}
 	}
 
-	::logout(dest);
+	::logout();
+
+	if (this_object()) {
+		destruct_object(this_object());
+	}
 }
 
 private void do_banner()

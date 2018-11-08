@@ -20,6 +20,7 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
+#include <kotaka/assert.h>
 
 #define STATE_GETNAME	1
 #define STATE_GETPASS	2
@@ -215,6 +216,7 @@ void receive_in(string input)
 			if (user) {
 				send_out("Evicting previous connection.\n");
 				user->quit("bumped");
+				ASSERT(!user);
 			} else {
 				send_out("Your previous connection went away before I could evict it.\n");
 
