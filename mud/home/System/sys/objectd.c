@@ -274,8 +274,7 @@ atomic void compile(string owner, object obj, string *source, string inherited .
 				}
 			}
 
-			SUSPENDD->suspend_system();
-			SUSPENDD->queue_work("do_upgrade", obj);
+			call_out("do_upgrade", 0, obj);
 
 			catch {
 				obj->upgrading();

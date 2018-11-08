@@ -336,7 +336,7 @@ int query_timeout(object LIB_CONN connection)
 
 		connection->set_mode(MODE_BLOCK);
 
-		SUSPENDD->queue_delayed_work("close_connection", delay, connection);
+		call_out("close_connection", delay, connection);
 
 		return (int)(ceil((float)delay));
 	};
