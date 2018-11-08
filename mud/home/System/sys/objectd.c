@@ -225,7 +225,9 @@ void do_upgrade(object obj)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	obj->upgrade();
+	if (obj) {
+		obj->upgrade();
+	}
 }
 
 atomic void compile(string owner, object obj, string *source, string inherited ...)
