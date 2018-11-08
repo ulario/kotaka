@@ -30,7 +30,9 @@
 
 inherit SECOND_AUTO;
 inherit LIB_SYSTEM;
+inherit "~System/lib/struct/list";
 
+mixed **upgrades;	/* upgrade list */
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
@@ -200,6 +202,25 @@ atomic void compiling(string path)
 	}
 }
 
+static void process()
+{
+	object obj;
+
+	if (!upgrades || list_empty(upgrades)) {
+		upgrades = nil;
+		return;
+	}
+
+	call_out("process", 0);
+
+	obj = list_front(upgrades);
+	list_pop_front(upgrades);
+
+	if (obj) {
+		obj->upgrade();
+	}
+}
+
 void do_upgrade(object obj)
 {
 	ACCESS_CHECK(SYSTEM());
@@ -274,11 +295,17 @@ atomic void compile(string owner, object obj, string *source, string inherited .
 				}
 			}
 
-			call_out("do_upgrade", 0, obj);
-
 			catch {
 				obj->upgrading();
 			}
+
+			if (!upgrades) {
+				upgrades = ({ nil, nil });
+
+				call_out("process", 0);
+			}
+
+			list_push_back(upgrades, obj);
 		}
 	}
 }
