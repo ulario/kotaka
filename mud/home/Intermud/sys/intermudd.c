@@ -170,10 +170,12 @@ private string mudmode_sprint(mixed data)
 
 private void log_outbound(mixed *arr)
 {
+/*	LOGD->post_message("debug", LOG_DEBUG, "I3 packet out: " + mixed_sprint(arr));*/
 }
 
 private void log_inbound(mixed *arr)
 {
+/*	LOGD->post_message("debug", LOG_DEBUG, "I3 packet in: " + mixed_sprint(arr));*/
 }
 
 /* connection management */
