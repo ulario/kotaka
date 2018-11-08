@@ -535,14 +535,11 @@ static void keepalive()
 	keepalive = call_out("keepalive", 300);
 
 	arr = ({
-		"error",
+		"who-req",
 		5,
 		MUDNAME,
 		0,
 		MUDNAME,
-		0,
-		"keepalive",
-		"Keepalive message",
 		0
 	});
 
