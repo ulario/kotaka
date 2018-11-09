@@ -27,9 +27,4 @@ static void do_test(string test)
 void test()
 {
 	ACCESS_CHECK(TEST());
-
-	call_out("do_test", 0, "bigstruct");
-	call_out("do_test", 0, "sort");
-	call_out("do_test", 0, "sysstruct");
-	call_out("do_test", 0, "struct");
 }
