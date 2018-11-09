@@ -30,8 +30,8 @@ private void load()
 {
 	MODULED->boot_module("Utility");
 
-	load_dir("obj", 1);
-	load_dir("sys", 1);
+	load_dir("obj");
+	load_dir("sys");
 }
 
 static void create()
@@ -51,13 +51,4 @@ int forbid_inherit(string from, string path, int priv)
 		/* no partial inheritance allowed */
 		return !(DRIVER->creator(from) == "Thing");
 	}
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	load();
-
-	purge_orphans("Thing");
 }

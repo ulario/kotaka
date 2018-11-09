@@ -29,9 +29,9 @@ inherit UTILITY_COMPILE;
 
 void load()
 {
-	load_dir("lwo", 1);
-	load_dir("obj", 1);
-	load_dir("sys", 1);
+	load_dir("lwo");
+	load_dir("obj");
+	load_dir("sys");
 }
 
 private void set_limits()
@@ -77,13 +77,7 @@ void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
-	load();
-
 	set_limits();
-
-	compile_object("sys/logd");
-
-	purge_orphans("Text");
 }
 
 private void booted_channel()

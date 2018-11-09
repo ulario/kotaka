@@ -23,10 +23,10 @@
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-private void load()
+atomic private void load()
 {
-	destruct_dir("sys", 3);
-	load_dir("sys", 3);
+	destruct_dir("sys");
+	load_dir("sys");
 }
 
 private void set_limits()
@@ -46,8 +46,5 @@ void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
-	load();
 	set_limits();
-
-	purge_orphans("Verb");
 }

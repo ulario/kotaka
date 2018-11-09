@@ -51,8 +51,8 @@ private void check_versions();
 
 private void load()
 {
-	load_dir("lwo", 1);
-	load_dir("obj", 1);
+	load_dir("lwo");
+	load_dir("obj");
 	load_dir("sys");
 }
 
@@ -488,6 +488,18 @@ void upgrade_system_post_recompile()
 	/* first, ask all InitD's if we can upgrade */
 	/* if nobody says no, send the upgrade signal */
 	MODULED->upgrade_modules();
+	LOGD->post_message("system", LOG_NOTICE, "Upgrade processing completed");
+
+	call_out("do_upgrade_rebuild", 0);
+}
+
+static void do_upgrade_rebuild()
+{
+	MODULED->upgrade_purge();
+	LOGD->post_message("system", LOG_NOTICE, "Upgrade purge completed");
+
+	MODULED->upgrade_build();
+	LOGD->post_message("system", LOG_NOTICE, "Upgrade build completed");
 }
 
 string query_patcher(string program)

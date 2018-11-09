@@ -17,18 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <config.h>
 #include <kotaka/paths/system.h>
 
 inherit SECOND_AUTO;
 
-#define CMD_DESTRUCT	1
-#define CMD_LOAD	2
-#define CMD_RECOMPILE	3
-
-#define FLAG_RECURSE	1
-#define FLAG_CATCH	2
-
-static void process_dir(string dir, int cmd, int flags)
+static void process_dir(string dir, string func)
 {
 	mixed **files;
 	string *names;
@@ -36,75 +30,100 @@ static void process_dir(string dir, int cmd, int flags)
 	int *sizes;
 	int index;
 
+	if (dir == "/") {
+		dir = "";
+	}
+
 	names = get_dir(dir + "/*")[0];
 
 	for (index = 0; index < sizeof(names); index++) {
 		mixed *info;
 		string name;
+		string path;
 
 		name = names[index];
 
 		info = file_info(dir + "/" + name);
 
-		if (info[0] == -2 && (flags & 1)) {
-			process_dir(dir + "/" + name, cmd, flags);
+		/* directory */
+		if (info[0] == -2) {
+			process_dir(dir + "/" + name, func);
 			continue;
 		}
 
+		/* not a .c file */
 		if (strlen(name) <= 2 || name[strlen(name) - 2 ..] != ".c") {
 			continue;
 		}
 
-		name = name[ .. strlen(name) - 3];
+		name = name[.. strlen(name) - 3];
+		path = dir + "/" + name;
 
-		switch(cmd) {
-		case 1:
-			if (info[2]) {
-				if (flags & 2) {
-					catch {
-						destruct_object(dir + "/" + name);
-					}
-				} else {
-					destruct_object(dir + "/" + name);
+		switch(func) {
+		case "load":
+		case "compile":
+		case "recompile":
+			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+				/* inheritable */
+				continue;
+			}
+
+			switch(func) {
+			case "load":
+				if (info[2]) {
+					/* already loaded */
+					continue;
 				}
+				break;
+
+			case "recompile":
+				if (!info[2]) {
+					/* not loaded */
+					continue;
+				}
+				break;
+			}
+			compile_object(path);
+			break;
+
+		case "purge":
+			if (!sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+				/* not inheritable */
+				continue;
+			}
+			/* fall through */
+
+		case "destruct":
+			if (info[2]) {
+				destruct_object(path);
 			}
 			break;
 
-		case 2:
-			if (flags & 2) {
-				catch {
-					load_object(dir + "/" + name);
-				}
-			} else {
-				load_object(dir + "/" + name);
-			}
-			break;
-
-		case 3:
-			if (info[2]) {
-				compile_object(dir + "/" + name);
-			}
 		}
 	}
 }
 
-static void load_dir(string dir, varargs int flags)
+static void load_dir(string dir)
 {
-	process_dir(dir, CMD_LOAD, flags);
+	process_dir(dir, "load");
 }
 
-static void destruct_dir(string dir, varargs int flags)
+static void destruct_dir(string dir)
 {
-	process_dir(dir, CMD_DESTRUCT, flags);
+	process_dir(dir, "destruct");
 }
 
-static void recompile_dir(string dir, varargs int flags)
+static void recompile_dir(string dir)
 {
-	process_dir(dir, CMD_RECOMPILE, flags);
+	process_dir(dir, "recompile");
 }
 
-static void compile_dir(string dir, varargs int flags)
+static void compile_dir(string dir)
 {
-	process_dir(dir, CMD_RECOMPILE, flags);
-	process_dir(dir, CMD_LOAD, flags);
+	process_dir(dir, "compile");
+}
+
+static void purge_dir(string dir)
+{
+	process_dir(dir, "purge");
 }

@@ -57,12 +57,3 @@ void reboot()
 	ACCOUNTD->restore();
 	BAND->restore();
 }
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	load();
-
-	purge_orphans("Account");
-}

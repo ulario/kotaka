@@ -25,8 +25,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	load_dir("lwo", 1);
-	load_dir("sys", 1);
+	load_dir("lwo");
+	load_dir("sys");
 }
 
 static void create()
@@ -34,15 +34,4 @@ static void create()
 	KERNELD->set_global_access("Ansi", 1);
 
 	load();
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	load();
-
-	compile_object("lwo/painter");
-
-	purge_orphans("Ansi");
 }

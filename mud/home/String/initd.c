@@ -27,8 +27,7 @@ private void load()
 {
 	MODULED->boot_module(nil);
 
-	load_dir("lwo", 1);
-	load_dir("sys", 1);
+	load_dir("sys");
 }
 
 static void create()
@@ -36,15 +35,4 @@ static void create()
 	KERNELD->set_global_access("String", 1);
 
 	load();
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	load();
-
-	compile_object("sys/stringd");
-
-	purge_orphans("String");
 }

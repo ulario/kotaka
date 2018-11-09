@@ -58,10 +58,10 @@ private void load()
 	MODULED->boot_module("Thing");
 	MODULED->boot_module("Test");
 
-	load_dir("lwo", 1);
-	load_dir("obj", 1);
-	load_dir("open", 1);
-	load_dir("sys", 1);
+	load_dir("lwo");
+	load_dir("obj");
+	load_dir("open");
+	load_dir("sys");
 }
 
 private void create_channels()
@@ -151,13 +151,6 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	set_limits();
-
-	load();
-
-	compile_object("sys/helpd");
-	compile_object("sys/saveload");
-
-	purge_orphans("Game");
 }
 
 void booted_module(string module)

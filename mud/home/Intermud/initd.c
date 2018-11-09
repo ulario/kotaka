@@ -34,7 +34,7 @@ private void load()
 {
 	MODULED->boot_module("Channel");
 
-	load_dir("sys", 1);
+	load_dir("sys");
 }
 
 static void create()
@@ -51,8 +51,4 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	set_limits();
-
-	load();
-
-	purge_orphans("Intermud");
 }

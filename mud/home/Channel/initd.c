@@ -27,7 +27,7 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	load_dir("sys", 1);
+	load_dir("sys");
 }
 
 private void set_limits()
@@ -67,10 +67,4 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	set_limits();
-
-	compile_object("sys/channeld");
-
-	load();
-
-	purge_orphans("Channel");
 }

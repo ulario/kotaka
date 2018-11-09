@@ -20,6 +20,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
+inherit "~/lib/utility/compile";
 inherit SECOND_AUTO;
 
 void reboot()
@@ -127,5 +128,33 @@ static void purge_orphans(string module)
 
 			destruct_object(file);
 		}
+	}
+}
+
+void upgrade_purge()
+{
+	string module;
+
+	ACCESS_CHECK(SYSTEM());
+
+	module = DRIVER->creator(object_name(this_object()));
+
+	purge_orphans(module);
+
+	if (module) {
+		purge_dir(USR_DIR + "/" + module);
+	}
+}
+
+void upgrade_build()
+{
+	string module;
+
+	ACCESS_CHECK(SYSTEM());
+
+	module = DRIVER->creator(object_name(this_object()));
+
+	if (module) {
+		compile_dir(USR_DIR + "/" + module);
 	}
 }

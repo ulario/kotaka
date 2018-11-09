@@ -25,8 +25,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	load_dir("obj", 1);
-	load_dir("sys", 1);
+	load_dir("obj");
+	load_dir("sys");
 }
 
 static void create()
@@ -34,13 +34,4 @@ static void create()
 	KERNELD->set_global_access("Help", 1);
 
 	load();
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	load();
-
-	purge_orphans("Help");
 }

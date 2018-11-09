@@ -45,12 +45,3 @@ static void create()
 
 	load();
 }
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	load();
-
-	purge_orphans("Kotaka");
-}

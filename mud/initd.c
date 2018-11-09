@@ -25,7 +25,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	destruct_dir("lib", 1);
+	load_dir("misc");
+	load_dir("sys");
 }
 
 static void create()
@@ -33,11 +34,23 @@ static void create()
 	load();
 }
 
-void upgrade_module()
+void upgrade_purge()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
-	load();
-
 	purge_orphans(nil);
+
+	destruct_dir("lib");
+}
+
+void upgrade_build()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	compile_dir("misc");
+}
+
+void upgrade_module()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
 }

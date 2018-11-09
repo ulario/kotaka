@@ -399,3 +399,61 @@ void shutdown_module(string module)
 
 	call_out("purge_module_tick", 0, module);
 }
+
+void upgrade_purge()
+{
+	int sz;
+	string *list;
+
+	ACCESS_CHECK(SYSTEM());
+
+	list = map_indices(modules);
+	list -= ({ "System" });
+
+	scramble(list);
+
+	rlimits(0; -1) {
+		for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+			string module;
+
+			module = list[sz];
+
+			if (modules[module] == -1) {
+				continue;
+			}
+
+			rlimits(0; 250000) {
+				initd_of(module)->upgrade_purge();
+			}
+		}
+	}
+}
+
+void upgrade_build()
+{
+	int sz;
+	string *list;
+
+	ACCESS_CHECK(SYSTEM());
+
+	list = map_indices(modules);
+	list -= ({ "System" });
+
+	scramble(list);
+
+	rlimits(0; -1) {
+		for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+			string module;
+
+			module = list[sz];
+
+			if (modules[module] == -1) {
+				continue;
+			}
+
+			rlimits(0; MODULE_BOOT_TICKS) {
+				initd_of(module)->upgrade_build();
+			}
+		}
+	}
+}

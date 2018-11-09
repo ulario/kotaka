@@ -26,10 +26,11 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	destruct_dir("lwo", 1);
-	destruct_dir("sys", 1);
-	load_dir("lwo", 1);
-	load_dir("sys", 1);
+	destruct_dir("lwo");
+	destruct_dir("sys");
+	load_dir("lwo");
+	load_dir("obj");
+	load_dir("sys");
 }
 
 private void set_limits()
@@ -63,8 +64,6 @@ void upgrade_module()
 	load();
 
 	purge_orphans("Test");
-
-	call_out("do_test", 0);
 }
 
 string query_patcher(string path)

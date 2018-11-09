@@ -27,8 +27,8 @@ private void load()
 {
 	MODULED->boot_module("Text");
 
-	load_dir("lwo", 1);
-	load_dir("sys", 1);
+	load_dir("lwo");
+	load_dir("sys");
 }
 
 static void create()
@@ -36,13 +36,4 @@ static void create()
 	KERNELD->set_global_access("Action", 1);
 
 	load();
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	load();
-
-	purge_orphans("Action");
 }
