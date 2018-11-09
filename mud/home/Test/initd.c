@@ -39,7 +39,6 @@ private void set_limits()
 
 static void do_test()
 {
-	"sys/testd"->test();
 }
 
 static void create()
