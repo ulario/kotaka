@@ -23,7 +23,6 @@
 #include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;
-inherit "/lib/string/validate";
 
 int audit;
 
@@ -65,8 +64,7 @@ object get_proxy(string user)
 
 	creator = DRIVER->creator(previous_program());
 
-	CHECKARG(user && user != "" &&
-		is_valid_username(user), 1, "get_proxy");
+	CHECKARG(user && user != "", 1, "get_proxy");
 
 	check_security(user, creator);
 
@@ -95,8 +93,7 @@ object get_wiztool(string user)
 
 	creator = DRIVER->creator(previous_program());
 
-	CHECKARG(user && user != "" &&
-		is_valid_username(user), 1, "get_proxy");
+	CHECKARG(user && user != "", 1, "get_proxy");
 
 	check_security(user, creator);
 
