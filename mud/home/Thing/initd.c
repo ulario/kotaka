@@ -40,15 +40,3 @@ static void create()
 
 	load();
 }
-
-int forbid_inherit(string from, string path, int priv)
-{
-	switch(path) {
-	case USR_DIR + "/Thing/lib/thing":
-		/* no private inheritance allowed */
-		return priv;
-	default:
-		/* no partial inheritance allowed */
-		return !(DRIVER->creator(from) == "Thing");
-	}
-}
