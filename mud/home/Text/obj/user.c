@@ -79,8 +79,8 @@ void dispatch_wiztool(string line)
 
 static void destruct(int clone)
 {
-	if (clone) {
-		::destruct();
+	if (clone && !quitting) {
+		disconnect();
 	}
 }
 
@@ -215,17 +215,14 @@ void quit(string cause)
 
 	disconnect();
 
-	if (this_object()) {
-		destruct_object(this_object());
-	}
+	quitting = 0;
 }
 
 void logout(int dest)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	if (!username || quitting) {
-	} else {
+	if (username && !quitting) {
 		if (dest) {
 			/* connection object was destructed, manual logout */
 			message("Come back soon.\n");
@@ -238,9 +235,7 @@ void logout(int dest)
 
 	::logout();
 
-	if (this_object()) {
-		destruct_object(this_object());
-	}
+	destruct_object(this_object());
 }
 
 private void do_banner()

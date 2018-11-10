@@ -126,11 +126,6 @@ void logout()
 	call_limited("nuke_state_tree", root);
 }
 
-static void destruct()
-{
-	disconnect();
-}
-
 private void do_escape(string str)
 {
 	string *words;
