@@ -32,7 +32,5 @@ private void load()
 
 static void create()
 {
-	KERNELD->set_global_access("Bigstruct", 1);
-
 	load();
 }

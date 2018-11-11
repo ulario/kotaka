@@ -33,7 +33,5 @@ private void load()
 
 static void create()
 {
-	KERNELD->set_global_access("Geometry", 1);
-
 	load();
 }

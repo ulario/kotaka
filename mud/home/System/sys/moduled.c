@@ -328,6 +328,10 @@ void boot_module(string module, varargs int reboot)
 		KERNELD->add_owner(module);
 	}
 
+	if (module) {
+		KERNELD->set_global_access(module, 1);
+	}
+
 	rlimits(0; -1) {
 		rlimits(0; MODULE_BOOT_TICKS) {
 			call_limited("load_module", module);

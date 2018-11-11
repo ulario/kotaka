@@ -44,8 +44,6 @@ static void do_test()
 
 static void create()
 {
-	KERNELD->set_global_access("Test", 1);
-
 	MODULED->boot_module("Bigstruct");
 
 	set_limits();

@@ -39,8 +39,6 @@ private void load()
 
 static void create()
 {
-	KERNELD->set_global_access("Intermud", 1);
-
 	set_limits();
 
 	load();

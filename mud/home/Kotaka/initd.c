@@ -41,7 +41,5 @@ private void load()
 
 static void create()
 {
-	KERNELD->set_global_access("Kotaka", 1);
-
 	load();
 }

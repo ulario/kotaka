@@ -42,8 +42,6 @@ private void set_limits()
 
 static void create()
 {
-	KERNELD->set_global_access("Text", 1);
-
 	MODULED->boot_module("Ansi");
 	MODULED->boot_module("Verb");
 

@@ -31,7 +31,5 @@ private void load()
 
 static void create()
 {
-	KERNELD->set_global_access("Help", 1);
-
 	load();
 }

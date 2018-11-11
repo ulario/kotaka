@@ -36,9 +36,8 @@ private void set_limits()
 
 static void create()
 {
-	KERNELD->set_global_access("Verb", 1);
-
 	load();
+
 	set_limits();
 }
 

@@ -82,8 +82,6 @@ private void set_limits()
 
 static void create()
 {
-	KERNELD->set_global_access("Game", 1);
-
 	load();
 
 	set_limits();

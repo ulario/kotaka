@@ -33,7 +33,5 @@ private void load()
 
 static void create()
 {
-	KERNELD->set_global_access("Action", 1);
-
 	load();
 }

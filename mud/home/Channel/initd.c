@@ -37,8 +37,6 @@ private void set_limits()
 
 static void create()
 {
-	KERNELD->set_global_access("Channel", 1);
-
 	MODULED->boot_module("String");
 
 	set_limits();

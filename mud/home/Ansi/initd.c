@@ -31,7 +31,5 @@ private void load()
 
 static void create()
 {
-	KERNELD->set_global_access("Ansi", 1);
-
 	load();
 }
