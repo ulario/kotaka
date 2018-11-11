@@ -32,9 +32,9 @@ private void load()
 
 static void create()
 {
-	MODULED->boot_module("String");
-
 	KERNELD->set_global_access("Account", 1);
+
+	MODULED->boot_module("String");
 
 	load();
 

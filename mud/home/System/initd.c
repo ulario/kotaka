@@ -76,6 +76,7 @@ static void create()
 
 	catch {
 		load_object(KERNELD);		/* needed for LogD */
+
 		KERNELD->set_global_access("System", 1);
 
 		configure_klib();
