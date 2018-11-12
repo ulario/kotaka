@@ -308,16 +308,16 @@ void boot_module(string module, varargs int reboot)
 	string *others;
 	int sz;
 
-	if (!file_info(initd_of(module) + ".c")) {
-		error("No initd for module");
+	if (module == "System") {
+		error("Cannot boot system module");
 	}
 
-	switch(modules[module]) {
-	case -1:
-		error("Module is being shut down");
+	if (modules[module] == -1) {
+		error("Module is shutting down");
+	}
 
-	case 1:
-		return;
+	if (!file_info(initd_of(module) + ".c")) {
+		error("No initd for module");
 	}
 
 	if (module && !sizeof(KERNELD->query_users() & ({ module }))) {

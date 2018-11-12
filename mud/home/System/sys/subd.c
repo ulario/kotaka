@@ -400,6 +400,29 @@ static void full_rebuild_tick(mixed **list, mapping initds)
 	compile_object(path);
 }
 
+private void rebuild_initd(string path)
+{
+	if (file_info(path + ".c")[1] != -2) {
+		catch {
+			if (!find_object(path)) {
+				string module;
+
+				if (path == "/initd") {
+					MODULED->boot_module(nil);
+				} else {
+					ASSERT(sscanf(path, USR_DIR + "/%s/initd", module));
+
+					MODULED->boot_module(module);
+				}
+			} else {
+				compile_object(path);
+			}
+		} : {
+			LOGD->post_message("debug", LOG_NOTICE, "Error trying to rebuild " + path);
+		}
+	}
+}
+
 void full_rebuild()
 {
 	ACCESS_CHECK(VERB() || KADMIN());
@@ -483,17 +506,7 @@ void full_rebuild()
 
 				path = indices[i];
 
-				if (file_info(path + ".c")[1] != -2) {
-					if (!find_object(path)) {
-						LOGD->post_message("debug", LOG_NOTICE, "Compiling new initd " + path + " ...");
-					}
-
-					catch {
-						compile_object(path);
-					} : {
-						LOGD->post_message("debug", LOG_NOTICE, "Error trying to rebuild " + path);
-					}
-				}
+				rebuild_initd(path);
 			}
 		}
 
