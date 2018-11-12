@@ -307,6 +307,7 @@ void boot_module(string module, varargs int reboot)
 {
 	string *others;
 	int sz;
+	int existed;
 
 	if (module == "System") {
 		error("Cannot boot system module");
@@ -320,6 +321,8 @@ void boot_module(string module, varargs int reboot)
 		error("No initd for module");
 	}
 
+	existed = !!find_object(initd_of(module));
+
 	if (module && !sizeof(KERNELD->query_users() & ({ module }))) {
 		KERNELD->add_user(module);
 	}
@@ -332,9 +335,11 @@ void boot_module(string module, varargs int reboot)
 		KERNELD->set_global_access(module, 1);
 	}
 
-	rlimits(0; -1) {
-		rlimits(0; MODULE_BOOT_TICKS) {
-			call_limited("load_module", module);
+	if (!existed) {
+		rlimits(0; -1) {
+			rlimits(0; MODULE_BOOT_TICKS) {
+				call_limited("load_module", module);
+			}
 		}
 	}
 
@@ -346,13 +351,15 @@ void boot_module(string module, varargs int reboot)
 		error("Failure to grant global access by " + module);
 	}
 
-	if (reboot) {
-		LOGD->post_message("system", LOG_NOTICE, "Rebooted " + (module ? module : "Ecru"));
-	} else {
-		LOGD->post_message("system", LOG_NOTICE, "Booted " + (module ? module : "Ecru"));
-	}
+	if (!existed) {
+		if (reboot) {
+			LOGD->post_message("system", LOG_NOTICE, "Rebooted " + (module ? module : "Ecru"));
+		} else {
+			LOGD->post_message("system", LOG_NOTICE, "Booted " + (module ? module : "Ecru"));
+		}
 
-	send_module_boot_signal(module);
+		send_module_boot_signal(module);
+	}
 }
 
 void reboot_module(string module)
