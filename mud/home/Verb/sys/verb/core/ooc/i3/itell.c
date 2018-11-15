@@ -56,4 +56,6 @@ void main(object actor, mapping roles)
 	}
 
 	INTERMUDD->send_tell(user->query_name(), user->query_titled_name(), mud, target, msg);
+
+	user->message("You tell " + target + "@" + mud + ": " + msg + "\n");
 }
