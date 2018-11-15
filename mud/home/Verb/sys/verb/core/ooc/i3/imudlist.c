@@ -67,5 +67,40 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	send_out(wordwrap(implode(list, ", "), width) + "\n");
+	switch(roles["raw"]) {
+	case "-v":
+		{
+			string **table;
+			int sz, i;
+
+			sz = sizeof(list);
+
+			table = allocate(sz + 1);
+
+			table[0] = ({ "Name", "IP", "Port", "Status" });
+
+			for (i = 0; i < sz; i++) {
+				mixed *info;
+
+				info = INTERMUDD->query_mud(list[i]);
+
+				if (info[0] == -1) {
+					table[i + 1] = ({ list[i], info[1], info[2] + "", info[0] + "" });
+				}
+			}
+
+			table -= ({ nil });
+
+			send_out(render_table(table, 2) + "\n");
+		}
+		break;
+
+	case nil:
+	case "":
+		send_out(wordwrap(implode(list, ", "), width) + "\n");
+		break;
+
+	default:
+		send_out("Usage: imudlist [-v]\n");
+	}
 }
