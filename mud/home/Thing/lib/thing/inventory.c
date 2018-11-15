@@ -25,8 +25,6 @@ private object environment;
 private object *inventory;
 
 void reset_id_number();
-float query_total_mass();
-float query_total_volume();
 
 static void create()
 {
