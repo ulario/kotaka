@@ -149,16 +149,31 @@ void move(object new_env, varargs int force)
 	}
 
 	if (new_env) {
+		object test;
+		int levels;
+
 		if (new_env == this) {
 			error("Self containment attempted");
 		}
 
-		if (is_container_of(new_env)) {
-			error("Cyclic containment attempted");
-		}
-
 		if (sizeof(new_env->query_inventory()) >= 100) {
 			error("Destination object too cluttered");
+		}
+
+		test = new_env->query_environment();
+
+		while (test) {
+			if (test == this) {
+				error("Cyclic containment attempted");
+			}
+
+			levels++;
+
+			if (levels >= 40) {
+				error("Object nesting overflow");
+			}
+
+			test = test->query_environment();
 		}
 	}
 
