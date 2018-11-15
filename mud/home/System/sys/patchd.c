@@ -26,11 +26,11 @@
 #include <status.h>
 
 inherit SECOND_AUTO;
-inherit "~/lib/struct/maparr";
 inherit "~/lib/struct/multimap";
 
-mapping patcherdb;	/* ([ level : ([ index : patchers ]) ]) */
-mapping patchabledb;	/* ([ level : ([ index : obj ]) ]) */
+mapping patcherdb; /* ([ level : ([ index : patchers ]) ]) */
+mapping patchabledb;
+mapping objdb; /* ([ level : ([ index : obj ]) ]) */
 
 int handle;
 mixed *sweep_list;
@@ -110,11 +110,11 @@ atomic void enqueue_patchers(object master, string *patchers)
 
 	set_multimap(patcherdb, index, patchers);
 
-	if (!patchabledb) {
-		patchabledb = ([ ]);
+	if (!objdb) {
+		objdb = ([ ]);
 	}
 
-	set_multimap(patchabledb, index, master);
+	set_multimap(objdb, index, master);
 
 	call_touch(master);
 	enqueue_nudge(master);
@@ -127,7 +127,7 @@ atomic void enqueue_patchers(object master, string *patchers)
 				object obj;
 
 				if (obj = find_object(path + "#" + sz)) {
-					set_multimap(patchabledb, sz, obj);
+					set_multimap(objdb, sz, obj);
 					call_touch(obj);
 					touchcount++;
 				}
@@ -135,6 +135,19 @@ atomic void enqueue_patchers(object master, string *patchers)
 		}
 
 		enqueue_sweep(path);
+	}
+}
+
+private string *lookup_patchers(int index)
+{
+	if (patcherdb) {
+		string *patchers;
+
+		patchers = query_multimap(patcherdb, index);
+
+		if (patchers) {
+			return patchers;
+		}
 	}
 }
 
@@ -155,15 +168,15 @@ string *query_patchers(object obj)
 		index = mindex;
 	}
 
-	if (!patchabledb || !query_multimap(patchabledb, index)) {
-		return nil;
+	if (objdb) {
+		if (query_multimap(objdb, index)) {
+			return lookup_patchers(mindex);
+		}
 	}
 
-	if (patcherdb) {
-		patchers = query_multimap(patcherdb, mindex);
-
-		if (patchers) {
-			return patchers;
+	if (patchabledb) {
+		if (query_multimap(patchabledb, index)) {
+			return lookup_patchers(mindex);
 		}
 	}
 }
@@ -181,11 +194,13 @@ void clear_patch(object obj)
 		index = status(obj, O_INDEX);
 	}
 
-	if (!patchabledb) {
-		patchabledb = ([ ]);
+	if (patchabledb) {
+		set_multimap(patchabledb, index, nil);
 	}
 
-	set_multimap(patchabledb, index, nil);
+	if (objdb) {
+		set_multimap(objdb, index, nil);
+	}
 }
 
 static void nudge_object(object obj)
@@ -266,6 +281,7 @@ void reset()
 	nudge_list = nil;
 	patcherdb = nil;
 	patchabledb = nil;
+	objdb = nil;
 
 	callouts = status(this_object(), O_CALLOUTS);
 
