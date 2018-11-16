@@ -183,13 +183,11 @@ private void index_includes(int oindex, string *inc)
 
 atomic object register_program(string path, string *inherits, string *includes)
 {
-	int i;
-	int sz;
 	int oindex;
 	object pinfo;
-	int *oindices;
-	string *ctors;
-	string *dtors;
+
+	int *oinherits;
+	string *oincludes;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
@@ -197,75 +195,90 @@ atomic object register_program(string path, string *inherits, string *includes)
 		return nil;
 	}
 
-	ASSERT(progdb);
-	ASSERT(incdb);
-	ASSERT(inhdb);
-	ASSERT(pathdb);
-
 	oindex = status(path, O_INDEX);
 
-	sz = sizeof(inherits);
-	oindices = allocate(sz);
-	ctors = ({ });
-	dtors = ({ });
-
-	for (i = 0; i < sz; i++) {
-		object subpinfo;
-		int suboindex;
-
-		suboindex = status(inherits[i], O_INDEX);
-		oindices[i] = suboindex;
-
-		subpinfo = progdb->query_element(suboindex);
-
-		if (subpinfo) {
-			mixed inh;
-
-			inh = subpinfo->query_inherited_constructors();
-
-			if (inh) {
-				ctors |= inh;
-			}
-
-			ctors |= ({ subpinfo->query_constructor() });
-
-			inh = subpinfo->query_inherited_destructors();
-
-			if (inh) {
-				dtors |= inh;
-			}
-
-			dtors |= ({ subpinfo->query_destructor() });
-		} else {
-			LOGD->post_message("debug", LOG_WARN, "No program info for inherited program " + inherits[i]);
-		}
+	if (pathdb) {
+		pathdb->set_element(path, oindex);
 	}
-
-	ctors -= ({ nil });
-	dtors -= ({ nil });
 
 	pinfo = progdb->query_element(oindex);
 
-	if (pathdb)
-		pathdb->set_element(path, oindex);
-
-	if (pinfo) {
-		deindex_inherits(oindex, pinfo->query_inherits());
-		deindex_includes(oindex, pinfo->query_includes());
-	} else {
+	if (!pinfo) {
 		pinfo = new_object(PROGRAM_INFO);
 		pinfo->set_path(path);
 
 		progdb->set_element(oindex, pinfo);
 	}
 
-	pinfo->set_inherits(oindices);
-	pinfo->set_includes(includes);
-	pinfo->set_inherited_constructors(ctors);
-	pinfo->set_inherited_destructors(dtors);
+	oinherits = pinfo->query_inherits();
+	oincludes = pinfo->query_includes();
 
-	index_inherits(oindex, oindices);
-	index_includes(oindex, includes);
+	if (oinherits) {
+		deindex_inherits(oindex, oinherits);
+	}
+
+	if (oincludes) {
+		deindex_includes(oindex, oincludes);
+	}
+
+	if (inherits) {
+		string *ctors;
+		string *dtors;
+		int sz;
+		int i;
+
+		int *oindices;
+
+		ASSERT(includes);
+
+		sz = sizeof(inherits);
+		oindices = allocate(sz);
+		ctors = ({ });
+		dtors = ({ });
+
+		for (i = 0; i < sz; i++) {
+			object subpinfo;
+			int suboindex;
+
+			suboindex = status(inherits[i], O_INDEX);
+			oindices[i] = suboindex;
+
+			subpinfo = progdb->query_element(suboindex);
+
+			if (subpinfo) {
+				mixed inh;
+
+				inh = subpinfo->query_inherited_constructors();
+
+				if (inh) {
+					ctors |= inh;
+				}
+
+				ctors |= ({ subpinfo->query_constructor() });
+
+				inh = subpinfo->query_inherited_destructors();
+
+				if (inh) {
+					dtors |= inh;
+				}
+
+				dtors |= ({ subpinfo->query_destructor() });
+			} else {
+				LOGD->post_message("debug", LOG_WARN, "No program info for inherited program " + inherits[i]);
+			}
+		}
+
+		ctors -= ({ nil });
+		dtors -= ({ nil });
+
+		pinfo->set_inherits(oindices);
+		pinfo->set_includes(includes);
+		pinfo->set_inherited_constructors(ctors);
+		pinfo->set_inherited_destructors(dtors);
+
+		index_inherits(oindex, oindices);
+		index_includes(oindex, includes);
+	}
 
 	return pinfo;
 }
@@ -274,6 +287,9 @@ atomic void remove_program(int index)
 {
 	object pinfo;
 	string path;
+
+	int *oinherits;
+	string *oincludes;
 
 	ACCESS_CHECK(SYSTEM());
 
@@ -286,8 +302,16 @@ atomic void remove_program(int index)
 	if (pinfo) {
 		path = pinfo->query_path();
 
-		deindex_inherits(index, pinfo->query_inherits());
-		deindex_includes(index, pinfo->query_includes());
+		oinherits = pinfo->query_inherits();
+		oincludes = pinfo->query_includes();
+
+		if (oinherits) {
+			deindex_inherits(index, oinherits);
+		}
+
+		if (oincludes) {
+			deindex_includes(index, oincludes);
+		}
 	}
 
 	if (path && pathdb->query_element(path) == index) {

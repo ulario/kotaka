@@ -113,16 +113,18 @@ static void boot()
 		MODULED->boot_module("Bigstruct");
 
 		load();
-
 		LOGD->post_message("system", LOG_NOTICE, "System loaded");
 
-		PROGRAMD->create_database();
-		OBJECTD->register_ghosts();
-		SYSTEM_SUBD->discover_objects();
+		rlimits (0; -1) {
+			PROGRAMD->create_database();
+			OBJECTD->register_ghosts();
+			OBJECTD->discover_clones();
+			SYSTEM_SUBD->discover_objects();
 
-		LOGD->post_message("system", LOG_NOTICE, "System discovered");
+			LOGD->post_message("system", LOG_NOTICE, "System discovered");
 
-		DUMPD->set_parameters(3600, 0, 24);
+			DUMPD->set_parameters(3600, 0, 24);
+		}
 
 		MODULED->boot_module("Game");
 	} : {

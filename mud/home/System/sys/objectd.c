@@ -343,13 +343,13 @@ atomic void clone(string owner, object obj)
 
 	ACCESS_CHECK(KERNEL());
 
-	pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
+	if (find_object(PROGRAMD)) {
+		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
 
-	if (!pinfo) {
-		return;
+		if (pinfo) {
+			pinfo->add_clone(obj);
+		}
 	}
-
-	pinfo->add_clone(obj);
 }
 
 atomic void destruct(varargs mixed owner, mixed obj)
@@ -395,15 +395,15 @@ atomic void destruct(varargs mixed owner, mixed obj)
 
 	if (find_object(PROGRAMD)) {
 		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
-	}
 
-	if (is_clone) {
-		if (pinfo) {
-			pinfo->remove_clone(obj);
-		}
-	} else {
-		if (pinfo) {
-			pinfo->set_destructed();
+		if (is_clone) {
+			if (pinfo) {
+				pinfo->remove_clone(obj);
+			}
+		} else {
+			if (pinfo) {
+				pinfo->set_destructed();
+			}
 		}
 	}
 }
@@ -503,7 +503,11 @@ private void register_ghosts_dir(string dir)
 	mixed **lists;
 	int sz;
 
-	lists = get_dir(dir + (dir == "/" ? "*" : "/*"));
+	if (dir == "/") {
+		dir = "";
+	}
+
+	lists = get_dir(dir + "/*");
 	names = lists[0];
 	sizes = lists[1];
 	objs = lists[3];
@@ -513,17 +517,16 @@ private void register_ghosts_dir(string dir)
 		string path;
 
 		name = names[sz];
-		path = (dir == "/" ? "" : "/") + name;
+		path = dir + "/" + name;
 
 		if (sizes[sz] == -2) {
 			register_ghosts_dir(path);
 		} else {
-			if (!sscanf(path, "%*s.c", path)) {
+			if (!sscanf(path, "%s.c", path)) {
 				continue;
 			}
 
 			if (objs[sz]) {
-				LOGD->post_message("system", LOG_NOTICE, "Registering ghost program " + path);
 				PROGRAMD->register_program(path, nil, nil);
 			}
 		}
@@ -535,4 +538,70 @@ void register_ghosts()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	register_ghosts_dir("/");
+}
+
+void discover_clones()
+{
+	string *owners;
+	int sz;
+
+	mixed **masters;
+	mixed **clones;
+
+	ACCESS_CHECK(previous_program() == INITD);
+
+	masters = ({ nil, nil });
+	clones = ({ nil, nil });
+
+	owners = KERNELD->query_owners();
+
+	for (sz = sizeof(owners); --sz >= 0; ) {
+		object first;
+
+		first = KERNELD->first_link(owners[sz]);
+
+		if (first) {
+			object cursor;
+
+			cursor = first;
+
+			do {
+				string name;
+
+				name = object_name(cursor);
+
+				if (sscanf(name, "%*s#%*d")) {
+					list_push_back(clones, cursor);
+				} else if (sscanf(name, "%*s" + CLONABLE_SUBDIR + "%*s")) {
+					list_push_back(masters, cursor);
+				}
+
+				cursor = KERNELD->next_link(cursor);
+			} while (cursor != first);
+		}
+	}
+
+	while (!list_empty(masters)) {
+		object pinfo;
+		object master;
+
+		master = list_front(masters);
+		list_pop_front(masters);
+
+		pinfo = PROGRAMD->query_program_info(status(master, O_INDEX));
+
+		pinfo->clear_clones();
+	}
+
+	while (!list_empty(clones)) {
+		object pinfo;
+		object clone;
+
+		clone = list_front(clones);
+		list_pop_front(clones);
+
+		pinfo = PROGRAMD->query_program_info(status(clone, O_INDEX));
+
+		pinfo->add_clone(clone);
+	}
 }

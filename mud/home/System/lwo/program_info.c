@@ -99,14 +99,14 @@ void set_inherits(int *new_inherits)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherits = new_inherits[..];
+	inherits = new_inherits ? new_inherits[..] : nil;
 }
 
 void set_includes(string *new_includes)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	includes = new_includes[..];
+	includes = new_includes ? new_includes[..] : nil;
 }
 
 void set_destructed()
@@ -158,12 +158,12 @@ string query_path()
 
 int *query_inherits()
 {
-	return inherits[..];
+	return inherits ? inherits[..] : nil;
 }
 
 string *query_includes()
 {
-	return includes[..];
+	return includes ? includes[..] : nil;
 }
 
 int query_destructed()
@@ -188,12 +188,12 @@ string query_patcher()
 
 string *query_inherited_constructors()
 {
-	return inherited_constructors[..];
+	return inherited_constructors ? inherited_constructors[..] : nil;
 }
 
 string *query_inherited_destructors()
 {
-	return inherited_destructors[..];
+	return inherited_destructors ? inherited_destructors[..] : nil;
 }
 
 void add_clone(object clone)
@@ -248,15 +248,27 @@ object *query_clones()
 	return map_indices(clones);
 }
 
+void clear_clones()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	ASSERT(path);
+	ASSERT(sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s"));
+
+	nclones = 0;
+	clones = ([ ]);
+}
+
 atomic void reset_clones()
 {
 	int sz;
 
-	nclones = 0;
-	clones = ([ ]);
+	ACCESS_CHECK(SYSTEM());
 
 	ASSERT(path);
 	ASSERT(sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s"));
+
+	clear_clones();
 
 	for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 		object obj;
