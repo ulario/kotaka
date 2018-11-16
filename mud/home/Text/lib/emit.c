@@ -152,7 +152,9 @@ void ooc_emit_to(string sender, string receiver, string message)
 	sclass = TEXT_SUBD->query_user_class(sender);
 	rclass = TEXT_SUBD->query_user_class(receiver);
 
-	sinvis = !!ACCOUNTD->query_account_property(sender, "invisible");
+	if (sender) {
+		sinvis = !!ACCOUNTD->query_account_property(sender, "invisible");
+	}
 
 	if (sinvis && sclass >= rclass) {
 		return;
