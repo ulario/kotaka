@@ -523,7 +523,9 @@ void check_sitebans()
 					}
 				}
 
-				conn->reboot();
+				if (conn) {
+					conn->reboot();
+				}
 			}
 		}
 	}
