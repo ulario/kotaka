@@ -97,3 +97,8 @@ void booted_module(string module)
 		booted_channel();
 	}
 }
+
+static void destruct()
+{
+	destruct_object("sys/userd");
+}

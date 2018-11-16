@@ -43,6 +43,20 @@ static void create()
 	SYSTEM_USERD->set_binary_manager(1, this_object());
 }
 
+static void destruct()
+{
+	object *turkeys;
+	int sz;
+
+	turkeys = map_values(users) + map_indices(guests);
+
+	for (sz = sizeof(turkeys); --sz >= 0; ) {
+		catch {
+			destruct_object(turkeys[sz]);
+		}
+	}
+}
+
 object select(string str)
 {
 	int has_telnet;
