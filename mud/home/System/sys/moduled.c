@@ -363,53 +363,54 @@ void boot_module(string module, varargs int reboot)
 	}
 }
 
-void reboot_module(string module)
+private void do_module_shutdown(string module, int reboot)
 {
-	object cursor;
-	mixed **list;
-
-	ACCESS_CHECK(INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
+	string initd;
 
 	switch(module) {
+	case "String":
+		if (reboot) {
+			break;
+		}
 	case "Bigstruct":
 	case "System":
-		error("Cannot reboot " + module);
+		if (reboot) {
+			error("Cannot reboot " + module);
+		} else {
+			error("Cannot shut down " + module);
+		}
 	}
 
 	freeze_module(module);
 	modules[module] = -1;
 
-	LOGD->post_message("system", LOG_NOTICE, "Rebooting " + (module ? module : "Ecru"));
+	LOGD->post_message("system", LOG_NOTICE, (reboot ? "Rebooting" : "Shutting down") + " " + (module ? module : "Ecru"));
 
 	send_module_shutdown_signal(module);
-	destruct_object(initd_of(module));
 
-	call_out("purge_module_tick", 0, module, 1);
+	initd = initd_of(module);
+
+	if (find_object(initd)) {
+		catch {
+			destruct_object(initd_of(module));
+		}
+	}
+
+	call_out("purge_module_tick", 0, module, reboot);
 }
 
 void shutdown_module(string module)
 {
-	object cursor;
-	mixed **list;
-
 	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
 
-	switch(module) {
-	case "Bigstruct":
-	case "String":
-	case "System":
-		error("Cannot shut down " + module);
-	}
+	do_module_shutdown(module, 0);
+}
 
-	freeze_module(module);
-	modules[module] = -1;
+void reboot_module(string module)
+{
+	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
 
-	LOGD->post_message("system", LOG_NOTICE, "Shutting down " + (module ? module : "Ecru"));
-
-	send_module_shutdown_signal(module);
-	destruct_object(initd_of(module));
-
-	call_out("purge_module_tick", 0, module);
+	do_module_shutdown(module, 1);
 }
 
 void upgrade_purge()
