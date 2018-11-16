@@ -241,9 +241,9 @@ void logout(int dest)
 		} else {
 			/* remote closure, we're linkdead */
 		}
-		unsubscribe_channels();
 	}
 
+	unsubscribe_channels(); /* we won't be able to receive channel messages once we nuke our ustate tree */
 	::logout();
 
 	if (!destructing) {
