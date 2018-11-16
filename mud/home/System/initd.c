@@ -177,7 +177,8 @@ private void reboot_common()
 	check_versions();
 
 	catch {
-		LOGD->post_message("debug", LOG_NOTICE, "Re-auditing filequota");
+		LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
+
 		rlimits(0; -1) {
 			DRIVER->fix_filequota();
 		}
