@@ -121,9 +121,9 @@ void load_world_purge(mixed **list)
 		}
 
 		if (done) {
-			SUSPENDD->queue_work("load_world_spawn", 1);
+			call_out("load_world_spawn", 0, 1);
 		} else {
-			SUSPENDD->queue_work("load_world_purge", list);
+			call_out("load_world_purge", 0, list);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
@@ -154,9 +154,9 @@ void load_world_spawn(int i)
 		}
 
 		if (done) {
-			SUSPENDD->queue_work("load_world_name", i - 1);
+			call_out("load_world_name", 0, i - 1);
 		} else {
-			SUSPENDD->queue_work("load_world_spawn", i);
+			call_out("load_world_spawn", 0, i);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
@@ -187,9 +187,9 @@ void load_world_name(int i)
 
 			i--;
 
-			SUSPENDD->queue_work("load_world_name", i);
+			call_out("load_world_name", 0, i);
 		} else {
-			SUSPENDD->queue_work("load_world_set", objlist->query_size() - 1);
+			call_out("load_world_set", 0, objlist->query_size() - 1);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted parsing data for object " + i);
@@ -210,7 +210,7 @@ void load_world_set(int i)
 			obj->load(data);
 			i--;
 
-			SUSPENDD->queue_work("load_world_set", i);
+			call_out("load_world_set", 0, i);
 		} else {
 			LOGD->post_message("system", LOG_INFO, "World loaded");
 		}
@@ -321,9 +321,10 @@ void save_world_put(mixed **list)
 		if (done) {
 			CONFIGD->make_dir(".");
 			CONFIGD->make_dir("save");
-			SUSPENDD->queue_work("save_world_write", objlist->query_size());
+
+			call_out("save_world_write", 0, objlist->query_size());
 		} else {
-			SUSPENDD->queue_work("save_world_put", list);
+			call_out("save_world_put", 0, list);
 		}
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World save aborted");
@@ -344,7 +345,7 @@ void save_world_write(int i)
 		);
 
 		if (i > 0) {
-			SUSPENDD->queue_work("save_world_write", i);
+			call_out("save_world_write", 0, i);
 		} else {
 			LOGD->post_message("system", LOG_INFO, "World saved");
 		}
@@ -405,11 +406,9 @@ void load_world()
 
 	list = ({ nil, nil });
 
-	SUSPENDD->suspend_system();
-
 	purge_directory(nil, list);
 
-	SUSPENDD->queue_work("load_world_purge", list);
+	call_out("load_world_purge", 0, list);
 }
 
 void save_world()
@@ -428,9 +427,7 @@ void save_world()
 
 	purge_savedir();
 
-	SUSPENDD->suspend_system();
-
 	put_directory(nil, list);
 
-	SUSPENDD->queue_work("save_world_put", list);
+	call_out("save_world_put", 0, list);
 }
