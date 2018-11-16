@@ -33,8 +33,6 @@ inherit system_user LIB_SYSTEM_USER;
 
 private object root;
 int suspend;
-int disconnecting;
-int destructing;
 
 /****************/
 /* Declarations */

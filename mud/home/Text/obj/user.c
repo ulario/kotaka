@@ -35,6 +35,7 @@ inherit "/lib/string/replace";
 
 object mobile;
 object body;
+int destructing;
 int keepalive;
 int quitting;
 int logging_out;
@@ -81,6 +82,8 @@ void dispatch_wiztool(string line)
 
 static void destruct(int clone)
 {
+	destructing = 1;
+
 	if (clone && !logging_out) {
 		disconnect();
 	}
@@ -243,7 +246,9 @@ void logout(int dest)
 
 	::logout();
 
-	destruct_object(this_object());
+	if (!destructing) {
+		destruct_object(this_object());
+	}
 }
 
 private void do_banner()
