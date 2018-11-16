@@ -136,8 +136,10 @@ void main(object actor, mapping roles)
 	case 1:
 		send_out("There is " + sizeof(users) + " guest connected.\n\n");
 		break;
+
 	case 0:
 		break;
+
 	default:
 		send_out("There are " + sizeof(users) + " guests connected.\n\n");
 	}

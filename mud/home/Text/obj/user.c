@@ -184,9 +184,11 @@ void quit(string cause)
 	case "quit": /* user logged out */
 		message("Come back soon.\n");
 		break;
+
 	case "banned": /* user was banned */
 		/* user's message handled by ban command */
 		break;
+
 	case "sitebanned": /* user was sitebanned */
 		{
 			string msg;
@@ -198,17 +200,23 @@ void quit(string cause)
 			}
 		}
 		break;
+
 	case "bumped": /* user logged in on another connection */
 		/* handled by new user's login */
 		break;
+
 	case "badpass": /* password authentication failed */
 		break;
+
 	case "kicked": /* user was kicked */
 		break; /* kick will handle this */
+
 	case "nuked": /* user's account was nuked */
 		break;
+
 	case "timeout": /* user timed out at login process */
 		break; /* handled by start ustate */
+
 	case "idle": /* user idled out */
 		break;
 	}

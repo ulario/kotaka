@@ -147,6 +147,7 @@ void receive_in(string input)
 
 	case STATE_CHKPASS:
 		send_out("\n");
+
 		if (ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, someone else just swiped the username you wanted.\n");
 			query_user()->set_mode(MODE_ECHO);
