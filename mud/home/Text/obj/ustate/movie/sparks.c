@@ -64,7 +64,7 @@ void begin()
 
 	::begin();
 
-	send_out("\033[1;1H\033[2J");
+	send_out("\033[2J");
 
 	check_screen();
 	set_nparticles();
@@ -121,6 +121,8 @@ static void do_frame(float diff)
 	object paint;
 	object gc;
 
+	send_out("\033[0m\033[1;1H");
+
 	paint = new_object(LWO_PAINTER);
 	paint->set_size(screen_width, screen_height);
 	paint->add_layer("default");
@@ -132,7 +134,6 @@ static void do_frame(float diff)
 
 	do_particles(gc, diff);
 
-	send_out("\033[1;1H");
 	send_out(implode(paint->render_color(), "\n"));
 }
 
