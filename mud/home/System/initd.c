@@ -86,7 +86,6 @@ static void create()
 		load_object(SECRETD);		/* needed for LogD */
 		load_object(LOGD);		/* we need to log any error messages */
 		load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
-		load_object(OBJECTD);		/* enforces static invariants */
 
 		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
 		load_object(CALLOUTD);		/* suspends callouts */
@@ -108,9 +107,16 @@ static void boot()
 {
 	catch {
 		load_object(ERRORD);		/* depends on TLS */
+		load_object(OBJECTD);		/* depends on TLS */
 		load_object(MODULED);
 
 		MODULED->boot_module("Bigstruct");
+
+		load_object(PROGRAM_INFO);
+		load_object(PROGRAMD);
+		load_object(SYSTEM_SUBD);
+
+		LOGD->post_message("system", LOG_NOTICE, "System discovered");
 
 		load();
 		LOGD->post_message("system", LOG_NOTICE, "System loaded");
@@ -120,11 +126,9 @@ static void boot()
 			OBJECTD->register_ghosts();
 			OBJECTD->discover_clones();
 			SYSTEM_SUBD->discover_objects();
-
-			LOGD->post_message("system", LOG_NOTICE, "System discovered");
-
-			DUMPD->set_parameters(3600, 0, 24);
 		}
+
+		DUMPD->set_parameters(3600, 0, 24);
 
 		MODULED->boot_module("Game");
 	} : {

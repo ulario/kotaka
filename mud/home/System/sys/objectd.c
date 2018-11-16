@@ -45,11 +45,6 @@ static void create()
 	DRIVER->set_object_manager(this_object());
 }
 
-void upgrade()
-{
-	ACCESS_CHECK(SYSTEM());
-}
-
 /* private */
 
 private mixed query_include_file(string compiled, string from, string path)
