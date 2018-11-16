@@ -30,7 +30,9 @@ void main(object actor, mapping roles)
 {
 	string demo;
 
-	if (roles["raw"] == "") {
+	demo = roles["raw"];
+
+	if (demo == "") {
 		send_out("Usage: ansidemo <demo>\n");
 		send_out("Available demos:\n");
 		send_out("matrix - Demonstrate a cascading field of ones and zeroes in eerie green hues\n");
@@ -39,16 +41,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	switch(roles["raw"]) {
-	case "matrix":
-	case "sparks":
-	case "space":
-		demo = roles["raw"];
-		break;
-	default:
+	if (find_object("~Text/obj/ustate/movie/" + demo)) {
+		query_ustate()->push_state(query_user()->clone_ustate("movie/" + demo));
+	} else {
 		send_out("No such ansi demo\n");
-		return;
 	}
-
-	query_ustate()->push_state(query_user()->clone_ustate("movie/" + demo));
 }
