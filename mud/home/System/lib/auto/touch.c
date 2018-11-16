@@ -68,5 +68,4 @@ nomask int _F_touch(string func)
 
 void system_patcher()
 {
-	LOGD->post_message("system", LOG_DEBUG, "System patcher called for " + object_name(this_object()));
 }
