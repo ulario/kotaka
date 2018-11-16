@@ -460,8 +460,6 @@ void upgrade_system()
 
 void upgrade_system_post_recompile()
 {
-	int major, minor, patch;
-
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled for system upgrade");
 
 	/* first, upgrade System */
@@ -484,11 +482,22 @@ void upgrade_system_post_recompile()
 	configure_rsrc();
 	set_limits();
 
+	compile_object(PROGRAM_INFO);
+	compile_object(PATCHD);
+	compile_object(OBJECTD);
+	compile_object(PROGRAMD);
+
+	call_out("upgrade_system_post_recompile_2", 0);
+}
+
+static void upgrade_system_post_recompile_2()
+{
 	rlimits (0; -1) {
-		rlimits (0; 1000000000) {
-			upgrade_purge();
-			upgrade_build();
-		}
+		LOGD->post_message("system", LOG_NOTICE, "Discovering clones");
+		OBJECTD->discover_clones();
+
+		upgrade_purge();
+		upgrade_build();
 	}
 
 	/* first, ask all InitD's if we can upgrade */
