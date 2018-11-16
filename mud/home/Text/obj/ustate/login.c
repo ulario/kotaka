@@ -171,11 +171,11 @@ void receive_in(string input)
 				break;
 			}
 
-			query_user()->set_username(name);
-
 			if (silent) {
 				ACCOUNTD->set_account_property(name, "invisible", 1);
 			}
+
+			query_user()->login_user(name);
 
 			terminate_account_state();
 
@@ -222,8 +222,8 @@ void receive_in(string input)
 					+ " logs in.\n", ({ user }));
 			}
 
-			query_user()->set_username(name);
-			TEXT_SUBD->login_user(query_user());
+			query_user()->login_user(name);
+
 			terminate_account_state();
 		} else {
 			send_out("Ok then.\n");

@@ -170,7 +170,7 @@ void receive_in(string input)
 
 			ACCOUNTD->register_account(name, password);
 
-			query_user()->set_username(name);
+			query_user()->login_user(name);
 
 			ACCOUNTD->set_account_property(name, "channels", ({ "chat" }));
 
@@ -178,7 +178,7 @@ void receive_in(string input)
 			text = read_file("~/data/quickstartguide");
 
 			pager->set_text(
-			text ? text : "Yell at the admin, he broke the quick start guide."
+				text ? text : "Yell at the admin, he broke the quick start guide."
 			);
 
 			parent = query_parent();

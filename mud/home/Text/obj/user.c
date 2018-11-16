@@ -37,8 +37,10 @@ object mobile;
 object body;
 int keepalive;
 int quitting;
-
+int logging_out;
 string username;
+
+static void unsubscribe_channels();
 
 static void create(int clone)
 {
@@ -79,7 +81,7 @@ void dispatch_wiztool(string line)
 
 static void destruct(int clone)
 {
-	if (clone && !quitting) {
+	if (clone && !logging_out) {
 		disconnect();
 	}
 }
@@ -97,13 +99,6 @@ int query_class()
 string query_titled_name()
 {
 	return TEXT_SUBD->query_titled_name(username);
-}
-
-void set_username(string new_username)
-{
-	ACCESS_CHECK(TEXT());
-
-	username = new_username;
 }
 
 string query_name()
@@ -178,6 +173,8 @@ object query_base_conn()
 
 void quit(string cause)
 {
+	unsubscribe_channels();
+
 	quitting = 1;
 
 	switch(cause) {
@@ -232,6 +229,8 @@ void logout(int dest)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
+	logging_out = 1;
+
 	if (username && !quitting) {
 		if (dest) {
 			/* connection object was destructed, manual logout */
@@ -239,6 +238,7 @@ void logout(int dest)
 		} else {
 			/* remote closure, we're linkdead */
 		}
+		unsubscribe_channels();
 	}
 
 	::logout();
@@ -357,7 +357,7 @@ void channel_message(string channel, string stamp, string sender, string message
 	}
 }
 
-void subscribe_channels()
+static void subscribe_channels()
 {
 	string *channels;
 
@@ -373,6 +373,21 @@ void subscribe_channels()
 				message("Warning: " + channels[sz] + " does not exist.\n");
 			}
 		}
+	}
+}
+
+static void unsubscribe_channels()
+{
+	string *subscriptions;
+	int sz;
+	object this;
+
+	this = this_object();
+
+	subscriptions = CHANNELD->query_subscriptions(this);
+
+	for (sz = sizeof(subscriptions); --sz >= 0; ) {
+		CHANNELD->unsubscribe_channel(subscriptions[sz], this);
 	}
 }
 
@@ -402,4 +417,33 @@ object query_mudclient_obj()
 		}
 		conn = conn->query_conn();
 	}
+}
+
+atomic void login_user(string name)
+{
+	object this;
+
+	ACCESS_CHECK(TEXT());
+
+	this = this_object();
+
+	username = name;
+
+	if (TEXT_USERD->query_is_guest(this)) {
+		TEXT_USERD->promote_guest(username, this);
+	} else {
+		TEXT_USERD->add_user(username, this);
+	}
+
+	set_mode(MODE_ECHO);
+	subscribe_channels();
+}
+
+atomic void logout_user()
+{
+	ASSERT(username);
+
+	TEXT_USERD->demote_user(username);
+
+	username = nil;
 }

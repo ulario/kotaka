@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kernel/user.h>
+#include <kotaka/assert.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/ansi.h>
@@ -244,6 +245,24 @@ void promote_guest(string name, object user)
 
 	guests[user] = nil;
 	users[name] = user;
+}
+
+void demote_user(string name)
+{
+	object user;
+
+	ACCESS_CHECK(TEXT() || GAME());
+
+	user = users[name];
+
+	if (!user) {
+		error("No such user");
+	}
+
+	ASSERT(!guests[user]);
+
+	guests[user] = 1;
+	users[name] = nil;
 }
 
 void rename_user(string oldname, string newname)

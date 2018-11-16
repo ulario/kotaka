@@ -138,17 +138,20 @@ void receive_in(string input)
 	switch(state) {
 	case STATE_GETPASS:
 		send_out("\n");
+
 		if (!ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, the account you're changing the password on just poofed.\n");
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
 		}
+
 		if (!authorized()) {
 			send_out("You are no longer authorized to change that password.\n");
 			pop_state();
 			return;
 		}
+
 		password = input;
 		state = STATE_CHKPASS;
 		break;
@@ -156,6 +159,7 @@ void receive_in(string input)
 	case STATE_CHKPASS:
 		send_out("\n");
 		query_user()->set_mode(MODE_ECHO);
+
 		if (!ACCOUNTD->query_is_registered(name)) {
 			send_out("Whoops, the account you're changing the password on just poofed.\n");
 			pop_state();
@@ -166,6 +170,7 @@ void receive_in(string input)
 			pop_state();
 			return;
 		}
+
 		if (input != password) {
 			send_out("Password mismatch.\n");
 			pop_state();
