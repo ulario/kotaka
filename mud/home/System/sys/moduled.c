@@ -140,6 +140,7 @@ static void purge_module_tick(string module, varargs int reboot)
 	cursor = KERNELD->first_link(module);
 
 	if (cursor) {
+		TLSD->set_tls_value("System", "destruct_force", cursor);
 		destruct_object(cursor);
 		call_out("purge_module_tick", 0, module, reboot);
 		return;
