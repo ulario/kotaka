@@ -137,6 +137,7 @@ string *render_color()
 	}
 
 	sz = sizeof(stack);
+	color = 0x07;
 
 	for (i = 0; i < sz; i++) {
 		int sx, sy;
