@@ -373,7 +373,7 @@ static void full_rebuild_tick(mixed **list, mapping initds)
 	string path;
 
 	if (list_empty(list)) {
-		LOGD->post_message("debug", LOG_NOTICE, "Full rebuild completed");
+		LOGD->post_message("system", LOG_NOTICE, "Full rebuild completed");
 		return;
 	}
 
