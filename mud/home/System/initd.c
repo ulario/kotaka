@@ -139,11 +139,6 @@ void upgrade()
 
 	configure_logging();
 	configure_rsrc();
-
-	LOGD->post_message("debug", LOG_NOTICE, "Re-auditing filequota");
-	rlimits(0; -1) {
-		DRIVER->fix_filequota();
-	}
 }
 
 void clear_admin()
