@@ -177,9 +177,6 @@ void receive_in(string input)
 				ACCOUNTD->set_account_property(name, "invisible", 1);
 			}
 
-			TEXT_SUBD->login_user(query_user());
-			TEXT_SUBD->send_login_message(name);
-
 			terminate_account_state();
 
 			return;

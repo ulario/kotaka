@@ -226,10 +226,8 @@ void logout(int dest)
 		if (dest) {
 			/* connection object was destructed, manual logout */
 			message("Come back soon.\n");
-			TEXT_SUBD->send_logout_message(username, " gets disconnected.");
 		} else {
 			/* remote closure, we're linkdead */
-			TEXT_SUBD->send_logout_message(username, " goes linkdead.");
 		}
 	}
 

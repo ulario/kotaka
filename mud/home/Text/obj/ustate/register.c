@@ -173,10 +173,6 @@ void receive_in(string input)
 
 			ACCOUNTD->set_account_property(name, "channels", ({ "chat" }));
 
-			TEXT_SUBD->login_user(user);
-
-			TEXT_SUBD->send_register_message(name);
-
 			pager = clone_object("page");
 			text = read_file("~/data/quickstartguide");
 
