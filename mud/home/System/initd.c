@@ -482,9 +482,12 @@ void upgrade_system_post_recompile()
 	configure_rsrc();
 	set_limits();
 
-	load();
-
-	purge_orphans("System");
+	rlimits (0; -1) {
+		rlimits (0; 1000000000) {
+			upgrade_purge();
+			upgrade_build();
+		}
+	}
 
 	/* first, ask all InitD's if we can upgrade */
 	/* if nobody says no, send the upgrade signal */

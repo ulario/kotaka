@@ -19,7 +19,8 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
-#include <kotaka/log.h>
+#include <kotaka/assert.h>
+#include <status.h>
 
 inherit SECOND_AUTO;
 
@@ -32,14 +33,17 @@ string path;			/* the canonical path for this object */
 int *inherits;			/* program numbers of inherited objects */
 string *includes;		/* canonical include files */
 
-int destructed;			/* destructed */
+int destructed;
 
-string constructor;		/* constructor */
-string destructor;		/* destructor */
-string patcher;			/* patcher */
+string constructor;
+string destructor;
+string patcher;
 
-string *inherited_constructors;	/* constructors */
-string *inherited_destructors;	/* destructors */
+string *inherited_constructors;
+string *inherited_destructors;
+
+int nclones;
+mapping clones;
 
 /****************/
 /* Declarations */
@@ -69,6 +73,12 @@ string query_patcher();
 
 string *query_inherited_constructors();
 string *query_inherited_destructors();
+
+void add_clone(object clone);
+void remove_clone(object clone);
+int query_clone_count();
+object *query_clones();
+atomic void reset_clones();
 
 /***************/
 /* definitions */
@@ -184,4 +194,75 @@ string *query_inherited_constructors()
 string *query_inherited_destructors()
 {
 	return inherited_destructors[..];
+}
+
+void add_clone(object clone)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (nclones == 0 && !clones) {
+		return;
+	}
+
+	nclones++;
+
+	if (nclones >= status(ST_ARRAYSIZE)) {
+		clones = nil;
+	} else {
+		clones[clone] = 1;
+	}
+}
+
+void remove_clone(object clone)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (nclones == 0 && !clones) {
+		return;
+	}
+
+	nclones--;
+
+	if (clones) {
+		clones[clone] = nil;
+	}
+}
+
+int query_clone_count()
+{
+	if (nclones == 0 && !clones) {
+		return -1;
+	}
+
+	return nclones;
+}
+
+object *query_clones()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (!clones) {
+		return nil;
+	}
+
+	return map_indices(clones);
+}
+
+atomic void reset_clones()
+{
+	int sz;
+
+	nclones = 0;
+	clones = ([ ]);
+
+	ASSERT(path);
+	ASSERT(sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s"));
+
+	for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
+		object obj;
+
+		if (obj = find_object(path + "#" + sz)) {
+			add_clone(obj);
+		}
+	}
 }

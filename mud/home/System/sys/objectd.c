@@ -339,7 +339,17 @@ atomic void compile_failed(string owner, string path)
 
 atomic void clone(string owner, object obj)
 {
+	object pinfo;
+
 	ACCESS_CHECK(KERNEL());
+
+	pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
+
+	if (!pinfo) {
+		return;
+	}
+
+	pinfo->add_clone(obj);
 }
 
 atomic void destruct(varargs mixed owner, mixed obj)
@@ -350,9 +360,9 @@ atomic void destruct(varargs mixed owner, mixed obj)
 	string path;
 	object pinfo;
 
-	if (!sscanf(previous_program(), "/kernel/%*s")) {
-		ACCESS_CHECK(SYSTEM());
+	if (previous_program() != DRIVER) {
 		/* regular destruct call */
+		ACCESS_CHECK(SYSTEM());
 
 		return;
 	}
@@ -383,11 +393,15 @@ atomic void destruct(varargs mixed owner, mixed obj)
 		}
 	}
 
-	if (!is_clone) {
-		if (find_object(PROGRAMD)) {
-			pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
-		}
+	if (find_object(PROGRAMD)) {
+		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
+	}
 
+	if (is_clone) {
+		if (pinfo) {
+			pinfo->remove_clone(obj);
+		}
+	} else {
 		if (pinfo) {
 			pinfo->set_destructed();
 		}

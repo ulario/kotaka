@@ -19,7 +19,6 @@
  */
 #include <kernel/access.h>
 #include <kotaka/assert.h>
-#include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/privilege.h>
@@ -66,19 +65,6 @@ void cleanup_patch()
 	ACCESS_CHECK(SYSTEM());
 }
 
-private void enqueue_sweep(string path)
-{
-	if (!sweep_list) {
-		sweep_list = ({ nil, nil });
-	}
-
-	list_push_back(sweep_list, ({ path, status(ST_OTABSIZE) }) );
-
-	if (!handle) {
-		handle = call_out("process", 0);
-	}
-}
-
 private void enqueue_nudge(object obj)
 {
 	if (!nudge_list) {
@@ -90,6 +76,40 @@ private void enqueue_nudge(object obj)
 	if (!handle) {
 		handle = call_out("process", 0);
 	}
+}
+
+private void touch_one(object obj)
+{
+	int index;
+
+	if (!sscanf(object_name(obj), "%*s#%d", index)) {
+		index = status(obj, O_INDEX);
+	}
+
+	set_multimap(objdb, index, obj);
+
+	call_touch(obj);
+	enqueue_nudge(obj);
+}
+
+private int touch_all(string path)
+{
+	int touchcount;
+
+	rlimits(0; -1) {
+		int sz;
+
+		for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
+			object obj;
+
+			if (obj = find_object(path + "#" + sz)) {
+				touch_one(obj);
+				touchcount++;
+			}
+		}
+	}
+
+	return touchcount;
 }
 
 atomic void enqueue_patchers(object master, string *patchers)
@@ -114,27 +134,37 @@ atomic void enqueue_patchers(object master, string *patchers)
 		objdb = ([ ]);
 	}
 
-	set_multimap(objdb, index, master);
-
-	call_touch(master);
-	enqueue_nudge(master);
+	touch_one(master);
 
 	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
-		rlimits(0; -1) {
+		object pinfo;
+
+		pinfo = PROGRAMD->query_program_info(index);
+
+		if (pinfo) {
+			object *clones;
 			int sz;
 
-			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
-				object obj;
-
-				if (obj = find_object(path + "#" + sz)) {
-					set_multimap(objdb, sz, obj);
-					call_touch(obj);
-					touchcount++;
-				}
+			if (pinfo->query_clone_count() == -1) {
+				pinfo->reset_clones();
 			}
-		}
 
-		enqueue_sweep(path);
+			clones = pinfo->query_clones();
+
+			if (clones) {
+				for (sz = sizeof(clones); --sz >= 0; ) {
+					object clone;
+
+					clone = clones[sz];
+
+					touch_one(clone);
+				}
+			} else {
+				touch_all(path);
+			}
+		} else {
+			touch_all(path);
+		}
 	}
 }
 
