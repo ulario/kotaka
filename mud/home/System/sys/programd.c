@@ -192,6 +192,8 @@ atomic object register_program(string path, string *inherits, string *includes)
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	if (!progdb) {
+		LOGD->post_message("system", LOG_WARNING, "Skipping registration of " + path + ", no progdb");
+
 		return nil;
 	}
 
