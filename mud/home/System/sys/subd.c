@@ -464,6 +464,9 @@ void full_rebuild()
 			destruct_object(path);
 		}
 
+		/* purge any lingering unregistered inheritables */
+		purge_dir("/");
+
 		list = ({ nil, nil });
 		gather_lpc_files("/", list);
 
