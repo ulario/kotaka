@@ -45,8 +45,13 @@ static void create()
 	set_limits();
 
 	load();
+}
 
-	call_out("do_test", 0);
+static void destruct()
+{
+	destruct_dir("lwo");
+	destruct_dir("obj");
+	destruct_dir("sys");
 }
 
 void upgrade_module()
