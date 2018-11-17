@@ -113,7 +113,7 @@ private int compact_submap(mapping map, int level)
 	return map_sizeof(map);
 }
 
-void compact_multimap(mapping multimap)
+static void compact_multimap(mapping multimap)
 {
 	int *levels;
 	mapping *maps;
