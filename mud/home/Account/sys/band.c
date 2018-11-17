@@ -103,6 +103,7 @@ static void prune_bans()
 		case T_INT: /* blank ban */
 		case T_STRING: /* ban with message */
 			continue;
+
 		case T_ARRAY: /* modern ban */
 			{
 				string message;
@@ -141,6 +142,7 @@ static void prune_sitebans()
 		case T_INT: /* blank ban */
 		case T_STRING: /* ban with message */
 			continue;
+
 		case T_ARRAY: /* modern ban */
 			{
 				string message;
