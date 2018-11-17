@@ -38,10 +38,6 @@ private void set_limits()
 	KERNELD->rsrc_set_limit("Test", "ticks", 500000000);
 }
 
-static void do_test()
-{
-}
-
 static void create()
 {
 	MODULED->boot_module("Bigstruct");
