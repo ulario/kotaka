@@ -29,7 +29,7 @@
 inherit SECOND_AUTO;
 
 object progdb;	/* program database, index -> program_info */
-object pathdb;	/* path database, filename -> latest index */
+object pathdb;	/* defunct */
 object inhdb;	/* inherit database, filename -> inheriting objects */
 object incdb;	/* include database, filename -> including objects */
 
@@ -45,6 +45,15 @@ static void create()
 static void destruct()
 {
 	destruct_database();
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (pathdb) {
+		destruct_object(pathdb);
+	}
 }
 
 /* helpers */
@@ -199,10 +208,6 @@ atomic object register_program(string path, string *inherits, string *includes)
 
 	oindex = status(path, O_INDEX);
 
-	if (pathdb) {
-		pathdb->set_element(path, oindex);
-	}
-
 	pinfo = progdb->query_element(oindex);
 
 	if (!pinfo) {
@@ -316,10 +321,6 @@ atomic void remove_program(int index)
 		}
 	}
 
-	if (path && pathdb->query_element(path) == index) {
-		pathdb->set_element(path, nil);
-	}
-
 	progdb->set_element(index, nil);
 }
 
@@ -353,19 +354,6 @@ object query_program_info(int oindex)
 		return progdb->query_element(oindex);
 	} else {
 		ASSERT(SYSTEM());
-	}
-}
-
-int query_program_index(string path)
-{
-	mixed index;
-
-	index = pathdb->query_element(path);
-
-	if (index != nil) {
-		return index;
-	} else {
-		return -1;
 	}
 }
 
