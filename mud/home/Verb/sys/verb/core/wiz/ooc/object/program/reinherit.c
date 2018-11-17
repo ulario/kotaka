@@ -24,6 +24,7 @@
 #include <kotaka/paths/verb.h>
 #include <kotaka/paths/utility.h>
 #include <type.h>
+#include <status.h>
 
 inherit LIB_VERB;
 
@@ -35,6 +36,8 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	mixed *status;
+	string path;
+
 	object hits;
 	object list;
 
@@ -42,19 +45,21 @@ void main(object actor, mapping roles)
 	object objs;
 	object proxy;
 
-	int i, sz;
-	int oindex;
+	int sz;
+	mixed oindex;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to reinherit.\n");
 		return;
 	}
 
-	roles["raw"] = DRIVER->normalize_path(roles["raw"], "/");
+	path = roles["raw"];
 
-	oindex = PROGRAMD->query_program_index(roles["raw"]);
+	path = DRIVER->normalize_path(path, "/");
 
-	if (oindex == -1) {
+	oindex = status(path, O_INDEX);
+
+	if (oindex == nil) {
 		send_out("No such program.\n");
 		return;
 	}
@@ -67,19 +72,18 @@ void main(object actor, mapping roles)
 	SUBD->gather_inheriters(oindex, hits);
 
 	list = hits->query_indices();
-	sz = list->query_size();
 
 	libs = new_object(BIGSTRUCT_ARRAY_LWO);
 	libs->claim();
 	objs = new_object(BIGSTRUCT_ARRAY_LWO);
 	objs->claim();
 
-	for (i = 0; i < sz; i++) {
+	for (sz = list->query_size(); --sz >= 0; ) {
 		int oindex;
 		object pinfo;
 		string path;
 
-		oindex = list->query_element(i);
+		oindex = list->query_element(sz);
 
 		pinfo = PROGRAMD->query_program_info(oindex);
 
@@ -96,16 +100,15 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	sz = libs->query_size();
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
-	for (i = 0; i < sz; i++) {
-		proxy->destruct_object(libs->query_element(i));
+	for (sz = libs->query_size(); --sz >= 0; ) {
+		proxy->destruct_object(libs->query_element(sz));
 	}
 
-	sz = objs->query_size();
+	proxy->destruct_object(path);
 
-	for (i = 0; i < sz; i++) {
-		proxy->compile_object(objs->query_element(i));
+	for (sz = objs->query_size(); --sz >= 0; ) {
+		proxy->compile_object(objs->query_element(sz));
 	}
 }
