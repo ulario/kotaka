@@ -72,8 +72,6 @@ nomask int _F_sys_create(int clone)
 				call_other(this, ctor);
 			}
 		}
-	} else {
-		ASSERT(creator == "System" || creator == "Bigstruct");
 	}
 
 	if (sscanf(oname, "%*s" + CLONABLE_SUBDIR) == 0 &&
