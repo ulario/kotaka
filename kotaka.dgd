@@ -7,7 +7,7 @@ binary_port	= ([
 	"*": 50080		/* http */
 ]);		/* binary port number */
 directory	= "/home/dgd/git/kotaka/mud";/* base directory (MUST be absolute) */
-users		= 40;			/* max # of users */
+users		= 32;			/* max # of users */
 editors		= 0;			/* max # of editor sessions */
 ed_tmpfile	= "../state/ed";	/* proto editor tmpfile */
 swap_file	= "../state/swap";	/* swap file */
@@ -28,5 +28,5 @@ driver_object	= "/kernel/sys/driver";	/* driver object */
 create		= "_F_create";		/* name of create function */
 
 array_size	= 1024;			/* max array size */
-objects		= 1024;		/* max # of objects */
+objects		= 1024;			/* max # of objects */
 call_outs	= 1024;			/* max # of call_outs */
