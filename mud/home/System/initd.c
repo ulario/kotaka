@@ -64,9 +64,9 @@ private void set_limits()
 
 private void log_boot_error()
 {
-	LOGD->post_message("system", LOG_ERROR, "Runtime error during boot");
-	LOGD->post_message("system", LOG_ERROR, TLSD->query_tls_value("System", "error-string"));
-	LOGD->post_message("system", LOG_ERROR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
+	LOGD->post_message("system", LOG_ERR, "Runtime error during boot");
+	LOGD->post_message("system", LOG_ERR, TLSD->query_tls_value("System", "error-string"));
+	LOGD->post_message("system", LOG_ERR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
 }
 
 static void create()

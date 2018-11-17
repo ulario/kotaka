@@ -271,7 +271,7 @@ atomic object register_program(string path, string *inherits, string *includes)
 
 				dtors |= ({ subpinfo->query_destructor() });
 			} else {
-				LOGD->post_message("debug", LOG_WARN, "No program info for inherited program " + inherits[i]);
+				LOGD->post_message("debug", LOG_WARNING, "No program info for inherited program " + inherits[i]);
 			}
 		}
 

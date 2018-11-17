@@ -48,7 +48,7 @@ static void destruct()
 void suspend_system()
 {
 	if (!SYSTEM()) {
-		LOGD->post_message("system", LOG_WARN, "System suspension is deprecated.");
+		LOGD->post_message("system", LOG_WARNING, "System suspension is deprecated.");
 	}
 
 	if (suspend) {

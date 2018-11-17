@@ -18,16 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #define LOG_EMERG	0
-#define LOG_EMERGENCY	0
 #define LOG_ALERT	1
 #define LOG_CRIT	2
-#define LOG_CRITICAL	2
 #define LOG_ERR		3
-#define LOG_ERROR	3
-#define LOG_WARN	4
 #define LOG_WARNING	4
-#define LOG_NOTE	5
 #define LOG_NOTICE	5
 #define LOG_INFO	6
-#define LOG_INFORMATION	6
 #define LOG_DEBUG	7

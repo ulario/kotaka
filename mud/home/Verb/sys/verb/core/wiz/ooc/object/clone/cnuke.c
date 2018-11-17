@@ -50,7 +50,7 @@ void lazy_nuke(string path, int index, object proxy)
 	object obj;
 
 	if (!proxy) {
-		LOGD->post_message("system", LOG_ERROR, "Aborting clone nuke (proxy destructed)");
+		LOGD->post_message("system", LOG_ERR, "Aborting clone nuke (proxy destructed)");
 
 		return;
 	}
