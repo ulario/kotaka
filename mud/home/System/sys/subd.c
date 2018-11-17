@@ -305,17 +305,20 @@ atomic void full_reset()
 		discover_objects();
 
 		while (!paths->empty()) {
-			string path;
+			string path, index;
 
 			path = paths->query_back();
 			paths->pop_back();
 
-			if (!status(path)) {
+			index = status(path, index);
+
+			if (index == nil) {
 				continue;
 			}
 
-			if (PROGRAMD->query_program_index(path) == -1) {
+			if (!PROGRAMD->query_program_info(index)) {
 				LOGD->post_message("system", LOG_INFO, "Restoring orphaned program " + path);
+
 				PROGRAMD->register_program(path, ({ }), ({ }));
 			}
 		}
