@@ -131,6 +131,12 @@ void gather_inherits(mapping map, int oindex)
 	object pinfo;
 
 	pinfo = PROGRAMD->query_program_info(oindex);
+
+	if (!pinfo) {
+		LOGD->post_message("system", LOG_WARNING, "Attempted to gather inherits for unregistered program #" + oindex);
+		return;
+	}
+
 	inh = pinfo->query_inherits();
 
 	if (!inh) {
@@ -280,6 +286,12 @@ atomic void compile(string owner, object obj, string *source, string inherited .
 					program = programs[sz];
 
 					pinfo = PROGRAMD->query_program_info(program);
+
+					if (!pinfo) {
+						LOGD->post_message("system", LOG_WARNING, "Attempted to query patcher of unregistered program #" + program);
+						continue;
+					}
+
 					patcher = pinfo->query_patcher();
 
 					if (patcher) {
