@@ -92,7 +92,7 @@ function crashed
 		mv mud/core crash
 		echo "+++ DGD terminated by SIG$SIGNAME (core dump processed) +++"
 	else
-		echo "+++ DGD terminated by SIG$SIGNAME +++"
+		echo "+++ DGD terminated by SIG$SIGNAME (no core file found) +++"
 	fi
 }
 
