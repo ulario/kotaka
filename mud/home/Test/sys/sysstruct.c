@@ -24,24 +24,7 @@
 #include <kotaka/log.h>
 
 inherit "~System/lib/struct/multimap";
-inherit "~System/lib/struct/maparr";
 inherit "~System/lib/struct/list";
-
-private void test_maparr()
-{
-	mapping map;
-	int i;
-
-	for (i = 1; i < (1 << 30); i *= 3) {
-		map = set_multilevel_map_arr(map, 3, i, i);
-	}
-
-	for (i = 1; i < (1 << 30); i *= 3) {
-		ASSERT(query_multilevel_map_arr(map, 3, i) == i);
-		map = set_multilevel_map_arr(map, 3, i, nil);
-		ASSERT(query_multilevel_map_arr(map, 3, i) == nil);
-	}
-}
 
 private void test_multimap()
 {
@@ -69,6 +52,5 @@ void test()
 {
 	ACCESS_CHECK(TEST());
 
-	test_maparr();
 	test_multimap();
 }
