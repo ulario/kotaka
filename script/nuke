@@ -6,3 +6,4 @@ killall -KILL dgd monitor
 
 rm -f state/*
 rm -f kotaka.err
+rm -rf crash
