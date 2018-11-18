@@ -107,36 +107,41 @@ static void boot()
 {
 	catch {
 		load_object(ERRORD);		/* depends on TLS */
-		load_object(OBJECTD);		/* depends on TLS */
 		load_object(MODULED);
 
 		MODULED->boot_module("Bigstruct");
 
 		load_object(PROGRAM_INFO);
 		load_object(PROGRAMD);
+		load_object(PATCHD);
 		load_object(SYSTEM_SUBD);
-
-		LOGD->post_message("system", LOG_NOTICE, "System discovered");
-
-		load();
-		LOGD->post_message("system", LOG_NOTICE, "System loaded");
+		load_object(OBJECTD);		/* depends on TLS */
 
 		rlimits (0; -1) {
 			PROGRAMD->create_database();
 			OBJECTD->register_ghosts();
 			OBJECTD->discover_clones();
-			SYSTEM_SUBD->discover_objects();
+			SYSTEM_SUBD->discover_objects(); /* will recompile everything */
 		}
+		LOGD->post_message("system", LOG_NOTICE, "System discovered");
+
+		load();
+		LOGD->post_message("system", LOG_NOTICE, "System loaded");
 
 		DUMPD->set_parameters(3600, 0, 24);
 
-		MODULED->boot_module("Game");
+		call_out("ready", 0);
 	} : {
 		log_boot_error();
 		LOGD->flush();
 		shutdown();
 		error("System setup failed");
 	}
+}
+
+static void ready()
+{
+	MODULED->boot_module("Game");
 }
 
 void upgrade()

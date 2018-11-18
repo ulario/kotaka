@@ -43,7 +43,7 @@ string *messages;
 static void create(int clone)
 {
 	if (clone) {
-		::create(0);
+		wt::create(0);
 		messages = ({ });
 		directory = USR_DIR + "/" + query_owner();
 	}

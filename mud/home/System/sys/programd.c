@@ -198,7 +198,7 @@ atomic object register_program(string path, string *inherits, string *includes)
 	int *oinherits;
 	string *oincludes;
 
-	ACCESS_CHECK(previous_program() == OBJECTD);
+	ACCESS_CHECK(SYSTEM());
 
 	if (!progdb) {
 		LOGD->post_message("system", LOG_WARNING, "Skipping registration of " + path + ", no progdb");
@@ -286,6 +286,27 @@ atomic object register_program(string path, string *inherits, string *includes)
 		index_inherits(oindex, oindices);
 		index_includes(oindex, includes);
 	}
+
+	return pinfo;
+}
+
+atomic object register_destructed_program(string path, int index)
+{
+	object pinfo;
+
+	ACCESS_CHECK(SYSTEM());
+
+	if (!progdb) {
+		LOGD->post_message("system", LOG_WARNING, "Skipping registration of destructed " + path + ", no progdb");
+
+		return nil;
+	}
+
+	pinfo = new_object(PROGRAM_INFO);
+	pinfo->set_path(path);
+
+	progdb->set_element(index, pinfo);
+	pinfo->set_destructed(path);
 
 	return pinfo;
 }

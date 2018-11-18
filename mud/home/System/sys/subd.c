@@ -281,36 +281,76 @@ void discover_objects()
 
 atomic void full_reset()
 {
-	object ind;
-	object paths;
+	/* collect paths of existing programs */
+	/* wipe database */
+	/* destruct all inheritables */
+	/* stub all existing programs */
+	/* discover clones */
 
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
+	LOGD->post_message("debug", LOG_NOTICE, "Resetting object manager");
+
 	rlimits(0; -1) {
+		mixed **restore;
+		mixed **masters;
+		object ind;
+
+		/* nuke all inheritables */
+		purge_dir("/");
+
 		ind = PROGRAMD->query_program_indices();
-		paths = new_object(BIGSTRUCT_ARRAY_LWO);
-		paths->claim();
+
+		restore = ({ nil, nil });
+		masters = ({ nil, nil });
 
 		while (!ind->empty()) {
 			object pinfo;
+			string path;
 
 			pinfo = PROGRAMD->query_program_info(ind->query_back());
 			ind->pop_back();
 
-			paths->push_back(pinfo->query_path());
+			path = pinfo->query_path();
+
+			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+				destruct_object(path);
+			} else if (status(path)) {
+				list_push_back(masters, path);
+			}
 		}
 
 		PROGRAMD->reset_program_database();
 
+		while (!list_empty(masters)) {
+			string path;
+			mixed index;
+
+			path = list_front(masters);
+			list_pop_front(masters);
+
+			list_push_back(restore, path);
+
+			index = status(path, O_INDEX);
+
+			if (index == nil) {
+				continue;
+			}
+
+			PROGRAMD->register_program(path, nil, nil);
+		}
+
+		OBJECTD->discover_clones();
 		discover_objects();
 
-		while (!paths->empty()) {
-			string path, index;
+		while (!list_empty(restore)) {
+			string path;
+			mixed index;
 
-			path = paths->query_back();
-			paths->pop_back();
+			path = list_front(restore);
+			list_pop_front(restore);
 
-			index = status(path, index);
+			index = status(path, O_INDEX);
 
 			if (index == nil) {
 				continue;
@@ -323,6 +363,8 @@ atomic void full_reset()
 			}
 		}
 	}
+
+	LOGD->post_message("debug", LOG_NOTICE, "Object manager reset");
 }
 
 mixed **query_dormant()
@@ -378,6 +420,7 @@ static void full_rebuild_tick(mixed **list, mapping initds)
 
 	if (list_empty(list)) {
 		LOGD->post_message("system", LOG_NOTICE, "Full rebuild completed");
+
 		return;
 	}
 
@@ -393,12 +436,9 @@ static void full_rebuild_tick(mixed **list, mapping initds)
 	}
 
 	if (!file_info(path + ".c")) {
-		LOGD->post_message("debug", LOG_NOTICE, "Skipping " + path + " because source vanished");
-		return;
-	}
+		LOGD->post_message("debug", LOG_NOTICE, "Rebuild skipping " + path + " because source vanished");
 
-	if (!find_object(path)) {
-		LOGD->post_message("debug", LOG_NOTICE, "Compiling " + path + " ...");
+		return;
 	}
 
 	compile_object(path);
@@ -421,8 +461,6 @@ private void rebuild_initd(string path)
 			} else {
 				compile_object(path);
 			}
-		} : {
-			LOGD->post_message("debug", LOG_NOTICE, "Error trying to rebuild " + path);
 		}
 	}
 }

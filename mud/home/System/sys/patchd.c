@@ -19,6 +19,7 @@
  */
 #include <kernel/access.h>
 #include <kotaka/assert.h>
+#include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/privilege.h>
@@ -145,25 +146,29 @@ atomic void enqueue_patchers(object master, string *patchers)
 			object *clones;
 			int sz;
 
-			if (pinfo->query_clone_count() == -1) {
+			switch(pinfo->query_clone_count()) {
+			case 0: /* no clones */
+				break;
+
+			case -1: /* defunct */
+				LOGD->post_message("system", LOG_WARNING, "Defunct clone list for " + path + ", resetting");
 				pinfo->reset_clones();
-			}
+				/* fall through */
 
-			clones = pinfo->query_clones();
+			default:
+				clones = pinfo->query_clones();
 
-			if (clones) {
-				for (sz = sizeof(clones); --sz >= 0; ) {
-					object clone;
-
-					clone = clones[sz];
-
-					touch_one(clone);
+				if (clones) {
+					for (sz = sizeof(clones); --sz >= 0; ) {
+						touch_one(clones[sz]);
+					}
+				} else {
+					LOGD->post_message("system", LOG_WARNING, "Clone overflow for " + path + ", sweeping");
+					touch_all(path);
 				}
-			} else {
-				touch_all(path);
 			}
 		} else {
-			touch_all(path);
+			LOGD->post_message("system", LOG_WARNING, "Missing program info for " + path + ", not patching");
 		}
 	}
 }

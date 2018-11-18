@@ -24,12 +24,12 @@
 
 inherit SECOND_AUTO;
 
-private inherit API_TLS;
+private inherit tls API_TLS;
 
 static void create()
 {
-	::create();
-	::set_tls_size(1);
+	tls::create();
+	tls::set_tls_size(1);
 }
 
 mixed query_tls_value(string domain, string key)

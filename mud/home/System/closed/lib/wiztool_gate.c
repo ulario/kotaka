@@ -23,6 +23,11 @@
 inherit sa SECOND_AUTO;
 inherit lw LIB_WIZTOOL;
 
+static void create(int history)
+{
+	lw::create(history);
+}
+
 static void message(string msg)
 {
 	error("Must override");

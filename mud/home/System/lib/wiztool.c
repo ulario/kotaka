@@ -26,6 +26,11 @@
 inherit auto SECOND_AUTO;
 inherit user LIB_WIZTOOL;
 
+static void create(varargs int clone)
+{
+	user::create(0);
+}
+
 /*
  * NAME:	compile_object()
  * DESCRIPTION:	compile_object wrapper

@@ -26,6 +26,10 @@
 inherit "call_guard";
 inherit "catalog";
 
+static void create(varargs int clone)
+{
+}
+
 nomask int _F_sys_create(int clone)
 {
 	string oname;

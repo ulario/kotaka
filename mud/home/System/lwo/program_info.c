@@ -24,13 +24,9 @@
 
 inherit SECOND_AUTO;
 
-/*************/
-/* Variables */
-/*************/
-
 string path;			/* the canonical path for this object */
 
-int *inherits;			/* program numbers of inherited objects */
+int *inherits;			/* indices of inherited objects */
 string *includes;		/* canonical include files */
 
 int destructed;
@@ -45,46 +41,7 @@ string *inherited_destructors;
 int nclones;
 mapping clones;
 
-/****************/
-/* Declarations */
-/****************/
-
-static void create(int clone);
-void set_path(string new_path);
-void set_inherits(int *new_inherits);
-void set_includes(string *new_includes);
-void set_destructed();
-
-void set_constructor(string constructor);
-void set_destructor(string destructor);
-void set_patcher(string patcher);
-
-void set_inherited_constructors(string *constructors);
-void set_inherited_destructors(string *destructors);
-
-string query_path();
-int *query_inherits();
-string *query_includes();
-int query_destructed();
-
-string query_constructor();
-string query_destructor();
-string query_patcher();
-
-string *query_inherited_constructors();
-string *query_inherited_destructors();
-
-void add_clone(object clone);
-void remove_clone(object clone);
-int query_clone_count();
-object *query_clones();
-atomic void reset_clones();
-
-/***************/
-/* definitions */
-/***************/
-
-static void create(int clone)
+static void create(varargs int clone)
 {
 }
 

@@ -78,6 +78,8 @@ private void compile_common(string owner, string path, string *source, string *i
 
 	if (find_object(PROGRAMD)) {
 		pinfo = PROGRAMD->register_program(path, inherited, includes);
+	} else {
+		LOGD->post_message("system", LOG_WARNING, "Compiled " + path + " without ProgramD loaded, cannot register");
 	}
 
 	/* we don't get to tell kernel objects what they inherit */
@@ -299,13 +301,15 @@ atomic void compile(string owner, object obj, string *source, string inherited .
 					}
 				}
 
-				if (sizeof(patchers)) {
+				if (sizeof(patchers) && find_object(PATCHD)) {
 					PATCHD->enqueue_patchers(obj, patchers);
 				}
 			}
 
 			catch {
-				obj->upgrading();
+				if (function_object("upgrading", obj)) {
+					obj->upgrading();
+				}
 			}
 
 			if (!upgrades) {
@@ -460,7 +464,9 @@ atomic int touch(varargs mixed obj, mixed func)
 		ASSERT(typeof(func) == T_STRING);
 
 		if (!sscanf(object_name(obj), "/kernel/%*s")) {
-			return obj->_F_touch(func);
+			if (function_object("_F_", obj)) {
+				return obj->_F_touch(func);
+			}
 		}
 	} else if (sscanf(previous_program(), USR_DIR
 		+ "/System" + INHERITABLE_SUBDIR + "auto/%*s")) {
@@ -540,14 +546,14 @@ private void register_ghosts_dir(string dir)
 	}
 }
 
-void register_ghosts()
+atomic void register_ghosts()
 {
 	ACCESS_CHECK(previous_program() == INITD);
 
 	register_ghosts_dir("/");
 }
 
-void discover_clones()
+atomic void discover_clones()
 {
 	string *owners;
 	int sz;
@@ -555,7 +561,7 @@ void discover_clones()
 	mixed **masters;
 	mixed **clones;
 
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(SYSTEM());
 
 	masters = ({ nil, nil });
 	clones = ({ nil, nil });
@@ -564,8 +570,10 @@ void discover_clones()
 
 	for (sz = sizeof(owners); --sz >= 0; ) {
 		object first;
+		string owner;
 
-		first = KERNELD->first_link(owners[sz]);
+		owner = owners[sz];
+		first = KERNELD->first_link(owner);
 
 		if (first) {
 			object cursor;
@@ -591,11 +599,24 @@ void discover_clones()
 	while (!list_empty(masters)) {
 		object pinfo;
 		object master;
+		string path;
+		int index;
 
 		master = list_front(masters);
 		list_pop_front(masters);
 
-		pinfo = PROGRAMD->query_program_info(status(master, O_INDEX));
+		path = object_name(master);
+		index = status(master, O_INDEX);
+
+		pinfo = PROGRAMD->query_program_info(index);
+
+		if (!pinfo) {
+			if (find_object(path)) {
+				pinfo = PROGRAMD->register_program(path, nil, nil);
+			} else {
+				pinfo = PROGRAMD->register_destructed_program(path, index);
+			}
+		}
 
 		pinfo->clear_clones();
 	}
@@ -603,11 +624,25 @@ void discover_clones()
 	while (!list_empty(clones)) {
 		object pinfo;
 		object clone;
+		int index;
 
 		clone = list_front(clones);
 		list_pop_front(clones);
 
-		pinfo = PROGRAMD->query_program_info(status(clone, O_INDEX));
+		index = status(clone, O_INDEX);
+		pinfo = PROGRAMD->query_program_info(index);
+
+		if (!pinfo) {
+			string path;
+
+			sscanf(object_name(clone), "%s#%*d", path);
+
+			if (status(path)) {
+				pinfo = PROGRAMD->register_program(path, nil, nil);
+			} else {
+				pinfo = PROGRAMD->register_destructed_program(path, index);
+			}
+		}
 
 		pinfo->add_clone(clone);
 	}
