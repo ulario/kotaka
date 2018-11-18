@@ -140,20 +140,23 @@ atomic void enqueue_patchers(object master, string *patchers)
 	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		object pinfo;
 
-		pinfo = PROGRAMD->query_program_info(index);
+		pinfo = OBJECTD->query_program_info(index);
 
 		if (pinfo) {
 			object *clones;
 			int sz;
 
+			if (!pinfo->query_clones_valid()) {
+				LOGD->post_message("system", LOG_WARNING, "Defunct clone list for " + path + ", resetting");
+				pinfo->reset_clones();
+			}
+
 			switch(pinfo->query_clone_count()) {
 			case 0: /* no clones */
 				break;
 
-			case -1: /* defunct */
-				LOGD->post_message("system", LOG_WARNING, "Defunct clone list for " + path + ", resetting");
-				pinfo->reset_clones();
-				/* fall through */
+			case -1:
+				ASSERT(0);
 
 			default:
 				clones = pinfo->query_clones();

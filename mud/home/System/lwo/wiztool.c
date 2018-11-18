@@ -35,7 +35,7 @@ static void process(string str);
 static void create(int clone)
 {
     if (clone) {
-	::create(200);
+	w::create(200);
 
 	user = this_user();
 

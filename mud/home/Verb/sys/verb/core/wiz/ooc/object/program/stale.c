@@ -19,8 +19,10 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/assert.h>
 
 inherit LIB_VERB;
+inherit "~System/lib/struct/list";
 
 string *query_parse_methods()
 {
@@ -30,40 +32,44 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	/* Report all objects inheriting a destructed inheritable */
-	object indices;
-	int i, sz;
+	mixed **list;
+	object proxy;
 
 	if (query_user()->query_class() < 2) {
 		send_out("Only a wizard can do that.\n");
 		return;
 	}
 
-	indices = PROGRAMD->query_program_indices();
-	sz = indices->query_size();
+	list = OBJECTD->query_program_indices();
+	proxy = PROXYD->get_proxy(query_user()->query_name());
 
-	for (i = 0; i < sz; i++) {
+	while (!list_empty(list)) {
 		int pindex;
 		object pinfo;
 		int *libs;
 		int ssz, j;
 
-		pindex = indices->query_element(i);
-		pinfo = PROGRAMD->query_program_info(pindex);
+		pindex = list_front(list);
+		list_pop_front(list);
+
+		pinfo = OBJECTD->query_program_info(pindex);
 
 		if (pinfo->query_destructed()) {
 			continue;
 		}
 
 		libs = pinfo->query_inherits();
+		ASSERT(libs);
+
 		ssz = sizeof(libs);
 
 		for (j = 0; j < ssz; j++) {
 			object pinfo2;
 
-			pinfo2 = PROGRAMD->query_program_info(libs[j]);
+			pinfo2 = OBJECTD->query_program_info(libs[j]);
 
 			if (pinfo2->query_destructed()) {
-				send_out(pinfo->query_path() + " inherits " + pinfo2->query_path() + "\n");
+				send_out(pinfo->query_path() + " inherits destructed " + pinfo2->query_path() + "\n");
 			}
 		}
 	}

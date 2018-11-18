@@ -17,11 +17,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
-inherit "~/lib/utility/compile";
 inherit SECOND_AUTO;
+inherit "~/lib/struct/list";
+inherit "~/lib/utility/compile";
 
 void reboot()
 {
@@ -97,20 +99,20 @@ void shutdown_module(string module)
 
 static void purge_orphans(string module)
 {
-	rlimits (0; -1) {
-		object list;
+	rlimits (0; 1000000) {
+		mixed **list;
 
-		list = PROGRAMD->query_program_indices();
+		list = OBJECTD->query_program_indices();
 
-		while (!list->empty()) {
+		while (!list_empty(list)) {
 			int index;
 			object pinfo;
 			string file;
 
-			index = list->query_back();
-			list->pop_back();
+			index = list_front(list);
+			list_pop_front(list);
 
-			pinfo = PROGRAMD->query_program_info(index);
+			pinfo = OBJECTD->query_program_info(index);
 
 			if (!pinfo) {
 				continue;
@@ -139,11 +141,11 @@ void upgrade_purge()
 
 	module = DRIVER->creator(object_name(this_object()));
 
+	ASSERT(module);
+
 	purge_orphans(module);
 
-	if (module) {
-		purge_dir(USR_DIR + "/" + module);
-	}
+	purge_dir(USR_DIR + "/" + module);
 }
 
 void upgrade_build()
@@ -154,7 +156,7 @@ void upgrade_build()
 
 	module = DRIVER->creator(object_name(this_object()));
 
-	if (module) {
-		compile_dir(USR_DIR + "/" + module);
-	}
+	ASSERT(module);
+
+	compile_dir(USR_DIR + "/" + module);
 }

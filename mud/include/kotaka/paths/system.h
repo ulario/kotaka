@@ -19,6 +19,10 @@
  */
 #include <config.h>
 
+/* initd */
+
+#define INITD		(USR_DIR + "/System/initd")
+
 /* daemons */
 
 #define CALLOUTD	(USR_DIR + "/System/sys/calloutd")
@@ -27,7 +31,6 @@
 #define DUMPD		(USR_DIR + "/System/sys/dumpd")
 #define ERRORD		(USR_DIR + "/System/sys/errord")
 #define FILTERD		(USR_DIR + "/System/sys/filterd")
-#define INITD		(USR_DIR + "/System/initd")
 #define KERNELD		(USR_DIR + "/System/sys/kerneld")
 #define LOGD		(USR_DIR + "/System/sys/logd")
 #define MODULED		(USR_DIR + "/System/sys/moduled")
@@ -37,7 +40,6 @@
 #define PROXYD		(USR_DIR + "/System/sys/proxyd")
 #define SECRETD		(USR_DIR + "/System/sys/secretd")
 #define STATUSD		(USR_DIR + "/System/sys/statusd")
-#define SYSTEM_SUBD	(USR_DIR + "/System/sys/subd")
 #define SUSPENDD	(USR_DIR + "/System/sys/suspendd")
 #define SWAPD		(USR_DIR + "/System/sys/swapd")
 #define SYSTEM_USERD	(USR_DIR + "/System/sys/userd")
@@ -49,21 +51,21 @@
 /* libs */
 
 #define CALL_GUARD		(USR_DIR + "/System/lib/auto/call_guard")
+#define SECOND_AUTO		(USR_DIR + "/System/lib/auto/second_auto")
 #define LIB_FILTER		(USR_DIR + "/System/lib/filter")
 #define LIB_SYSTEM_USER		(USR_DIR + "/System/lib/user")
 #define LIB_SYSTEM_WIZTOOL	(USR_DIR + "/System/lib/wiztool")
 #define LIB_USERD		(USR_DIR + "/System/lib/userd")
 #define LIB_INITD		(USR_DIR + "/System/lib/initd")
 #define LIB_SYSTEM		(USR_DIR + "/System/lib/system")
-#define SECOND_AUTO		(USR_DIR + "/System/lib/auto/second_auto")
 #define UTILITY_STRING		(USR_DIR + "/System/lib/utility/string")
 #define UTILITY_COMPILE		(USR_DIR + "/System/lib/utility/compile")
 #define UTILITY_ALGORITHM	(USR_DIR + "/System/lib/utility/algorithm")
 
 /* lwos */
 
-#define CLONE_INFO		(USR_DIR + "/System/lwo/clone_info")
 #define PROGRAM_INFO		(USR_DIR + "/System/lwo/program_info")
+#define SPARSE_ARRAY		(USR_DIR + "/System/lwo/struct/sparse_array")
 
 /* objs */
 

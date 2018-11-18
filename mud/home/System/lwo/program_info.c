@@ -35,14 +35,22 @@ string constructor;
 string destructor;
 string patcher;
 
+string *constructors;
+string *destructors;
+string *patchers;
+
 string *inherited_constructors;
 string *inherited_destructors;
 
+int clones_valid;
 int nclones;
 mapping clones;
 
 static void create(varargs int clone)
 {
+	if (clone) {
+		clones = ([ ]);
+	}
 }
 
 void set_path(string new_path)
@@ -108,6 +116,27 @@ void set_inherited_destructors(string *destructors)
 	inherited_destructors = destructors[..];
 }
 
+void set_constructors(string *new_constructors)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	constructors = new_constructors[..];
+}
+
+void set_destructors(string *new_destructors)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	destructors = new_destructors[..];
+}
+
+void set_patchers(string *new_patchers)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	patchers = new_patchers[..];
+}
+
 string query_path()
 {
 	return path;
@@ -143,6 +172,78 @@ string query_patcher()
 	return patcher;
 }
 
+string *query_constructors()
+{
+	if (!constructors) {
+		if (constructor) {
+			constructors = ({ constructor });
+		} else {
+			constructors = ({ });
+		}
+
+		if (inherited_constructors) {
+			constructors |= inherited_constructors;
+		}
+	}
+
+	return constructors[..];
+}
+
+string *query_destructors()
+{
+	if (!destructors) {
+		if (destructor) {
+			destructors = ({ destructor });
+		} else {
+			destructors = ({ });
+		}
+
+		if (inherited_destructors) {
+			destructors |= inherited_destructors;
+		}
+	}
+
+	return destructors[..];
+}
+
+string *query_patchers()
+{
+	if (!patchers) {
+		string *libpatchers;
+
+		libpatchers = ({ });
+
+		if (inherits) {
+			int sz;
+			int i;
+
+			sz = sizeof(inherits);
+
+			for (i = 0; i < sz; i++) {
+				object libpinfo;
+
+				libpinfo = OBJECTD->query_program_info(inherits[i]);
+
+				if (!libpinfo) {
+					continue;
+				}
+
+				libpatchers |= libpinfo->query_patchers();
+			}
+		}
+
+		if (patcher) {
+			patchers = ({ patcher });
+		} else {
+			patchers = ({ });
+		}
+
+		patchers |= libpatchers;
+	}
+
+	return patchers[..];
+}
+
 string *query_inherited_constructors()
 {
 	return inherited_constructors ? inherited_constructors[..] : nil;
@@ -157,7 +258,7 @@ void add_clone(object clone)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	if (nclones == 0 && !clones) {
+	if (!clones_valid) {
 		return;
 	}
 
@@ -174,7 +275,7 @@ void remove_clone(object clone)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	if (nclones == 0 && !clones) {
+	if (!clones_valid) {
 		return;
 	}
 
@@ -185,9 +286,14 @@ void remove_clone(object clone)
 	}
 }
 
+int query_clones_valid()
+{
+	return clones_valid;
+}
+
 int query_clone_count()
 {
-	if (nclones == 0 && !clones) {
+	if (!clones_valid) {
 		return -1;
 	}
 
@@ -198,11 +304,18 @@ object *query_clones()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	if (!clones) {
+	if (!clones_valid || !clones) {
 		return nil;
 	}
 
 	return map_indices(clones);
+}
+
+void set_clones_valid(int flag)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	clones_valid = flag;
 }
 
 void clear_clones()
@@ -214,6 +327,7 @@ void clear_clones()
 
 	nclones = 0;
 	clones = ([ ]);
+	clones_valid = 0;
 }
 
 atomic void reset_clones()
@@ -226,6 +340,7 @@ atomic void reset_clones()
 	ASSERT(sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s"));
 
 	clear_clones();
+	clones_valid = 1;
 
 	for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 		object obj;

@@ -30,33 +30,174 @@
 
 inherit SECOND_AUTO;
 inherit LIB_SYSTEM;
-inherit "~System/lib/struct/list";
+inherit "~/lib/struct/list";
+inherit "~/lib/utility/compile";
 
 mixed **upgrades;	/* upgrade list */
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
-int is_initd;		/* current compilation is for an initd */
-int is_kernel;		/* current compilation is for a kernel object */
-int is_auto;		/* current compilation is for a second auto support library */
+object progdb;		/* program database */
 
 static void create()
 {
+	progdb = new_object(SPARSE_ARRAY);
+
 	DRIVER->set_object_manager(this_object());
 }
 
-/* private */
-
-private mixed query_include_file(string compiled, string from, string path)
+void upgrade()
 {
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (!progdb) {
+		progdb = new_object(SPARSE_ARRAY);
+	}
+}
+
+/* helpers */
+
+private object fetch_program_info(int index)
+{
+	object pinfo;
+
+	if (progdb && (pinfo = progdb->query_element(index))) {
+		return pinfo;
+	}
+
+	if (find_object(PROGRAMD)) {
+		pinfo = PROGRAMD->query_program_info(index);
+
+		if (!pinfo) {
+			return nil;
+		}
+
+		if (!progdb) {
+			progdb = new_object(SPARSE_ARRAY);
+		}
+
+		progdb->set_element(index, pinfo);
+		PROGRAMD->remove_program(index);
+	}
+
+	return pinfo;
+}
+
+private object setup_ghost_program_info(string path, int index)
+{
+	object pinfo;
+
+	if (find_object(PROGRAMD)) {
+		PROGRAMD->remove_program(index);
+	}
+
+	if (!progdb) {
+		progdb = new_object(SPARSE_ARRAY);
+	}
+
+	pinfo = new_object(PROGRAM_INFO);
+	pinfo->set_path(path);
+
+	progdb->set_element(index, pinfo);
+
+	return pinfo;
+}
+
+private object setup_program_info(string path, string *inherited)
+{
+	int index;
+	object pinfo;
+	string constructor, destructor, patcher;
+	string *constructors, *destructors, *patchers;
 	string creator;
 	object initd;
+
+	int sz;
+
+	index = status(path, O_INDEX);
+
+	pinfo = fetch_program_info(index);
+
+	if (!pinfo) {
+		pinfo = setup_ghost_program_info(path, index);
+	}
+
+	pinfo->set_includes(includes[..]);
+
+	creator = DRIVER->creator(path);
+
+	if (creator) {
+		initd = find_object(USR_DIR + "/" + creator + "/initd");
+	} else {
+		initd = find_object("/initd");
+	}
+
+	constructor = initd->query_constructor(path);
+	destructor = initd->query_destructor(path);
+	patcher = initd->query_patcher(path);
+
+	pinfo->set_constructor(constructor);
+	pinfo->set_destructor(destructor);
+	pinfo->set_patcher(patcher);
+
+	sz = sizeof(inherited);
+
+	constructors = constructor ? ({ constructor }) : ({ });
+	destructors = destructor ? ({ destructor }) : ({ });
+	patchers = patcher ? ({ patcher }) : ({ });
+
+	if (sz) {
+		int *ii;
+		int i;
+
+		ii = allocate(sz);
+
+		for (i = 0; i < sz; i++) {
+			object libpinfo;
+			int libindex;
+			string iconstructor;
+			string idestructor;
+			string ipatcher;
+
+			ii[i] = status(inherited[i], O_INDEX);
+
+			libindex = ii[i];
+
+			libpinfo = fetch_program_info(libindex);
+
+			if (!libpinfo) {
+				LOGD->post_message("system", LOG_WARNING, "Unable to access program_info for inherited object " + inherited[i]);
+				continue;
+			}
+
+			constructors |= libpinfo->query_constructors();
+			destructors |= libpinfo->query_destructors();
+			patchers |= libpinfo->query_patchers();
+		}
+
+		pinfo->set_inherits(ii);
+	} else {
+		pinfo->set_inherits( ({ }) );
+	}
+
+	pinfo->set_constructors(constructors);
+	pinfo->set_destructors(destructors);
+	pinfo->set_patchers(patchers);
+
+	progdb->set_element(index, pinfo);
+
+	return pinfo;
+}
+
+private string query_include_file(string compiled, string from, string path)
+{
+	string creator;
 
 	if (path == "/include/std.h") {
 		return path;
 	}
 
-	creator = find_object(DRIVER)->creator(compiled);
+	creator = DRIVER->creator(compiled);
 
 	if (creator == "System") {
 		return path;
@@ -64,144 +205,22 @@ private mixed query_include_file(string compiled, string from, string path)
 
 	if (path == "/include/AUTO"
 		&& from == "/include/std.h"
-		&& compiled != USR_DIR + "/admin/_code") {
+		&& (!creator || compiled != USR_DIR + "/" + creator + "/_code")) {
 		return USR_DIR + "/System/include/second_auto.h";
 	}
 
 	return path;
 }
 
-private void compile_common(string owner, string path, string *source, string *inherited)
+static void destruct_object(object obj)
 {
-	object initd;
-	object pinfo;
-
-	if (find_object(PROGRAMD)) {
-		pinfo = PROGRAMD->register_program(path, inherited, includes);
-	} else {
-		LOGD->post_message("system", LOG_WARNING, "Compiled " + path + " without ProgramD loaded, cannot register");
-	}
-
-	/* we don't get to tell kernel objects what they inherit */
-	if (sscanf(path, "/kernel/%*s")) {
-		return;
-	}
-
-	/* everyting outside auto must inherit it */
-	if (!is_auto && !sizeof(({ SECOND_AUTO }) & inherited)) {
-		error("Failure to inherit SECOND_AUTO: " + path);
-	}
-
-	if (is_initd) {
-		return;
-	}
-
-	if (pinfo) {
-		initd = find_object(initd_of(owner));
-	}
-
-	if (initd) {
-		pinfo->set_constructor(initd->query_constructor(path));
-		pinfo->set_destructor(initd->query_destructor(path));
-		pinfo->set_patcher(initd->query_patcher(path));
-	}
-
-	includes = nil;
+	::destruct_object(obj);
 }
 
-private void set_flags(string path)
+static void upgrade_object(object obj)
 {
-	string creator;
-
-	is_kernel = sscanf(path, "/kernel/%*s");
-	is_auto = sscanf(path, USR_DIR + "/System"
-		+ INHERITABLE_SUBDIR + "auto/%*s");
-
-	creator = DRIVER->creator(path);
-
-	is_initd = (path == initd_of(creator));
-}
-
-/* program management */
-
-/* klib hooks */
-
-void gather_inherits(mapping map, int oindex)
-{
-	int *inh;
-	int sz;
-	object pinfo;
-
-	pinfo = PROGRAMD->query_program_info(oindex);
-
-	if (!pinfo) {
-		LOGD->post_message("system", LOG_WARNING, "Attempted to gather inherits for unregistered program #" + oindex);
-		return;
-	}
-
-	inh = pinfo->query_inherits();
-
-	if (!inh) {
-		LOGD->post_message("system", LOG_WARNING, "Attempted to gather inherits for ghost program " + pinfo->query_path());
-		return;
-	}
-
-	for (sz = sizeof(inh) - 1; sz >= 0; --sz) {
-		int i;
-
-		i = inh[sz];
-
-		if (!map[i]) {
-			map[i] = 1;
-
-			gather_inherits(map, i);
-		}
-	}
-}
-
-atomic void compiling(string path)
-{
-	ACCESS_CHECK(KERNEL());
-
-	includes = ({ "/include/std.h" });
-
-	if (sscanf(path, USR_DIR + "/%*s/_code")) {
-		/* klib wiztool "code" command, ignore */
-		return;
-	}
-
-	if (!find_object(PROGRAMD)) {
-		switch(DRIVER->creator(path)) {
-		case "System":
-		case "Bigstruct":
-			break;
-
-		default:
-			error("Cannot compile " + path + " without ProgramD");
-		}
-	}
-
-	if (path == "/initd" || sscanf(path, USR_DIR + "/%*s/initd")) {
-		/* this is an initd */
-	} else {
-		string creator;
-		string initd;
-
-		creator = DRIVER->creator(path);
-
-		if (creator) {
-			initd = USR_DIR + "/" + creator + "/initd";
-		} else {
-			initd = "/initd";
-		}
-
-		if (!find_object(initd)) {
-			error("Cannot compile " + path + " without " + initd);
-		}
-	}
-
-	if (find_object(path)) {
-		upgrading = 1;
+	if (obj && function_object("upgrade", obj)) {
+		obj->upgrade();
 	}
 }
 
@@ -219,233 +238,176 @@ static void process()
 	obj = list_front(upgrades);
 	list_pop_front(upgrades);
 
-	if (obj) {
+	if (obj && function_object("upgrade", obj)) {
 		obj->upgrade();
 	}
 }
 
-void do_upgrade(object obj)
+/* klib hooks */
+
+void compiling(string path)
 {
-	ACCESS_CHECK(SYSTEM());
+	string creator;
+	string initd;
 
-	if (obj) {
-		obj->upgrade();
-	}
-}
+	ACCESS_CHECK(previous_program() == DRIVER);
 
-atomic void compile(string owner, object obj, string *source, string inherited ...)
-{
-	string path;
-	string err;
-	int index;
-
-	ACCESS_CHECK(KERNEL());
-
-	path = object_name(obj);
-
-	set_flags(path);
-
-	if (path != DRIVER) {
-		inherited |= ({ AUTO });
-	}
+	includes = ({ "/include/std.h" });
 
 	if (sscanf(path, USR_DIR + "/%*s/_code")) {
-		/* klib wiztool "code" command, ignore */
+		/* klib wiztool "code" command, ignore it */
 		return;
 	}
 
-	index = status(obj, O_INDEX);
+	creator = DRIVER->creator(path);
 
-	compile_common(owner, path, source, inherited);
+	if (creator) {
+		initd = USR_DIR + "/" + creator + "/initd";
+	} else {
+		initd = "/initd";
+	}
 
-	if (is_initd) {
-		if (!sizeof(({ LIB_INITD }) & inherited)) {
-			error("Failure to inherit LIB_INITD: " + path);
-		}
+	if (path != initd && !find_object(initd)) {
+		error("Cannot compile " + path + " without " + initd);
+	}
+
+	if (find_object(path)) {
+		upgrading = 1;
+	}
+}
+
+void compile(string owner, object obj, string *source, string inherited ...)
+{
+	string creator;
+	string path;
+	object pinfo;
+	int *inh;
+	int sz;
+
+	ACCESS_CHECK(previous_program() == DRIVER);
+
+	path = object_name(obj);
+	pinfo = setup_program_info(path, inherited);
+
+	if (sscanf(path, "/kernel/%*s")) {
+		return;
+	}
+
+	creator = DRIVER->creator(path);
+
+	if (creator && path == USR_DIR + "/" + creator + "/_code") {
+		call_out("destruct_object", 0, obj);
+
+		return;
 	}
 
 	if (upgrading) {
+		string *patchers;
+
 		upgrading = 0;
 
-		if (!is_kernel) {
-			if (find_object(PROGRAMD)) {
-				int *programs;
-				int sz;
-				string *patchers;
-				mapping inherits;
-
-				inherits = ([ ]);
-				gather_inherits(inherits, index);
-				programs = map_indices(inherits) | ({ index });
-
-				patchers = ({ });
-
-				for (sz = sizeof(programs) - 1; sz >= 0; --sz) {
-					object pinfo;
-					string patcher;
-					int program;
-
-					program = programs[sz];
-
-					pinfo = PROGRAMD->query_program_info(program);
-
-					if (!pinfo) {
-						LOGD->post_message("system", LOG_WARNING, "Attempted to query patcher of unregistered program #" + program);
-						continue;
-					}
-
-					patcher = pinfo->query_patcher();
-
-					if (patcher) {
-						patchers |= ({ patcher });
-					}
-				}
-
-				if (sizeof(patchers) && find_object(PATCHD)) {
-					PATCHD->enqueue_patchers(obj, patchers);
-				}
-			}
-
+		if (function_object("upgrading", obj)) {
 			catch {
-				if (function_object("upgrading", obj)) {
-					obj->upgrading();
-				}
+				obj->upgrading();
 			}
-
-			if (!upgrades) {
-				upgrades = ({ nil, nil });
-
-				call_out("process", 0);
-			}
-
-			list_push_back(upgrades, obj);
 		}
+
+		call_out("upgrade_object", 0, obj);
+
+		patchers = pinfo->query_patchers();
+
+		if (sizeof(patchers)) {
+			PATCHD->enqueue_patchers(obj, patchers);
+		}
+	} else if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
+		pinfo->clear_clones();
+		pinfo->set_clones_valid(1);
 	}
 }
 
-atomic void compile_lib(string owner, string path, string *source, string inherited ...)
+void compile_lib(string owner, string path, string *source, string inherited ...)
 {
-	string ctor;
-	string dtor;
-	object initd;
+	ACCESS_CHECK(previous_program() == DRIVER);
 
-	ACCESS_CHECK(KERNEL());
-
-	if (path != AUTO) {
-		inherited |= ({ AUTO });
-	}
-
-	set_flags(path);
-
-	compile_common(owner, path, source, inherited);
+	setup_program_info(path, inherited);
 }
 
-atomic void compile_failed(string owner, string path)
+void compile_failed(string owner, string path)
 {
-	ACCESS_CHECK(KERNEL());
+	ACCESS_CHECK(previous_program() == DRIVER);
+
+	includes = nil;
 
 	upgrading = 0;
-	includes = nil;
 }
 
-atomic void clone(string owner, object obj)
+void clone(string owner, object obj)
 {
 	object pinfo;
 
-	ACCESS_CHECK(KERNEL());
+	ACCESS_CHECK(previous_program() == DRIVER);
 
-	if (find_object(PROGRAMD)) {
-		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
+	pinfo = fetch_program_info(status(obj, O_INDEX));
 
-		if (pinfo) {
-			pinfo->add_clone(obj);
-		}
-	}
+	pinfo->add_clone(obj);
 }
 
-atomic void destruct(varargs mixed owner, mixed obj)
+void destruct(varargs mixed owner_arg, mixed obj_arg)
 {
-	int is_clone;
-	int is_initd;
-	string name;
-	string path;
-	object pinfo;
+	if (previous_program() == DRIVER) {
+		string owner;
+		object obj;
+		object pinfo;
 
-	if (previous_program() != DRIVER) {
-		/* regular destruct call */
-		ACCESS_CHECK(SYSTEM());
+		string path;
 
-		return;
-	}
+		owner = owner_arg;
+		obj = obj_arg;
 
-	ACCESS_CHECK(KERNEL());
+		pinfo = fetch_program_info(status(obj, O_INDEX));
 
-	name = object_name(obj);
-
-	if (sscanf(name, USR_DIR + "/%*s/_code")) {
-		/* klib wiztool "code" command, ignore */
-		return;
-	}
-
-	set_flags(name);
-	is_clone = sscanf(name, "%s#%*d", path);
-
-	if (!path) {
-		path = name;
-	}
-
-	if (!is_kernel) {
-		object force;
-
-		force = TLSD->query_tls_value("System", "destruct_force");
-
-		if (obj != force) {
-			obj->_F_sys_destruct();
+		if (!pinfo) {
+			return;
 		}
-	}
 
-	if (find_object(PROGRAMD)) {
-		pinfo = PROGRAMD->query_program_info(status(obj, O_INDEX));
-
-		if (is_clone) {
-			if (pinfo) {
-				pinfo->remove_clone(obj);
-			}
+		if (sscanf(object_name(obj), "%s#%*d", path)) {
+			/* clone */
+			pinfo->remove_clone(obj);
 		} else {
-			if (pinfo) {
-				pinfo->set_destructed();
-			}
+			pinfo->set_destructed();
 		}
+	} else {
+		ACCESS_CHECK(previous_program() == OBJECTD);
+
+		LOGD->post_message("system", LOG_WARNING, "ObjectD destructing");
 	}
 }
 
-atomic void destruct_lib(string owner, string path)
+void destruct_lib(string owner, string path)
 {
 	object pinfo;
 
-	ACCESS_CHECK(KERNEL());
+	pinfo = fetch_program_info(status(path, O_INDEX));
 
-	if (find_object(PROGRAMD)) {
-		pinfo = PROGRAMD->query_program_info(status(path, O_INDEX));
+	if (pinfo) {
+		pinfo->set_destructed();
 	}
-
-	if (!pinfo) {
-		return;
-	}
-
-	pinfo->set_destructed();
 }
 
-atomic void remove_program(string owner, string path, int timestamp, int index)
+void remove_program(string owner, string path, int timestamp, int index)
 {
-	ACCESS_CHECK(KERNEL());
+	ACCESS_CHECK(previous_program() == DRIVER);
 
 	if (find_object(PROGRAMD)) {
 		PROGRAMD->remove_program(index);
 	}
+
+	if (progdb) {
+		progdb->set_element(index, nil);
+	}
 }
 
-atomic mixed include_file(string compiled, string from, string path)
+mixed include_file(string compiled, string from, string path)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
 
@@ -457,32 +419,34 @@ atomic mixed include_file(string compiled, string from, string path)
 	}
 }
 
-atomic int touch(varargs mixed obj, mixed func)
+int touch(varargs mixed obj_arg, mixed func_arg)
 {
 	if (previous_program() == DRIVER) {
-		ASSERT(typeof(obj) == T_OBJECT);
-		ASSERT(typeof(func) == T_STRING);
+		object obj;
+		string func;
 
-		if (!sscanf(object_name(obj), "/kernel/%*s")) {
-			if (function_object("_F_", obj)) {
-				return obj->_F_touch(func);
-			}
+		obj = obj_arg;
+		func = func_arg;
+
+		if (sscanf(object_name(obj), "/kernel/%*s")) {
+			return 0;
 		}
-	} else if (sscanf(previous_program(), USR_DIR
-		+ "/System" + INHERITABLE_SUBDIR + "auto/%*s")) {
-		/* this is our own touch handler */
-		/* obj is func */
+
+		if (function_object("_F_touch", obj)) {
+			return obj->_F_touch(func);
+		}
 	} else {
-		error("Access denied");
+		/* this is our own touch handler */
+		ACCESS_CHECK(SYSTEM());
 	}
 }
 
-atomic int forbid_call(string path)
+int forbid_call(string path)
 {
 	ACCESS_CHECK(KERNEL());
 }
 
-atomic int forbid_inherit(string from, string path, int priv)
+int forbid_inherit(string from, string path, int priv)
 {
 	object initd;
 
@@ -540,17 +504,26 @@ private void register_ghosts_dir(string dir)
 			}
 
 			if (objs[sz]) {
-				PROGRAMD->register_program(path, nil, nil);
+				setup_ghost_program_info(path, status(path, O_INDEX));
 			}
 		}
 	}
 }
 
-atomic void register_ghosts()
+void register_ghosts()
 {
-	ACCESS_CHECK(previous_program() == INITD);
+	ACCESS_CHECK(SYSTEM());
 
 	register_ghosts_dir("/");
+}
+
+void discover_objects()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	purge_dir("/");
+
+	recompile_dir("/");
 }
 
 atomic void discover_clones()
@@ -608,17 +581,18 @@ atomic void discover_clones()
 		path = object_name(master);
 		index = status(master, O_INDEX);
 
-		pinfo = PROGRAMD->query_program_info(index);
+		pinfo = fetch_program_info(index);
 
 		if (!pinfo) {
+			pinfo = setup_ghost_program_info(path, index);
+
 			if (find_object(path)) {
-				pinfo = PROGRAMD->register_program(path, nil, nil);
-			} else {
-				pinfo = PROGRAMD->register_destructed_program(path, index);
+				pinfo->set_destructed();
 			}
 		}
 
 		pinfo->clear_clones();
+		pinfo->set_clones_valid(1);
 	}
 
 	while (!list_empty(clones)) {
@@ -630,20 +604,58 @@ atomic void discover_clones()
 		list_pop_front(clones);
 
 		index = status(clone, O_INDEX);
-		pinfo = PROGRAMD->query_program_info(index);
+		pinfo = fetch_program_info(index);
 
 		if (!pinfo) {
 			string path;
+			mixed mindex;
 
 			sscanf(object_name(clone), "%s#%*d", path);
 
-			if (status(path)) {
-				pinfo = PROGRAMD->register_program(path, nil, nil);
-			} else {
-				pinfo = PROGRAMD->register_destructed_program(path, index);
+			pinfo = setup_ghost_program_info(path, index);
+
+			mindex = status(path, O_INDEX);
+
+			if (mindex == nil || mindex != index) {
+				pinfo->set_destructed();
 			}
 		}
 
 		pinfo->add_clone(clone);
+	}
+}
+
+object query_program_info(int index)
+{
+	return fetch_program_info(index);
+}
+
+mixed **query_program_indices()
+{
+	ASSERT(progdb);
+
+	return progdb->query_indices();
+}
+
+void reset()
+{
+	ACCESS_CHECK(PRIVILEGED() || VERB());
+
+	rlimits (0; 1000000000) {
+		progdb = new_object(SPARSE_ARRAY);
+
+		register_ghosts();
+		discover_clones();
+		discover_objects();
+	}
+}
+
+void full_rebuild()
+{
+	ACCESS_CHECK(PRIVILEGED() || VERB());
+
+	rlimits (0; 1000000000) {
+		purge_dir("/");
+		compile_dir("/");
 	}
 }

@@ -76,10 +76,6 @@ atomic void create_database()
 		incdb = clone_object(BIGSTRUCT_MAP_OBJ);
 		incdb->claim();
 		incdb->set_type(T_STRING);
-
-		pathdb = clone_object(BIGSTRUCT_MAP_OBJ);
-		pathdb->claim();
-		pathdb->set_type(T_STRING);
 	}
 }
 
@@ -122,72 +118,6 @@ atomic void destruct_database()
 	}
 }
 
-private void deindex_inherits(int oindex, int *inh)
-{
-	int sz;
-
-	ASSERT(inhdb);
-
-	for (sz = sizeof(inh); --sz >= 0; ) {
-		object submap;
-		submap = inhdb->query_element(inh[sz]);
-		submap->set_element(oindex, nil);
-	}
-}
-
-private void deindex_includes(int oindex, string *inc)
-{
-	int sz;
-
-	ASSERT(incdb);
-
-	for (sz = sizeof(inc); --sz >= 0; ) {
-		object submap;
-		submap = incdb->query_element(inc[sz]);
-		submap->set_element(oindex, nil);
-	}
-}
-
-private void index_inherits(int oindex, int *inh)
-{
-	int sz;
-
-	ASSERT(inhdb);
-
-	for (sz = sizeof(inh); --sz >= 0; ) {
-		object submap;
-		submap = inhdb->query_element(inh[sz]);
-
-		if (!submap) {
-			inhdb->set_element(inh[sz], submap = new_object(BIGSTRUCT_MAP_LWO));
-			submap->claim();
-			submap->set_type(T_INT);
-		}
-
-		submap->set_element(oindex, 1);
-	}
-}
-
-private void index_includes(int oindex, string *inc)
-{
-	int sz;
-
-	ASSERT(incdb);
-
-	for (sz = sizeof(inc); --sz >= 0; ) {
-		object submap;
-		submap = incdb->query_element(inc[sz]);
-
-		if (!submap) {
-			incdb->set_element(inc[sz], submap = new_object(BIGSTRUCT_MAP_LWO));
-			submap->claim();
-			submap->set_type(T_INT);
-		}
-
-		submap->set_element(oindex, 1);
-	}
-}
-
 /* objectd hooks */
 
 atomic object register_program(string path, string *inherits, string *includes)
@@ -215,17 +145,6 @@ atomic object register_program(string path, string *inherits, string *includes)
 		pinfo->set_path(path);
 
 		progdb->set_element(oindex, pinfo);
-	}
-
-	oinherits = pinfo->query_inherits();
-	oincludes = pinfo->query_includes();
-
-	if (oinherits) {
-		deindex_inherits(oindex, oinherits);
-	}
-
-	if (oincludes) {
-		deindex_includes(oindex, oincludes);
 	}
 
 	if (inherits) {
@@ -282,9 +201,6 @@ atomic object register_program(string path, string *inherits, string *includes)
 		pinfo->set_includes(includes);
 		pinfo->set_inherited_constructors(ctors);
 		pinfo->set_inherited_destructors(dtors);
-
-		index_inherits(oindex, oindices);
-		index_includes(oindex, includes);
 	}
 
 	return pinfo;
@@ -325,23 +241,6 @@ atomic void remove_program(int index)
 		return;
 	}
 
-	pinfo = progdb->query_element(index);
-
-	if (pinfo) {
-		path = pinfo->query_path();
-
-		oinherits = pinfo->query_inherits();
-		oincludes = pinfo->query_includes();
-
-		if (oinherits) {
-			deindex_inherits(index, oinherits);
-		}
-
-		if (oincludes) {
-			deindex_includes(index, oincludes);
-		}
-	}
-
 	progdb->set_element(index, nil);
 }
 
@@ -359,7 +258,9 @@ object query_program_indices()
 {
 	object indices;
 
-	ASSERT(progdb);
+	if (!progdb) {
+		return nil;
+	}
 
 	indices = progdb->query_indices();
 
@@ -371,51 +272,9 @@ object query_program_indices()
 
 object query_program_info(int oindex)
 {
+	object pinfo;
+
 	if (progdb) {
 		return progdb->query_element(oindex);
-	} else {
-		ASSERT(SYSTEM());
 	}
-}
-
-object query_inheriters(int oindex)
-{
-	object list;
-
-	ASSERT(inhdb);
-
-	list = inhdb->query_element(oindex);
-
-	if (list) {
-		list = list->query_indices();
-	} else {
-		list = new_object(BIGSTRUCT_ARRAY_LWO);
-		list->claim();
-	}
-
-	list->grant_access(previous_object(), FULL_ACCESS);
-	list->grant_access(this_object(), 0);
-
-	return list;
-}
-
-object query_includers(string path)
-{
-	object list;
-
-	ASSERT(incdb);
-
-	list = incdb->query_element(path);
-
-	if (list) {
-		list = list->query_indices();
-	} else {
-		list = new_object(BIGSTRUCT_ARRAY_LWO);
-		list->claim();
-	}
-
-	list->grant_access(previous_object(), FULL_ACCESS);
-	list->grant_access(this_object(), 0);
-
-	return list;
 }

@@ -34,5 +34,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	SYSTEM_SUBD->full_rebuild();
+	OBJECTD->full_rebuild();
 }

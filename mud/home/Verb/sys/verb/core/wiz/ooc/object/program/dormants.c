@@ -28,17 +28,51 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+/* ({ ({ file names }), ({ file sizes }), ({ file mod times }), ({ objects }) }) */
+
+private void list_dormants(mixed **list, object proxy, string dir)
+{
+	string *names;
+	int *sizes;
+	mixed *times;
+	mixed *objs;
+	int sz;
+
+	if (dir == "/") {
+		dir = "";
+	}
+
+	({ names, sizes, times, objs }) = proxy->get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		if (sizes[sz] == -2) {
+			if (names[sz] != "lib") {
+				list_dormants(list, proxy, dir + "/" + names[sz]);
+			}
+
+			continue;
+		}
+
+		if (!objs[sz]) {
+			list_push_back(list, dir + "/" + names[sz]);
+		}
+	}
+}
+
 void main(object actor, mapping roles)
 {
 	mixed **list;
-	int sz, i;
+	object proxy;
 
 	if (query_user()->query_class() < 3) {
 		send_out("You do not have sufficient access rights to list dormants.\n");
 		return;
 	}
 
-	list = SYSTEM_SUBD->query_dormant();
+	list = ({ nil, nil });
+	proxy = PROXYD->get_proxy(query_user()->query_name());
+
+	list_dormants(list, proxy, "/");
 
 	if (list_empty(list)) {
 		send_out("There are no dormant LPC source files.\n");
@@ -48,7 +82,7 @@ void main(object actor, mapping roles)
 	send_out("These LPC files are not compiled:\n");
 
 	while (!list_empty(list)) {
-		send_out(list_front(list) + ".c\n");
+		send_out(list_front(list) + "\n");
 		list_pop_front(list);
 	}
 }

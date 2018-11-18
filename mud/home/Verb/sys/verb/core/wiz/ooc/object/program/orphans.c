@@ -19,8 +19,10 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/assert.h>
 
 inherit LIB_VERB;
+inherit "~System/lib/struct/list";
 
 string *query_parse_methods()
 {
@@ -29,15 +31,35 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	object user;
+	mixed **list;
+	object proxy;
 
-	user = query_user();
-
-	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to perform an inheritance audit.\n");
-
+	if (query_user()->query_class() < 2) {
+		send_out("Only a wizard can do that.\n");
 		return;
 	}
 
-	SYSTEM_SUBD->cross_module_inheritance_audit();
+	list = OBJECTD->query_program_indices();
+	proxy = PROXYD->get_proxy(query_user()->query_name());
+
+	while (!list_empty(list)) {
+		int index;
+		string path;
+		object pinfo;
+
+		index = list_front(list);
+		list_pop_front(list);
+
+		pinfo = OBJECTD->query_program_info(index);
+
+		if (pinfo->query_destructed()) {
+			continue;
+		}
+
+		path = pinfo->query_path();
+
+		if (!file_info(path + ".c")) {
+			send_out(path + " has no LPC source file\n");
+		}
+	}
 }

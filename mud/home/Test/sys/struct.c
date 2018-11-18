@@ -23,7 +23,6 @@
 #include <kotaka/privilege.h>
 #include <type.h>
 
-inherit "~System/lib/struct/multimap";
 inherit "/lib/string/sprint";
 
 private void test_mapping_1()

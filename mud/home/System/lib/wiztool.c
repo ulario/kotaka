@@ -23,12 +23,12 @@
 #include <kernel/access.h>
 #include <kotaka/paths/system.h>
 
-inherit auto SECOND_AUTO;
-inherit user LIB_WIZTOOL;
+inherit a SECOND_AUTO;
+inherit w LIB_WIZTOOL;
 
-static void create(varargs int clone)
+static void create(int size)
 {
-	user::create(0);
+	w::create(size);
 }
 
 /*
@@ -50,7 +50,7 @@ static object compile_object(string path, string source...)
 	return nil;
     }
     return (sizeof(source) != 0) ?
-	    auto::compile_object(path, source...) : auto::compile_object(path);
+	    a::compile_object(path, source...) : a::compile_object(path);
 }
 
 /*
@@ -64,7 +64,7 @@ static object clone_object(string path)
 	message(path + ": Permission denied.\n");
 	return nil;
     }
-    return auto::clone_object(path);
+    return a::clone_object(path);
 }
 
 /*
@@ -76,6 +76,6 @@ static void dump_state(varargs int increment)
     if (!access(query_owner(), "/", FULL_ACCESS)) {
 	message("Permission denied.\n");
     } else {
-	auto::dump_state(increment);
+	a::dump_state(increment);
     }
 }

@@ -24,7 +24,6 @@
 #include <status.h>
 
 inherit SECOND_AUTO;
-inherit "~/lib/string/align";
 
 #define K (1 << 10)
 #define M (1 << 20)

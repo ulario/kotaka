@@ -112,17 +112,15 @@ static void boot()
 		MODULED->boot_module("Bigstruct");
 
 		load_object(PROGRAM_INFO);
+		load_object(SPARSE_ARRAY);
 		load_object(PROGRAMD);
 		load_object(PATCHD);
-		load_object(SYSTEM_SUBD);
 		load_object(OBJECTD);		/* depends on TLS */
 
 		rlimits (0; -1) {
-			PROGRAMD->create_database();
-			OBJECTD->register_ghosts();
-			OBJECTD->discover_clones();
-			SYSTEM_SUBD->discover_objects(); /* will recompile everything */
+			OBJECTD->reset();
 		}
+
 		LOGD->post_message("system", LOG_NOTICE, "System discovered");
 
 		load();
@@ -491,6 +489,7 @@ void upgrade_system_post_recompile()
 	compile_object(PATCHD);
 	compile_object(OBJECTD);
 	compile_object(PROGRAMD);
+	compile_object(SPARSE_ARRAY);
 
 	call_out("upgrade_system_post_recompile_2", 0);
 }
@@ -500,6 +499,7 @@ static void upgrade_system_post_recompile_2()
 	rlimits (0; -1) {
 		LOGD->post_message("system", LOG_NOTICE, "Discovering clones");
 		OBJECTD->discover_clones();
+		LOGD->post_message("system", LOG_NOTICE, "Discovered clones");
 
 		upgrade_purge();
 		upgrade_build();

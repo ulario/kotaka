@@ -32,8 +32,8 @@ do {\
 			object_name(previous_object()));\
 } while (0)
 
-inherit sa SECOND_AUTO;
-inherit wt LIB_WIZTOOL;
+inherit a SECOND_AUTO;
+inherit w LIB_WIZTOOL;
 
 object client;
 string directory;
@@ -43,7 +43,7 @@ string *messages;
 static void create(int clone)
 {
 	if (clone) {
-		wt::create(0);
+		w::create(200);
 		messages = ({ });
 		directory = USR_DIR + "/" + query_owner();
 	}
@@ -168,14 +168,14 @@ object compile_object(string path, string source...)
 {
 	VERIFY();
 	path = normalize(path);
-	return wt::compile_object(path, source...);
+	return w::compile_object(path, source...);
 }
 
 object clone_object(string path)
 {
 	VERIFY();
 	path = normalize(path);
-	return wt::clone_object(path);
+	return w::clone_object(path);
 }
 
 int destruct_object(mixed obj)
@@ -186,14 +186,14 @@ int destruct_object(mixed obj)
 		obj = normalize(obj);
 	}
 
-	return wt::destruct_object(obj);
+	return w::destruct_object(obj);
 }
 
 object new_object(string path)
 {
 	VERIFY();
 	path = normalize(path);
-	return wt::new_object(path);
+	return w::new_object(path);
 }
 
 mixed read_file(string path, varargs int offset, int size)
@@ -263,7 +263,7 @@ void swapout()
 void dump_state(varargs int increment)
 {
 	VERIFY();
-	wt::dump_state(increment);
+	w::dump_state(increment);
 }
 
 void shutdown(varargs int hotboot)

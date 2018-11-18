@@ -22,6 +22,7 @@
 #include <status.h>
 
 inherit LIB_VERB;
+inherit "~System/lib/struct/list";
 
 string *query_parse_methods()
 {
@@ -31,21 +32,18 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	/* Report all objects inheriting a destructed inheritable */
-	object indices;
+	mixed **list;
 	object proxy;
-	int i, sz;
 
 	if (query_user()->query_class() < 2) {
 		send_out("Only a wizard can do that.\n");
 		return;
 	}
 
-	indices = PROGRAMD->query_program_indices();
-	sz = indices->query_size();
-
+	list = OBJECTD->query_program_indices();
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
-	for (i = 0; i < sz; i++) {
+	while (!list_empty(list)) {
 		int pindex;
 		object pinfo;
 		mixed *finfo;
@@ -56,8 +54,10 @@ void main(object actor, mapping roles)
 		string *shinies;
 		string *missing;
 
-		pindex = indices->query_element(i);
-		pinfo = PROGRAMD->query_program_info(pindex);
+		pindex = list_front(list);
+		list_pop_front(list);
+
+		pinfo = OBJECTD->query_program_info(pindex);
 
 		if (pinfo->query_destructed()) {
 			continue;
@@ -101,6 +101,7 @@ void main(object actor, mapping roles)
 		if (sizeof(shinies)) {
 			send_out(path + " is older than:\n" + implode(shinies, "\n") + "\n\n");
 		}
+
 		if (sizeof(missing)) {
 			send_out(path + " is missing:\n" + implode(missing, "\n") + "\n\n");
 		}

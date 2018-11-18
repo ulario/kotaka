@@ -48,6 +48,25 @@ private void test_multimap()
 	ASSERT(map_sizeof(map) == 0);
 }
 
+private void test_sparse_array()
+{
+	object sparse;
+	int i;
+
+	sparse = new_object("~System/lwo/struct/sparse_array");
+
+	for (i = 1; i < (1 << 30); i *= 3) {
+		sparse->set_element(i, i);
+	}
+
+	for (i = 1; i < (1 << 30); i *= 3) {
+		ASSERT(sparse->query_element(i) == i);
+		sparse->set_element(i, i);
+		ASSERT(sparse->query_element(i) == nil);
+	}
+
+}
+
 void test()
 {
 	ACCESS_CHECK(TEST());
