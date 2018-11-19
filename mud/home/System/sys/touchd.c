@@ -22,7 +22,6 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/channel.h>
-#include <kotaka/paths/bigstruct.h>
 #include <kotaka/privilege.h>
 #include <status.h>
 #include <type.h>
@@ -33,9 +32,11 @@ object queue;	/* objects with outstanding upgrades needing to be bumped */
 
 int hqueue;
 
-void touch_object(object obj)
+static void destruct()
 {
-	::call_touch(obj);
+	if (queue) {
+		destruct_object(queue);
+	}
 }
 
 static void nuke_object(object obj)
@@ -43,47 +44,6 @@ static void nuke_object(object obj)
 	destruct_object(obj);
 }
 
-void queue_object(object obj)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	if (!queue) {
-		queue = clone_object(BIGSTRUCT_DEQUE_OBJ);
-		queue->claim();
-	}
-
-	queue->push_back(obj);
-
-	if (!hqueue) {
-		hqueue = call_out("process", 0);
-	}
-}
-
 static void process()
 {
-	object obj;
-
-	hqueue = 0;
-
-	if (queue->empty()) {
-		if (queue && !sscanf(object_name(queue), "%*s#-1")) {
-			call_out("nuke_object", 0, queue);
-		}
-
-		queue = nil;
-
-		LOGD->post_message("debug", LOG_DEBUG, "Finished patching");
-		PATCHD->cleanup_patch();
-
-		return;
-	}
-
-	obj = queue->query_front();
-	queue->pop_front();
-
-	hqueue = call_out("process", 0);
-
-	if (obj) {
-		obj->_F_dummy();
-	}
 }
