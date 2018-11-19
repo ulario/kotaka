@@ -69,6 +69,59 @@ private void log_boot_error()
 	LOGD->post_message("system", LOG_ERR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
 }
 
+private void destruct_dir(string dir)
+{
+	int sz;
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		if (sizes[sz] == -2) {
+			destruct_dir(dir + "/" + names[sz]);
+			continue;
+		}
+
+		if (objs[sz]) {
+			string path;
+
+			sscanf(names[sz], "%s.c", path);
+			path = dir + "/" + path;
+
+			destruct_object(path);
+		}
+	}
+}
+
+private void compile_dir(string dir)
+{
+	int sz;
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string path;
+
+		if (sizes[sz] == -2) {
+			compile_dir(dir + "/" + names[sz]);
+			continue;
+		}
+
+		if (sscanf(names[sz], "%s.c", path)) {
+			path = dir + "/" + path;
+
+			compile_object(path);
+		}
+	}
+}
+
 static void create()
 {
 	check_config();
@@ -486,6 +539,7 @@ void upgrade_system_post_recompile()
 	set_limits();
 
 	LOGD->post_message("system", LOG_NOTICE, "Compiling new object manager");
+	destruct_dir("lib");
 	compile_object(PROGRAM_INFO);
 	compile_object(PATCHD);
 	compile_object(OBJECTD);
@@ -494,59 +548,6 @@ void upgrade_system_post_recompile()
 	LOGD->post_message("system", LOG_NOTICE, "Compiled new object manager");
 
 	call_out("upgrade_system_post_recompile_2", 0);
-}
-
-private void destruct_dir(string dir)
-{
-	int sz;
-	string *names;
-	int *sizes;
-	int *times;
-	mixed *objs;
-
-	({ names, sizes, times, objs }) = get_dir(dir + "/*");
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		if (sizes[sz] == -2) {
-			destruct_dir(dir + "/" + names[sz]);
-			continue;
-		}
-
-		if (objs[sz]) {
-			string path;
-
-			sscanf(names[sz], "%s.c", path);
-			path = dir + "/" + path;
-
-			destruct_object(path);
-		}
-	}
-}
-
-private void compile_dir(string dir)
-{
-	int sz;
-	string *names;
-	int *sizes;
-	int *times;
-	mixed *objs;
-
-	({ names, sizes, times, objs }) = get_dir(dir + "/*");
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		string path;
-
-		if (sizes[sz] == -2) {
-			compile_dir(dir + "/" + names[sz]);
-			continue;
-		}
-
-		if (sscanf(names[sz], "%s.c", path)) {
-			path = dir + "/" + path;
-
-			compile_object(path);
-		}
-	}
 }
 
 static void upgrade_system_post_recompile_2()
