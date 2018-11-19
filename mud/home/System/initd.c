@@ -499,31 +499,32 @@ void booted_module(string module)
 private void upgrade_check_kotaka_version()
 {
 	if (version_major) {
-		error("Must upgrade from version 0.52 or 0.53");
+		error("Must upgrade from version 0.53.3 or 0.54");
 	}
 
 	switch(version_minor) {
-	case 52:
-		if (version_patch) {
-			error("Must upgrade from version 0.52 or 0.53");
-		}
-		break;
-
 	case 53:
 		switch(version_patch) {
-		case 0:
-		case 1:
-		case 2:
 		case 3:
 			break;
 
 		default:
-			error("Must upgrade from version 0.52 or 0.53");
+			error("Must upgrade from version 0.53.3 or 0.54");
+		}
+		break;
+
+	case 54:
+		switch(version_patch) {
+		case 0:
+			break;
+
+		default:
+			error("Must upgrade from version 0.53.3 or 0.54");
 		}
 		break;
 
 	default:
-		error("Must upgrade from version 0.52 or 0.53");
+		error("Must upgrade from version 0.53.3 or 0.54");
 	}
 }
 
