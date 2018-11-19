@@ -62,12 +62,12 @@ nomask int _F_sys_create(int clone)
 				sz = sizeof(ctors);
 
 				for (i = 0; i < sz; i++) {
-					call_other(this, ctors[i]);
+					call_limited(this, ctors[i]);
 				}
 			}
 
 			if (ctor) {
-				call_other(this, ctor);
+				call_limited(this, ctor);
 			}
 		}
 	}
@@ -126,14 +126,14 @@ nomask void _F_sys_destruct()
 			dtors = pinfo->query_inherited_destructors();
 
 			if (dtor) {
-				call_other(this, dtor);
+				call_limited(this, dtor);
 			}
 
 			if (dtors) {
 				sz = sizeof(dtors);
 
 				for (i = sz - 1; i >= 0; i--) {
-					call_other(this, dtors[i]);
+					call_limited(this, dtors[i]);
 				}
 			}
 		}
