@@ -34,25 +34,6 @@ inherit LIB_SYSTEM;
 
 mapping modules;
 
-/* 1: module is online */
-/* -1: module is shutting down */
-
-/* creator */
-
-static void create()
-{
-	modules = ([ ]);
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	modules["System"] = nil;
-}
-
-/* helpers */
-
 private void scramble(mixed *arr)
 {
 	int sz;
@@ -182,6 +163,18 @@ static void upgrade_module(string module)
 static void load_module(string module)
 {
 	load_object(initd_of(module));
+}
+
+static void create()
+{
+	modules = ([ ]);
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	modules["System"] = nil;
 }
 
 /* initd hooks */
