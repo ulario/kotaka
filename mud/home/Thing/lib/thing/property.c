@@ -22,6 +22,8 @@
 #include <kotaka/property.h>
 #include <type.h>
 
+inherit "/lib/copy";
+
 object query_environment();
 object *query_archetypes();
 
@@ -43,12 +45,12 @@ nomask string *list_local_properties()
 
 nomask mapping query_local_properties()
 {
-	return SUBD->deep_copy(properties);
+	return deep_copy(properties);
 }
 
 nomask void set_local_properties(mapping prop)
 {
-	properties = SUBD->deep_copy(prop);
+	properties = deep_copy(prop);
 }
 
 nomask void clear_local_properties()
@@ -77,7 +79,7 @@ nomask void clear_removed_properties()
 
 nomask void set_local_property(string name, mixed value)
 {
-	properties[name] = SUBD->deep_copy(value);
+	properties[name] = deep_copy(value);
 }
 
 void set_property(string name, mixed value)
@@ -127,7 +129,7 @@ void set_property(string name, mixed value)
 
 nomask mixed query_local_property(string name)
 {
-	return SUBD->deep_copy(properties[name]);
+	return deep_copy(properties[name]);
 }
 
 mixed query_property(string name)
@@ -152,7 +154,7 @@ mixed query_property(string name)
 			value = properties[name];
 
 			if (value != nil) {
-				return SUBD->deep_copy(value);
+				return deep_copy(value);
 			}
 
 			return info[2];
@@ -161,7 +163,7 @@ mixed query_property(string name)
 	case PROP_INHERIT:
 	case PROP_DROPDOWN:
 		if (properties[name] != nil)  {
-			return SUBD->deep_copy(properties[name]);
+			return deep_copy(properties[name]);
 		}
 
 		if (sizeof(removed_properties & ({ name }) )) {
@@ -217,7 +219,7 @@ mixed query_property(string name)
 				arch = query_archetypes();
 			}
 
-			local = SUBD->deep_copy(properties[lname]);
+			local = deep_copy(properties[lname]);
 
 			switch(info[0]) {
 			case T_ARRAY:

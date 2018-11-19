@@ -20,6 +20,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 #include <kotaka/assert.h>
+#include <status.h>
 
 inherit LIB_VERB;
 inherit "~System/lib/struct/list";

@@ -31,6 +31,7 @@
 
 inherit "~System/lib/struct/list";
 inherit "/lib/string/sprint";
+inherit "/lib/copy";
 
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
@@ -230,7 +231,7 @@ mixed query_channel_config(string channel, string key)
 		error("No such channel");
 	}
 
-	return SUBD->deep_copy(config[key]);
+	return deep_copy(config[key]);
 }
 
 /* ChannelD only records config data.  If config values have any side
@@ -248,7 +249,7 @@ void set_channel_config(string channel, string key, mixed value)
 		error("No such channel");
 	}
 
-	config[key] = SUBD->deep_copy(value);
+	config[key] = deep_copy(value);
 
 	save();
 }

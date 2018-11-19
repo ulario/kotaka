@@ -26,6 +26,7 @@
 #include <type.h>
 
 inherit LIB_VERB;
+inherit "~System/lib/struct/list";
 
 string *query_parse_methods()
 {

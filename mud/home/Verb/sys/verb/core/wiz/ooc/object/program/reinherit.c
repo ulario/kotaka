@@ -27,6 +27,7 @@
 #include <type.h>
 
 inherit LIB_VERB;
+inherit "~System/lib/struct/list";
 
 string *query_parse_methods()
 {
@@ -57,7 +58,7 @@ void main(object actor, mapping roles)
 
 	if (index == nil) {
 		send_out("No such inheritable in service");
-		break;
+		return;
 	}
 
 	list = OBJECTD->query_program_indices();

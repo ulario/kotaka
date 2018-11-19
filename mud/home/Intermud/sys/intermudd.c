@@ -38,6 +38,7 @@
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
+inherit "/lib/copy";
 inherit "/lib/string/case";
 inherit "/lib/string/sprint";
 inherit "/lib/string/replace";
@@ -613,7 +614,7 @@ string *query_channels()
 
 mixed *query_channel(string channel)
 {
-	return SUBD->deep_copy(channels[channel]);
+	return deep_copy(channels[channel]);
 }
 
 string *query_muds()
@@ -623,7 +624,7 @@ string *query_muds()
 
 mixed *query_mud(string mud)
 {
-	return SUBD->deep_copy(muds[mud]);
+	return deep_copy(muds[mud]);
 }
 
 void send_tell(string from, string decofrom, string mud, string user, string message)

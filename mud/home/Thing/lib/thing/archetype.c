@@ -24,6 +24,8 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
+inherit "/lib/tier";
+
 private object *archetypes;
 
 private object first_instance;
@@ -276,14 +278,14 @@ atomic nomask void thing_set_prev_instance(object archetype, object instance)
 {
 	ACCESS_CHECK(THING());
 
-	prev_instance = SUBD->set_tiered_map(prev_instance, archetype, instance);
+	prev_instance = set_tiered_map(prev_instance, archetype, instance);
 }
 
 atomic nomask void thing_set_next_instance(object archetype, object instance)
 {
 	ACCESS_CHECK(THING());
 
-	next_instance = SUBD->set_tiered_map(next_instance, archetype, instance);
+	next_instance = set_tiered_map(next_instance, archetype, instance);
 }
 
 nomask void set_archetype(object "archetype" new_arch)
