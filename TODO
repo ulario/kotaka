@@ -30,20 +30,3 @@ Change logging
 	Log spamming is a potential denial of service vector.
 
 	We need a way to flush logs
-
-Remove System dependency on Bigstruct
-
-	As a matter of principle System itself must not have any
-	dependencies on external code.
-
-Obsolete code
-
-	ObjectD
-
-		The old upgrade chain needs removed.
-
-		For now, we're shifting obj->upgrade calls to SUSPENDD.
-
-	PatchD
-
-		We need to remove the old code for handling patches.
