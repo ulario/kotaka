@@ -85,12 +85,15 @@ atomic static int call_out(string func, mixed delay, mixed args...)
 {
 	int handle;
 	string owner;
+	object this;
 
-	if (!this_object()) {
+	this = this_object();
+
+	if (!this) {
 		error("Cannot call_out from destructed object");
 	}
 
-	if (!function_object(func, this_object())) {
+	if (!function_object(func, this)) {
 		error("Call_out to undefined function " + func);
 	}
 
