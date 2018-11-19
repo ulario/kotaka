@@ -68,3 +68,12 @@ nomask int _F_touch(string func)
 void system_patcher()
 {
 }
+
+static void call_touch(object obj)
+{
+	if (SYSTEM()) {
+		::call_touch(obj);
+	} else {
+		OBJECTD->call_touch(obj);
+	}
+}

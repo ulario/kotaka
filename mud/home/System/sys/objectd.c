@@ -664,3 +664,10 @@ void full_rebuild()
 		compile_dir("/");
 	}
 }
+
+void call_touch(object obj)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	::call_touch(obj);
+}
