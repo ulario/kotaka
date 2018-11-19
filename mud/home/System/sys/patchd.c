@@ -162,21 +162,7 @@ atomic void enqueue_patchers(object master, string *patchers)
 			object *clones;
 			int sz;
 
-			if (!pinfo->query_clones_valid()) {
-				LOGD->post_message("system", LOG_WARNING, "Defunct clone list for " + path + ", resetting");
-				pinfo->reset_clones();
-			}
-
-			sz = pinfo->query_clone_count();
-
-			switch(sz) {
-			case 0: /* no clones */
-				break;
-
-			case -1:
-				ASSERT(0);
-
-			default:
+			if (pinfo->query_clone_count()) {
 				clones = pinfo->query_clones();
 
 				if (clones) {

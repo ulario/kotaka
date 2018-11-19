@@ -32,14 +32,14 @@ string *includes;		/* canonical include files */
 int destructed;
 
 string constructor;
-string destructor;
-string patcher;
-
 string *inherited_constructors;
+
+string destructor;
 string *inherited_destructors;
+
+string patcher;
 string *inherited_patchers;
 
-int clones_valid;
 int nclones;
 mapping clones;
 
@@ -48,6 +48,68 @@ static void create(varargs int clone)
 	if (clone) {
 		clones = ([ ]);
 	}
+}
+
+string query_path()
+{
+	return path;
+}
+
+int *query_inherits()
+{
+	return inherits ? inherits[..] : nil;
+}
+
+string *query_includes()
+{
+	return includes ? includes[..] : nil;
+}
+
+int query_destructed()
+{
+	return destructed;
+}
+
+string query_constructor()
+{
+	return constructor;
+}
+
+string query_destructor()
+{
+	return destructor;
+}
+
+string query_patcher()
+{
+	return patcher;
+}
+
+string *query_inherited_constructors()
+{
+	return inherited_constructors ? inherited_constructors[..] : ({ });
+}
+
+string *query_inherited_destructors()
+{
+	return inherited_destructors ? inherited_destructors[..] : ({ });
+}
+
+string *query_inherited_patchers()
+{
+	return inherited_patchers ? inherited_patchers[..] : ({ });
+}
+
+int query_clone_count()
+{
+	return nclones;
+}
+
+object *query_clones()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	return clones ? map_indices(clones) : nil;
 }
 
 void set_path(string new_path)
@@ -103,107 +165,37 @@ void set_inherited_constructors(string *constructors)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherited_constructors = constructors ? constructors[..] : nil;
+	inherited_constructors = sizeof(constructors) ? constructors[..] : nil;
 }
 
 void set_inherited_destructors(string *destructors)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherited_destructors = destructors ? destructors[..] : nil;
+	inherited_destructors = sizeof(destructors) ? destructors[..] : nil;
 }
 
 void set_inherited_patchers(string *patchers)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherited_patchers = patchers ? patchers[..] : nil;
+	inherited_patchers = sizeof(patchers) ? patchers[..] : nil;
 }
 
-void set_constructors(string *dummy)
+void clear_clones()
 {
-}
+	ACCESS_CHECK(SYSTEM());
 
-void set_destructors(string *dummy)
-{
-}
+	ASSERT(path);
+	ASSERT(sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s"));
 
-void set_patchers(string *dummy)
-{
-}
-
-string query_path()
-{
-	return path;
-}
-
-int *query_inherits()
-{
-	return inherits ? inherits[..] : nil;
-}
-
-string *query_includes()
-{
-	return includes ? includes[..] : nil;
-}
-
-int query_destructed()
-{
-	return destructed;
-}
-
-string query_constructor()
-{
-	return constructor;
-}
-
-string query_destructor()
-{
-	return destructor;
-}
-
-string query_patcher()
-{
-	return patcher;
-}
-
-string *query_inherited_constructors()
-{
-	return inherited_constructors ? inherited_constructors[..] : ({ });
-}
-
-string *query_inherited_destructors()
-{
-	return inherited_destructors ? inherited_destructors[..] : ({ });
-}
-
-string *query_inherited_patchers()
-{
-	return inherited_patchers ? inherited_patchers[..] : ({ });
-}
-
-string *query_constructors()
-{
-	return ({ });
-}
-
-string *query_destructors()
-{
-	return ({ });
-}
-
-string *query_patchers()
-{
-	return ({ });
+	nclones = 0;
+	clones = ([ ]);
 }
 
 void add_clone(object clone)
 {
 	ACCESS_CHECK(SYSTEM());
-
-	if (!clones_valid) {
-		return;
-	}
 
 	nclones++;
 
@@ -218,59 +210,11 @@ void remove_clone(object clone)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	if (!clones_valid) {
-		return;
-	}
-
 	nclones--;
 
 	if (clones) {
 		clones[clone] = nil;
 	}
-}
-
-int query_clones_valid()
-{
-	return clones_valid;
-}
-
-int query_clone_count()
-{
-	if (!clones_valid) {
-		return -1;
-	}
-
-	return nclones;
-}
-
-object *query_clones()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	if (!clones_valid || !clones) {
-		return nil;
-	}
-
-	return map_indices(clones);
-}
-
-void set_clones_valid(int flag)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	clones_valid = flag;
-}
-
-void clear_clones()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	ASSERT(path);
-	ASSERT(sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s"));
-
-	nclones = 0;
-	clones = ([ ]);
-	clones_valid = 0;
 }
 
 atomic void reset_clones()
@@ -283,7 +227,6 @@ atomic void reset_clones()
 	ASSERT(sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s"));
 
 	clear_clones();
-	clones_valid = 1;
 
 	for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 		object obj;

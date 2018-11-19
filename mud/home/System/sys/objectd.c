@@ -341,7 +341,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		}
 	} else if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		pinfo->clear_clones();
-		pinfo->set_clones_valid(1);
 	}
 }
 
@@ -435,6 +434,7 @@ mixed include_file(string compiled, string from, string path)
 
 	if (file_info(path)) {
 		includes |= ({ path });
+
 		return path;
 	}
 }
@@ -612,7 +612,6 @@ void discover_clones()
 		}
 
 		pinfo->clear_clones();
-		pinfo->set_clones_valid(1);
 	}
 
 	while (!list_empty(clones)) {
