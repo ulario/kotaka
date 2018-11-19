@@ -47,3 +47,8 @@ string spaces(int count)
 {
 	return chars(' ', count);
 }
+
+string nulls(int count)
+{
+	return chars('\0', count);
+}
