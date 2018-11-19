@@ -216,7 +216,9 @@ private string query_include_file(string compiled, string from, string path)
 
 static void destruct_object(object obj)
 {
-	::destruct_object(obj);
+	if (obj) {
+		::destruct_object(obj);
+	}
 }
 
 static void upgrade_object(object obj)
