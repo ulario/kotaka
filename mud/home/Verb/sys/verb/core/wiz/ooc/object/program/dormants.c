@@ -53,6 +53,10 @@ private void list_dormants(mixed **list, object proxy, string dir)
 			continue;
 		}
 
+		if (!sscanf(names[sz], "%*s.c")) {
+			continue;
+		}
+
 		if (!objs[sz]) {
 			list_push_back(list, dir + "/" + names[sz]);
 		}
