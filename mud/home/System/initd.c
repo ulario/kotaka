@@ -514,6 +514,7 @@ private void upgrade_check_kotaka_version()
 		switch(version_patch) {
 		case 0:
 		case 1:
+		case 2:
 			break;
 
 		default:
