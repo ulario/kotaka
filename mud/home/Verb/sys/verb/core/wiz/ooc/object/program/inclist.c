@@ -60,7 +60,7 @@ void main(object actor, mapping roles)
 		inc = pinfo->query_includes();
 		ASSERT(inc);
 
-		if (sizeof(libs & ({ index }))) {
+		if (sizeof(inc & ({ path }))) {
 			send_out(pinfo->query_path() + " includes " + path + "\n");
 		}
 	}
