@@ -82,16 +82,24 @@ private object setup_ghost_program_info(string path, int index)
 	return pinfo;
 }
 
+private int *inherited_indices(string *inherited)
+{
+	int sz;
+	int *ret;
+
+	for (sz = sizeof(inherited), ret = allocate(sz); --sz >= 0; ) {
+		ret[sz] = status(inherited[sz], O_INDEX);
+	}
+
+	return ret;
+}
+
 private object setup_program_info(string path, string *inherited)
 {
 	int index;
 	object pinfo;
-	string constructor, destructor, patcher;
-	string *constructors, *destructors, *patchers;
-	string creator;
-	object initd;
 
-	int sz;
+	int *inh;
 
 	index = status(path, O_INDEX);
 
@@ -101,69 +109,87 @@ private object setup_program_info(string path, string *inherited)
 		pinfo = setup_ghost_program_info(path, index);
 	}
 
+	inh = inherited_indices(inherited);
+
 	pinfo->set_includes(includes[..]);
+	pinfo->set_inherits(inh);
 
-	creator = DRIVER->creator(path);
-
-	if (creator) {
-		initd = find_object(USR_DIR + "/" + creator + "/initd");
-	} else {
-		initd = find_object("/initd");
-	}
-
-	if (initd) {
-		constructor = initd->query_constructor(path);
-		destructor = initd->query_destructor(path);
-		patcher = initd->query_patcher(path);
-	}
-
-	pinfo->set_constructor(constructor);
-	pinfo->set_destructor(destructor);
-	pinfo->set_patcher(patcher);
-
-	sz = sizeof(inherited);
-
-	constructors = constructor ? ({ constructor }) : ({ });
-	destructors = destructor ? ({ destructor }) : ({ });
-	patchers = patcher ? ({ patcher }) : ({ });
-
-	if (sz) {
-		int *ii;
+	if (!sscanf(path, "/kernel/%*s")) {
+		object initd;
 		int i;
+		int sz;
+		string creator;
 
-		ii = allocate(sz);
+		string constructor, destructor, patcher;
+		string *iconstructors, *idestructors, *ipatchers;
+
+		creator = DRIVER->creator(path);
+
+		if (creator) {
+			initd = find_object(USR_DIR + "/" + creator + "/initd");
+		} else {
+			initd = find_object("/initd");
+		}
+
+		if (initd) {
+			constructor = initd->query_constructor(path);
+			destructor = initd->query_destructor(path);
+			patcher = initd->query_patcher(path);
+		}
+
+		pinfo->set_constructor(constructor);
+		pinfo->set_destructor(destructor);
+		pinfo->set_patcher(patcher);
+
+		sz = sizeof(inherited);
+
+		iconstructors = ({ });
+		idestructors = ({ });
+		ipatchers = ({ });
 
 		for (i = 0; i < sz; i++) {
 			object libpinfo;
 			int libindex;
-			string iconstructor;
-			string idestructor;
-			string ipatcher;
+			string lconstructor;
+			string ldestructor;
+			string lpatcher;
 
-			ii[i] = status(inherited[i], O_INDEX);
-
-			libindex = ii[i];
+			libindex = inh[i];
 
 			libpinfo = fetch_program_info(libindex);
 
 			if (!libpinfo) {
 				LOGD->post_message("system", LOG_WARNING, "Unable to access program_info for inherited object " + inherited[i]);
+
 				continue;
 			}
 
-			constructors |= libpinfo->query_constructors();
-			destructors |= libpinfo->query_destructors();
-			patchers |= libpinfo->query_patchers();
+			lconstructor = libpinfo->query_constructor();
+			ldestructor = libpinfo->query_destructor();
+			lpatcher = libpinfo->query_patcher();
+
+			/* call inherited first */
+			iconstructors |= libpinfo->query_inherited_constructors();
+			idestructors |= libpinfo->query_inherited_destructors();
+			ipatchers |= libpinfo->query_inherited_patchers();
+
+			if (lconstructor) {
+				iconstructors |= ({ lconstructor });
+			}
+
+			if (ldestructor) {
+				idestructors |= ({ ldestructor });
+			}
+
+			if (lpatcher) {
+				ipatchers |= ({ lpatcher });
+			}
 		}
 
-		pinfo->set_inherits(ii);
-	} else {
-		pinfo->set_inherits( ({ }) );
+		pinfo->set_inherited_constructors(iconstructors - ({ constructor }));
+		pinfo->set_inherited_destructors(idestructors - ({ destructor }));
+		pinfo->set_inherited_patchers(ipatchers - ({ patcher }));
 	}
-
-	pinfo->set_constructors(constructors);
-	pinfo->set_destructors(destructors);
-	pinfo->set_patchers(patchers);
 
 	progdb->set_element(index, pinfo);
 
@@ -271,7 +297,9 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 	path = object_name(obj);
 
-	inherited = ({ AUTO }) + inherited;
+	if (path != DRIVER) {
+		inherited = ({ AUTO }) + inherited;
+	}
 
 	pinfo = setup_program_info(path, inherited);
 
@@ -288,6 +316,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 
 	if (upgrading) {
+		string patcher;
 		string *patchers;
 
 		upgrading = 0;
@@ -300,7 +329,12 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 		call_out("upgrade_object", 0, obj);
 
-		patchers = pinfo->query_patchers();
+		patchers = pinfo->query_inherited_patchers();
+		patcher = pinfo->query_patcher();
+
+		if (patcher) {
+			patchers |= ({ patcher });
+		}
 
 		if (sizeof(patchers)) {
 			PATCHD->enqueue_patchers(obj, patchers);
@@ -315,7 +349,9 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
 
-	inherited = ({ AUTO }) + inherited;
+	if (path != AUTO) {
+		inherited = ({ AUTO }) + inherited;
+	}
 
 	setup_program_info(path, inherited);
 }
@@ -510,7 +546,7 @@ void discover_objects()
 	recompile_dir("/");
 }
 
-atomic void discover_clones()
+void discover_clones()
 {
 	string *owners;
 	int sz;

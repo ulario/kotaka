@@ -33,8 +33,6 @@ static void create(varargs int clone)
 nomask int _F_sys_create(int clone)
 {
 	string oname;
-	string creator;
-
 	object this;
 	object objectd;
 
@@ -45,8 +43,6 @@ nomask int _F_sys_create(int clone)
 
 	sscanf(oname, "%s#%*d", oname);
 
-	creator = DRIVER->creator(oname);
-
 	objectd = find_object(OBJECTD);
 
 	if (objectd) {
@@ -55,14 +51,23 @@ nomask int _F_sys_create(int clone)
 		pinfo = OBJECTD->query_program_info(status(this, O_INDEX));
 
 		if (pinfo) {
-			string *ctors;
+			string ctor;
+			mixed *ctors;
 			int i, sz;
 
-			ctors = pinfo->query_constructors();
-			sz = sizeof(ctors);
+			ctor = pinfo->query_constructor();
+			ctors = pinfo->query_inherited_constructors();
 
-			for (i = 0; i < sz; i++) {
-				call_other(this, ctors[i]);
+			if (ctors) {
+				sz = sizeof(ctors);
+
+				for (i = 0; i < sz; i++) {
+					call_other(this, ctors[i]);
+				}
+			}
+
+			if (ctor) {
+				call_other(this, ctor);
 			}
 		}
 	}
@@ -84,13 +89,10 @@ static void destruct(varargs int clone)
 nomask void _F_sys_destruct()
 {
 	string oname;
-	string creator;
-
 	object this;
 	object objectd;
 
 	int clone;
-	int oindex;
 
 	ACCESS_CHECK(KERNEL() || SYSTEM());
 
@@ -99,18 +101,12 @@ nomask void _F_sys_destruct()
 
 	clone = !!sscanf(oname, "%*s#");
 
-	if (!sscanf(oname, "%s#%d", oname, oindex)) {
-		oindex = status(this, O_INDEX);
-	}
-
 	if (sscanf(oname, "%*s" + CLONABLE_SUBDIR) == 0 &&
 		sscanf(oname, "%*s" + LIGHTWEIGHT_SUBDIR) == 0) {
 		destruct();
 	} else {
 		destruct(clone);
 	}
-
-	creator = DRIVER->creator(oname);
 
 	objectd = find_object(OBJECTD);
 
@@ -122,15 +118,23 @@ nomask void _F_sys_destruct()
 		);
 
 		if (pinfo) {
+			string dtor;
 			string *dtors;
 			int i, sz;
 
+			dtor = pinfo->query_destructor();
 			dtors = pinfo->query_inherited_destructors();
 
-			sz = sizeof(dtors);
+			if (dtor) {
+				call_other(this, dtor);
+			}
 
-			for (i = sz - 1; i >= 0; i--) {
-				call_other(this, dtors[i]);
+			if (dtors) {
+				sz = sizeof(dtors);
+
+				for (i = sz - 1; i >= 0; i--) {
+					call_other(this, dtors[i]);
+				}
 			}
 		}
 	}

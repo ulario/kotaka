@@ -551,16 +551,46 @@ void upgrade_system_post_recompile()
 	configure_rsrc();
 	set_limits();
 
+	destruct_dir("/kernel/lib");
+
+	compile_dir("/kernel/obj");
+	compile_dir("/kernel/sys");
+
+	LOGD->post_message("system", LOG_NOTICE, "Kernel library rebuilt");
+
+	compile_object(PROGRAM_INFO);
+	compile_object(PATCHD);
+	compile_object(OBJECTD);
+
+	LOGD->post_message("system", LOG_NOTICE, "Object manager rebuilt");
+
+	call_out("upgrade_system_post_recompile_2", 0);
+}
+
+static void upgrade_system_post_recompile_2()
+{
 	rlimits (0; -1) {
-		destruct_dir("/kernel/lib");
-
-		compile_dir("/kernel/obj");
-		compile_dir("/kernel/sys");
-
 		upgrade_purge();
 		upgrade_build();
 	}
 
+	LOGD->post_message("system", LOG_NOTICE, "System rebuilt");
+
+	call_out("upgrade_system_post_recompile_3", 0);
+}
+
+static void upgrade_system_post_recompile_3()
+{
+	purge_dir("~Bigstruct");
+	recompile_dir("~Bigstruct");
+
+	LOGD->post_message("system", LOG_NOTICE, "Bigstruct rebuilt");
+
+	call_out("upgrade_system_post_recompile_4", 0);
+}
+
+static void upgrade_system_post_recompile_4()
+{
 	MODULED->upgrade_modules();
 	LOGD->post_message("system", LOG_NOTICE, "Upgrade processing completed");
 

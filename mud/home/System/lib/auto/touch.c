@@ -35,7 +35,6 @@ nomask int _F_touch(string func)
 {
 	object this;
 	string name;
-	string *patchers;
 	int oindex;
 	int sz;
 
@@ -49,14 +48,18 @@ nomask int _F_touch(string func)
 	}
 
 	if (find_object(PATCHD)) {
+		string *patchers;
+
 		patchers = PATCHD->query_patchers(this);
 
 		if (patchers) {
+			int i, sz;
+
 			PATCHD->clear_patch(this);
 
-			for (sz = sizeof(patchers); --sz >= 0; ) {
+			for (sz = sizeof(patchers), i = 0; i < sz; i++) {
 				catch {
-					call_limited(patchers[sz]);
+					call_limited(patchers[i]);
 				}
 			}
 		}

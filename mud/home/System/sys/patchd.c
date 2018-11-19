@@ -117,6 +117,7 @@ private int touch_all(string path)
 			object obj;
 
 			if (obj = find_object(path + "#" + sz)) {
+				call_touch(obj);
 				set_multimap(objdb, sz, obj);
 				touchcount++;
 			}
@@ -166,7 +167,9 @@ atomic void enqueue_patchers(object master, string *patchers)
 				pinfo->reset_clones();
 			}
 
-			switch(pinfo->query_clone_count()) {
+			sz = pinfo->query_clone_count();
+
+			switch(sz) {
 			case 0: /* no clones */
 				break;
 
@@ -177,6 +180,8 @@ atomic void enqueue_patchers(object master, string *patchers)
 				clones = pinfo->query_clones();
 
 				if (clones) {
+					int sz;
+
 					for (sz = sizeof(clones); --sz >= 0; ) {
 						touch_one(clones[sz]);
 					}

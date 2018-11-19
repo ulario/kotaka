@@ -35,12 +35,9 @@ string constructor;
 string destructor;
 string patcher;
 
-string *constructors;
-string *destructors;
-string *patchers;
-
 string *inherited_constructors;
 string *inherited_destructors;
+string *inherited_patchers;
 
 int clones_valid;
 int nclones;
@@ -106,35 +103,33 @@ void set_inherited_constructors(string *constructors)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherited_constructors = constructors[..];
+	inherited_constructors = constructors ? constructors[..] : nil;
 }
 
 void set_inherited_destructors(string *destructors)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	inherited_destructors = destructors[..];
+	inherited_destructors = destructors ? destructors[..] : nil;
 }
 
-void set_constructors(string *new_constructors)
+void set_inherited_patchers(string *patchers)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	constructors = new_constructors[..];
+	inherited_patchers = patchers ? patchers[..] : nil;
 }
 
-void set_destructors(string *new_destructors)
+void set_constructors(string *dummy)
 {
-	ACCESS_CHECK(SYSTEM());
-
-	destructors = new_destructors[..];
 }
 
-void set_patchers(string *new_patchers)
+void set_destructors(string *dummy)
 {
-	ACCESS_CHECK(SYSTEM());
+}
 
-	patchers = new_patchers[..];
+void set_patchers(string *dummy)
+{
 }
 
 string query_path()
@@ -172,86 +167,34 @@ string query_patcher()
 	return patcher;
 }
 
-string *query_constructors()
-{
-	if (!constructors) {
-		if (constructor) {
-			constructors = ({ constructor });
-		} else {
-			constructors = ({ });
-		}
-
-		if (inherited_constructors) {
-			constructors |= inherited_constructors;
-		}
-	}
-
-	return constructors[..];
-}
-
-string *query_destructors()
-{
-	if (!destructors) {
-		if (destructor) {
-			destructors = ({ destructor });
-		} else {
-			destructors = ({ });
-		}
-
-		if (inherited_destructors) {
-			destructors |= inherited_destructors;
-		}
-	}
-
-	return destructors[..];
-}
-
-string *query_patchers()
-{
-	if (!patchers) {
-		string *libpatchers;
-
-		libpatchers = ({ });
-
-		if (inherits) {
-			int sz;
-			int i;
-
-			sz = sizeof(inherits);
-
-			for (i = 0; i < sz; i++) {
-				object libpinfo;
-
-				libpinfo = OBJECTD->query_program_info(inherits[i]);
-
-				if (!libpinfo) {
-					continue;
-				}
-
-				libpatchers |= libpinfo->query_patchers();
-			}
-		}
-
-		if (patcher) {
-			patchers = ({ patcher });
-		} else {
-			patchers = ({ });
-		}
-
-		patchers |= libpatchers;
-	}
-
-	return patchers[..];
-}
-
 string *query_inherited_constructors()
 {
-	return inherited_constructors ? inherited_constructors[..] : nil;
+	return inherited_constructors ? inherited_constructors[..] : ({ });
 }
 
 string *query_inherited_destructors()
 {
-	return inherited_destructors ? inherited_destructors[..] : nil;
+	return inherited_destructors ? inherited_destructors[..] : ({ });
+}
+
+string *query_inherited_patchers()
+{
+	return inherited_patchers ? inherited_patchers[..] : ({ });
+}
+
+string *query_constructors()
+{
+	return ({ });
+}
+
+string *query_destructors()
+{
+	return ({ });
+}
+
+string *query_patchers()
+{
+	return ({ });
 }
 
 void add_clone(object clone)
