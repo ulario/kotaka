@@ -182,7 +182,6 @@ static void boot()
 
 		load_object(PROGRAM_INFO);
 		load_object(SPARSE_ARRAY);
-		load_object(PROGRAMD);
 		load_object(PATCHD);
 		load_object(OBJECTD);		/* depends on TLS */
 
