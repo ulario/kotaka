@@ -578,13 +578,6 @@ static void do_upgrade_rebuild()
 	LOGD->post_message("system", LOG_NOTICE, "Upgrade build completed");
 }
 
-string query_patcher(string program)
-{
-	if (program == USR_DIR + "/System/lib/auto/touch") {
-		return "system_patcher";
-	}
-}
-
 void begin_task()
 {
 	ACCESS_CHECK(SYSTEM());
