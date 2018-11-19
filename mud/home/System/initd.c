@@ -256,7 +256,7 @@ private void reboot_common()
 	catch {
 		LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
 
-		rlimits(0; -1) {
+		rlimits (0; -1) {
 			DRIVER->fix_filequota();
 		}
 	}
