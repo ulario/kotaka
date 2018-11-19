@@ -485,13 +485,68 @@ void upgrade_system_post_recompile()
 	configure_rsrc();
 	set_limits();
 
+	LOGD->post_message("system", LOG_NOTICE, "Compiling new object manager");
 	compile_object(PROGRAM_INFO);
 	compile_object(PATCHD);
 	compile_object(OBJECTD);
 	compile_object(PROGRAMD);
 	compile_object(SPARSE_ARRAY);
+	LOGD->post_message("system", LOG_NOTICE, "Compiled new object manager");
 
 	call_out("upgrade_system_post_recompile_2", 0);
+}
+
+private void destruct_dir(string dir)
+{
+	int sz;
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		if (sizes[sz] == -2) {
+			destruct_dir(dir + "/" + names[sz]);
+			continue;
+		}
+
+		if (objs[sz]) {
+			string path;
+
+			sscanf(names[sz], "%s.c", path);
+			path = dir + "/" + path;
+
+			destruct_object(path);
+		}
+	}
+}
+
+private void compile_dir(string dir)
+{
+	int sz;
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string path;
+
+		if (sizes[sz] == -2) {
+			compile_dir(dir + "/" + names[sz]);
+			continue;
+		}
+
+		if (sscanf(names[sz], "%s.c", path)) {
+			path = dir + "/" + path;
+
+			compile_object(path);
+		}
+	}
 }
 
 static void upgrade_system_post_recompile_2()
@@ -501,11 +556,15 @@ static void upgrade_system_post_recompile_2()
 		OBJECTD->discover_clones();
 		LOGD->post_message("system", LOG_NOTICE, "Discovered clones");
 
-		LOGD->post_message("system", LOG_NOTICE, "MIgrating program database");
+		LOGD->post_message("system", LOG_NOTICE, "Migrating program database");
 		PROGRAMD->purge();
 
-		upgrade_purge();
-		upgrade_build();
+		LOGD->post_message("system", LOG_NOTICE, "Recompiling System");
+		destruct_dir("lib");
+		compile_dir("lwo");
+		compile_dir("obj");
+		compile_dir("sys");
+		compile_object(INITD);
 	}
 
 	/* first, ask all InitD's if we can upgrade */
