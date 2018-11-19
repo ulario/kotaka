@@ -528,6 +528,8 @@ private void upgrade_check_kotaka_version()
 
 void upgrade_system()
 {
+	destruct_dir("lib");
+
 	compile_object(INITD);
 
 	call_out("upgrade_system_post_recompile", 0);
