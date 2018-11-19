@@ -79,6 +79,19 @@ private void enqueue_nudge(object obj)
 	}
 }
 
+private void enqueue_sweep(string path)
+{
+	if (!sweep_list) {
+		sweep_list = ({ nil, nil });
+	}
+
+	list_push_back(sweep_list, ({ path, status(ST_OTABSIZE) }) );
+
+	if (!handle) {
+		handle = call_out("process", 0);
+	}
+}
+
 private void touch_one(object obj)
 {
 	int index;
@@ -104,11 +117,13 @@ private int touch_all(string path)
 			object obj;
 
 			if (obj = find_object(path + "#" + sz)) {
-				touch_one(obj);
+				set_multimap(objdb, sz, obj);
 				touchcount++;
 			}
 		}
 	}
+
+	enqueue_sweep(path);
 
 	return touchcount;
 }
