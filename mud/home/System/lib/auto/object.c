@@ -62,12 +62,12 @@ nomask int _F_sys_create(int clone)
 				sz = sizeof(ctors);
 
 				for (i = 0; i < sz; i++) {
-					call_limited(this, ctors[i]);
+					call_limited(ctors[i]);
 				}
 			}
 
 			if (ctor) {
-				call_limited(this, ctor);
+				call_limited(ctor);
 			}
 		}
 	}
@@ -126,21 +126,20 @@ nomask void _F_sys_destruct()
 			dtors = pinfo->query_inherited_destructors();
 
 			if (dtor) {
-				call_limited(this, dtor);
+				call_limited(dtor);
 			}
 
 			if (dtors) {
 				sz = sizeof(dtors);
 
 				for (i = sz - 1; i >= 0; i--) {
-					call_limited(this, dtors[i]);
+					call_limited(dtors[i]);
 				}
 			}
 		}
 	}
 
 	set_object_name(nil);
-	PATCHD->clear_patch(this_object());
 }
 
 void upgrading()
