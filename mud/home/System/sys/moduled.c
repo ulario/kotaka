@@ -26,7 +26,7 @@
 #include <status.h>
 #include <type.h>
 
-#define MODULE_BOOT_TICKS 100000000
+#define MODULE_BOOT_TICKS 1000000000
 
 inherit SECOND_AUTO;
 inherit UTILITY_COMPILE;

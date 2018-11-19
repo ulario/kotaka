@@ -31,6 +31,13 @@ private void load()
 	load_dir("sys");
 }
 
+private void test()
+{
+	"sys/bigstruct"->test();
+	"sys/struct"->test();
+	"sys/sysstruct"->test();
+}
+
 private void set_limits()
 {
 	KERNELD->rsrc_set_limit("Test", "ticks", 500000000);
@@ -43,6 +50,7 @@ static void create()
 	set_limits();
 
 	load();
+	test();
 }
 
 static void destruct()
@@ -59,6 +67,7 @@ void upgrade_module()
 	set_limits();
 
 	load();
+	test();
 
 	purge_orphans("Test");
 }
