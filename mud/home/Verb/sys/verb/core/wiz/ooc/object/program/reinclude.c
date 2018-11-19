@@ -34,82 +34,51 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	mixed *status;
-	object hits;
-	object list;
-
-	object libs;
-	object objs;
+	string path;
+	mixed **list;
 	object proxy;
-
-	int i, sz;
-	int oindex;
+	mixed **compile;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to reinherit.\n");
 		return;
 	}
 
-	roles["raw"] = DRIVER->normalize_path(roles["raw"], "/");
+	path = roles["raw"];
+	list = OBJECTD->query_program_indices();
+	proxy = PROXYD->get_proxy(query_user()->query_name());
 
-	list = PROGRAMD->query_includers(roles["raw"]);
+	compile = ({ nil, nil });
 
-	if (!list) {
-		send_out("No programs include that file.\n");
-		return;
-	}
-
-	hits = new_object(BIGSTRUCT_MAP_LWO);
-	hits->claim();
-	hits->set_type(T_INT);
-	hits->grant_access(find_object(SUBD), WRITE_ACCESS);
-
-	sz = list->query_size();
-
-	for (i = 0; i < sz; i++) {
-		SUBD->gather_inheriters(list->query_element(i), hits);
-	}
-
-	list = hits->query_indices();
-	sz = list->query_size();
-
-	libs = new_object(BIGSTRUCT_ARRAY_LWO);
-	libs->claim();
-	objs = new_object(BIGSTRUCT_ARRAY_LWO);
-	objs->claim();
-
-	for (i = 0; i < sz; i++) {
-		int oindex;
+	while (!list_empty(list)) {
 		object pinfo;
-		string path;
 
-		oindex = list->query_element(i);
+		pinfo = list_front(list);
+		list_pop_front(list);
 
-		pinfo = PROGRAMD->query_program_info(oindex);
-
-		if (pinfo->query_destructed()) {
+		if (!pinfo || pinfo->query_destructed()) {
 			continue;
 		}
 
-		path = pinfo->query_path();
+		if (sizeof(pinfo->query_includes() & ({ path }) )) {
+			string ppath;
 
-		if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
-			libs->push_back(path);
-		} else {
-			objs->push_back(path);
+			ppath = pinfo->query_path();
+
+			if (sscanf(ppath, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+				proxy->destruct_object(ppath);
+			} else {
+				list_push_back(compile, ppath);
+			}
 		}
 	}
 
-	sz = libs->query_size();
-	proxy = PROXYD->get_proxy(query_user()->query_name());
+	while (!list_empty(compile)) {
+		string ppath;
 
-	for (i = 0; i < sz; i++) {
-		proxy->destruct_object(libs->query_element(i));
-	}
+		ppath = list_front(compile);
+		list_pop_front(compile);
 
-	sz = objs->query_size();
-
-	for (i = 0; i < sz; i++) {
-		proxy->compile_object(objs->query_element(i));
+		proxy->compile_object(ppath);
 	}
 }

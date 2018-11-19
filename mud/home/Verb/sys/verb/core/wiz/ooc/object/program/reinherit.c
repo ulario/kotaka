@@ -21,10 +21,10 @@
 #include <kernel/kernel.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/verb.h>
 #include <kotaka/paths/utility.h>
-#include <type.h>
+#include <kotaka/paths/verb.h>
 #include <status.h>
+#include <type.h>
 
 inherit LIB_VERB;
 
@@ -35,18 +35,11 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	mixed *status;
 	string path;
-
-	object hits;
-	object list;
-
-	object libs;
-	object objs;
+	mixed **list;
 	object proxy;
-
-	int sz;
-	mixed oindex;
+	mixed **compile;
+	mixed index;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to reinherit.\n");
@@ -55,60 +48,52 @@ void main(object actor, mapping roles)
 
 	path = roles["raw"];
 
-	path = DRIVER->normalize_path(path, "/");
-
-	oindex = status(path, O_INDEX);
-
-	if (oindex == nil) {
-		send_out("No such program.\n");
+	if (!sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+		send_out("Not inheritable");
 		return;
 	}
 
-	hits = new_object(BIGSTRUCT_MAP_LWO);
-	hits->claim();
-	hits->set_type(T_INT);
-	hits->grant_access(find_object(SUBD), WRITE_ACCESS);
+	index = status(path, O_INDEX);
 
-	SUBD->gather_inheriters(oindex, hits);
+	if (index == nil) {
+		send_out("No such inheritable in service");
+		break;
+	}
 
-	list = hits->query_indices();
+	list = OBJECTD->query_program_indices();
+	proxy = PROXYD->get_proxy(query_user()->query_name());
 
-	libs = new_object(BIGSTRUCT_ARRAY_LWO);
-	libs->claim();
-	objs = new_object(BIGSTRUCT_ARRAY_LWO);
-	objs->claim();
+	compile = ({ nil, nil });
 
-	for (sz = list->query_size(); --sz >= 0; ) {
-		int oindex;
+	while (!list_empty(list)) {
 		object pinfo;
-		string path;
 
-		oindex = list->query_element(sz);
+		pinfo = list_front(list);
+		list_pop_front(list);
 
-		pinfo = PROGRAMD->query_program_info(oindex);
-
-		if (pinfo->query_destructed()) {
+		if (!pinfo || pinfo->query_destructed()) {
 			continue;
 		}
 
-		path = pinfo->query_path();
+		if (sizeof(pinfo->query_inherits() & ({ index }) )) {
+			string ppath;
 
-		if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
-			libs->push_back(path);
-		} else {
-			objs->push_back(path);
+			ppath = pinfo->query_path();
+
+			if (sscanf(ppath, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+				proxy->destruct_object(ppath);
+			} else {
+				list_push_back(compile, ppath);
+			}
 		}
 	}
 
-	proxy = PROXYD->get_proxy(query_user()->query_name());
+	while (!list_empty(compile)) {
+		string ppath;
 
-	for (sz = libs->query_size(); --sz >= 0; ) {
-		proxy->destruct_object(libs->query_element(sz));
-	}
+		ppath = list_front(compile);
+		list_pop_front(compile);
 
-	proxy->destruct_object(path);
-
-	for (sz = objs->query_size(); --sz >= 0; ) {
-		proxy->compile_object(objs->query_element(sz));
+		proxy->compile_object(ppath);
 	}
 }
