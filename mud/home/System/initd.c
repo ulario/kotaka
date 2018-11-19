@@ -551,13 +551,15 @@ void upgrade_system_post_recompile()
 	configure_rsrc();
 	set_limits();
 
-	purge_dir("/kernel/lib");
+	rlimits (0; -1) {
+		destruct_dir("/kernel/lib");
 
-	compile_dir("/kernel/obj");
-	compile_dir("/kernel/sys");
+		compile_dir("/kernel/obj");
+		compile_dir("/kernel/sys");
 
-	upgrade_purge();
-	upgrade_build();
+		upgrade_purge();
+		upgrade_build();
+	}
 
 	MODULED->upgrade_modules();
 	LOGD->post_message("system", LOG_NOTICE, "Upgrade processing completed");
