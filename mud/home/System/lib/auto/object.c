@@ -51,27 +51,18 @@ nomask int _F_sys_create(int clone)
 
 	if (objectd) {
 		object pinfo;
-		string *ctors;
-		string ctor;
-		int i, sz;
 
 		pinfo = OBJECTD->query_program_info(status(this, O_INDEX));
 
 		if (pinfo) {
-			ctors = pinfo->query_inherited_constructors();
+			string *ctors;
+			int i, sz;
 
-			if (ctors) {
-				sz = sizeof(ctors);
+			ctors = pinfo->query_constructors();
+			sz = sizeof(ctors);
 
-				for (i = 0; i < sz; i++) {
-					call_other(this, ctors[i]);
-				}
-			}
-
-			ctor = pinfo->query_constructor();
-
-			if (ctor) {
-				call_other(this, ctor);
+			for (i = 0; i < sz; i++) {
+				call_other(this, ctors[i]);
 			}
 		}
 	}
@@ -125,27 +116,21 @@ nomask void _F_sys_destruct()
 
 	if (objectd) {
 		object pinfo;
-		string *dtors;
-		string dtor;
-		int i, sz;
 
 		pinfo = OBJECTD->query_program_info(
 			status(this, O_INDEX)
 		);
 
 		if (pinfo) {
-			dtor = pinfo->query_destructor();
-
-			if (dtor) {
-				call_other(this, dtor);
-			}
+			string *dtors;
+			int i, sz;
 
 			dtors = pinfo->query_inherited_destructors();
 
-			if (dtors) {
-				for (sz = sizeof(dtors) - 1; sz >= 0; --sz) {
-					call_other(this, dtors[i]);
-				}
+			sz = sizeof(dtors);
+
+			for (i = sz - 1; i >= 0; i--) {
+				call_other(this, dtors[i]);
 			}
 		}
 	}
