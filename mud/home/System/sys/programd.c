@@ -278,3 +278,27 @@ object query_program_info(int oindex)
 		return progdb->query_element(oindex);
 	}
 }
+
+void purge()
+{
+	object indices;
+	int sz;
+
+	ACCESS_CHECK(SYSTEM());
+
+	if (!progdb) {
+		return;
+	}
+
+	indices = progdb->query_indices();
+
+	rlimits (0; -1) {
+		for (sz = indices->query_size(); --sz >= 0; ) {
+			object pinfo;
+
+			pinfo = OBJECTD->query_program_info(indices->query_element(sz));
+		}
+	}
+
+	ASSERT(progdb->query_indices()->query_size() == 0);
+}

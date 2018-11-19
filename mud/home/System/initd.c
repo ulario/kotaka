@@ -501,6 +501,9 @@ static void upgrade_system_post_recompile_2()
 		OBJECTD->discover_clones();
 		LOGD->post_message("system", LOG_NOTICE, "Discovered clones");
 
+		LOGD->post_message("system", LOG_NOTICE, "MIgrating program database");
+		PROGRAMD->purge();
+
 		upgrade_purge();
 		upgrade_build();
 	}
