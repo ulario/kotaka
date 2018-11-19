@@ -552,38 +552,14 @@ void upgrade_system_post_recompile()
 	configure_rsrc();
 	set_limits();
 
-	LOGD->post_message("system", LOG_NOTICE, "Compiling new object manager");
-	destruct_dir("lib");
-	compile_object(PROGRAM_INFO);
-	compile_object(PATCHD);
-	compile_object(OBJECTD);
-	compile_object(PROGRAMD);
-	compile_object(SPARSE_ARRAY);
-	LOGD->post_message("system", LOG_NOTICE, "Compiled new object manager");
+	purge_dir("/kernel/lib");
 
-	call_out("upgrade_system_post_recompile_2", 0);
-}
+	compile_dir("/kernel/obj");
+	compile_dir("/kernel/sys");
 
-static void upgrade_system_post_recompile_2()
-{
-	rlimits (0; -1) {
-		LOGD->post_message("system", LOG_NOTICE, "Discovering clones");
-		OBJECTD->discover_clones();
-		LOGD->post_message("system", LOG_NOTICE, "Discovered clones");
+	upgrade_purge();
+	upgrade_build();
 
-		LOGD->post_message("system", LOG_NOTICE, "Migrating program database");
-		PROGRAMD->purge();
-
-		LOGD->post_message("system", LOG_NOTICE, "Recompiling System");
-		destruct_dir("lib");
-		compile_dir("lwo");
-		compile_dir("obj");
-		compile_dir("sys");
-		compile_object(INITD);
-	}
-
-	/* first, ask all InitD's if we can upgrade */
-	/* if nobody says no, send the upgrade signal */
 	MODULED->upgrade_modules();
 	LOGD->post_message("system", LOG_NOTICE, "Upgrade processing completed");
 
