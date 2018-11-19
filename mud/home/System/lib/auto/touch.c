@@ -31,6 +31,56 @@ static int touch(string func)
 	return 0;
 }
 
+private void patch()
+{
+	object pinfo;
+	int index;
+	string patcher;
+	string *patchers;
+	int i, sz;
+	object this;
+	string name;
+
+	this = this_object();
+	name = object_name(this);
+
+	if (!sscanf(name, "%*s#%d", index)) {
+		index = status(this, O_INDEX);
+	}
+
+	if (!PATCHD->query_marked(this)) {
+		return;
+	}
+
+	pinfo = OBJECTD->query_program_info(index);
+
+	if (!pinfo) {
+		return;
+	}
+
+	patcher = pinfo->query_patcher();
+	patchers = pinfo->query_inherited_patchers();
+
+	if (patcher) {
+		patchers |= ({ patcher });
+	}
+
+	PATCHD->clear_mark(this);
+
+	for (sz = sizeof(patchers), i = 0; i < sz; i++) {
+		catch {
+			call_limited(patchers[i]);
+		}
+	}
+}
+
+nomask void _F_patch()
+{
+	ACCESS_CHECK(previous_program() == PATCHD);
+
+	patch();
+}
+
 nomask int _F_touch(string func)
 {
 	object this;
@@ -43,29 +93,15 @@ nomask int _F_touch(string func)
 	this = this_object();
 	name = object_name(this);
 
-	if (!sscanf(name, "%*s#%d", oindex)) {
-		oindex = status(this, O_INDEX);
-	}
-
 	if (find_object(PATCHD)) {
-		string *patchers;
-
-		patchers = PATCHD->query_patchers(this);
-
-		if (patchers) {
-			int i, sz;
-
-			PATCHD->clear_patch(this);
-
-			for (sz = sizeof(patchers), i = 0; i < sz; i++) {
-				catch {
-					call_limited(patchers[i]);
-				}
-			}
-		}
+		patch();
 	}
 
-	return touch(func);
+	if (func == "_F_patch") {
+		return 1;
+	} else {
+		return touch(func);
+	}
 }
 
 static void call_touch(object obj)

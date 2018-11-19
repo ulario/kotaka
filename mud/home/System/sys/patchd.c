@@ -33,8 +33,14 @@ mapping patchabledb;
 mapping objdb; /* ([ level : ([ index : obj ]) ]) */
 
 int handle;
+
 mixed *sweep_list;
 mixed *nudge_list;
+
+object pflagdb;
+
+mixed **patch_queue; /* ({ obj }) */
+mixed **sweep_queue; /* ({ path, master_index, clone_index }) */
 
 static void create()
 {
@@ -245,6 +251,10 @@ void clear_patch(object obj)
 	if (objdb) {
 		set_multimap(objdb, index, nil);
 	}
+
+	if (pflagdb) {
+		pflagdb->set_element(index, nil);
+	}
 }
 
 static void nudge_object(object obj)
@@ -286,7 +296,9 @@ static void process()
 		obj = list_front(nudge_list);
 		list_pop_front(nudge_list);
 
-		if (obj) {
+		if (function_object("_F_patch", obj)) {
+			obj->_F_patch();
+		} else {
 			obj->_F_dummy();
 		}
 	} else if (sweep_list && !list_empty(sweep_list)) {
@@ -306,30 +318,172 @@ static void process()
 		} else {
 			list_pop_front(sweep_list);
 		}
+	} else if (patch_queue) {
+		object obj;
+
+		handle = call_out("process", 0);
+
+		obj = list_front(patch_queue);
+		list_pop_front(patch_queue);
+
+		if (list_empty(patch_queue)) {
+			patch_queue = nil;
+		}
+
+		if (function_object("_F_patch", obj)) {
+			obj->_F_patch();
+		} else {
+			obj->_F_dummy();
+		}
+	} else if (sweep_queue) {
+		mixed *head;
+		string path;
+		int master_index;
+		int clone_index;
+		int goal;
+
+		handle = call_out("process", 0);
+
+		head = list_front(sweep_queue);
+
+		({ path, master_index, clone_index }) = head;
+
+		goal = (clone_index - 1) & 1023;
+
+		while (--clone_index >= goal) {
+			object clone;
+
+			clone = find_object(path + "#" + clone_index);
+
+			if (clone && status(clone, O_INDEX) == master_index) {
+				if (function_object("_F_patch", clone)) {
+					clone->_F_patch();
+				} else {
+					clone->_F_dummy();
+				}
+				break;
+			}
+		}
+
+		if (clone_index) {
+			head[2] = clone_index;
+		} else {
+			list_pop_front(sweep_queue);
+
+			if (list_empty(sweep_queue)) {
+				sweep_queue = nil;
+			}
+		}
 	} else {
+		pflagdb = nil;
+		sweep_queue = nil;
+		patch_queue = nil;
 		sweep_list = nil;
 		nudge_list = nil;
 	}
 }
 
-void reset()
+private void queue_patch(object obj)
 {
-	mixed **callouts;
-	int sz;
-
-	ACCESS_CHECK(SYSTEM() || KADMIN());
-
-	handle = 0;
-
-	sweep_list = nil;
-	nudge_list = nil;
-	patcherdb = nil;
-	patchabledb = nil;
-	objdb = nil;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
+	if (!patch_queue) {
+		patch_queue = ({ nil, nil });
 	}
+
+	if (!handle) {
+		handle = call_out("process", 0);
+	}
+
+	list_push_back(patch_queue, obj);
+}
+
+private void queue_sweep(string path, int master_index)
+{
+	if (!sweep_queue) {
+		sweep_queue = ({ nil, nil });
+	}
+
+	if (!handle) {
+		handle = call_out("process", 0);
+	}
+
+	list_push_back(sweep_queue, ({ path, master_index, status(ST_OTABSIZE) }));
+}
+
+void mark_patch(string path)
+{
+	int index;
+	object pinfo;
+	object master;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	master = find_object(path);
+	index = status(master, O_INDEX);
+	pinfo = OBJECTD->query_program_info(index);
+
+	if (!pflagdb) {
+		pflagdb = new_object(SPARSE_ARRAY);
+	}
+
+	pflagdb->set_element(index, master);
+	queue_patch(master);
+
+	if (pinfo->query_clone_count()) {
+		object *clones;
+
+		clones = pinfo->query_clones();
+
+		if (clones) {
+			int sz;
+
+			for (sz = sizeof(clones); --sz >= 0; ) {
+				object clone;
+
+				clone = clones[sz];
+
+				pflagdb->set_element(sz, clone);
+				queue_patch(clone);
+			}
+		} else {
+			int sz;
+
+			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
+				object clone;
+
+				clone = find_object(path + "#" + sz);
+
+				if (clone && status(clone, O_INDEX) == index) {
+					pflagdb->set_element(sz, clone);
+				}
+			}
+
+			queue_sweep(path, index);
+		}
+	}
+}
+
+int query_marked(object obj)
+{
+	int index;
+
+	if (!sscanf(object_name(obj), "%*s#%d", index)) {
+		index = status(obj, O_INDEX);
+	}
+
+	if (pflagdb && pflagdb->query_element(index)) {
+		return 1;
+	}
+
+	if (objdb && query_multimap(objdb, index)) {
+		return 1;
+	}
+
+	return 0;
+}
+
+void clear_mark(object obj)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	clear_patch(obj);
 }

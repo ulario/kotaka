@@ -316,9 +316,6 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	}
 
 	if (upgrading) {
-		string patcher;
-		string *patchers;
-
 		upgrading = 0;
 
 		if (function_object("upgrading", obj)) {
@@ -329,15 +326,11 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 		call_out("upgrade_object", 0, obj);
 
-		patchers = pinfo->query_inherited_patchers();
-		patcher = pinfo->query_patcher();
-
-		if (patcher) {
-			patchers |= ({ patcher });
-		}
-
-		if (sizeof(patchers)) {
-			PATCHD->enqueue_patchers(obj, patchers);
+		if (
+			sizeof(pinfo->query_inherited_patchers())
+			|| pinfo->query_patcher()
+		) {
+			PATCHD->mark_patch(path);
 		}
 	} else if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		pinfo->clear_clones();
