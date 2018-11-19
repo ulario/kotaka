@@ -25,6 +25,20 @@ inherit SECOND_AUTO;
 inherit "~/lib/struct/list";
 inherit "~/lib/utility/compile";
 
+static void reset_limits()
+{
+	string creator;
+	int sz;
+	string *resources;
+
+	creator = DRIVER->creator(object_name(this_object()));
+	resources = KERNELD->query_resources();
+
+	for (sz = sizeof(resources); --sz >= 0; ) {
+		KERNELD->rsrc_set_limit(creator, resources[sz], -1);
+	}
+}
+
 void reboot()
 {
 	ACCESS_CHECK(previous_program() == MODULED);

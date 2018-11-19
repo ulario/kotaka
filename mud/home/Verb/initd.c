@@ -31,6 +31,8 @@ atomic private void load()
 
 private void set_limits()
 {
+	reset_limits();
+
 	KERNELD->rsrc_set_limit("Verb", "ticks", 1000000);
 }
 

@@ -30,14 +30,28 @@ private void load()
 	load_dir("sys");
 }
 
+private void set_limits()
+{
+	reset_limits();
+}
+
 static void create()
 {
+	set_limits();
+
 	MODULED->boot_module("String");
 
 	load();
 
 	ACCOUNTD->restore();
 	BAND->restore();
+}
+
+void upgrade_module()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
 }
 
 void prepare_reboot()

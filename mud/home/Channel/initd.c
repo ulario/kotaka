@@ -32,6 +32,8 @@ private void load()
 
 private void set_limits()
 {
+	reset_limits();
+
 	KERNELD->rsrc_set_limit("Channel", "callouts", 10);
 }
 
@@ -46,6 +48,13 @@ static void create()
 	CHANNELD->restore();
 }
 
+void upgrade_module()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
+}
+
 void prepare_reboot()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
@@ -58,11 +67,4 @@ void reboot()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	CHANNELD->restore();
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	set_limits();
 }

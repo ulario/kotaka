@@ -65,10 +65,6 @@ nomask int _F_touch(string func)
 	return touch(func);
 }
 
-void system_patcher()
-{
-}
-
 static void call_touch(object obj)
 {
 	if (SYSTEM()) {

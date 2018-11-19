@@ -30,7 +30,21 @@ private void load()
 	load_dir("sys");
 }
 
+static void set_limits()
+{
+	reset_limits();
+}
+
 static void create()
 {
+	reset_limits();
+
 	load();
+}
+
+void upgrade_module()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
 }

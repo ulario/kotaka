@@ -27,23 +27,8 @@
 #include <kotaka/property.h>
 #include <type.h>
 
-/**************/
-/* Directives */
-/**************/
-
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
-
-/****************/
-/* Declarations */
-/****************/
-
-void load_help();
-void build_world();
-
-/****************/
-/* Constructors */
-/****************/
 
 private void load()
 {
@@ -64,6 +49,13 @@ private void load()
 	load_dir("sys");
 }
 
+private void set_limits()
+{
+	reset_limits();
+
+	KERNELD->rsrc_set_limit("Game", "ticks", 1000000);
+}
+
 private void create_channels()
 {
 	if (!CHANNELD->test_channel("chat")) {
@@ -73,11 +65,6 @@ private void create_channels()
 
 void configure_channels()
 {
-}
-
-private void set_limits()
-{
-	KERNELD->rsrc_set_limit("Game", "ticks", 1000000);
 }
 
 static void create()
@@ -93,6 +80,22 @@ static void create()
 		"sys/saveload"->load_world();
 	} else {
 		build_world();
+	}
+}
+
+void upgrade_module()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
+}
+
+void booted_module(string module)
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	if (module == "Help") {
+		"sys/helpd"->load_help();
 	}
 }
 
@@ -142,20 +145,4 @@ void build_world()
 	master->set_object_name("class:race:humanoid:human");
 	master->set_local_property("brief", "simple man");
 	master->set_local_property("look", "A simple, boring man.");
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	set_limits();
-}
-
-void booted_module(string module)
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	if (module == "Help") {
-		"sys/helpd"->load_help();
-	}
 }
