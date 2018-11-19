@@ -61,35 +61,14 @@ private object fetch_program_info(int index)
 {
 	object pinfo;
 
-	if (progdb && (pinfo = progdb->query_element(index))) {
-		return pinfo;
+	if (progdb) {
+		return progdb->query_element(index);
 	}
-
-	if (find_object(PROGRAMD)) {
-		pinfo = PROGRAMD->query_program_info(index);
-
-		if (!pinfo) {
-			return nil;
-		}
-
-		if (!progdb) {
-			progdb = new_object(SPARSE_ARRAY);
-		}
-
-		progdb->set_element(index, pinfo);
-		PROGRAMD->remove_program(index);
-	}
-
-	return pinfo;
 }
 
 private object setup_ghost_program_info(string path, int index)
 {
 	object pinfo;
-
-	if (find_object(PROGRAMD)) {
-		PROGRAMD->remove_program(index);
-	}
 
 	if (!progdb) {
 		progdb = new_object(SPARSE_ARRAY);
@@ -406,10 +385,6 @@ void destruct_lib(string owner, string path)
 void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
-
-	if (find_object(PROGRAMD)) {
-		PROGRAMD->remove_program(index);
-	}
 
 	if (progdb) {
 		progdb->set_element(index, nil);
