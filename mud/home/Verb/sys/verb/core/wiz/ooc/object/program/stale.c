@@ -33,7 +33,6 @@ void main(object actor, mapping roles)
 {
 	/* Report all objects inheriting a destructed inheritable */
 	mixed **list;
-	object proxy;
 
 	if (query_user()->query_class() < 2) {
 		send_out("Only a wizard can do that.\n");
@@ -41,7 +40,6 @@ void main(object actor, mapping roles)
 	}
 
 	list = OBJECTD->query_program_indices();
-	proxy = PROXYD->get_proxy(query_user()->query_name());
 
 	while (!list_empty(list)) {
 		int pindex;

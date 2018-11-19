@@ -19,9 +19,10 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
-#include <status.h>
+#include <kotaka/assert.h>
 
 inherit LIB_VERB;
+inherit "~System/lib/struct/list";
 
 string *query_parse_methods()
 {
@@ -30,36 +31,45 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	mixed *status;
-	object ilist;
-	int i, sz;
+	/* Report all objects inheriting a destructed inheritable */
+	mixed **list;
+	string path;
+	mixed index;
 
 	if (query_user()->query_class() < 2) {
-		send_out("You do not have sufficient access rights to do an inheritance check.\n");
+		send_out("Only a wizard can do that.\n");
 		return;
 	}
 
-	status = status(roles["raw"]);
+	path = roles["raw"];
+	index = status(path, O_INDEX);
 
-	if (!status) {
-		send_out("No such program.\n");
+	if (index == nil) {
+		send_out("No such program is presently in service");
 		return;
 	}
 
-	ilist = PROGRAMD->query_inheriters(status[O_INDEX]);
+	list = OBJECTD->query_program_indices();
 
-	if (!ilist) {
-		send_out("No programs inherit that object.\n");
-		return;
-	}
-
-	sz = ilist->query_size();
-	send_out("There are " + sz + " programs inheriting that object:\n");
-
-	for (i = 0; i < sz; i++) {
+	while (!list_empty(list)) {
+		int pindex;
 		object pinfo;
+		int *inh;
 
-		pinfo = PROGRAMD->query_program_info(ilist->query_element(i));
-		send_out((pinfo ? pinfo->query_path() : "wtf#") + "\n");
+		pindex = list_front(list);
+		list_pop_front(list);
+
+		pinfo = OBJECTD->query_program_info(pindex);
+
+		if (pinfo->query_destructed()) {
+			continue;
+		}
+
+		inh = pinfo->query_inherits();
+		ASSERT(inh);
+
+		if (sizeof(inh & ({ index }))) {
+			send_out(pinfo->query_path() + " inherits " + path + "\n");
+		}
 	}
 }

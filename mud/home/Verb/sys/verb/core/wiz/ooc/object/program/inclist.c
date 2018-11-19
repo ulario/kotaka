@@ -19,8 +19,10 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/assert.h>
 
 inherit LIB_VERB;
+inherit "~System/lib/struct/list";
 
 string *query_parse_methods()
 {
@@ -29,28 +31,37 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	object ilist;
-	int i, sz;
+	/* Report all objects inheriting a destructed inheritable */
+	mixed **list;
+	string path;
 
 	if (query_user()->query_class() < 2) {
-		send_out("You do not have sufficient access rights to do an inclusion check.\n");
+		send_out("Only a wizard can do that.\n");
 		return;
 	}
 
-	ilist = PROGRAMD->query_includers(roles["raw"]);
+	path = roles["raw"];
+	list = OBJECTD->query_program_indices();
 
-	if (!ilist) {
-		send_out("No programs include that file.\n");
-		return;
-	}
-
-	sz = ilist->query_size();
-	send_out("There are " + sz + " programs including that file:\n");
-
-	for (i = 0; i < sz; i++) {
+	while (!list_empty(list)) {
+		int pindex;
 		object pinfo;
+		string *inc;
 
-		pinfo = PROGRAMD->query_program_info(ilist->query_element(i));
-		send_out((pinfo ? pinfo->query_path() : "wtf#") + "\n");
+		pindex = list_front(list);
+		list_pop_front(list);
+
+		pinfo = OBJECTD->query_program_info(pindex);
+
+		if (pinfo->query_destructed()) {
+			continue;
+		}
+
+		inc = pinfo->query_includes();
+		ASSERT(inc);
+
+		if (sizeof(libs & ({ index }))) {
+			send_out(pinfo->query_path() + " includes " + path + "\n");
+		}
 	}
 }
