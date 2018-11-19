@@ -36,7 +36,7 @@ nomask int _F_sys_create(int clone)
 	string creator;
 
 	object this;
-	object programd;
+	object objectd;
 
 	ACCESS_CHECK(KERNEL() || SYSTEM());
 
@@ -47,17 +47,15 @@ nomask int _F_sys_create(int clone)
 
 	creator = DRIVER->creator(oname);
 
-	programd = find_object(PROGRAMD);
+	objectd = find_object(OBJECTD);
 
-	if (programd) {
+	if (objectd) {
 		object pinfo;
 		string *ctors;
 		string ctor;
 		int i, sz;
 
-		pinfo = PROGRAMD->query_program_info(
-			status(this, O_INDEX)
-		);
+		pinfo = OBJECTD->query_program_info(status(this, O_INDEX));
 
 		if (pinfo) {
 			ctors = pinfo->query_inherited_constructors();
@@ -98,7 +96,7 @@ nomask void _F_sys_destruct()
 	string creator;
 
 	object this;
-	object programd;
+	object objectd;
 
 	int clone;
 	int oindex;
@@ -123,15 +121,15 @@ nomask void _F_sys_destruct()
 
 	creator = DRIVER->creator(oname);
 
-	programd = find_object(PROGRAMD);
+	objectd = find_object(OBJECTD);
 
-	if (programd) {
+	if (objectd) {
 		object pinfo;
 		string *dtors;
 		string dtor;
 		int i, sz;
 
-		pinfo = PROGRAMD->query_program_info(
+		pinfo = OBJECTD->query_program_info(
 			status(this, O_INDEX)
 		);
 
