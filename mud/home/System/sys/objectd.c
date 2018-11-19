@@ -292,6 +292,8 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 	path = object_name(obj);
 
+	inherited = ({ AUTO }) + inherited;
+
 	pinfo = setup_program_info(path, inherited);
 
 	if (sscanf(path, "/kernel/%*s")) {
@@ -333,6 +335,8 @@ void compile(string owner, object obj, string *source, string inherited ...)
 void compile_lib(string owner, string path, string *source, string inherited ...)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
+
+	inherited = ({ AUTO }) + inherited;
 
 	setup_program_info(path, inherited);
 }
