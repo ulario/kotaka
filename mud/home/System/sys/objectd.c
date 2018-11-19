@@ -671,3 +671,10 @@ void call_touch(object obj)
 
 	::call_touch(obj);
 }
+
+void do_upgrade(object obj)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	call_out("upgrade_object", 0, obj);
+}
