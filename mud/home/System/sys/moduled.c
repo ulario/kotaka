@@ -339,6 +339,8 @@ void boot_module(string module, varargs int reboot)
 	}
 
 	if (!existed) {
+		thaw_module(module);
+
 		rlimits(0; -1) {
 			rlimits(0; MODULE_BOOT_TICKS) {
 				call_limited("load_module", module);
