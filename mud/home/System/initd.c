@@ -122,10 +122,26 @@ private void compile_dir(string dir)
 	}
 }
 
+private void set_version()
+{
+	if (sscanf(KOTAKA_VERSION, "%d.%d.%d", version_major, version_minor, version_patch) != 3) {
+		version_patch = 0;
+
+		if (sscanf(KOTAKA_VERSION, "%d.%d", version_major, version_minor) != 2) {
+			version_minor = 0;
+
+			if(sscanf(KOTAKA_VERSION, "%d", version_major) != 1) {
+				error("Cannot parse Kotaka version");
+			}
+		}
+	}
+}
+
 static void create()
 {
 	check_config();
 	check_versions();
+	set_version();
 
 	catch {
 		load_object(KERNELD);		/* needed for LogD */
@@ -517,16 +533,7 @@ void upgrade_system_post_recompile()
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module");
 
 	upgrade_check_kotaka_version();
-
-	if (sscanf(KOTAKA_VERSION, "%d.%d.%d", version_major, version_minor, version_patch) != 3) {
-		version_patch = 0;
-		if (sscanf(KOTAKA_VERSION, "%d.%d", version_major, version_minor) != 2) {
-			version_minor = 0;
-			if(sscanf(KOTAKA_VERSION, "%d", version_major) != 1) {
-				error("Cannot parse Kotaka version");
-			}
-		}
-	}
+	set_version();
 
 	configure_rsrc();
 	set_limits();
