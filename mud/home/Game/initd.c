@@ -67,6 +67,8 @@ void configure_channels()
 {
 }
 
+void build_world();
+
 static void create()
 {
 	load();
