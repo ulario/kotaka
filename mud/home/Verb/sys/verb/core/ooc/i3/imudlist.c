@@ -77,7 +77,7 @@ void main(object actor, mapping roles)
 
 			table = allocate(sz + 1);
 
-			table[0] = ({ "Name", "IP", "Port", "Status" });
+			table[0] = ({ "Name", "IP", "Port" });
 
 			for (i = 0; i < sz; i++) {
 				mixed *info;
@@ -85,7 +85,7 @@ void main(object actor, mapping roles)
 				info = INTERMUDD->query_mud(list[i]);
 
 				if (info[0] == -1) {
-					table[i + 1] = ({ list[i], info[1], info[2] + "", info[0] + "" });
+					table[i + 1] = ({ list[i], info[1], info[2] + "" });
 				}
 			}
 
