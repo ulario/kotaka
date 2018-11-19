@@ -22,6 +22,7 @@
 #include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;
+inherit "~/lib/struct/list";
 
 object root;
 
@@ -281,7 +282,7 @@ mapping list_directory(string name)
 	}
 }
 
-private void gather(string path, object dir, object deque)
+private void gather(string path, object dir, mixed **list)
 {
 	string *names;
 	mapping key;
@@ -296,10 +297,12 @@ private void gather(string path, object dir, object deque)
 		switch(vals[sz]) {
 		case 1:
 			if (!dir->query_entry_value(names[sz])) {
-				deque->push_back(
+				list_push_back(
+					list,
 					path ?
 					(path + ":" + names[sz]) :
-					names[sz]);
+					names[sz]
+				);
 			}
 			break;
 
@@ -307,7 +310,8 @@ private void gather(string path, object dir, object deque)
 			gather(
 				path ?
 				path + ":" + names[sz] :
-				names[sz], dir->query_entry_value(names[sz]), deque);
+				names[sz], dir->query_entry_value(names[sz]), list
+			);
 		}
 	}
 }
@@ -317,16 +321,15 @@ void fix()
 	ACCESS_CHECK(SYSTEM());
 
 	rlimits(0; -1) {
-		object deque;
+		mixed **list;
 
-		deque = new_object(BIGSTRUCT_DEQUE_LWO);
-		deque->claim();
+		list = ({ nil, nil });
 
-		gather(nil, root, deque);
+		gather(nil, root, list);
 
-		while (!deque->empty()) {
-			remove_object(deque->query_front());
-			deque->pop_front();
+		while (!list_empty(list)) {
+			remove_object(list_front(list));
+			list_pop_front(list);
 		}
 	}
 }
