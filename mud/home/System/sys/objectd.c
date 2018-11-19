@@ -132,9 +132,11 @@ private object setup_program_info(string path, string *inherited)
 		initd = find_object("/initd");
 	}
 
-	constructor = initd->query_constructor(path);
-	destructor = initd->query_destructor(path);
-	patcher = initd->query_patcher(path);
+	if (initd) {
+		constructor = initd->query_constructor(path);
+		destructor = initd->query_destructor(path);
+		patcher = initd->query_patcher(path);
+	}
 
 	pinfo->set_constructor(constructor);
 	pinfo->set_destructor(destructor);
