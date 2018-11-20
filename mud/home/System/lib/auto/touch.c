@@ -26,11 +26,6 @@
 
 inherit "call_guard";
 
-static int touch(string func)
-{
-	return 0;
-}
-
 private void patch()
 {
 	object pinfo;
@@ -41,20 +36,21 @@ private void patch()
 	object this;
 	string name;
 
-	this = this_object();
-	name = object_name(this);
-
-	if (!sscanf(name, "%*s#%d", index)) {
-		index = status(this, O_INDEX);
+	if (!find_object(PATCHD)) {
+		return;
 	}
 
 	if (!PATCHD->query_marked(this)) {
 		return;
 	}
 
-	pinfo = OBJECTD->query_program_info(index);
+	this = this_object();
+
+	pinfo = OBJECTD->query_program_info(status(this, O_INDEX));
 
 	if (!pinfo) {
+		LOGD->post_message("system", LOG_WARNING, "Attempted to patch " + object_name(this) + " without program_info");
+
 		return;
 	}
 
@@ -74,41 +70,9 @@ private void patch()
 	}
 }
 
-nomask void _F_patch()
-{
-	ACCESS_CHECK(previous_program() == PATCHD);
-
-	patch();
-}
-
 nomask int _F_touch(string func)
 {
-	object this;
-	string name;
-	int oindex;
-	int sz;
-
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	this = this_object();
-	name = object_name(this);
-
-	if (find_object(PATCHD)) {
-		patch();
-	}
-
-	if (func == "_F_patch") {
-		return 1;
-	} else {
-		return touch(func);
-	}
-}
-
-static void call_touch(object obj)
-{
-	if (SYSTEM()) {
-		::call_touch(obj);
-	} else {
-		OBJECTD->call_touch(obj);
-	}
+	patch();
 }

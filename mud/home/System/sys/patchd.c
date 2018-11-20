@@ -42,6 +42,8 @@ object pflagdb;
 mixed **patch_queue; /* ({ obj }) */
 mixed **sweep_queue; /* ({ path, master_index, clone_index }) */
 
+int query_marked(object obj);
+
 static void create()
 {
 }
@@ -276,8 +278,7 @@ private int sweep(string path, int index)
 		object obj;
 
 		if (obj = find_object(path + "#" + index)) {
-			enqueue_nudge(obj);
-			break;
+			obj->_F_dummy();
 		}
 	}
 
@@ -296,11 +297,15 @@ static void process()
 		obj = list_front(nudge_list);
 		list_pop_front(nudge_list);
 
-		if (function_object("_F_patch", obj)) {
-			obj->_F_patch();
-		} else {
-			obj->_F_dummy();
+		if (list_empty(nudge_list)) {
+			nudge_list = nil;
 		}
+
+		if (!obj) {
+			return;
+		}
+
+		obj->_F_dummy();
 	} else if (sweep_list && !list_empty(sweep_list)) {
 		string path;
 		mixed *head;
@@ -317,6 +322,10 @@ static void process()
 			head[1] = index;
 		} else {
 			list_pop_front(sweep_list);
+
+			if (list_empty(sweep_list)) {
+				sweep_list = nil;
+			}
 		}
 	} else if (patch_queue) {
 		object obj;
@@ -330,11 +339,11 @@ static void process()
 			patch_queue = nil;
 		}
 
-		if (function_object("_F_patch", obj)) {
-			obj->_F_patch();
-		} else {
-			obj->_F_dummy();
+		if (!obj) {
+			return;
 		}
+
+		obj->_F_dummy();
 	} else if (sweep_queue) {
 		mixed *head;
 		string path;
@@ -348,22 +357,20 @@ static void process()
 
 		({ path, master_index, clone_index }) = head;
 
-		goal = (clone_index - 1) & 1023;
+		goal = (clone_index - 1) & ~1023;
 
-		while (--clone_index >= goal) {
+		do {
 			object clone;
+
+			clone_index--;
 
 			clone = find_object(path + "#" + clone_index);
 
-			if (clone && status(clone, O_INDEX) == master_index) {
-				if (function_object("_F_patch", clone)) {
-					clone->_F_patch();
-				} else {
-					clone->_F_dummy();
-				}
+			if (clone && status(clone, O_INDEX) == master_index && query_marked(clone)) {
+				clone->_F_dummy();
 				break;
 			}
-		}
+		} while (clone_index > goal);
 
 		if (clone_index) {
 			head[2] = clone_index;
@@ -446,6 +453,8 @@ void mark_patch(string path)
 			}
 		} else {
 			int sz;
+
+			LOGD->post_message("system", LOG_WARNING, "Clone overflow for " + path + ", sweeping");
 
 			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 				object clone;
