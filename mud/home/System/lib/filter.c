@@ -26,36 +26,21 @@ inherit SECOND_AUTO;
 inherit conn LIB_CONN;
 inherit user LIB_USER;
 
-#define DESTRUCT_OPEN		1
-#define DESTRUCT_CLOSE		2
-#define DESTRUCT_SET_MODE	3
-#define DESTRUCT_DISCONNECT	4
-#define DESTRUCT_REBOOT		5
-
 static void create()
 {
 	user::create();
 	conn::create("telnet");
 }
 
-/*********************************/
-/* user hooks (conn::user->func) */
-/*********************************/
+static void self_destruct()
+{
+	destruct_object(this_object());
+}
 
-/*
-
-LIB_USER destructs on:
-
-*/
-
-/*
-login
-logout
-receive_message
-message_done
-open_datagram
-receive_datagram
-*/
+static void self_disconnect()
+{
+	disconnect();
+}
 
 int login(string str)
 {
@@ -64,7 +49,6 @@ int login(string str)
 
 	connection(previous_object());
 
-	/* LIB_CONN does an implicit call to set_mode */
 	return conn::receive_message(nil, str);
 }
 
@@ -88,7 +72,6 @@ int receive_message(string str)
 	ACCESS_CHECK(previous_program() == LIB_CONN
 		|| calling_object() == this_object());
 
-	/* LIB_CONN does an implicit call to set_mode */
 	return conn::receive_message(nil, str);
 }
 
@@ -109,39 +92,6 @@ void receive_datagram(string packet)
 
 	conn::receive_datagram(nil, packet);
 }
-
-/***************************************/
-/* connection hooks (user::conn->func) */
-/***************************************/
-
-/*
-
-LIB_CONN self destructs on:
-
-set_mode
-	on MODE_DISCONNECT
-
-open
-	if userd returns -1 for timeout
-
-close
-	if not !dest
-
-disconnect
-	unconditional
-
-reboot
-	unconditional
-
-*/
-
-/*
-message
-disconnect
-datagram_challenge
-datagram
-timeout
-*/
 
 int message(string str)
 {
@@ -180,10 +130,6 @@ static void timeout()
 	::timeout(allocate(DRIVER->query_tls_size()));
 }
 
-/*************************************/
-/* connection api (this->conn::func) */
-/*************************************/
-
 void set_mode(int new_mode)
 {
 	object conn;
@@ -209,21 +155,3 @@ void set_mode(int new_mode)
 
 	query_conn()->set_mode(new_mode);
 }
-
-static void self_destruct()
-{
-	destruct_object(this_object());
-}
-
-static void self_disconnect()
-{
-	disconnect();
-}
-
-/*******************************/
-/* user api (this->user::func) */
-/*******************************/
-
-/***********/
-/* Unknown */
-/***********/
