@@ -197,8 +197,6 @@ private void set_version()
 
 private void configure_logging()
 {
-	ACCESS_CHECK(SYSTEM());
-
 	LOGD->clear_targets();
 
 	LOGD->set_target("*", 63, "driver");
@@ -240,31 +238,16 @@ private void reboot_common()
 	check_config();
 	check_versions();
 
-	catch {
-		LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
+	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
+	DRIVER->fix_filequota();
 
-		rlimits (0; -1) {
-			DRIVER->fix_filequota();
-		}
-	}
-	catch {
-		clear_admin();
-	}
-	catch {
-		configure_rsrc();
-	}
-	catch {
-		configure_logging();
-	}
-	catch {
-		CALLOUTD->reboot();
-	}
-	catch {
-		PATCHD->reboot();
-	}
-	catch {
-		DUMPD->reboot();
-	}
+	clear_admin();
+	configure_rsrc();
+	configure_logging();
+
+	CALLOUTD->reboot();
+	PATCHD->reboot();
+	DUMPD->reboot();
 }
 
 private void upgrade_check_kotaka_version()
@@ -302,6 +285,7 @@ static void create()
 		KERNELD->set_global_access("System", 1);
 
 		configure_klib();
+		clear_admin();
 		configure_rsrc();
 		set_limits();
 
@@ -374,9 +358,6 @@ static void upgrade_system_post_recompile()
 
 	upgrade_check_kotaka_version();
 	set_version();
-
-	configure_rsrc();
-	set_limits();
 
 	destruct_dir("/kernel/lib");
 
@@ -480,10 +461,12 @@ void hotboot()
 
 void upgrade()
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	configure_logging();
+	clear_admin();
 	configure_rsrc();
+	set_limits();
+	configure_logging();
 }
 
 int forbid_inherit(string from, string path, int priv)
