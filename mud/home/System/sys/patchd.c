@@ -445,10 +445,12 @@ void mark_patch(string path)
 
 			for (sz = sizeof(clones); --sz >= 0; ) {
 				object clone;
+				int cindex;
 
 				clone = clones[sz];
+				sscanf(object_name(clone), "%*s#%d", cindex);
 
-				pflagdb->set_element(sz, clone);
+				pflagdb->set_element(cindex, clone);
 				queue_patch(clone);
 			}
 		} else {
