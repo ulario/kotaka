@@ -203,7 +203,6 @@ int login(string str)
 
 void logout(int quit)
 {
-	int interval, handle;
 	object conn;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
@@ -211,6 +210,9 @@ void logout(int quit)
 	conn = previous_object();
 
 	if (connections[conn]) {
+		float interval;
+		int handle;
+
 		({ interval, handle }) = connections[conn];
 
 		remove_call_out(handle);
