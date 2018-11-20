@@ -38,9 +38,9 @@ mixed query_tls_value(string domain, string key)
 	mapping heap;
 	mapping dmap;
 
-	creator = DRIVER->creator(object_name(previous_object()));
+	creator = DRIVER->creator(previous_program());
 
-	if (domain != creator) {
+	if (creator == nil || domain != creator) {
 		error("Access denied");
 	}
 
@@ -65,9 +65,9 @@ void set_tls_value(string domain, string key, mixed value)
 	mapping heap;
 	mapping dmap;
 
-	creator = DRIVER->creator(object_name(previous_object()));
+	creator = DRIVER->creator(previous_program());
 
-	if (domain != creator) {
+	if (creator == nil || domain != creator) {
 		error("Access denied");
 	}
 
