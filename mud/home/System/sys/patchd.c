@@ -349,7 +349,7 @@ static void process()
 		string path;
 		int master_index;
 		int clone_index;
-		int goal;
+		int ticks;
 
 		handle = call_out("process", 0);
 
@@ -357,7 +357,7 @@ static void process()
 
 		({ path, master_index, clone_index }) = head;
 
-		goal = (clone_index - 1) & ~1023;
+		ticks = status(ST_TICKS);
 
 		do {
 			object clone;
@@ -370,7 +370,7 @@ static void process()
 				clone->_F_dummy();
 				break;
 			}
-		} while (clone_index > goal);
+		} while (clone_index > 0 && status(ST_TICKS) + 50000 > ticks);
 
 		if (clone_index) {
 			head[2] = clone_index;
