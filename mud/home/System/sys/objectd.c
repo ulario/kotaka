@@ -380,7 +380,9 @@ void destruct(varargs mixed owner_arg, mixed obj_arg)
 		owner = owner_arg;
 		obj = obj_arg;
 
-		obj->_F_sys_destruct();
+		if (TLSD->query_tls_value("System", "destruct_force") != obj) {
+			obj->_F_sys_destruct();
+		}
 
 		pinfo = fetch_program_info(status(obj, O_INDEX));
 
