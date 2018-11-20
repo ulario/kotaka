@@ -27,8 +27,11 @@
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-void load()
+private void load()
 {
+	MODULED->boot_module("Ansi");
+	MODULED->boot_module("Verb");
+
 	load_dir("lwo");
 	load_dir("obj");
 	load_dir("sys");
@@ -43,9 +46,6 @@ private void set_limits()
 
 static void create()
 {
-	MODULED->boot_module("Ansi");
-	MODULED->boot_module("Verb");
-
 	set_limits();
 
 	load();

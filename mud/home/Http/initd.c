@@ -37,7 +37,7 @@ static void set_limits()
 
 static void create()
 {
-	reset_limits();
+	set_limits();
 
 	load();
 }

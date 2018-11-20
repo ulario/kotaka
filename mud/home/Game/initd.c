@@ -38,10 +38,10 @@ private void load()
 	MODULED->boot_module("Geometry");
 	MODULED->boot_module("Help");
 	MODULED->boot_module("Http");
-	MODULED->boot_module("Text");
 	MODULED->boot_module("Intermud");
-	MODULED->boot_module("Thing");
 	MODULED->boot_module("Test");
+	MODULED->boot_module("Text");
+	MODULED->boot_module("Thing");
 
 	load_dir("lwo");
 	load_dir("obj");
@@ -71,9 +71,9 @@ void build_world();
 
 static void create()
 {
-	load();
-
 	set_limits();
+
+	load();
 
 	create_channels();
 	configure_channels();

@@ -26,6 +26,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	MODULED->boot_module("Bigstruct");
+
 	load_dir("lwo");
 	load_dir("obj");
 	load_dir("sys");
@@ -47,11 +49,10 @@ private void test()
 
 static void create()
 {
-	MODULED->boot_module("Bigstruct");
-
 	set_limits();
 
 	load();
+
 	test();
 }
 
@@ -67,11 +68,6 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	set_limits();
-
-	load();
-	test();
-
-	purge_orphans("Test");
 }
 
 string query_patcher(string path)

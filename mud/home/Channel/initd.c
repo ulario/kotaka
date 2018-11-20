@@ -27,6 +27,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	MODULED->boot_module("String");
+
 	load_dir("sys");
 }
 
@@ -39,8 +41,6 @@ private void set_limits()
 
 static void create()
 {
-	MODULED->boot_module("String");
-
 	set_limits();
 
 	load();

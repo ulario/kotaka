@@ -23,9 +23,8 @@
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-atomic private void load()
+private void load()
 {
-	destruct_dir("sys");
 	load_dir("sys");
 }
 
