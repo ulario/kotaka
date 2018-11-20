@@ -93,13 +93,7 @@ object select(string str)
 		if (!has_telnet) {
 			return clone_object("~/obj/filter/telnet");
 		}
-		if (!has_mudclient) {
-			return clone_object("~/obj/filter/mudclient");
-		}
-		if (!has_line) {
-			return clone_object("~/obj/filter/line");
-		}
-		return clone_object("~/obj/user");
+		/* fall through */
 
 	case TELNET_CONN:
 		if (!has_mudclient) {
