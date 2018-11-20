@@ -113,7 +113,7 @@ nomask void _F_sys_destruct()
 	if (objectd) {
 		object pinfo;
 
-		pinfo = OBJECTD->query_program_info(
+		pinfo = objectd->query_program_info(
 			status(this, O_INDEX)
 		);
 
