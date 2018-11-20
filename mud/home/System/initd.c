@@ -43,12 +43,6 @@ int version_patch;
 void console_post(string str, int level);
 void message(string str);
 
-private void configure_klib();
-void configure_logging();
-void configure_rsrc();
-private void check_config();
-private void check_versions();
-
 private void load()
 {
 	load_dir("lwo");
@@ -62,272 +56,21 @@ private void set_limits()
 	KERNELD->rsrc_set_limit("System", "ticks", 250000);
 }
 
-private void log_boot_error()
-{
-	LOGD->post_message("system", LOG_ERR, "Runtime error during boot");
-	LOGD->post_message("system", LOG_ERR, TLSD->query_tls_value("System", "error-string"));
-	LOGD->post_message("system", LOG_ERR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
-}
-
-private void destruct_dir(string dir)
-{
-	int sz;
-	string *names;
-	int *sizes;
-	int *times;
-	mixed *objs;
-
-	({ names, sizes, times, objs }) = get_dir(dir + "/*");
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		if (sizes[sz] == -2) {
-			destruct_dir(dir + "/" + names[sz]);
-			continue;
-		}
-
-		if (objs[sz]) {
-			string path;
-
-			sscanf(names[sz], "%s.c", path);
-			path = dir + "/" + path;
-
-			destruct_object(path);
-		}
-	}
-}
-
-private void compile_dir(string dir)
-{
-	int sz;
-	string *names;
-	int *sizes;
-	int *times;
-	mixed *objs;
-
-	({ names, sizes, times, objs }) = get_dir(dir + "/*");
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		string path;
-
-		if (sizes[sz] == -2) {
-			compile_dir(dir + "/" + names[sz]);
-			continue;
-		}
-
-		if (sscanf(names[sz], "%s.c", path)) {
-			path = dir + "/" + path;
-
-			compile_object(path);
-		}
-	}
-}
-
-private void set_version()
-{
-	if (sscanf(KOTAKA_VERSION, "%d.%d.%d", version_major, version_minor, version_patch) != 3) {
-		version_patch = 0;
-
-		if (sscanf(KOTAKA_VERSION, "%d.%d", version_major, version_minor) != 2) {
-			version_minor = 0;
-
-			if(sscanf(KOTAKA_VERSION, "%d", version_major) != 1) {
-				error("Cannot parse Kotaka version");
-			}
-		}
-	}
-}
-
-static void create()
-{
-	check_config();
-	check_versions();
-	set_version();
-
-	catch {
-		load_object(KERNELD);		/* needed for LogD */
-
-		KERNELD->set_global_access("System", 1);
-
-		configure_klib();
-		configure_rsrc();
-		set_limits();
-
-		load_object(SECRETD);		/* needed for LogD */
-		load_object(LOGD);		/* we need to log any error messages */
-		load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
-
-		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
-		load_object(CALLOUTD);		/* suspends callouts */
-		load_object(SUSPENDD);		/* suspends system */
-
-		SECRETD->remove_file("logs/session.log");
-
-		call_out("boot", 0);
-
-		LOGD->post_message("system", LOG_NOTICE, "System core loaded");
-	} : {
-		LOGD->flush();
-		shutdown();
-		error("Failed to load system core");
-	}
-}
-
-static void boot()
-{
-	catch {
-		load_object(ERRORD);		/* depends on TLS */
-		load_object(MODULED);
-
-		MODULED->boot_module("Bigstruct");
-
-		load_object(PROGRAM_INFO);
-		load_object(SPARSE_ARRAY);
-		load_object(PATCHD);
-		load_object(OBJECTD);		/* depends on TLS */
-
-		rlimits (0; -1) {
-			OBJECTD->reset();
-		}
-
-		LOGD->post_message("system", LOG_NOTICE, "System discovered");
-
-		load();
-		LOGD->post_message("system", LOG_NOTICE, "System loaded");
-
-		DUMPD->set_parameters(3600, 0, 24);
-
-		call_out("ready", 0);
-	} : {
-		log_boot_error();
-		LOGD->flush();
-		shutdown();
-		error("System setup failed");
-	}
-}
-
-static void ready()
-{
-	MODULED->boot_module("Game");
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	configure_logging();
-	configure_rsrc();
-}
-
-void clear_admin()
-{
-	/* remove all admin quotas */
-	string *resources;
-	int index;
-
-	resources = KERNELD->query_resources();
-
-	for (index = 0; index < sizeof(resources); index++) {
-		KERNELD->rsrc_set_limit("admin", resources[index],
-			-1);
-	}
-}
-
-/* kernel hooks */
-
-void prepare_reboot()
-{
-	ACCESS_CHECK(KERNEL());
-
-	if (TLSD->query_tls_value("System", "incremental-snapshot")) {
-		LOGD->post_message("system", LOG_NOTICE, "Incremental snapshot");
-	} else {
-		LOGD->post_message("system", LOG_NOTICE, "Full snapshot");
-	}
-
-	ACCESSD->save();
-	MODULED->prepare_reboot();
-}
-
-private void reboot_common()
-{
-	check_config();
-	check_versions();
-
-	catch {
-		LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
-
-		rlimits (0; -1) {
-			DRIVER->fix_filequota();
-		}
-	}
-	catch {
-		clear_admin();
-	}
-	catch {
-		configure_rsrc();
-	}
-	catch {
-		configure_logging();
-	}
-	catch {
-		CALLOUTD->reboot();
-	}
-	catch {
-		PATCHD->reboot();
-	}
-	catch {
-		DUMPD->reboot();
-	}
-}
-
-void reboot()
-{
-	ACCESS_CHECK(KERNEL());
-
-	reboot_common();
-
-	catch {
-		SYSTEM_USERD->reboot();
-	}
-	catch {
-		ACCESSD->restore();
-	}
-	catch {
-		MODULED->reboot();
-	}
-}
-
-void hotboot()
-{
-	ACCESS_CHECK(KERNEL());
-
-	reboot_common();
-
-	catch {
-		SYSTEM_USERD->hotboot();
-	}
-	catch {
-		MODULED->hotboot();
-	}
-}
-
-/* miscellaneous */
-
 private void configure_klib()
 {
 	string *wizards;
-	int index;
+	int sz;
 
 	KERNELD->add_owner("Secret");
 
 	wizards = KERNELD->query_users();
 
-	for (index = 0; index < sizeof(wizards); index++) {
-		KERNELD->add_owner(wizards[index]);
+	for (sz = sizeof(wizards); --sz >= 0; ) {
+		KERNELD->add_owner(wizards[sz]);
 	}
 }
 
-void configure_rsrc()
+private void configure_rsrc()
 {
 	KERNELD->set_rsrc("stack", 100, 0, 0);
 	KERNELD->set_rsrc("ticks", 250000, 0, 0);
@@ -337,68 +80,23 @@ void configure_rsrc()
 	KERNELD->set_rsrc("callout usage", -1, 1, 1);
 }
 
-atomic void configure_logging()
+private void clear_admin()
 {
-	ACCESS_CHECK(SYSTEM());
+	string *resources;
+	int sz;
 
-	LOGD->clear_targets();
+	resources = KERNELD->query_resources();
 
-	LOGD->set_target("*", 63, "driver");
-
-	LOGD->set_target("debug", 0, "driver");
-	LOGD->set_target("compile", 255, "driver");
-	LOGD->set_target("error", 255, "driver");
-	LOGD->set_target("trace", 255, "driver");
-
-	LOGD->set_target("debug", 255, "null");
-	LOGD->set_target("compile", 255, "null");
-	LOGD->set_target("trace", 255, "null");
-
-	LOGD->set_target("*", 255, "file:general");
-
-	LOGD->set_target("error", 255, "file:error");
-	LOGD->set_target("trace", 255, "file:error");
-	LOGD->set_target("compile", 255, "file:error");
-
-	LOGD->set_target("*", 127, "file:session");
-	LOGD->set_target("debug", 0, "file:session");
-
-	LOGD->set_target("*", 128, "file:debug");
-	LOGD->set_target("debug", 255, "file:debug");
-
-	LOGD->set_target("system", 255, "file:general");
-	LOGD->set_target("system", 255, "file:session");
-
-	LOGD->set_target("system", 63, "channel:system");
-
-	LOGD->set_target("compile", 255, "channel:compile");
-	LOGD->set_target("error", 255, "channel:error");
-	LOGD->set_target("trace", 255, "channel:trace");
-	LOGD->set_target("debug", 255, "channel:debug");
+	for (sz = sizeof(resources); --sz >= 0; ) {
+		KERNELD->rsrc_set_limit("admin", resources[sz], -1);
+	}
 }
 
-int forbid_inherit(string from, string path, int priv)
+private void log_boot_error()
 {
-	string creator;
-	int firstchar;
-
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	if (sscanf(path, USR_DIR + "/System/lib/auto/%*s")) {
-		return 0;
-	}
-
-	creator = DRIVER->creator(from);
-
-	if (creator == "System") {
-		return 0;
-	}
-
-	if (sscanf(path, USR_DIR + "/System/closed/%*s")) {
-		return 1;
-	}
-
-	return 0;
+	LOGD->post_message("system", LOG_ERR, "Runtime error during boot");
+	LOGD->post_message("system", LOG_ERR, TLSD->query_tls_value("System", "error-string"));
+	LOGD->post_message("system", LOG_ERR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
 }
 
 private void check_config()
@@ -482,17 +180,90 @@ private void check_versions()
 	}
 }
 
-string query_version()
+private void set_version()
 {
-	return KOTAKA_VERSION;
+	if (sscanf(KOTAKA_VERSION, "%d.%d.%d", version_major, version_minor, version_patch) != 3) {
+		version_patch = 0;
+
+		if (sscanf(KOTAKA_VERSION, "%d.%d", version_major, version_minor) != 2) {
+			version_minor = 0;
+
+			if(sscanf(KOTAKA_VERSION, "%d", version_major) != 1) {
+				error("Cannot parse Kotaka version");
+			}
+		}
+	}
 }
 
-void booted_module(string module)
+private void configure_logging()
 {
-	switch(module) {
-	case "Bigstruct":
-		LOGD->post_message("system", LOG_NOTICE, "System received boot notification for Bigstruct");
-		break;
+	ACCESS_CHECK(SYSTEM());
+
+	LOGD->clear_targets();
+
+	LOGD->set_target("*", 63, "driver");
+
+	LOGD->set_target("debug", 0, "driver");
+	LOGD->set_target("compile", 255, "driver");
+	LOGD->set_target("error", 255, "driver");
+	LOGD->set_target("trace", 255, "driver");
+
+	LOGD->set_target("debug", 255, "null");
+	LOGD->set_target("compile", 255, "null");
+	LOGD->set_target("trace", 255, "null");
+
+	LOGD->set_target("*", 255, "file:general");
+
+	LOGD->set_target("error", 255, "file:error");
+	LOGD->set_target("trace", 255, "file:error");
+	LOGD->set_target("compile", 255, "file:error");
+
+	LOGD->set_target("*", 127, "file:session");
+	LOGD->set_target("debug", 0, "file:session");
+
+	LOGD->set_target("*", 128, "file:debug");
+	LOGD->set_target("debug", 255, "file:debug");
+
+	LOGD->set_target("system", 255, "file:general");
+	LOGD->set_target("system", 255, "file:session");
+
+	LOGD->set_target("system", 63, "channel:system");
+
+	LOGD->set_target("compile", 255, "channel:compile");
+	LOGD->set_target("error", 255, "channel:error");
+	LOGD->set_target("trace", 255, "channel:trace");
+	LOGD->set_target("debug", 255, "channel:debug");
+}
+
+private void reboot_common()
+{
+	check_config();
+	check_versions();
+
+	catch {
+		LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
+
+		rlimits (0; -1) {
+			DRIVER->fix_filequota();
+		}
+	}
+	catch {
+		clear_admin();
+	}
+	catch {
+		configure_rsrc();
+	}
+	catch {
+		configure_logging();
+	}
+	catch {
+		CALLOUTD->reboot();
+	}
+	catch {
+		PATCHD->reboot();
+	}
+	catch {
+		DUMPD->reboot();
 	}
 }
 
@@ -519,16 +290,80 @@ private void upgrade_check_kotaka_version()
 	}
 }
 
-void upgrade_system()
+static void create()
 {
-	destruct_dir("lib");
+	check_config();
+	check_versions();
+	set_version();
 
-	compile_object(INITD);
+	catch {
+		load_object(KERNELD);		/* needed for LogD */
 
-	call_out("upgrade_system_post_recompile", 0);
+		KERNELD->set_global_access("System", 1);
+
+		configure_klib();
+		configure_rsrc();
+		set_limits();
+
+		load_object(SECRETD);		/* needed for LogD */
+		load_object(LOGD);		/* we need to log any error messages */
+		load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
+
+		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
+		load_object(CALLOUTD);		/* suspends callouts */
+		load_object(SUSPENDD);		/* suspends system */
+
+		SECRETD->remove_file("logs/session.log");
+
+		call_out("boot", 0);
+
+		LOGD->post_message("system", LOG_NOTICE, "System core loaded");
+	} : {
+		LOGD->flush();
+		shutdown();
+		error("Failed to load system core");
+	}
 }
 
-void upgrade_system_post_recompile()
+static void boot()
+{
+	catch {
+		load_object(ERRORD);		/* depends on TLS */
+		load_object(MODULED);
+
+		MODULED->boot_module("Bigstruct");
+
+		load_object(PROGRAM_INFO);
+		load_object(SPARSE_ARRAY);
+		load_object(PATCHD);
+		load_object(OBJECTD);		/* depends on TLS */
+
+		rlimits (0; -1) {
+			OBJECTD->reset();
+		}
+
+		LOGD->post_message("system", LOG_NOTICE, "System discovered");
+
+		load();
+		LOGD->post_message("system", LOG_NOTICE, "System loaded");
+
+		DUMPD->set_parameters(3600, 0, 24);
+
+		call_out("ready", 0);
+	} : {
+		log_boot_error();
+		LOGD->flush();
+		shutdown();
+		error("System setup failed");
+	}
+}
+
+static void ready()
+{
+	MODULED->boot_module("Game");
+}
+
+static void upgrade_system_post_recompile()
 {
 	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled for system upgrade");
 
@@ -596,6 +431,105 @@ static void do_upgrade_rebuild()
 
 	MODULED->upgrade_build();
 	LOGD->post_message("system", LOG_NOTICE, "Upgrade build completed");
+}
+
+void prepare_reboot()
+{
+	ACCESS_CHECK(KERNEL());
+
+	if (TLSD->query_tls_value("System", "incremental-snapshot")) {
+		LOGD->post_message("system", LOG_NOTICE, "Incremental snapshot");
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "Full snapshot");
+	}
+
+	ACCESSD->save();
+	MODULED->prepare_reboot();
+}
+
+void reboot()
+{
+	ACCESS_CHECK(KERNEL());
+
+	reboot_common();
+
+	catch {
+		SYSTEM_USERD->reboot();
+	}
+	catch {
+		ACCESSD->restore();
+	}
+	catch {
+		MODULED->reboot();
+	}
+}
+
+void hotboot()
+{
+	ACCESS_CHECK(KERNEL());
+
+	reboot_common();
+
+	catch {
+		SYSTEM_USERD->hotboot();
+	}
+	catch {
+		MODULED->hotboot();
+	}
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	configure_logging();
+	configure_rsrc();
+}
+
+int forbid_inherit(string from, string path, int priv)
+{
+	string creator;
+	int firstchar;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (sscanf(path, USR_DIR + "/System/lib/auto/%*s")) {
+		return 0;
+	}
+
+	creator = DRIVER->creator(from);
+
+	if (creator == "System") {
+		return 0;
+	}
+
+	if (sscanf(path, USR_DIR + "/System/closed/%*s")) {
+		return 1;
+	}
+
+	return 0;
+}
+
+void booted_module(string module)
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	switch(module) {
+	case "Bigstruct":
+		LOGD->post_message("system", LOG_NOTICE, "System received boot notification for Bigstruct");
+		break;
+	}
+}
+
+void upgrade_system()
+{
+	ACCESS_CHECK(VERB());
+
+	purge_dir("lib");
+
+	compile_object(INITD);
+
+	call_out("upgrade_system_post_recompile", 0);
 }
 
 void begin_task()
