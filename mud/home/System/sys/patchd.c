@@ -425,13 +425,13 @@ void mark_patch(string path)
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	master = find_object(path);
-	index = status(master, O_INDEX);
-	pinfo = OBJECTD->query_program_info(index);
-
 	if (!pflagdb) {
 		pflagdb = new_object(SPARSE_ARRAY);
 	}
+
+	master = find_object(path);
+	index = status(master, O_INDEX);
+	pinfo = OBJECTD->query_program_info(index);
 
 	pflagdb->set_element(index, master);
 	queue_patch(master);
@@ -472,6 +472,59 @@ void mark_patch(string path)
 			}
 
 			queue_sweep(path, index);
+		}
+	}
+}
+
+void unmark_patch(string path)
+{
+	int index;
+	object pinfo;
+	object master;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (!pflagdb) {
+		return;
+	}
+
+	master = find_object(path);
+	index = status(master, O_INDEX);
+	pinfo = OBJECTD->query_program_info(index);
+
+	pflagdb->set_element(index, nil);
+
+	if (pinfo->query_clone_count()) {
+		object *clones;
+
+		clones = pinfo->query_clones();
+
+		if (clones) {
+			int sz;
+
+			for (sz = sizeof(clones); --sz >= 0; ) {
+				object clone;
+				int cindex;
+
+				clone = clones[sz];
+				sscanf(object_name(clone), "%*s#%d", cindex);
+
+				pflagdb->set_element(cindex, nil);
+			}
+		} else {
+			int sz;
+
+			LOGD->post_message("system", LOG_WARNING, "Clone overflow for " + path + ", sweeping");
+
+			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
+				object clone;
+
+				clone = find_object(path + "#" + sz);
+
+				if (clone && status(clone, O_INDEX) == index) {
+					pflagdb->set_element(sz, nil);
+				}
+			}
 		}
 	}
 }

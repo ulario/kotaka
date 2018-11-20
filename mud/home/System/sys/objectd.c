@@ -331,6 +331,8 @@ void compile(string owner, object obj, string *source, string inherited ...)
 			|| pinfo->query_patcher()
 		) {
 			PATCHD->mark_patch(path);
+		} else {
+			PATCHD->unmark_patch(path);
 		}
 	} else if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		pinfo->clear_clones();
