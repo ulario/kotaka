@@ -368,9 +368,10 @@ static void process()
 
 			if (clone && status(clone, O_INDEX) == master_index && query_marked(clone)) {
 				clone->_F_dummy();
+
 				break;
 			}
-		} while (clone_index > 0 && status(ST_TICKS) + 50000 > ticks);
+		} while (clone_index > 0 && status(ST_TICKS) > 50000);
 
 		if (clone_index) {
 			head[2] = clone_index;
