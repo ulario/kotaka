@@ -20,9 +20,11 @@
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <kotaka/log.h>
 
 inherit SECOND_AUTO;
 inherit "~/lib/struct/list";
+inherit "~/lib/string/char";
 
 object root;
 
@@ -153,11 +155,6 @@ void remove_object(string name)
 			break;
 		}
 	}
-}
-
-void dump()
-{
-	root->dump(0);
 }
 
 object lookup_object(string name)
@@ -332,4 +329,42 @@ void fix()
 			list_pop_front(list);
 		}
 	}
+}
+
+private void dump_directory(object dir, int indent)
+{
+	mapping key;
+	string *indices;
+	object *values;
+	int sz, i;
+
+	key = dir->query_key();
+
+	indices = map_indices(key);
+	values = map_values(key);
+
+	for (sz = sizeof(indices), i = 0; i < sz; i++) {
+		object obj;
+		string name;
+
+		name = indices[i];
+
+		switch (key[name]) {
+		case 1:
+			obj = dir->query_entry_value(name);
+			LOGD->post_message("debug", LOG_DEBUG, spaces(indent * 2) + name + ": " + (obj ? "<" + object_name(obj) + ">" : "nil"));
+			break;
+		case 2:
+			LOGD->post_message("debug", LOG_DEBUG, spaces(indent * 2) + name);
+			dump_directory(dir->query_entry_value(name), indent + 1);
+			break;
+		}
+	}
+}
+
+void dump()
+{
+	LOGD->post_message("debug", LOG_DEBUG, "Dumping CatalogD");
+
+	dump_directory(root, 0);
 }

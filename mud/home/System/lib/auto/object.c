@@ -138,8 +138,6 @@ nomask void _F_sys_destruct()
 			}
 		}
 	}
-
-	set_object_name(nil);
 }
 
 void upgrading()

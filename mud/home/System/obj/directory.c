@@ -59,8 +59,8 @@ void remove_subdirectory(string name)
 		error("Directory not empty");
 	}
 
-	destruct_object(map[name]);
 	key[name] = nil;
+	destruct_object(map[name]);
 }
 
 void add_entry(string name, object obj)

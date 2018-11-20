@@ -193,6 +193,7 @@ int login(string str)
 	}
 
 	handle = call_out("report", interval, conn);
+
 	connections[conn] = ({ interval, handle });
 
 	conn->message("\033[1;1H\033[2J");
@@ -209,9 +210,11 @@ void logout(int quit)
 
 	conn = previous_object();
 
-	({ interval, handle }) = connections[conn];
+	if (connections[conn]) {
+		({ interval, handle }) = connections[conn];
 
-	remove_call_out(handle);
+		remove_call_out(handle);
+	}
 }
 
 int receive_message(string str)
@@ -243,7 +246,6 @@ int receive_message(string str)
 		case "interval":
 			if (sizeof(params) < 2) {
 				conn->message("Usage: interval <interval>\n");
-				call_out("clear", 5.0, conn);
 				break;
 			} else {
 				float interval;
@@ -252,8 +254,7 @@ int receive_message(string str)
 				sscanf(params[1], "%f", interval);
 
 				if (interval < 1.0 && !is_trusted(conn)) {
-					conn->message("Intervals less than 1 second\nare only allowed for local connections.\n");
-					call_out("clear", 5.0, conn);
+					conn->message("Intervals less than 1 second are only allowed for local connections.\n");
 					break;
 				}
 
@@ -270,7 +271,6 @@ int receive_message(string str)
 
 		default:
 			conn->message("Commands: clear, interval, quit\n");
-			call_out("clear", 5.0, conn);
 			break;
 		}
 	} else {

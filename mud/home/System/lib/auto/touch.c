@@ -42,6 +42,10 @@ nomask int _F_touch(string func)
 
 	this = this_object();
 
+	if (TLSD->query_tls_value("System", "destruct_force") == this) {
+		return 0;
+	}
+
 	if (!PATCHD->query_marked(this)) {
 		return 0;
 	}

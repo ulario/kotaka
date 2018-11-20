@@ -375,13 +375,20 @@ void destruct(varargs mixed owner_arg, mixed obj_arg)
 		object obj;
 		object pinfo;
 
+		string name;
 		string path;
 
 		owner = owner_arg;
 		obj = obj_arg;
 
-		if (TLSD->query_tls_value("System", "destruct_force") != obj) {
+		if (function_object("_F_sys_destruct", obj) && TLSD->query_tls_value("System", "destruct_force") != obj) {
 			obj->_F_sys_destruct();
+		}
+
+		name = obj->query_object_name();
+
+		if (name && CATALOGD->test_name(name) == 1) {
+			CATALOGD->remove_object(name);
 		}
 
 		pinfo = fetch_program_info(status(obj, O_INDEX));
