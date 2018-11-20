@@ -385,7 +385,6 @@ private void do_module_shutdown(string module, int reboot)
 		}
 	}
 
-	freeze_module(module);
 	modules[module] = -1;
 
 	LOGD->post_message("system", LOG_NOTICE, (reboot ? "Rebooting" : "Shutting down") + " " + (module ? module : "Ecru"));
@@ -394,11 +393,16 @@ private void do_module_shutdown(string module, int reboot)
 
 	initd = initd_of(module);
 
-	call_out("purge_module_tick", 0, module, reboot);
-
+	/* give it a chance to shut down cleanly first */
 	if (find_object(initd)) {
-		destruct_object(initd);
+		catch {
+			destruct_object(initd);
+		}
 	}
+
+	freeze_module(module);
+
+	call_out("purge_module_tick", 0, module, reboot);
 }
 
 void shutdown_module(string module)
