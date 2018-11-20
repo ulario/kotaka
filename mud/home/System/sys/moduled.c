@@ -394,13 +394,11 @@ private void do_module_shutdown(string module, int reboot)
 
 	initd = initd_of(module);
 
-	if (find_object(initd)) {
-		catch {
-			destruct_object(initd_of(module));
-		}
-	}
-
 	call_out("purge_module_tick", 0, module, reboot);
+
+	if (find_object(initd)) {
+		destruct_object(initd);
+	}
 }
 
 void shutdown_module(string module)
