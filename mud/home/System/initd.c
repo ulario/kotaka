@@ -195,8 +195,10 @@ private void set_version()
 	}
 }
 
-private void configure_logging()
+void configure_logging()
 {
+	ACCESS_CHECK(SYSTEM());
+
 	LOGD->clear_targets();
 
 	LOGD->set_target("*", 63, "driver");
@@ -240,10 +242,6 @@ private void reboot_common()
 
 	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
 	DRIVER->fix_filequota();
-
-	clear_admin();
-	configure_rsrc();
-	configure_logging();
 
 	CALLOUTD->reboot();
 	PATCHD->reboot();
