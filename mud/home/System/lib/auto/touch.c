@@ -36,14 +36,6 @@ private void patch()
 	object this;
 	string name;
 
-	if (!find_object(PATCHD)) {
-		return;
-	}
-
-	if (!PATCHD->query_marked(this)) {
-		return;
-	}
-
 	this = this_object();
 
 	pinfo = OBJECTD->query_program_info(status(this, O_INDEX));
@@ -73,6 +65,14 @@ private void patch()
 nomask int _F_touch(string func)
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (!find_object(PATCHD)) {
+		return;
+	}
+
+	if (!PATCHD->query_marked(this)) {
+		return;
+	}
 
 	patch();
 }
