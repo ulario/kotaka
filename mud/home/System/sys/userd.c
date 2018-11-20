@@ -24,9 +24,9 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
-#define SITEBAN_DELAY  0.5 /* linger time for dumping a sitebanned connection */
-#define OVERLOAD_DELAY 0.5 /* linger time for dumping an overloaded connection */
-#define BLOCK_DELAY    0.5 /* linger time for dumping a blocked connection */
+#define SITEBAN_DELAY  0.1 /* linger time for dumping a sitebanned connection */
+#define OVERLOAD_DELAY 0.1 /* linger time for dumping an overloaded connection */
+#define BLOCK_DELAY    0.1 /* linger time for dumping a blocked connection */
 
 inherit SECOND_AUTO;
 inherit LIB_USERD;
@@ -361,7 +361,6 @@ object select(string str)
 	object intercept;
 
 	int has_rlimits;
-	int has_task;
 
 	object target;
 
@@ -376,20 +375,12 @@ object select(string str)
 			has_rlimits = 1;
 		}
 
-		if (conn <- "~/obj/filter/task") {
-			has_task = 1;
-		}
-
 		conn = conn->query_conn();
 	}
 
 	intercept = TLSD->query_tls_value("System", "select-intercept");
 
 	if (intercept) {
-		if (!has_task) {
-			return clone_object("~/obj/filter/task", intercept->query_owner());
-		}
-
 		if (!has_rlimits) {
 			return clone_object("~/obj/filter/rlimits", intercept->query_owner());
 		}
@@ -416,10 +407,10 @@ object select(string str)
 			return this_object();
 		}
 
-		if (!has_rlimits || !has_task) {
+		if (!has_rlimits) {
 			TLSD->set_tls_value("System", "select-intercept", user);
 
-			return clone_object("~/obj/filter/task", user->query_owner());
+			return clone_object("~/obj/filter/rlimits", user->query_owner());
 		}
 
 		return user;
@@ -428,7 +419,6 @@ object select(string str)
 
 void intercept_redirect(object new_user, string str)
 {
-	int has_task;
 	int has_rlimits;
 
 	object conn;
@@ -444,18 +434,10 @@ void intercept_redirect(object new_user, string str)
 			has_rlimits = 1;
 		}
 
-		if (conn <- "~/obj/filter/task") {
-			has_task = 1;
-		}
-
 		conn = conn->query_conn();
 	}
 
-	if (!has_task) {
-		TLSD->set_tls_value("System", "select-intercept", new_user);
-
-		new_user = clone_object("~/obj/filter/task", user->query_owner());
-	} else if (!has_rlimits) {
+	if (!has_rlimits) {
 		TLSD->set_tls_value("System", "select-intercept", new_user);
 
 		new_user = clone_object("~/obj/filter/rlimits", user->query_owner());

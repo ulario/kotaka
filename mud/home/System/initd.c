@@ -609,10 +609,8 @@ static void do_upgrade_rebuild()
 
 void begin_task()
 {
-	ACCESS_CHECK(SYSTEM());
 }
 
 void end_task()
 {
-	ACCESS_CHECK(SYSTEM());
 }
