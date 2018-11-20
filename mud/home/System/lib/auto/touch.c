@@ -26,24 +26,32 @@
 
 inherit "call_guard";
 
-private void patch()
+nomask int _F_touch(string func)
 {
+	object this;
 	object pinfo;
-	int index;
 	string patcher;
 	string *patchers;
 	int i, sz;
-	object this;
-	string name;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (!find_object(PATCHD)) {
+		return 0;
+	}
 
 	this = this_object();
+
+	if (!PATCHD->query_marked(this)) {
+		return 0;
+	}
 
 	pinfo = OBJECTD->query_program_info(status(this, O_INDEX));
 
 	if (!pinfo) {
 		LOGD->post_message("system", LOG_WARNING, "Attempted to patch " + object_name(this) + " without program_info");
 
-		return;
+		return 0;
 	}
 
 	patcher = pinfo->query_patcher();
@@ -60,19 +68,6 @@ private void patch()
 			call_limited(patchers[i]);
 		}
 	}
-}
 
-nomask int _F_touch(string func)
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	if (!find_object(PATCHD)) {
-		return;
-	}
-
-	if (!PATCHD->query_marked(this)) {
-		return;
-	}
-
-	patch();
+	return 0;
 }
