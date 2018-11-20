@@ -451,6 +451,7 @@ void mark_patch(string path)
 				sscanf(object_name(clone), "%*s#%d", cindex);
 
 				pflagdb->set_element(cindex, clone);
+				call_touch(clone);
 				queue_patch(clone);
 			}
 		} else {
@@ -464,6 +465,7 @@ void mark_patch(string path)
 				clone = find_object(path + "#" + sz);
 
 				if (clone && status(clone, O_INDEX) == index) {
+					call_touch(clone);
 					pflagdb->set_element(sz, clone);
 				}
 			}
