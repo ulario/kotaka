@@ -82,10 +82,12 @@ void dispatch_wiztool(string line)
 
 static void destruct(int clone)
 {
-	destructing = 1;
+	if (clone) {
+		destructing = 1;
 
-	if (clone && !logging_out) {
-		disconnect();
+		if (!logging_out) {
+			disconnect();
+		}
 	}
 }
 
