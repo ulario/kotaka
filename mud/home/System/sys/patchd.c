@@ -485,7 +485,7 @@ void unmark_patch(string path)
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	if (!pflagdb) {
-		return;
+		pflagdb = new_object(SPARSE_ARRAY);
 	}
 
 	master = find_object(path);
@@ -493,6 +493,10 @@ void unmark_patch(string path)
 	pinfo = OBJECTD->query_program_info(index);
 
 	pflagdb->set_element(index, nil);
+
+	if (objdb) {
+		set_multimap(objdb, index, nil);
+	}
 
 	if (pinfo->query_clone_count()) {
 		object *clones;
@@ -523,6 +527,10 @@ void unmark_patch(string path)
 
 				if (clone && status(clone, O_INDEX) == index) {
 					pflagdb->set_element(sz, nil);
+
+					if (objdb) {
+						set_multimap(objdb, index, nil);
+					}
 				}
 			}
 		}
