@@ -295,7 +295,7 @@ private void do_login()
 
 	set_mode(MODE_ECHO);
 
-	set_root_state(clone_object(USTATE_DIR + "/start"));
+	set_root_state(clone_object(USTATE_DIR + "/login"));
 
 	TEXT_USERD->add_guest(this_object());
 }

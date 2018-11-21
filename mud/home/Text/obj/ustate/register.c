@@ -21,20 +21,17 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
-#define STATE_GETNAME	1
-#define STATE_GETPASS	2
-#define STATE_CHKPASS	3
+#define STATE_GETUSERNAME 1
+#define STATE_GETPASSWORD 2
+#define STATE_CHKPASSWORD 3
 
 inherit "/lib/string/validate";
 inherit TEXT_LIB_USTATE;
 
-string name;
+string username;
 string password;
 
 int state;
-int stopped;
-int reading;
-int dead;
 
 static void create(int clone)
 {
@@ -46,21 +43,11 @@ static void destruct(int clone)
 	::destruct();
 }
 
-private void prompt()
+void set_username(string new_username)
 {
-	switch(state) {
-	case STATE_GETNAME:
-		send_out("Please choose a username: ");
-		break;
+	ACCESS_CHECK(TEXT());
 
-	case STATE_GETPASS:
-		send_out("Please choose a password: ");
-		break;
-
-	case STATE_CHKPASS:
-		send_out("Please confirm your password: ");
-		break;
-	}
+	username = new_username;
 }
 
 void begin()
@@ -73,94 +60,88 @@ void begin()
 		return;
 	}
 
-	state = STATE_GETNAME;
-}
-
-void stop()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	stopped = 1;
-}
-
-void go()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	stopped = 0;
-
-	if (!reading) {
-		prompt();
+	if (username) {
+		send_out("New password: ");
+		query_user()->set_mode(MODE_NOECHO);
+		state = STATE_GETPASSWORD;
+	} else {
+		send_out("New username: ");
+		state = STATE_GETUSERNAME;
 	}
-}
-
-void pre_end()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	dead = 1;
 }
 
 void receive_in(string input)
 {
 	ACCESS_CHECK(previous_object() == query_user());
 
-	reading = 1;
-
 	switch(state) {
-	case STATE_GETNAME:
+	case STATE_GETUSERNAME:
 		input = to_lower(input);
 		if (!is_valid_username(input)) {
 			send_out("That is not a valid username.\n");
 			pop_state();
 			return;
 		} else if (ACCOUNTD->query_is_registered(input)) {
-			send_out("That name is already taken.\n");
+			send_out("That username is already taken.\n");
 			pop_state();
 			return;
 		} else {
-			state = STATE_GETPASS;
+			state = STATE_GETPASSWORD;
 			query_user()->set_mode(MODE_NOECHO);
-			name = input;
+			username = input;
 			break;
 		}
 		break;
 
-	case STATE_GETPASS:
-		send_out("\n");
-		if (ACCOUNTD->query_is_registered(name)) {
-			send_out("Whoops, someone else just swiped the username you wanted.\n");
+	case STATE_GETPASSWORD:
+		if (ACCOUNTD->query_is_registered(username)) {
+			query_user()->set_mode(MODE_ECHO);
+			send_out("\n");
+			send_out("Oops...someone else just swiped the username you wanted.\n");
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
-		} else if (BAND->query_is_user_banned(name)) {
-			send_out("That name is banned.\n");
-			send_out(BAND->query_ban_message(name));
+		} else if (BAND->query_is_user_banned(username)) {
+			query_user()->set_mode(MODE_ECHO);
+			send_out("\n");
+			send_out("That username was just banned!\n");
+			send_out(BAND->query_ban_message(username));
 			query_user()->quit("banned");
 			return;
 		} else {
 			password = input;
-			state = STATE_CHKPASS;
-			break;
+			state = STATE_CHKPASSWORD;
+			send_out("\nConfirm password: ");
+			query_user()->set_mode(MODE_NOECHO);
+			return;
 		}
 		break;
 
-	case STATE_CHKPASS:
+	case STATE_CHKPASSWORD:
+		query_user()->set_mode(MODE_ECHO);
 		send_out("\n");
 
-		if (ACCOUNTD->query_is_registered(name)) {
+		if (ACCOUNTD->query_is_registered(username)) {
 			send_out("Whoops, someone else just swiped the username you wanted.\n");
 			query_user()->set_mode(MODE_ECHO);
 			pop_state();
 			return;
-		} else if (BAND->query_is_user_banned(name)) {
+		} else if (BAND->query_is_user_banned(username)) {
 			send_out("Whoops, the username you picked just got banned.\n");
-			send_out(BAND->query_ban_message(name));
+			send_out(BAND->query_ban_message(username));
 			query_user()->quit("banned");
 			return;
 		} else if (input != password) {
 			send_out("Password mismatch.\n");
-			query_user()->set_mode(MODE_ECHO);
+			{
+				object parent;
+
+				parent = query_parent();
+
+				if (parent <- "login") {
+					
+				}
+			}
 			pop_state();
 			return;
 		} else {
@@ -168,11 +149,11 @@ void receive_in(string input)
 			object pager;
 			string text;
 
-			ACCOUNTD->register_account(name, password);
+			ACCOUNTD->register_account(username, password);
 
-			query_user()->login_user(name);
+			query_user()->login_user(username);
 
-			ACCOUNTD->set_account_property(name, "channels", ({ "chat" }));
+			ACCOUNTD->set_account_property(username, "channels", ({ "chat" }));
 
 			pager = clone_object("page");
 			text = read_file("~/data/quickstartguide");
@@ -183,7 +164,7 @@ void receive_in(string input)
 
 			parent = query_parent();
 
-			if (instanceof(parent, "start")) {
+			if (instanceof(parent, "login")) {
 				object shell;
 
 				suspend_user();
@@ -200,12 +181,6 @@ void receive_in(string input)
 			return;
 		}
 		break;
-	}
-
-	reading = 0;
-
-	if (!stopped) {
-		prompt();
 	}
 }
 
