@@ -58,10 +58,10 @@ static void log_message_in(string source, string msg, varargs string key)
 
 	mtime = millitime();
 
-	"~/sys/logd"->post_message("log/log-" + source + "-in",
-		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + "<<< " + msg);
-	"~/sys/logd"->post_message("log/log-" + source + "-combo",
-		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + "<<< " + msg);
+	"~/sys/logd"->post_message("log/log-" + (source ? source : "(nil)") + "-in",
+		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + "<<< " + (msg ? msg : "(nil)"));
+	"~/sys/logd"->post_message("log/log-" + (source ? source : "(nil)") + "-combo",
+		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + "<<< " + (msg ? msg : "(nil)"));
 }
 
 static void log_message_out(string source, string msg, varargs string key)
@@ -70,8 +70,8 @@ static void log_message_out(string source, string msg, varargs string key)
 
 	mtime = millitime();
 
-	"~/sys/logd"->post_message("log/log-" + source + "-out",
-		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + ">>> " + msg);
-	"~/sys/logd"->post_message("log/log-" + source + "-combo",
-		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + ">>> " + msg);
+	"~/sys/logd"->post_message("log/log-" + (source ? source : "(nil)") + "-out",
+		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + ">>> " + (msg ? msg : "(nil)"));
+	"~/sys/logd"->post_message("log/log-" + (source ? source : "(nil)") + "-combo",
+		"[" + pmtime(mtime) + "] " + (key ? key  + " " : "") + ">>> " + (msg ? msg : "(nil)"));
 }
