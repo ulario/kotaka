@@ -403,10 +403,31 @@ private void do_tell(mixed *value)
 private void do_channel_m(mixed *value)
 {
 	if (CHANNELD->test_channel(value[6])) {
+		string message;
+		string newmessage;
+		int i, sz;
+
+		message = value[8];
+		newmessage = "";
+
+		for (sz = strlen(message), i = 0; i < sz; i++) {
+			string tip;
+
+			if (message[i] < ' ') {
+				tip = "^@";
+				tip[1] = message[i] + '@';
+			} else {
+				tip = " ";
+				tip[0] = message[i];
+			}
+
+			newmessage += tip;
+		}
+
 		if (to_lower(value[3]) == to_lower(value[7])) {
-			CHANNELD->post_message(value[6], value[7] + "@" + value[2], value[8], 1);
+			CHANNELD->post_message(value[6], value[7] + "@" + value[2], newmessage, 1);
 		} else {
-			CHANNELD->post_message(value[6], value[7] + " (" + value[3] + ")@" + value[2], value[8], 1);
+			CHANNELD->post_message(value[6], value[7] + " (" + value[3] + ")@" + value[2], newmessage, 1);
 		}
 	}
 }
