@@ -387,10 +387,12 @@ void destruct(varargs mixed owner_arg, mixed obj_arg)
 			obj->_F_sys_destruct();
 		}
 
-		name = obj->query_object_name();
+		if (function_object("query_object_name", obj)) {
+			name = obj->query_object_name();
 
-		if (name && CATALOGD->test_name(name) == 1) {
-			CATALOGD->remove_object(name);
+			if (name && CATALOGD->test_name(name) == 1) {
+				CATALOGD->remove_object(name);
+			}
 		}
 
 		pinfo = fetch_program_info(status(obj, O_INDEX));
