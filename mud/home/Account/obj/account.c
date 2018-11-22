@@ -111,6 +111,13 @@ int authenticate(string trial_password)
 	}
 }
 
+string *list_properties()
+{
+	ACCESS_CHECK(ACCOUNT());
+
+	return properties ? map_indices(properties) : ({ });
+}
+
 void set_property(string property, mixed value)
 {
 	ACCESS_CHECK(ACCOUNT());

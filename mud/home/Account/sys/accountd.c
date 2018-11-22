@@ -105,6 +105,17 @@ int authenticate(string name, string password)
 	return FALSE;
 }
 
+string *list_account_properties(string name)
+{
+	CHECKARG(name, 1, "list_account_properties");
+
+	if (!accounts[name]) {
+		error("No such account");
+	}
+
+	return accounts[name]->list_properties();
+}
+
 mixed query_account_property(string name, string property)
 {
 	CHECKARG(name, 1, "query_account_property");
