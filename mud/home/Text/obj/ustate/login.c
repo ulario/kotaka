@@ -303,6 +303,7 @@ void receive_in(string input)
 				register->set_username(username);
 				push_state(register);
 			}
+			break;
 
 		case "n":
 		case "no":

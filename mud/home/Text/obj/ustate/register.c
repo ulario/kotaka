@@ -63,12 +63,12 @@ void begin()
 	}
 
 	if (username) {
+		state = STATE_GETPASSWORD;
 		send_out("New password: ");
 		query_user()->set_mode(MODE_NOECHO);
-		state = STATE_GETPASSWORD;
 	} else {
-		send_out("New username: ");
 		state = STATE_GETUSERNAME;
+		send_out("New username: ");
 	}
 }
 
