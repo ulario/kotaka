@@ -32,9 +32,6 @@ string name;
 string password;
 
 int state;
-int stopped;
-int reading;
-int dead;
 
 static void create(int clone)
 {
@@ -44,19 +41,6 @@ static void create(int clone)
 static void destruct(int clone)
 {
 	::destruct();
-}
-
-private void prompt()
-{
-	switch(state) {
-	case STATE_GETPASS:
-		send_out("Please choose a password: ");
-		break;
-
-	case STATE_CHKPASS:
-		send_out("Please confirm your password: ");
-		break;
-	}
 }
 
 void set_name(string new_name)
@@ -71,33 +55,13 @@ void begin()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	state = STATE_GETPASS;
-
+	send_out("Please choose a password: ");
 	query_user()->set_mode(MODE_NOECHO);
 }
 
-void stop()
+void end()
 {
-	ACCESS_CHECK(previous_object() == query_user());
-
-	stopped = 1;
-}
-
-void go()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	stopped = 0;
-
-	if (!reading) {
-		prompt();
-	}
-}
-
-void pre_end()
-{
-	ACCESS_CHECK(previous_object() == query_user());
-
-	dead = 1;
+	destruct_object(this_object());
 }
 
 private int authorized()
@@ -107,11 +71,6 @@ private int authorized()
 	if (name != user->query_name()) {
 		switch(TEXT_SUBD->query_user_class(name)) {
 		case 4: /* owner */
-			if (user->query_username() != "admin") {
-				return 0;
-			}
-			break;
-
 		case 3: /* administrator */
 			if (user->query_username() != "admin") {
 				return 0;
@@ -133,20 +92,19 @@ void receive_in(string input)
 {
 	ACCESS_CHECK(previous_object() == query_user());
 
-	reading = 1;
-
 	switch(state) {
 	case STATE_GETPASS:
 		send_out("\n");
 
 		if (!ACCOUNTD->query_is_registered(name)) {
-			send_out("Whoops, the account you're changing the password on just poofed.\n");
 			query_user()->set_mode(MODE_ECHO);
+			send_out("That account no longer exists.\n");
 			pop_state();
 			return;
 		}
 
 		if (!authorized()) {
+			query_user()->set_mode(MODE_ECHO);
 			send_out("You are no longer authorized to change that password.\n");
 			pop_state();
 			return;
@@ -154,17 +112,19 @@ void receive_in(string input)
 
 		password = input;
 		state = STATE_CHKPASS;
-		break;
+		send_out("Please confirm your password: ");
+		return;
 
 	case STATE_CHKPASS:
 		send_out("\n");
 		query_user()->set_mode(MODE_ECHO);
 
 		if (!ACCOUNTD->query_is_registered(name)) {
-			send_out("Whoops, the account you're changing the password on just poofed.\n");
+			send_out("That account no longer exists.\n");
 			pop_state();
 			return;
 		}
+
 		if (!authorized()) {
 			send_out("You are no longer authorized to change that password.\n");
 			pop_state();
@@ -180,17 +140,5 @@ void receive_in(string input)
 			pop_state();
 			return;
 		}
-		break;
 	}
-
-	reading = 0;
-
-	if (!stopped) {
-		prompt();
-	}
-}
-
-void end()
-{
-	destruct_object(this_object());
 }

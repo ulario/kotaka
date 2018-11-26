@@ -35,7 +35,9 @@ string username;
 string password;
 int silent;
 int state;
-int bum;
+
+int stopped;
+int pending;
 
 static void create(int clone)
 {
@@ -49,10 +51,14 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	send_out("Welcome to Ulario:\n\n");
-	send_out("If you wish to connect as a guest, simply type enter.\n\n");
+	switch(state) {
+	case STATE_GETUSERNAME:
+		send_out("Login: ");
+		break;
 
-	send_out("Login: ");
+	case STATE_GETPASSWORD:
+		send_out("Password: ");
+	}
 }
 
 void begin()
@@ -65,17 +71,25 @@ void begin()
 		return;
 	}
 
+	send_out("Welcome to Ulario:\n\n");
+	send_out("If you wish to connect as a guest, simply type enter.\n\n");
+
 	state = STATE_GETUSERNAME;
 
 	prompt();
 }
 
+void stop()
+{
+	stopped = 1;
+}
+
 void go()
 {
-	if (bum) {
-		state = STATE_GETUSERNAME;
+	stopped = 0;
 
-		bum = 0;
+	if (pending) {
+		pending = 0;
 
 		prompt();
 	}
@@ -115,8 +129,7 @@ void receive_in(string input)
 
 		if (!is_valid_username(input)) {
 			send_out("That is not a valid username.\n\n");
-			send_out("Login: ");
-			return;
+			break;
 		}
 
 		username = input;
@@ -135,7 +148,6 @@ void receive_in(string input)
 		}
 
 		username = input;
-		send_out("Password: ");
 		query_user()->set_mode(MODE_NOECHO);
 		state = STATE_GETPASSWORD;
 		break;
@@ -162,7 +174,7 @@ void receive_in(string input)
 				msg = BAND->query_ban_message(username);
 
 				if (msg) {
-					send_out(msg);
+					send_out(msg + "\n");
 				}
 
 				query_user()->quit("banned");
@@ -223,7 +235,7 @@ void receive_in(string input)
 			msg = BAND->query_ban_message(username);
 
 			if (msg) {
-				send_out(msg);
+				send_out(msg + "\n");
 			}
 
 			query_user()->quit("banned");
@@ -236,11 +248,21 @@ void receive_in(string input)
 		case "yes":
 			{
 				object user;
+				object conn;
 
 				user = TEXT_USERD->find_user(username);
 
 				if (user) {
 					send_out("Evicting previous connection.\n");
+
+
+					conn = query_user()->query_conn();
+					
+					while (conn && conn <- LIB_USER) {
+						conn = conn->query_conn();
+					}
+
+					user->message("\n\nYou, or someone with your password,\nlogged into your account from " + query_ip_number(conn) + "\n");
 					user->quit("bumped");
 					ASSERT(!user);
 				} else {
@@ -259,10 +281,8 @@ void receive_in(string input)
 
 		case "n":
 		case "no":
-			{
-				query_user()->quit("quit");
-				return;
-			}
+			query_user()->quit("quit");
+			return;
 
 		default:
 			send_out("Yes or no please: ");
@@ -278,24 +298,26 @@ void receive_in(string input)
 				object register;
 
 				state = STATE_GETUSERNAME;
-				bum = 1;
 
 				register = clone_object("register");
 				register->set_username(username);
 				push_state(register);
-				return;
 			}
 
 		case "n":
 		case "no":
-			{
-				query_user()->quit("quit");
-				return;
-			}
+			query_user()->quit("quit");
+			return;
 
 		default:
 			send_out("Yes or no please: ");
 			return;
 		}
+	}
+
+	if (!stopped) {
+		prompt();
+	} else {
+		pending = 1;
 	}
 }

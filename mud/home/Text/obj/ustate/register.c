@@ -33,6 +33,8 @@ string password;
 
 int state;
 
+int pending;
+
 static void create(int clone)
 {
 	::create();
@@ -70,6 +72,11 @@ void begin()
 	}
 }
 
+void end()
+{
+	destruct_object(this_object());
+}
+
 void receive_in(string input)
 {
 	ACCESS_CHECK(previous_object() == query_user());
@@ -77,6 +84,7 @@ void receive_in(string input)
 	switch(state) {
 	case STATE_GETUSERNAME:
 		input = to_lower(input);
+
 		if (!is_valid_username(input)) {
 			send_out("That is not a valid username.\n");
 			pop_state();
@@ -89,9 +97,8 @@ void receive_in(string input)
 			state = STATE_GETPASSWORD;
 			query_user()->set_mode(MODE_NOECHO);
 			username = input;
-			break;
+			return;
 		}
-		break;
 
 	case STATE_GETPASSWORD:
 		if (ACCOUNTD->query_is_registered(username)) {
@@ -104,7 +111,7 @@ void receive_in(string input)
 		} else if (BAND->query_is_user_banned(username)) {
 			query_user()->set_mode(MODE_ECHO);
 			send_out("\n");
-			send_out("That username was just banned!\n");
+			send_out("Your username was just banned!\n");
 			send_out(BAND->query_ban_message(username));
 			query_user()->quit("banned");
 			return;
@@ -115,33 +122,22 @@ void receive_in(string input)
 			query_user()->set_mode(MODE_NOECHO);
 			return;
 		}
-		break;
 
 	case STATE_CHKPASSWORD:
 		query_user()->set_mode(MODE_ECHO);
 		send_out("\n");
 
 		if (ACCOUNTD->query_is_registered(username)) {
-			send_out("Whoops, someone else just swiped the username you wanted.\n");
-			query_user()->set_mode(MODE_ECHO);
+			send_out("Oops...someone else just swiped the username you wanted.\n");
 			pop_state();
 			return;
 		} else if (BAND->query_is_user_banned(username)) {
-			send_out("Whoops, the username you picked just got banned.\n");
+			send_out("Your username was just banned!\n");
 			send_out(BAND->query_ban_message(username));
 			query_user()->quit("banned");
 			return;
 		} else if (input != password) {
 			send_out("Password mismatch.\n");
-			{
-				object parent;
-
-				parent = query_parent();
-
-				if (parent <- "login") {
-					
-				}
-			}
 			pop_state();
 			return;
 		} else {
@@ -180,11 +176,5 @@ void receive_in(string input)
 
 			return;
 		}
-		break;
 	}
-}
-
-void end()
-{
-	destruct_object(this_object());
 }
