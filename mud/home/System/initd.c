@@ -40,6 +40,8 @@ int version_major;
 int version_minor;
 int version_patch;
 
+mixed **tasks;
+
 void console_post(string str, int level);
 void message(string str);
 
@@ -513,8 +515,35 @@ void upgrade_system()
 	call_out("upgrade_system_post_recompile", 0);
 }
 
+void enqueue_task_prefix(string path, string func, mixed args ...)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (!tasks)) {
+		tasks = ({ nil, nil });
+	}
+
+	list_push_back(tasks, ({ path, func, args }) );
+}
+
 void begin_task()
 {
+	rlimits (0; -1) {
+		while (tasks) {
+			string path;
+			string func;
+			mixed *args;
+
+			({ path, func, args }) = list_front(tasks);
+			list_pop_front(tasks);
+
+			if (list_empty(tasks)) {
+				tasks = nil;
+			}
+
+			call_other(path, func, args ...);
+		}
+	}
 }
 
 void end_task()

@@ -360,7 +360,7 @@ object select(string str)
 
 	object intercept;
 
-	int has_rlimits;
+	int has_rlimits, has_task;
 
 	object target;
 
@@ -371,6 +371,10 @@ object select(string str)
 	conn = previous_object(1);
 
 	while (conn <- LIB_USER) {
+		if (conn <- "~/obj/filter/task") {
+			has_task = 1;
+		}
+
 		if (conn <- "~/obj/filter/rlimits") {
 			has_rlimits = 1;
 		}
@@ -381,7 +385,15 @@ object select(string str)
 	intercept = TLSD->query_tls_value("System", "select-intercept");
 
 	if (intercept) {
+		if (!has_task) {
+			TLSD->set_tls_value("System", "select-intercept", user);
+
+			return clone_object("~/obj/filter/task");
+		}
+
 		if (!has_rlimits) {
+			TLSD->set_tls_value("System", "select-intercept", user);
+
 			return clone_object("~/obj/filter/rlimits", intercept->query_owner());
 		}
 
@@ -407,6 +419,12 @@ object select(string str)
 			return this_object();
 		}
 
+		if (!has_task) {
+			TLSD->set_tls_value("System", "select-intercept", user);
+
+			return clone_object("~/obj/filter/task", user->query_owner());
+		}
+
 		if (!has_rlimits) {
 			TLSD->set_tls_value("System", "select-intercept", user);
 
@@ -419,7 +437,7 @@ object select(string str)
 
 void intercept_redirect(object new_user, string str)
 {
-	int has_rlimits;
+	int has_rlimits, has_task;
 
 	object conn;
 	object user;
@@ -434,7 +452,17 @@ void intercept_redirect(object new_user, string str)
 			has_rlimits = 1;
 		}
 
+		if (conn <- "~/obj/filter/task") {
+			has_task = 1;
+		}
+
 		conn = conn->query_conn();
+	}
+
+	if (!has_task) {
+		TLSD->set_tls_value("System", "select-intercept", new_user);
+
+		new_user = clone_object("~/obj/filter/task", user->query_owner());
 	}
 
 	if (!has_rlimits) {
