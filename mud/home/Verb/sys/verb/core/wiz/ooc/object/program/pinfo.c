@@ -84,8 +84,6 @@ void main(object actor, mapping roles)
 	if (sz = sizeof(arr)) {
 		int i;
 
-		qsort(arr, 0, sz);
-
 		send_out("Inherits:\n");
 
 		for (i = 0; i < sz; i++) {
@@ -115,8 +113,6 @@ void main(object actor, mapping roles)
 
 	if (sz = sizeof(arr)) {
 		int i;
-
-		qsort(arr, 0, sz);
 
 		send_out("Includes:\n");
 
