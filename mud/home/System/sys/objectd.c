@@ -326,14 +326,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 		call_out("upgrade_object", 0, obj);
 
-		if (
-			sizeof(pinfo->query_inherited_patchers())
-			|| pinfo->query_patcher()
-		) {
-			PATCHD->mark_patch(path);
-		} else {
-			PATCHD->unmark_patch(path);
-		}
+		INITD->enqueue_task_prefix(PATCHD, "mark_patch", path);
 	} else if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		pinfo->clear_clones();
 	}
