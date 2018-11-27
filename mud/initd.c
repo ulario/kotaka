@@ -29,8 +29,15 @@ private void load()
 	load_dir("sys");
 }
 
+private void set_limits()
+{
+	reset_limits();
+}
+
 static void create()
 {
+	set_limits();
+
 	load();
 }
 
@@ -40,7 +47,7 @@ void upgrade_purge()
 
 	purge_orphans(nil);
 
-	destruct_dir("lib");
+	purge_dir("lib");
 }
 
 void upgrade_build()
@@ -53,4 +60,6 @@ void upgrade_build()
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
+
+	set_limits();
 }
