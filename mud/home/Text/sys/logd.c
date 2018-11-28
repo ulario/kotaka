@@ -65,10 +65,12 @@ static void flush()
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
 
-	while (!list_empty(buf)) {
+	if (!list_empty(buf)) {
 		string file;
 		string msg;
 		mixed *info;
+
+		call_out("flush", 0);
 
 		({ file, msg }) = list_front(buf);
 		list_pop_front(buf);
