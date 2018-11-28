@@ -25,6 +25,18 @@
 
 inherit LIB_VERB;
 
+void upgrade()
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
+}
+
 string *query_parse_methods()
 {
 	return ({ "raw" });
@@ -53,31 +65,28 @@ void main(object actor, mapping roles)
 		call_other(path, func);
 	}
 
-	call_out("lazy_allcall", 0, path, func, status(ST_OTABSIZE) - 1, time());
+	call_out("lazy_allcall", 0, path, func, status(ST_OTABSIZE), 0);
 }
 
-static void lazy_allcall(string path, string func, int oindex, varargs int time)
+static void lazy_allcall(string path, string func, int oindex, int total)
 {
-	object obj;
+	do {
+		object obj;
 
-	obj = find_object(path + "#" + oindex);
+		oindex--;
 
-	if (obj) {
-		call_other(obj, func);
-	}
+		obj = find_object(path + "#" + oindex);
 
-	if (oindex == 0) {
-		LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall finished.");
-	} else {
-		int newtime;
-
-		newtime = time();
-
-		if (time < newtime) {
-			LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall: " + oindex + " slots left to check.");
-			time = time();
+		if (obj) {
+			call_other(obj, func);
+			total++;
+			break;
 		}
+	} while (oindex > 0 && status(ST_TICKS) > 50000);
 
-		call_out("lazy_allcall", 0, path, func, oindex - 1, time);
+	if (oindex) {
+		call_out("lazy_allcall", 0, path, func, oindex - 1, total);
+	} else {
+		LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall finished, " + total + " objects called");
 	}
 }

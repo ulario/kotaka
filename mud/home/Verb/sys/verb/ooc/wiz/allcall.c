@@ -30,8 +30,8 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	mixed *st;
-	int i, sz;
-	int tcount;
+	int sz;
+	int total;
 	string path;
 	string func;
 
@@ -52,21 +52,18 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	sz = status(ST_OTABSIZE);
+	call_other(path, func);
 
-	for (i = 0; i < sz; i++) {
+	for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 		object obj;
 
-		obj = find_object(path + "#" + i);
+		obj = find_object(path + "#" + sz);
 
 		if (obj) {
-			catch {
-				call_other(obj, func);
-			}
-
-			tcount++;
+			call_other(obj, func);
+			total++;
 		}
 	}
 
-	send_out(tcount + " objects called.\n");
+	send_out(total + " objects called.\n");
 }
