@@ -521,6 +521,7 @@ void enqueue_task_prefix(string path, string func, mixed args ...)
 
 	if (!tasks) {
 		tasks = ({ nil, nil });
+		call_out("_F_dummy", 0);
 	}
 
 	list_push_back(tasks, ({ path, func, args }) );
