@@ -40,7 +40,7 @@ private void set_limits()
 	KERNELD->rsrc_set_limit("Test", "ticks", 500000000);
 }
 
-private void test()
+void test()
 {
 	"sys/bigstruct"->test();
 	"sys/struct"->test();
@@ -52,8 +52,6 @@ static void create()
 	set_limits();
 
 	load();
-
-	test();
 }
 
 static void destruct()
