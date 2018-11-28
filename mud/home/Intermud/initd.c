@@ -36,7 +36,7 @@ private void set_limits()
 {
 	reset_limits();
 
-	KERNELD->rsrc_set_limit("Intermud", "ticks", 5000000);
+	KERNELD->rsrc_set_limit("Intermud", "ticks", 10000000);
 }
 
 static void create()
