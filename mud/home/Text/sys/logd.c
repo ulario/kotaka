@@ -53,6 +53,10 @@ void post_message(string file, string msg)
 {
 	ACCESS_CHECK(TEXT());
 
+	if (!buf) {
+		buf = ({ nil, nil });
+	}
+
 	if (list_empty(buf)) {
 		call_out("flush", 0);
 	}
@@ -65,7 +69,14 @@ static void flush()
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("log");
 
-	if (!list_empty(buf)) {
+	if (!buf) {
+		return;
+	}
+
+	if (list_empty(buf)) {
+		buf = nil;
+		return;
+	} else {
 		string file;
 		string msg;
 		mixed *info;
@@ -74,6 +85,10 @@ static void flush()
 
 		({ file, msg }) = list_front(buf);
 		list_pop_front(buf);
+
+		if (list_empty(buf)) {
+			buf = nil;
+		}
 
 		if (info = SECRETD->file_info(file)) {
 			/* ({ file size, file modification time, object }) */
