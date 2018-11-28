@@ -402,28 +402,34 @@ private void do_tell(mixed *value)
 
 private void do_channel_m(mixed *value)
 {
-	if (CHANNELD->test_channel(value[6])) {
-		string message;
-		string newmessage;
-		int i, sz;
+	string message;
+	string newmessage;
+	int i, sz;
+	int cflag;
 
-		message = value[8];
-		newmessage = "";
+	message = value[8];
+	newmessage = "";
 
-		for (sz = strlen(message), i = 0; i < sz; i++) {
-			string tip;
+	for (sz = strlen(message), i = 0; i < sz; i++) {
+		string tip;
 
-			if (message[i] < ' ') {
-				tip = "^@";
-				tip[1] = message[i] + '@';
-			} else {
-				tip = " ";
-				tip[0] = message[i];
-			}
-
-			newmessage += tip;
+		if (message[i] < ' ') {
+			tip = "^@";
+			tip[1] += message[i];
+			cflag = 1;
+		} else {
+			tip = " ";
+			tip[0] = message[i];
 		}
 
+		newmessage += tip;
+	}
+
+	if (cflag) {
+		LOGD->post_message("system", LOG_WARNING, value[3] + "@" + value[2] + " sent a control character on I3 via " + value[6]);
+	}
+
+	if (CHANNELD->test_channel(value[6])) {
 		if (to_lower(value[3]) == to_lower(value[7])) {
 			CHANNELD->post_message(value[6], value[7] + "@" + value[2], newmessage, 1);
 		} else {
