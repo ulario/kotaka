@@ -356,13 +356,9 @@ int query_timeout(object LIB_CONN connection)
 
 object select(string str)
 {
-	object manager, user, conn, root;
-
-	object intercept;
-
+	object conn;
 	int has_rlimits, has_task;
-
-	object target;
+	object intercept;
 
 	/* input was received before the connection was assigned to a user object */
 
@@ -386,14 +382,10 @@ object select(string str)
 
 	if (intercept) {
 		if (!has_task) {
-			TLSD->set_tls_value("System", "select-intercept", user);
-
 			return clone_object("~/obj/filter/task");
 		}
 
 		if (!has_rlimits) {
-			TLSD->set_tls_value("System", "select-intercept", user);
-
 			return clone_object("~/obj/filter/rlimits", intercept->query_owner());
 		}
 
@@ -401,9 +393,10 @@ object select(string str)
 
 		return intercept;
 	} else {
-		root = conn;
+		object manager;
+		object user;
 
-		manager = query_manager(root);
+		manager = query_manager(conn);
 
 		if (!manager) {
 			TLSD->set_tls_value("System", "userd-error", "No connection manager");
@@ -437,10 +430,9 @@ object select(string str)
 
 void intercept_redirect(object new_user, string str)
 {
-	int has_rlimits, has_task;
-
 	object conn;
 	object user;
+	int has_rlimits, has_task;
 
 	ACCESS_CHECK(SYSTEM());
 
@@ -448,12 +440,12 @@ void intercept_redirect(object new_user, string str)
 	user = conn;
 
 	while (conn <- LIB_USER) {
-		if (conn <- "~/obj/filter/rlimits") {
-			has_rlimits = 1;
-		}
-
 		if (conn <- "~/obj/filter/task") {
 			has_task = 1;
+		}
+
+		if (conn <- "~/obj/filter/rlimits") {
+			has_rlimits = 1;
 		}
 
 		conn = conn->query_conn();
@@ -462,16 +454,22 @@ void intercept_redirect(object new_user, string str)
 	if (!has_task) {
 		TLSD->set_tls_value("System", "select-intercept", new_user);
 
-		new_user = clone_object("~/obj/filter/task", user->query_owner());
+		new_user = clone_object("~/obj/filter/task");
+
+		user->_F_sys_redirect(new_user, str);
+
+		return;
 	}
 
 	if (!has_rlimits) {
 		TLSD->set_tls_value("System", "select-intercept", new_user);
 
 		new_user = clone_object("~/obj/filter/rlimits", user->query_owner());
-	}
 
-	user->_F_sys_redirect(new_user, str);
+		user->_F_sys_redirect(new_user, str);
+
+		return;
+	}
 }
 
 /* connection hooks */

@@ -519,7 +519,7 @@ void enqueue_task_prefix(string path, string func, mixed args ...)
 {
 	ACCESS_CHECK(SYSTEM());
 
-	if (!tasks)) {
+	if (!tasks) {
 		tasks = ({ nil, nil });
 	}
 
@@ -528,6 +528,8 @@ void enqueue_task_prefix(string path, string func, mixed args ...)
 
 void begin_task()
 {
+	ACCESS_CHECK(SYSTEM());
+
 	rlimits (0; -1) {
 		while (tasks) {
 			string path;
@@ -548,4 +550,5 @@ void begin_task()
 
 void end_task()
 {
+	ACCESS_CHECK(SYSTEM());
 }
