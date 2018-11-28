@@ -532,17 +532,18 @@ void begin_task()
 	ACCESS_CHECK(SYSTEM());
 
 	rlimits (0; -1) {
-		while (tasks) {
+		mixed **active;
+
+		active = tasks;
+		tasks = nil;
+
+		while (!list_empty(active)) {
 			string path;
 			string func;
 			mixed *args;
 
-			({ path, func, args }) = list_front(tasks);
-			list_pop_front(tasks);
-
-			if (list_empty(tasks)) {
-				tasks = nil;
-			}
+			({ path, func, args }) = list_front(active);
+			list_pop_front(active);
 
 			call_other(path, func, args ...);
 		}
