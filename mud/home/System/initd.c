@@ -545,7 +545,9 @@ void begin_task()
 			({ path, func, args }) = list_front(active);
 			list_pop_front(active);
 
-			call_other(path, func, args ...);
+			catch {
+				call_other(path, func, args ...);
+			}
 		}
 	}
 }
