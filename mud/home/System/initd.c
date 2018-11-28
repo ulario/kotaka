@@ -531,6 +531,10 @@ void begin_task()
 {
 	ACCESS_CHECK(SYSTEM());
 
+	if (!tasks) {
+		return;
+	}
+
 	rlimits (0; -1) {
 		mixed **active;
 
