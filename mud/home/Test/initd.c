@@ -37,7 +37,7 @@ private void set_limits()
 {
 	reset_limits();
 
-	KERNELD->rsrc_set_limit("Test", "ticks", 500000000);
+	KERNELD->rsrc_set_limit("Test", "ticks", 1000000000);
 }
 
 void test()

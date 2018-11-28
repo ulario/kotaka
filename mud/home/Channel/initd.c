@@ -35,8 +35,6 @@ private void load()
 private void set_limits()
 {
 	reset_limits();
-
-	KERNELD->rsrc_set_limit("Channel", "callouts", 10);
 }
 
 static void create()

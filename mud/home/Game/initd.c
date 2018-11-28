@@ -52,8 +52,6 @@ private void load()
 private void set_limits()
 {
 	reset_limits();
-
-	KERNELD->rsrc_set_limit("Game", "ticks", 1000000);
 }
 
 private void create_channels()
