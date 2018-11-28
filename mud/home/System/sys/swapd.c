@@ -23,11 +23,13 @@
 #include <kotaka/log.h>
 #include <status.h>
 
-inherit SECOND_AUTO;
-
 #define K (1 << 10)
 #define M (1 << 20)
 #define G (1 << 30)
+
+inherit SECOND_AUTO;
+
+int angst;
 
 static void create()
 {
@@ -41,6 +43,8 @@ void upgrade()
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
+	angst = 0;
+
 	callouts = status(this_object(), O_CALLOUTS);
 
 	for (sz = sizeof(callouts); --sz >= 0; ) {
@@ -48,6 +52,18 @@ void upgrade()
 	}
 
 	call_out("check", 0);
+}
+
+private void remove_callouts()
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
 }
 
 static void check()
@@ -61,6 +77,10 @@ static void check()
 	int full;
 	int frag;
 	int slack;
+
+	remove_callouts();
+
+	call_out("check", 1);
 
 	smem_size = (float)status(ST_SMEMSIZE);
 	smem_used = (float)status(ST_SMEMUSED);
@@ -76,12 +96,14 @@ static void check()
 	}
 
 	if (frag && slack) {
-		LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
+		angst++;
 
-		swapout();
-
-		call_out("check", 30);
-	} else {
-		call_out("check", 1);
+		if (angst > 30) {
+			angst = 0;
+			LOGD->post_message("system", LOG_NOTICE, "Memory fragmented, swapping out");
+			swapout();
+		}
+	} else if (angst) {
+		angst--;
 	}
 }
