@@ -417,7 +417,7 @@ private void queue_sweep(string path, int master_index)
 	list_push_back(sweep_queue, ({ path, master_index, status(ST_OTABSIZE) }));
 }
 
-void mark_patch(string path)
+void mark_patch(string path, varargs int clear)
 {
 	int index;
 	object pinfo;
@@ -451,9 +451,16 @@ void mark_patch(string path)
 				clone = clones[sz];
 				sscanf(object_name(clone), "%*s#%d", cindex);
 
-				pflagdb->set_element(cindex, clone);
-				call_touch(clone);
-				queue_patch(clone);
+				if (clear) {
+					if (objdb) {
+						set_multimap(objdb, cindex, nil);
+					}
+					pflagdb->set_element(cindex, nil);
+				} else {
+					pflagdb->set_element(cindex, clone);
+					call_touch(clone);
+					queue_patch(clone);
+				}
 			}
 		} else {
 			int sz;
@@ -466,12 +473,21 @@ void mark_patch(string path)
 				clone = find_object(path + "#" + sz);
 
 				if (clone && status(clone, O_INDEX) == index) {
-					call_touch(clone);
-					pflagdb->set_element(sz, clone);
+					if (clear) {
+						if (objdb) {
+							set_multimap(objdb, sz, nil);
+						}
+						pflagdb->set_element(sz, nil);
+					} else {
+						call_touch(clone);
+						pflagdb->set_element(sz, clone);
+					}
 				}
 			}
 
-			queue_sweep(path, index);
+			if (!clear) {
+				queue_sweep(path, index);
+			}
 		}
 	}
 }
