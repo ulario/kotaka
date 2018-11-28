@@ -78,11 +78,13 @@ static void lazy_allcall(string path, string func, int oindex, int total)
 		obj = find_object(path + "#" + oindex);
 
 		if (obj) {
-			call_other(obj, func);
+			rlimits (0; 50000) {
+				call_other(obj, func);
+			}
 			total++;
 			break;
 		}
-	} while (oindex > 0 && status(ST_TICKS) > 50000);
+	} while (oindex > 0 && status(ST_TICKS) > 75000);
 
 	if (oindex) {
 		call_out("lazy_allcall", 0, path, func, oindex, total);
