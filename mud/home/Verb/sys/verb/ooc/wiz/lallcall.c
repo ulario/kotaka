@@ -85,7 +85,7 @@ static void lazy_allcall(string path, string func, int oindex, int total)
 	} while (oindex > 0 && status(ST_TICKS) > 50000);
 
 	if (oindex) {
-		call_out("lazy_allcall", 0, path, func, oindex - 1, total);
+		call_out("lazy_allcall", 0, path, func, oindex, total);
 	} else {
 		LOGD->post_message("debug", LOG_DEBUG, "Lazy allcall finished, " + total + " objects called");
 	}
