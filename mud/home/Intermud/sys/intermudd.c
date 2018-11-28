@@ -796,17 +796,6 @@ static void save()
 	SECRETD->write_file("intermud-tmp", buf + "\n");
 	SECRETD->remove_file("intermud");
 	SECRETD->rename_file("intermud-tmp", "intermud");
-
-	buf = hybrid_sprint( ([
-		"muds" : muds,
-		"channels" : channels
-	]) );
-
-	SECRETD->make_dir(".");
-	SECRETD->remove_file("intermud-aux-tmp");
-	SECRETD->write_file("intermud-aux-tmp", buf + "\n");
-	SECRETD->remove_file("intermud-aux");
-	SECRETD->rename_file("intermud-aux-tmp", "intermud-aux");
 }
 
 private void restore()
