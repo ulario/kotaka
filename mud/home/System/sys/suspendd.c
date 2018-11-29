@@ -34,6 +34,46 @@ mapping suspenders;
 
 void release_system();
 
+private void wipe_callouts()
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object());
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
+}
+
+private void work()
+{
+	object obj;
+	string func;
+	mixed *args;
+
+	if (queue && queue->empty()) {
+		if (!sscanf(object_name(queue), "%*s#-1")) {
+			destruct_object(queue);
+		} else {
+			queue = nil;
+		}
+	}
+
+	if (!queue) {
+		if (suspend) {
+			release_system();
+		}
+
+		return;
+	}
+
+	({ obj, func, args }) = queue->query_front();
+	queue->pop_front();
+
+	call(obj, func, args);
+}
+
 static void create()
 {
 }
@@ -43,26 +83,16 @@ static void destruct()
 	if (suspend) {
 		release_system();
 	}
-}
+
+	rlimits (0; -1) {
+		while (queue) {
+			work();
+		}
+	}
 
 void suspend_system()
 {
-	if (!SYSTEM()) {
-		LOGD->post_message("system", LOG_WARNING, "System suspension is deprecated.");
-	}
-
-	if (suspend) {
-		return;
-	}
-
-	suspend = 1;
-
-	if (!handle) {
-		handle = call_out("process", 0);
-	}
-
-	CALLOUTD->suspend_callouts();
-	SYSTEM_USERD->block_connections();
+	error("System suspension is not supported");
 }
 
 void release_system()
@@ -175,42 +205,11 @@ static void call(object obj, string func, mixed *args)
 
 static void process()
 {
-	object obj;
-	string func;
-	mixed *args;
+	wipe_callouts();
 
-	handle = 0;
+	if (queue && !queue->empty()) {
+		work();
 
-	catch {
-		handle = call_out("process", 0);
-	} : {
-		if (suspend) {
-			release_system();
-		}
-		return;
+		call_out("process", 0);
 	}
-
-	if (queue && queue->empty()) {
-		if (!sscanf(object_name(queue), "%*s#-1")) {
-			destruct_object(queue);
-		} else {
-			queue = nil;
-		}
-	}
-
-	if (!queue) {
-		if (suspend) {
-			release_system();
-		}
-
-		remove_call_out(handle);
-		handle = 0;
-
-		return;
-	}
-
-	({ obj, func, args }) = queue->query_front();
-	queue->pop_front();
-
-	call(obj, func, args);
 }
