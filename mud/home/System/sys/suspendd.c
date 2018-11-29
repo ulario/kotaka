@@ -33,6 +33,7 @@ object queue;
 mapping suspenders;
 
 void release_system();
+static void call(object obj, string func, mixed *args);
 
 private void wipe_callouts()
 {
@@ -89,6 +90,7 @@ static void destruct()
 			work();
 		}
 	}
+}
 
 void suspend_system()
 {
