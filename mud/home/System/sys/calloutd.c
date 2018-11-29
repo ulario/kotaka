@@ -43,7 +43,17 @@ private mixed *release();
 private void alloc_queue();
 private void free_queue();
 
-/* private */
+private void wipe_callouts()
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object());
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
+}
 
 static void create()
 {
@@ -52,9 +62,31 @@ static void create()
 
 static void destruct()
 {
-	dead = 1;
-
 	RSRCD->release_callouts();
+	RSRCD->release_callout(nil, 0);
+
+	wipe_callouts();
+
+	rlimits (0; -1) {
+		for (;;) {
+			object obj;
+			int chandle;
+
+			({ obj, chandle }) = release();
+
+			if (chandle == -1) {
+				break;
+			}
+
+			if (obj) {
+				catch {
+					RSRCD->release_callout(obj, chandle);
+				}
+			}
+		}
+	}
+
+	free_queue();
 }
 
 private int object_index(object obj)
