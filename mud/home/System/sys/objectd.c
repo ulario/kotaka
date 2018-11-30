@@ -226,8 +226,10 @@ static void destruct_object(object obj)
 	}
 }
 
-static void upgrade_object(object obj)
+void upgrade_object(object obj)
 {
+	ACCESS_CHECK(SYSTEM() || KERNEL());
+
 	if (obj && function_object("upgrade", obj)) {
 		obj->upgrade();
 	}
@@ -327,7 +329,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 			}
 		}
 
-		call_out("upgrade_object", 0, obj);
+		INITD->enqueue_task_prefix(OBJECTD, "upgrade_object", obj);
 
 		patcher = pinfo->query_patcher();
 		patchers = pinfo->query_inherited_patchers();
