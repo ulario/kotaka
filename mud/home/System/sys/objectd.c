@@ -667,12 +667,14 @@ void reset()
 {
 	ACCESS_CHECK(PRIVILEGED() || VERB());
 
-	rlimits (0; 1000000000) {
-		progdb = new_object(SPARSE_ARRAY);
+	rlimits (0; -1) {
+		rlimits (0; 1000000000) {
+			progdb = new_object(SPARSE_ARRAY);
 
-		register_ghosts();
-		discover_clones();
-		discover_objects();
+			register_ghosts();
+			discover_clones();
+			discover_objects();
+		}
 	}
 }
 
