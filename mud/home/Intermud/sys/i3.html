@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)https://wotf.org/specs/i3.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>https://wotf.org/specs/i3.html</title>
+  <link rel="stylesheet" type="text/css" href="./i3_files/menu.css">
+  <link rel="stylesheet" type="text/css" href="./i3_files/content.css">
+  <script src="./i3_files/menu.js" type="text/javascript" language="javaScript">
+  </script>
+
+  <script type="text/javascript" language="javascript">
+
+<!--
+  function init() {
+    initialize();
+    plainLayout();
+  }
+-->
+  </script>
+
+</head>
+<body onload="init()">
+<div class="titlebar">
+   <div class="titleleft">
+      <img src="./i3_files/jleft.png">
+   </div>
+   <div class="titletext">
+      Way of the Force
+   </div>
+</div>
+<div class="menubar" id="menubar" style="display: block;">
+<div class="spacer"> </div>
+<div class="menubar-inner">
+<div class="menubar-item" onmouseover="triggerOpen(&#39;game&#39;)" onmouseout="mouseLeftMenu(this)">
+  <a href="javascript:toggleMenu(&#39;game&#39;)" title="menu: game">Game</a>
+  <div class="menubox" id="game-menu-box">
+    <a href="https://wotf.org/">Home</a>
+    <a href="https://wotf.org/news.txt">News</a>
+    <a href="https://wotf.org/help/">Documentation</a>
+    <a href="https://wotf.org/mud/who">Who is online</a>
+  </div>
+</div>
+<div class="menubar-item" onmouseover="triggerOpen(&#39;intermud&#39;)" onmouseout="mouseLeftMenu(this)">
+  <a href="javascript:toggleMenu(&#39;intermud&#39;)" title="menu: intermud">Intermud 3</a>
+  <div class="menubox" id="intermud-menu-box">
+    <a href="https://wotf.org/i3/">Introduction</a>
+    <a href="https://wotf.org/mud/mudlist">Mudlist</a>
+    <a href="https://wotf.org/specs/mudmode.html">Mudmode spec</a>
+    <a href="https://wotf.org/specs/i3.html">I3v3 spec</a>
+    <a href="https://wotf.org/i3/irn/v1/">IRNv1 spec</a>
+    <a href="https://wotf.org/i3/irn/v2/">IRNv2 spec</a>
+  </div>
+</div>
+<div class="menubar-item" onmouseover="triggerOpen(&#39;misc&#39;)" onmouseout="mouseLeftMenu(this)">
+  <a href="javascript:toggleMenu(&#39;misc&#39;)" title="menu: misc">Misc</a>
+  <div class="menubox" id="misc-menu-box">
+    <a href="https://wotf.org/downloads/">Downloads</a>
+    <a href="http://fortune.wotf.org/docs?codebase=dgd">LPC documentation</a>
+    <a href="http://fortune.wotf.org/">Fortune database</a>
+  </div>
+</div>
+</div>
+</div> <!-- end of menubar -->
+<div class="spacer2"> </div>
+<div class="content" id="content" style="display: block;">
+<div class="content-body-left" style="width: 90%;">
+
+<title>Intermud-3: a Proposal for The Future</title>
+
+
+
+
+<h1>Intermud-3: a Proposal for The Future</h1>
+
+<font size="2">Initial protocol design by:
+<ul>
+<li>Greg Stein (<a href="mailto:gstein@svpal.org">gstein@svpal.org</a>)
+</li><li>John Viega (<a href="mailto:rust@virginia.edu">rust@virginia.edu</a>)
+</li><li>Tim Hollebeek
+(<a href="mailto:tim@handel.princeton.edu">tim@handel.princeton.edu</a>)
+</li></ul>
+Please forward discussion to the Intermud mailing list at
+<a href="mailto:intermud@imaginary.com">intermud@imaginary.com</a>.
+You may subscribe by mailing
+<a href="mailto:majordomo@imaginary.com">majordomo@imaginary.com</a>.
+Place "<kbd>subscribe intermud</kbd>" in the body.
+</font><p><font size="2">
+</font>
+
+</p><hr>
+This document details a proposal for a future generation
+of Intermud protocols.  It is designed to use the high level
+communication facilities
+provided by the MudOS LP driver.
+Other drivers may be capable of handling the
+communication protocol, but this proposal does not focus on them.
+See <a href="https://wotf.org/specs/i3.html#other">Other Drivers</a>
+for a possible scheme to include them into
+the Intermud as defined by this proposal.
+<p>
+This document has the following sections:
+</p><ul>
+<li><a href="https://wotf.org/specs/i3.html#imps">Contributors and Implementors</a> :
+        lists the contributors to this specification and people who have
+        created I3 implementations (for public or private release)
+</li><li><a href="https://wotf.org/specs/i3.html#network">Logical Network Layout</a> :
+        describes how the muds connect to each other
+</li><li><a href="https://wotf.org/specs/i3.html#formats">Packet Format</a> :
+        describes the basic format of all packets
+</li><li><a href="https://wotf.org/specs/i3.html#services">Services</a> :
+        describes the services available
+</li><li><a href="https://wotf.org/specs/i3.html#support">Support Packets</a> :
+        describes additional packet types for maintainance purposes
+</li><li><a href="https://wotf.org/specs/i3.html#oob">OOB Protocols</a> :
+        describes the protocols used for OOB communications
+</li><li><a href="https://wotf.org/specs/i3.html#router">Router Design</a> :
+        describes the design of the routers
+</li><li><a href="https://wotf.org/specs/i3.html#other">Other Drivers/Mudlibs</a> :
+        describes an approach that could be used to include
+        non-MudOS drivers
+</li><li><a href="https://wotf.org/specs/i3.html#errors">Error Summary</a> :
+        quick summary of the error codes used
+</li><li><a href="https://wotf.org/specs/i3.html#types">Packet Types Summary</a> :
+        quick summary of the packets that are used
+</li><li><a href="https://wotf.org/specs/i3.html#compressed">Compressed Mode</a> :
+        describes a scheme for compressing the transmitted data
+</li><li><a href="https://wotf.org/specs/i3.html#changelog">Change Log</a> :
+        lists recent changes to the specification
+</li></ul>
+
+<hr>
+<h2><a name="imps">Contributors and Implementors</a></h2>
+
+Many people have contributed to this specification.  This is an attempt
+to list those people who have helped in some way or another.  Also, there
+are a number of implementations out there now.  This list should help with
+locating resources for picking up an implementation for for finding
+people who have an implementation similar to your needs.
+ <p>
+Contributors:
+</p><ul>
+<li> As mentioned at the head of this page, the core designers of this
+protocol were:
+<ul>
+<li>Deathblade (Greg Stein, <a href="mailto:gstein@svpal.org">gstein@svpal.org</a>)
+</li><li>Rust (John Viega, <a href="mailto:rust@virginia.edu">rust@virginia.edu</a>)
+</li><li>Beek (Tim Hollebeek,
+<a href="mailto:tim@handel.princeton.edu">tim@handel.princeton.edu</a>)
+</li></ul>
+ <p>
+</p></li><li> Descartes
+(George Reese, <a href="mailto:borg@imaginary.com">borg@imaginary.com</a>)<br>
+Descartes contributed in a number of areas, particularly as one of the
+pioneer implementors after the initial development by the Lima Mudlib team.
+ <p>
+</p></li><li> Deathknight
+(Jesse McClusky, <a href="https://wotf.org/specs/thought@weblink.org">thought@weblink.org</a>)<br>
+Deathknight was the original contributor of the central router-based,
+backbone design of the current I3 system.
+ <p>
+</p></li></ul>
+There are, of course, many other contributors who offered input both
+at the conference in February '95 and on the intermud mailing list.
+Their omission is not by design, but because informartion wasn't available
+at the time of this writing (they didn't provide info).
+ <p>
+
+Implementations:
+</p><ul>
+<li> The <a href="http://lima.imaginary.com/">Lima Mudlib</a> contains
+an implementation of the Intermud-3 system (written by Deathblade).  This
+was the first implementation
+to exist and is one of the few that is readily and publically available
+for use by other systems.  It was implemented for the MudOS v22 driver.
+It is publically available at:
+<a href="ftp://ftp.imaginary.com/lib/LIMA">ftp://ftp.imaginary.com/lib/LIMA</a>
+ <p>
+</p></li><li> The
+<a href="http://www.imaginary.com/LPC/Nightmare/">Nightmare Object Library</a>
+also contains an implementation of
+the Intermud-3 system (written by Descartes).  This implementation is
+also one of the oldest around,
+originating soon after the Lima version and first appearing in the release
+of Nightmare IV.
+ <p>
+The Intermud-3 system for Nightmare (and Foundation) has also been pulled
+out into its own package, available at:
+<a href="ftp://ftp.imaginary.com/pub/LPC/etc/Intermud3.tar.gz">ftp://ftp.imaginary.com/pub/LPC/etc/Intermud3.tar.gz</a>.
+ </p><p>
+</p></li><li> Terry
+(Terry Penn, <a href="mailto:aurora@openix.com">aurora@openix.com</a>) has
+created two implementations of the Intermud-3 system.
+<ul>
+<li> One is for Shadow's Edge running LPMUD 3.2.1@122
+</li><li> Another for MudOS v22a18
+</li></ul>
+Both of these are running on custom mudlibs and are not generally available.
+ <p>
+
+</p></li><li> Logic
+(Edward Marshall, <a href="mailto:logic@common.net">logic@common.net</a>)
+has written an implementation for LPmud 3.2.1 for the private mudlib
+EOTSlib.  He has potential plans for a public release of the I3 package.
+ <p>
+
+</p></li><li> Skylight (Patrick Li,
+<a href="mailto:pli@shell.portal.com">pli@shell.portal.com</a>)<br>
+Hanzou (James Donald Jr.,
+<a href="mailto:hanzou@echeque.com">hanzou@echeque.com</a>)<br>
+They have written a version for LPmud 3.2.1@98 (or later).  The package is
+primarily aimed for 2.4.5 mudlibs and is available at:
+<a href="ftp://ftp.netcom.com/pub/ja/jamesd/lpmud/amylaar-intermud3-latest.tar.gz">ftp://ftp.netcom.com/pub/ja/jamesd/lpmud/amylaar-intermud3-latest.tar.gz</a>
+ <p>
+
+</p></li><li> Deathblade and Cowl (Hal Schechner,
+<a href="mailto:cowl@orion.tyler.net">cowl@orion.tyler.net</a>) designed
+and implementated the Intermud-3 router currently in use at
+athens.imaginary.com.
+ <p>
+
+</p></li></ul>
+
+As always, there are many others out there, but they have not submitted
+information yet for inclusion here.
+ <p>
+
+</p><hr>
+<h2><a name="network">Logical Network Layout</a></h2>
+The logical network of muds is organized into a set of fully
+connected routers each acting as a hub for an arbitrary
+set of muds.
+<p>
+
+A mud has a "preferred" router, but will be told and will
+record information about all
+routers in existence (for failover in case the preferred
+is down).  A mud's preferred router may be changed
+programatically to handle load balancing among routers.
+</p><p>
+
+The routers open and maintain TCP sessions (using MudOS's "MUD"
+mode) to each of the
+other routers (fully connected network).  Each router will
+hold a list of all muds within the intermud and which router the mud
+is connected to.
+</p><p>
+
+An active TCP session (in MUD mode) is maintained between a mud
+and its router.
+The mud is responsibile for opening (see the
+<a href="https://wotf.org/specs/i3.html#startup-req-2">startup-req-2</a> packet),
+maintaining, reconnecting, and
+shutting down this session.  A graceful exit will cause the router to
+propogate information about the "down" state of the mud to the
+other routers and muds on the intermud.  A dropped connection
+will wait 5 minutes before delivering "down" state notification (this
+5 minutes is provided for the mud to reconnect).  A mud is removed
+after 7 days of being in the down state.
+</p><p>
+
+The network of TCP sessions between the routers and muds will
+be used for "in band" transmissions.  The data carried over these
+connections will be limited to "fast response" messages.  Some
+services will be carried off of this network and are called "out
+of band" (OOB) transmissions.
+</p><p>
+
+Each mud will listen at a TCP port for incoming connections
+for processing OOB transmissions.  At the moment,
+the services that use the OOB transmissions are mail, news, and
+file transfers.  Connections will be opened as needed and closed when
+the transmission completes.
+</p><p>
+
+Lastly, each mud may maintain a UDP port for some specific OOB
+transmissions.  At the moment, though, there are no UDP-based OOB
+services, so this port is typically not opened.
+
+</p><h3>MUD Naming</h3>
+For proper identification within the Intermud network, muds must
+use a canonical naming system.  The canonical name is defined to
+be the mud's actual name (properly capitalized, with spaces, etc).
+Examples: <em>Quendor</em>, <em>Idea Exchange</em>.  These names
+will be used in the mudlist and in all packet routing.  The case
+is significant, although the routers may (?) disallow two muds
+with the same name, but with different casing.
+<p>
+
+Routers will have names assigned to them; there are a few
+cases where a router must be referenced.  routers will
+be distinguished from muds with a leading asterisk (such as
+<em>*nightmare</em>). Muds may not define a name with a leading
+asterisk if they wish to be a part of the Intermud.
+</p><p>
+
+</p><hr>
+<h2><a name="formats">Packet Format</a></h2>
+Transmissions are LPC arrays with a predefined set of six initial
+elements:
+<code>({ <var>type</var>, <var>ttl</var>, <var>originator mudname</var>,
+<var>originator username</var>, <var>target mudname</var>,
+<var>target username</var>, ... })</code>.<p>
+
+<var>type</var> describes the type of the packet.
+See <a href="https://wotf.org/specs/i3.html#types">Packet Types</a> for a summary of the
+packet types used in this protocol.</p><p>
+
+<var>ttl</var> is the packet's Time To Live (TTL).
+This is similar to an IP packet's TTL - it specifies the number of
+hops left to a packet.  This may not be absolutely necessary, but
+provides a mechanism to handle the case where the routers
+mis-route a packet into an endless loop.  Eventually, it will
+time out and be removed from the network.</p><p>
+
+<var>originator mudname</var> is used to indicate the mud where
+the packet originated.  If the packet cannot be delivered for
+some reason, this mud will be notified, if possible.</p><p>
+
+<var>originator username</var> is used to indicate the user that
+triggered the delivery of the packet. If the mud itself sent the
+packet (e.g. mail delivery or shutdown notification), then the
+username will be 0.  The username should be in lower-case.
+</p><p>
+
+<var>target mudname</var> is used to route the packet to the
+appropriate destination mud. Zero is used
+to indicate broadcast packets.</p><p>
+
+<var>target username</var> is used to route the packet to a
+particular user on a remote mud.  The username may be 0 if
+the packet is targeted for the mud itself rather than a
+specific user.  This should always be in lower-case.  The target
+mud will attempt to find the user with whatever appropriate means.
+</p><p>
+
+Many packets will specify a <var>visname</var>.  This is a user's
+"visible" name - the name which should be displayed to other users.
+Typically, this is equivalent to the username with altered capitalization,
+but may actually be quite arbitrary with respect to the username.
+</p><p>
+
+</p><hr>
+<h2><a name="services">Services</a></h2>
+There are eleven services covered by this proposal:
+<ul>
+<li><a href="https://wotf.org/specs/i3.html#tell">tell</a> :
+        send a message to a user on a remote mud
+
+</li><li><a href="https://wotf.org/specs/i3.html#emoteto">emoteto</a> :
+        send an emote to a user on a remote mud
+
+</li><li><a href="https://wotf.org/specs/i3.html#who">who</a> :
+        get a list of users on a remote mud
+
+</li><li><a href="https://wotf.org/specs/i3.html#finger">finger</a> :
+        get information about a particular user on a remote mud
+
+</li><li><a href="https://wotf.org/specs/i3.html#locate">locate</a> :
+        locate a player on a remote mud(s)
+
+</li><li><a href="https://wotf.org/specs/i3.html#channel">channel</a> :
+        send a string/emote/soul between muds
+
+</li><li><a href="https://wotf.org/specs/i3.html#news">news</a> :
+        propogate news posts between muds
+
+</li><li><a href="https://wotf.org/specs/i3.html#mail">mail</a> :
+        propogate mail items between muds
+
+</li><li><a href="https://wotf.org/specs/i3.html#file">file</a> :
+        transfer a file between muds
+
+</li><li><a href="https://wotf.org/specs/i3.html#auth">auth</a> :
+        perform mud or user authentication
+
+</li><li><a href="https://wotf.org/specs/i3.html#ucache">ucache</a> :
+        cache information about remote users
+
+</li></ul>
+
+<h3><a name="tell">Service: tell</a></h3>
+The originator will deliver the following packet to the target
+mud over the in-band
+network (to its router):
+<pre>    ({
+        (string) "tell",
+        (int)     5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) target_mudname,
+        (string) target_username,
+        (string) orig_visname,
+        (string) message
+    })</pre>
+At the target mud, the message will be delivered to target_username.
+The orig_visname is told to the target_username to indicate who sent
+the message; it is usually combined with the originator_mudname as:
+<code>sprintf("%s@%s", orig_visname, originator_mudname)</code>.
+<p>
+
+The target_username should be lower-cased by the originating mud.
+</p><p>
+
+If the router fails to deliver the packet for some reason, it will
+return an <a href="https://wotf.org/specs/i3.html#error">error</a> packet.
+
+</p><h3><a name="emoteto">Service: emoteto</a></h3>
+The originator will deliver the following packet to the target
+mud over the in-band
+network (to its router):
+<pre>    ({
+        (string) "emoteto",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) target_mudname,
+        (string) target_username,
+        (string) orig_visname,
+        (string) message
+    })</pre>
+At the target mud, the message will be delivered to target_username
+with the appropriate formatting.  The message will contain $N tokens
+for substituting the originator's name.  This name is typically
+formatted using:
+<code>sprintf("%s@%s", orig_visname, originator_mudname)</code>.
+<p>
+
+The target_username should be lower-cased by the originating mud.
+</p><p>
+
+A simple example would be a message such as, "$N smiles at you." which
+would be transformed into something like, "Joe@PutzMud smiles at you."
+</p><p>
+
+If the router or target mud fails to deliver the packet for some
+reason, it will
+return an <a href="https://wotf.org/specs/i3.html#error">error</a> packet.
+
+</p><h3><a name="who">Service: who</a></h3>
+The originator will deliver the following packet over the in-band
+network (to its router):
+<pre>    ({
+        (string) "who-req",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) target_mudname,
+        (string) 0
+    })</pre>
+The router will route
+the packet to another router or to the target mud.  The target
+mud returns:
+<pre>    ({
+        (string)  "who-reply",
+        (int)     5,
+        (string)  originator_mudname,
+        (string)  0,
+        (string)  target_mudname,
+        (string)  target_username,
+        (mixed *) who_data
+    })</pre>
+where <var>who_data</var> is an array containing an array
+of the following format for each user on the mud:
+<pre>    ({
+        (string)  user_visname,
+        (int)     idle_time,
+        (string)  xtra_info
+    })</pre>
+Each <var>user_visname</var> should specify the user's visual name.
+<var>idle_time</var> should be measured in seconds and
+<var>xtra_info</var> should be a string.
+<p>
+
+If the router fails to deliver the packet for some reason, it will
+return an <a href="https://wotf.org/specs/i3.html#error">error</a> packet.
+
+</p><h3><a name="finger">Service: finger</a></h3>
+Finger operates similarly to <a href="https://wotf.org/specs/i3.html#who">who</a> but returns
+information about a specific user rather than all users logged
+into the mud.  This service uses the in-band network; the packet
+has the following format:
+<pre>    ({
+        (string) "finger-req",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) target_mudname,
+        (string) 0,
+        (string) username
+    })</pre>
+Note: technically, we could use the target_username field to hold
+the name of the person to finger, but we do not wish to imply that
+the packet is <em>destined</em> for that user. The packet is only
+querying information about the user.
+<p>
+
+The target mud will return:
+</p><pre>    ({
+        (string) "finger-reply",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,
+        (string) target_username,
+        (string) visname,
+        (string) title,
+        (string) real_name,
+        (string) e_mail,
+        (string) loginout_time,
+        (int)    idle_time,
+        (string) ip_name,
+        (string) level,
+        (string) extra  // eg, a .plan file, or any other relevant info
+    })</pre>
+A mud may return 0 for any item if they wish to keep the information
+private.  In particular, it is suggested that information about
+players (as opposed to wizards) be kept confidential.
+<p>
+
+The returned <var>visname</var> should contain the user's visual name.
+<var>loginout_time</var> specifies the (local) time the user logged in
+(if they are currently on) or the time the user logged out.  The
+value should be expressed as a string.  It
+should be 0 to
+indicate no information.  The <var>idle_time</var> is expressed as
+an integer number of seconds of idle time.  If this value is -1, then
+the user is not logged onto the mud at the moment.
+</p><p>
+
+If <var>extra</var> is given, then it should be terminated with a
+carriage return.
+</p><p>
+
+</p><h3><a name="locate">Service: locate</a></h3>
+This service locates a particular user on the Intermud system.
+The following packet is delivered over the in-band network (to the
+mud's router), which
+then delivers it to all muds (target_mudname == 0):
+<pre>    ({
+        (string) "locate-req",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) 0,
+        (string) 0,
+        (string) username
+    })</pre>
+
+<strong>If</strong> the requested user is logged into the
+receiving mud, then the following reply is returned:
+<pre>    ({
+        (string) "locate-reply",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,
+        (string) target_username,
+        (string) located_mudname,
+        (string) located_visname,
+        (int)    idle_time,
+        (string) status,
+    })</pre>
+
+<var>located_visname</var> should contain the correct visual name
+of the user. <var>idle_time</var> will have the idle time (in seconds)
+of the located user.
+ <p>
+
+<var>status</var> specifies any special status of the user.  This will
+typically be zero to indicate that the user has no special status.
+The values for this string are arbitrary, but certain statuses have
+predefined values that can be used:
+</p><ul>
+<li> "link-dead"
+</li><li> "editing"
+</li><li> "inactive"
+</li><li> "invisible"
+</li><li> "hidden"
+</li></ul>
+
+These predefined values are intended to cover those statuses that
+might modify a user's reception of Intermud transmissions; they are
+not intended to be all-inclusive (and the string is arbitrary in any case).
+The predefined way to specify multiple attributes is with a
+comma-space-separated list such as: "editing, hidden".  The located mud
+should not attempt to apply special formatting or other characters,
+instead leaving that to the receiving mud.
+ <p>
+Other examples for the status string might be "afk for dinner" or
+"taking a test".
+ </p><p>
+
+</p><h3><a name="channel">Service: channel</a></h3>
+There are two types of channels in the Intermud system:
+selective admission and selective banning.  All channels
+are owned by a particular mud and are adminstrated by that
+mud only.  The owner of a channel may also choose to filter
+the channel, although this may subject that mud to an increased
+load for processing the channel contents and the channel will
+become unavailable when the host mud is down.
+<p>
+
+The routers maintain three channel lists - one list for each
+type of channel (selective admission vs banning) where the channel
+is unfiltered, and one list for selective admission, filtered
+channels.  Selectively banned, filtered channels are not allowed.
+For each channel, the router will store which type it is
+(what list it is on), the owning mud of the channel, and a list
+of muds that are admitted/banned.
+</p><p>
+
+When a mud sends a startup-req-2 packet, it includes its chanlist-id
+in the packet.  The router will potentially respond with a chanlist-reply
+message to update the mud's channel list.
+</p><p>
+
+The router will respond to channel list changes with the
+chanlist-reply packet.
+</p><pre>    ({
+        (string)  "<a name="chanlist-reply">chanlist-reply</a>",
+        (int)     5,
+        (string)  originator_mudname,     // the router
+        (string)  0,
+        (string)  target_mudname,
+        (string)  0,
+        (int)     chanlist_id,
+        (mapping) channel_list
+    })</pre>
+<var>channel_list</var> is mapping with channel names as keys,
+and an array of two elements as the values. If the value is
+0, then the channel has been deleted.
+The array contains the
+host mud, and the type of the channel:
+<a name="channel-type-list"><pre>        0  selectively banned
+        1  selectively admitted
+        2  filtered (selectively admitted)
+</pre></a>
+All channel messages are delivered to the router.  It will then
+pass the message to the appropriate set of muds.  If the channel
+is filtered, then the packet will be delivered to the host mud for
+filtering; it will then return to the router network for
+distribution.  It is assumed that a channel packet for a filtered
+channel that comes from the channel host has been filtered.
+<p>
+
+Channel messages come in three flavors: standard messages, emotes, and
+targetted emotes.
+These use packets channel-m, channel-e, and channel-t, respectively.
+They are:
+</p><pre>    ({
+        (string) "<a name="channel-m">channel-m</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) 0,
+        (string) 0,
+        (string) channel_name,
+        (string) visname,
+        (string) message
+    })</pre>
+<pre>    ({
+        (string) "<a name="channel-e">channel-e</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) 0,
+        (string) 0,
+        (string) channel_name,
+        (string) visname,
+        (string) message
+    })</pre>
+<pre>    ({
+        (string) "<a name="channel-t">channel-t</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) 0,
+        (string) 0,
+        (string) channel_name,
+        (string) targetted_mudname,
+        (string) targetted_username,
+        (string) message_others,
+        (string) message_target,
+        (string) originator_visname,
+        (string) target_visname
+    })</pre>
+When a mud receives a channel-m packet, it should deliver it locally
+to all listeners.  The actual message delivered to users should be
+a composition of the originator_mudname, visname,
+channel_name, and message.  The message should not be preformatted
+with this information before delivery so that individual muds can
+define the display semantics. A suggested format is:
+<pre>[gwiz] John@Doe Mud: help me! help me! I am a cluebie newless!
+</pre>
+This was composed with:
+<p>
+<code>
+sprintf("[%s] %s@%s: %s", channel_name, visname,
+originator_mudname, message);
+</code>
+</p><p>
+
+channel-e packets are similar to channel-m packets, but the message
+has a token in it to represent where the originator's name should be.
+This token is $N.  An example is "$N smiles."</p><p>
+### need more info here ###
+</p><p>
+
+When a mud receives a channel-t packet, it should deliver the
+message locally to all listeners.  The actual message delivered
+should be a composition of the channel_name and one of message_others
+or message_target.  The messages will include $N and $O for the name
+of the originator and the object/target of their emote.
+The appropriate message
+is selected based on the listener - if the listener matches
+the targetted mud/user, then the message_target should be used.
+A suggested format is:
+</p><pre>[gwiz] With a flying leap, John@Doe Mud falls into the pit.
+[gwiz] Jane@BlandMud waves to Goober@PutzMud.
+[gwiz] Jane@BlandMud waves to you.
+</pre>
+These were composed with:
+<p>
+<code>
+sprintf("[%s] %s", channel_name, one_of_the_messages);
+</code>
+</p><p>
+### need a bit more on channel-t ###
+</p><p>
+
+All messages should
+<em>not</em> be terminated with a newline - that will be applied
+on the receiving mud if necessary. The <var>target_username</var>
+should be in lower-case if provided.
+</p><p>
+
+A channel may be added with the following packet:
+</p><pre>    ({
+        (string) "<a name="channel-add">channel-add</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) target_mudname,         // the router
+        (string) 0,
+        (string) channel_name,
+        (int)    channel_type
+    })</pre>
+The for <var>channel_type</var> field accepts the
+<a href="https://wotf.org/specs/i3.html#channel-type-list">same values</a> that the
+name server returns for channels. Sending this packet again with a new
+value for channel_type will change the information.
+<p>
+A channel may be removed by the mud that created it by sending the
+following packet:
+</p><pre>    ({
+        (string) "<a name="channel-remove">channel-remove</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) target_mudname,         // the router
+        (string) 0,
+        (string) channel_name
+    })</pre>
+<p>
+
+To administer a channel, the channels host/owner mud may use the
+following packet:
+</p><pre>    ({
+        (string)   "<a name="channel-admin">channel-admin</a>",
+        (int)      5,
+        (string)   originator_mudname,
+        (string)   originator_username,
+        (string)   target_mudname,         // the router
+        (string)   0,
+        (string)   channel_name,
+        (string *) add_to_list,
+        (string *) remove_from_list
+    })</pre>
+The muds specified in <var>add_to_list</var> are added to the
+allowed/banned list stored within the router network.  The
+muds specified in <var>remove_from_list</var> are removed from
+that list.
+<p>
+
+To filter a channel, the following packets will be used :
+</p><pre>    ({
+        (string)   <a name="chan-filter-req">"chan-filter-req"</a>,
+        (int)      5,
+        (string)   originator_mudname,     // the router
+        (string)   0,
+        (string)   target_mudname,         // the owner/host mud
+        (string)   0,
+        (string)   channel_name,
+        (mixed *)  packet_to_filter,
+    })
+</pre>
+Where <var>packet_to_filter</var> is a channel-m, channel-e or
+channel-t packet.
+<p>
+
+The filtered packet is returned to the router in the following packet :
+</p><pre>    ({
+        (string)   <a name="chan-filter-reply">"chan-filter-reply"</a>,
+        (int)      5,
+        (string)   originator_mudname,    // The channel host/owner mudname
+        (string)   0,
+        (string)   target_mudname,        // the router
+        (string)   0,
+        (string)   channel_name,
+        (mixed *)  filtered_packet,
+    })</pre>
+<p>
+
+A list of who is listening to a channel on a remote mud may be requested
+with the following packet:
+</p><pre>    ({
+        (string) "<a name="chan-who-req">chan-who-req</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) target_mudname,
+        (string) 0,
+        (string) channel_name
+    })</pre>
+<p>
+The reply for the who request takes the following format:
+</p><pre>    ({
+        (string)   "<a name="chan-who-reply">chan-who-reply</a>",
+        (int)      5,
+        (string)   originator_mudname,
+        (string)   0,
+        (string)   target_mudname,
+        (string)   target_username,
+        (string)   channel_name,
+        (string *) user_list
+    })</pre>
+The user_list should be an array of strings, representing the
+users' "visual" names.
+<p>
+        
+A mud may decide whether or not it is listening to any given
+channel by sending a channel-listen packet.  This packet is also
+used to tune out a channel, which should be done whenever no one
+on the mud is listening to the channel.  The format of this
+packet is:
+</p><pre>    ({
+        (string) "<a name="channel-listen">channel-listen</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,         // the router
+        (string) 0,
+        (string) channel_name,
+        (int)    on_or_off
+    })</pre>
+The <var>on_or_off</var> will contain one of the following values:
+<pre>        0 The mud does not wish to receive this channel.
+        1 The mud wishes to receive this channel.
+</pre>
+<p>
+
+Lastly, for targetted emotes, it is necessary to get information on
+the target.  There are two pieces of information required: the visname
+and the gender of the target.  This operation is performed with the
+following packets:
+</p><pre>    ({
+        (string) "<a name="chan-user-req">chan-user-req</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,
+        (string) 0,
+        (string) username
+    })</pre>
+<p>
+Note that the username is separate since the packet is not targetted
+<em>to</em> the user.
+</p><p>
+
+The reply for the user info request takes the following format:
+</p><pre>    ({
+        (string) "<a name="chan-user-reply">chan-user-reply</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,
+        (string) 0,
+        (string) username,
+        (string) visname,
+        (int)    gender
+    })</pre>
+The gender takes one of the following values:
+<a name="gender-value-list"><pre>        0  male
+        1  female
+        2  neuter
+</pre></a>
+Note that a mud may have more variants on gender, but most human
+languages only have three forms at most.  These are used to select
+the appropriate pronouns, possessives, and reflexive words.
+<p>
+
+</p><h3><a name="news">Service: news</a></h3>
+### work to do here... this is an OOB service, also employing the
+auth service ### <p>
+This packet is used to transmit a request for a post to a
+remote mud's news server (via the OOB network).
+This connection
+should not disconnect from the server until it is done dealing
+with it for the forseeable future.  Instead, it should exchange
+messages in lockstep with the server.
+</p><pre>    ({
+        (string) "<a name="news-read-req">news-read-req</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) 0,
+        (string) 0,
+        (string) newsgroup_name,
+        (int)    id,
+    })</pre>
+<p>
+
+The server response for this request takes the following form:
+</p><pre>    ({
+        (int)    posting_time,
+        (string) thread_id,
+        (string) subject,
+        (string) poster,
+        (string) contents
+    })</pre>
+
+To post a message, send the following packet:
+<pre>    ({
+        (string) "<a name="news-post-req">news-post-req</a>",
+        (string) originator_mudname,
+        (int)    mud_login_port,
+        (string) mewsgroup,
+        (string) thread_id,
+        (string) subject,
+        (string) poster,
+        (string) contents
+    })</pre>
+<p>
+Notice that this packed does not follow the standard packet form,
+because it is not transmitted over the in band network.
+
+The server response should be an integer representing the id of the
+post, or an error packet.
+</p><p>
+
+To request a list of newsgroups, send the following packet:
+</p><pre>    ({
+        (string) "<a name="news-grplist-req">news-grplist-req</a>"
+    })</pre>
+<p>
+
+The response from the server should be an array containing an array
+for each available group.  This array should contain the following
+data:
+</p><pre>    ({
+        (string) group_name,
+        (int)    first_post_id,
+        (int)    last_post_id
+    })</pre>
+
+
+<h3><a name="mail">Service: mail</a></h3>
+
+This packet is used to deliver a mail message to a remote mud.
+It will be delivered over the OOB network (i.e., over a direct TCP
+connection  to the target mud's out-of-band TCP port).  It has the
+following form:
+<pre>    ({
+        (string)   "mail",
+	(int)      id,
+	(string)   orig_user,
+	(mapping)  to_list,
+        (mapping)  cc_list,
+        (string *) bcc_list,
+        (int)      send_time,
+        (string)   subject,
+        (string)   contents,
+    })
+
+</pre>
+Where <var> to_list </var> and <var> cc_list </var> are mappings
+of the following format : 
+<pre>    ([
+        MUD-A : ({ user-1, user-2, }),
+        MUD-B : ({ user-1, user-2, }),
+    ])
+</pre>
+and  bcc_list  is an array of the users at the target mud only.
+
+<p>
+
+Mail is acknoleged by the use of a <a name="mail-ack">"mail-ack"</a> packet.
+</p><pre>    ({
+        (string)   "mail-ack",
+        (mapping)  ack_list,
+    })
+</pre>
+
+Where ack_list is a mapping whose keys are the id's that have been acknowleged,
+and the values are arrays of the failures.
+
+
+NB: <strong>mail</strong> is an OOB service, and employs the auth service.
+Errors must be sent via the OOB network
+
+
+<h3><a name="file">Service: file</a></h3>
+### work to do here... this is an OOB service, also employing the
+auth service ### <p>
+### this service still in development ### </p><p>
+This service is used to transfer files between muds.  Before
+files may be transferred, a session token must be returned from
+the remote mud using the login protocols.
+</p><p>
+
+It will use the out-of-band TCP port and has the following form:
+<br>
+
+To list the files on a remote mud, send the following packet:
+</p><pre>    ({
+        (string) <a name="file-list-req">"file-list-req"</a>,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) dir,
+    }) </pre>
+
+Where <var>dir</var> is the directory to be listed.
+<var>dir</var> is considered to be relative to a world read/write directory.  
+Any leading '/' is ignored.
+
+The response from the remote mud should be:
+<pre>    ({
+        (string)  <a name="file-list-reply">"file-list-reply"</a>,
+        (string)  target_username,
+        (mixed *) dir_list,
+    }) </pre>
+Where <var>dir_list</var> is an array containing an array
+of the following format for each file in the reply list:
+<pre>    ({
+        (string) fname,
+        (int)    fsize,
+        (int)    ftime,
+    }) </pre>
+
+To send a file to a remote mud, send the following packet:
+
+<pre>    ({
+        (string) <a name="file-put">"file-put"</a>,
+        (int)    id,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) remote_fname,
+        (string) contents,
+    }) </pre>
+
+Puts are acknoleged by the following packet :
+<pre>    ({
+        (string) <a name="file-put-ack">"file-put-ack"</a>,
+        (int)    id,
+        (int)    success,
+    })
+</pre>
+
+To retrive a file from a remote mud, send the following packet:
+<pre>    ({
+        (string) <a name="file-get-req">"file-get-req"</a>,
+        (int)    id,
+        (string) originator_mudname,
+        (string) originator_username,
+        (string) remote_fname,
+    }) </pre>
+
+The remote mud should respond with
+<pre>    ({
+        (string) <a name="file-get-reply">"file-get-reply"</a>,
+	(int)    id,
+        (int)    success,
+        (string) contents,
+    })</pre>
+
+Where <var> success</var> corresponds to the following.
+<ul>
+<pre><li>     -3  :  Request Failed (write permission)
+</li><li>     -2  :  Request Failed (read  permission)
+</li><li>     -1  :  Request Failed (fpath error)
+</li><li>      0  :  Request Failed (unknown error)
+</li><li>      1  :  Request successful
+</li></pre></ul>
+
+<p>
+
+The file should only be transfered from a world writeable directory
+on one mud to a world writable directory on another.<br>
+<var> remote_fname </var> is relative to the same directory as file-list-*
+and any leading '/' is ignored.
+</p><p>
+
+The size of the file capable of being sent in this manner is
+limited by the size of the maximum string length on both the
+sending and receiving muds.
+</p><p>
+An error response should be returned over the OOB network.
+
+</p><p>
+
+
+</p><h3><a name="auth">Service: auth</a></h3>
+The <em>auth</em> service is used for performing authentication of a
+mud.  This authentication is used for OOB
+communications since in-band communication is always authenticated
+at a mud-level.
+ <p>
+
+The authentication is used to verify that an incoming
+OOB connection request is actually from the mud that the request
+says it is from.  Before the OOB connection is made, the originator
+sends the following packet (over the in-band network) to the target mud:
+</p><pre>    ({
+        (string) "<a name="auth-mud-req">auth-mud-req</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,
+        (string) 0
+    })</pre>
+The target mud generates a unique integer key, associates that with
+the originating mud with the key, and then returns the key (over the
+in-band network) to the
+originator with:
+<pre>    ({
+        (string) "<a name="auth-mud-reply">auth-mud-reply</a>",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,
+        (string) 0,
+        (int)    session_key
+    })</pre>
+At this point, the originator may contact the target mud through the
+OOB port, using the <var>session_key</var> to authenticate that it actually is
+the purported originator. <p>
+
+It is possible, and should be accounted for, that a particular originator
+might issue multiple auth-mud-req packets before establishing an OOB
+session to the target mud.  Only the <em>last</em> request and
+<var>session_key</var>
+need to be remembered.  The keys from prior requests may be discarded and
+connection attempts using them may be rejected. </p><p>
+
+Session keys must remain valid for <em>10 minutes</em> from receipt of
+the auth-mud-req packet.  After that point, the target mud may discard
+the key and reject connection attempts with that key.  After a successful
+OOB connection is made, the target mud may discard the key (the key
+should be interpreted as a one-time key). </p><p>
+
+</p><h3><a name="ucache">Service: ucache</a></h3>
+The <em>ucache</em> service is used for maintaining user information
+caches within the Intermud network.  A mud may cache information that
+it receives from <a href="https://wotf.org/specs/i3.html#chan-user-req">chan-user-req</a> packet.
+To keep this up to date, muds should issue <em>ucache-update</em>
+packets, which are then used by muds that implement the <em>ucache</em>
+service. <p>
+
+Whenever the contents of a <a href="https://wotf.org/specs/i3.html#chan-user-reply">chan-user-reply</a>
+packet would change (<var>visname</var> or <var>gender</var>), then the
+mud should broadcast the following packet:
+</p><pre>    ({
+        (string) "ucache-update",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) 0,
+        (string) 0,
+        (string) username,
+        (string) visname,
+        (int)    gender
+    })</pre>
+The contents of this packet are similar to the
+<a href="https://wotf.org/specs/i3.html#chan-user-reply">chan-user-reply</a> packet. <p>
+
+Note that the router will filter this packet's delivery to only those
+muds that support the <em>ucache</em> service.
+ </p><p>
+
+</p><hr>
+<h2><a name="support">Support Packets</a></h2>
+
+<h3><a name="error">error</a></h3>
+This packet is returned when error conditions arise.  It has the
+following form:
+<pre>    ({
+        (string)  "error",
+        (int)     5,
+        (string)  originator_mudname,
+        (string)  0,
+        (string)  target_mudname,
+        (string)  target_username,
+        (string)  error_code,
+        (string)  error_message,
+        (mixed *) error_packet
+    })</pre>
+The <var>error_code</var> values are standardized and are summarized in
+the <a href="https://wotf.org/specs/i3.html#errors">Error Summary</a> section.  The <var>error_message</var>
+does not follow any particular standards (yet?), but should be a message
+that can be displayed to a user.  The <var>error_packet</var> may contain
+the packet that caused the particular error to be generated.  If the
+packet is unavailable (i.e. due to code structure), then the value 0
+may be used.
+
+<h3><a name="startup-req">startup-req-3</a></h3>
+This packet is delivered to a mud's router when the mud first
+establishes the connection.  If the mud has never received a password
+from a server, it should send 0.  The server is responsible for creating
+a random password for new muds, and validating the password of a mud
+before allowing a mud to connect from a site other than the one from
+which it normally connects.
+<p>
+
+A startup-req-3 packet has the following form:
+</p><pre>    ({
+        (string)  "startup-req-3",
+        (int)     5,
+        (string)  originator_mudname,
+        (string)  0,
+        (string)  target_mudname,         // the router
+        (string)  0,
+
+        (int)     password,
+        (int)     old_mudlist_id,
+        (int)     old_chanlist_id,
+
+        // these correspond to the values in a mudlist <a href="https://wotf.org/specs/i3.html#info_mapping">info_mapping</a>
+        (int)     player_port,
+        (int)     imud_tcp_port,
+        (int)     imud_udp_port,
+        (string)  mudlib,
+        (string)  base_mudlib,
+        (string)  driver,
+        (string)  mud_type,
+        (string)  open_status,
+        (string)  admin_email,
+        (mapping) services
+        (mapping) other_data
+    })</pre>
+The -3 on the packet type indicates that the mud will use Protocol
+Version 3 for communication (this specification).  Future changes
+in the protocol can update this number as required.  The router
+network must support all protocol versions and must translate packets
+between muds with different protocol versions.  Error packets will be
+returned to a mud if that mud attempts to use a service that cannot
+be translated (e.g. services that are only available in later
+protocol versions).
+<p>
+
+<i>Note: version 2 of the protocol had a smaller
+<a href="https://wotf.org/specs/i3.html#locate">locate-reply</a> packet.  No other changes
+were made to the specification.
+</i>
+ </p><p>
+<i>Note: version 1 of the protocol was almost exactly the same as this
+version except that it was missing a couple fields from the startup
+packet and the corresponding info_mapping in the mudlist packet.
+</i>
+ </p><p>
+
+All pieces of information are required to be sent to a router except
+for the port numbers and other_data.  The
+player_port may be 0 if the mud is private/closed.  The OOB ports may
+be 0 if the services that require them will not be provided by the mud.
+other_data may be 0 if a mud has no "other data" (see below).
+</p><p>
+<var>open_status</var> is a string describing the current
+status of the mud.  Suggested (strongly encouraged values) are:
+</p><ul>
+<li>"mudlib development"
+</li><li>"beta testing"
+</li><li>"open for public"
+</li><li>"restricted access"
+</li></ul>
+
+<var>mud_type</var> specifies the type/family/genre of the mud
+driver.  Examples are: <em>LP</em>, <em>MOO</em>
+<p>
+
+<var>services</var> is a mapping with service names as keys.  The
+allowable services include those specified within this specification
+(in the <a href="https://wotf.org/specs/i3.html#services">Services</a> section); these simply have
+a value of 1 in the mapping.  In addition,
+extended (non-standard) services may be specified with
+service-specific information
+for their value.
+Here is the
+current list of services (keys and values) that a mud may make
+available along with some example extended services:
+</p><ul>
+<li>"tell" : 1
+</li><li>"emoteto" : 1
+</li><li>"who" : 1
+</li><li>"finger" : 1
+</li><li>"locate" : 1
+</li><li>"channel" : 1
+</li><li>"news" : 1
+</li><li>"mail" : 1
+</li><li>"file" : 1
+</li><li>"auth" : 1
+</li><li>"ucache" : 1
+</li><li>"smtp" : port-number<br>
+Specifies the port number of a mud's SMTP mail interface. Note that
+Intermud mail is normally delivered via the OOB TCP port.
+<p>
+</p></li><li>"ftp" : port-number<br>
+Specifies the port number of a mud's FTP service.  Note that
+Intermud file transfer is normally delivered via the OOB TCP port.
+<p>
+</p></li><li>"nntp" : port-number<br>
+Specifies the port number of a mud's NNTP server.  Note that
+Intermud news transfer is normally delivered via the OOB TCP port.
+<p>
+</p></li><li>"http" : port-number<br>
+Specifies the port number of a mud's WWW server (httpd).
+<p>
+</p></li><li>"rcp" : port-number<br>
+Specifies the port number of a mud's Remote Creator server (currently
+a facility provided by Nightmare Lib IV).
+ <p>
+</p></li><li>"amcp" : version-string<br>
+Indicates the mud supports AMCP of some particular version.
+</li></ul>
+Additional services and service-specific data may be added in the
+future as required.
+ <p>
+
+The <var>other_data</var> field (when provided) contains a mapping
+with string keys.
+The values are arbitrary and determined by the key.  These key/value
+pairs are used to specify information that is not related directly
+to the I3 network operation.  At this time, there are no defined keys
+in this specification or via precedent.  Individual muds are free to
+define their own key/value pairs.  It is highly recommended that
+attempts be made to avoid namespace collisions.  For example, if the
+Lima Mudlib decides to place an entry into the <var>other_data</var>
+field, it might use a key of "lima-somekey".
+
+</p><h3><a name="startup-reply">startup-reply</a></h3>
+This packet will be delivered to a mud for three conditions: in
+response to a startup-req packet, when the router wishes
+the mud to connect to a different router, or when the set
+of routers change for some reason.
+<pre>    ({
+        (string)   "startup-reply",
+        (int)      5,
+        (string)   originator_mudname,     // the router
+        (string)   0,
+        (string)   target_mudname,
+        (string)   0,
+        (string *) router_list,
+        (int)      password
+    })</pre>
+The <var>router_list</var> is an array representing an
+ordered list of routers to use.  The first element should
+be the router that the mud should use.  Typically, this
+will be the router that the mud initially connected to.
+If not, however, then the mud should close the connection and
+reopen to the designated router.  The list should be saved
+and used in case of failure to connect to a router.
+Each element in the list is an array of two elements; the first
+element is the router name, the second element is the router's
+address in the following format: "ip.ad.re.ss portnum".  Note that
+this address can be passed to MudOS's socket_connect() function.
+For example: <code>({ "*nightmare", "199.199.122.10 9000" })</code>.
+<p>
+
+The first router specified in the list will be the mud's
+preferred router.  Future initial connections and startup-req
+packets will go to that router until told otherwise.
+
+</p><h3><a name="shutdown">shutdown</a></h3>
+This packet is delivered to a mud's router when the mud is
+gracefully shutting down.
+It has the following form:
+<pre>    ({
+        (string) "shutdown",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,         // the router
+        (string) 0,
+        (int)    restart_delay
+    })</pre>
+<var>restart_delay</var> can be used to specify when the mud
+thinks it will be restarted.  This value is measured in seconds.
+0 may be used to mean unknown/indefinite.  If a mud will be
+back "immediately," then it can simply use 1 second for this.
+<p>
+
+If the restart_delay is greater than 5 minutes, then the router
+will mark the mud as "down" immediately rather waiting the 5 minutes.
+Likewise, if the restart_delay specifies a duration longer than
+7 days, the mud will be deleted from the Intermud.  Any time less
+than 5 minutes will cause the router to operate as normal: it
+will wait for a while.
+
+</p><h3><a name="mudlist">mudlist</a></h3>
+The router will send this to a mud whenever the mud's list needs
+to be updated.  Typically, this will happen once right after login
+(based on the old_mudlist_id that a mud provided in the
+<a href="https://wotf.org/specs/i3.html#startup-req">startup-req-3</a>
+packet),
+and then as changes occur within the intermud network.
+A mud should remember the mudlist and its associated mudlist_id
+across reconnects to the router.
+<pre>    ({
+        (string)  "mudlist",
+        (int)     5,
+        (string)  originator_mudname,     // the router
+        (string)  0,
+        (string)  target_mudname,
+        (string)  0,
+        (int)     mudlist_id
+        (mapping) info_mapping
+    })</pre>
+The <var><a name="info_mapping">info_mapping</a></var> contains mud
+names as keys and information
+about each mud as the value.  This information is specified as an
+array with the following format:
+<pre>    ({
+        (int)     state,
+        (string)  ip_addr,
+        (int)     player_port,
+        (int)     imud_tcp_port,
+        (int)     imud_udp_port,
+        (string)  mudlib,
+        (string)  base_mudlib,
+        (string)  driver,
+        (string)  mud_type,
+        (string)  open_status,
+        (string)  admin_email,
+        (mapping) services
+        (mapping) other_data
+    })</pre>
+Each record of information should replace any prior record for
+a particular mud.  If the mapping's value is zero, then the mud has
+been deleted (it went down and has not come back for a week)
+from the Intermud.
+<p>
+
+<var>state</var> is an integer with the following values:
+</p><pre>        -1  mud is up
+         0  mud is down
+         n  mud will be down for n seconds
+</pre>
+
+<h3><a name="oob-req">oob-req</a></h3>
+### not sure on this packet... discussion required ### <p>
+This packet is delivered to a target mud when an originating mud wishes
+to connect to its OOB port.  This packet should only be delivered if
+the target mud does not support the <a href="https://wotf.org/specs/i3.html#auth">auth</a> service or
+if the service using the OOB connection will not require use of the auth
+service. </p><p>
+
+The packet has the following form:
+</p><pre>  ({
+        (string) "oob-req",
+        (int)    5,
+        (string) originator_mudname,
+        (string) 0,
+        (string) target_mudname,
+        (string) 0,
+   })</pre>
+The originating mud must then connect within 10 minutes.  The target mud
+may use this opportunity to actual open the OOB port and listen for
+the incoming connection request.
+
+<h3><a name="oob-begin">oob-begin</a></h3>
+This packet is used over an OOB link (see <a href="https://wotf.org/specs/i3.html#oob">OOB Protocols</a>).
+It is used to specify the authorization information for this connection.
+ <p>
+
+Since this packet operates over an OOB link, it does not need to conform
+to standard packet formats.  Its format is:
+</p><pre>  ({
+        (string) "oob-begin",
+        (string) originator_mudname,
+        (int)    auth_type,
+        (int)    auth_token
+   })</pre>
+
+The <var>auth_type</var> will contain one of the following values:
+<pre>        0 no authentication used
+        1 <a href="https://wotf.org/specs/i3.html#auth-mud-req">auth-mud-req</a> used
+</pre>
+
+<h3><a name="oob-end">oob-end</a></h3>
+This packet is used over an OOB link (see <a href="https://wotf.org/specs/i3.html#oob">OOB Protocols</a>).
+It is used to signify that a mud is done delivering packets to the other
+mud. <p>
+
+Since this packet operates over an OOB link, it does not need to conform
+to standard packet formats.  Its format is:
+</p><pre>  ({
+        (string) "oob-end",
+        (string) mudname
+   })</pre>
+<var>mudname</var> states who has completing delivering packets.  This
+is used to simplify the process of determining which mud (of a possible
+many outstanding OOB connections) just completed their work.  This could
+be done simply by matching the socket which received the data to a
+record of what mud it connected to, but specifying the mud should make
+this process simpler for some clients.
+ <p>
+
+</p><hr>
+<h2><a name="oob">OOB Protocols</a></h2>
+### more to come ### <p>
+</p><ol>
+<li> Originator uses target's <a href="https://wotf.org/specs/i3.html#auth">auth</a> service
+to fetch necessary authorization tokens.  If authorization is not
+needed, then an <a href="https://wotf.org/specs/i3.html#oob-req">oob-req</a> packet is sent.  This
+step operates of the in-band network.
+
+</li><li> Originator connects to target's OOB port.
+
+</li><li> Originator delivers an <a href="https://wotf.org/specs/i3.html#oob-begin">oob-begin</a> packet,
+containing the authorization tokens, over the OOB link to the target mud.
+
+</li><li> The target mud validates the authorization tokens.  If the validation
+fails, then the target mud closes the connection.
+
+</li><li> Target returns an <a href="https://wotf.org/specs/i3.html#oob-begin">oob-begin</a> packet (with
+empty authorization information) to tell the originator to begin.
+
+</li><li> Originator delivers all queued packets to the target mud.  The
+target should respond with various replies and acknowledgements during
+this process.  The target is not yet allowed to actively send packets
+yet.
+
+</li><li> Originator delivers an <a href="https://wotf.org/specs/i3.html#oob-end">oob-end</a> packet,
+signalling completion.
+
+</li><li> If the target mud has any packets to deliver in an outbound queue
+for the originator, then it performs the deliveries.  The originator
+should respond with various replies and acknowledgements during this process.
+
+</li><li> The target mud delivers an <em>oob-end</em> packet if no deliveries
+are to be made, or upon completion of the deliveries.
+
+</li><li> If the originator has futher packets to deliver (some may have
+been placed in the originator's outbound queue during this process),
+then the process returns to step #6.
+
+</li><li> The originator drops the connection.
+
+</li></ol>
+
+The target mud may time out and close the connection if it does not
+receive any packets for 10 minutes.
+ <p>
+
+</p><hr>
+<h2><a name="router">Router Design</a></h2>
+The routers will create, open, and maintain MUD mode TCP sessions
+with each of the other routers. Each router will also
+maintain a list of the status of all links in the router network.
+This link information will be used for routing around a failed link
+until the link is reestablished.
+<p>
+
+Each router will maintain a complete list of all muds on the
+Intermud, the information associated with each one, the
+up/down/rebooting state, and which router the mud is connected to.
+</p><p>
+
+Each router will also maintain a list of information about each
+Intermud channel, including the channel host/owner, the type of
+channel, and the list of admitted/banned muds for the channel.
+</p><p>
+
+</p><h3>List Synchronization</h3>
+The two sets of lists are synchronized with the same scheme from
+a mud's point of view: they receive a unique token that precisely
+denotes the state of their list. The router network can
+remember how to provide deltas from one token to another or can
+just deliever complete lists when a request arrives from a mud
+that needs an update.
+<p>
+
+To guarantee uniqueness of the token, the
+routers can use the current time.  This becomes complex because
+all routers must use the same token for the list (in case a
+mud is switched to a new router, it should not have to fetch
+the whole list). Using the time across multiple machines with
+different time drifts and within different time zones and accounting
+for poor system administration can make the problem quite difficult.
+A scheme is required to meet each of these problems.
+</p><p>
+
+Assume a steady state where each router has the same token and
+a consistent list with respect to the other routers. Now, let
+us say a router generates a delta to the list.  It
+will create a new token as <code>max(old_token + 1, time())</code>.
+This token will be passed with the list delta to all other routers.
+The other routers will install the change, record the new
+token, and propogate the information to their connected muds.
+Within the router network, the router that originated the
+current token is remembered.  This is needed to uniquely identify
+deltas that occurred at the same instant.  Using the above formula
+for creating the token also ensures that a router will generate
+unique tokens even if they occur within the same second (the second
+token will be 1 more than the first).
+</p><p>
+
+Now, what happens when two routers generate deltas at about
+the same time?  Call the tokens <code>t1</code> and <code>t2</code>
+and they are ordered as <code>t1 &lt; t2</code>.
+There are two situations that will occur: a router will receive
+t1 before t2, or vice-versa.  First, the stable-state token must
+be specified for this situation (it cannot simply be the last token
+to arrive; otherwise, some routers will have t1 and some will have
+t2).  The rule is simply: <code>final_token = max(t1,t2)</code>.
+</p><p>
+
+Now, if a router receives t1 before t2, then everything will
+be fine - it will have notified its muds with the t1-delta then
+with the t2-delta.  The muds and the router will become stable
+with a current token of t2.
+</p><p>
+
+However, if the router receives t2 first, then there will be
+problems.  It will notify the muds with the t2-delta, then with
+the t1-delta.  The router will deliver a token of t2 with the
+t1-delta change to the muds and will stabilize with that token.
+This would seem to be okay unless a mud disconnected between the
+t2-delta and t1-delta notifications.  When it reconnects, it will
+ask for changes since t2 and receive none.  Simply put: the t1-delta
+is subverted to using the t2 token and therefore does not uniquely
+identify the change.
+</p><p>
+
+This problem is solved with the use of a "alter-token" packet.  The
+t1-delta gets a new token applied to it and is recirculated through
+the router network.  Since many routers may see the conflict
+and initiate an alter-token operation, there should be a way to
+eliminate duplicates; otherwise, two altered-t1-deltas could
+again create a synchronization problem.  To overcome this, the altered
+token will be set to t2+1.  The routers will ignore the
+receipt of an altered-token-delta if its current token came from
+a similar altered-token.
+</p><p>
+
+### todo:
+two packets with same time;
+multiple packets? - solve case of two - inductance handles rest ###
+</p><p>
+
+</p><pre>    ({
+        (string)  "XXXlist-delta",
+        (int)     5,
+        (string)  originator_mudname,     // the router
+        (string)  0,
+        (string)  "*",                    // router broadcast
+        (string)  0,
+        (int)     token,
+        (mapping) list_delta_info
+    })</pre>
+<pre>    ({
+        (string)  "XXXlist-altered",
+        (int)     5,
+        (string)  originator_mudname,     // the router
+        (string)  0,
+        (string)  "*",                    // router broadcast
+        (string)  0,
+        (int)     altered_token,
+        (mapping) list_delta_info
+    })</pre>
+
+<h3>Packet Routing</h3>
+To efficiently implement the routing, the routers will route based
+entirely on the originator/target fields of the packet.  Knowledge of
+the packet types will not be required.  This provides flexibility for
+extensions and, most likely, increased routing speed.
+<p>
+
+Rules for routing are based entirely on the target_mudname.  If it
+is provided, then the packet will be sent to the mud if it is connected
+to the receiving router.  Otherwise, the router for the mud
+is looked up and the packet is forwarded there.
+If the mudname refers to the router itself, then the packet will
+be passed "up" to higher-level router processes.
+</p><p>
+
+### info on routing around downed links ###
+</p><p>
+
+</p><hr>
+<h2><a name="other">Other Drivers/Mudlibs</a></h2>
+There will exist two reference implementations of the mudlib side
+of the protocol.  These can be ported/used to create implementations
+for alternate mudlibs and for MudOS pre-v21 drivers.
+<p>
+
+For drivers that have TCP but not MUD-mode, they will need to parse
+the incoming transmissions (MUD-mode is effectively a combination
+of save_variable() and a standard TCP socket).
+</p><p>
+
+For drivers without TCP sockets, then a gateway will need to be
+written to hook into the router network and gateway the protocol
+between the MUD-mode TCP sockets and, say, UDP.
+</p><p>
+
+Gateways can also
+be used for non-LP based muds (e.g MOO, MUCK, Diku, etc).
+</p><p>
+
+Note that it is possible for the router network protocol to
+evolve independently of the protocol used by the muds.  This
+could involve moving away from the MUD-mode style of communication.
+</p><p>
+
+</p><hr>
+<h2><a name="errors">Error Summary</a></h2>
+There are a "standard" set of error_codes that are returned by
+routers and remote muds in <a href="https://wotf.org/specs/i3.html#error">error</a> packets.
+The error_message is not as well defined at this point, but should
+be something that can be displayed to the user.
+<p>
+
+Following is a list of the standard error codes returned by the routers:
+</p><ul>
+<li>unk-dst : unknown destination mud
+</li><li>not-imp : feature not yet implemented
+</li><li>unk-type : unknown packet type (also sent by muds)
+</li><li>unk-src : unknown source of packet (unregistered mud)
+</li><li>bad-pkt : bad packet format (also sent by muds)
+</li><li>bad-proto : protocol violation (packet used incorrectly, at the wrong
+time, etc)
+</li><li>not-allowed : operation not allowed (e.g. channel bans)
+</li></ul>
+Following is a list of standardized error codes that a mud may return:
+<ul>
+<li>unk-type : unknown packet type (also sent by router)
+</li><li>unk-user : unknown target user
+</li><li>unk-channel : unknown channel name
+</li><li>bad-pkt : bad packet format (also sent by router)
+</li></ul>
+
+<hr>
+<h2><a name="types">Packet Types Summary</a></h2>
+<ul>
+<li><a href="https://wotf.org/specs/i3.html#tell">tell</a> : send a message to a remote user
+</li><li><a href="https://wotf.org/specs/i3.html#emoteto">emoteto</a> : send an emote to a remote user
+</li><li><a href="https://wotf.org/specs/i3.html#who">who-req</a> : request a list of users on a remote mud
+</li><li><a href="https://wotf.org/specs/i3.html#who">who-reply</a> : reply with a list of users on a remote mud
+</li><li><a href="https://wotf.org/specs/i3.html#finger">finger-req</a> :
+request finger information for a remote user
+</li><li><a href="https://wotf.org/specs/i3.html#finger">finger-reply</a> :
+reply with finger information for a remote user
+</li><li><a href="https://wotf.org/specs/i3.html#locate">locate-req</a> : request the location of a user
+</li><li><a href="https://wotf.org/specs/i3.html#locate">locate-reply</a> : reply with the location of a user
+</li><li><a href="https://wotf.org/specs/i3.html#chanlist-reply">chanlist-reply</a> :
+reply with/update the list of available channels
+</li><li><a href="https://wotf.org/specs/i3.html#channel-m">channel-m</a> : send a message over a channel
+</li><li><a href="https://wotf.org/specs/i3.html#channel-e">channel-e</a> : send an emote over a channel
+</li><li><a href="https://wotf.org/specs/i3.html#channel-t">channel-t</a> : send a targetted emote over a channel
+</li><li><a href="https://wotf.org/specs/i3.html#channel-add">channel-add</a> : register a new channel
+</li><li><a href="https://wotf.org/specs/i3.html#channel-remove">channel-remove</a> :
+remove a channel from name server databases.
+</li><li><a href="https://wotf.org/specs/i3.html#channel-admin">channel-admin</a> :
+adminstrate the participants of a channel
+</li><li><a href="https://wotf.org/specs/i3.html#chan-filter-req">chan-filter-req</a> : filter a channel
+</li><li><a href="https://wotf.org/specs/i3.html#chan-filter-reply">chan-filter-reply</a> : return filtered channel messages to the router
+</li><li><a href="https://wotf.org/specs/i3.html#chan-who-req">chan-who-req</a> :
+request a who list for people listening to a channel on a remote mud
+</li><li><a href="https://wotf.org/specs/i3.html#chan-who-reply">chan-who-reply</a> : return a requested channel who list
+</li><li><a href="https://wotf.org/specs/i3.html#channel-listen">channel-listen</a> :
+tune a mud as a whole into or out of a channel
+</li><li><a href="https://wotf.org/specs/i3.html#chan-user-req">chan-user-req</a> : request channel user's info
+</li><li><a href="https://wotf.org/specs/i3.html#chan-user-reply">chan-user-reply</a> : reply with channel user's info
+</li><li><a href="https://wotf.org/specs/i3.html#news">news-read-req</a> : retrieve a news post from an OOB news server.
+</li><li><a href="https://wotf.org/specs/i3.html#news-post-req">news-post-req</a> : post news to an OOB news server.
+</li><li><a href="https://wotf.org/specs/i3.html#news-grplist-req">news-grplist-req</a>
+</li><li><a href="https://wotf.org/specs/i3.html#mail">mail</a> : deliver an item of mail
+</li><li><a href="https://wotf.org/specs/i3.html#mail-ack">mail-ack</a> : acknoledge a mail
+</li><li><a href="https://wotf.org/specs/i3.html#file-list-req">file-list-req</a> :
+ request a list of files on a remote mud
+</li><li><a href="https://wotf.org/specs/i3.html#file-list-reply">file-list-reply</a> : reply with list list
+</li><li><a href="https://wotf.org/specs/i3.html#file-put">file-put</a> : send a file to a remote mud
+</li><li><a href="https://wotf.org/specs/i3.html#file-put-ack">file-put-ack</a> : acknoledge a file-put
+</li><li><a href="https://wotf.org/specs/i3.html#file-get-req">file-get-req</a> : get a file from a remote mud
+</li><li><a href="https://wotf.org/specs/i3.html#file-get-reply">file-get-reply</a> : reply with the requested file
+</li><li><a href="https://wotf.org/specs/i3.html#auth-mud-req">auth-mud-req</a> :
+request a mud-level authorization token
+</li><li><a href="https://wotf.org/specs/i3.html#auth-mud-reply">auth-mud-reply</a> :
+reply with a mud-level authorization token
+</li><li><a href="https://wotf.org/specs/i3.html#ucache">ucache-update</a> : update cached user information
+</li><li><a href="https://wotf.org/specs/i3.html#error">error</a> : provide error information
+</li><li><a href="https://wotf.org/specs/i3.html#startup-req">startup-req-3</a> :
+provide start up information to the router
+</li><li><a href="https://wotf.org/specs/i3.html#startup-reply">startup-reply</a> :
+reply with/update the basic startup information (router list)
+</li><li><a href="https://wotf.org/specs/i3.html#shutdown">shutdown</a> : gracefully indicate shutdown
+</li><li><a href="https://wotf.org/specs/i3.html#mudlist">mudlist</a> :
+reply with/update the list of available muds
+</li><li><a href="https://wotf.org/specs/i3.html#oob-req">oob-req</a> : request setup for OOB connection
+</li><li><a href="https://wotf.org/specs/i3.html#oob-begin">oob-begin</a> : begin OOB communication
+</li><li><a href="https://wotf.org/specs/i3.html#oob-end">oob-end</a> : end one side of an OOB process
+</li></ul>
+
+<hr>
+<h2><a name="compressed">Compressed Mode</a></h2>
+### to be filled in with specifics ###<p>
+Generally, many of the fields will be replaced with numbers rather
+than full strings.  Some of the fields can be paired up using
+various combined keys. For example, originator_mudname can almost
+always be ommitted since it can be inferred from the TCP session
+at the router end.  Also, all the request/reply pairs can use a
+request key rather than recording actual user names (the user
+is associated with the request key on the originating mud).
+ </p><p>
+
+</p><hr>
+<h2><a name="changelog">Change Log</a></h2>
+<ul>
+
+<li> Deathblade, February 15
+<ul>
+<li> added section for contributors and implementors
+</li><li> removed the section on reference implementations
+</li><li> cleared up a couple OOB items
+</li></ul>
+
+</li><li> Winddle, January 7
+<ul>
+<li> update file, removing local_fname and references to /ftp to
+remove some confusion.
+</li></ul>
+
+</li><li> Deathblade, December 20
+<ul>
+<li> add this change log
+</li><li> update to startup-req-3 for the change in the locate-reply packet
+</li></ul>
+
+</li><li> Winddle, December 6
+<ul>
+<li> minor fix to mail
+</li><li> fix TTL to be int in chan-filter-reply
+</li></ul>
+
+</li><li> Winddle, October 20
+<ul>
+<li> update to mail
+</li><li> update to file
+</li><li> fixed a few 'broken' links
+</li></ul>
+
+</li><li> Deathblade, October 7
+<ul>
+<li> update to startup-req-2
+</li><li> modify the startup-req-2 packet and the mudinfo records to include
+    "admin_email" and "other_data"
+</li><li> add amcp service
+</li><li> strip really old changelog entries
+</li></ul>
+
+</li><li> Winddle, September 24
+<ul>
+<li> add typecasting
+</li></ul>
+
+</li><li> Deathblade, September 10
+<ul>
+<li> add some OOB from Winddle
+</li><li> remove auth-user-xxx
+</li></ul>
+
+</li><li> Deathblade, August 9
+<ul>
+<li> added OOB information
+</li></ul>
+
+</li><li> Deathblade, August 8
+<ul>
+<li> add the auth, emoteto, ucache services
+</li><li> add section for OOB discussion
+</li><li> added a couple more standard errors
+</li><li> renamed some news packets to fit within the "news name space"
+</li><li> add comments to mail, file, and news protos re: auth service
+</li></ul>
+
+</li></ul>
+
+
+
+</div>
+</div>
+<div class="footer">
+  <div class="spacer"></div>
+  <div class="footer-content">
+    Generated by lpc.displaylib/html v2.0 in 0.001 seconds.
+  </div>
+</div>
+
+
+
+</body></html>
