@@ -684,9 +684,11 @@ void full_rebuild()
 {
 	ACCESS_CHECK(PRIVILEGED() || VERB());
 
-	rlimits (0; 1000000000) {
-		purge_dir("/");
-		compile_dir("/");
+	rlimits (0; -1) {
+		rlimits (0; 1000000000) {
+			purge_dir("/");
+			compile_dir("/");
+		}
 	}
 }
 
