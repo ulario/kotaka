@@ -17,24 +17,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/verb.h>
-#include <kotaka/log.h>
+#include <kotaka/privilege.h>
 #include <status.h>
 
 inherit LIB_VERB;
 
+static void allcall(string path, string func, int oindex, int total)
+{
+	object obj;
+
+	oindex--;
+
+	obj = find_object(path + "#" + oindex);
+
+	if (obj) {
+		rlimits (0; 50000) {
+			call_other(obj, func);
+		}
+		total++;
+	}
+
+	if (oindex) {
+		call_out("allcall", 0, path, func, oindex, total);
+	} else {
+		LOGD->post_message("debug", LOG_DEBUG, "Allcall finished, " + total + " objects called");
+	}
+}
+
 void upgrade()
 {
-	mixed **callouts;
-	int sz;
+	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
-	}
+	wipe_callouts();
 }
 
 string *query_parse_methods()
@@ -66,29 +84,4 @@ void main(object actor, mapping roles)
 	}
 
 	call_out("allcall", 0, path, func, status(ST_OTABSIZE), 0);
-}
-
-static void allcall(string path, string func, int oindex, int total)
-{
-	do {
-		object obj;
-
-		oindex--;
-
-		obj = find_object(path + "#" + oindex);
-
-		if (obj) {
-			rlimits (0; 50000) {
-				call_other(obj, func);
-			}
-			total++;
-			break;
-		}
-	} while (oindex > 0 && status(ST_TICKS) > 75000);
-
-	if (oindex) {
-		call_out("allcall", 0, path, func, oindex, total);
-	} else {
-		LOGD->post_message("debug", LOG_DEBUG, "Allcall finished, " + total + " objects called");
-	}
 }
