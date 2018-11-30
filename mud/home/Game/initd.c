@@ -39,13 +39,13 @@ private void load()
 	MODULED->boot_module("Help");
 	MODULED->boot_module("Http");
 	MODULED->boot_module("Intermud");
+	MODULED->boot_module("Kotaka");
 	MODULED->boot_module("Test");
 	MODULED->boot_module("Text");
 	MODULED->boot_module("Thing");
 
 	load_dir("lwo");
 	load_dir("obj");
-	load_dir("open");
 	load_dir("sys");
 }
 
