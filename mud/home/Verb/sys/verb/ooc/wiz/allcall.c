@@ -29,17 +29,27 @@ inherit LIB_VERB;
 static void allcall(string path, string func, int oindex, int total)
 {
 	object obj;
+	int goal;
 
-	oindex--;
+	goal = oindex - 1000;
 
-	obj = find_object(path + "#" + oindex);
-
-	if (obj) {
-		rlimits (0; 50000) {
-			call_other(obj, func);
-		}
-		total++;
+	if (goal < 0) {
+		goal = 0;
 	}
+
+	do {
+		oindex--;
+
+		obj = find_object(path + "#" + oindex);
+
+		if (obj) {
+			rlimits (0; 50000) {
+				call_other(obj, func);
+			}
+			total++;
+			break;
+		}
+	} while (oindex > goal);
 
 	if (oindex) {
 		call_out("allcall", 0, path, func, oindex, total);

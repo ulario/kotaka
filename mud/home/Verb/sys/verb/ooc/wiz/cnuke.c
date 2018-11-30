@@ -27,18 +27,28 @@ inherit LIB_VERB;
 static void nuke(object proxy, string path, int index)
 {
 	object obj;
+	int goal;
 
-	if (!proxy) {
-		LOGD->post_message("system", LOG_ERR, "Aborting clone nuke (proxy destructed)");
+	goal = index - 1000;
 
-		return;
+	if (goal < 0) {
+		goal = 0;
 	}
 
-	--index;
+	do {
+		--index;
 
-	if (obj = find_object(path + "#" + index)) {
-		proxy->destruct_object(obj);
-	}
+		if (obj = find_object(path + "#" + index)) {
+			if (!proxy) {
+				LOGD->post_message("system", LOG_ERR, "Aborting clone nuke (proxy destructed)");
+
+				return;
+			}
+
+			proxy->destruct_object(obj);
+			break;
+		}
+	} while (index > goal);
 
 	if (index) {
 		call_out("lazy_nuke", 0, path, index - 1, proxy);
