@@ -102,7 +102,7 @@ static void check()
 
 		angst++;
 
-		if (angst > 60) {
+		if (angst > 30) {
 			angst = 0;
 			LOGD->post_message("system", LOG_NOTICE, "Memory still fragmented, swapping out");
 			swapout();
