@@ -21,7 +21,7 @@
 
 private string name;
 
-atomic static void set_object_name(string new_name)
+atomic void set_object_name(string new_name)
 {
 	CATALOGD->validate_name(new_name);
 
