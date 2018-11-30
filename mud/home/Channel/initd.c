@@ -46,9 +46,9 @@ static void create()
 	CHANNELD->restore();
 }
 
-void upgrade_module()
+void upgrade()
 {
-	ACCESS_CHECK(previous_program() == MODULED);
+	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	set_limits();
 }

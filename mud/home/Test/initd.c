@@ -61,9 +61,9 @@ static void destruct()
 	destruct_dir("sys");
 }
 
-void upgrade_module()
+void upgrade()
 {
-	ACCESS_CHECK(previous_program() == MODULED);
+	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	set_limits();
 }
