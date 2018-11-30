@@ -450,6 +450,29 @@ private void do_channel_e(mixed *value)
 	}
 }
 
+private void do_who_reply(mixed *value)
+{
+	object user;
+	string buffer;
+	int i, sz;
+	mixed *who_data;
+
+	user = TEXT_USERD->find_user(value[5]);
+
+	if (!user) {
+		LOGD->post_message("system", LOG_NOTICE, "I3 sent a who-reply to offline user " + value[5]);
+		return;
+	}
+
+	who_data = value[6];
+
+	user->message("Users online at " + value[2] + ":\n");
+
+	for (i = 0, sz = sizeof(who_data); i < sz; i++) {
+		user->message(who_data[i][0] + " " + who_data[i][2] + "\n");
+	}
+}
+
 private void bounce_packet(mixed *value)
 {
 	mixed *arr;
@@ -511,6 +534,10 @@ private void process_packet(mixed *value)
 
 	case "tell":
 		do_tell(value);
+		break;
+
+	case "who-reply":
+		do_who_reply(value);
 		break;
 
 	/* we don't care about these right now */
@@ -652,6 +679,26 @@ string *query_muds()
 mixed *query_mud(string mud)
 {
 	return deep_copy(muds[mud]);
+}
+
+void send_who(string from, string mud)
+{
+	mixed *arr;
+
+	ACCESS_CHECK(INTERFACE() || VERB());
+
+	arr = ({
+		"who-req",
+		5,
+		MUDNAME,
+		from,
+		mud,
+		0
+	});
+
+	log_outbound(arr);
+
+	message(make_packet(arr));
 }
 
 void send_tell(string from, string decofrom, string mud, string user, string message)
