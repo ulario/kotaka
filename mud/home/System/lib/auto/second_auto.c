@@ -87,6 +87,18 @@ private mixed **convert_callouts(mixed **callouts)
 	return callouts;
 }
 
+static void wipe_callouts()
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = ::status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
+}
+
 static void dump_state(varargs int incr)
 {
 	if (incr) {
