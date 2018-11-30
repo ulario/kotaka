@@ -252,23 +252,23 @@ private void reboot_common()
 private void upgrade_check_kotaka_version()
 {
 	if (version_major) {
-		error("Must upgrade from version 0.54 or 0.55");
+		error("Must upgrade from version 0.55 or 0.56");
 	}
 
 	switch(version_minor) {
-	case 54:
 	case 55:
+	case 56:
 		switch(version_patch) {
 		case 0:
 			break;
 
 		default:
-			error("Must upgrade from version 0.54 or 0.55");
+			error("Must upgrade from version 0.55 or 0.56");
 		}
 		break;
 
 	default:
-		error("Must upgrade from version 0.54 or 0.55");
+		error("Must upgrade from version 0.55 or 0.56");
 	}
 }
 
