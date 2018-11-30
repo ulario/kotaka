@@ -32,34 +32,30 @@ inherit SECOND_AUTO;
 string message;
 mapping connections; /* ([ connection : ({ interval, handle }) ]) */
 
-static void create()
+private void schedule(object conn)
 {
-	message = "";
-	connections = ([ ]);
+	int handle;
+	float interval;
 
-	wiz::create(0);
-	userd::create();
-	user::create();
+	({ interval, handle }) = connections[conn];
 
-	load_object(SYSTEM_USERD);
-
-	SYSTEM_USERD->set_telnet_manager(0, this_object());
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	if (!connections) {
-		connections = ([ ]);
+	if (handle) {
+		remove_call_out(handle);
 	}
+
+	connections[conn] = ({ interval, call_out("report", interval, conn) });
 }
 
-static mixed message(string msg)
+private void wipe_callouts()
 {
-	message += msg;
+	mixed **callouts;
+	int sz;
 
-	return nil;
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
 }
 
 private int is_trusted(object conn)
@@ -97,6 +93,27 @@ private string print_report()
 	return message;
 }
 
+static void create()
+{
+	message = "";
+	connections = ([ ]);
+
+	wiz::create(0);
+	userd::create();
+	user::create();
+
+	load_object(SYSTEM_USERD);
+
+	SYSTEM_USERD->set_telnet_manager(0, this_object());
+}
+
+static mixed message(string msg)
+{
+	message += msg;
+
+	return nil;
+}
+
 static void report(object conn)
 {
 	string message;
@@ -125,7 +142,7 @@ static void report(object conn)
 
 	conn->message("\033[J");
 
-	/* don't start a callout, wait for message_done */
+	schedule(conn);
 }
 
 static void clear(object conn)
@@ -137,7 +154,35 @@ static void clear(object conn)
 	conn->message("\033[1;1H\033[2J");
 }
 
-/* userd hooks */
+void upgrade()
+{
+	object *conns;
+	int handle;
+	float interval;
+	int sz;
+
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	wipe_callouts();
+
+	if (!connections) {
+		connections = ([ ]);
+	}
+
+	conns = map_indices(connections);
+
+	for (sz = sizeof(conns); --sz >= 0; ) {
+		object conn;
+
+		conn = conns[sz];
+
+		({ interval, handle }) = connections[conn];
+
+		handle = call_out("report", interval, conn);
+
+		connections[conn] = ({ interval, handle });
+	}
+}
 
 string query_banner(object conn)
 {
@@ -168,8 +213,6 @@ object select(string input)
 	return this_object();
 }
 
-/* user hooks */
-
 int login(string str)
 {
 	float interval;
@@ -189,14 +232,14 @@ int login(string str)
 	if (is_trusted(conn)) {
 		interval = 0.05;
 	} else {
-		interval = 1.0;
+		interval = 5.0;
 	}
 
-	handle = call_out("report", interval, conn);
-
-	connections[conn] = ({ interval, handle });
+	connections[conn] = ({ interval, 0 });
 
 	conn->message("\033[1;1H\033[2J");
+
+	schedule(conn);
 
 	return MODE_NOECHO;
 }
@@ -216,6 +259,8 @@ void logout(int quit)
 		({ interval, handle }) = connections[conn];
 
 		remove_call_out(handle);
+
+		connections[conn] = ({ -1, nil });
 	}
 }
 
@@ -260,14 +305,8 @@ int receive_message(string str)
 					break;
 				}
 
-				handle = connections[conn][1];
-
-				if (handle) {
-					remove_call_out(handle);
-				}
-
-				handle = call_out("report", interval, conn);
-				connections[conn] = ({ interval, handle });
+				connections[conn][0] = interval;
+				schedule(conn);
 			}
 			break;
 
@@ -284,25 +323,7 @@ int receive_message(string str)
 
 int message_done()
 {
-	object conn;
-	float interval;
-	int handle;
-
 	ACCESS_CHECK(previous_program() == LIB_CONN);
-
-	conn = previous_object();
-
-	if (!connections[conn]) {
-		LOGD->post_message("system", LOG_WARNING, "Spurious message_done, terminating connection");
-
-		return MODE_DISCONNECT;
-	}
-
-	({ interval, handle }) = connections[conn];
-
-	handle = call_out("report", interval, conn);
-
-	connections[conn][1] = handle;
 
 	return MODE_NOCHANGE;
 }
