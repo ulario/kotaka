@@ -61,10 +61,6 @@ private void create_channels()
 	}
 }
 
-void configure_channels()
-{
-}
-
 void build_world();
 
 static void create()
@@ -74,7 +70,6 @@ static void create()
 	load();
 
 	create_channels();
-	configure_channels();
 
 	if (CONFIGD->file_info("save")) {
 		"sys/saveload"->load_world();
