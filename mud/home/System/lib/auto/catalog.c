@@ -21,13 +21,12 @@
 
 private string name;
 
-atomic void set_object_name(string new_name)
+atomic static void set_object_name(string new_name)
 {
 	CATALOGD->validate_name(new_name);
 
 	if (name) {
 		CATALOGD->remove_object(name);
-		name = nil;
 	}
 
 	name = new_name;
