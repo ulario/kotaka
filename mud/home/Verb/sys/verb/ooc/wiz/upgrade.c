@@ -30,12 +30,8 @@ string *query_parse_methods()
 
 atomic void main(object actor, mapping roles)
 {
-	object user;
-
-	user = query_user();
-
-	if (user->query_class() < 3) {
-		send_out("You do not have sufficient access rights to upgrade the system\n");
+	if (query_user()->query_class() < 4) {
+		send_out("Only the mud owner can upgrade the system\n");
 		return;
 	}
 
