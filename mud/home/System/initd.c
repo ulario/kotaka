@@ -21,7 +21,6 @@
 #include <kernel/kernel.h>
 #include <kernel/version.h>
 #include <kotaka/log.h>
-#include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
@@ -310,8 +309,6 @@ static void boot()
 		load_object(ERRORD);		/* depends on TLS */
 		load_object(MODULED);
 
-		MODULED->boot_module("Bigstruct");
-
 		load_object(PROGRAM_INFO);
 		load_object(SPARSE_ARRAY);
 		load_object(PATCHD);
@@ -383,16 +380,6 @@ static void upgrade_system_post_recompile_2()
 }
 
 static void upgrade_system_post_recompile_3()
-{
-	purge_dir("~Bigstruct");
-	recompile_dir("~Bigstruct");
-
-	LOGD->post_message("system", LOG_NOTICE, "Bigstruct rebuilt");
-
-	call_out("upgrade_system_post_recompile_4", 0);
-}
-
-static void upgrade_system_post_recompile_4()
 {
 	MODULED->upgrade_modules();
 	LOGD->post_message("system", LOG_NOTICE, "Upgrade processing completed");
@@ -486,17 +473,6 @@ int forbid_inherit(string from, string path, int priv)
 	}
 
 	return 0;
-}
-
-void booted_module(string module)
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	switch(module) {
-	case "Bigstruct":
-		LOGD->post_message("system", LOG_NOTICE, "System received boot notification for Bigstruct");
-		break;
-	}
 }
 
 void upgrade_system()
