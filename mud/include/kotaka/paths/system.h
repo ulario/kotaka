@@ -25,7 +25,6 @@
 
 /* daemons */
 
-#define CALLOUTD	(USR_DIR + "/System/sys/calloutd")
 #define CATALOGD	(USR_DIR + "/System/sys/catalogd")
 #define CONFIGD		(USR_DIR + "/System/sys/configd")
 #define DUMPD		(USR_DIR + "/System/sys/dumpd")
@@ -39,7 +38,6 @@
 #define PROXYD		(USR_DIR + "/System/sys/proxyd")
 #define SECRETD		(USR_DIR + "/System/sys/secretd")
 #define STATUSD		(USR_DIR + "/System/sys/statusd")
-#define SUSPENDD	(USR_DIR + "/System/sys/suspendd")
 #define SWAPD		(USR_DIR + "/System/sys/swapd")
 #define SYSTEM_USERD	(USR_DIR + "/System/sys/userd")
 #define TLSD		(USR_DIR + "/System/sys/tlsd")

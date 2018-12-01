@@ -291,10 +291,7 @@ static void create()
 		load_object(SECRETD);		/* needed for LogD */
 		load_object(LOGD);		/* we need to log any error messages */
 		load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
-
 		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
-		load_object(CALLOUTD);		/* suspends callouts */
-		load_object(SUSPENDD);		/* suspends system */
 
 		SECRETD->remove_file("logs/session.log");
 
