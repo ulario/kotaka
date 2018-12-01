@@ -30,8 +30,8 @@ string *query_parse_methods()
 
 atomic void main(object actor, mapping roles)
 {
-	if (query_user()->query_class() < 4) {
-		send_out("Only the mud owner can upgrade the system\n");
+	if (query_user()->query_class() < 3) {
+		send_out("Only an administrator can upgrade the system\n");
 		return;
 	}
 
