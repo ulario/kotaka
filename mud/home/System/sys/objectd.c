@@ -31,37 +31,37 @@
 inherit SECOND_AUTO;
 inherit LIB_SYSTEM;
 inherit "~/lib/struct/list";
+inherit "~/lib/struct/sparsearray";
 inherit "~/lib/utility/compile";
 
 mixed **upgrades;	/* upgrade list */
 string compiling;	/* path of object we are currently compiling */
 string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
-object progdb;		/* program database */
+mixed progdb;		/* program database */
 
 static void create()
 {
-	progdb = new_object(SPARSE_ARRAY);
-
 	DRIVER->set_object_manager(this_object());
 }
 
 void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	if (!progdb) {
-		progdb = new_object(SPARSE_ARRAY);
-	}
 }
 
 /* helpers */
 
 private object fetch_program_info(int index)
 {
-	object pinfo;
+	switch(typeof(progdb)) {
+	case T_NIL:
+		return nil;
 
-	if (progdb) {
+	case T_MAPPING:
+		return sparsearray_query_element(progdb, index);
+
+	case T_OBJECT:
 		return progdb->query_element(index);
 	}
 }
@@ -70,14 +70,22 @@ private object setup_ghost_program_info(string path, int index)
 {
 	object pinfo;
 
-	if (!progdb) {
-		progdb = new_object(SPARSE_ARRAY);
-	}
-
 	pinfo = new_object(PROGRAM_INFO);
 	pinfo->set_path(path);
 
-	progdb->set_element(index, pinfo);
+	switch(typeof(progdb)) {
+	case T_NIL:
+		progdb = ([ ]);
+		/* fall through */
+
+	case T_MAPPING:
+		sparsearray_set_element(progdb, index, pinfo);
+		break;
+
+	case T_OBJECT:
+		progdb->set_element(index, pinfo);
+		break;
+	}
 
 	return pinfo;
 }
@@ -190,8 +198,6 @@ private object setup_program_info(string path, string *inherited)
 		pinfo->set_inherited_destructors(idestructors - ({ destructor }));
 		pinfo->set_inherited_patchers(ipatchers - ({ patcher }));
 	}
-
-	progdb->set_element(index, pinfo);
 
 	return pinfo;
 }
@@ -430,8 +436,17 @@ void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
 
-	if (progdb) {
+	switch(typeof(progdb)) {
+	case T_NIL:
+		return;
+
+	case T_MAPPING:
+		sparsearray_set_element(progdb, index, nil);
+		break;
+
+	case T_OBJECT:
 		progdb->set_element(index, nil);
+		break;
 	}
 }
 
@@ -660,9 +675,49 @@ object query_program_info(int index)
 
 mixed **query_program_indices()
 {
-	ASSERT(progdb);
+	switch(typeof(progdb)) {
+	case T_NIL:
+		return nil;
 
-	return progdb->query_indices();
+	case T_MAPPING:
+		return sparsearray_query_indices(progdb);
+
+	case T_OBJECT:
+		return progdb->query_indices();
+	}
+}
+
+void convert_progdb()
+{
+	ACCESS_CHECK(PRIVILEGED() || VERB() || CODE());
+
+	switch(typeof(progdb)) {
+	case T_NIL:
+	case T_MAPPING:
+		return;
+
+	case T_OBJECT:
+		rlimits (0; -1) {
+			mapping newdb;
+			mixed **indices;
+
+			indices = progdb->query_indices();
+			newdb = ([ ]);
+
+			while (!list_empty(indices)) {
+				int index;
+				object pinfo;
+
+				index = list_front(indices);
+				list_pop_front(indices);
+
+				pinfo = progdb->query_element(index);
+				sparsearray_set_element(newdb, index, pinfo);
+			}
+
+			progdb = newdb;
+		}
+	}
 }
 
 void reset()
@@ -671,7 +726,7 @@ void reset()
 
 	rlimits (0; -1) {
 		rlimits (0; 1000000000) {
-			progdb = new_object(SPARSE_ARRAY);
+			progdb = nil;
 
 			register_ghosts();
 			discover_clones();
