@@ -749,7 +749,7 @@ void listen_channel(string channel, int on)
 {
 	mixed *arr;
 
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || CHANNEL());
 
 	arr = ({
 		"channel-listen",
