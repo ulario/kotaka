@@ -243,7 +243,6 @@ private void reboot_common()
 	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
 	DRIVER->fix_filequota();
 
-	PATCHD->reboot();
 	DUMPD->reboot();
 }
 
@@ -357,6 +356,8 @@ static void upgrade_system_post_recompile()
 	compile_dir("/kernel/sys");
 
 	LOGD->post_message("system", LOG_NOTICE, "Kernel library rebuilt");
+
+	destruct_dir("~/lib");
 
 	compile_object(PROGRAM_INFO);
 	compile_object(PATCHD);
