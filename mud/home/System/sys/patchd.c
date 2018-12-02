@@ -517,3 +517,19 @@ void clear_mark(object obj)
 
 	clear_patch(obj);
 }
+
+void reset()
+{
+	ACCESS_CHECK(SYSTEM() || CODE());
+
+	wipe_callouts();
+
+	pflagdb = nil;
+	objdb = nil;
+	patcherdb = nil;
+	patchabledb = nil;
+	sweep_list = nil;
+	nudge_list = nil;
+	patch_queue = nil;
+	sweep_queue = nil;
+}
