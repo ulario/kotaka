@@ -48,6 +48,8 @@ static void create()
 void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	call_out("convert_progdb", 0);
 }
 
 /* helpers */
@@ -752,11 +754,4 @@ void call_touch(object obj)
 	ACCESS_CHECK(SYSTEM());
 
 	::call_touch(obj);
-}
-
-void do_upgrade(object obj)
-{
-	ACCESS_CHECK(SYSTEM());
-
-	call_out("upgrade_object", 0, obj);
 }
