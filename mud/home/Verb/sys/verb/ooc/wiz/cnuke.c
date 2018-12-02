@@ -20,6 +20,7 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/privilege.h>
 #include <status.h>
 
 inherit LIB_VERB;
@@ -27,36 +28,24 @@ inherit LIB_VERB;
 static void nuke(object proxy, string path, int index)
 {
 	object obj;
-	int goal;
 
-	goal = index - 1000;
+	--index;
 
-	if (goal < 0) {
-		goal = 0;
+	if (obj = find_object(path + "#" + index)) {
+		proxy->destruct_object(obj);
 	}
 
-	do {
-		--index;
-
-		if (obj = find_object(path + "#" + index)) {
-			if (!proxy) {
-				LOGD->post_message("system", LOG_ERR, "Aborting clone nuke (proxy destructed)");
-
-				return;
-			}
-
-			proxy->destruct_object(obj);
-			break;
-		}
-	} while (index > goal);
-
 	if (index) {
-		call_out("lazy_nuke", 0, path, index - 1, proxy);
+		call_out("nuke", 0, path, index, proxy);
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "Clone nuke completed");
 	}
 }
 
-static void upgrade()
+void upgrade()
 {
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
 	wipe_callouts();
 }
 
@@ -79,8 +68,4 @@ void main(object actor, mapping roles)
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
 	call_out("nuke", 0, proxy, path, status(ST_OTABSIZE));
-}
-
-void lazy_nuke(varargs mixed dummy...)
-{
 }

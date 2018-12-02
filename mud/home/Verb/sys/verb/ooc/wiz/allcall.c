@@ -26,35 +26,20 @@
 
 inherit LIB_VERB;
 
-static void allcall(string path, string func, int oindex, int total)
+static void allcall(string path, string func, int index)
 {
 	object obj;
-	int goal;
 
-	goal = oindex - 1000;
+	index--;
 
-	if (goal < 0) {
-		goal = 0;
-	}
+	obj = find_object(path + "#" + index);
 
-	do {
-		oindex--;
+	call_other(obj, func);
 
-		obj = find_object(path + "#" + oindex);
-
-		if (obj) {
-			rlimits (0; 50000) {
-				call_other(obj, func);
-			}
-			total++;
-			break;
-		}
-	} while (oindex > goal);
-
-	if (oindex) {
-		call_out("allcall", 0, path, func, oindex, total);
+	if (index) {
+		call_out("allcall", 0, path, func, index);
 	} else {
-		LOGD->post_message("debug", LOG_DEBUG, "Allcall finished, " + total + " objects called");
+		LOGD->post_message("debug", LOG_DEBUG, "Allcall finished");
 	}
 }
 
@@ -72,12 +57,8 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	mixed *st;
-	int i, sz;
-	int tcount;
 	string path;
 	string func;
-	object list;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to call all clones.\n");
@@ -93,5 +74,5 @@ void main(object actor, mapping roles)
 		call_other(path, func);
 	}
 
-	call_out("allcall", 0, path, func, status(ST_OTABSIZE), 0);
+	call_out("allcall", 0, path, func, status(ST_OTABSIZE));
 }

@@ -17,14 +17,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
-#include <kotaka/log.h>
+#include <kotaka/privilege.h>
 #include <status.h>
 
 inherit LIB_VERB;
 
-int handle;
+static void lazy_clones(string path, int index)
+{
+	object obj;
+
+	index--;
+
+	obj = find_object(path + "#" + index);
+
+	if (obj) {
+		LOGD->post_message("debug", LOG_DEBUG, "Found " + object_name(obj));
+	}
+
+	if (index) {
+		call_out("lazy_clones", 0, path, index);
+	} else {
+		LOGD->post_message("debug", LOG_DEBUG, "Lazy clone enumeration finished.");
+	}
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	wipe_callouts();
+}
 
 string *query_parse_methods()
 {
@@ -33,47 +58,10 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	string path;
-	mixed *st;
-	int i, sz;
-
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do a clone check.\n");
 		return;
 	}
 
-	path = roles["raw"];
-
-	if (handle) {
-		remove_call_out(handle);
-	}
-
-	handle = call_out("lazy_clones", 0, path, status(ST_OTABSIZE) - 1, time());
-}
-
-static void lazy_clones(string path, int oindex, varargs int time)
-{
-	object obj;
-
-	obj = find_object(path + "#" + oindex);
-
-	if (obj) {
-		LOGD->post_message("debug", LOG_DEBUG, "Found " + object_name(obj));
-	}
-
-	if (oindex == 0) {
-		handle = 0;
-		LOGD->post_message("debug", LOG_DEBUG, "Lazy clone enumeration finished.");
-	} else {
-		int newtime;
-
-		newtime = time();
-
-		if (time < newtime) {
-			LOGD->post_message("debug", LOG_DEBUG, "Lazy clone enumeration: " + oindex + " slots left to check.");
-			time = time();
-		}
-
-		handle = call_out("lazy_clones", 0, path, oindex - 1, time);
-	}
+	call_out("clones", 0, roles["raw"], status(ST_OTABSIZE));
 }
