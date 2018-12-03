@@ -59,11 +59,8 @@ static void destruct()
 
 object select(string str)
 {
-	int has_telnet;
-	int has_mudclient;
-	int has_line;
+	int has_telnet, has_mudclient;
 	object conn;
-	object user;
 	string basename;
 
 	conn = previous_object(2);
@@ -74,9 +71,6 @@ object select(string str)
 		}
 		if (conn <- "~/obj/filter/mudclient") {
 			has_mudclient = 1;
-		}
-		if (conn <- "~/obj/filter/line") {
-			has_line = 1;
 		}
 
 		conn = conn->query_conn();
@@ -98,9 +92,6 @@ object select(string str)
 	case TELNET_CONN:
 		if (!has_mudclient) {
 			return clone_object("~/obj/filter/mudclient");
-		}
-		if (!has_line) {
-			return clone_object("~/obj/filter/line");
 		}
 		return clone_object("~/obj/user");
 	}
