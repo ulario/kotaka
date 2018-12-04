@@ -19,12 +19,12 @@
  */
 #include <kotaka/paths/utility.h>
 #include <kotaka/paths/ansi.h>
-#include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/geometry.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
 inherit "/lib/sort";
+inherit "~System/lib/struct/list";
 inherit "/lib/string/case";
 inherit "/lib/string/char";
 inherit "/lib/string/format";
@@ -402,7 +402,6 @@ private string draw_look_xyz(object viewer)
 	object oenv;
 	int x, y, sz, i;
 	object painter;
-	object *envstack;
 	object gc;
 	string render;
 
@@ -447,27 +446,26 @@ private string draw_look_xyz(object viewer)
 
 	if (viewer) {
 		object env;
-		object envstack;
+		mixed **envstack;
 
 		gc->set_clip(-8, -8, 8, 8);
 		gc->set_offset(8, 8);
 
 		env = viewer->query_environment();
 		oenv = env;
-		envstack = new_object(BIGSTRUCT_DEQUE_LWO);
-		envstack->claim();
+		envstack = ({ nil, nil });
 
 		while (env && (env->query_property("is_transparent") || env->query_virtual())) {
 			env = env->query_environment();
 
 			if (env) {
-				envstack->push_front(env);
+				list_push_front(envstack, env);
 			}
 		}
 
-		while (!envstack->empty()) {
-			env = envstack->query_front();
-			envstack->pop_front();
+		while (!list_empty(envstack)) {
+			env = list_front(envstack);
+			list_pop_front(envstack);
 			draw_object(gc, viewer, env);
 		}
 
