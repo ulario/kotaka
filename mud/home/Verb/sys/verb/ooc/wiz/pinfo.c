@@ -33,6 +33,7 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	mixed index;
+	string path;
 	object pinfo;
 	mixed val;
 	mixed *arr;
@@ -52,7 +53,10 @@ void main(object actor, mapping roles)
 			send_out("Program not found\n");
 			return;
 		}
+
+		path = pinfo->query_path();
 	} else {
+		path = index;
 		index = status(index, O_INDEX);
 
 		if (index == nil) {
@@ -69,15 +73,11 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	val = pinfo->query_clone_count();
+	send_out("Program: " + path + " (#" + index + ")\n\n");
 
-	if (val) {
-		send_out("Program #" + index + " (" + val + " clones)\n");
-	} else {
-		send_out("Program #" + index + "\n");
+	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
+		send_out("Clones:\n    " + pinfo->query_clone_count() + "\n\n");
 	}
-
-	send_out("Path: " + pinfo->query_path() + "\n");
 
 	arr = pinfo->query_inherits();
 
