@@ -120,9 +120,9 @@ private string query_siteban_message(object LIB_CONN connection)
 	ip = BAND->check_siteban_message(ip);
 
 	if (ip) {
-		return "Sitebanned\n\n" + ip + "\n";
+		return "You are sitebanned\n\n" + ip + "\n";
 	} else {
-		return "Sitebanned\n";
+		return "You are sitebanned\n";
 	}
 }
 
