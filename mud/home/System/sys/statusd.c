@@ -19,6 +19,7 @@
  */
 #include <kernel/user.h>
 #include <kotaka/assert.h>
+#include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
@@ -191,9 +192,23 @@ string query_banner(object conn)
 	return nil;
 }
 
-string query_sitebanned_banner(object conn)
+string query_sitebanned_banner(object connection)
 {
-	return "Access denied (blacklisted IP address)";
+	string ip;
+
+	while (connection && connection <- LIB_USER) {
+		connection = connection->query_conn();
+	}
+
+	ip = query_ip_number(connection);
+
+	ip = BAND->check_siteban_message(ip);
+
+	if (ip) {
+		return "Access denied (" + ip + ")\n";
+	} else {
+		return "Access denied\n";
+	}
 }
 
 int query_timeout(object conn)
