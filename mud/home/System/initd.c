@@ -110,9 +110,6 @@ private void check_config()
 	}
 
 	if (status(ST_UTABSIZE) < 3) {
-		/* 1: reserved for regular logins */
-		/* 2: reserved for emergency logins */
-		/* 3: reserved for overflow burning */
 		error("User table too small (minimum 3)");
 	}
 
@@ -195,7 +192,7 @@ private void set_version()
 	}
 }
 
-void configure_logging()
+private atomic void configure_logging()
 {
 	ACCESS_CHECK(SYSTEM());
 
@@ -266,6 +263,13 @@ private void upgrade_check_kotaka_version()
 	default:
 		error("Must upgrade from version 0.55 or 0.56");
 	}
+}
+
+private void recompile_kernel()
+{
+	purge_dir("/kernel/lib");
+	compile_dir("/kernel/obj");
+	compile_dir("/kernel/sys");
 }
 
 static void create()
@@ -339,61 +343,40 @@ static void ready()
 
 static void upgrade_system_post_recompile()
 {
-	LOGD->post_message("system", LOG_NOTICE, "InitD recompiled for system upgrade");
-
-	/* first, upgrade System */
-	/* do NOT bother other modules for upgrades until after System itself is successfully upgraded */
-
-	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module");
-
 	upgrade_check_kotaka_version();
 	set_version();
 
-	destruct_dir("/kernel/lib");
-
-	compile_dir("/kernel/obj");
-	compile_dir("/kernel/sys");
-
-	LOGD->post_message("system", LOG_NOTICE, "Kernel library rebuilt");
-
-	destruct_dir("~/lib");
-
-	compile_object(PROGRAM_INFO);
-	compile_object(PATCHD);
-	compile_object(OBJECTD);
-
-	LOGD->post_message("system", LOG_NOTICE, "Object manager rebuilt");
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library");
+	recompile_kernel();
 
 	call_out("upgrade_system_post_recompile_2", 0);
 }
 
 static void upgrade_system_post_recompile_2()
 {
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling System");
+
 	rlimits (0; -1) {
 		upgrade_purge();
 		upgrade_build();
 	}
-
-	LOGD->post_message("system", LOG_NOTICE, "System rebuilt");
 
 	call_out("upgrade_system_post_recompile_3", 0);
 }
 
 static void upgrade_system_post_recompile_3()
 {
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules");
 	MODULED->upgrade_modules();
-	LOGD->post_message("system", LOG_NOTICE, "Upgrade processing completed");
 
 	call_out("do_upgrade_rebuild", 0);
 }
 
 static void do_upgrade_rebuild()
 {
+	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules");
 	MODULED->upgrade_purge();
-	LOGD->post_message("system", LOG_NOTICE, "Upgrade purge completed");
-
 	MODULED->upgrade_build();
-	LOGD->post_message("system", LOG_NOTICE, "Upgrade build completed");
 }
 
 void prepare_reboot()
@@ -479,8 +462,9 @@ void upgrade_system()
 {
 	ACCESS_CHECK(VERB());
 
-	purge_dir("lib");
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling InitD");
 
+	purge_dir("lib");
 	compile_object(INITD);
 
 	call_out("upgrade_system_post_recompile", 0);
