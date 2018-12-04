@@ -34,10 +34,6 @@ inherit "/lib/string/sprint";
 object oindex2onum; /* ([ oindex: idnum ]) */
 object objlist;	/* ({ idnum: obj, data }) */
 
-/* private helper functions */
-
-/* - loading */
-
 private void purge_object(object obj, mixed **list)
 {
 	int sz;
@@ -63,7 +59,6 @@ private void purge_directory(string dir, mixed **list)
 	int i, sz;
 
 	if (CATALOGD->test_name(dir) != 2) {
-		/* if the directory's already empty, don't purge it */
 		return;
 	}
 
@@ -91,10 +86,8 @@ private void purge_directory(string dir, mixed **list)
 	}
 }
 
-void load_world_purge(mixed **list)
+static void load_world_purge(mixed **list)
 {
-	ACCESS_CHECK(SYSTEM());
-
 	catch {
 		int done;
 		mixed data;
@@ -130,10 +123,8 @@ void load_world_purge(mixed **list)
 	}
 }
 
-void load_world_spawn(int i)
+static void load_world_spawn(int i)
 {
-	ACCESS_CHECK(SYSTEM());
-
 	catch {
 		int done;
 
@@ -163,10 +154,8 @@ void load_world_spawn(int i)
 	}
 }
 
-void load_world_name(int i)
+static void load_world_name(int i)
 {
-	ACCESS_CHECK(SYSTEM());
-
 	catch {
 		if (i > 0) {
 			object obj;
@@ -196,10 +185,8 @@ void load_world_name(int i)
 	}
 }
 
-void load_world_set(int i)
+static void load_world_set(int i)
 {
-	ACCESS_CHECK(SYSTEM());
-
 	catch {
 		if (i > 0) {
 			object obj;
@@ -218,8 +205,6 @@ void load_world_set(int i)
 		LOGD->post_message("system", LOG_INFO, "World load aborted loading data for object " + i);
 	}
 }
-
-/* - saving */
 
 private void purge_savedir()
 {
@@ -290,10 +275,8 @@ private void put_directory(string dir, mixed **list)
 	}
 }
 
-void save_world_put(mixed **list)
+static void save_world_put(mixed **list)
 {
-	ACCESS_CHECK(SYSTEM());
-
 	catch {
 		int done;
 		mixed data;
@@ -331,10 +314,8 @@ void save_world_put(mixed **list)
 	}
 }
 
-void save_world_write(int i)
+static void save_world_write(int i)
 {
-	ACCESS_CHECK(SYSTEM());
-
 	catch {
 		i--;
 
@@ -353,8 +334,6 @@ void save_world_write(int i)
 		LOGD->post_message("system", LOG_INFO, "World save aborted");
 	}
 }
-
-/* public helper functions */
 
 object *parse_object(string input)
 {
@@ -379,8 +358,10 @@ string sprint_object(object obj, varargs mapping seen)
 		switch(path) {
 		case USR_DIR + "/Game/obj/thing":
 			return "<O:" + oindex2onum->query_element(oindex) + ">";
+
 		case USR_DIR + "/Text/obj/user":
 			return "<U:" + obj->query_name() + ">";
+
 		default:
 			error("Unknown object type (" + path + ")");
 		}
@@ -388,8 +369,6 @@ string sprint_object(object obj, varargs mapping seen)
 		return ::sprint_object(obj, seen);
 	}
 }
-
-/* public functions */
 
 void load_world()
 {
