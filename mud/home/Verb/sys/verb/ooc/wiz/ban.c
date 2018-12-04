@@ -35,6 +35,8 @@ void main(object actor, mapping roles)
 	string args;
 	string username;
 
+	object turkey;
+
 	user = query_user();
 
 	if (user->query_class() < 2) {
@@ -92,29 +94,22 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	if (BAND->query_is_user_banned(username)) {
-		BAND->ban_user(username, args, -1);
+	BAND->ban_user(username, ([ "message": args ]));
 
-		send_out("Ban message updated.\n");
-	} else {
-		object turkey;
+	turkey = TEXT_USERD->find_user(username);
+
+	if (turkey) {
 		string kicker_name;
 		string turkey_name;
-
-		BAND->ban_user(username, args, -1);
 
 		kicker_name = user->query_titled_name();
 		turkey_name = TEXT_SUBD->query_titled_name(username);
 
-		turkey = TEXT_USERD->find_user(username);
+		TEXT_SUBD->send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud!\n", ({ turkey, query_user() }) );
 
-		TEXT_SUBD->send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
-
-		if (turkey) {
-			turkey->message(kicker_name + " bans you from the mud.\n");
-			turkey->quit("banned");
-		}
-
-		user->message("You ban " + turkey_name + " from the mud.\n");
+		turkey->message(kicker_name + " bans you from the mud!\n");
+		turkey->quit("banned");
 	}
+
+	user->message("User banned.\n");
 }

@@ -30,11 +30,8 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	object turkey;
 	object user;
 	string username;
-	string kicker_name;
-	string turkey_name;
 
 	user = query_user();
 
@@ -62,12 +59,14 @@ void main(object actor, mapping roles)
 			return;
 		}
 		break;
+
 	case 2: /* wizard.  Only an administrator can ban them */
 		if (user->query_class() < 3) {
 			send_out("Only an administrator can unban a wizard.\n");
 			return;
 		}
 		break;
+
 	default:
 		if (user->query_class() < 2) {
 			send_out("Only a wizard can unban someone.\n");
@@ -78,14 +77,10 @@ void main(object actor, mapping roles)
 
 	if (!BAND->query_is_user_banned(username)) {
 		send_out("User not banned.\n");
+		return;
 	}
 
 	BAND->unban_user(username);
 
-	kicker_name = user->query_titled_name();
-	turkey_name = TEXT_SUBD->query_titled_name(username);
-
-	send_out("You unban " + turkey_name + " from the mud.\n");
-
-	TEXT_SUBD->send_to_all_except(kicker_name + " unbans " + turkey_name + " from the mud.\n", ({ turkey, query_user() }) );
+	send_out("User unbanned.\n");
 }

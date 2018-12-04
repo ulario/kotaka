@@ -242,7 +242,6 @@ private void reboot_common()
 
 	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
 	DRIVER->fix_filequota();
-
 	DUMPD->reboot();
 }
 
