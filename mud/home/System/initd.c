@@ -192,46 +192,6 @@ private void set_version()
 	}
 }
 
-private atomic void configure_logging()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	LOGD->clear_targets();
-
-	LOGD->set_target("*", 63, "driver");
-
-	LOGD->set_target("debug", 0, "driver");
-	LOGD->set_target("compile", 255, "driver");
-	LOGD->set_target("error", 255, "driver");
-	LOGD->set_target("trace", 255, "driver");
-
-	LOGD->set_target("debug", 255, "null");
-	LOGD->set_target("compile", 255, "null");
-	LOGD->set_target("trace", 255, "null");
-
-	LOGD->set_target("*", 255, "file:general");
-
-	LOGD->set_target("error", 255, "file:error");
-	LOGD->set_target("trace", 255, "file:error");
-	LOGD->set_target("compile", 255, "file:error");
-
-	LOGD->set_target("*", 127, "file:session");
-	LOGD->set_target("debug", 0, "file:session");
-
-	LOGD->set_target("*", 128, "file:debug");
-	LOGD->set_target("debug", 255, "file:debug");
-
-	LOGD->set_target("system", 255, "file:general");
-	LOGD->set_target("system", 255, "file:session");
-
-	LOGD->set_target("system", 63, "channel:system");
-
-	LOGD->set_target("compile", 255, "channel:compile");
-	LOGD->set_target("error", 255, "channel:error");
-	LOGD->set_target("trace", 255, "channel:trace");
-	LOGD->set_target("debug", 255, "channel:debug");
-}
-
 private void reboot_common()
 {
 	check_config();
@@ -468,6 +428,46 @@ void upgrade_system()
 	compile_object(INITD);
 
 	call_out("upgrade_system_post_recompile", 0);
+}
+
+atomic void configure_logging()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	LOGD->clear_targets();
+
+	LOGD->set_target("*", 63, "driver");
+
+	LOGD->set_target("debug", 0, "driver");
+	LOGD->set_target("compile", 255, "driver");
+	LOGD->set_target("error", 255, "driver");
+	LOGD->set_target("trace", 255, "driver");
+
+	LOGD->set_target("debug", 255, "null");
+	LOGD->set_target("compile", 255, "null");
+	LOGD->set_target("trace", 255, "null");
+
+	LOGD->set_target("*", 255, "file:general");
+
+	LOGD->set_target("error", 255, "file:error");
+	LOGD->set_target("trace", 255, "file:error");
+	LOGD->set_target("compile", 255, "file:error");
+
+	LOGD->set_target("*", 127, "file:session");
+	LOGD->set_target("debug", 0, "file:session");
+
+	LOGD->set_target("*", 128, "file:debug");
+	LOGD->set_target("debug", 255, "file:debug");
+
+	LOGD->set_target("system", 255, "file:general");
+	LOGD->set_target("system", 255, "file:session");
+
+	LOGD->set_target("system", 63, "channel:system");
+
+	LOGD->set_target("compile", 255, "channel:compile");
+	LOGD->set_target("error", 255, "channel:error");
+	LOGD->set_target("trace", 255, "channel:trace");
+	LOGD->set_target("debug", 255, "channel:debug");
 }
 
 void enqueue_task_prefix(string path, string func, mixed args ...)
