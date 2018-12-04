@@ -73,11 +73,17 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	send_out("Program: " + path + " (#" + index + ")\n\n");
+	send_out("Program: " + path + " (#" + index);
 
 	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
-		send_out("Clones:\n    " + pinfo->query_clone_count() + "\n\n");
+		int clones;
+
+		clones = pinfo->query_clone_count();
+
+		send_out(", " + clones + " " + (clones == 1 ? "clone" : "clones"));
 	}
+
+	send_out(")\n\n");
 
 	arr = pinfo->query_inherits();
 
