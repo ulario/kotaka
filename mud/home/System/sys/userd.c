@@ -24,9 +24,9 @@
 #include <kotaka/privilege.h>
 #include <status.h>
 
-#define SITEBAN_DELAY  0.1 /* linger time for dumping a sitebanned connection */
-#define OVERLOAD_DELAY 0.1 /* linger time for dumping an overloaded connection */
-#define BLOCK_DELAY    0.1 /* linger time for dumping a blocked connection */
+#define SITEBAN_DELAY  0.05 /* linger time for dumping a sitebanned connection */
+#define OVERLOAD_DELAY 0.05 /* linger time for dumping an overloaded connection */
+#define BLOCK_DELAY    0.05 /* linger time for dumping a blocked connection */
 
 inherit SECOND_AUTO;
 inherit LIB_USERD;
