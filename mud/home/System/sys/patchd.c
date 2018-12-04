@@ -28,11 +28,44 @@
 inherit SECOND_AUTO;
 inherit "~/lib/struct/list";
 
-object pflagdb;
+int query_marked(object obj);
+
+mixed pflagdb;
 mixed **patch_queue; /* ({ obj }) */
 mixed **sweep_queue; /* ({ path, master_index, clone_index }) */
 
-int query_marked(object obj);
+private void convert_pflagdb()
+{
+	switch(typeof(pflagdb)) {
+	case T_NIL:
+		pflagdb = ([ ]);
+
+	case T_MAPPING:
+		break;
+
+	case T_OBJECT:
+		rlimits (0; -1) {
+			mapping newdb;
+			mixed **indices;
+
+			indices = pflagdb->query_indices();
+			newdb = ([ ]);
+
+			while (!list_empty(indices)) {
+				int index;
+				object obj;
+
+				index = list_front(indices);
+				list_pop_front(indices);
+
+				obj = pflagdb->query_element(index);
+				sparsearray_set_element(newdb, index, obj);
+			}
+
+			pflagdb = newdb;
+		}
+	}
+}
 
 private void queue_patch(object obj)
 {
@@ -118,6 +151,13 @@ static void process()
 	}
 }
 
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	convert_pflagdb();
+}
+
 void mark_patch(string path, varargs int clear)
 {
 	int index;
@@ -126,15 +166,15 @@ void mark_patch(string path, varargs int clear)
 
 	ACCESS_CHECK(SYSTEM());
 
-	if (!pflagdb) {
-		pflagdb = new_object(SPARSE_ARRAY);
+	if (typeof(pflagdb) != T_MAPPING) {
+		convert_pflagdb();
 	}
 
 	master = find_object(path);
 	index = status(master, O_INDEX);
 	pinfo = OBJECTD->query_program_info(index);
 
-	pflagdb->set_element(index, master);
+	sparsearray_set_element(pflagdb, index, master);
 	queue_patch(master);
 
 	if (pinfo->query_clone_count()) {
@@ -153,9 +193,9 @@ void mark_patch(string path, varargs int clear)
 				sscanf(object_name(clone), "%*s#%d", cindex);
 
 				if (clear) {
-					pflagdb->set_element(cindex, nil);
+					sparsearray_set_element(pflagdb, cindex, nil);
 				} else {
-					pflagdb->set_element(cindex, clone);
+					sparsearray_set_element(pflagdb, cindex, clone);
 					call_touch(clone);
 					queue_patch(clone);
 				}
@@ -172,10 +212,10 @@ void mark_patch(string path, varargs int clear)
 
 				if (clone && status(clone, O_INDEX) == index) {
 					if (clear) {
-						pflagdb->set_element(sz, nil);
+						sparsearray_set_element(pflagdb, sz, nil);
 					} else {
 						call_touch(clone);
-						pflagdb->set_element(sz, clone);
+						sparsearray_set_element(pflagdb, sz, clone);
 					}
 				}
 			}
@@ -195,11 +235,15 @@ int query_marked(object obj)
 		index = status(obj, O_INDEX);
 	}
 
-	if (pflagdb && pflagdb->query_element(index)) {
-		return 1;
+	if (pflagdb == nil) {
+		return 0;
 	}
 
-	return 0;
+	if (typeof(pflagdb) != T_MAPPING) {
+		convert_pflagdb();
+	}
+
+	return !!sparsearray_query_element(pflagdb, index);
 }
 
 void clear_mark(object obj)
@@ -215,9 +259,15 @@ void clear_mark(object obj)
 		index = status(obj, O_INDEX);
 	}
 
-	if (pflagdb) {
-		pflagdb->set_element(index, nil);
+	if (pflagdb == nil) {
+		return;
 	}
+
+	if (typeof(pflagdb) != T_MAPPING) {
+		convert_pflagdb;
+	}
+
+	sparsearray_set_element(pflagdb, index, nil);
 }
 
 void reset()
