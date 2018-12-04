@@ -35,14 +35,13 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
+atomic void configure_logging();
+
 int version_major;
 int version_minor;
 int version_patch;
 
 mixed **tasks;
-
-void console_post(string str, int level);
-void message(string str);
 
 private void load()
 {
