@@ -67,8 +67,3 @@ void upgrade()
 
 	set_limits();
 }
-
-string query_patcher(string path)
-{
-	LOGD->post_message("debug", LOG_DEBUG, "Asked for patcher for " + path);
-}
