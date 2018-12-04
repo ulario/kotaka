@@ -243,9 +243,9 @@ static void create()
 		KERNELD->set_global_access("System", 1);
 
 		configure_klib();
-		clear_admin();
 		configure_rsrc();
 		set_limits();
+		clear_admin();
 
 		load_object(SECRETD);		/* needed for LogD */
 		load_object(LOGD);		/* we need to log any error messages */
@@ -387,9 +387,10 @@ void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	clear_admin();
+	configure_klib();
 	configure_rsrc();
 	set_limits();
+	clear_admin();
 	configure_logging();
 }
 
