@@ -285,7 +285,6 @@ void upgrade_modules()
 					call_out("shutdown_module", 0, module);
 				} else {
 					catch {
-						LOGD->post_message("debug", LOG_DEBUG, "Recompiling initd for " + (module ? module : "Ecru"));
 						compile_object(initd_of(module));
 
 						call_out("upgrade_module", 0, module);
