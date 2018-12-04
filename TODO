@@ -24,3 +24,28 @@ Ban system upgrade
 	* Temporary bans that expire
 
 	* Automatic bans by code
+
+	Bans should be turned into a mapping.
+
+	Key:
+
+		Each ban can be listed by a key.
+
+		The canonical form of a key is an IP address followed by a CIDR mask.
+
+	Value:
+
+		The value should itself be a mapping with the following keys:
+
+		expire: The expiration date
+		issuer: Who issued the ban
+		message: Message shown to the banned user
+		note: Administrative notes
+
+Property hardcoding
+
+	Some properties really should be hard coded as they are an
+	intrinsic part of an object.
+
+	Such hard coded properties should, relatedly, be listable as hard
+	coded and immune to configuration by PropertyD.
