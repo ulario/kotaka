@@ -17,16 +17,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <status.h>
+#include <type.h>
 #include <kernel/access.h>
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/privilege.h>
-#include <status.h>
 
 inherit SECOND_AUTO;
 inherit "~/lib/struct/list";
+inherit "~/lib/struct/sparsearray";
 
 int query_marked(object obj);
 
@@ -264,7 +266,7 @@ void clear_mark(object obj)
 	}
 
 	if (typeof(pflagdb) != T_MAPPING) {
-		convert_pflagdb;
+		convert_pflagdb();
 	}
 
 	sparsearray_set_element(pflagdb, index, nil);
