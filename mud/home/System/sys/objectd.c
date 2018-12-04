@@ -52,8 +52,6 @@ void upgrade()
 	call_out("convert_progdb", 0);
 }
 
-/* helpers */
-
 private object fetch_program_info(int index)
 {
 	switch(typeof(progdb)) {
@@ -227,19 +225,48 @@ private string query_include_file(string compiled, string from, string path)
 	return path;
 }
 
+private void register_ghosts_dir(string dir)
+{
+	string *names;
+	int *sizes;
+	mixed *objs;
+	mixed **lists;
+	int sz;
+
+	if (dir == "/") {
+		dir = "";
+	}
+
+	lists = get_dir(dir + "/*");
+	names = lists[0];
+	sizes = lists[1];
+	objs = lists[3];
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+		string path;
+
+		name = names[sz];
+		path = dir + "/" + name;
+
+		if (sizes[sz] == -2) {
+			register_ghosts_dir(path);
+		} else {
+			if (!sscanf(path, "%s.c", path)) {
+				continue;
+			}
+
+			if (objs[sz]) {
+				setup_ghost_program_info(path, status(path, O_INDEX));
+			}
+		}
+	}
+}
+
 static void destruct_object(object obj)
 {
 	if (obj) {
 		::destruct_object(obj);
-	}
-}
-
-void upgrade_object(object obj)
-{
-	ACCESS_CHECK(SYSTEM() || KERNEL());
-
-	if (obj && function_object("upgrade", obj)) {
-		obj->upgrade();
 	}
 }
 
@@ -261,8 +288,6 @@ static void process()
 		obj->upgrade();
 	}
 }
-
-/* klib hooks */
 
 void compiling(string path)
 {
@@ -507,7 +532,14 @@ int forbid_inherit(string from, string path, int priv)
 	}
 }
 
-/* subroutines */
+void upgrade_object(object obj)
+{
+	ACCESS_CHECK(SYSTEM() || KERNEL());
+
+	if (obj && function_object("upgrade", obj)) {
+		obj->upgrade();
+	}
+}
 
 void nuke_object(object obj)
 {
@@ -516,44 +548,6 @@ void nuke_object(object obj)
 	TLSD->set_tls_value("System", "destruct_force", obj);
 
 	destruct_object(obj);
-}
-
-private void register_ghosts_dir(string dir)
-{
-	string *names;
-	int *sizes;
-	mixed *objs;
-	mixed **lists;
-	int sz;
-
-	if (dir == "/") {
-		dir = "";
-	}
-
-	lists = get_dir(dir + "/*");
-	names = lists[0];
-	sizes = lists[1];
-	objs = lists[3];
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		string name;
-		string path;
-
-		name = names[sz];
-		path = dir + "/" + name;
-
-		if (sizes[sz] == -2) {
-			register_ghosts_dir(path);
-		} else {
-			if (!sscanf(path, "%s.c", path)) {
-				continue;
-			}
-
-			if (objs[sz]) {
-				setup_ghost_program_info(path, status(path, O_INDEX));
-			}
-		}
-	}
 }
 
 void register_ghosts()
