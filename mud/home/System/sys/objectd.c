@@ -40,18 +40,6 @@ string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
 mixed progdb;		/* program database */
 
-static void create()
-{
-	DRIVER->set_object_manager(this_object());
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	call_out("convert_progdb", 0);
-}
-
 private object fetch_program_info(int index)
 {
 	switch(typeof(progdb)) {
@@ -263,6 +251,11 @@ private void register_ghosts_dir(string dir)
 	}
 }
 
+static void create()
+{
+	DRIVER->set_object_manager(this_object());
+}
+
 static void destruct_object(object obj)
 {
 	if (obj) {
@@ -287,6 +280,13 @@ static void process()
 	if (obj && function_object("upgrade", obj)) {
 		obj->upgrade();
 	}
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	call_out("convert_progdb", 0);
 }
 
 void compiling(string path)
