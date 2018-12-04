@@ -40,18 +40,46 @@ string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
 mixed progdb;		/* program database */
 
-private object fetch_program_info(int index)
+private void convert_progdb()
 {
 	switch(typeof(progdb)) {
 	case T_NIL:
-		return nil;
+		progdb = ([ ]);
 
 	case T_MAPPING:
-		return sparsearray_query_element(progdb, index);
+		return;
 
 	case T_OBJECT:
-		return progdb->query_element(index);
+		rlimits (0; -1) {
+			mapping newdb;
+			mixed **indices;
+
+			indices = progdb->query_indices();
+			newdb = ([ ]);
+
+			while (!list_empty(indices)) {
+				int index;
+				object pinfo;
+
+				index = list_front(indices);
+				list_pop_front(indices);
+
+				pinfo = progdb->query_element(index);
+				sparsearray_set_element(newdb, index, pinfo);
+			}
+
+			progdb = newdb;
+		}
 	}
+}
+
+private object fetch_program_info(int index)
+{
+	if (typeof(progdb) != T_MAPPING) {
+		convert_progdb();
+	}
+
+	return sparsearray_query_element(progdb, index);
 }
 
 private object setup_ghost_program_info(string path, int index)
@@ -61,19 +89,11 @@ private object setup_ghost_program_info(string path, int index)
 	pinfo = new_object(PROGRAM_INFO);
 	pinfo->set_path(path);
 
-	switch(typeof(progdb)) {
-	case T_NIL:
-		progdb = ([ ]);
-		/* fall through */
-
-	case T_MAPPING:
-		sparsearray_set_element(progdb, index, pinfo);
-		break;
-
-	case T_OBJECT:
-		progdb->set_element(index, pinfo);
-		break;
+	if (typeof(progdb) != T_MAPPING) {
+		convert_progdb();
 	}
+
+	sparsearray_set_element(progdb, index, pinfo);
 
 	return pinfo;
 }
@@ -253,6 +273,8 @@ private void register_ghosts_dir(string dir)
 
 static void create()
 {
+	progdb = ([ ]);
+
 	DRIVER->set_object_manager(this_object());
 }
 
@@ -286,7 +308,7 @@ void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	call_out("convert_progdb", 0);
+	convert_progdb();
 }
 
 void compiling(string path)
@@ -463,18 +485,11 @@ void remove_program(string owner, string path, int timestamp, int index)
 {
 	ACCESS_CHECK(previous_program() == DRIVER);
 
-	switch(typeof(progdb)) {
-	case T_NIL:
-		return;
-
-	case T_MAPPING:
-		sparsearray_set_element(progdb, index, nil);
-		break;
-
-	case T_OBJECT:
-		progdb->set_element(index, nil);
-		break;
+	if (typeof(progdb) != T_MAPPING) {
+		convert_progdb();
 	}
+
+	sparsearray_set_element(progdb, index, nil);
 }
 
 mixed include_file(string compiled, string from, string path)
@@ -671,49 +686,11 @@ object query_program_info(int index)
 
 mixed **query_program_indices()
 {
-	switch(typeof(progdb)) {
-	case T_NIL:
-		return nil;
-
-	case T_MAPPING:
-		return sparsearray_query_indices(progdb);
-
-	case T_OBJECT:
-		return progdb->query_indices();
+	if (typeof(progdb) != T_MAPPING) {
+		convert_progdb();
 	}
-}
 
-void convert_progdb()
-{
-	ACCESS_CHECK(PRIVILEGED() || VERB() || CODE());
-
-	switch(typeof(progdb)) {
-	case T_NIL:
-	case T_MAPPING:
-		return;
-
-	case T_OBJECT:
-		rlimits (0; -1) {
-			mapping newdb;
-			mixed **indices;
-
-			indices = progdb->query_indices();
-			newdb = ([ ]);
-
-			while (!list_empty(indices)) {
-				int index;
-				object pinfo;
-
-				index = list_front(indices);
-				list_pop_front(indices);
-
-				pinfo = progdb->query_element(index);
-				sparsearray_set_element(newdb, index, pinfo);
-			}
-
-			progdb = newdb;
-		}
-	}
+	return sparsearray_query_indices(progdb);
 }
 
 void reset()
@@ -722,7 +699,7 @@ void reset()
 
 	rlimits (0; -1) {
 		rlimits (0; 1000000000) {
-			progdb = nil;
+			progdb = ([ ]);
 
 			register_ghosts();
 			discover_clones();
