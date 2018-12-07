@@ -293,11 +293,11 @@ void save()
 
 	buf = hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
 
-	CONFIGD->make_dir(".");
-	CONFIGD->remove_file("bans-tmp");
-	CONFIGD->write_file("bans-tmp", buf + "\n");
-	CONFIGD->remove_file("bans");
-	CONFIGD->rename_file("bans-tmp", "bans");
+	SECRETD->make_dir(".");
+	SECRETD->remove_file("bans-tmp");
+	SECRETD->write_file("bans-tmp", buf + "\n");
+	SECRETD->remove_file("bans");
+	SECRETD->rename_file("bans-tmp", "bans");
 }
 
 void restore()
@@ -306,7 +306,11 @@ void restore()
 
 	ACCESS_CHECK(ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
 
-	buf = CONFIGD->read_file("bans");
+	buf = SECRETD->read_file("bans");
+
+	if (!buf) {
+		buf = CONFIGD->read_file("bans");
+	}
 
 	if (buf) {
 		mapping save;
