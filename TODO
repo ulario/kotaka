@@ -41,6 +41,7 @@ Ban system upgrade
 		issuer: Who issued the ban
 		message: Message shown to the banned user
 		note: Administrative notes
+		issuer: The admin (or module) issuing the ban
 
 Property hardcoding
 

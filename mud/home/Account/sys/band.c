@@ -125,7 +125,7 @@ private string cidr_mask(string site, int cidr)
 	}
 
 	switch(cidr) {
-	case 1 .. 8:
+	case 0 .. 8:
 		o1 &= ~((1 << (8 - cidr)) - 1);
 		o2 = "0";
 		o3 = "0";
@@ -236,6 +236,7 @@ private void check_property(string name, mixed value)
 {
 	switch(name) {
 	case "message":
+	case "issuer":
 	case "note":
 		switch(typeof(value)) {
 		case T_NIL:
@@ -605,7 +606,7 @@ int check_siteban(string ip)
 
 	canonicalize_sitebans();
 
-	for (cidr = 32; --cidr > 1; ) {
+	for (cidr = 32; cidr >= 0; cidr--) {
 		masked = cidr_mask(ip, cidr);
 
 		if (query_is_site_banned(cidr_mask(ip, cidr) + "/" + cidr)) {
@@ -623,7 +624,7 @@ string check_siteban_message(string ip)
 
 	canonicalize_sitebans();
 
-	for (cidr = 32; --cidr > 1; ) {
+	for (cidr = 32; cidr >= 0; cidr--) {
 		masked = cidr_mask(ip, cidr);
 
 		if (query_is_site_banned(masked + "/" + cidr)) {
