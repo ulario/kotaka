@@ -17,10 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
+#include <kotaka/log.h>
 #include <kotaka/paths/account.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
-#include <kotaka/assert.h>
 
 #define STATE_GETUSERNAME  1 /* asking for username */
 #define STATE_GETPASSWORD  2 /* asking for password */
@@ -39,16 +41,6 @@ int state;
 int stopped;
 int pending;
 
-static void create(int clone)
-{
-	::create();
-}
-
-static void destruct(int clone)
-{
-	::destruct();
-}
-
 private void prompt()
 {
 	switch(state) {
@@ -59,6 +51,44 @@ private void prompt()
 	case STATE_GETPASSWORD:
 		send_out("Password: ");
 	}
+}
+
+private void strike()
+{
+	object conn;
+	string ip;
+
+	conn = query_user();
+
+	while (conn && conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	if (!conn) {
+		LOGD->post_message("system", LOG_WARNING, "Bogus connection chain");
+
+		return;
+	}
+
+	ip = query_ip_number(conn);
+
+	if (!ip) {
+		LOGD->post_message("system", LOG_WARNING, "Linkdead user?");
+
+		return;
+	}
+
+	"~/sys/faild"->strike(ip);
+}
+
+static void create(int clone)
+{
+	::create();
+}
+
+static void destruct(int clone)
+{
+	::destruct();
 }
 
 void begin()
@@ -160,9 +190,11 @@ void receive_in(string input)
 		if (ACCOUNTD->query_is_registered(username)) {
 			if (!ACCOUNTD->authenticate(username, password)) {
 				send_out("Wrong password\n");
-				/* we will eventually want to ban IPs that */
-				/* fail too much */
+
+				strike();
+
 				query_user()->quit("badpass");
+
 				return;
 			}
 
