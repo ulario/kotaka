@@ -94,7 +94,7 @@ void main(object actor, mapping roles)
 		break;
 	}
 
-	BAND->ban_user(username, ([ "message": args ]));
+	BAND->ban_user(username, ([ "issuer": user->query_username(), "message": args ]));
 
 	turkey = TEXT_USERD->find_user(username);
 

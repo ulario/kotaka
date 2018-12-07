@@ -53,10 +53,9 @@ private void prompt()
 	}
 }
 
-private void strike()
+private string get_ip()
 {
 	object conn;
-	string ip;
 
 	conn = query_user();
 
@@ -67,10 +66,17 @@ private void strike()
 	if (!conn) {
 		LOGD->post_message("system", LOG_WARNING, "Bogus connection chain");
 
-		return;
+		return nil;
 	}
 
-	ip = query_ip_number(conn);
+	return query_ip_number(conn);
+}
+
+private void strike()
+{
+	string ip;
+
+	ip = get_ip();
 
 	if (!ip) {
 		LOGD->post_message("system", LOG_WARNING, "Linkdead user?");
@@ -79,6 +85,19 @@ private void strike()
 	}
 
 	"~/sys/faild"->strike(ip);
+}
+
+private int is_garbage(string input)
+{
+	if (strlen(input) >= 4 && input[0 .. 3] == "GET ") {
+		return 1;
+	}
+
+	if (strlen(input) >= 1 && input[0] < ' ') {
+		return 1;
+	}
+
+	return 0;
 }
 
 static void create(int clone)
@@ -136,6 +155,23 @@ void receive_in(string input)
 
 	switch(state) {
 	case STATE_GETUSERNAME:
+		/* autoban HTTP requests */
+		if (is_junk(input)) {
+			string ip;
+
+			ip = get_ip();
+
+			LOGD->post_message("system", LOG_WARNING, "Banning " + ip + " for sending garbage");
+
+			BAND->ban_site(ip, ([
+				"expire": time() + 30 * 24 * 60 * 60,
+				"issuer": "Text",
+				"message": "Spam"
+			]) );
+
+			return;
+		}
+
 		input = to_lower(input);
 
 		if (input == "") {

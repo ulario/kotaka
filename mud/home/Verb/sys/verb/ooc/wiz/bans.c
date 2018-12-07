@@ -54,12 +54,19 @@ void main(object actor, mapping roles)
 			string message;
 			mapping ban;
 			mixed expire;
+			mixed issuer;
 			int remaining;
 
 			username = users[i];
 			ban = BAND->query_ban(username);
 
 			send_out(username + " ");
+
+			issuer = ban["issuer"];
+
+			if (issuer) {
+				send_out("(issued by " + issuer + ") ");
+			}
 
 			expire = ban["expire"];
 

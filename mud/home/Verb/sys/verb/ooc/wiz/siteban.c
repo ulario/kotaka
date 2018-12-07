@@ -66,6 +66,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	BAND->ban_site(site, ([ "message" : args ]));
+	BAND->ban_site(site, ([ "issuer": user->query_username(), "message" : args ]));
 	send_out("Site banned.\n");
 }
