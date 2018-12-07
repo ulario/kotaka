@@ -27,13 +27,50 @@ inherit "/lib/string/sprint";
 
 string name;
 string password; /* hashed */
+
 mapping properties;
 
 static void create(int clone)
 {
 }
 
-void save();
+void save()
+{
+	string buf;
+
+	ACCESS_CHECK(ACCOUNT());
+
+	buf = hybrid_sprint(
+		([
+			"properties" : properties,
+			"password" : password
+		])
+	);
+
+	SECRETD->make_dir(".");
+	SECRETD->make_dir("accounts");
+
+	SECRETD->remove_file("accounts/" + name + ".tmp");
+	SECRETD->write_file("accounts/" + name + ".tmp", buf + "\n");
+	SECRETD->remove_file("accounts/" + name);
+	SECRETD->rename_file("accounts/" + name + ".tmp", "accounts/" + name);
+}
+
+void load()
+{
+	mapping map;
+	string buf;
+
+	ACCESS_CHECK(ACCOUNT());
+
+	buf = SECRETD->read_file("accounts/" + name);
+	ASSERT(buf);
+
+	map = PARSER_VALUE->parse(buf);
+
+	properties = map["properties"];
+	password = map["password"];
+}
 
 void set_name(string new_name)
 {
@@ -152,42 +189,4 @@ mixed query_property(string property)
 	} else {
 		return nil;
 	}
-}
-
-void save()
-{
-	string buf;
-
-	ACCESS_CHECK(ACCOUNT());
-
-	buf = hybrid_sprint(
-		([
-			"properties" : properties,
-			"password" : password
-		])
-	);
-
-	SECRETD->make_dir(".");
-	SECRETD->make_dir("accounts");
-
-	SECRETD->remove_file("accounts/" + name + ".tmp");
-	SECRETD->write_file("accounts/" + name + ".tmp", buf + "\n");
-	SECRETD->remove_file("accounts/" + name);
-	SECRETD->rename_file("accounts/" + name + ".tmp", "accounts/" + name);
-}
-
-void load()
-{
-	mapping map;
-	string buf;
-
-	ACCESS_CHECK(ACCOUNT());
-
-	buf = SECRETD->read_file("accounts/" + name);
-	ASSERT(buf);
-
-	map = PARSER_VALUE->parse(buf);
-
-	properties = map["properties"];
-	password = map["password"];
 }
