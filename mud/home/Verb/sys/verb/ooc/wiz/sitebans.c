@@ -52,15 +52,39 @@ void main(object actor, mapping roles)
 		for (i = 0; i < sz; i++) {
 			string site;
 			string message;
+			mapping ban;
+			mixed expire;
+			int remaining;
 
 			site = sites[i];
+			ban = BAND->query_siteban(site);
 
-			message = BAND->query_siteban_message(site);
+			send_out(site + " ");
+
+			expire = ban["expire"];
+
+			if (expire == nil) {
+				send_out("(permanent)");
+			} else {
+				remaining = expire - time();
+
+				if (remaining < 60) {
+					send_out("(expires in " + remaining + " seconds)");
+				} else if (remaining < 3600) {
+					send_out("(expires in " + (remaining / 60) + " minutes)");
+				} else if (remaining < 86400) {
+					send_out("(expires in " + (remaining / 3600) + " hours)");
+				} else {
+					send_out("(expires in " + (remaining / 86400) + " days)");
+				}
+			}
+
+			message = ban["message"];
 
 			if (message) {
-				send_out(site + ": " + message + "\n");
+				send_out(": " + message + "\n");
 			} else {
-				send_out(site + " (no message)\n");
+				send_out(" (no message)\n");
 			}
 		}
 	} else {

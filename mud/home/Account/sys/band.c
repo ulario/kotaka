@@ -485,6 +485,28 @@ string *query_bans()
 	return map_indices(bans);
 }
 
+mapping query_ban(string username)
+{
+	mixed ban;
+	mixed expire;
+
+	ban = convert_ban(bans[username]);
+
+	if (ban == nil) {
+		return nil;
+	}
+
+	expire = ban["expire"];
+
+	if (expire != nil && expire != -1) {
+		if (time() >= expire) {
+			return nil;
+		}
+	}
+
+	return ban[..];
+}
+
 void ban_site(string mask, varargs mixed message_arg, mixed expire_arg)
 {
 	string *pnames;
@@ -597,6 +619,28 @@ string *query_sitebans()
 	prune_sitebans();
 
 	return map_indices(sitebans);
+}
+
+mapping query_siteban(string mask)
+{
+	mixed ban;
+	mixed expire;
+
+	ban = convert_ban(sitebans[mask]);
+
+	if (ban == nil) {
+		return nil;
+	}
+
+	expire = ban["expire"];
+
+	if (expire != nil && expire != -1) {
+		if (time() >= expire) {
+			return nil;
+		}
+	}
+
+	return ban[..];
 }
 
 int check_siteban(string ip)

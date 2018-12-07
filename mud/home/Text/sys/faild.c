@@ -22,16 +22,18 @@
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
-mapping strikes; /* ([ IP : ({ strikes, time }) ]) */
+mapping times; /* ([ IP : ({ strikes, time }) ]) */
+mapping strikes; /* ([ IP : strikes ]) */
 
 static void create()
 {
 	strikes = ([ ]);
+	times = ([ ]);
 }
 
 static void ban_site(string ip)
 {
-	LOGD->post_message("system", LOG_NOTICE, "Too many strikes, sitebanning" + ip);
+	LOGD->post_message("system", LOG_NOTICE, "Too many strikes, sitebanning " + ip);
 
 	BAND->ban_site(ip,
 		([
@@ -52,25 +54,25 @@ void reset()
 void strike(string ip)
 {
 	int time;
-	mixed *strike;
+	int *strike;
 
 	ACCESS_CHECK(TEXT());
 
 	time = time();
+
 	strike = strikes[ip];
 
-	if (strike && strike[1] + 24 * 60 * 60 > time) {
-		strike[0]++;
-		strike[1] = time;
-
-		LOGD->post_message("system", LOG_NOTICE, "Issuing login strike " + strike[0] + " against " + ip);
-
-		if (strike[0] >= 3) {
-			call_out("ban_site", 0, ip);
-		}
-	} else {
+	if (!strike || strike[1] + 24 * 60 + 60 < time) {
 		strike = ({ 1, time });
 		strikes[ip] = strike;
+	} else {
+		strike[0]++;
+		strike[1] = time;
+	}
+
+	LOGD->post_message("system", LOG_NOTICE, "Issuing login strike " + strike[0] + " against " + ip);
+
+	if (strike[0] >= 3) {
+		call_out("ban_site", 0, ip);
 	}
 }
-
