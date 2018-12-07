@@ -56,7 +56,7 @@ void save()
 	SECRETD->rename_file("accounts/" + name + ".tmp", "accounts/" + name);
 }
 
-void load()
+void restore()
 {
 	mapping map;
 	string buf;
@@ -70,6 +70,13 @@ void load()
 
 	properties = map["properties"];
 	password = map["password"];
+}
+
+void load()
+{
+	ACCESS_CHECK(ACCOUNT());
+
+	restore();
 }
 
 void set_name(string new_name)
@@ -88,6 +95,8 @@ string query_name()
 
 void delete_account()
 {
+	ACCESS_CHECK(ACCOUNT());
+
 	SECRETD->remove_file("accounts/" + name);
 
 	destruct_object(this_object());

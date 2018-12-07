@@ -147,6 +147,8 @@ void save()
 
 	ACCESS_CHECK(VERB() || ACCOUNT());
 
+	LOGD->post_message("system", LOG_NOTICE, "Saving accounts");
+
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("accounts");
 
@@ -182,18 +184,18 @@ void restore()
 
 	ACCESS_CHECK(VERB() || ACCOUNT());
 
+	LOGD->post_message("system", LOG_NOTICE, "Restoring accounts");
+
 	names = SECRETD->get_dir("accounts/*")[0];
 
 	if (sizeof(names) == ST_ARRAYSIZE) {
 		error("Account count overflow");
 	}
 
-	if (names) {
-		remove = map_indices(accounts) - names;
+	remove = map_indices(accounts) - names;
 
-		for (sz = sizeof(remove); --sz >= 0; ) {
-			destruct_object(accounts[remove[sz]]);
-		}
+	for (sz = sizeof(remove); --sz >= 0; ) {
+		destruct_object(accounts[remove[sz]]);
 	}
 
 	for (sz = sizeof(names); --sz >= 0; ) {
@@ -209,6 +211,6 @@ void restore()
 		account = accounts[name];
 
 		account->set_name(name);
-		account->load();
+		account->restore();
 	}
 }
