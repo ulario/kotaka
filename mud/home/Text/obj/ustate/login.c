@@ -156,7 +156,7 @@ void receive_in(string input)
 	switch(state) {
 	case STATE_GETUSERNAME:
 		/* autoban HTTP requests */
-		if (is_junk(input)) {
+		if (is_garbage(input)) {
 			string ip;
 
 			ip = get_ip();
