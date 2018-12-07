@@ -87,17 +87,17 @@ private void strike()
 	"~/sys/faild"->strike(ip);
 }
 
-private int is_garbage(string input)
+private string garbage(string input)
 {
 	if (strlen(input) >= 4 && input[0 .. 3] == "GET ") {
-		return 1;
+		return "http";
 	}
 
 	if (strlen(input) >= 1 && input[0] < ' ') {
-		return 1;
+		return "control";
 	}
 
-	return 0;
+	return nil;
 }
 
 static void create(int clone)
@@ -151,22 +151,25 @@ void end()
 
 void receive_in(string input)
 {
+	string garbage;
+
 	ACCESS_CHECK(previous_object() == query_user());
 
 	switch(state) {
 	case STATE_GETUSERNAME:
-		/* autoban HTTP requests */
-		if (is_garbage(input)) {
+		garbage = garbage(input);
+
+		if (garbage) {
 			string ip;
 
 			ip = get_ip();
 
-			LOGD->post_message("system", LOG_WARNING, "Banning " + ip + " for sending garbage");
+			LOGD->post_message("system", LOG_WARNING, "Banning " + ip + " for sending " + garbage + " garbage");
 
 			BAND->ban_site(ip, ([
 				"expire": time() + 30 * 24 * 60 * 60,
 				"issuer": "Text",
-				"message": "Spam"
+				"message": "Sending garbage"
 			]) );
 
 			return;
