@@ -81,11 +81,9 @@ string query_sitebanned_banner(object LIB_CONN connection)
 
 	ASSERT(ip);
 
-	LOGD->post_message("system", LOG_NOTICE, "Telnet connection from banned ip " + ip);
+	LOGD->post_message("system", LOG_NOTICE, "Telnet connection from sitebanned ip " + ip);
 
 	ban = BAND->check_siteban(ip);
-
-	ASSERT(ban);
 
 	output = "You are sitebanned\n";
 
@@ -107,11 +105,11 @@ string query_sitebanned_banner(object LIB_CONN connection)
 			if (remaining < 60) {
 				output += "(expires in " + remaining + " seconds)\n";
 			} else if (remaining < 3600) {
-				output += "(expires in " + (remaining / 60 + 1) + " minutes)\n";
+				output += "(expires in " + ((remaining + 59) / 60) + " minutes)\n";
 			} else if (remaining < 86400) {
-				output += "(expires in " + (remaining / 3600 + 1) + " hours)\n";
+				output += "(expires in " + ((remaining + 3599) / 3600) + " hours)\n";
 			} else {
-				output += "(expires in " + (remaining / 86400 + 1) + " days)\n";
+				output += "(expires in " + ((remaining + 86399) / 86400) + " days)\n";
 			}
 		}
 	}
