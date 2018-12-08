@@ -296,6 +296,8 @@ private void do_chanlist_reply(mixed *value)
 
 private void do_emoteto(mixed *value)
 {
+	string mud;
+	string message;
 	object user;
 
 	if (user = TEXT_USERD->find_user(value[5])) {
@@ -418,8 +420,13 @@ private void do_tell(mixed *value)
 
 private void do_channel_m(mixed *value)
 {
+	string name;
+	string visname;
+	string mud;
 	string message;
 	string newmessage;
+	string header;
+	string channel;
 	int i, sz;
 	int cflag;
 
@@ -441,15 +448,26 @@ private void do_channel_m(mixed *value)
 		newmessage += tip;
 	}
 
-	if (cflag) {
-		LOGD->post_message("system", LOG_WARNING, value[3] + "@" + value[2] + " sent a control character on I3 via " + value[6]);
+	message = newmessage;
+
+	mud = value[2];
+	name = value[3];
+	channel = value[6];
+	visname = value[7];
+
+	if (sscanf(message, "%*s%%^")) {
+		message = TEXT_SUBD->pinkfish2ansi(message) + "\033[0m";
 	}
 
-	if (CHANNELD->test_channel(value[6])) {
-		if (to_lower(value[3]) == to_lower(value[7])) {
-			CHANNELD->post_message(value[6], value[7] + "@" + value[2], newmessage, 1);
+	if (cflag) {
+		LOGD->post_message("system", LOG_WARNING, name + "@" + mud + " sent a control character on I3 via " + channel);
+	}
+
+	if (CHANNELD->test_channel(channel)) {
+		if (to_lower(name) == to_lower(visname)) {
+			CHANNELD->post_message(channel, visname + "@" + mud, message, 1);
 		} else {
-			CHANNELD->post_message(value[6], value[7] + " (" + value[3] + ")@" + value[2], newmessage, 1);
+			CHANNELD->post_message(channel, visname + " (" + name + ")@" + mud, message, 1);
 		}
 	}
 }
@@ -485,8 +503,28 @@ private void do_who_reply(mixed *value)
 	user->message("Users online at " + value[2] + ":\n");
 
 	for (i = 0, sz = sizeof(who_data); i < sz; i++) {
-		user->message(who_data[i][0] + " " + who_data[i][2] + "\n");
+		string visname;
+		int idle;
+		string extra;
+
+		visname = who_data[i][0];
+		idle = who_data[i][1];
+		extra = who_data[i][2];
+
+		user->message(TEXT_SUBD->pinkfish2ansi(visname));
+
+		if (extra) {
+			user->message(" - " + TEXT_SUBD->pinkfish2ansi(extra));
+		}
+
+		if (idle) {
+			user->message(" (" + idle + "s)");
+		}
+
+		user->message("\n");
 	}
+
+	user->message("\033[0m");
 }
 
 private void bounce_packet(mixed *value)
