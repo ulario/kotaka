@@ -228,11 +228,15 @@ void receive_in(string input)
 
 		if (ACCOUNTD->query_is_registered(username)) {
 			if (!ACCOUNTD->authenticate(username, password)) {
+				object user;
+
 				send_out("Wrong password\n");
 
 				strike();
 
-				query_user()->quit("badpass");
+				if (user = query_user()) {
+					user->quit("badpass");
+				}
 
 				return;
 			}

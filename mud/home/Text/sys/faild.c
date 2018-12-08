@@ -73,6 +73,6 @@ void strike(string ip)
 	LOGD->post_message("system", LOG_NOTICE, "Issuing login strike " + strike[0] + " against " + ip);
 
 	if (strike[0] >= 3) {
-		call_out("ban_site", 0, ip);
+		ban_site(ip);
 	}
 }

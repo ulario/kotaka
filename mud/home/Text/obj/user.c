@@ -36,7 +36,6 @@ inherit "/lib/string/replace";
 object mobile;
 object body;
 int destructing;
-int keepalive;
 int quitting;
 int logging_out;
 string username;
@@ -193,33 +192,52 @@ void quit(string cause)
 
 	case "sitebanned": /* user was sitebanned */
 		{
-			string msg;
+			mapping ban;
+			string message;
+			mixed expire;
 
-			msg = BAND->check_siteban_message(query_ip_number(query_base_conn()));
+			ban = BAND->check_siteban(query_ip_number(query_base_conn()));
 
-			message("\n\nYou have been sitebanned.\n\n");
+			message("\n\nYou have just been sitebanned.\n\n");
 
-			if (msg) {
-				message(msg + "\n");
+			if (message = ban["message"]) {
+				message(message + "\n");
+			}
+
+			expire = ban["expire"];
+
+			if (expire != nil && expire != -1) {
+				int remaining;
+
+				remaining = expire - time();
+
+				if (remaining < 60) {
+					message("(expires in " + remaining + " seconds)\n");
+				} else if (remaining < 3600) {
+					message("(expires in " + (remaining / 60 + 1) + " minutes)\n");
+				} else if (remaining < 86400) {
+					message("(expires in " + (remaining / 3600 + 1) + " hours)\n");
+				} else {
+					message("(expires in " + (remaining / 86400 + 1) + " days)\n");
+				}
 			}
 		}
 		break;
 
 	case "bumped": /* user logged in on another connection */
-		/* handled by new user's login */
-		break;
+		break; /* handled by new user's login */
 
 	case "badpass": /* password authentication failed */
-		break;
+		break; /* handled by login */
 
 	case "kicked": /* user was kicked */
-		break; /* kick will handle this */
+		break; /* handled by kick */
 
 	case "nuked": /* user's account was nuked */
-		break;
+		break; /* handled by nuke */
 
 	case "timeout": /* user timed out at login process */
-		break; /* handled by start ustate */
+		break; /* handled by login */
 
 	case "idle": /* user idled out */
 		break;
@@ -239,7 +257,6 @@ void logout(int dest)
 	if (username && !quitting) {
 		if (dest) {
 			/* connection object was destructed, manual logout */
-			message("Come back soon.\n");
 		} else {
 			/* remote closure, we're linkdead */
 		}
