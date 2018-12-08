@@ -23,6 +23,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
+#include <kotaka/log.h>
 
 inherit "/lib/string/case";
 inherit LIB_EMIT;
@@ -323,4 +324,65 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 	}
 
 	return implode(message, " ");
+}
+
+string pinkfish2ansi(string input)
+{
+	string output;
+
+	output = "";
+
+	while (strlen(input)) {
+		string head;
+		string fish;
+		string tail;
+
+		switch(sscanf(input, "%s%%^%s%%^%s", head, fish, tail)) {
+		case 0:
+			/* no more pinkfish codes */
+		case 1:
+			/* incomplete pinkfish code */
+			output += input;
+			return output;
+		case 2:
+			tail = "";
+		case 3:
+			output += head;
+			input = tail;
+
+			switch(fish) {
+			case "BOLD":
+				output += "\033[1m";
+				break;
+			case "RESET":
+				output += "\033[0m";
+				break;
+			case "RED":
+				output += "\033[31m";
+				break;
+			case "GREEN":
+				output += "\033[32m";
+				break;
+			case "YELLOW":
+				output += "\033[33m";
+				break;
+			case "BLUE":
+				output += "\033[34m";
+				break;
+			case "CYAN":
+				output += "\033[35m";
+				break;
+			case "MAGENTA":
+				output += "\033[36m";
+				break;
+			case "WHITE":
+				output += "\033[37m";
+				break;
+			default:
+				LOGD->post_message("system", LOG_NOTICE, "Unknown pinkfish code " + fish);
+			}
+		}
+	}
+
+	return output;
 }
