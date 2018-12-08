@@ -214,11 +214,11 @@ void quit(string cause)
 				if (remaining < 60) {
 					message("(expires in " + remaining + " seconds)\n");
 				} else if (remaining < 3600) {
-					message("(expires in " + (remaining / 60 + 1) + " minutes)\n");
+					message("(expires in " + ((remaining + 59) / 60) + " minutes)\n");
 				} else if (remaining < 86400) {
-					message("(expires in " + (remaining / 3600 + 1) + " hours)\n");
+					message("(expires in " + ((remaining + 3599) / 3600) + " hours)\n");
 				} else {
-					message("(expires in " + (remaining / 86400 + 1) + " days)\n");
+					message("(expires in " + ((remaining + 86399) / 86400) + " days)\n");
 				}
 			}
 		}
