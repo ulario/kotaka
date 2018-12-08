@@ -33,76 +33,6 @@ void prune_sitebans();
 mapping bans;
 mapping sitebans;
 
-private mapping convert_ban(mixed ban)
-{
-	mapping converted;
-	string message;
-	mixed expire;
-
-	switch(typeof(ban)) {
-	case T_NIL:
-		return nil;
-
-	case T_INT: /* blank ban */
-		return ([ ]);
-
-	case T_STRING: /* ban with message */
-		return ([
-			"message": ban
-		]);
-
-	case T_ARRAY: /* modern ban */
-		converted = ([ ]);
-		message = ban[0];
-
-		if (message) {
-			converted["message"];
-		}
-
-		expire = ban[1];
-
-		if (expire != nil && expire != -1) {
-			converted["expire"] = expire;
-		}
-
-		return converted;
-
-	case T_MAPPING:
-		expire = ban["expire"];
-
-		if (expire == -1) {
-			ban["expire"] = nil;
-		}
-
-		return ban;
-	}
-}
-
-private void convert_bans()
-{
-	string *keys;
-	mixed *values;
-	int sz;
-
-	keys = map_indices(bans);
-	values = map_values(bans);
-
-	for (sz = sizeof(keys); --sz >= 0; ) {
-		mixed value;
-
-		bans[keys[sz]] = convert_ban(values[sz]);
-	}
-
-	keys = map_indices(sitebans);
-	values = map_values(sitebans);
-
-	for (sz = sizeof(keys); --sz >= 0; ) {
-		mixed value;
-
-		sitebans[keys[sz]] = convert_ban(values[sz]);
-	}
-}
-
 private string cidr_mask(string site, int cidr)
 {
 	mixed o1, o2, o3, o4;
@@ -216,22 +146,6 @@ private string canonicalize_mask(string mask)
 	return cidr_mask(o1 + "." + o2 + "." + o3 + "." + o4, cidr) + "/" + cidr;
 }
 
-private void canonicalize_sitebans()
-{
-	string *keys;
-	mixed *values;
-	int sz;
-
-	keys = map_indices(sitebans);
-	values = map_values(sitebans);
-
-	sitebans = ([ ]);
-
-	for (sz = sizeof(keys); --sz >= 0; ) {
-		sitebans[canonicalize_mask(keys[sz])] = values[sz];
-	}
-}
-
 private void check_property(string name, mixed value)
 {
 	switch(name) {
@@ -275,9 +189,6 @@ void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	canonicalize_sitebans();
-	convert_bans();
-
 	call_out("save", 0);
 }
 
@@ -287,8 +198,6 @@ void save()
 
 	ACCESS_CHECK(KERNEL() || ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
 
-	convert_bans();
-	canonicalize_sitebans();
 	prune_bans();
 	prune_sitebans();
 
@@ -322,8 +231,6 @@ void restore()
 		sitebans = save["sitebans"];
 	}
 
-	convert_bans();
-	canonicalize_sitebans();
 	prune_bans();
 	prune_sitebans();
 }
@@ -341,8 +248,7 @@ void prune_bans()
 		string key;
 
 		key = keys[sz];
-
-		ban = convert_ban(bans[key]);
+		ban = bans[key];
 
 		expire = ban["expire"];
 
@@ -367,8 +273,7 @@ void prune_sitebans()
 		string key;
 
 		key = keys[sz];
-
-		ban = convert_ban(sitebans[key]);
+		ban = sitebans[key];
 
 		expire = ban["expire"];
 
@@ -439,7 +344,7 @@ int query_is_user_banned(string username)
 	mixed ban;
 	mixed expire;
 
-	ban = convert_ban(bans[username]);
+	ban = bans[username];
 
 	if (ban == nil) {
 		return 0;
@@ -461,7 +366,7 @@ string query_ban_message(string username)
 	mixed ban;
 	mixed expire;
 
-	ban = convert_ban(bans[username]);
+	ban = bans[username];
 
 	if (ban == nil) {
 		return nil;
@@ -490,7 +395,7 @@ mapping query_ban(string username)
 	mixed ban;
 	mixed expire;
 
-	ban = convert_ban(bans[username]);
+	ban = bans[username];
 
 	if (ban == nil) {
 		return nil;
@@ -560,7 +465,6 @@ void unban_site(string mask)
 {
 	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
 
-	canonicalize_sitebans();
 	mask = canonicalize_mask(mask);
 
 	sitebans[mask] = nil;
@@ -574,7 +478,7 @@ int query_is_site_banned(string site)
 	mixed expire;
 
 	site = canonicalize_mask(site);
-	ban = convert_ban(sitebans[site]);
+	ban = sitebans[site];
 
 	if (ban == nil) {
 		return 0;
@@ -596,7 +500,7 @@ string query_siteban_message(string mask)
 	mixed ban;
 	mixed expire;
 
-	ban = convert_ban(sitebans[canonicalize_mask(mask)]);
+	ban = sitebans[canonicalize_mask(mask)];
 
 	if (ban == nil) {
 		return nil;
@@ -615,7 +519,6 @@ string query_siteban_message(string mask)
 
 string *query_sitebans()
 {
-	canonicalize_sitebans();
 	prune_sitebans();
 
 	return map_indices(sitebans);
@@ -626,7 +529,7 @@ mapping query_siteban(string mask)
 	mixed ban;
 	mixed expire;
 
-	ban = convert_ban(sitebans[mask]);
+	ban = sitebans[mask];
 
 	if (ban == nil) {
 		return nil;
@@ -648,8 +551,6 @@ int test_siteban(string ip)
 	int cidr;
 	string masked;
 
-	canonicalize_sitebans();
-
 	for (cidr = 32; cidr >= 0; cidr--) {
 		masked = cidr_mask(ip, cidr);
 
@@ -665,8 +566,6 @@ mapping check_siteban(string ip)
 {
 	int cidr;
 	string masked;
-
-	canonicalize_sitebans();
 
 	for (cidr = 32; cidr >= 0; cidr--) {
 		mapping ban;
