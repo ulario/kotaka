@@ -95,6 +95,7 @@ void receive_in(string input)
 			return;
 		} else {
 			state = STATE_GETPASSWORD;
+			send_out("New password: ");
 			query_user()->set_mode(MODE_NOECHO);
 			username = input;
 			return;
