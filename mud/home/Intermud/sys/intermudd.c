@@ -36,6 +36,13 @@
 #define ROUTER_IP	"195.242.99.94"
 #define ROUTER_PORT	8080
 
+/*
+*dalet          97.107.133.86                  8787
+*Kelly          150.101.219.57                 8080
+*i4             204.209.44.3                   8080
+*wpr            195.242.99.94                  8080
+*/
+
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 inherit "/lib/copy";
