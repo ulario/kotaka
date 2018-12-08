@@ -120,13 +120,13 @@ private void alloc_queue()
 
 private void free_queue()
 {
-	if (!sscanf(object_name(cmap), "%*s#-1")) {
+	if (cmap && !sscanf(object_name(cmap), "%*s#-1")) {
 		destruct_object(cmap);
 	} else {
 		cmap = nil;
 	}
 
-	if (!sscanf(object_name(cqueue), "%*s#-1")) {
+	if (cqueue && !sscanf(object_name(cqueue), "%*s#-1")) {
 		destruct_object(cqueue);
 	} else {
 		cqueue = nil;
