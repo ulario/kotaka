@@ -47,8 +47,8 @@ string generate_error_page(int status_code, string status_message, string lines.
 	response += "</head>\n";
 
 	response += "<body>\n";
-	response += "<div style=\"text-align: center;\">";
-	response += "<h1 style=\"color: red;\">" + status_message + "</h1>\n";
+	response += "<div style=\"text-align: center;\">\n";
+	response += "<h1 style=\"color: white; background-color: red; padding: 1em;\">" + status_message + "</h1>\n";
 
 	for (sz = sizeof(lines); i < sz; i++) {
 		response += "<p>" + lines[i] + "</p>\n";
@@ -77,13 +77,23 @@ string query_blocked_banner(object connection)
 	);
 }
 
-string query_overload_banner(object connection)
+float query_blocked_timeout(object connection)
+{
+	return 0.1;
+}
+
+string query_overloaded_banner(object connection)
 {
 	return generate_error_page(503
 		, "Server busy"
 		, "The server has too many connections at the moment."
 		, "Please try again in 60 seconds."
 	);
+}
+
+float query_overloaded_timeout(object connection)
+{
+	return 0.1;
 }
 
 string query_sitebanned_banner(object connection)
@@ -141,6 +151,11 @@ string query_sitebanned_banner(object connection)
 	}
 
 	return generate_error_page(403, bits...);
+}
+
+float query_sitebanned_timeout(object connection)
+{
+	return 0.1;
 }
 
 int query_timeout(object connection)

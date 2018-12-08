@@ -23,10 +23,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <status.h>
-
-#define SITEBAN_DELAY  0.05 /* linger time for dumping a sitebanned connection */
-#define OVERLOAD_DELAY 0.05 /* linger time for dumping an overloaded connection */
-#define BLOCK_DELAY    0.05 /* linger time for dumping a blocked connection */
+#include <type.h>
 
 inherit SECOND_AUTO;
 inherit LIB_USERD;
@@ -271,47 +268,106 @@ string query_banner(object LIB_CONN connection)
 
 	if (!manager) {
 		TLSD->set_tls_value("System", "abort-connection", 1);
+		TLSD->set_tls_value("System", "abort-delay", 0);
 
 		return "No connection manager\n";
 	}
 
 	if (BAND->check_siteban(query_ip_number(root))) {
+		mixed timeout;
+
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", free_users() ? SITEBAN_DELAY : 0);
 
 		root->set_mode(MODE_BLOCK);
 
-		catch {
-			return manager->query_sitebanned_banner(connection);
-		} : {
+		timeout = 0;
+
+		if (function_object("query_sitebanned_timeout", manager)) {
+			catch {
+				timeout = manager->query_sitebanned_timeout(connection);
+			}
+
+			if ((float)timeout > 1.0) {
+				timeout = 1.0;
+			}
+		}
+
+		TLSD->set_tls_value("System", "abort-delay", free_users() ? timeout : 0);
+
+		if (function_object("query_sitebanned_banner", manager)) {
+			catch {
+				return manager->query_sitebanned_banner(connection);
+			} : {
+				return "Sitebanned\n";
+			}
+		} else {
 			return "Sitebanned\n";
 		}
 	}
 
 	if (blocked) {
+		mixed timeout;
+
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", free_users() ? BLOCK_DELAY : 0);
 
 		root->set_mode(MODE_BLOCK);
 
-		catch {
-			return manager->query_blocked_banner(connection);
-		} : {
-			return "Connection manager fault\n\nSystem suspended\n";
+		timeout = 0;
+
+		if (function_object("query_blocked_timeout", manager)) {
+			catch {
+				timeout = manager->query_blocked_timeout(connection);
+			}
+
+			if ((float)timeout > 1.0) {
+				timeout = 1.0;
+			}
+		}
+
+		TLSD->set_tls_value("System", "abort-delay", free_users() ? timeout : 0);
+
+		if (function_object("query_blocked_banner", manager)) {
+			catch {
+				return manager->query_blocked_banner(connection);
+			} : {
+				return "Connection manager fault\n\nConnections blocked\n";
+			}
+		} else {
+			return "Connections blocked\n";
 		}
 	}
 
 	if (!free_users()) {
-		/* current connection is occupying the last slot */
+		mixed timeout;
+
 		TLSD->set_tls_value("System", "abort-connection", 1);
-		TLSD->set_tls_value("System", "abort-delay", 0);
 
 		root->set_mode(MODE_BLOCK);
 
-		catch {
-			return manager->query_overload_banner(connection);
-		} : {
-			return "Connection manager fault\n\nSystem busy\n";
+		timeout = 0;
+
+		if (function_object("query_overloaded_timeout", manager)) {
+			catch {
+				timeout = manager->query_overloaded_timeout(connection);
+			}
+
+			if ((float)timeout > 1.0) {
+				timeout = 1.0;
+			}
+		}
+
+		TLSD->set_tls_value("System", "abort-delay", free_users() ? timeout : 0);
+
+		root->set_mode(MODE_BLOCK);
+
+		if (function_object("query_overloaded_banner", manager)) {
+			catch {
+				return manager->query_overloaded_banner(connection);
+			} : {
+				return "Connection manager fault\n\nSystem busy\n";
+			}
+		} else {
+			return "System busy\n";
 		}
 	}
 
@@ -330,8 +386,20 @@ int query_timeout(object LIB_CONN connection)
 
 		delay = TLSD->query_tls_value("System", "abort-delay");
 
-		if (!delay || (float)delay < 0.0) {
+		switch(typeof(delay)) {
+		case T_NIL:
 			return -1;
+
+		case T_INT:
+			if (delay <= 0) {
+				return -1;
+			}
+			break;
+
+		case T_FLOAT:
+			if (delay <= 0.0) {
+				return -1;
+			}
 		}
 
 		connection->set_mode(MODE_BLOCK);

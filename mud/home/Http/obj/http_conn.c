@@ -25,11 +25,11 @@
 #include <kotaka/assert.h>
 #include <type.h>
 
-inherit LIB_SYSTEM_USER;
+#define STATE_HEADERS    1
+#define STATE_ENTITY     2
+#define STATE_RESPONDING 3
 
-#define STATE_HEADERS		1
-#define STATE_ENTITY		2
-#define STATE_RESPONDING	3
+inherit LIB_SYSTEM_USER;
 
 string request;
 int state;

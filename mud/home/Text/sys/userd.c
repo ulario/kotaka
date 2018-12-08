@@ -57,59 +57,21 @@ static void destruct()
 	}
 }
 
-object select(string str)
-{
-	int has_telnet, has_mudclient;
-	object conn;
-	string basename;
-
-	conn = previous_object(2);
-
-	while (conn && conn <- LIB_USER) {
-		if (conn <- "~/obj/filter/telnet") {
-			has_telnet = 1;
-		}
-		if (conn <- "~/obj/filter/mudclient") {
-			has_mudclient = 1;
-		}
-
-		conn = conn->query_conn();
-	}
-
-	if (!conn) {
-		return nil;
-	}
-
-	sscanf(object_name(conn), "%s#%*d", basename);
-
-	switch(basename) {
-	case BINARY_CONN:
-		if (!has_telnet) {
-			return clone_object("~/obj/filter/telnet");
-		}
-		/* fall through */
-
-	case TELNET_CONN:
-		if (!has_mudclient) {
-			return clone_object("~/obj/filter/mudclient");
-		}
-		return clone_object("~/obj/user");
-	}
-}
-
 string query_blocked_banner(object LIB_CONN connection)
 {
-	return "Maintenance in progress.\n";
+	return "Maintenance in progress\n";
 }
 
-string query_overload_banner(object LIB_CONN connection)
+string query_overloaded_banner(object LIB_CONN connection)
 {
-	return "Too many connections.\n";
+	return "Too many connections\n";
 }
 
-private string query_siteban_message(object LIB_CONN connection)
+string query_sitebanned_banner(object LIB_CONN connection)
 {
 	string ip;
+	mapping ban;
+	string output;
 
 	while (connection && connection <- LIB_USER) {
 		connection = connection->query_conn();
@@ -117,18 +79,44 @@ private string query_siteban_message(object LIB_CONN connection)
 
 	ip = query_ip_number(connection);
 
-	ip = BAND->check_siteban_message(ip);
+	ASSERT(ip);
 
-	if (ip) {
-		return "You are sitebanned\n\n" + ip + "\n";
-	} else {
-		return "You are sitebanned\n";
+	LOGD->post_message("system", LOG_NOTICE, "Telnet connection from banned ip " + ip);
+
+	ban = BAND->check_siteban(ip);
+
+	ASSERT(ban);
+
+	output = "You are sitebanned\n";
+
+	if (ban) {
+		string message;
+		mixed expire;
+
+		if (message = ban["message"]) {
+			output += message + "\n";
+		}
+
+		expire = ban["expire"];
+
+		if (expire != nil) {
+			int remaining;
+
+			remaining = expire - time();
+
+			if (remaining < 60) {
+				output += "(expires in " + remaining + " seconds)\n";
+			} else if (remaining < 3600) {
+				output += "(expires in " + (remaining / 60 + 1) + " minutes)\n";
+			} else if (remaining < 86400) {
+				output += "(expires in " + (remaining / 3600 + 1) + " hours)\n";
+			} else {
+				output += "(expires in " + (remaining / 86400 + 1) + " days)\n";
+			}
+		}
 	}
-}
 
-string query_sitebanned_banner(object LIB_CONN connection)
-{
-	return query_siteban_message(connection);
+	return output;
 }
 
 void siteban_notify(object LIB_CONN connection)
@@ -185,6 +173,45 @@ int query_timeout(object LIB_CONN connection)
 	return 5;
 }
 
+object select(string str)
+{
+	int has_telnet, has_mudclient;
+	object conn;
+	string basename;
+
+	conn = previous_object(2);
+
+	while (conn && conn <- LIB_USER) {
+		if (conn <- "~/obj/filter/telnet") {
+			has_telnet = 1;
+		}
+		if (conn <- "~/obj/filter/mudclient") {
+			has_mudclient = 1;
+		}
+
+		conn = conn->query_conn();
+	}
+
+	if (!conn) {
+		return nil;
+	}
+
+	sscanf(object_name(conn), "%s#%*d", basename);
+
+	switch(basename) {
+	case BINARY_CONN:
+		if (!has_telnet) {
+			return clone_object("~/obj/filter/telnet");
+		}
+		/* fall through */
+
+	case TELNET_CONN:
+		if (!has_mudclient) {
+			return clone_object("~/obj/filter/mudclient");
+		}
+		return clone_object("~/obj/user");
+	}
+}
 void add_user(string name, object user)
 {
 	ACCESS_CHECK(TEXT());

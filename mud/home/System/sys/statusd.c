@@ -225,10 +225,18 @@ string query_sitebanned_banner(object connection)
 
 		remaining = expire - time();
 
-		output += " (expires in " + remaining + " seconds)";
+		if (remaining < 60) {
+			output += " (expires in " + remaining + " seconds)";
+		} else if (remaining < 3600) {
+			output += " (expires in " + (remaining / 60 + 1) + " minutes)";
+		} else if (remaining < 86400) {
+			output += " (expires in " + (remaining / 3600 + 1) + " hours)";
+		} else {
+			output += " (expires in " + (remaining / 86400 + 1) + " days)";
+		}
 	}
 
-	return output;
+	return output + "\n";
 }
 
 int query_timeout(object conn)
