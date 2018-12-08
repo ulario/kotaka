@@ -682,3 +682,14 @@ mapping check_siteban(string ip)
 
 	return nil;
 }
+
+string check_siteban_message(string ip)
+{
+	mapping ban;
+
+	ban = check_siteban(ip);
+
+	if (ban) {
+		return ban["message"];
+	}
+}
