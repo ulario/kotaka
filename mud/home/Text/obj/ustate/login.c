@@ -40,6 +40,7 @@ int state;
 
 int stopped;
 int pending;
+int persist;
 
 private void prompt()
 {
@@ -70,21 +71,6 @@ private string get_ip()
 	}
 
 	return query_ip_number(conn);
-}
-
-private void strike()
-{
-	string ip;
-
-	ip = get_ip();
-
-	if (!ip) {
-		LOGD->post_message("system", LOG_WARNING, "Linkdead user?");
-
-		return;
-	}
-
-	"~/sys/faild"->strike(ip);
 }
 
 private string garbage(string input)
@@ -146,7 +132,9 @@ void go()
 
 void end()
 {
-	destruct_object(this_object());
+	if (!persist) {
+		destruct_object(this_object());
+	}
 }
 
 void receive_in(string input)
@@ -229,14 +217,19 @@ void receive_in(string input)
 		if (ACCOUNTD->query_is_registered(username)) {
 			if (!ACCOUNTD->authenticate(username, password)) {
 				object user;
+				string ip;
 
 				send_out("Wrong password\n");
 
-				strike();
+				persist = 1;
 
-				if (user = query_user()) {
-					user->quit("badpass");
-				}
+				ip = get_ip();
+
+				query_user()->quit("badpass");
+
+				"~/sys/faild"->strike(ip);
+
+				destruct_object(this_object());
 
 				return;
 			}
