@@ -171,37 +171,11 @@ void suspend(object obj, int handle)
 
 	ACCESS_CHECK(previous_program() == RSRCD);
 
-	if (dead) {
-		catch {
-			RSRCD->release_callout(obj, handle);
-		}
-		return;
+	catch {
+		RSRCD->release_callout(obj, handle);
 	}
 
-	if (object_name(obj) == SUSPENDD) {
-		catch {
-			RSRCD->release_callout(obj, handle);
-		}
-		return;
-	}
-
-	if ((end + 1) & 0x3FFFFFFF == begin) {
-		error("Suspension queue overflow");
-	}
-
-	oindex = object_index(obj);
-
-	map = cmap->query_element(oindex);
-
-	if (!map) {
-		map = ([ ]);
-		cmap->set_element(oindex, map);
-	}
-
-	map[handle] = end;
-
-	cqueue->set_element(end++, ({ obj, handle }) );
-	end &= 0x3FFFFFFF;
+	return;
 }
 
 int remove_callout(object obj, int handle)
