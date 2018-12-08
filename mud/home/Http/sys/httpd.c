@@ -110,13 +110,13 @@ string query_sitebanned_banner(object connection)
 
 	ASSERT(ip);
 
-	LOGD->post_message("system", LOG_NOTICE, "HTTP connection from banned ip " + ip);
+	LOGD->post_message("system", LOG_NOTICE, "HTTP connection from sitebanned ip " + ip);
 
 	ban = BAND->check_siteban(ip);
 
 	ASSERT(ban);
 
-	bits = ({ "Banned", "You are banned from this server" });
+	bits = ({ "Sitebanned", "You are sitebanned from this server" });
 
 	if (ban) {
 		string message;
