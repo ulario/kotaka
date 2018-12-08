@@ -78,11 +78,11 @@ void main(object actor, mapping roles)
 				if (remaining < 60) {
 					send_out("(expires in " + remaining + " seconds)");
 				} else if (remaining < 3600) {
-					send_out("(expires in " + (remaining / 60) + " minutes)");
+					send_out("(expires in " + (remaining / 60 + 1) + " minutes)");
 				} else if (remaining < 86400) {
-					send_out("(expires in " + (remaining / 3600) + " hours)");
+					send_out("(expires in " + (remaining / 3600 + 1) + " hours)");
 				} else {
-					send_out("(expires in " + (remaining / 86400) + " days)");
+					send_out("(expires in " + (remaining / 86400 + 1) + " days)");
 				}
 			}
 

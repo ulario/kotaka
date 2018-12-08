@@ -643,7 +643,7 @@ mapping query_siteban(string mask)
 	return ban[..];
 }
 
-int check_siteban(string ip)
+int test_siteban(string ip)
 {
 	int cidr;
 	string masked;
@@ -661,7 +661,7 @@ int check_siteban(string ip)
 	return 0;
 }
 
-string check_siteban_message(string ip)
+mapping check_siteban(string ip)
 {
 	int cidr;
 	string masked;
@@ -669,10 +669,14 @@ string check_siteban_message(string ip)
 	canonicalize_sitebans();
 
 	for (cidr = 32; cidr >= 0; cidr--) {
+		mapping ban;
+
 		masked = cidr_mask(ip, cidr);
 
-		if (query_is_site_banned(masked + "/" + cidr)) {
-			return query_siteban_message(masked + "/" + cidr);
+		ban = query_siteban(masked + "/" + cidr);
+
+		if (ban) {
+			return ban;
 		}
 	}
 

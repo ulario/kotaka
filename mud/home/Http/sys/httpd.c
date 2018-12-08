@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
+#include <kotaka/log.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kernel/user.h>
@@ -87,6 +89,8 @@ string query_overload_banner(object connection)
 string query_sitebanned_banner(object connection)
 {
 	string ip;
+	mapping ban;
+	string *bits;
 
 	while (connection && connection <- LIB_USER) {
 		connection = connection->query_conn();
@@ -94,20 +98,49 @@ string query_sitebanned_banner(object connection)
 
 	ip = query_ip_number(connection);
 
-	ip = BAND->check_siteban_message(ip);
+	ASSERT(ip);
 
-	if (ip) {
-		return generate_error_page(403
-			, "Banned"
-			, "You are banned from this server."
-			, ip
-		);
-	} else {
-		return generate_error_page(403
-			, "Banned"
-			, "You are banned from this server."
-		);
+	LOGD->post_message("system", LOG_NOTICE, "HTTP connection from banned ip " + ip);
+
+	ban = BAND->check_siteban(ip);
+
+	ASSERT(ban);
+
+	bits = ({ "Banned", "You are banned from this server" });
+
+	if (ban) {
+		string message;
+		mixed expire;
+
+		message = ban["message"];
+
+		if (ban["message"]) {
+			bits += ({ message });
+		}
+
+		expire = ban["expire"];
+
+		if (expire != nil) {
+			int remaining;
+			string emessage;
+
+			remaining = expire - time();
+
+			if (remaining < 60) {
+				emessage = "Expires in " + remaining + " seconds";
+			} else if (remaining < 3600) {
+				emessage = "Expires in " + (remaining / 60 + 1) + " minutes";
+			} else if (remaining < 86400) {
+				emessage = "Expires in " + (remaining / 3600 + 1) + " hours";
+			} else {
+				emessage = "Expires in " + (remaining / 86400 + 1) + " days";
+			}
+
+			bits += ({ emessage });
+		}
 	}
+
+	return generate_error_page(403, bits...);
 }
 
 int query_timeout(object connection)

@@ -195,6 +195,10 @@ string query_banner(object conn)
 string query_sitebanned_banner(object connection)
 {
 	string ip;
+	mapping ban;
+	string output;
+	string message;
+	mixed expire;
 
 	while (connection && connection <- LIB_USER) {
 		connection = connection->query_conn();
@@ -202,13 +206,29 @@ string query_sitebanned_banner(object connection)
 
 	ip = query_ip_number(connection);
 
-	ip = BAND->check_siteban_message(ip);
+	ban = BAND->check_siteban(ip);
 
-	if (ip) {
-		return "Access denied (" + ip + ")\n";
-	} else {
-		return "Access denied\n";
+	if (!ban) {
+		return "Access denied";
 	}
+
+	output = "Access denied";
+
+	if (message = ban["message"]) {
+		output += " (" + message + ")";
+	}
+
+	expire = ban["expire"];
+
+	if (expire != nil && expire != -1) {
+		int remaining;
+
+		remaining = expire - time();
+
+		output += " (expires in " + remaining + " seconds)";
+	}
+
+	return output;
 }
 
 int query_timeout(object conn)
