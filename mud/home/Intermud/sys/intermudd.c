@@ -60,6 +60,7 @@ int password;
 int chanlistid;
 int mudlistid;
 
+mapping routers;
 mapping muds;
 mapping channels;
 
@@ -81,6 +82,7 @@ static void create()
 	mudlistid = 0;
 	chanlistid = 0;
 
+	routers = ([ ]);
 	muds = ([ ]);
 	channels = ([ ]);
 
@@ -186,7 +188,14 @@ private void log_inbound(mixed *arr)
 /*	LOGD->post_message("debug", LOG_DEBUG, "I3 packet in: " + mixed_sprint(arr));*/
 }
 
-/* connection management */
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (!routers) {
+		routers = ([ ]);
+	}
+}
 
 string query_banner(object LIB_CONN connection)
 {
@@ -840,9 +849,10 @@ static void save()
 	string buf;
 
 	buf = hybrid_sprint( ([
-		"password" : password,
+		"chanlistid" : chanlistid,
 		"mudlistid" : mudlistid,
-		"chanlistid" : chanlistid
+		"password" : password,
+		"routers" : routers
 	]) );
 
 	SECRETD->make_dir(".");
@@ -874,6 +884,10 @@ private void restore()
 			if (map && map["password"]) {
 				password = map["password"];
 			}
+
+			if (map && map["routers"]) {
+				routers = map["routers"];
+			}
 		} : {
 			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
 			SECRETD->remove_file("intermud-bad");
@@ -882,4 +896,40 @@ private void restore()
 	} else {
 		return;
 	}
+}
+
+void add_router(string name, string ip, int port)
+{
+	ACCESS_CHECK(VERB());
+
+	if (!routers) {
+		routers = ([ ]);
+	}
+
+	routers[name] = ({ ip, port });
+
+	call_out("save", 0);
+}
+
+void remove_router(string name)
+{
+	ACCESS_CHECK(VERB());
+
+	if (!routers) {
+		routers = ([ ]);
+	}
+
+	routers[name] = nil;
+
+	call_out("save", 0);
+}
+
+string *query_routers()
+{
+	return map_indices(routers);
+}
+
+mixed *query_router(string name)
+{
+	return routers[name];
 }
