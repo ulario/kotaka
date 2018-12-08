@@ -48,7 +48,7 @@ string generate_error_page(int status_code, string status_message, string lines.
 
 	response += "<body>\n";
 	response += "<div style=\"text-align: center;\">\n";
-	response += "<h1 style=\"color: white; background-color: red; padding: 1em;\">" + status_message + "</h1>\n";
+	response += "<h1 style=\"color: red;\">" + status_message + "</h1>\n";
 
 	for (sz = sizeof(lines); i < sz; i++) {
 		response += "<p>" + lines[i] + "</p>\n";
