@@ -57,7 +57,6 @@ private void wipe_callouts()
 
 static void create()
 {
-	RSRCD->set_suspension_manager(this_object());
 }
 
 static void destruct()
