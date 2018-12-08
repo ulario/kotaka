@@ -57,6 +57,7 @@ private void wipe_callouts()
 
 static void create()
 {
+	call_out("self_destruct", 0);
 }
 
 static void destruct()
@@ -379,4 +380,16 @@ private mixed *release()
 	}
 
 	return callout;
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	call_out("self_destruct", 0);
+}
+
+static void self_destruct()
+{
+	destruct_object(this_object());
 }
