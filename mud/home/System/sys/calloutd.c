@@ -69,10 +69,17 @@ static void destruct()
 
 	rlimits (0; -1) {
 		for (;;) {
+			mixed *callout;
 			object obj;
 			int chandle;
 
-			({ obj, chandle }) = release();
+			callout = release();
+
+			if (!callout) {
+				break;
+			}
+
+			({ obj, chandle }) = callout;
 
 			if (chandle == -1) {
 				break;
