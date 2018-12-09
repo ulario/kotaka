@@ -22,6 +22,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "/lib/string/case";
 
 string *query_parse_methods()
 {
@@ -93,6 +94,8 @@ void main(object actor, mapping roles)
 		}
 		break;
 	}
+
+	username = to_lower(username);
 
 	BAND->ban_user(username, ([ "issuer": user->query_username(), "message": args ]));
 

@@ -21,6 +21,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "/lib/string/format";
 
 string *query_parse_methods()
 {
@@ -44,56 +45,61 @@ void main(object actor, mapping roles)
 	if (sizeof(users)) {
 		int i;
 		int sz;
-
-		send_out("Banned users:\n");
+		int time;
+		string **table;
 
 		sz = sizeof(users);
 
+		table = allocate(sz + 1);
+		table[0] = ({ "User", "Issuer", "Expire", "Message" });
+
+		time = time();
+
 		for (i = 0; i < sz; i++) {
 			string username;
-			string message;
 			mapping ban;
+			mixed remaining;
+			string issuer;
 			mixed expire;
-			mixed issuer;
-			int remaining;
+			string message;
 
 			username = users[i];
 			ban = BAND->query_ban(username);
 
-			send_out(username + " ");
-
 			issuer = ban["issuer"];
 
-			if (issuer) {
-				send_out("(issued by " + issuer + ") ");
+			if (!issuer) {
+				issuer = "";
 			}
 
 			expire = ban["expire"];
 
 			if (expire == nil) {
-				send_out("(permanent)");
+				remaining = "forever";
 			} else {
-				remaining = expire - time();
+				remaining = expire - time;
 
 				if (remaining < 60) {
-					send_out("(expires in " + remaining + " seconds)");
+					remaining = remaining + "s";
 				} else if (remaining < 3600) {
-					send_out("(expires in " + ((remaining + 59) / 60) + " minutes)");
+					remaining = ((remaining + 59) / 60) + "m";
 				} else if (remaining < 86400) {
-					send_out("(expires in " + ((remaining + 3599) / 3600) + " hours)");
+					remaining = ((remaining + 3599) / 3600) + "h";
 				} else {
-					send_out("(expires in " + ((remaining + 86399) / 86400) + " days)");
+					remaining = ((remaining + 86399) / 86400) + "d";
 				}
 			}
 
 			message = ban["message"];
 
-			if (message) {
-				send_out(": " + message + "\n");
-			} else {
-				send_out(" (no message)\n");
+			if (!message) {
+				message = "";
 			}
+
+			table[i + 1] = ({ username, issuer, remaining, message });
 		}
+
+		send_out(render_table(table, 2) + "\n");
 	} else {
 		send_out("There are no banned users.\n");
 	}
