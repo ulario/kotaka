@@ -32,6 +32,8 @@ mapping connections;	/* all connections */
 mapping users;		/* all logged in user objects */
 mapping guests;		/* all guest user objects */
 
+mapping blacklist;
+
 static void create()
 {
 	::create();
@@ -72,6 +74,7 @@ string query_sitebanned_banner(object LIB_CONN connection)
 	string ip;
 	mapping ban;
 	string output;
+	int time;
 
 	while (connection && connection <- LIB_USER) {
 		connection = connection->query_conn();
@@ -81,7 +84,16 @@ string query_sitebanned_banner(object LIB_CONN connection)
 
 	ASSERT(ip);
 
-	LOGD->post_message("system", LOG_NOTICE, "Telnet connection from sitebanned ip " + ip);
+	if (!blacklist) {
+		blacklist = ([ ]);
+	}
+
+	time = time();
+
+	if (blacklist[ip] == nil || blacklist[ip] + 3600 < time) {
+		LOGD->post_message("system", LOG_NOTICE, "Telnet connection from sitebanned ip " + ip + ", further reports suppressed for an hour");
+		blacklist[ip] = time;
+	}
 
 	ban = BAND->check_siteban(ip);
 

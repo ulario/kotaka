@@ -25,6 +25,8 @@
 
 inherit LIB_USERD;
 
+mapping blacklist;
+
 static void create()
 {
 	SYSTEM_USERD->set_binary_manager(2, this_object());
@@ -101,6 +103,7 @@ string query_sitebanned_banner(object connection)
 	string ip;
 	mapping ban;
 	string *bits;
+	int time;
 
 	while (connection && connection <- LIB_USER) {
 		connection = connection->query_conn();
@@ -110,7 +113,16 @@ string query_sitebanned_banner(object connection)
 
 	ASSERT(ip);
 
-	LOGD->post_message("system", LOG_NOTICE, "HTTP connection from sitebanned ip " + ip);
+	if (!blacklist) {
+		blacklist = ([ ]);
+	}
+
+	time = time();
+
+	if (blacklist[ip] == nil || blacklist[ip] + 3600 < time) {
+		LOGD->post_message("system", LOG_NOTICE, "HTTP connection from sitebanned ip " + ip + ", further reports suppressed for an hour");
+		blacklist[ip] = time;
+	}
 
 	ban = BAND->check_siteban(ip);
 
