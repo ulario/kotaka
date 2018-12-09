@@ -10,11 +10,6 @@ Tasks should be listed in order of desired completion.
 Pending
 -------
 
-Archetypes
-
-	Introduce new archetype api, formally deprecate old one
-	Formal deprecation of constructors and destructors
-
 Ban system upgrade
 
 	The banning system needs to be upgraded
