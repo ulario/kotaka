@@ -23,6 +23,7 @@
 #include <kotaka/privilege.h>
 #include <type.h>
 
+inherit "/lib/string/case";
 inherit "/lib/string/sprint";
 
 void save();
@@ -201,7 +202,10 @@ void save()
 	prune_bans();
 	prune_sitebans();
 
-	buf = hybrid_sprint( ([ "bans": bans, "sitebans": sitebans ]) );
+	buf = hybrid_sprint( ([
+		"bans": bans,
+		"sitebans": sitebans
+	]) );
 
 	SECRETD->make_dir(".");
 	SECRETD->remove_file("bans-tmp");
@@ -238,7 +242,6 @@ void restore()
 void prune_bans()
 {
 	string *keys;
-	mixed ban;
 	int sz;
 
 	keys = map_indices(bans);
@@ -246,9 +249,15 @@ void prune_bans()
 	for (sz = sizeof(keys); --sz >= 0; ) {
 		mixed expire;
 		string key;
+		mixed ban;
 
 		key = keys[sz];
+
 		ban = bans[key];
+		bans[key] = nil;
+		key = to_lower(key);
+
+		bans[key] = ban;
 
 		expire = ban["expire"];
 
