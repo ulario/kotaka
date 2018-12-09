@@ -40,7 +40,7 @@ mapping save()
 	ACCESS_CHECK(GAME());
 
 	return ([
-		"archetypes": query_archetypes(),
+		"archetype": query_archetype(),
 		"capacity": query_capacity(),
 		"density": query_density(),
 		"environment": query_environment(),
@@ -57,9 +57,20 @@ mapping save()
 
 void load(mapping data)
 {
+	mixed arch;
+
 	ACCESS_CHECK(GAME());
 
-	set_archetypes(data["archetypes"]);
+	if (arch = data["archetype"]) {
+		set_archetype(arch);
+	} else if (arch = data["archetypes"]) {
+		if (sizeof(arch)) {
+			set_archetype(arch[0]);
+		} else {
+			set_archetype(nil);
+		}
+	}
+
 	set_virtual(data["virtual"]);
 	set_capacity(data["capacity"]);
 	set_density(data["density"]);
