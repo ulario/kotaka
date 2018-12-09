@@ -45,20 +45,9 @@ int forbid_insert(object obj)
 
 static void destruct()
 {
-	int sz;
-	int index;
 	object env;
-	object *children;
 
-	destructing = 1;
-
-	children = query_inventory();
 	env = query_environment();
-	sz = sizeof(children);
-
-	for (index = 0; index < sz; index++) {
-		children[index]->move(env);
-	}
 
 	if (env) {
 		env->bulk_invalidate();
