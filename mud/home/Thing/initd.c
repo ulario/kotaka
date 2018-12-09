@@ -52,3 +52,11 @@ void upgrade()
 
 	set_limits();
 }
+
+string query_patcher(string path)
+{
+	switch(path) {
+	case USR_DIR + "/Thing/lib/thing/archetype":
+		return "patch_archetype";
+	}
+}
