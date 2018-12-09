@@ -63,8 +63,6 @@ static void destruct()
 	if (env) {
 		env->bulk_invalidate();
 	}
-
-	clear_archetypes();
 }
 
 void self_destruct()
