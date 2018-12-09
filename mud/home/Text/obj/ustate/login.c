@@ -148,17 +148,24 @@ void receive_in(string input)
 		garbage = garbage(input);
 
 		if (garbage) {
+			object user;
 			string ip;
 
+			persist = 1;
+
 			ip = get_ip();
+
+			query_user()->quit("kicked");
 
 			LOGD->post_message("system", LOG_WARNING, "Banning " + ip + " for sending " + garbage + " garbage");
 
 			BAND->ban_site(ip, ([
 				"expire": time() + 30 * 24 * 60 * 60,
 				"issuer": "Text",
-				"message": "Sending garbage"
+				"message": "Spam"
 			]) );
+
+			destruct_object(this_object());
 
 			return;
 		}
