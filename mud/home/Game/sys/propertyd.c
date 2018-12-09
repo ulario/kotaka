@@ -37,10 +37,7 @@ void configure_properties()
 	PROPERTYD->add_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
 
 	/* inheritance */
-	PROPERTYD->add_property("archetypes", T_ARRAY, PROP_MAGIC, ({ "query_archetypes", "set_archetypes" }) );
-	PROPERTYD->add_property("first_instance", T_OBJECT, PROP_MAGIC, ({ "query_first_instance", nil }) );
-	PROPERTYD->add_property("prev_instances", T_MAPPING, PROP_MAGIC, ({ "query_next_instances", nil }) );
-	PROPERTYD->add_property("next_instances", T_MAPPING, PROP_MAGIC, ({ "query_prev_instances", nil }) );
+	PROPERTYD->add_property("archetype", T_ARRAY, PROP_MAGIC, ({ "query_archetype", "set_archetype" }) );
 
 	/* descriptions */
 	PROPERTYD->add_property("snouns", T_ARRAY, PROP_COMBO, ({ "local_snouns", "removed_snouns" }) );
