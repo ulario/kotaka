@@ -38,7 +38,11 @@ static void create()
 
 nomask void clean_archetypes()
 {
-	archetypes -= ({ nil });
+	if (archetypes) {
+		archetypes -= ({ nil });
+	} else {
+		archetypes = ({ });
+	}
 }
 
 nomask void patch_archetype()
@@ -85,6 +89,7 @@ nomask void set_archetype(object "archetype" new_archetype)
 	}
 
 	archetype = new_archetype;
+	archetypes = ({ archetype });
 }
 
 nomask object query_archetype()

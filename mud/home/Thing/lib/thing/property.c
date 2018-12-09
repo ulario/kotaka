@@ -25,7 +25,7 @@
 inherit "/lib/copy";
 
 object query_environment();
-object *query_archetypes();
+object query_archetype();
 
 private mapping properties;
 private string *removed_properties;
@@ -173,21 +173,20 @@ mixed query_property(string name)
 		{
 			int index;
 			mixed value;
-			object *arch;
+			object arch;
 
 			if (info[1] == PROP_DROPDOWN) {
-				arch = ({ query_environment() }) - ({ nil });
+				arch = query_environment();
 			} else {
-				arch = query_archetypes();
+				arch = query_archetype();
 			}
 
-			for (index = 0; index < sizeof(arch); index++) {
-				value = arch[index]->
-					query_property(name);
+			if (arch) {
+				value = arch->query_property(name);
+			}
 
-				if (value != nil) {
-					return value;
-				}
+			if (value != nil) {
+				return value;
 			}
 
 			return info[2];
@@ -206,7 +205,7 @@ mixed query_property(string name)
 			string rname;
 
 			string *extra;
-			object *arch;
+			object arch;
 
 			extra = info[2];
 
@@ -214,17 +213,15 @@ mixed query_property(string name)
 			rname = extra[1];
 
 			if (info[1] == PROP_MIXDOWN) {
-				arch = ({ query_environment() }) - ({ nil });
+				arch = query_environment();
 			} else {
-				arch = query_archetypes();
+				arch = query_archetype();
 			}
 
 			local = deep_copy(properties[lname]);
 
 			switch(info[0]) {
 			case T_ARRAY:
-				gather = ({ });
-
 				if (!local) {
 					local = ({ });
 				}
@@ -232,8 +229,6 @@ mixed query_property(string name)
 				break;
 
 			case T_MAPPING:
-				gather = ([ ]);
-
 				if (!local) {
 					local = ([ ]);
 				}
@@ -244,12 +239,7 @@ mixed query_property(string name)
 				error("Illegal combo type");
 			}
 
-			for (index = 0; index < sizeof(arch);
-				index++) {
-				gather |=
-					arch[index]->
-					query_property(name);
-			}
+			gather = arch->query_property(name);
 
 			if (rname) {
 				remove = query_property(rname);

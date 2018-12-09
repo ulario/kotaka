@@ -17,7 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/privilege.h>
 #include <kotaka/paths/thing.h>
+#include <kotaka/paths/system.h>
 #include <kotaka/property.h>
 #include <type.h>
 
@@ -130,4 +132,11 @@ void configure_properties()
 	/* belly, hips, groin */
 	/* left leg, left ankle, left foot */
 	/* right leg, right ankle, right foot */
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	configure_properties();
 }
