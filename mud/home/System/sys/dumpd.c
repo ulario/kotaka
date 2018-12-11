@@ -26,9 +26,7 @@
 
 inherit SECOND_AUTO;
 
-int offset;	/* the remainder when time is divided by the interval */
 int interval;	/* how long between dumps */
-int increments;	/* the N in every Nth dump being a full dump */
 
 private void stop()
 {
@@ -53,25 +51,19 @@ private void start()
 
 		goal = now;
 		goal -= goal % interval;
-		goal += offset;
 
 		if (goal <= now) {
 			goal += interval;
 		}
 
-		call_out("dump", goal - now, goal % (interval * increments) != offset);
+		call_out("dump", goal - now);
 	}
 }
 
-static void dump(int incr)
+static void dump(varargs int incr)
 {
-	if (incr) {
-		dump_state(1);
-		start();
-	} else {
-		dump_state();
-		start();
-	}
+	dump_state();
+	start();
 }
 
 static void create()
@@ -94,21 +86,13 @@ void reboot()
 	start();
 }
 
-void set_parameters(int new_interval, int new_offset, int new_increments)
+void set_interval(int new_interval)
 {
 	ACCESS_CHECK(SYSTEM());
-
-	if (new_interval) {
-		ASSERT(new_offset < new_interval);
-	} else {
-		ASSERT(new_offset == 0 && new_increments == 0);
-	}
 
 	stop();
 
 	interval = new_interval;
-	offset = new_offset;
-	increments = new_increments;
 
 	start();
 }
@@ -116,14 +100,4 @@ void set_parameters(int new_interval, int new_offset, int new_increments)
 int query_interval()
 {
 	return interval;
-}
-
-int query_offset()
-{
-	return offset;
-}
-
-int query_increments()
-{
-	return increments;
 }

@@ -284,7 +284,7 @@ static void boot()
 		load();
 		LOGD->post_message("system", LOG_NOTICE, "System loaded");
 
-		DUMPD->set_parameters(3600, 0, 24);
+		DUMPD->set_interval(3600);
 
 		call_out("ready", 0);
 	} : {
