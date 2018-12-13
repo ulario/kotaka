@@ -157,7 +157,7 @@ void receive_in(string input)
 
 			query_user()->quit("kicked");
 
-			LOGD->post_message("system", LOG_WARNING, "Banning " + ip + " for sending " + garbage + " garbage");
+			LOGD->post_message("system", LOG_WARNING, "Telnet login: sitebanning " + ip + " for sending " + garbage + " garbage");
 
 			BAND->ban_site(ip, ([
 				"expire": time() + 30 * 24 * 60 * 60,
