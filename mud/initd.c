@@ -26,6 +26,7 @@ inherit UTILITY_COMPILE;
 private void load()
 {
 	load_dir("misc");
+	load_dir("lwo");
 	load_dir("sys");
 }
 
