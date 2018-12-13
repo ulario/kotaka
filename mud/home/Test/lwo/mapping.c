@@ -4,14 +4,22 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/log.h>
 
-#define MAX_BRANCH_SIZE   8
-#define MAX_LEAF_SIZE   256
+#define MAX_BRANCH_SIZE 4
+#define MAX_LEAF_SIZE   128
 
+inherit "/lib/string/sprint";
 inherit "/lib/search";
 
-mapping root;
+mixed root;
 int type;
-int levels;
+
+/* node structure: */
+
+/* leaf node */
+/* ({ size, ([ key : value ]) }) */
+
+/* branch node */
+/* ({ keys, ([ key : subnode ]) }) */
 
 void set_type(int new_type)
 {
@@ -21,8 +29,7 @@ void set_type(int new_type)
 	case T_FLOAT:
 	case T_STRING:
 		type = new_type;
-		root = ([ ]);
-		levels = 1;
+		root = ({ 0, ([ ]) });
 		return;
 
 	default:
@@ -30,108 +37,131 @@ void set_type(int new_type)
 	}
 }
 
-private void split_map(mapping map, int i)
+private mixed split_node(mixed *parent, int chubby)
 {
 	mixed *keys;
 	mixed key;
-
+	mixed splitkey;
+	mixed *node;
 	mixed *subkeys;
-	mapping submap;
+	int sz;
+	mapping lower;
+	mapping upper;
 
-	int subsz;
+	keys = parent[0];
+	key = keys[chubby];
 
-	mixed midkey;
+	node = parent[1][key];
 
-	mapping lowmap;
-	mapping highmap;
+	subkeys = map_indices(node[1]);
+	sz = sizeof(subkeys);
+	splitkey = subkeys[sz / 2];
 
-	keys = map_indices(map);
-	key = keys[i];
+	lower = node[1][.. splitkey];
+	upper = node[1][splitkey ..];
+	lower[splitkey] = nil;
 
-	submap = map[key];
-	subkeys = map_indices(submap);
+	switch(typeof(node[0])) {
+	case T_INT: /* splitting a leaf node */
+		parent[1][key] = ({ map_sizeof(lower), lower });
+		parent[1][splitkey] = ({ map_sizeof(upper), upper });
+		break;
 
-	subsz = sizeof(subkeys);
-	subsz /= 2;
+	case T_ARRAY: /* splitting a branch node */
+		parent[1][key] = ({ subkeys[.. sz / 2 - 1], lower });
+		parent[1][splitkey] = ({ subkeys[sz / 2 ..], upper });
+		break;
+	}
 
-	midkey = subkeys[subsz];
+	if (chubby + 1 == sizeof(keys)) {
+		keys += ({ splitkey });
+	} else {
+		keys = keys[.. chubby] + ({ splitkey }) + keys[chubby + 1 ..];
+	}
 
-	lowmap = submap[.. midkey];
-	highmap = submap[midkey ..];
-	lowmap[midkey] = nil;
+	parent[0] = keys;
 
-	map[key] = lowmap;
-	map[midkey] = highmap;
+	return splitkey;
 }
 
-/* 0 = success */
-/* 1 = element too full */
-private int sub_set_element(mapping map, int level, mixed key, mixed value)
+/* -1 = node too big */
+private int sub_set_element(mixed *node, mixed key, mixed value)
 {
-	int rebottom;
+	mixed head;
+	mapping map;
 
-	if (!level) {
-		if (map[key] == nil && value != nil) {
-			/* adding new element, check capacity */
-			if (map_sizeof(map) >= MAX_LEAF_SIZE) {
-				return 1;
+	head = node[0];
+	map = node[1];
+
+	switch(typeof(head)) {
+	case T_INT: /* leaf node */
+		if (value != nil) {
+			if (head >= MAX_LEAF_SIZE) {
+				/* compact */
+				head = map_sizeof(map);
+
+				if (head >= MAX_LEAF_SIZE) {
+					/* overflow */
+					return -1;
+				}
 			}
+		}
+
+		if (map[key] != nil) {
+			head--;
 		}
 
 		map[key] = value;
 
-		return 0;
-	} else {
-		int i;
-		mixed *keys;
-		int ret;
-		mixed subkey;
-		mapping submap;
-
-		keys = map_indices(map);
-
-		i = binary_search_floor(keys, key);
-
-		if (i == -1) {
-			i = 0;
-			rebottom = 1;
+		if (map[key] != nil) {
+			head++;
 		}
 
-		subkey = keys[i];
-		submap = map[subkey];
+		node[0] = head;
+		break;
 
-		ret = sub_set_element(submap, level - 1, key, value);
+	case T_ARRAY: /* branch node */
+		{
+			int subindex;
+			mixed subkey;
+			mixed splitkey;
+			mixed newkey;
+			mixed *subnode;
 
-		if (ret == 1) {
-			/* submap too big */
-			if (sizeof(keys) >= MAX_BRANCH_SIZE) {
-				/* we need to split but we're too big ourselves */
-				return 1;
+			/* find floor */
+			subindex = binary_search_floor(head, key);
+
+			if (subindex == -1) {
+				subindex = 0;
+				newkey = key;
 			}
 
-			split_map(map, i);
+			subkey = head[subindex];
+			subnode = map[subkey];
 
-			keys = map_indices(map);
+			if (sub_set_element(subnode, key, value) == -1) {
+				if (sizeof(head) > MAX_BRANCH_SIZE) {
+					/* we're too big to be split, punt */
+					return -1;
+				}
 
-			if (keys[i + 1] <= key) {
-				/* the split scooped our target */
-				i++;
+				splitkey = split_node(node, subindex);
+
+				if (key >= splitkey) {
+					/* upper half */
+					subnode = map[splitkey];
+				}
+
+				sub_set_element(subnode, key, value);
 			}
 
-			subkey = keys[i];
-			submap = map[subkey];
+			if (newkey != nil) {
+				/* rebottom */
+				map[subkey] = nil;
+				map[newkey] = subnode;
+				head[0] = newkey;
+			}
 
-			ret = sub_set_element(submap, level - 1, key, value);
-			ASSERT(ret != 1);
-		}
-
-		/* we can only rebottom if we're already on the ground */
-
-		if (rebottom) {
-			keys[0] = key;
-			map[key] = map[subkey];
-			map[subkey] = nil;
-		} else {
 			return 0;
 		}
 	}
@@ -139,56 +169,75 @@ private int sub_set_element(mapping map, int level, mixed key, mixed value)
 
 void set_element(mixed key, mixed value)
 {
-	int ret;
-
-	if (typeof(key) == 0 || typeof(key) != type) {
+	if (typeof(key) != type) {
 		error("Type mismatch");
 	}
 
-	if (ret = sub_set_element(root, levels - 1, key, value) == 1) {
-		mixed basekey;
+	if (sub_set_element(root, key, value) == -1) {
+		mixed head;
+		mixed bottom;
 
-		basekey = map_indices(root)[0];
-		root = ([ basekey : root ]);
-		levels++;
+		head = root[0];
 
-		ret = sub_set_element(root, levels - 1, key, value);
+		switch(typeof(head)) {
+		case T_INT:
+			head = map_indices(root[1]);
+			break;
+
+		case T_ARRAY:
+			break;
+		}
+
+		bottom = head[0];
+
+		root = ({
+			({ bottom }),
+			([ bottom : root ])
+		});
+
+		sub_set_element(root, key, value);
+	}
+}
+
+private mixed sub_query_element(mixed *node, mixed key)
+{
+	mixed head;
+	mapping map;
+
+	head = node[0];
+	map = node[1];
+
+	switch(typeof(head)) {
+	case T_INT:
+		return map[key];
+
+	case T_ARRAY:
+		{
+			int subindex;
+			mixed subkey;
+			mixed subnode;
+
+			/* find floor */
+			subindex = binary_search_floor(head, key);
+
+			if (subindex == -1) {
+				return -1;
+			}
+
+			subkey = head[subindex];
+			subnode = map[subkey];
+
+			return sub_query_element(subnode, key);
+		}
 	}
 }
 
 mixed query_element(mixed key)
 {
-	mapping map;
-	int level;
-
-	if (typeof(key) == 0 || typeof(key) != type) {
-		error("Type mismatch");
-	}
-
-	map = root;
-
-	level = levels - 1;
-
-	while (level) {
-		int i;
-		mixed *keys;
-
-		keys = map_indices(map);
-
-		i = binary_search_floor(keys, key);
-
-		if (i == -1) {
-			return nil;
-		}
-
-		map = map[keys[i]];
-		level--;
-	}
-
-	return map[key];
+	return sub_query_element(root, key);
 }
 
-mapping query_root()
+mixed *query_root()
 {
 	return root;
 }
