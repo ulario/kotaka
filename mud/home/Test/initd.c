@@ -37,14 +37,41 @@ private void set_limits()
 {
 	reset_limits();
 
-	KERNELD->rsrc_set_limit("Test", "ticks", 1000000000);
+	KERNELD->rsrc_set_limit("Test", "ticks", 2000000000);
 }
 
 void test()
 {
+	mixed diff;
+	mixed *mtime1, *mtime2;
+
+	mtime1 = millitime();
 	"sys/bigstruct"->test();
+	mtime2 = millitime();
+
+	diff = mtime2[0] - mtime1[0];
+	diff = (float)diff + mtime2[1] - mtime1[1];
+
+	LOGD->post_message("system", LOG_NOTICE, "Bigstruct test completed in " + diff + " seconds");
+
+	mtime1 = mtime2;
 	"sys/struct"->test();
+	mtime2 = millitime();
+
+	diff = mtime2[0] - mtime1[0];
+	diff = (float)diff + mtime2[1] - mtime1[1];
+
+	LOGD->post_message("system", LOG_NOTICE, "Struct test completed in " + diff + " seconds, average time per element is " + diff / 1000000.0);
+
+	mtime1 = mtime2;
 	"sys/sysstruct"->test();
+
+	mtime2 = millitime();
+
+	diff = mtime2[0] - mtime1[0];
+	diff = (float)diff + mtime2[1] - mtime1[1];
+
+	LOGD->post_message("system", LOG_NOTICE, "Sysstruct test completed in " + diff + " seconds");
 }
 
 static void create()
@@ -52,6 +79,8 @@ static void create()
 	set_limits();
 
 	load();
+
+	call_out("test", 0);
 }
 
 static void destruct()

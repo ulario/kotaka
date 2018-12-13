@@ -56,60 +56,29 @@ private void test_mapping_1()
 
 private void test_mapping_2()
 {
-	mapping arr;
 	object map;
 	int i;
-	mapping times;
-
-	arr = ([ ]);
 
 	map = new_object("~/lwo/mapping");
 	map->set_type(T_INT);
 
-	times = ([ ]);
-
-	for (i = 0; i < status(ST_ARRAYSIZE); i++) {
-		mixed *mtime1, *mtime2;
-		mixed diff;
-
-		LOGD->post_message("system", LOG_NOTICE, "Test 2: setting element " + i);
-
-
-		mtime1 = millitime();
-
+	for (i = 0; i < 100000; i++) {
 		map->set_element(i, i);
-
-		mtime2 = millitime();
-
-		diff = mtime2[0] - mtime1[0];
-		diff = (float)diff + mtime2[1] - mtime1[1];
-
-		times[i] = diff;
 
 		ASSERT(map->query_element(i) == i);
 	}
 
-	for (i = 1; i < status(ST_ARRAYSIZE); i++) {
-		LOGD->post_message("system", LOG_NOTICE, "Test 2: clearing element " + i);
-
+	for (i = 1; i < 100000; i++) {
 		map->set_element(i, nil);
 
 		ASSERT(map->query_element(i) == nil);
 	}
-
-	LOGD->post_message("system", LOG_NOTICE, "Profiling data: " + hybrid_sprint(times));
 }
 
 void test()
 {
-	mixed *mtime1, *mtime2;
-
 	ACCESS_CHECK(TEST());
-
-	mtime1 = millitime();
 
 	test_mapping_1();
 	test_mapping_2();
-
-	mtime2 = millitime();
 }
