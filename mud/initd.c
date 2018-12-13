@@ -56,6 +56,8 @@ void upgrade_build()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	compile_dir("misc");
+	compile_dir("lwo");
+	compile_dir("sys");
 }
 
 void upgrade_module()
@@ -63,4 +65,6 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	set_limits();
+
+	load();
 }
