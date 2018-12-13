@@ -17,9 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/help.h>
-#include <kotaka/paths/bigstruct.h>
 #include <kotaka/privilege.h>
+
+#define HELPD "~Kotaka/sys/helpd"
 
 inherit "~System/lib/struct/list";
 
@@ -46,8 +46,6 @@ static void load_helpdir(string dir, mixed **clist, mixed **tlist)
 	int *sizes;
 	int sz;
 	int i;
-
-	HELPD->add_category(dir);
 
 	dirlist = get_dir("~/data/help/" + dir + "/*");
 
@@ -132,4 +130,9 @@ void load_help()
 
 	HELPD->reset();
 	load_rootdir();
+}
+
+void upgrade()
+{
+	load_help();
 }

@@ -31,12 +31,13 @@ private void load()
 	MODULED->boot_module("Bigstruct");
 	MODULED->boot_module("Channel");
 	MODULED->boot_module("Geometry");
-	MODULED->boot_module("Help");
 	MODULED->boot_module("Http");
 	MODULED->boot_module("String");
 	MODULED->boot_module("Text");
 	MODULED->boot_module("Thing");
 	MODULED->boot_module("Utility");
+
+	load_dir("sys");
 }
 
 private void set_limits()

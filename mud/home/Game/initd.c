@@ -36,7 +36,6 @@ private void load()
 	MODULED->boot_module("Action");
 	MODULED->boot_module("Channel");
 	MODULED->boot_module("Geometry");
-	MODULED->boot_module("Help");
 	MODULED->boot_module("Http");
 	MODULED->boot_module("Intermud");
 	MODULED->boot_module("Kotaka");
@@ -89,7 +88,7 @@ void booted_module(string module)
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 
-	if (module == "Help") {
+	if (module == "Kotaka") {
 		"sys/helpd"->load_help();
 	}
 }
