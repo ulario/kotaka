@@ -79,6 +79,11 @@ private void configure_rsrc()
 	KERNELD->set_rsrc("callout usage", -1, 1, 1);
 }
 
+private void configure_system()
+{
+	DUMPD->set_interval(3600);
+}
+
 private void clear_admin()
 {
 	string *resources;
@@ -198,7 +203,8 @@ private void reboot_common()
 
 	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
 	DRIVER->fix_filequota();
-	DUMPD->reboot();
+
+	configure_system();
 }
 
 private void upgrade_check_kotaka_version()
@@ -284,7 +290,7 @@ static void boot()
 		load();
 		LOGD->post_message("system", LOG_NOTICE, "System loaded");
 
-		DUMPD->set_interval(3600);
+		configure_system();
 
 		call_out("ready", 0);
 	} : {
@@ -391,6 +397,7 @@ void upgrade()
 	configure_rsrc();
 	set_limits();
 	clear_admin();
+	configure_system();
 	configure_logging();
 }
 
