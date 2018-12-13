@@ -34,7 +34,7 @@ private void test_mapping_1()
 
 	arr = ([ ]);
 
-	map = new_object("~/lwo/mapping");
+	map = new_object("/lwo/struct/mapping");
 	map->set_type(T_INT);
 
 	for (i = 1; i < 1 << 25; i *= 3) {
@@ -55,7 +55,7 @@ private void test_mapping_2()
 	object map;
 	int i;
 
-	map = new_object("~/lwo/mapping");
+	map = new_object("/lwo/struct/mapping");
 	map->set_type(T_INT);
 
 	for (i = 0; i < 100000; i++) {
