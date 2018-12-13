@@ -383,7 +383,9 @@ private void send_to_target(string target, string timestamp, string message)
 
 			user = users[i];
 
-			user->message(line + "\n");
+			catch {
+				user->message(line + "\n");
+			}
 		}
 	}
 }
@@ -455,7 +457,9 @@ void post_message(string facility, int priority, string message)
 			sz = sizeof(targets);
 
 			for (index = 0; index < sz; index++) {
-				send_to_target(targets[index], timestamp, message);
+				catch {
+					send_to_target(targets[index], timestamp, message);
+				}
 			}
 		} else {
 			if (strlen(message) > 200) {
