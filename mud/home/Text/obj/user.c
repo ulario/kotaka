@@ -363,9 +363,17 @@ int receive_message(string str)
 	return do_receive(str);
 }
 
-void channel_message(string channel, string stamp, string sender, string message)
+/* ctime format: */
+/* Tue Aug  3 14:40:18 1993 */
+/* 012345678901234567890123 */
+
+void channel_message(string channel, mixed *mtime, string sender, string message)
 {
+	string stamp;
+
 	ACCESS_CHECK(previous_program() == CHANNELD);
+
+	stamp = ctime(mtime[0])[11 .. 15];
 
 	if (sender) {
 		if (message) {

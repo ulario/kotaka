@@ -429,10 +429,15 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	mtime = millitime();
 
-	stamp = ctime(mtime[0])[11 .. 18];
+	/* ctime format: */
+	/* Tue Aug  3 14:40:18 1993 */
+	/* 012345678901234567890123 */
+	stamp = ctime(mtime[0]);
+	stamp = stamp[0 .. 2] + ", " + stamp[4 .. 9] + ", " + stamp[20 .. 23] + stamp[11 .. 18];
 
 	stamp += ".";
 
+	/* millitime resolution is 1m anyway */
 	mstamp = "" + floor(mtime[1] * 1000.0 + 0.5);
 	mstamp = "000" + mstamp;
 	mstamp = mstamp[strlen(mstamp) - 3 ..];
@@ -454,7 +459,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 		sz = sizeof(send_list);
 
 		for (index = 0; index < sz; index++) {
-			send_list[index]->channel_message(channel, stamp, sender, message);
+			send_list[index]->channel_message(channel, mtime, sender, message);
 		}
 	}
 }
