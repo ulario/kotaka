@@ -38,16 +38,12 @@ private void test_mapping_1()
 	map->set_type(T_INT);
 
 	for (i = 1; i < 1 << 25; i *= 3) {
-		LOGD->post_message("system", LOG_NOTICE, "Test 1: setting element " + i);
-
 		map->set_element(i, i);
 
 		ASSERT(map->query_element(i) == i);
 	}
 
 	for (i = 1; i < 1 << 25; i *= 3) {
-		LOGD->post_message("system", LOG_NOTICE, "Test 1: clearing element " + i);
-
 		map->set_element(i, nil);
 
 		ASSERT(map->query_element(i) == nil);
