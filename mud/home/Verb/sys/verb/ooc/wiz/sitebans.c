@@ -21,11 +21,53 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "/lib/sort";
 inherit "/lib/string/format";
 
 string *query_parse_methods()
 {
 	return ({ "raw" });
+}
+
+int compare_sites(string a, string b)
+{
+	int o1a, o2a, o3a, o4a, cidra;
+	int o1b, o2b, o3b, o4b, cidrb;
+
+	sscanf(a, "%d.%d.%d.%d/%d", o1a, o2a, o3a, o4a, cidra);
+	sscanf(b, "%d.%d.%d.%d/%d", o1b, o2b, o3b, o4b, cidrb);
+
+	if (o1a < o1b) {
+		return -1;
+	}
+	if (o1a > o1b) {
+		return 1;
+	}
+	if (o2a < o2b) {
+		return -1;
+	}
+	if (o2a > o2b) {
+		return 1;
+	}
+	if (o3a < o3b) {
+		return -1;
+	}
+	if (o3a > o3b) {
+		return 1;
+	}
+	if (o4a < o4b) {
+		return -1;
+	}
+	if (o4a > o4b) {
+		return 1;
+	}
+	if (cidra < cidrb) {
+		return -1;
+	}
+	if (cidra > cidrb) {
+		return 1;
+	}
+	return 0;
 }
 
 void main(object actor, mapping roles)
@@ -43,6 +85,8 @@ void main(object actor, mapping roles)
 
 	sites = BAND->query_sitebans();
 	sz = sizeof(sites);
+
+	qsort(sites, 0, sz, "compare_sites");
 
 	if (sz) {
 		int i;
