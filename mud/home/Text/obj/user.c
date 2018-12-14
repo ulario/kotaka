@@ -198,7 +198,7 @@ void quit(string cause)
 
 			ban = BAND->check_siteban(query_ip_number(query_base_conn()));
 
-			message("\n\nYou have just been sitebanned.\n\n");
+			message("You have just been sitebanned.\n");
 
 			if (message = ban["message"]) {
 				message(message + "\n");

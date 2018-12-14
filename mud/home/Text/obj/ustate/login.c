@@ -155,8 +155,6 @@ void receive_in(string input)
 
 			ip = get_ip();
 
-			query_user()->quit("kicked");
-
 			LOGD->post_message("system", LOG_WARNING, "Telnet login: sitebanning " + ip + " for sending " + garbage + " garbage");
 
 			BAND->ban_site(ip, ([
