@@ -38,13 +38,13 @@ private void schedule(object conn)
 	int handle;
 	float interval;
 
-	({ interval, handle }) = connections[conn];
+	({ handle, interval }) = connections[conn];
 
 	if (handle) {
 		remove_call_out(handle);
 	}
 
-	connections[conn] = ({ interval, call_out("report", interval, conn) });
+	connections[conn] = ({ call_out("report", interval, conn), interval });
 }
 
 private void wipe_callouts()
@@ -69,6 +69,7 @@ private int is_trusted(object conn)
 	case "::1":
 	case "127.0.0.1":
 		return 1;
+
 	default:
 		return 0;
 	}
@@ -129,7 +130,7 @@ static void report(object conn)
 		return;
 	}
 
-	connections[conn][1] = 0;
+	connections[conn][0] = 0;
 
 	message = print_report();
 
@@ -158,8 +159,6 @@ static void clear(object conn)
 void upgrade()
 {
 	object *conns;
-	int handle;
-	float interval;
 	int sz;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
@@ -174,14 +173,16 @@ void upgrade()
 
 	for (sz = sizeof(conns); --sz >= 0; ) {
 		object conn;
+		int handle;
+		float interval;
 
 		conn = conns[sz];
 
-		({ interval, handle }) = connections[conn];
+		({ handle, interval }) = connections[conn];
 
 		handle = call_out("report", interval, conn);
 
-		connections[conn] = ({ interval, handle });
+		connections[conn] = ({ handle, interval });
 	}
 }
 
@@ -278,7 +279,7 @@ int login(string str)
 		interval = 5.0;
 	}
 
-	connections[conn] = ({ interval, 0 });
+	connections[conn] = ({ 0, interval });
 
 	conn->message("\033[1;1H\033[2J");
 
@@ -296,14 +297,14 @@ void logout(int quit)
 	conn = previous_object();
 
 	if (connections[conn]) {
-		float interval;
 		int handle;
+		float interval;
 
-		({ interval, handle }) = connections[conn];
+		({ handle, interval }) = connections[conn];
 
 		remove_call_out(handle);
 
-		connections[conn] = ({ -1, nil });
+		connections[conn] = nil;
 	}
 }
 
@@ -348,7 +349,7 @@ int receive_message(string str)
 					break;
 				}
 
-				connections[conn][0] = interval;
+				connections[conn][1] = interval;
 				schedule(conn);
 			}
 			break;
