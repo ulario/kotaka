@@ -51,7 +51,7 @@ void main(object actor, mapping roles)
 		sz = sizeof(users);
 
 		table = allocate(sz + 1);
-		table[0] = ({ "User", "Issuer", "Expire", "Message" });
+		table[0] = ({ "User", "Issuer", "Exp", "Message" });
 
 		time = time();
 
@@ -75,7 +75,7 @@ void main(object actor, mapping roles)
 			expire = ban["expire"];
 
 			if (expire == nil) {
-				remaining = "forever";
+				remaining = "Perm";
 			} else {
 				remaining = expire - time;
 

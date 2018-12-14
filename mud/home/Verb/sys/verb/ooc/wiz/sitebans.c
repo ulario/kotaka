@@ -119,7 +119,7 @@ void main(object actor, mapping roles)
 			expire = ban["expire"];
 
 			if (expire == nil) {
-				remaining = "forever";
+				remaining = "Perm";
 			} else {
 				remaining = expire - time;
 
