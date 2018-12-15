@@ -73,12 +73,12 @@ void main(object actor, mapping roles)
 	body->set_property("is_proper", 1);
 	body->set_property("brief", to_title(name));
 
-	body->add_archetype(CATALOGD->lookup_object("class:race:humanoid:human"));
+	body->set_archetype(IDD->find_object_by_name("class:race:humanoid:human"));
 	body->set_object_name("players:" + name);
 
 	send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 
-	world = CATALOGD->lookup_object("start");
+	world = IDD->find_object_by_name("start");
 
 	if (world) {
 		body->move(world);

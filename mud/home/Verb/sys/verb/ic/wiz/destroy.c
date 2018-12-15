@@ -69,16 +69,6 @@ void main(object actor, mapping roles)
 
 	dob = dob[1];
 
-	if (dob->query_first_instance()) {
-		send_out(TEXT_SUBD->generate_brief_definite(dob) + " has outstanding instances.\n");
-		return;
-	}
-
-	if (sizeof(dob->query_inventory())) {
-		send_out(TEXT_SUBD->generate_brief_definite(dob) + " is not empty.\n");
-		return;
-	}
-
 	emit_from(actor, actor, " ", ({ "destroy", "destroys" }), " ", dob, ".");
 	dob->self_destruct();
 }

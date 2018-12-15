@@ -127,7 +127,7 @@ void remove_object_name(string name)
 	}
 }
 
-string find_object_name(string name)
+object find_object_by_name(string name)
 {
 	string *parts;
 	mapping map;

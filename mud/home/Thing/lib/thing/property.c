@@ -222,6 +222,7 @@ mixed query_property(string name)
 
 			switch(info[0]) {
 			case T_ARRAY:
+				gather = ({ });
 				if (!local) {
 					local = ({ });
 				}
@@ -229,6 +230,7 @@ mixed query_property(string name)
 				break;
 
 			case T_MAPPING:
+				gather = ([ ]);
 				if (!local) {
 					local = ([ ]);
 				}
@@ -239,7 +241,9 @@ mixed query_property(string name)
 				error("Illegal combo type");
 			}
 
-			gather = arch->query_property(name);
+			if (arch) {
+				gather = arch->query_property(name);
+			}
 
 			if (rname) {
 				remove = query_property(rname);

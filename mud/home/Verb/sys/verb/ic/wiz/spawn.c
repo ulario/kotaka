@@ -45,7 +45,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	master = CATALOGD->lookup_object(roles["raw"]);
+	master = IDD->find_object_by_name(roles["raw"]);
 
 	if (!master) {
 		send_out("No such object: " + roles["raw"] + ".\n");
@@ -53,7 +53,7 @@ void main(object actor, mapping roles)
 	}
 
 	thing = GAME_INITD->create_object();
-	thing->add_archetype(master);
+	thing->set_archetype(master);
 	thing->move(actor);
 
 	emit_from(actor, actor, " ", ({ "spawn", "spawns" }), " ", thing, ".");

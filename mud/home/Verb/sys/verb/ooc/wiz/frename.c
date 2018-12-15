@@ -48,7 +48,7 @@ atomic private void do_folder_rename(string old_name, string new_name)
 
 		switch(keys[i]) {
 		case 1: /* object */
-			CATALOGD->lookup_object(old_name + ":" + name)->set_object_name(new_name + ":" + name);
+			IDD->find_object_by_name(old_name + ":" + name)->set_object_name(new_name + ":" + name);
 			break;
 		case 2:
 			do_folder_rename(old_name + ":" + name, new_name + ":" + name);

@@ -56,12 +56,14 @@ void main(object actor, mapping roles)
 			return;
 		}
 
-		body = CATALOGD->lookup_object(roles["raw"]);
+		body = IDD->find_object_by_name(roles["raw"]);
+
+		if (!body) {
+			send_out("No such body found\n");
+		}
 	}
 
-	if (!body) {
-		body = CATALOGD->lookup_object("players:" + name);
-	}
+	body = IDD->find_object_by_name("players:" + name);
 
 	if (!body) {
 		send_out("You don't have a character.  Please use chargen to create one.\n");

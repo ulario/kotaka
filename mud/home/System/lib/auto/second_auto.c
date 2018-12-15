@@ -463,12 +463,14 @@ void set_object_name(string new_name)
 		return;
 	}
 
-	if (CATALOGD->lookup_object(new_name)) {
-		error("Duplicate name");
-	}
+	if (new_name) {
+		if (CATALOGD->lookup_object(new_name)) {
+			error("Duplicate name");
+		}
 
-	if (IDD->find_object_name(new_name)) {
-		error("Duplicate name");
+		if (IDD->find_object_by_name(new_name)) {
+			error("Duplicate name");
+		}
 	}
 
 	if (name) {
@@ -477,7 +479,9 @@ void set_object_name(string new_name)
 
 	name = new_name;
 
-	IDD->add_object_name(name, this_object());
+	if (name) {
+		IDD->add_object_name(name, this_object());
+	}
 }
 
 string query_object_name()

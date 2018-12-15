@@ -51,7 +51,7 @@ atomic void main(object actor, mapping roles)
 		send_out("Usage: multispawn <quantity> <path>\n");
 	}
 
-	master = CATALOGD->lookup_object(path);
+	master = IDD->find_object_by_name(path);
 
 	if (!master) {
 		send_out("No such object: " + path + ".\n");
@@ -60,7 +60,7 @@ atomic void main(object actor, mapping roles)
 
 	while (num) {
 		thing = GAME_INITD->create_object();
-		thing->add_archetype(master);
+		thing->set_archetype(master);
 		thing->move(actor);
 		num--;
 	}
