@@ -35,6 +35,7 @@ int query_marked(object obj);
 mixed pflagdb;
 mixed **patch_queue; /* ({ obj }) */
 mixed **sweep_queue; /* ({ path, master_index, clone_index }) */
+int processing;
 
 private void convert_pflagdb()
 {
@@ -76,6 +77,10 @@ private void queue_patch(object obj)
 	}
 
 	list_push_back(patch_queue, obj);
+
+	if (!processing) {
+		processing = call_out("process", 0);
+	}
 }
 
 private void queue_sweep(string path, int master_index)
@@ -85,6 +90,10 @@ private void queue_sweep(string path, int master_index)
 	}
 
 	list_push_back(sweep_queue, ({ path, master_index, status(ST_OTABSIZE) }));
+
+	if (!processing) {
+		processing = call_out("process", 0);
+	}
 }
 
 static void create()
@@ -150,6 +159,7 @@ static void process()
 		pflagdb = nil;
 		sweep_queue = nil;
 		patch_queue = nil;
+		processing = 0;
 	}
 }
 
