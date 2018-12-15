@@ -230,9 +230,66 @@ private void upgrade_check_kotaka_version()
 	}
 }
 
+private void destruct_dir(string dir)
+{
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+	int sz;
+
+	if (dir == "/") {
+		dir = "";
+	}
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+
+		name = names[sz];
+
+		if (sizes[sz] == -2) {
+			destruct_dir(dir + "/" + name);
+			continue;
+		} else if (sscanf(name, "%s.c", name)) {
+			if (objs[sz]) {
+				destruct_object(dir + "/" + name);
+			}
+		}
+	}
+}
+
+private void compile_dir(string dir)
+{
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+	int sz;
+
+	if (dir == "/") {
+		dir = "";
+	}
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+
+		name = names[sz];
+
+		if (sizes[sz] == -2) {
+			compile_dir(dir + "/" + name);
+		} else if (sscanf(name, "%s.c", name)) {
+			compile_object(dir + "/" + name);
+		}
+	}
+}
+
 private void recompile_kernel()
 {
-	purge_dir("/kernel/lib");
+	destruct_dir("/kernel/lib");
 	compile_dir("/kernel/obj");
 	compile_dir("/kernel/sys");
 }
@@ -429,9 +486,10 @@ void upgrade_system()
 {
 	ACCESS_CHECK(VERB());
 
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling InitD");
+	LOGD->post_message("system", LOG_NOTICE, "Destructing System libraries");
+	destruct_dir("lib");
 
-	purge_dir("lib");
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling InitD");
 	compile_object(INITD);
 
 	call_out("upgrade_system_post_recompile", 0);
