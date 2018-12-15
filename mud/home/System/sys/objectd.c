@@ -444,11 +444,7 @@ void destruct(varargs mixed owner_arg, mixed obj_arg)
 		}
 
 		if (function_object("query_object_name", obj)) {
-			name = obj->query_object_name();
-
-			if (name && CATALOGD->test_name(name) == 1) {
-				CATALOGD->remove_object(name);
-			}
+			obj->set_object_name(nil);
 		}
 
 		pinfo = fetch_program_info(status(obj, O_INDEX));

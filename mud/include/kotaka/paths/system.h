@@ -30,6 +30,7 @@
 #define DUMPD		(USR_DIR + "/System/sys/dumpd")
 #define ERRORD		(USR_DIR + "/System/sys/errord")
 #define FILTERD		(USR_DIR + "/System/sys/filterd")
+#define IDD		(USR_DIR + "/System/sys/idd")
 #define KERNELD		(USR_DIR + "/System/sys/kerneld")
 #define LOGD		(USR_DIR + "/System/sys/logd")
 #define MODULED		(USR_DIR + "/System/sys/moduled")

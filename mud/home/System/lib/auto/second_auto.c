@@ -28,6 +28,8 @@
 inherit "call_guard";
 inherit "catalog";
 
+private string name;
+
 private int enough_free_objects()
 {
 	int used;
@@ -428,4 +430,59 @@ nomask int _F_touch(string func)
 	}
 
 	return 0;
+}
+
+/*
+void add_object(string name, object obj)
+void remove_object(string name)
+object lookup_object(string name)
+*/
+
+void patch_object_name()
+{
+	if (name) {
+		return;
+	}
+
+	name = ::query_object_name();
+
+	if (name) {
+		LOGD->post_message("system", LOG_NOTICE, "Migrating name " + name);
+
+		IDD->add_object_name(name, this_object());
+
+		::set_object_name(nil);
+	}
+}
+
+void set_object_name(string new_name)
+{
+	patch_object_name();
+
+	if (name == new_name) {
+		return;
+	}
+
+	if (CATALOGD->lookup_object(new_name)) {
+		error("Duplicate name");
+	}
+
+	if (IDD->find_object_name(new_name)) {
+		error("Duplicate name");
+	}
+
+	if (name) {
+		IDD->remove_object_name(name);
+	}
+
+	name = new_name;
+
+	IDD->add_object_name(name, this_object());
+}
+
+string query_object_name()
+{
+	patch_object_name();
+
+	return name;
 }
