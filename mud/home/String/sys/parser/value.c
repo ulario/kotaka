@@ -91,7 +91,7 @@ static object *parse_obj(string *input)
 	obj = find_object(oname);
 
 	if (!obj) {
-		obj = CATALOGD->lookup_object(oname);
+		obj = IDD->find_object_by_name(oname);
 	}
 
 	if (obj) {

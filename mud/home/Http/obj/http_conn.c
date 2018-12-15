@@ -160,7 +160,7 @@ private mixed string2object(string str)
 	obj = find_object(str);
 
 	if (!obj) {
-		obj = CATALOGD->lookup_object(str);
+		obj = IDD->find_object_by_name(str);
 	}
 
 	if (!obj) {

@@ -51,12 +51,12 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (CATALOGD->lookup_object("players:" + name)) {
+	if (IDD->find_object_by_name("players:" + name)) {
 		send_out("You already have a character.\n");
 		return;
 	}
 
-	human = CATALOGD->lookup_object("class:race:humanoid:human");
+	human = IDD->find_object_by_name("class:race:humanoid:human");
 
 	if (!human) {
 		send_out("Yell at a wizard, there's no human archetype to spawn your character from.\n");

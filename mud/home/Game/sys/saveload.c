@@ -36,9 +36,8 @@ object objlist;	/* ({ idnum: obj, data }) */
 
 private void purge_object(object obj, mixed **list)
 {
-	int sz;
 	object *inv;
-	string name;
+	int sz;
 
 	inv = obj->query_inventory();
 
@@ -46,42 +45,35 @@ private void purge_object(object obj, mixed **list)
 		list_push_front(list, inv[sz]);
 	}
 
-	name = obj->query_object_name();
-
 	destruct_object(obj);
 }
 
 private void purge_directory(string dir, mixed **list)
 {
-	mapping dlist;
-	int *keys;
 	string *names;
-	int i, sz;
+	string *directories;
+	int sz;
 
-	if (CATALOGD->test_name(dir) != 2) {
+	directories = IDD->query_directories(dir);
+	names = IDD->query_names(dir);
+
+	if (!directories) {
 		return;
 	}
 
-	dlist = CATALOGD->list_directory(dir);
-
-	names = map_indices(dlist);
-	keys = map_values(dlist);
-
-	sz = sizeof(keys);
-
-	for (i = 0; i < sz; i++) {
-		if (keys[i] == 2) {
-			if (dir) {
-				list_push_front(list, dir + ":" + names[i]);
-			} else {
-				list_push_front(list, names[i]);
-			}
+	for (sz = sizeof(directories); --sz >= 0; ) {
+		if (dir) {
+			list_push_back(list, dir + ":" + directories[sz]);
 		} else {
-			if (dir) {
-				list_push_front(list, CATALOGD->lookup_object(dir + ":" + names[i]));
-			} else {
-				list_push_front(list, CATALOGD->lookup_object(names[i]));
-			}
+			list_push_back(list, directories[sz]);
+		}
+	}
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		if (dir) {
+			list_push_back(list, IDD->find_object_by_name(dir + ":" + names[sz]));
+		} else {
+			list_push_back(list, IDD->find_object_by_name(names[sz]));
 		}
 	}
 }
@@ -248,29 +240,26 @@ private void put_object(object obj, mixed **list)
 
 private void put_directory(string dir, mixed **list)
 {
-	mapping dlist;
-	int *keys;
+	string *directories;
 	string *names;
-	int i, sz;
+	int sz;
 
-	dlist = CATALOGD->list_directory(dir);
+	directories = IDD->query_directories(dir);
+	names = IDD->query_names(dir);
 
-	names = map_indices(dlist);
-	keys = map_values(dlist);
-
-	for (sz = sizeof(keys); --sz >= 0; ) {
-		if (keys[sz] == 2) {
-			if (dir) {
-				list_push_front(list, dir + ":" + names[sz]);
-			} else {
-				list_push_front(list, names[sz]);
-			}
+	for (sz = sizeof(directories); --sz >= 0; ) {
+		if (dir) {
+			list_push_front(list, dir + ":" + directories[sz]);
 		} else {
-			if (dir) {
-				list_push_front(list, CATALOGD->lookup_object(dir + ":" + names[sz]));
-			} else {
-				list_push_front(list, CATALOGD->lookup_object(names[sz]));
-			}
+			list_push_front(list, directories[sz]);
+		}
+	}
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		if (dir) {
+			list_push_front(list, IDD->find_object_by_name(dir + ":" + names[sz]));
+		} else {
+			list_push_front(list, IDD->find_object_by_name(names[sz]));
 		}
 	}
 }
