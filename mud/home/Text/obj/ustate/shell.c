@@ -121,6 +121,7 @@ private void handle_input(string input, varargs mapping dup)
 {
 	string first;
 	string alias;
+	object verb;
 
 	input = trim_whitespace(input);
 
@@ -183,20 +184,14 @@ private void handle_input(string input, varargs mapping dup)
 		}
 	}
 
-	catch {
-		object verb;
+	verb = VERBD->find_verb(first);
 
-		verb = VERBD->find_verb(first);
-
-		if (!verb) {
-			send_out("No such command.\n");
-			return;
-		}
-
-		"~/sys/englishd"->do_verb(verb, first, input);
-	} : {
-		send_out("Error.\n");
+	if (!verb) {
+		send_out("No such command.\n");
+		return;
 	}
+
+	"~/sys/englishd"->do_verb(verb, first, input);
 }
 
 void receive_in(string input)
