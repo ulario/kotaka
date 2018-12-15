@@ -29,6 +29,8 @@
 inherit SECOND_AUTO;
 inherit "~/lib/struct/list";
 
+mixed **filebuf;
+
 mapping facilities;
 mapping buffers;
 
@@ -173,37 +175,31 @@ private void append_node(string file, string fragment)
 
 private void write_logfile(string file, string timestamp, string message)
 {
-	int i;
-	int sz;
-	string line;
+	int sz, i;
 	string *lines;
-	object deque;
 
 	lines = explode("\n" + message + "\n", "\n");
 
 	sz = sizeof(lines);
 
+	if (!filebuf) {
+		filebuf = ({ nil, nil });
+	}
+
 	for (i = 0; i < sz; i++) {
-		append_node(file, timestamp + " " + lines[i] + "\n");
+		list_push_back(filebuf, ({ file, timestamp + " " + lines[i] + "\n" }));
 	}
 
 	schedule();
 }
 
-private void write_node(string base)
+private void commit_logfile(string base, string message)
 {
-	mixed **list;
-	mixed *node;
 	mixed *info;
-	string front;
-
-	list = buffers[base];
-	front = list_front(list);
-	list_pop_front(list);
 
 	info = SECRETD->file_info("logs/" + base + ".log");
 
-	if (info && info[0] + strlen(front) > 1 << 30) {
+	if (info && info[0] + strlen(message) > 1 << 30) {
 		SECRETD->remove_file("logs/" + base + ".dir.log");
 		SECRETD->rename_file("logs/" + base + ".log", "logs/" + base + ".dir/old.log");
 	}
@@ -211,10 +207,23 @@ private void write_node(string base)
 	catch {
 		SECRETD->make_dir(".");
 		SECRETD->make_dir("logs");
-		SECRETD->write_file("logs/" + base + ".log", front);
+		SECRETD->write_file("logs/" + base + ".log", message);
 	} : {
 		DRIVER->message("Error writing to " + base + "\n");
 	}
+}
+
+private void write_node(string base)
+{
+	mixed **list;
+	mixed *node;
+	string front;
+
+	list = buffers[base];
+	front = list_front(list);
+	list_pop_front(list);
+
+	commit_logfile(base, front);
 
 	if (list_empty(list)) {
 		buffers[base] = nil;
@@ -239,6 +248,19 @@ void flush()
 			sz = sizeof(files);
 
 			write_node(files[random(sz)]);
+		}
+
+		while (filebuf) {
+			string file, message;
+
+			if (list_empty(filebuf)) {
+				filebuf = nil;
+				break;
+			}
+
+			({ file, message }) = list_front(filebuf);
+			list_pop_front(filebuf);
+			commit_logfile(file, message);
 		}
 	}
 }
