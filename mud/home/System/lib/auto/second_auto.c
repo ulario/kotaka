@@ -28,27 +28,17 @@
 inherit "call_guard";
 inherit "catalog";
 
-private int enough_free_objects(int clone)
+private int enough_free_objects()
 {
 	int used;
 	int free;
 	int total;
-	int quota;
 
 	used = ::status(ST_NOBJECTS);
 	total = ::status(ST_OTABSIZE);
 	free = total - used;
-	quota = total / 50;
 
-	if (quota < 100) {
-		quota = 100;
-	}
-
-	if (clone) {
-		quota /= 2;
-	}
-
-	return free >= quota;
+	return free >= 20;
 }
 
 private int enough_free_callouts()
@@ -235,7 +225,7 @@ static object compile_object(string path, string source...)
 
 	if (!SYSTEM() &&
 		DRIVER->creator(path) != "System" &&
-		!obj && !enough_free_objects(0)) {
+		!obj && !enough_free_objects()) {
 		error("Too many objects");
 	}
 
@@ -254,7 +244,7 @@ static object load_object(string path)
 
 	if (!SYSTEM() &&
 		DRIVER->creator(path) != "System" &&
-		!obj && !enough_free_objects(0)) {
+		!obj && !enough_free_objects()) {
 		error("Too many objects");
 	}
 
@@ -265,7 +255,7 @@ static object clone_object(string path, varargs string uid)
 {
 	if (!SYSTEM() &&
 		query_owner() != "System" &&
-		!enough_free_objects(1)) {
+		!enough_free_objects()) {
 		error("Too many objects");
 	}
 
