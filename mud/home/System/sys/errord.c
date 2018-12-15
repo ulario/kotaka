@@ -98,89 +98,8 @@ string print_stack(mixed **trace, varargs int raw)
 
 private void handle_error(string error, mixed **trace)
 {
-	int atom;
-	int i;
-
-	string **comperr;
-	string *cerrstrs;
-
-	string compstr;
-	string errstr;
-	string tracestr;
-
-	DRIVER->set_error_manager(nil);
-
-	catch {
-		string prefix, tag, suffix;
-
-		TLSD->set_tls_value("System", "error-string", error);
-		TLSD->set_tls_value("System", "error-trace", trace);
-
-		comperr = TLSD->query_tls_value("System", "compile-errors");
-
-		if (comperr) {
-			cerrstrs = allocate(sizeof(comperr));
-
-			for (i = 0; i < sizeof(comperr); i++) {
-				mixed *cframe;
-
-				cframe = comperr[i];
-
-				cerrstrs[i] =
-					cframe[0] + ", " +
-					cframe[1] + ": " + cframe[2];
-			}
-			comperr = nil;
-
-			compstr = implode(cerrstrs, "\n");
-		}
-
-		errstr = "Runtime error: " + error;
-
-		tracestr = print_stack(trace[0 .. sizeof(trace) - 2]);
-
-		if (find_object(LOGD)) {
-			if (compstr) {
-				LOGD->post_message("compile", LOG_ERR, compstr);
-			}
-
-			LOGD->post_message("error", LOG_ERR, errstr);
-
-			if (!compstr) {
-				LOGD->post_message("trace", LOG_INFO, "\n" + tracestr);
-			}
-		} else {
-			if (compstr) {
-				DRIVER->message(compstr + "\n");
-			}
-
-			DRIVER->message(errstr + "\n");
-
-			if (!compstr) {
-				DRIVER->message(tracestr + "\n");
-			}
-
-			if (find_object(CHANNELD)) {
-				catch {
-					if (compstr) {
-						CHANNELD->post_message("compile", nil, compstr);
-					}
-				}
-
-				catch {
-					CHANNELD->post_message("error", nil, errstr);
-				}
-
-				if (!compstr) {
-					catch {
-						CHANNELD->post_message("trace", nil, tracestr);
-					}
-				}
-			}
-		}
-	}
-
-	DRIVER->set_error_manager(this_object());
+	LOGD->post_message("error", LOG_ERR, error);
+	LOGD->post_message("trace", LOG_INFO, print_stack(trace));
 }
 
 void runtime_error(string error, int caught, mixed **trace)
@@ -188,10 +107,14 @@ void runtime_error(string error, int caught, mixed **trace)
 	ACCESS_CHECK(previous_program() == DRIVER);
 
 	if (caught) {
-		error += " [caught]";
+		error += " [caught at " + caught + "]";
 	}
 
-	handle_error(error, trace);
+	error = catch(handle_error(error, trace));
+
+	if (error) {
+		DRIVER->message("Error in ErrorD::runtime_error: " + error + "\n");
+	}
 }
 
 string atomic_error(string error, int atom, mixed **trace)
@@ -199,25 +122,19 @@ string atomic_error(string error, int atom, mixed **trace)
 	ACCESS_CHECK(previous_program() == DRIVER);
 
 	if (atom) {
-		error += " [atomic]";
+		error += " [atomic at " + atom + "]";
 	}
 
-	handle_error(error, trace);
+	error = catch(handle_error(error, trace));
+
+	if (error) {
+		DRIVER->message("Error in ErrorD::atomic_error: " + error + "\n");
+	}
 }
 
 void compile_error(string file, int line, string err)
 {
-	string **comperr;
-
 	ACCESS_CHECK(previous_program() == DRIVER);
 
-	comperr = TLSD->query_tls_value("System", "compile-errors");
-
-	if (!comperr) {
-		comperr = ({ });
-	}
-
-	comperr += ({ ({ file, line, err }) });
-
-	TLSD->set_tls_value("System", "compile-errors", comperr);
+	LOGD->post_message("compile", LOG_ERR, file + ", " + line + ": " + err);
 }
