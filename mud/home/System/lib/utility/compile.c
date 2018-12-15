@@ -24,29 +24,26 @@ inherit SECOND_AUTO;
 
 static void process_dir(string dir, string func)
 {
-	mixed **files;
 	string *names;
-	mixed *objs;
 	int *sizes;
-	int index;
+	int *times;
+	mixed *objs;
+	int sz;
 
 	if (dir == "/") {
 		dir = "";
 	}
 
-	names = get_dir(dir + "/*")[0];
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
 
-	for (index = 0; index < sizeof(names); index++) {
-		mixed *info;
+	for (sz = sizeof(names); --sz >= 0; ) {
 		string name;
 		string path;
 
-		name = names[index];
-
-		info = file_info(dir + "/" + name);
+		name = names[sz];
 
 		/* directory */
-		if (info[0] == -2) {
+		if (sizes[sz] == -2) {
 			process_dir(dir + "/" + name, func);
 			continue;
 		}
@@ -56,8 +53,7 @@ static void process_dir(string dir, string func)
 			continue;
 		}
 
-		name = name[.. strlen(name) - 3];
-		path = dir + "/" + name;
+		path = dir + "/" + name[.. strlen(name) - 3];
 
 		switch(func) {
 		case "load":
@@ -70,14 +66,14 @@ static void process_dir(string dir, string func)
 
 			switch(func) {
 			case "load":
-				if (info[2]) {
+				if (objs[sz]) {
 					/* already loaded */
 					continue;
 				}
 				break;
 
 			case "recompile":
-				if (!info[2]) {
+				if (!objs[sz]) {
 					/* not loaded */
 					continue;
 				}
@@ -94,7 +90,7 @@ static void process_dir(string dir, string func)
 			/* fall through */
 
 		case "destruct":
-			if (info[2]) {
+			if (objs[sz]) {
 				destruct_object(path);
 			}
 			break;
