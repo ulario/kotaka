@@ -439,13 +439,3 @@ nomask int _F_touch(string func)
 
 	return 0;
 }
-
-void upgrading()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-}
