@@ -67,6 +67,12 @@ private void list_category(string category)
 
 	gather_categories(category, list);
 
+	if (category) {
+		send_out("[ \033[1;34m" + category + "\033[0m ]\n\n");
+	} else {
+		send_out("< \033[1;34mTable of contents\033[0m >\n\n");
+	}
+
 	while (!list_empty(list)) {
 		string subcategory;
 		string *topics;
@@ -80,9 +86,21 @@ private void list_category(string category)
 			if (subcategory) {
 				send_out("\033[1m" + subcategory + ":\033[0m\n");
 			}
+
 			send_out("    " + implode(topics, ", ") + "\n\n");
 		}
 	}
+}
+
+private void show_topic(string topic)
+{
+	string content;
+
+	content = HELPD->query_topic(topic);
+
+	send_out("[ \033[1;34m" + topic + "\033[0m ]\n\n");
+
+	send_out(content);
 }
 
 private string *filter_topics(string *topics)
@@ -171,19 +189,12 @@ void main(object actor, mapping roles)
 
 		switch(test) {
 		case 1:
-			{
-				string content;
-
-				content = HELPD->query_topic(topic);
-
-				send_out("\033[1;35m--- " + topic + " ---\033[0m\n\n");
-				send_out(content + "\n");
-			}
+			show_topic(topic);
 			break;
 
 		case 2:
-			send_out("\033[1;34m--- " + topic + " ---\033[0m\n\n");
 			list_category(topic);
+			break;
 		}
 	}
 }
