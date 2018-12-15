@@ -39,7 +39,7 @@ object query_exit_destination()
 	return query_local_property("exit_destination");
 }
 
-atomic void set_exit_destination(object obj)
+void set_exit_destination(object obj)
 {
 	object lobj;
 
@@ -57,7 +57,7 @@ object query_exit_return()
 	return query_local_property("exit_return");
 }
 
-atomic void set_exit_return(object obj)
+void set_exit_return(object obj)
 {
 	object lobj;
 

@@ -28,7 +28,7 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
-atomic void main(object actor, mapping roles)
+void main(object actor, mapping roles)
 {
 	if (query_user()->query_class() < 3) {
 		send_out("Only an administrator can upgrade the system\n");

@@ -451,7 +451,7 @@ object query_mudclient_obj()
 	}
 }
 
-atomic void login_user(string name)
+void login_user(string name)
 {
 	object this;
 
@@ -471,7 +471,7 @@ atomic void login_user(string name)
 	subscribe_channels();
 }
 
-atomic void logout_user()
+void logout_user()
 {
 	ASSERT(username);
 

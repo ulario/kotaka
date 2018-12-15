@@ -35,7 +35,7 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-atomic void configure_logging();
+void configure_logging();
 
 int version_major;
 int version_minor;
@@ -495,7 +495,7 @@ void upgrade_system()
 	call_out("upgrade_system_post_recompile", 0);
 }
 
-atomic void configure_logging()
+void configure_logging()
 {
 	ACCESS_CHECK(SYSTEM());
 

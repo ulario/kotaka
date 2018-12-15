@@ -92,11 +92,6 @@ void pre_end()
 
 private void handle_input(string input, varargs mapping dup);
 
-atomic private void do_atomic(string args)
-{
-	handle_input(args);
-}
-
 private void do_plus_command(string input)
 {
 	string first;
@@ -109,16 +104,11 @@ private void do_plus_command(string input)
 	switch(first) {
 	case "help":
 		send_out("+ commands:\n");
-		send_out("atomic   Execute the command atomically.\n");
 		send_out("fixverbs Reboot the verb module, and reload all verbs.\n");
 		return;
 
 	case "fixverbs":
 		MODULED->reboot_module("Verb");
-		return;
-
-	case "atomic":
-		do_atomic(input);
 		return;
 
 	default:

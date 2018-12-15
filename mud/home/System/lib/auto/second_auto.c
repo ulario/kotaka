@@ -146,7 +146,7 @@ static void _F_sys_callout(string func, mixed *args)
 	}
 }
 
-atomic static int call_out(string func, mixed delay, mixed args...)
+static int call_out(string func, mixed delay, mixed args...)
 {
 	int handle;
 	string owner;

@@ -154,7 +154,7 @@ void pre_end()
 	dead = 1;
 }
 
-private atomic void do_makeroom()
+private void do_makeroom()
 {
 	int bx, by, sx, sy;
 	int px, py;
@@ -204,7 +204,7 @@ private atomic void do_makeroom()
 	push_state(creator);
 }
 
-private atomic void do_linkroom(int offset)
+private void do_linkroom(int offset)
 {
 	object room2;
 	object env;
