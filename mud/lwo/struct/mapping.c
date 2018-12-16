@@ -20,10 +20,10 @@
 #include <type.h>
 #include <kotaka/assert.h>
 
-#define MAX_BRANCH_SIZE 8
-#define MAX_LEAF_SIZE   256
-
 inherit "/lib/search";
+
+int branch;
+int leaf;
 
 mixed root;
 int type;
@@ -35,6 +35,16 @@ int type;
 
 /* branch node */
 /* ({ keys, subnodes }) */
+
+void set_leaf_limit(int new_leaf)
+{
+	leaf = new_leaf;
+}
+
+void set_branch_limit(int new_branch)
+{
+	branch = new_branch;
+}
 
 void set_type(int new_type)
 {
@@ -141,11 +151,11 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 			map = node[1];
 
 			if (value != nil) {
-				if (head >= MAX_LEAF_SIZE) {
+				if (head >= leaf) {
 					/* compact */
 					head = map_sizeof(node[1]);
 
-					if (head >= MAX_LEAF_SIZE) {
+					if (head >= leaf) {
 						/* overflow */
 						return -1;
 					}
@@ -186,7 +196,7 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 			subnode = node[1][subindex];
 
 			if (sub_set_element(subnode, key, value) == -1) {
-				if (sizeof(head) > MAX_BRANCH_SIZE) {
+				if (sizeof(head) > branch) {
 					/* we're too big to be split, punt */
 					return -1;
 				}
@@ -214,6 +224,14 @@ void set_element(mixed key, mixed value)
 {
 	if (typeof(key) != type) {
 		error("Type mismatch");
+	}
+
+	if (!leaf) {
+		leaf = 256;
+	}
+
+	if (!branch) {
+		branch = 16;
 	}
 
 	if (sub_set_element(root, key, value) == -1) {
