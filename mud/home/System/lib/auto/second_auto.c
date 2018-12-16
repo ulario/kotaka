@@ -264,10 +264,6 @@ static object clone_object(string path, varargs string uid)
 	return ::clone_object(path, uid);
 }
 
-static void create(varargs int clone)
-{
-}
-
 static void destruct(varargs int clone)
 {
 }
