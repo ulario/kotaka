@@ -22,7 +22,7 @@
 #include <kotaka/log.h>
 #include <kotaka/privilege.h>
 
-inherit "/lib/string/sprint";
+inherit SECOND_AUTO;
 
 mapping tree;
 
@@ -269,9 +269,4 @@ string *query_directories(string name)
 	}
 
 	return keys - ({ nil });
-}
-
-void dump()
-{
-	LOGD->post_message("debug", LOG_DEBUG, "IDD Dump:\n" + hybrid_sprint(tree));
 }
