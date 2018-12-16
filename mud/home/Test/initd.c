@@ -46,15 +46,6 @@ void test()
 	mixed *mtime1, *mtime2;
 
 	mtime1 = millitime();
-	"sys/bigstruct"->test();
-	mtime2 = millitime();
-
-	diff = mtime2[0] - mtime1[0];
-	diff = (float)diff + mtime2[1] - mtime1[1];
-
-	LOGD->post_message("system", LOG_NOTICE, "Bigstruct test completed in " + diff + " seconds");
-
-	mtime1 = mtime2;
 	"sys/struct"->test();
 	mtime2 = millitime();
 
