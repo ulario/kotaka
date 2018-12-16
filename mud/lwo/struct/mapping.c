@@ -36,32 +36,6 @@ int type;
 /* branch node */
 /* ({ keys, subnodes }) */
 
-void set_leaf_limit(int new_leaf)
-{
-	leaf = new_leaf;
-}
-
-void set_branch_limit(int new_branch)
-{
-	branch = new_branch;
-}
-
-void set_type(int new_type)
-{
-	switch(new_type)
-	{
-	case T_INT:
-	case T_FLOAT:
-	case T_STRING:
-		type = new_type;
-		root = ({ 0, ([ ]) });
-		return;
-
-	default:
-		error("Invalid type");
-	}
-}
-
 private mixed split_node(mixed *parent, int chubby)
 {
 	mixed *keys;
@@ -220,6 +194,60 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 	}
 }
 
+private mixed sub_query_element(mixed *node, mixed key)
+{
+	mixed head;
+
+	head = node[0];
+
+	switch(typeof(head)) {
+	case T_INT:
+		return node[1][key];
+
+	case T_ARRAY:
+		{
+			int subindex;
+			mixed subkey;
+			mixed subnode;
+
+			/* find floor */
+			subindex = binary_search_floor(head, key);
+
+			if (subindex == -1) {
+				return nil;
+			}
+
+			return sub_query_element(node[1][subindex], key);
+		}
+	}
+}
+
+void set_leaf_limit(int new_leaf)
+{
+	leaf = new_leaf;
+}
+
+void set_branch_limit(int new_branch)
+{
+	branch = new_branch;
+}
+
+void set_type(int new_type)
+{
+	switch(new_type)
+	{
+	case T_INT:
+	case T_FLOAT:
+	case T_STRING:
+		type = new_type;
+		root = ({ 0, ([ ]) });
+		return;
+
+	default:
+		error("Invalid type");
+	}
+}
+
 void set_element(mixed key, mixed value)
 {
 	if (typeof(key) != type) {
@@ -260,45 +288,9 @@ void set_element(mixed key, mixed value)
 	}
 }
 
-private mixed sub_query_element(mixed *node, mixed key)
-{
-	mixed head;
-
-	head = node[0];
-
-	switch(typeof(head)) {
-	case T_INT:
-		return node[1][key];
-
-	case T_ARRAY:
-		{
-			int subindex;
-			mixed subkey;
-			mixed subnode;
-
-			/* find floor */
-			subindex = binary_search_floor(head, key);
-
-			if (subindex == -1) {
-				return nil;
-			}
-
-			return sub_query_element(node[1][subindex], key);
-		}
-	}
-}
-
 mixed query_element(mixed key)
 {
 	return sub_query_element(root, key);
-}
-
-private void sub_compact(mixed *node)
-{
-}
-
-void compact()
-{
 }
 
 mixed *query_root()
