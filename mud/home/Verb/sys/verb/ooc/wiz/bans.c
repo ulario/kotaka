@@ -113,6 +113,10 @@ string print_bans(string header, string *targets, mixed *bans)
 			+ "  " + lalign(table[i][1], len[1])
 			+ "  " + lalign(table[i][2], len[2])
 			+ "  " + table[i][3] + "\033[0m\n";
+
+		if (i % 5 == 4 && i + 1 != sz) {
+			buffer += "\n";
+		}
 	}
 
 	return buffer;
