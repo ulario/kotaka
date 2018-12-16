@@ -271,6 +271,38 @@ private void register_ghosts_dir(string dir)
 	}
 }
 
+private void check_program(string path, string *inherits)
+{
+	if (sscanf(path, "/kernel/%*s")) {
+		return;
+	}
+
+	if (DRIVER->creator(path) == "System") {
+		int has_sa;
+		int sz;
+
+		has_sa = 0;
+
+		for (sz = sizeof(inherits); --sz >= 0; ) {
+			string inh;
+
+			inh = inherits[sz];
+
+			if (DRIVER->creator(inh) != "System") {
+				error(path + " must not inherit from " + inh);
+			}
+
+			if (inh == SECOND_AUTO) {
+				has_sa = 1;
+			}
+		}
+
+		if (has_sa == 0 && !sscanf(path, USR_DIR + "/System/lib/auto/%*s")) {
+			error(path + " doesn't inherit second auto");
+		}
+	}
+}
+
 static void create()
 {
 	progdb = ([ ]);
@@ -393,6 +425,8 @@ void compile(string owner, object obj, string *source, string inherited ...)
 	} else if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
 		pinfo->clear_clones();
 	}
+
+	check_program(path, inherited);
 }
 
 void compile_lib(string owner, string path, string *source, string inherited ...)
@@ -404,6 +438,8 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 	}
 
 	setup_program_info(path, inherited);
+
+	check_program(path, inherited);
 }
 
 void compile_failed(string owner, string path)
