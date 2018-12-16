@@ -42,27 +42,8 @@ private void set_limits()
 
 void test()
 {
-	mixed diff;
-	mixed *mtime1, *mtime2;
-
-	mtime1 = millitime();
 	"sys/struct"->test();
-	mtime2 = millitime();
-
-	diff = mtime2[0] - mtime1[0];
-	diff = (float)diff + mtime2[1] - mtime1[1];
-
-	LOGD->post_message("system", LOG_NOTICE, "Struct test completed in " + diff + " seconds, average time per element is " + diff / 1000000.0);
-
-	mtime1 = mtime2;
 	"sys/sysstruct"->test();
-
-	mtime2 = millitime();
-
-	diff = mtime2[0] - mtime1[0];
-	diff = (float)diff + mtime2[1] - mtime1[1];
-
-	LOGD->post_message("system", LOG_NOTICE, "Sysstruct test completed in " + diff + " seconds");
 }
 
 static void create()

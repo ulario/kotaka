@@ -26,7 +26,7 @@
 
 inherit "/lib/string/sprint";
 
-private void test_mapping_1()
+private object test_mapping_1()
 {
 	mapping arr;
 	object map;
@@ -43,14 +43,10 @@ private void test_mapping_1()
 		ASSERT(map->query_element(i) == i);
 	}
 
-	for (i = 1; i < 1 << 25; i *= 3) {
-		map->set_element(i, nil);
-
-		ASSERT(map->query_element(i) == nil);
-	}
+	return map;
 }
 
-private void test_mapping_2()
+private object test_mapping_2(int count)
 {
 	object map;
 	int i;
@@ -58,20 +54,71 @@ private void test_mapping_2()
 	map = new_object("/lwo/struct/mapping");
 	map->set_type(T_INT);
 
-	for (i = 0; i < 65536; i++) {
-		int r;
+	for (i = 0; i < count; i++) {
+		int a, b;
 
-		r = random(1048576);
-		map->set_element(r, i);
+		a = random(1048576);
+		b = random(1048576);
 
-		ASSERT(map->query_element(r) == i);
+		map->set_element(a, b);
+
+		catch {
+			ASSERT(map->query_element(a) == b);
+		} : {
+			remove_file("crash");
+			write_file("crash", hybrid_sprint(map->query_root(), 0, nil, 1));
+			error("Test failed trying to insert " + b + " at " + a);
+		}
 	}
+
+	return map;
 }
 
 void test()
 {
+	mixed *mtime1, *mtime2;
+	float diff;
+	int count;
+	int sec;
+	mixed msec;
+	object map;
+
 	ACCESS_CHECK(TEST());
 
-	test_mapping_1();
-	test_mapping_2();
+	remove_file("dump");
+
+	map = test_mapping_1();
+
+	write_file("dump", hybrid_sprint(map->query_root(), 0, nil, 1) + "\n\n");
+
+	count = 1;
+
+	for (;;) {
+		mtime1 = millitime();
+
+		map = test_mapping_2(count);
+
+		mtime2 = millitime();
+
+		diff = (float)(mtime2[0] - mtime1[0]) + (mtime2[1] - mtime1[1]);
+
+		if (diff > 1.0) {
+			break;
+		}
+
+		count <<= 2;
+	}
+
+	msec = (int)floor(diff * 1000.0 + 0.5);
+
+	sec = msec / 1000;
+	msec %= 1000;
+
+	msec = "000" + msec;
+	msec = msec[strlen(msec) - 3 ..];
+
+	LOGD->post_message("system", LOG_NOTICE, "Mapping test completed in " + sec + "." + msec + " seconds");
+	LOGD->post_message("system", LOG_NOTICE, count + " element average: " + (diff / (float)count));
+
+	write_file("dump", hybrid_sprint(map->query_root(), 0, nil, 1) + "\n\n");
 }
