@@ -23,7 +23,7 @@
 inherit SECOND_AUTO;
 inherit "escape";
 
-string simple_sprint(mixed data, varargs mapping seen)
+string simple_sprint(mixed data, varargs mapping seen, int nodup)
 {
 	int iter;
 	string tmp;
@@ -67,11 +67,13 @@ string simple_sprint(mixed data, varargs mapping seen)
 		}
 
 	case T_ARRAY:
-		if (seen[data] != nil) {
-			return "@" + seen[data];
-		}
+		if (!nodup) {
+			if (seen[data] != nil) {
+				return "@" + seen[data];
+			}
 
-		seen[data] = map_sizeof(seen);
+			seen[data] = map_sizeof(seen);
+		}
 
 		if (sizeof(data) == 0)
 			return "({ })";
@@ -86,11 +88,13 @@ string simple_sprint(mixed data, varargs mapping seen)
 		return tmp + " })";
 
 	case T_MAPPING:
-		if (seen[data] != nil) {
-			return "@" + seen[data];
-		}
+		if (!nodup) {
+			if (seen[data] != nil) {
+				return "@" + seen[data];
+			}
 
-		seen[data] = map_sizeof(seen);
+			seen[data] = map_sizeof(seen);
+		}
 
 		if (map_sizeof(data) == 0)
 			return "([ ])";

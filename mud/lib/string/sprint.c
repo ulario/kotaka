@@ -22,9 +22,9 @@
 inherit "~System/lib/string/sprint";
 inherit "char";
 
-string mixed_sprint(mixed data, varargs mapping seen);
+string mixed_sprint(mixed data, varargs mapping seen, int nodup);
 
-string sprint_object(object obj, varargs mapping seen)
+string sprint_object(object obj, varargs mapping seen, int nodup)
 {
 	string path;
 	string oname;
@@ -34,10 +34,12 @@ string sprint_object(object obj, varargs mapping seen)
 			return "@" + seen[obj];
 		}
 
-		seen[obj] = map_sizeof(seen);
+		if (!nodup) {
+			seen[obj] = map_sizeof(seen);
+		}
 
 		if (function_object("sprint_save", obj)) {
-			return "(< <" + path + ">: " + mixed_sprint(obj->sprint_save(), seen) + ">)";
+			return "(< <" + path + ">: " + mixed_sprint(obj->sprint_save(), seen, nodup) + ">)";
 		} else {
 			return "<" + object_name(obj) + ">";
 		}
@@ -48,7 +50,7 @@ string sprint_object(object obj, varargs mapping seen)
 	}
 }
 
-string mixed_sprint(mixed data, varargs mapping seen)
+string mixed_sprint(mixed data, varargs mapping seen, int nodup)
 {
 	int iter;
 	string tmp;
@@ -63,21 +65,23 @@ string mixed_sprint(mixed data, varargs mapping seen)
 	case T_STRING:
 	case T_INT:
 	case T_FLOAT:
-		return simple_sprint(data, seen);
+		return simple_sprint(data, seen, nodup);
 
 	case T_ARRAY:
 		if (seen[data] != nil) {
 			return "@" + seen[data];
 		}
 
-		seen[data] = map_sizeof(seen);
+		if (!nodup) {
+			seen[data] = map_sizeof(seen);
+		}
 
 		if (sizeof(data) == 0)
 			return "({ })";
 
 		tmp = "({ ";
 		for (iter = 0; iter < sizeof(data); iter++) {
-			tmp += mixed_sprint(data[iter], seen);
+			tmp += mixed_sprint(data[iter], seen, nodup);
 			if (iter < sizeof(data) - 1) {
 				tmp += ", ";
 			}
@@ -97,19 +101,19 @@ string mixed_sprint(mixed data, varargs mapping seen)
 		arr = map_indices(data);
 		tmp = "([ ";
 		for (iter = 0; iter < sizeof(arr); iter++) {
-			tmp += mixed_sprint(arr[iter], seen) + " : " +
-				mixed_sprint(data[arr[iter]], seen);
+			tmp += mixed_sprint(arr[iter], seen, nodup) + " : " +
+				mixed_sprint(data[arr[iter]], seen, nodup);
 			if (iter != sizeof(arr) - 1)
 				tmp += ", ";
 		}
 		return tmp + " ])";
 
 	case T_OBJECT:
-		return sprint_object(data, seen);
+		return sprint_object(data, seen, nodup);
 	}
 }
 
-string tree_sprint(mixed data, varargs int indent, mapping seen)
+string tree_sprint(mixed data, varargs int indent, mapping seen, int nodup)
 {
 	string ind;
 
@@ -127,14 +131,16 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 	case T_STRING:
 	case T_FLOAT:
 	case T_OBJECT:
-		return mixed_sprint(data, seen);
+		return mixed_sprint(data, seen, nodup);
 
 	case T_ARRAY:
 		if (seen[data] != nil) {
 			return "@" + seen[data];
 		}
 
-		seen[data] = map_sizeof(seen);
+		if (!nodup) {
+			seen[data] = map_sizeof(seen);
+		}
 
 		if (sizeof(data) == 0)
 			return "({ })";
@@ -148,7 +154,7 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 			for (index = 0; index < sizeof(data); index++) {
 				parts[index] =
 					"  " + tree_sprint(data[index],
-					indent + 2, seen);
+					indent + 2, seen, nodup);
 			}
 
 			return "({\n" + ind + implode(parts,
@@ -160,7 +166,9 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 			return "@" + seen[data];
 		}
 
-		seen[data] = map_sizeof(seen);
+		if (!nodup) {
+			seen[data] = map_sizeof(seen);
+		}
 
 		if (map_sizeof(data) == 0)
 			return "([ ])";
@@ -174,10 +182,10 @@ string tree_sprint(mixed data, varargs int indent, mapping seen)
 
 			for (index = 0; index < map_sizeof(data); index++) {
 				parts[index] =
-					"  " + mixed_sprint(indices[index], seen) +
+					"  " + mixed_sprint(indices[index], seen, nodup) +
 					" :\n" + ind + "    " +
 					tree_sprint(data[indices[index]],
-					indent + 4, seen);
+					indent + 4, seen, nodup);
 			}
 
 			return "([\n" + ind + implode(parts,
@@ -253,7 +261,7 @@ int is_flat(mixed data)
 	}
 }
 
-string hybrid_sprint(mixed data, varargs int indent, mapping seen)
+string hybrid_sprint(mixed data, varargs int indent, mapping seen, int nodup)
 {
 	string ind;
 
@@ -268,7 +276,7 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 	case T_STRING:
 	case T_FLOAT:
 	case T_OBJECT:
-		return mixed_sprint(data, seen);
+		return mixed_sprint(data, seen, nodup);
 
 	case T_ARRAY:
 		if (seen[data] != nil) {
@@ -279,10 +287,12 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 			return "({ })";
 
 		if (is_flat(data)) {
-			return mixed_sprint(data, seen);
+			return mixed_sprint(data, seen, nodup);
 		}
 
-		seen[data] = map_sizeof(seen);
+		if (!nodup) {
+			seen[data] = map_sizeof(seen);
+		}
 
 		{
 			string *parts;
@@ -293,7 +303,7 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 			for (index = 0; index < sizeof(data); index++) {
 				parts[index] =
 					"  " + hybrid_sprint(data[index],
-					indent + 2, seen);
+					indent + 2, seen, nodup);
 			}
 
 			return "({\n" + ind + implode(parts,
@@ -310,10 +320,12 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 		}
 
 		if (is_flat(data)) {
-			return mixed_sprint(data, seen);
+			return mixed_sprint(data, seen, nodup);
 		}
 
-		seen[data] = map_sizeof(seen);
+		if (!nodup) {
+			seen[data] = map_sizeof(seen);
+		}
 
 		{
 			mixed *indices;
@@ -325,10 +337,10 @@ string hybrid_sprint(mixed data, varargs int indent, mapping seen)
 
 			for (index = 0; index < map_sizeof(data); index++) {
 				parts[index] =
-					"  " + mixed_sprint(indices[index], seen) +
+					"  " + mixed_sprint(indices[index], seen, nodup) +
 					" :" + (is_simple(data[indices[index]]) ? " " : "\n" + ind + "    ") +
 						hybrid_sprint(data[indices[index]],
-					indent + 4, seen);
+					indent + 4, seen, nodup);
 			}
 
 			return "([\n" + ind + implode(parts,
