@@ -18,15 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <type.h>
-#include <kotaka/paths/string.h>
 #include <kotaka/assert.h>
-#include <kotaka/paths/system.h>
-#include <kotaka/log.h>
 
 #define MAX_BRANCH_SIZE 8
 #define MAX_LEAF_SIZE   256
 
-inherit "/lib/string/sprint";
 inherit "/lib/search";
 
 mixed root;
