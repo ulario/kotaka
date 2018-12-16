@@ -22,7 +22,7 @@
 
 inherit LIB_VERB;
 inherit "/lib/sort";
-inherit "/lib/string/format";
+inherit "~System/lib/string/align";
 
 string *query_parse_methods()
 {
@@ -89,61 +89,18 @@ void main(object actor, mapping roles)
 	qsort(sites, 0, sz, "compare_sites");
 
 	if (sz) {
+		mapping *bans;
 		int i;
-		int time;
-		string **table;
 
-		table = allocate(sz + 1);
-		table[0] = ({ "Mask", "Issuer", "Exp", "Message" });
-
-		time = time();
+		bans = allocate(sz);
 
 		for (i = 0; i < sz; i++) {
-			string mask;
-			mapping ban;
-			string issuer;
-			mixed expire;
-			mixed remaining;
-			string message;
-
-			mask = sites[i];
-
-			ban = BAND->query_siteban(mask);
-
-			issuer = ban["issuer"];
-
-			if (!issuer) {
-				issuer = "";
-			}
-
-			expire = ban["expire"];
-
-			if (expire == nil) {
-				remaining = "Perm";
-			} else {
-				remaining = expire - time;
-
-				if (remaining < 60) {
-					remaining = remaining + "s";
-				} else if (remaining < 3600) {
-					remaining = ((remaining + 59) / 60) + "m";
-				} else if (remaining < 86400) {
-					remaining = ((remaining + 3599) / 3600) + "h";
-				} else {
-					remaining = ((remaining + 86399) / 86400) + "d";
-				}
-			}
-
-			message = ban["message"];
-
-			if (!message) {
-				message = "";
-			}
-
-			table[i + 1] = ({ mask, issuer, remaining, message });
+			bans[i] = BAND->query_siteban(sites[i]);
 		}
 
-		send_out(render_table(table, 2) + "\n");
+		send_out("bans"->print_bans("Site", sites, bans));
+
+		send_out("\n");
 	} else {
 		send_out("There are no banned sites.\n");
 	}

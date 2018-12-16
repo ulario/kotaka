@@ -22,16 +22,107 @@
 
 inherit LIB_VERB;
 inherit "/lib/string/format";
+inherit "~System/lib/string/align";
 
 string *query_parse_methods()
 {
 	return ({ "raw" });
 }
 
+string print_bans(string header, string *targets, mixed *bans)
+{
+	int sz, i;
+	int time;
+	string **table;
+	int *len;
+	string buffer;
+
+	sz = sizeof(bans);
+
+	table = allocate(sz);
+	len = ({ strlen(header), 6, 3, 7 });
+
+	time = time();
+
+	buffer = "";
+
+	for (i = 0; i < sz; i++) {
+		string target;
+		mapping ban;
+
+		string issuer;
+		mixed expire;
+		mixed remaining;
+		string message;
+		int sz2;
+
+		target = targets[i];
+		ban = bans[i];
+
+		issuer = ban["issuer"];
+
+		if (!issuer) {
+			issuer = "";
+		}
+
+		expire = ban["expire"];
+
+		if (expire == nil) {
+			remaining = "Perm";
+		} else {
+			remaining = expire - time;
+
+			if (remaining < 60) {
+				remaining = remaining + "s";
+			} else if (remaining < 3600) {
+				remaining = ((remaining + 59) / 60) + "m";
+			} else if (remaining < 86400) {
+				remaining = ((remaining + 3599) / 3600) + "h";
+			} else {
+				remaining = ((remaining + 86399) / 86400) + "d";
+			}
+		}
+
+		message = ban["message"];
+
+		if (!message) {
+			message = "";
+		}
+
+		table[i] = ({ targets[i], issuer, remaining, message });
+
+		for (sz2 = 0; sz2 < 4; sz2++) {
+			int len2;
+
+			len2 = strlen(table[i][sz2]);
+
+			if (len2 > len[sz2]) {
+				len[sz2] = len2;
+			}
+		}
+	}
+
+	buffer = "\033[1m" + lalign(header, len[0])
+		+ "  " + lalign("Issuer", len[1])
+		+ "  " + lalign("Exp", len[2])
+		+ "  Message\033[0m\n";
+
+	for (i = 0; i < sz; i++) {
+		buffer +=
+			lalign(table[i][0], len[0])
+			+ "  " + lalign(table[i][1], len[1])
+			+ "  " + lalign(table[i][2], len[2])
+			+ "  " + table[i][3] + "\033[0m\n";
+	}
+
+	return buffer;
+}
+
 void main(object actor, mapping roles)
 {
 	string *users;
 	object user;
+	int sz;
 
 	user = query_user();
 
@@ -41,65 +132,21 @@ void main(object actor, mapping roles)
 	}
 
 	users = BAND->query_bans();
+	sz = sizeof(users);
 
-	if (sizeof(users)) {
+	if (sz) {
+		mapping *bans;
 		int i;
-		int sz;
-		int time;
-		string **table;
 
-		sz = sizeof(users);
-
-		table = allocate(sz + 1);
-		table[0] = ({ "User", "Issuer", "Exp", "Message" });
-
-		time = time();
+		bans = allocate(sz);
 
 		for (i = 0; i < sz; i++) {
-			string username;
-			mapping ban;
-			mixed remaining;
-			string issuer;
-			mixed expire;
-			string message;
-
-			username = users[i];
-			ban = BAND->query_ban(username);
-
-			issuer = ban["issuer"];
-
-			if (!issuer) {
-				issuer = "";
-			}
-
-			expire = ban["expire"];
-
-			if (expire == nil) {
-				remaining = "Perm";
-			} else {
-				remaining = expire - time;
-
-				if (remaining < 60) {
-					remaining = remaining + "s";
-				} else if (remaining < 3600) {
-					remaining = ((remaining + 59) / 60) + "m";
-				} else if (remaining < 86400) {
-					remaining = ((remaining + 3599) / 3600) + "h";
-				} else {
-					remaining = ((remaining + 86399) / 86400) + "d";
-				}
-			}
-
-			message = ban["message"];
-
-			if (!message) {
-				message = "";
-			}
-
-			table[i + 1] = ({ username, issuer, remaining, message });
+			bans[i] = BAND->query_ban(users[i]);
 		}
 
-		send_out(render_table(table, 2) + "\n");
+		send_out(print_bans("User", users, bans));
+
+		send_out("\n");
 	} else {
 		send_out("There are no banned users.\n");
 	}
