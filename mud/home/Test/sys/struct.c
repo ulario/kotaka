@@ -58,16 +58,13 @@ private void test_mapping_2()
 	map = new_object("/lwo/struct/mapping");
 	map->set_type(T_INT);
 
-	for (i = 0; i < 100000; i++) {
-		map->set_element(i, i);
+	for (i = 0; i < 65536; i++) {
+		int r;
 
-		ASSERT(map->query_element(i) == i);
-	}
+		r = random(1048576);
+		map->set_element(r, i);
 
-	for (i = 1; i < 100000; i++) {
-		map->set_element(i, nil);
-
-		ASSERT(map->query_element(i) == nil);
+		ASSERT(map->query_element(r) == i);
 	}
 }
 
