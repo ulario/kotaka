@@ -390,14 +390,12 @@ mapping query_index(string topic)
 	}
 }
 
-mixed *query_tree()
-{
-	return ({ tree, index->query_root() });
-}
-
 void dump()
 {
-	LOGD->post_message("debug", LOG_DEBUG, "Help dump: " + hybrid_sprint(query_tree()));
+	SECRETD->make_dir(".");
+	SECRETD->remove_file("help-dump");
+	SECRETD->write_file("help-dump", hybrid_sprint(tree) + "\n\n");
+	SECRETD->write_file("help-dump", hybrid_sprint(index->query_root()) + "\n\n");
 }
 
 void reset()
