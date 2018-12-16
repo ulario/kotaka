@@ -202,7 +202,7 @@ private int sub_set_element(mixed *node, mixed key, mixed value)
 			}
 
 			if (newkey != nil) {
-				head[0] = newkey;
+				node[0][0] = newkey;
 			}
 
 			return 0;
