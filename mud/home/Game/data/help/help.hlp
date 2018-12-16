@@ -13,6 +13,3 @@ down your choice.
 Additionally, topics and categories by default will mask names lower in
 the hierarchy, though any such masked names will be listed at the bottom
 of the help file.
-
-Categories, if they contain an "index" topic, will show that topic,
-otherwise they will show the topics and categories inside.
