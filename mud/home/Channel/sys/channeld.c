@@ -433,7 +433,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 	/* Tue Aug  3 14:40:18 1993 */
 	/* 012345678901234567890123 */
 	stamp = ctime(mtime[0]);
-	stamp = stamp[0 .. 2] + ", " + stamp[4 .. 9] + ", " + stamp[20 .. 23] + stamp[11 .. 18];
+	stamp = stamp[0 .. 2] + ", " + stamp[4 .. 9] + ", " + stamp[20 .. 23] + " " + stamp[11 .. 18];
 
 	stamp += ".";
 
