@@ -25,7 +25,7 @@ inherit "/lib/search";
 int branch;
 int leaf;
 
-mixed root;
+mixed *root;
 int type;
 
 /* node structure: */
