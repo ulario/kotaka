@@ -53,19 +53,3 @@ void upgrade()
 
 	set_limits();
 }
-
-void prepare_reboot()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	ACCOUNTD->save();
-	BAND->save();
-}
-
-void reboot()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	ACCOUNTD->restore();
-	BAND->restore();
-}
