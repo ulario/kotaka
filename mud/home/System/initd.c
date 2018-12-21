@@ -79,7 +79,9 @@ private void configure_rsrc()
 
 private void configure_system()
 {
-	DUMPD->set_interval(3600);
+	DUMPD->set_interval(600);
+	DUMPD->set_offset(0);
+	DUMPD->set_steps(24);
 }
 
 private void clear_admin()

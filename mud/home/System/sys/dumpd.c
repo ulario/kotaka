@@ -27,6 +27,8 @@
 inherit SECOND_AUTO;
 
 int interval;	/* how long between dumps */
+int offset;	/* remainder of time % interval */
+int steps;	/* total snapshots in a cycle */
 
 private void stop()
 {
@@ -42,32 +44,40 @@ private void stop()
 
 private void start()
 {
-	if (interval) {
+	if (interval && steps) {
 		int now;
 		int goal;
-		int incr;
+		int full;
+		int test;
 
 		now = time();
-
 		goal = now;
 		goal -= goal % interval;
+		goal += offset;
 
 		if (goal <= now) {
 			goal += interval;
 		}
 
-		call_out("dump", goal - now);
+		test = (goal - offset) % (interval * steps);
+
+		if (test == test % interval) {
+			full = 1;
+		}
+
+		call_out("dump", goal - now, full);
 	}
 }
 
-static void dump(varargs int incr)
+static void dump(varargs int full)
 {
-	dump_state();
-	start();
-}
+	int now;
 
-static void create()
-{
+	now = time();
+
+	dump_state(!full);
+
+	start();
 }
 
 void upgrade()
@@ -90,6 +100,10 @@ void set_interval(int new_interval)
 {
 	ACCESS_CHECK(SYSTEM());
 
+	if (new_interval < 1) {
+		error("Invalid interval");
+	}
+
 	stop();
 
 	interval = new_interval;
@@ -97,7 +111,32 @@ void set_interval(int new_interval)
 	start();
 }
 
-int query_interval()
+void set_offset(int new_offset)
 {
-	return interval;
+	ACCESS_CHECK(SYSTEM());
+
+	if (new_offset < 0) {
+		error("Invalid offset");
+	}
+
+	stop();
+
+	offset = new_offset;
+
+	start();
+}
+
+void set_steps(int new_steps)
+{
+	ACCESS_CHECK(SYSTEM());
+
+	if (new_steps < 1) {
+		error("Invalid steps");
+	}
+
+	stop();
+
+	steps = new_steps;
+
+	start();
 }
