@@ -29,8 +29,6 @@
 #include <trace.h>
 #include <type.h>
 
-#define CONSOLE_LOGLEVEL 6
-
 inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
