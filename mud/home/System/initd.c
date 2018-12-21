@@ -203,8 +203,6 @@ private void reboot_common()
 
 	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
 	DRIVER->fix_filequota();
-
-	configure_system();
 }
 
 private void upgrade_check_kotaka_version()
@@ -388,6 +386,8 @@ static void upgrade_system_post_recompile_2()
 
 static void upgrade_system_post_recompile_3()
 {
+	configure_system();
+
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules");
 	MODULED->upgrade_modules();
 
@@ -454,7 +454,6 @@ void upgrade()
 	configure_rsrc();
 	set_limits();
 	clear_admin();
-	configure_system();
 	configure_logging();
 }
 
