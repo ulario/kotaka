@@ -53,7 +53,7 @@ private void start()
 		now = time();
 		goal = now;
 		goal -= goal % interval;
-		goal += offset;
+		goal += offset % interval;
 
 		if (goal <= now) {
 			goal += interval;
