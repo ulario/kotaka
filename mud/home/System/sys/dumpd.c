@@ -97,7 +97,7 @@ void reboot()
 
 void set_interval(int new_interval)
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(SYSTEM() || KADMIN());
 
 	if (new_interval < 1) {
 		error("Invalid interval");
@@ -112,7 +112,7 @@ void set_interval(int new_interval)
 
 void set_offset(int new_offset)
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(SYSTEM() || KADMIN());
 
 	if (new_offset < 0) {
 		error("Invalid offset");
@@ -127,7 +127,7 @@ void set_offset(int new_offset)
 
 void set_steps(int new_steps)
 {
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(SYSTEM() || KADMIN());
 
 	if (new_steps < 1) {
 		error("Invalid steps");
