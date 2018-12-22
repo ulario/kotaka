@@ -117,8 +117,7 @@ void test()
 	msec = "000" + msec;
 	msec = msec[strlen(msec) - 3 ..];
 
-	LOGD->post_message("system", LOG_NOTICE, "Mapping test completed in " + sec + "." + msec + " seconds");
-	LOGD->post_message("system", LOG_NOTICE, count + " element average: " + (diff / (float)count));
+	LOGD->post_message("system", LOG_NOTICE, "Big mapping benchmark, " + (int)((float)count / diff) + " ops/sec");
 
 	write_file("dump", hybrid_sprint(map->query_root(), 0, nil, 1) + "\n\n");
 }
