@@ -26,25 +26,27 @@
 #include <status.h>
 
 inherit wiz "~/closed/lib/wiztool_gate";
+inherit "~/lib/string/sprint";
 inherit userd LIB_USERD;
 inherit user LIB_USER;
 inherit SECOND_AUTO;
 
 string message;
-mapping connections; /* ([ connection : ({ interval, handle }) ]) */
+mapping connections;
 
 private void schedule(object conn)
 {
 	int handle;
 	float interval;
+	int skip;
 
-	({ handle, interval }) = connections[conn];
+	({ handle, interval, skip }) = connections[conn];
 
 	if (handle) {
 		remove_call_out(handle);
 	}
 
-	connections[conn] = ({ call_out("report", interval, conn), interval });
+	connections[conn] = ({ call_out("report", interval, conn), interval, skip });
 }
 
 private void wipe_callouts()
@@ -132,19 +134,27 @@ static void report(object conn)
 
 	connections[conn][0] = 0;
 
+	if (connections[conn][2]) {
+		connections[conn][2] = -1;
+		return;
+	}
+
+	schedule(conn);
+
+	connections[conn][2] = 1;
+
 	message = print_report();
 
 	lines = explode(message, "\n");
 
 	conn->message("\033[1;1H");
+	conn->message(simple_sprint(millitime()) + "\n");
 
 	for (sz = sizeof(lines), i = 0; i < sz; i++) {
 		conn->message(lines[i] + "\033[K\n");
 	}
 
 	conn->message("\033[J");
-
-	schedule(conn);
 }
 
 static void clear(object conn)
@@ -160,29 +170,33 @@ void upgrade()
 {
 	object *conns;
 	int sz;
+	int skip;
 
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	wipe_callouts();
 
-	if (!connections) {
-		connections = ([ ]);
-	}
-
 	conns = map_indices(connections);
 
 	for (sz = sizeof(conns); --sz >= 0; ) {
+		mixed *arr;
 		object conn;
 		int handle;
 		float interval;
+		int skip;
 
 		conn = conns[sz];
+		arr = connections[conn];
 
-		({ handle, interval }) = connections[conn];
+		if (sizeof(arr) == 2) {
+			arr += ({ 0 });
+		}
 
-		handle = call_out("report", interval, conn);
+		({ handle, interval, skip }) = arr;
 
-		connections[conn] = ({ handle, interval });
+		handle = call_out("report", 0, conn);
+
+		connections[conn] = ({ handle, interval, skip });
 	}
 }
 
@@ -262,6 +276,7 @@ int login(string str)
 	float interval;
 	int handle;
 	object conn;
+	int skip;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
@@ -274,12 +289,12 @@ int login(string str)
 	conn = previous_object();
 
 	if (is_trusted(conn)) {
-		interval = 0.05;
+		interval = 0.02;
 	} else {
 		interval = 5.0;
 	}
 
-	connections[conn] = ({ 0, interval });
+	connections[conn] = ({ 0, interval, skip });
 
 	conn->message("\033[1;1H\033[2J");
 
@@ -299,12 +314,11 @@ void logout(int quit)
 	if (connections[conn]) {
 		int handle;
 		float interval;
+		int skip;
 
-		({ handle, interval }) = connections[conn];
+		({ handle, interval, skip }) = connections[conn];
 
 		remove_call_out(handle);
-
-		connections[conn] = nil;
 	}
 }
 
@@ -367,7 +381,17 @@ int receive_message(string str)
 
 int message_done()
 {
+	object conn;
+
 	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	conn = previous_object();
+
+	if (connections[conn][2] == -1) {
+		call_out("report", 0, conn);
+	}
+
+	connections[conn][2] = 0;
 
 	return MODE_NOCHANGE;
 }
