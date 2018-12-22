@@ -20,6 +20,8 @@
 #include <config.h>
 #include <kernel/kernel.h>
 #include <kernel/user.h>
+#include <kernel/access.h>
+#include <kotaka/paths/system.h>
 
 #define ANSI()		(sscanf(previous_program(), USR_DIR + "/Ansi/%*s"))
 #define ACCOUNT()	(sscanf(previous_program(), USR_DIR + "/Account/%*s"))
@@ -37,8 +39,11 @@
 #define THING()		(sscanf(previous_program(), USR_DIR + "/Thing/%*s"))
 #define VERB()		(sscanf(previous_program(), USR_DIR + "/Verb/%*s"))
 
-#define KADMIN()	(previous_program(1) == LIB_WIZTOOL && \
+#define KROOT()		(previous_program(1) == LIB_WIZTOOL && \
 			previous_program() == USR_DIR + "/admin/_code")
+#define KADMIN()	(previous_program(1) == LIB_WIZTOOL && \
+			sscanf(previous_program(), USR_DIR + "/%*s/_code") && \
+			KERNELD->access(previous_object()->query_owner(), "/", FULL_ACCESS))
 #define CODE()		(previous_program(1) == LIB_WIZTOOL && \
 			sscanf(previous_program(), USR_DIR + "/%*s/_code"))
 #define LOCAL()		(calling_object() == this_object())
