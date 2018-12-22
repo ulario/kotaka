@@ -109,6 +109,7 @@ function signalled
 		;;
 	*)
 		crashed
+		exit
 		;;
 	esac
 }
