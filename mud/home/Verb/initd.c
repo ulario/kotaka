@@ -35,9 +35,9 @@ private void set_limits()
 
 static void create()
 {
-	load();
-
 	set_limits();
+
+	load();
 }
 
 void upgrade()
