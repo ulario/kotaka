@@ -38,6 +38,20 @@ mixed **query_roles()
 	});
 }
 
+string query_help_title()
+{
+	return "Put";
+}
+
+string *query_help_contents()
+{
+	return ({
+		"Puts an object somewhere.",
+		"The object you are putting must be in your possession, and the location" +
+		" you are putting it must be accessible."
+	});
+}
+
 private string validate_put(object actor, object obj, object iob)
 {
 	if (obj == actor) {

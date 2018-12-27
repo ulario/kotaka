@@ -50,6 +50,17 @@ private void do_drop(object actor, object obj)
 	obj->set_z_position(actor->query_z_position());
 }
 
+string query_help_title()
+{
+	return "Drop";
+}
+
+string *query_help_contents()
+{
+	return ({ "Drops an object.",
+		"The object must be in your possession." });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed dob;

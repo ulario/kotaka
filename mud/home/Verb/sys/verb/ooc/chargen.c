@@ -35,6 +35,19 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Chargen";
+}
+
+string *query_help_contents()
+{
+	return ({
+		"Chargen creates a character.",
+		"For now, it's just creates an instance of the human class and dumps you in the world."
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	string name;

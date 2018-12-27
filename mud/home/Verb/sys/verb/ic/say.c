@@ -35,6 +35,20 @@ mixed **query_roles()
 	});
 }
 
+string query_help_title()
+{
+	return "Say";
+}
+
+string *query_help_contents()
+{
+	return ({
+		"Speaks.  Takes a quoted phrase as what to say.",
+		"You can also specify a language with the \"in\" preposition.",
+		"If you want to talk \"to\" someone or something, use the \"to\" preposition."
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

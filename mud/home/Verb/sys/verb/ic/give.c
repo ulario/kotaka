@@ -69,6 +69,19 @@ private void do_give(object actor, object obj, object iob)
 	obj->set_z_position(0);
 }
 
+string query_help_title()
+{
+	return "Give";
+}
+
+string *query_help_contents()
+{
+	return ({
+		"Gives an object to a sentient creature.",
+		"The object must be in your possession and the recipient must consent."
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	mixed dob;

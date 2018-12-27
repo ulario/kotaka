@@ -30,6 +30,22 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Walk";
+}
+
+string *query_help_contents()
+{
+	return ({
+		"Changes your position.",
+		"To walk, specify the path you wish to take.  The path is just a string of" +
+		" n's, e's, s's, or w's, possibly with numbers in front, that say where to" +
+		" go and how far.",
+		"All units are in meters."
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	int number;

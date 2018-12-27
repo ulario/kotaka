@@ -26,6 +26,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Login";
+}
+
+string *query_help_contents()
+{
+	return ({ "Use this to log in when you're connected as a guest." });
+}
+
 void main(object actor, mapping roles)
 {
 	query_ustate()->push_state(query_user()->clone_ustate("login"));

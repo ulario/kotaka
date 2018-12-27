@@ -35,6 +35,20 @@ mixed **query_roles()
 	return ({ });
 }
 
+string query_help_title()
+{
+	return "Enter";
+}
+
+string *query_help_contents()
+{
+	return ({ "Enters a building or other object.",
+		"Usually an enterable object will have a default exit that will be" +
+		" used as the entrance, so this is just shorthand for going through" +
+		" that exit."
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

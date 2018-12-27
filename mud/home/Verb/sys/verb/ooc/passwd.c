@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Passwd";
+}
+
+string *query_help_contents()
+{
+	return ({ "Use this command to change your password." });
+}
+
 void main(object actor, mapping roles)
 {
 	string target;

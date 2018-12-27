@@ -28,6 +28,21 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Go";
+}
+
+string *query_help_contents()
+{
+	return ({
+		"Goes through an exit.",
+		"Specify the exit by direction or building or whatever.",
+		"Many exits are named by compass directions, but not all of them.",
+		"In cases of buildings, the exit may be named after the building."
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	object env;

@@ -28,6 +28,20 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Leave";
+}
+
+string *query_help_contents()
+{
+	return ({
+		"Leaves a building or other object.",
+		"Usually a leaveable object will have a default exit that will be used as" +
+		" the exit, so this is just shorthand for going through that exit."
+	});
+}
+
 void main(object actor, mapping roles)
 {
 	object env;

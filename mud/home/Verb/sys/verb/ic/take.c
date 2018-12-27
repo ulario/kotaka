@@ -35,6 +35,20 @@ mixed **query_roles()
 	return ({ });
 }
 
+string query_help_title()
+{
+	return "Take";
+}
+
+string *query_help_contents()
+{
+	return ({
+		"Takes an object.",
+		"The object must be accessible.  If the object is sentient, it" +
+		" must either be willing or you must win a grapple check."
+	});
+}
+
 string validate_take(object actor, object obj)
 {
 	if (obj->is_container_of(actor)) {
