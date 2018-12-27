@@ -90,6 +90,7 @@ void booted_module(string module)
 
 	if (module == "Kotaka") {
 		"sys/helpd"->load_help();
+		"~Verb/sys/verbd"->sync_help();
 	}
 }
 

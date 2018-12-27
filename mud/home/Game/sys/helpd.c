@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/privilege.h>
+#include <kotaka/log.h>
 
 #define HELPD "~Kotaka/sys/helpd"
 
@@ -33,6 +34,8 @@ static void create()
 static void load_helpfile(string dir, string entry)
 {
 	dir = (dir ? dir + "/" : "");
+
+	LOGD->post_message("debug", LOG_DEBUG, "Adding topic " + dir + entry);
 
 	HELPD->add_topic(dir + entry,
 		read_file("~/data/help/" + dir + entry + ".hlp")

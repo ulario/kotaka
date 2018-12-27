@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <kotaka/log.h>
 
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
@@ -31,6 +32,8 @@ private void load()
 private void set_limits()
 {
 	reset_limits();
+
+	KERNELD->rsrc_set_limit("Verb", "ticks", 2000000);
 }
 
 static void create()
@@ -40,9 +43,25 @@ static void create()
 	load();
 }
 
+static void reload_verb_help()
+{
+	LOGD->post_message("system", LOG_NOTICE, "Reloading verb help");
+
+	"sys/verbd"->sync_help();
+}
+
 void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	set_limits();
+}
+
+void upgrade_build()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	compile_dir("sys");
+
+	call_out("reload_verb_help", 0);
 }

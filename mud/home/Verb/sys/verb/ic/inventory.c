@@ -28,6 +28,14 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+}
+
+string *query_help_contents()
+{
+}
+
 private string print_values(mapping values)
 {
 	string buf;

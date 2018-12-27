@@ -17,11 +17,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#define LOG_EMERG	0
-#define LOG_ALERT	1
-#define LOG_CRIT	2
-#define LOG_ERR		3
-#define LOG_WARNING	4
-#define LOG_NOTICE	5
-#define LOG_INFO	6
-#define LOG_DEBUG	7
+#include <config.h>
+
+#define LOG_EMERG   0
+#define LOG_ALERT   1
+#define LOG_CRI     2
+#define LOG_ERR     3
+#define LOG_WARNING 4
+#define LOG_NOTICE  5
+#define LOG_INFO    6
+#define LOG_DEBUG   7
+
+#define LOGD (USR_DIR + "/System/sys/logd")

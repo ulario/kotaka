@@ -42,3 +42,13 @@ static void send_out(string str)
 }
 
 string *query_parse_methods();
+
+string query_help_title()
+{
+	return "Default help";
+}
+
+string *query_help_contents()
+{
+	return ({ "This verb has no help content." });
+}

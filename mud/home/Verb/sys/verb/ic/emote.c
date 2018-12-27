@@ -37,6 +37,14 @@ mixed **query_roles()
 }
 */
 
+string query_help_title()
+{
+}
+
+string *query_help_contents()
+{
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

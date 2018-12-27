@@ -93,6 +93,13 @@ static void create()
 	reset();
 }
 
+static void do_dump()
+{
+	remove_file("help-dump");
+	write_file("help-dump", hybrid_sprint(tree) + "\n\n");
+	write_file("help-dump", hybrid_sprint(index->query_root()) + "\n\n");
+}
+
 void add_topic(string topic, string content)
 {
 	string *parts;
@@ -300,8 +307,7 @@ string *query_topics(string category)
 
 			switch(typeof(map[part])) {
 			case T_NIL:
-				error("No such category");
-				map[part] = ([ ]);
+				return nil;
 
 			case T_MAPPING:
 				map = map[part];
@@ -339,6 +345,8 @@ string *query_categories(string category)
 
 	map = tree;
 
+	LOGD->post_message("debug", LOG_DEBUG, "Listing " + (category ? "category " + category : " root category"));
+
 	if (category) {
 		parts = explode(category, "/");
 
@@ -351,7 +359,7 @@ string *query_categories(string category)
 
 			switch(typeof(map[part])) {
 			case T_NIL:
-				error("No such category part " + part + " in category " + category);
+				return nil;
 
 			case T_MAPPING:
 				map = map[part];
@@ -392,10 +400,7 @@ mapping query_index(string topic)
 
 void dump()
 {
-	SECRETD->make_dir(".");
-	SECRETD->remove_file("help-dump");
-	SECRETD->write_file("help-dump", hybrid_sprint(tree) + "\n\n");
-	SECRETD->write_file("help-dump", hybrid_sprint(index->query_root()) + "\n\n");
+	call_out("do_dump", 0);
 }
 
 void reset()

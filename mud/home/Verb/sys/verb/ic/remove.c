@@ -35,6 +35,14 @@ mixed **query_roles()
 	return ({ });
 }
 
+string query_help_title()
+{
+}
+
+string *query_help_contents()
+{
+}
+
 void main(object actor, mapping roles)
 {
 	mixed dob;
