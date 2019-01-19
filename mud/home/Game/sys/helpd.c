@@ -35,8 +35,6 @@ static void load_helpfile(string dir, string entry)
 {
 	dir = (dir ? dir + "/" : "");
 
-	LOGD->post_message("debug", LOG_DEBUG, "Adding topic " + dir + entry);
-
 	HELPD->add_topic(dir + entry,
 		read_file("~/data/help/" + dir + entry + ".hlp")
 	);

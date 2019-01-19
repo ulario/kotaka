@@ -127,9 +127,6 @@ private void sync_help_dir(string dir)
 		topics = ({ });
 	}
 
-	LOGD->post_message("debug", LOG_DEBUG, "Existing categories: " + implode(categories, ", "));
-	LOGD->post_message("debug", LOG_DEBUG, "Existing topics: " + implode(topics, ", "));
-
 	for (sz = sizeof(names); --sz >= 0; ) {
 		string name;
 		string fullname;

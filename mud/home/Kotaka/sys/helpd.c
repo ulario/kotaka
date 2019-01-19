@@ -17,9 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include <kotaka/paths/system.h>
-#include <kotaka/log.h>
 #include <type.h>
 
 inherit "/lib/string/sprint";
@@ -344,8 +341,6 @@ string *query_categories(string category)
 	mapping categories;
 
 	map = tree;
-
-	LOGD->post_message("debug", LOG_DEBUG, "Listing " + (category ? "category " + category : " root category"));
 
 	if (category) {
 		parts = explode(category, "/");
