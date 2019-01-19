@@ -160,7 +160,7 @@ void receive_in(string input)
 			BAND->ban_site(ip, ([
 				"expire": time() + 30 * 24 * 60 * 60,
 				"issuer": "Text",
-				"message": "Spam"
+				"message": "Spam (" + garbage + ")"
 			]) );
 
 			destruct_object(this_object());
