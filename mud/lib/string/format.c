@@ -71,7 +71,7 @@ string rtrim_whitespace(string str)
 	return str[.. end];
 }
 
-private string wordwrap_line(string line, int width)
+string wordwrap_line(string line, int width)
 {
 	string *words;
 	string buffer;
