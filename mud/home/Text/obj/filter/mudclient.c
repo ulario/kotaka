@@ -136,5 +136,5 @@ void disable_msp()
 
 void beep()
 {
-	message("!!SOUND(beep.wav U=http://shentino.mynetgear.com/~shentino/sounds/)\n");
+	message("!!SOUND(beep.wav U=http://shentino.ddns.net/~shentino/sounds/)\n");
 }
