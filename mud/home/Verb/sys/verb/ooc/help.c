@@ -83,11 +83,17 @@ private void list_category(string category)
 		topics = HELPD->query_topics(subcategory);
 
 		if (sizeof(topics)) {
+			string line;
+
 			if (subcategory) {
 				send_out("\033[1m" + subcategory + ":\033[0m\n");
 			}
 
-			send_out("    " + implode(topics, ", ") + "\n\n");
+			line = implode(topics, ", ");
+			line = wordwrap_line(line, 60);
+			line = "    " + replace(line, "\n", "\n    ");
+
+			send_out(line + "\n\n");
 		}
 	}
 }
