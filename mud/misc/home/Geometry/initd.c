@@ -24,5 +24,4 @@ inherit UTILITY_COMPILE;
 
 static void create()
 {
-	MODULED->boot_module("Thing");
 }
