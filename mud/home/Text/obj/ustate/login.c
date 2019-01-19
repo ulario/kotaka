@@ -380,7 +380,8 @@ void receive_in(string input)
 
 		case "n":
 		case "no":
-			query_user()->quit("quit");
+			send_out("Login: ");
+			state = STATE_GETUSERNAME;
 			return;
 
 		default:
