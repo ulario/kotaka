@@ -111,26 +111,48 @@ private void show_topic(string topic)
 
 private string *filter_topics(string *topics)
 {
-	string *filters;
-	int i, j;
-	int sz;
+	int i, j, sz;
 
-	filters = topics[..];
-	sz = sizeof(filters);
+	i = 0;
 
-	for (i = 0; i < sz; i++) {
-		int sz2;
+	while (i < sizeof(topics)) {
+		int sz;
 
-		sz2 = sizeof(topics);
-
-		for (j = 0; j < sz2; j++) {
-			if (sscanf(topics[j], filters[i] + "/%*s")) {
-				topics[j] = nil;
+		for (sz = sizeof(topics); --sz > i; ) {
+			if (sscanf(topics[sz], topics[i] + "/%*s")) {
+				topics[sz] = nil;
 			}
 		}
 
 		topics -= ({ nil });
+		i++;
 	}
+
+	sz = sizeof(topics);
+
+	for (i = 0; i < sz; i++) {
+		if (!topics[i]) {
+			continue;
+		}
+
+		for (j = 0; j < sz; j++) {
+			if (i == j) {
+				continue;
+			}
+
+			if (!topics[j]) {
+				continue;
+			}
+
+			if (sscanf(topics[i], topics[j] + "/%*s")) {
+				topics[i] = nil;
+			} else if (sscanf(topics[i], "%*s/" + topics[j])) {
+				topics[i] = nil;
+			}
+		}
+	}
+
+	topics -= ({ nil });
 
 	return topics;
 }
