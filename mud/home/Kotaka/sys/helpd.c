@@ -46,6 +46,11 @@ private void remove_index(string entry, string topic)
 	mapping topics;
 
 	topics = index->query_element(entry);
+
+	if (!topics) {
+		return;
+	}
+
 	topics[topic] = nil;
 
 	if (!map_sizeof(topics)) {
