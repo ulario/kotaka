@@ -94,7 +94,7 @@ private string process_help_contents(string *paragraphs)
 	return help;
 }
 
-private void sync_help_dir(string dir)
+static void sync_help_dir(string dir)
 {
 	string *names;
 	int *sizes;
@@ -141,7 +141,7 @@ private void sync_help_dir(string dir)
 
 		if (sizes[sz] == -2) {
 			categories -= ({ name });
-			sync_help_dir(fullname);
+			call_out("sync_help_dir", 0, fullname);
 			continue;
 		}
 
@@ -204,5 +204,5 @@ void sync_help()
 
 	HELPD->add_topic("verbs/fudge", "Chocolatey goodness");
 
-	sync_help_dir(nil);
+	call_out("sync_help_dir", 0, nil);
 }
