@@ -310,13 +310,12 @@ void boot_module(string module, varargs int reboot)
 	string *others;
 	int sz;
 	int existed;
+	string creator;
+
+	creator = DRIVER->creator(previous_program());
 
 	if (module == "System") {
-		error("Cannot boot system module");
-	}
-
-	if (modules[module] == -1) {
-		error("Module is shutting down");
+		error("Cannot boot System module");
 	}
 
 	if (!file_info(initd_of(module) + ".c")) {
@@ -337,7 +336,11 @@ void boot_module(string module, varargs int reboot)
 		KERNELD->set_global_access(module, 1);
 	}
 
-	if (!existed) {
+	if (existed) {
+		LOGD->post_message("system", LOG_NOTICE, creator + (reboot ? " rebooting " : " booting ") + (module ? module : "Ecru") + " (already loaded)");
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, creator + (reboot ? " rebooting " : " booting ") + (module ? module : "Ecru"));
+
 		thaw_module(module);
 
 		rlimits(0; -1) {
