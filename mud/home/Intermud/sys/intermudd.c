@@ -461,6 +461,7 @@ private void do_channel_m(mixed *value)
 
 	if (cflag) {
 		LOGD->post_message("system", LOG_WARNING, name + "@" + mud + " sent a control character on I3 via " + channel);
+		LOGD->post_message("debug", LOG_DEBUG, name + "@" + mud + " sent " + message + " on " + channel);
 	}
 
 	if (CHANNELD->test_channel(channel)) {
