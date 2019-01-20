@@ -193,7 +193,7 @@ void main(object actor, mapping roles)
 		sz = sizeof(topics);
 
 		if (sz > 1) {
-			send_out("Topics:\n\n");
+			send_out("That topic is ambiguous, please choose from the following topics:\n\n");
 
 			for (i = 0; i < sz; i++) {
 				string topic;
