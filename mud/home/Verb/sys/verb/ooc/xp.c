@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Xp";
+}
+
+string *query_help_contents()
+{
+	return ({ "Shows your account's experience point total." });
+}
+
 void main(object actor, mapping roles)
 {
 	string name;

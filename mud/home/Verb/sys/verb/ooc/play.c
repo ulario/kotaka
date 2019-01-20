@@ -31,6 +31,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Play";
+}
+
+string *query_help_contents()
+{
+	return ({ "Takes a character and puts them in the game world." });
+}
+
 void main(object actor, mapping roles)
 {
 	string name;

@@ -162,6 +162,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Help";
+}
+
+string *query_help_contents()
+{
+	return ({ "Accesses the help system." });
+}
+
 void main(object actor, mapping roles)
 {
 	string topic;

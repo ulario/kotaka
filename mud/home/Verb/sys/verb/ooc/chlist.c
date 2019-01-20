@@ -40,6 +40,16 @@ private void i3tag(string *chlist)
 	}
 }
 
+string query_help_title()
+{
+	return "Chlist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists channels." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

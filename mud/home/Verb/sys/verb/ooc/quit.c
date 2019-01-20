@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Quit";
+}
+
+string *query_help_contents()
+{
+	return ({ "Goes out of character, or if already ooc, logs out." });
+}
+
 void main(object actor, mapping roles)
 {
 	object body;

@@ -26,6 +26,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Register";
+}
+
+string *query_help_contents()
+{
+	return ({ "If you're logged in as a guest, this allows you to register an account." });
+}
+
 void main(object actor, mapping roles)
 {
 	query_ustate()->push_state(query_user()->clone_ustate("register"));

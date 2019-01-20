@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Msp";
+}
+
+string *query_help_contents()
+{
+	return ({ "Manipulates the Mud Sound Protocol." });
+}
+
 void main(object actor, mapping roles)
 {
 	object conn;

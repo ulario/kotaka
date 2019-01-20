@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Gender";
+}
+
+string *query_help_contents()
+{
+	return ({ "Changes your OOC gender." });
+}
+
 void main(object actor, mapping roles)
 {
 	string name;

@@ -26,6 +26,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Ansidemo";
+}
+
+string *query_help_contents()
+{
+	return ({ "Shows off the pretty ansi video subsystem.", "Can show the matrix effect, sparks, and flying through space." });
+}
+
 void main(object actor, mapping roles)
 {
 	string demo;

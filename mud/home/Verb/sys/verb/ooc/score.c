@@ -103,6 +103,16 @@ string make_abi_number(int cur, int max)
 	return buf;
 }
 
+string query_help_title()
+{
+	return "Score";
+}
+
+string *query_help_contents()
+{
+	return ({ "Shows a mockup of what a score command may give in the future for your character." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Tell";
+}
+
+string *query_help_contents()
+{
+	return ({ "Sends an OOC private message to another user." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

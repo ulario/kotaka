@@ -44,7 +44,7 @@ string *query_help_contents()
 {
 	return ({
 		"Chargen creates a character.",
-		"For now, it's just creates an instance of the human class and dumps you in the world."
+		"For now, it just creates an instance of the human class and dumps you in the world."
 	});
 }
 

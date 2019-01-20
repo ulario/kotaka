@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Choff";
+}
+
+string *query_help_contents()
+{
+	return ({ "Turns off a channel." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

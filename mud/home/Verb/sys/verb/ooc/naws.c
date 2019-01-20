@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Naws";
+}
+
+string *query_help_contents()
+{
+	return ({ "Manipulates the Negotiate About Window Size telnet option." });
+}
+
 void main(object actor, mapping roles)
 {
 	object conn;

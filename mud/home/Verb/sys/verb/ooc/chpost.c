@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Chpost";
+}
+
+string *query_help_contents()
+{
+	return ({ "Posts a channel." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

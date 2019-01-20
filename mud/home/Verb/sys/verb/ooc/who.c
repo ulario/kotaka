@@ -31,6 +31,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Who";
+}
+
+string *query_help_contents()
+{
+	return ({ "Shows who is online." });
+}
+
 void main(object actor, mapping roles)
 {
 	int class;
