@@ -30,8 +30,6 @@
 
 /* Enable and redefine to suit */
 /* Also inspect the query_banner function below to validate the information provided to the router */
-#define MUDNAME "Kotaka"
-
 #define ROUTER_NAME	"*wpr"
 #define ROUTER_IP	"195.242.99.94"
 #define ROUTER_PORT	8080
@@ -53,7 +51,7 @@ inherit "/lib/string/replace";
 int handle;
 int keepalive;
 string buffer;
-
+string mudname;
 string routername;
 
 int password;
@@ -64,23 +62,16 @@ mapping routers;
 mapping muds;
 mapping channels;
 
+int rejections;
+
 static void save();
 private void restore();
-
-#ifndef MUDNAME
-
-static void create()
-{
-	MODULED->shutdown_module("Intermud");
-	error("Intermud daemon not configured properly, please read ~Intermud/intermudd.c");
-}
-
-#else
 
 static void create()
 {
 	mudlistid = 0;
 	chanlistid = 0;
+	rejections = 0;
 
 	routers = ([ ]);
 	muds = ([ ]);
@@ -197,14 +188,14 @@ void upgrade()
 	}
 }
 
-string query_banner(object LIB_CONN connection)
+private mixed *startup_packet()
 {
-	mixed *arr;
+	mudname = rejections ? "Kotaka" + (rejections + 1) : "Kotaka";
 
-	arr = ({
+	return ({
 		"startup-req-3",
 		5,
-		MUDNAME,
+		mudname,
 		0,
 		ROUTER_NAME,
 		0,
@@ -229,6 +220,14 @@ string query_banner(object LIB_CONN connection)
 		([ ])
 	});
 
+}
+
+string query_banner(object LIB_CONN connection)
+{
+	mixed *arr;
+
+	arr = startup_packet();
+
 	log_outbound(arr);
 
 	return make_packet(arr);
@@ -251,7 +250,7 @@ void send_channel_message(string channel, string sender, string visible, string 
 	arr = ({
 		"channel-m",
 		5,
-		MUDNAME,
+		mudname,
 		sender ? sender : 0,
 		0,
 		0,
@@ -308,7 +307,7 @@ private void do_emoteto(mixed *value)
 		arr = ({
 			"error",
 			5,
-			MUDNAME,
+			mudname,
 			0,
 			value[2],
 			value[3],
@@ -325,13 +324,33 @@ private void do_emoteto(mixed *value)
 
 private void do_error(mixed *value)
 {
-	if (value[2] == MUDNAME) {
+	if (value[2] == mudname) {
 		if (value[6] == "keepalive") {
 			return;
 		}
 	}
 
 	LOGD->post_message("system", LOG_ERR, "IntermudD: I3 error: " + mixed_sprint(value));
+
+	if (value[6] == "not-allowed") {
+		if (value[7] == "Bad password") {
+			mixed *badpkt;
+
+			badpkt = value[8];
+
+			if (badpkt[0] == "startup-req-3") {
+				LOGD->post_message("system", LOG_ERR, "I3: Rejected for having a bad password, incrementing");
+
+				rejections++;
+
+				disconnect();
+
+				buffer = "";
+
+				call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
+			}
+		}
+	}
 }
 
 private void do_mudlist(mixed *value)
@@ -403,7 +422,7 @@ private void do_tell(mixed *value)
 		arr = ({
 			"error",
 			5,
-			MUDNAME,
+			mudname,
 			0,
 			value[2],
 			value[3],
@@ -542,7 +561,7 @@ private void bounce_packet(mixed *value)
 	arr = ({
 		"error",
 		5,
-		MUDNAME,
+		mudname,
 		0,
 		value[2],
 		value[3],
@@ -642,14 +661,14 @@ static void keepalive()
 {
 	mixed *arr;
 
-	keepalive = call_out("keepalive", 300);
+	keepalive = call_out("keepalive", 60);
 
 	arr = ({
 		"who-req",
 		5,
-		MUDNAME,
+		mudname,
 		0,
-		MUDNAME,
+		mudname,
 		0
 	});
 
@@ -662,10 +681,9 @@ static void keepalive()
 
 int login(string input)
 {
-	buffer = input;
-
 	connection(previous_object());
 
+	buffer = input;
 	handle = call_out("process", 0);
 
 	return MODE_NOCHANGE;
@@ -689,14 +707,17 @@ int message_done()
 
 void logout(int quit)
 {
-	if (!quit) {
-		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection lost");
+	if (quit) {
+		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection closed");
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection lost, reconnecting");
 
 		call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
 	}
 
 	if (handle) {
 		remove_call_out(handle);
+		handle = 0;
 	}
 
 	buffer = nil;
@@ -745,7 +766,7 @@ void send_who(string from, string mud)
 	arr = ({
 		"who-req",
 		5,
-		MUDNAME,
+		mudname,
 		from,
 		mud,
 		0
@@ -765,7 +786,7 @@ void send_tell(string from, string decofrom, string mud, string user, string mes
 	arr = ({
 		"tell",
 		5,
-		MUDNAME,
+		mudname,
 		from,
 		mud,
 		user,
@@ -787,11 +808,11 @@ void send_emote(string from, string decofrom, string mud, string user, string me
 	arr = ({
 		"emoteto",
 		5,
-		MUDNAME,
+		mudname,
 		from,
 		mud,
 		user,
-		decofrom + "@" + MUDNAME,
+		decofrom + "@" + mudname,
 		message
 	});
 
@@ -809,7 +830,7 @@ void listen_channel(string channel, int on)
 	arr = ({
 		"channel-listen",
 		5,
-		MUDNAME,
+		mudname,
 		0,
 		ROUTER_NAME,
 		0,
@@ -828,16 +849,16 @@ void add_channel(string channel)
 
 	ACCESS_CHECK(INTERFACE());
 
-	if (channels[channel] && channels[channel][0] != MUDNAME) {
+	if (channels[channel] && channels[channel][0] != mudname) {
 		error("Not our channel");
 	}
 
-	channels[channel] = ({ MUDNAME, 0 });
+	channels[channel] = ({ mudname, 0 });
 
 	arr = ({
 		"channel-add",
 		5,
-		MUDNAME,
+		mudname,
 		0,
 		ROUTER_NAME,
 		0,
@@ -860,7 +881,7 @@ void remove_channel(string channel)
 		error("No such channel");
 	}
 
-	if (channels[channel][0] != MUDNAME) {
+	if (channels[channel][0] != mudname) {
 		error("Not our channel");
 	}
 
@@ -869,7 +890,7 @@ void remove_channel(string channel)
 	arr = ({
 		"channel-remove",
 		5,
-		MUDNAME,
+		mudname,
 		0,
 		ROUTER_NAME,
 		0,
@@ -880,8 +901,6 @@ void remove_channel(string channel)
 
 	message(make_packet(arr));
 }
-
-#endif
 
 static void save()
 {
