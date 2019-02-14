@@ -271,7 +271,7 @@ private void register_ghosts_dir(string dir)
 	}
 }
 
-private void check_program(string path, string *inherits)
+private void check_inherits(string path, string *inherits)
 {
 	if (sscanf(path, "/kernel/%*s")) {
 		return;
@@ -426,7 +426,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 		pinfo->clear_clones();
 	}
 
-	check_program(path, inherited);
+	check_inherits(path, inherited);
 }
 
 void compile_lib(string owner, string path, string *source, string inherited ...)
@@ -439,7 +439,7 @@ void compile_lib(string owner, string path, string *source, string inherited ...
 
 	setup_program_info(path, inherited);
 
-	check_program(path, inherited);
+	check_inherits(path, inherited);
 }
 
 void compile_failed(string owner, string path)
