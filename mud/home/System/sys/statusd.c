@@ -148,7 +148,7 @@ static void report(object conn)
 	lines = explode(message, "\n");
 
 	conn->message("\033[1;1H");
-	conn->message(simple_sprint(millitime()) + "\n");
+	conn->message(simple_sprint(millitime()) + "\033[K\n");
 
 	for (sz = sizeof(lines), i = 0; i < sz; i++) {
 		conn->message(lines[i] + "\033[K\n");
