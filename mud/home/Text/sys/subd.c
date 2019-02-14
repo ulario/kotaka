@@ -375,6 +375,24 @@ string pinkfish2ansi(string input)
 			case "MAGENTA":
 				output += "\033[36m";
 				break;
+			case "B_RED":
+				output += "\033[1;31m";
+				break;
+			case "B_GREEN":
+				output += "\033[1;32m";
+				break;
+			case "B_YELLOW":
+				output += "\033[1;33m";
+				break;
+			case "B_BLUE":
+				output += "\033[1;34m";
+				break;
+			case "B_CYAN":
+				output += "\033[1;35m";
+				break;
+			case "B_MAGENTA":
+				output += "\033[1;36m";
+				break;
 			case "WHITE":
 				output += "\033[37m";
 				break;
