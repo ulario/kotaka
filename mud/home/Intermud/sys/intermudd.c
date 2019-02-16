@@ -30,16 +30,6 @@
 
 /* Enable and redefine to suit */
 /* Also inspect the query_banner function below to validate the information provided to the router */
-#define ROUTER_NAME	"*wpr"
-#define ROUTER_IP	"195.242.99.94"
-#define ROUTER_PORT	8080
-
-/*
-*dalet          97.107.133.86                  8787
-*Kelly          150.101.219.57                 8080
-*i4             204.209.44.3                   8080
-*wpr            195.242.99.94                  8080
-*/
 
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
@@ -48,21 +38,25 @@ inherit "/lib/string/case";
 inherit "/lib/string/sprint";
 inherit "/lib/string/replace";
 
+/* daemon state */
 int handle;
 int keepalive;
 string buffer;
 string mudname;
-string routername;
+int rejections;
 
+/* i3 interface */
 int password;
 int chanlistid;
 int mudlistid;
+string router;
 
+/* local */
 mapping routers;
+
+/* i3 information */
 mapping muds;
 mapping channels;
-
-int rejections;
 
 static void save();
 private void restore();
@@ -72,18 +66,46 @@ static void create()
 	mudlistid = 0;
 	chanlistid = 0;
 	rejections = 0;
+	router = "*wpr";
 
 	routers = ([ ]);
 	muds = ([ ]);
 	channels = ([ ]);
 
-	call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
+	call_out("connect_i3", 0);
 
 	restore();
+
+	if (!router) {
+		router = "*wpr";
+		call_out("save", 0);
+	}
+
+	if (!routers || !map_sizeof(routers)) {
+		call_out("reset_routers", 0);
+	}
 }
 
 void listen_channel(string channel, int on);
 private string mudmode_sprint(mixed data);
+
+static void connect_i3()
+{
+	string ip;
+	int port;
+
+	if (!router) {
+		error("No router selected");
+	}
+
+	if (!routers[router]) {
+		error("No such router: " + router);
+	}
+
+	({ ip, port }) = routers[router];
+
+	connect(ip, port);
+}
 
 private string make_packet(mixed *data)
 {
@@ -197,7 +219,7 @@ private mixed *startup_packet()
 		5,
 		mudname,
 		0,
-		ROUTER_NAME,
+		router,
 		0,
 
 		password,
@@ -347,7 +369,7 @@ private void do_error(mixed *value)
 
 				buffer = "";
 
-				call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
+				call_out("connect_i3", 5);
 			}
 		}
 	}
@@ -712,7 +734,7 @@ void logout(int quit)
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection lost, reconnecting");
 
-		call_out("connect", 0, ROUTER_IP, ROUTER_PORT);
+		call_out("connect_i3", 5);
 	}
 
 	if (handle) {
@@ -727,7 +749,7 @@ void connect_failed(int refused)
 {
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed");
 
-	call_out("connect", 10, ROUTER_IP, ROUTER_PORT);
+	call_out("connect_i3", 30);
 }
 
 static void destruct()
@@ -832,7 +854,7 @@ void listen_channel(string channel, int on)
 		5,
 		mudname,
 		0,
-		ROUTER_NAME,
+		router,
 		0,
 		channel,
 		on
@@ -860,7 +882,7 @@ void add_channel(string channel)
 		5,
 		mudname,
 		0,
-		ROUTER_NAME,
+		router,
 		0,
 		channel,
 		0
@@ -892,7 +914,7 @@ void remove_channel(string channel)
 		5,
 		mudname,
 		0,
-		ROUTER_NAME,
+		router,
 		0,
 		channel
 	});
@@ -910,6 +932,7 @@ static void save()
 		"chanlistid" : chanlistid,
 		"mudlistid" : mudlistid,
 		"password" : password,
+		"router" : router,
 		"routers" : routers
 	]) );
 
@@ -946,13 +969,24 @@ private void restore()
 			if (map && map["routers"]) {
 				routers = map["routers"];
 			}
+
+			if (map && map["router"]) {
+				router = map["router"];
+			}
 		} : {
 			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
 			SECRETD->remove_file("intermud-bad");
 			SECRETD->rename_file("intermud", "intermud-bad");
 		}
-	} else {
-		return;
+	}
+
+	if (!routers) {
+		call_out("reset_routers", 0);
+	}
+
+	if (!router) {
+		router = "*wpr";
+		call_out("save", 0);
 	}
 }
 
@@ -990,4 +1024,18 @@ string *query_routers()
 mixed *query_router(string name)
 {
 	return routers[name];
+}
+
+void reset_routers()
+{
+	routers = ([
+		"*dalet": ({ "97.107.133.86", 8787 }),
+		"*Kelly": ({ "150.101.219.57", 8080 }),
+		"*i4": ({ "204.209.44.3", 8080 }),
+		"*wpr": ({ "136.144.155.250", 8080 })
+	]);
+
+	router = "*wpr";
+
+	call_out("save", 0);
 }
