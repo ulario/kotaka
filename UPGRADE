@@ -52,6 +52,3 @@ Every upgrade has the following sequence of events:
 		those which have not yet been compiled.  For the latter
 		part, please ensure that there are no stray LPC source
 		files.
-
-Caveats for v0.53
------------------

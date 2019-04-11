@@ -89,7 +89,7 @@ Second, the ModuleD hooks.
 
 	void upgrade_module()
 
-		Command from ModuleD instructing it to upgrade itself. 
+		Command from ModuleD instructing it to upgrade itself.
 		ModuleD will recompile the initd first.
 
 	void upgrade_purge()
