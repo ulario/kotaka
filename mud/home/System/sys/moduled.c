@@ -336,11 +336,7 @@ void boot_module(string module, varargs int reboot)
 		KERNELD->set_global_access(module, 1);
 	}
 
-	if (existed) {
-		LOGD->post_message("system", LOG_NOTICE, creator + (reboot ? " rebooting " : " booting ") + (module ? module : "Ecru") + " (already loaded)");
-	} else {
-		LOGD->post_message("system", LOG_NOTICE, creator + (reboot ? " rebooting " : " booting ") + (module ? module : "Ecru"));
-
+	if (!existed) {
 		thaw_module(module);
 
 		rlimits(0; -1) {
