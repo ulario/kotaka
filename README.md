@@ -1,51 +1,34 @@
-README
-======
+# Kotaka
 
-This is the standard issue, yet always unique, README file containing
-important information for Kotaka.
+Kotaka is a mudlib designed to work on DGD, on top of the kernel library
 
-Table of contents
------------------
+## Legal
 
-README
+Please see COPYING for a full copy of the license for this software.
 
-	This file
+It is licensed to all under the terms of the AGPLv3.
 
-INSTALL
+## Getting Started
 
-	Read this file to install kotaka and start using it
+First, install DGD.
 
-COPYRIGHT
+Second, install the kernel library
 
-	Copyright information.  In a nutshell, Kotaka is open source
-	software under the AGPL.
+## Deployment
 
-UPGRADE
+Whatever machine will host this needs to be able to accept inbound
+connections from players.
 
-	This shows how to deal with upgrades to new versions of kotaka.
+## Upgrading
 
-WARRANTY
+Please see UPGRADE.md for full instructions on how to handle upgrades to new versions of Kotaka.
 
-	A big fat warning that this software is as is.
+## Support
 
-kotaka.dgd
+Primary support should be sought on the DGD mailing list so that other
+members of the DGD community can benefit from the exchange.
 
-	The dgd configuration file.
+Please also use the DGD mailing list for issues with the underlying kernel library or with DGD itself.
 
-mud
-
-	The actual mudlib.
-
-scripts
-
-	Useful scripts.
-
-Support
--------
-
-For questions about dgd itself, please contact the dgd mailing list
-
-Questions about kotaka, or the kernel library, can be posted on the
-mailing list, or emailed to me directly.
-
-	shentino@gmail.com
+The github issue tracker for Kotaka may be used by users and developers
+alike to keep track of suggestions or bugs.
