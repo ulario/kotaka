@@ -26,6 +26,8 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
+	MODULED->boot_module("Kotaka");
+
 	load_dir("sys");
 }
 
