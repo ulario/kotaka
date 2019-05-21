@@ -29,6 +29,8 @@ private void load()
 	MODULED->boot_module("Kotaka");
 
 	load_dir("sys");
+
+	"sys/verbd"->sync_help();
 }
 
 private void set_limits()
