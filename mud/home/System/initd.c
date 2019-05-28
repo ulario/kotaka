@@ -586,3 +586,14 @@ string query_patcher(string path)
 		return "patch_object_name";
 	}
 }
+
+void abort(string message)
+{
+	ACCESS_CHECK(TEST());
+
+	DRIVER->message("Abort: " + message + "\n");
+
+	shutdown();
+
+	error("Abort");
+}
