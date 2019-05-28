@@ -33,6 +33,8 @@ private void test_multimap()
 
 	map = ([ ]);
 
+	LOGD->post_message("test", LOG_DEBUG, "Testing multimap...");
+
 	for (i = 1; i < (1 << 30); i *= 3) {
 		set_multimap(map, i, i);
 	}
@@ -46,12 +48,16 @@ private void test_multimap()
 	compact_multimap(map);
 
 	ASSERT(map_sizeof(map) == 0);
+
+	LOGD->post_message("test", LOG_DEBUG, "Tested multimap");
 }
 
 private void test_sparse_array()
 {
 	object sparse;
 	int i;
+
+	LOGD->post_message("test", LOG_DEBUG, "Testing sparse array...");
 
 	sparse = new_object("~System/lwo/struct/sparse_array");
 
@@ -65,6 +71,7 @@ private void test_sparse_array()
 		ASSERT(sparse->query_element(i) == nil);
 	}
 
+	LOGD->post_message("test", LOG_DEBUG, "Tested sparse array");
 }
 
 static void test()

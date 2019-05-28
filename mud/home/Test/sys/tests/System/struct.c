@@ -83,6 +83,8 @@ static void test()
 	mixed msec;
 	object map;
 
+	LOGD->post_message("test", LOG_DEBUG, "Testing mapping...");
+
 	remove_file("dump");
 
 	map = test_mapping_1();
@@ -115,6 +117,7 @@ static void test()
 	msec = "000" + msec;
 	msec = msec[strlen(msec) - 3 ..];
 
+	LOGD->post_message("test", LOG_DEBUG, "Tested mapping");
 	LOGD->post_message("system", LOG_NOTICE, "Big mapping benchmark, " + (int)((float)count / diff) + " ops/sec");
 
 	write_file("dump", hybrid_sprint(map->query_root(), 0, nil, 1) + "\n\n");
