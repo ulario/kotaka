@@ -67,9 +67,14 @@ private void test_sparse_array()
 
 }
 
-void test()
+static void test()
+{
+	test_multimap();
+}
+
+void schedule_test()
 {
 	ACCESS_CHECK(TEST());
 
-	test_multimap();
+	call_out("test", 0);
 }

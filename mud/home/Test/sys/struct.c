@@ -74,7 +74,7 @@ private object test_mapping_2(int count)
 	return map;
 }
 
-void test()
+static void test()
 {
 	mixed *mtime1, *mtime2;
 	float diff;
@@ -82,8 +82,6 @@ void test()
 	int sec;
 	mixed msec;
 	object map;
-
-	ACCESS_CHECK(TEST());
 
 	remove_file("dump");
 
@@ -120,4 +118,11 @@ void test()
 	LOGD->post_message("system", LOG_NOTICE, "Big mapping benchmark, " + (int)((float)count / diff) + " ops/sec");
 
 	write_file("dump", hybrid_sprint(map->query_root(), 0, nil, 1) + "\n\n");
+}
+
+void schedule_test()
+{
+	ACCESS_CHECK(TEST());
+
+	call_out("test", 0);
 }

@@ -42,8 +42,8 @@ private void set_limits()
 
 void test()
 {
-	"sys/struct"->test();
-	"sys/sysstruct"->test();
+	"sys/struct"->schedule_test();
+	"sys/sysstruct"->schedule_test();
 }
 
 static void create()
