@@ -69,7 +69,11 @@ private void test_sparse_array()
 
 static void test()
 {
-	test_multimap();
+	catch {
+		test_multimap();
+	} : {
+		INITD->abort("Error during system struct test");
+	}
 }
 
 void schedule_test()

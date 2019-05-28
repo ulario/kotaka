@@ -67,7 +67,7 @@ private object test_mapping_2(int count)
 		} : {
 			remove_file("crash");
 			write_file("crash", hybrid_sprint(map->query_root(), 0, nil, 1));
-			error("Test failed trying to insert " + b + " at " + a);
+			INITD->abort("Test failed trying to insert " + b + " at " + a);
 		}
 	}
 
