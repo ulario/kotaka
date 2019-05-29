@@ -1,5 +1,7 @@
 # Upgrade API
 
+This file will hold notes of pending changes in APIs going forward.
+
 ## ModuleD will be official registry for modules
 
 In the future, the existence of a module's InitD will no longer
@@ -26,7 +28,7 @@ will no longer automatically reflect the status of the
 module's initd.
 
 Modules will only be sent signals by ModuleD if they are
-officially online according to ModuleD's records
+officially online according to ModuleD's records.
 
 A module registered as online, but whose initd is not
 compiled, will be an anomalous state that will generate a
@@ -64,13 +66,16 @@ patching impossible.
 Therefore, going forward, we will simplify the regime, and the
 responsibilities of affected programs will be amended.
 
-Please see PATCHING for more information.
+A patcher can be registered with a program when the program is compiled.
+The patcher will be queried from the InitD responsible for the program in
+question at the time the program is compiled.
 
-When the new patching interface is built, any further
-recompilations of an object will cause it and its clones to be
-checked against the new patching api.
+When a non inheritable program is compiled, it is checked for patchers in
+either itself or any other program it inherits, and they are called as
+soon as the program is compiled.  All the object's clones will also be
+touched to ensure they are patched before being accessed again.
 
-It's also possible to use a patcher to intercept objects that
+It's possible to use a patcher to intercept objects that
 newly inherit an inheritable after being originally created.
 
 ## Deprecation of SortD
