@@ -40,10 +40,9 @@ private void set_limits()
 	KERNELD->rsrc_set_limit("Test", "ticks", 2000000000);
 }
 
-void test()
+static void test()
 {
-	"sys/struct"->schedule_test();
-	"sys/sysstruct"->schedule_test();
+	"sys/testd"->schedule_tests();
 }
 
 static void create()
