@@ -26,14 +26,14 @@
 inherit "~System/lib/struct/multimap";
 inherit "~System/lib/struct/list";
 
-private void test_multimap()
+static void test_multimap()
 {
 	mapping map;
 	int i;
 
 	map = ([ ]);
 
-	LOGD->post_message("test", LOG_DEBUG, "Testing multimap...");
+	LOGD->post_message("debug", LOG_DEBUG, "Testing multimap...");
 
 	for (i = 1; i < (1 << 30); i *= 3) {
 		set_multimap(map, i, i);
@@ -49,35 +49,38 @@ private void test_multimap()
 
 	ASSERT(map_sizeof(map) == 0);
 
-	LOGD->post_message("test", LOG_DEBUG, "Tested multimap");
+	LOGD->post_message("debug", LOG_DEBUG, "Tested multimap");
 }
 
-private void test_sparse_array()
+static void test_sparse_array()
 {
 	object sparse;
 	int i;
 
-	LOGD->post_message("test", LOG_DEBUG, "Testing sparse array...");
+	LOGD->post_message("debug", LOG_DEBUG, "Testing sparse array...");
 
 	sparse = new_object("~System/lwo/struct/sparse_array");
 
 	for (i = 1; i < (1 << 30); i *= 3) {
+		LOGD->post_message("debug", LOG_DEBUG, "Setting element " + i);
 		sparse->set_element(i, i);
 	}
 
 	for (i = 1; i < (1 << 30); i *= 3) {
+		LOGD->post_message("debug", LOG_DEBUG, "Checking element " + i);
 		ASSERT(sparse->query_element(i) == i);
-		sparse->set_element(i, i);
+		sparse->set_element(i, nil);
 		ASSERT(sparse->query_element(i) == nil);
 	}
 
-	LOGD->post_message("test", LOG_DEBUG, "Tested sparse array");
+	LOGD->post_message("debug", LOG_DEBUG, "Tested sparse array");
 }
 
 static void test()
 {
 	catch {
-		test_multimap();
+		call_out("test_sparse_array", 0);
+		call_out("test_multimap", 0);
 	} : {
 		INITD->abort("Error during system struct test");
 	}
