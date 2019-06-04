@@ -109,7 +109,11 @@ string mixed_sprint(mixed data, varargs mapping seen, int nodup)
 		return tmp + " ])";
 
 	case T_OBJECT:
-		return sprint_object(data, seen, nodup);
+		if (nodup) {
+			return sprint_object(data, seen, nodup);
+		} else {
+			return sprint_object(data, seen);
+		}
 	}
 }
 
