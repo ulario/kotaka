@@ -298,10 +298,7 @@ private void prepare_save_dirs(int n)
 {
 	int i;
 
-	LOGD->post_message("debug", LOG_DEBUG, "Preparing save dirs for " + n + " objects");
-
 	for (i = n - n % FANOUT; i >= FANOUT; i -= FANOUT) {
-		LOGD->post_message("debug", LOG_DEBUG, "Creating save-tmp/" + i);
 		CONFIGD->make_dir("save-tmp/" + i);
 	}
 }
@@ -365,8 +362,6 @@ static void save_world_write(int i)
 {
 	catch {
 		string sprint;
-
-		LOGD->post_message("debug", LOG_DEBUG, "Writing object #" + i);
 
 		sprint = hybrid_sprint(
 			objlist->query_element(i)[1]
@@ -480,8 +475,6 @@ void save_world()
 	}
 
 	ASSERT(!CONFIGD->file_info("save-tmp"));
-
-	LOGD->post_message("debug", LOG_DEBUG, "Fanout is " + FANOUT);
 
 	put_object_directory(nil, list);
 
