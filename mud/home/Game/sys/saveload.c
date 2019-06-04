@@ -291,6 +291,14 @@ static void save_world_put(mixed **list)
 		}
 
 		if (done) {
+			int nobj;
+
+			nobj = objlist->query_size();
+
+			if (!nobj) {
+				return;
+			}
+
 			CONFIGD->make_dir(".");
 			CONFIGD->make_dir("save");
 
