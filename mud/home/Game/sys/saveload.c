@@ -31,6 +31,8 @@
 inherit "~System/lib/struct/list";
 inherit "/lib/string/sprint";
 
+#define FANOUT 100
+
 object oindex2onum; /* ([ oindex: idnum ]) */
 object objlist;	/* ({ idnum: obj, data }) */
 
@@ -48,7 +50,7 @@ private void purge_object(object obj, mixed **list)
 	destruct_object(obj);
 }
 
-private void purge_directory(string dir, mixed **list)
+private void purge_object_directory(string dir, mixed **list)
 {
 	string *names;
 	string *directories;
@@ -90,7 +92,7 @@ static void load_world_purge(mixed **list)
 
 			switch(typeof(data)) {
 			case T_STRING:
-				purge_directory(data, list);
+				purge_object_directory(data, list);
 				break;
 
 			case T_OBJECT:
@@ -106,7 +108,7 @@ static void load_world_purge(mixed **list)
 		}
 
 		if (done) {
-			call_out("load_world_spawn", 0, 1);
+			call_out("load_world_spawn", 0, 0);
 		} else {
 			call_out("load_world_purge", 0, list);
 		}
@@ -115,32 +117,40 @@ static void load_world_purge(mixed **list)
 	}
 }
 
+private void spawn_object(int i, string data)
+{
+	object obj;
+	int j;
+
+	obj = GAME_INITD->create_thing();
+	sscanf(object_name(obj), "%*s#%d", j);
+
+	oindex2onum->set_element(j, i);
+	objlist->push_back( ({ obj, data }) );
+}
+
 static void load_world_spawn(int i)
 {
 	catch {
 		int done;
+		string data;
 
 		if (CONFIGD->file_info("save/" + i + ".obj")) {
-			object obj;
-			int j;
-
-			obj = GAME_INITD->create_thing();
-			sscanf(object_name(obj), "%*s#%d", j);
-
-			oindex2onum->set_element(j, i);
-
-			objlist->push_back( ({ obj,
-				CONFIGD->read_file("save/" + i + ".obj") }) );
-			i++;
-		} else {
-			done = 1;
+			data = CONFIGD->read_file("save/" + i + ".obj");
+		} else if (CONFIGD->file_info("save/" + (i - i % FANOUT) + "/" + i + ".obj")) {
+			data = CONFIGD->read_file("save/" + (i - i % FANOUT) + "/" + i + ".obj");
+		} else if (i > 10) {
+			call_out("load_world_name", 0, i);
+			return;
 		}
 
-		if (done) {
-			call_out("load_world_name", 0, i - 1);
-		} else {
-			call_out("load_world_spawn", 0, i);
+		if (data) {
+			spawn_object(i, data);
 		}
+
+		i++;
+
+		call_out("load_world_spawn", 0, i);
 	} : {
 		LOGD->post_message("system", LOG_INFO, "World load aborted");
 	}
@@ -198,21 +208,41 @@ static void load_world_set(int i)
 	}
 }
 
-private void purge_savedir()
+private void purge_directory(string dir)
 {
 	string *names;
 
+	LOGD->post_message("system", LOG_NOTICE, "Purging directory " + dir);
+
+	// loop in case of overflow
 	do {
+		mixed **arr;
+		int *sizes;
 		int sz;
 
-		names = CONFIGD->get_dir("save/*")[0];
+		arr = CONFIGD->get_dir(dir + "/*");
 
-		if (names) {
-			for (sz = sizeof(names); --sz >= 0; ) {
-				CONFIGD->remove_file("save/" + names[sz]);
+		if (!arr) {
+			return;
+		}
+
+		names = arr[0];
+		sizes = arr[1];
+
+		// loop in case of overflow
+		LOGD->post_message("system", LOG_NOTICE, "There are " + sizeof(names) + " entries");
+
+		for (sz = sizeof(names); --sz >= 0; ) {
+			if (sizes[sz] == -2) {
+				purge_directory(dir + "/" + names[sz]);
+			} else {
+				LOGD->post_message("system", LOG_NOTICE, "Removing file " + names[sz]);
+				CONFIGD->remove_file(dir + "/" + names[sz]);
 			}
 		}
 	} while (names && sizeof(names));
+
+	CONFIGD->remove_dir(dir);
 }
 
 private void put_object(object obj, mixed **list)
@@ -238,7 +268,7 @@ private void put_object(object obj, mixed **list)
 	}
 }
 
-private void put_directory(string dir, mixed **list)
+private void put_object_directory(string dir, mixed **list)
 {
 	string *directories;
 	string *names;
@@ -264,6 +294,18 @@ private void put_directory(string dir, mixed **list)
 	}
 }
 
+private void prepare_save_dirs(int n)
+{
+	int i;
+
+	LOGD->post_message("debug", LOG_DEBUG, "Preparing save dirs for " + n + " objects");
+
+	for (i = n - n % FANOUT; i >= FANOUT; i -= FANOUT) {
+		LOGD->post_message("debug", LOG_DEBUG, "Creating save-tmp/" + i);
+		CONFIGD->make_dir("save-tmp/" + i);
+	}
+}
+
 static void save_world_put(mixed **list)
 {
 	catch {
@@ -276,7 +318,7 @@ static void save_world_put(mixed **list)
 
 			switch(typeof(data)) {
 			case T_STRING:
-				put_directory(data, list);
+				put_object_directory(data, list);
 				break;
 
 			case T_OBJECT:
@@ -299,10 +341,18 @@ static void save_world_put(mixed **list)
 				return;
 			}
 
-			CONFIGD->make_dir(".");
-			CONFIGD->make_dir("save");
+			if (nobj > FANOUT * FANOUT) {
+				error("Too many objects to save");
+			}
 
-			call_out("save_world_write", 0, objlist->query_size());
+			CONFIGD->make_dir(".");
+			CONFIGD->make_dir("save-tmp");
+
+			if (nobj > FANOUT) {
+				prepare_save_dirs(nobj);
+			}
+
+			call_out("save_world_write", 0, nobj - 1);
 		} else {
 			call_out("save_world_put", 0, list);
 		}
@@ -314,17 +364,41 @@ static void save_world_put(mixed **list)
 static void save_world_write(int i)
 {
 	catch {
-		i--;
+		string sprint;
 
-		CONFIGD->write_file("save/" + (i + 1) + ".obj",
-			hybrid_sprint(
-				objlist->query_element(i)[1]
-			) + "\n"
-		);
+		LOGD->post_message("debug", LOG_DEBUG, "Writing object #" + i);
+
+		sprint = hybrid_sprint(
+			objlist->query_element(i)[1]
+		) + "\n";
+
+		switch(i) {
+		case 0 .. FANOUT - 1:
+			CONFIGD->write_file("save-tmp/" + i + ".obj", sprint);
+			break;
+
+		case FANOUT .. FANOUT * FANOUT - 1:
+			CONFIGD->write_file("save-tmp/" + (i - i % FANOUT) + "/" + i + ".obj", sprint);
+			break;
+		}
 
 		if (i > 0) {
-			call_out("save_world_write", 0, i);
+			call_out("save_world_write", 0, i - 1);
 		} else {
+			if (CONFIGD->file_info("save")) {
+				if (CONFIGD->file_info("save-old")) {
+					purge_directory("save-old");
+				}
+				CONFIGD->rename_file("save", "save-old");
+
+				ASSERT(CONFIGD->file_info("save-old"));
+				ASSERT(!CONFIGD->file_info("save"));
+			}
+
+			CONFIGD->rename_file("save-tmp", "save");
+			ASSERT(CONFIGD->file_info("save"));
+			ASSERT(!CONFIGD->file_info("save-tmp"));
+
 			LOGD->post_message("system", LOG_INFO, "World saved");
 		}
 	} : {
@@ -382,7 +456,7 @@ void load_world()
 
 	list = ({ nil, nil });
 
-	purge_directory(nil, list);
+	purge_object_directory(nil, list);
 
 	call_out("load_world_purge", 0, list);
 }
@@ -401,9 +475,15 @@ void save_world()
 
 	list = ({ nil, nil });
 
-	purge_savedir();
+	if (CONFIGD->file_info("save-tmp")) {
+		purge_directory("save-tmp");
+	}
 
-	put_directory(nil, list);
+	ASSERT(!CONFIGD->file_info("save-tmp"));
+
+	LOGD->post_message("debug", LOG_DEBUG, "Fanout is " + FANOUT);
+
+	put_object_directory(nil, list);
 
 	call_out("save_world_put", 0, list);
 }
