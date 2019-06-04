@@ -212,8 +212,8 @@ private void upgrade_check_kotaka_version()
 	}
 
 	switch(version_minor) {
-	case 57:
 	case 58:
+	case 59:
 		switch(version_patch) {
 		case 0:
 			break;
