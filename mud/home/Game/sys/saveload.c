@@ -328,7 +328,7 @@ static void save_world_write(int i)
 			LOGD->post_message("system", LOG_INFO, "World saved");
 		}
 	} : {
-		LOGD->post_message("system", LOG_INFO, "World save aborted");
+		LOGD->post_message("system", LOG_INFO, "World save aborted, error writing object #" + i);
 	}
 }
 
