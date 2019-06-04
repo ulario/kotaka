@@ -65,7 +65,7 @@ string mixed_sprint(mixed data, varargs mapping seen, int nodup)
 	case T_STRING:
 	case T_INT:
 	case T_FLOAT:
-		return simple_sprint(data, seen, nodup);
+		return simple_sprint(data, seen);
 
 	case T_ARRAY:
 		if (seen[data] != nil) {
