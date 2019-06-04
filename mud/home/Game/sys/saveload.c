@@ -384,16 +384,11 @@ static void save_world_write(int i)
 				if (CONFIGD->file_info("save-old")) {
 					purge_directory("save-old");
 				}
-				CONFIGD->rename_file("save", "save-old");
 
-				ASSERT(CONFIGD->file_info("save-old"));
-				ASSERT(!CONFIGD->file_info("save"));
+				CONFIGD->rename_file("save", "save-old");
 			}
 
 			CONFIGD->rename_file("save-tmp", "save");
-			ASSERT(CONFIGD->file_info("save"));
-			ASSERT(!CONFIGD->file_info("save-tmp"));
-
 			LOGD->post_message("system", LOG_INFO, "World saved");
 		}
 	} : {
@@ -473,8 +468,6 @@ void save_world()
 	if (CONFIGD->file_info("save-tmp")) {
 		purge_directory("save-tmp");
 	}
-
-	ASSERT(!CONFIGD->file_info("save-tmp"));
 
 	put_object_directory(nil, list);
 
