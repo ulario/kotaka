@@ -332,10 +332,6 @@ void boot_module(string module, varargs int reboot)
 		KERNELD->add_owner(module);
 	}
 
-	if (module) {
-		KERNELD->set_global_access(module, 1);
-	}
-
 	if (!existed) {
 		thaw_module(module);
 
