@@ -348,12 +348,6 @@ void boot_module(string module, varargs int reboot)
 
 	modules[module] = 1;
 
-	if (module && !sizeof(KERNELD->query_global_access() & ({ module }))) {
-		call_out("shutdown_module", 0, module);
-
-		error("Failure to grant global access by " + module);
-	}
-
 	if (!existed) {
 		if (reboot) {
 			LOGD->post_message("system", LOG_NOTICE, "Rebooted " + (module ? module : "Ecru"));
