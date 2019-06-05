@@ -337,7 +337,17 @@ void boot_module(string module, varargs int reboot)
 
 		rlimits(0; -1) {
 			rlimits(0; MODULE_BOOT_TICKS) {
-				call_limited("load_module", module);
+				string err;
+				
+				err = catch(call_limited("load_module", module));
+
+				if (err) {
+					if (module) {
+						error("Error booting module " + module + ": " + err);
+					} else {
+						error("Error booting nil module: " + err);
+					}
+				}
 			}
 		}
 	}
