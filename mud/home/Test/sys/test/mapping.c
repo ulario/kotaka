@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -90,7 +90,7 @@ static void test()
 
 		diff = (float)(mtime2[0] - mtime1[0]) + (mtime2[1] - mtime1[1]);
 
-		if (diff > 1.0) {
+		if (diff > 0.25) {
 			break;
 		}
 
