@@ -2,7 +2,7 @@
 
 static void test()
 {
-	"tests/main"->schedule_test();
+	"test/main"->schedule_test();
 }
 
 void schedule_tests()
