@@ -44,6 +44,7 @@ int keepalive;
 string buffer;
 string mudname;
 int rejections;
+int reset;
 
 /* i3 interface */
 int password;
@@ -58,8 +59,7 @@ mapping routers;
 mapping muds;
 mapping channels;
 
-static void save();
-private void restore();
+/* utility */
 
 private void reset_routers()
 {
@@ -162,131 +162,73 @@ private void send_packet(mixed *arr)
 	message(make_packet(arr));
 }
 
-static void create()
+private void unlisten_channel(string channel)
 {
-	mudlistid = 0;
-	chanlistid = 0;
-	rejections = 0;
-	router = "*wpr";
+	mixed *arr;
 
-	routers = ([ ]);
-	muds = ([ ]);
-	channels = ([ ]);
+	ACCESS_CHECK(INTERFACE() || CHANNEL());
 
-	call_out("connect_i3", 0);
-
-	restore();
-
-	if (!router) {
-		router = "*wpr";
-		call_out("save", 0);
-	}
-
-	if (!routers || !map_sizeof(routers)) {
-		reset_routers();
-	}
-}
-
-static void connect_i3()
-{
-	string ip;
-	int port;
-
-	if (!router) {
-		error("No router selected");
-	}
-
-	if (!routers[router]) {
-		error("No such router: " + router);
-	}
-
-	({ ip, port }) = routers[router];
-
-	connect(ip, port);
-}
-
-private mixed *startup_packet()
-{
-	mudname = rejections ? "Kotaka" + (rejections + 1) : "Kotaka";
-
-	return ({
-		"startup-req-3",
+	arr = ({
+		"channel-listen",
 		5,
 		mudname,
 		0,
 		router,
 		0,
-
-		password,
-		0,
-		0,
-
-		50000,
-		0,
-		0,
-		"Kotaka",
-		"Kotaka",
-		status(ST_VERSION),
-		"DGD",
-		"(fill in the purpose of the mud here)",
-		"(fill in your admin email here)",
-		([
-			"channel" : 1,
-			"tell" : 1
-		]),
-		([ ])
-	});
-
-}
-
-/* hooks */
-
-void upgrade()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	if (!routers) {
-		routers = ([ ]);
-	}
-}
-
-string query_banner(object LIB_CONN connection)
-{
-	mixed *arr;
-
-	arr = startup_packet();
-
-	return make_packet(arr);
-}
-
-int query_timeout(object LIB_CONN connection)
-{
-	return 3;
-}
-
-object select(string input)
-{
-	return this_object();
-}
-
-void send_channel_message(string channel, string sender, string visible, string text)
-{
-	mixed *arr;
-
-	arr = ({
-		"channel-m",
-		5,
-		mudname,
-		sender ? sender : 0,
-		0,
-		0,
 		channel,
-		visible,
-		text
+		0
 	});
 
 	send_packet(arr);
 }
+
+private void listen_channel(string channel)
+{
+	mixed *arr;
+
+	ACCESS_CHECK(INTERFACE() || CHANNEL());
+
+	arr = ({
+		"channel-listen",
+		5,
+		mudname,
+		0,
+		router,
+		0,
+		channel,
+		1
+	});
+
+	send_packet(arr);
+}
+
+private void bounce_packet(mixed *value)
+{
+	mixed *arr;
+
+	/* send back an error packet */
+	LOGD->post_message("system", LOG_ERR,
+		"IntermudD: Unhandled packet:\n" + hybrid_sprint(value) + "\n");
+
+	LOGD->post_message("system", LOG_ERR,
+		"IntermudD: Bouncing back an error to \"" + value[2] + "\"\n");
+
+	arr = ({
+		"error",
+		5,
+		mudname,
+		0,
+		value[2],
+		value[3],
+		"unk-type",
+		"Unhandled packet type: " + value[0],
+		value
+	});
+
+	send_packet(arr);
+}
+
+/* i3 handlers */
 
 private void do_chanlist_reply(mixed *value)
 {
@@ -309,7 +251,7 @@ private void do_chanlist_reply(mixed *value)
 			channels[names[sz]] = values[sz];
 
 			if (CHANNELD->query_intermud(names[sz])) {
-				listen_channel(names[sz], 1);
+				listen_channel(names[sz]);
 			}
 		}
 	}
@@ -363,13 +305,17 @@ private void do_error(mixed *value)
 			if (badpkt[0] == "startup-req-3") {
 				LOGD->post_message("system", LOG_ERR, "I3: Rejected for having a bad password, incrementing");
 
+				/* either we got bumped or we lost the password */
+				/* try again in a day */
 				rejections++;
+				password = 0;
+				reset = time() + 86400;
 
 				disconnect();
 
 				buffer = "";
 
-				call_out("connect_i3", 5);
+				call_out("connect_i3", 1);
 			}
 		}
 	}
@@ -416,8 +362,16 @@ private void do_startup_reply(mixed *value)
 	sz = sizeof(ch);
 
 	for (sz = sizeof(ch); --sz >= 0; ) {
-		if (channels[ch[sz]]) {
-			listen_channel(ch[sz], CHANNELD->query_intermud(ch[sz]));
+		string channel;
+
+		channel = ch[sz];
+
+		if (channels[channel]) {
+			if (CHANNELD->query_intermud(channel)) {
+				listen_channel(channel);
+			} else {
+				unlisten_channel(channel);
+			}
 		}
 	}
 
@@ -567,30 +521,39 @@ private void do_who_reply(mixed *value)
 	user->message("\033[0m");
 }
 
-private void bounce_packet(mixed *value)
+/* helpers */
+
+private mixed *startup_packet()
 {
-	mixed *arr;
+	mudname = rejections ? "Kotaka" + (rejections + 1) : "Kotaka";
 
-	/* send back an error packet */
-	LOGD->post_message("system", LOG_ERR,
-		"IntermudD: Unhandled packet:\n" + hybrid_sprint(value) + "\n");
-
-	LOGD->post_message("system", LOG_ERR,
-		"IntermudD: Bouncing back an error to \"" + value[2] + "\"\n");
-
-	arr = ({
-		"error",
+	return ({
+		"startup-req-3",
 		5,
 		mudname,
 		0,
-		value[2],
-		value[3],
-		"unk-type",
-		"Unhandled packet type: " + value[0],
-		value
-	});
+		router,
+		0,
 
-	send_packet(arr);
+		password,
+		0,
+		0,
+
+		50000,
+		0,
+		0,
+		"Kotaka",
+		"Kotaka",
+		status(ST_VERSION),
+		"DGD",
+		"(fill in the purpose of the mud here)",
+		"(fill in your admin email here)",
+		([
+			"channel" : 1,
+			"tell" : 1
+		]),
+		([ ])
+	});
 }
 
 private void process_packet(mixed *value)
@@ -644,6 +607,89 @@ private void process_packet(mixed *value)
 	}
 }
 
+private void restore()
+{
+	mapping map;
+	string buf;
+
+	routers = ([ ]);
+	router = nil;
+
+	mudlistid = 0;
+	muds = ([ ]);
+
+	chanlistid = 0;
+	channels = ([ ]);
+
+	password = 0;
+
+	buf = SECRETD->read_file("intermud");
+
+	if (buf) {
+		catch {
+			map = PARSER_VALUE->parse(buf);
+
+			if (map["password"]) {
+				password = map["password"];
+			}
+
+			if (map["routers"]) {
+				routers = map["routers"];
+			}
+
+			if (map["router"]) {
+				router = map["router"];
+			}
+
+			if (map["rejections"]) {
+				rejections = map["rejections"];
+			}
+
+			if (map["reset"]) {
+				reset = map["reset"];
+			}
+		} : {
+			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
+			SECRETD->remove_file("intermud-bad");
+			SECRETD->rename_file("intermud", "intermud-bad");
+		}
+	}
+
+	if (!routers) {
+		reset_routers();
+	}
+
+	if (!router) {
+		router = "*wpr";
+		call_out("save", 0);
+	}
+
+	if (reset < time()) {
+		reset = 0;
+		rejections = 0;
+		password = 0;
+		call_out("save", 0);
+	}
+}
+
+static void connect_i3()
+{
+	string ip;
+	int port;
+
+	if (!router) {
+		error("No router selected");
+	}
+
+	if (!routers[router]) {
+		error("No such router: " + router);
+	}
+
+	({ ip, port }) = routers[router];
+
+	connect(ip, port);
+}
+
 static void process()
 {
 	mixed *arr;
@@ -691,7 +737,62 @@ static void keepalive()
 	send_packet(arr);
 }
 
-/* communication */
+static void save()
+{
+	string buf;
+
+	buf = hybrid_sprint( ([
+		"router" : router,
+		"routers" : routers && map_sizeof(routers) ? routers : nil,
+		"chanlistid" : chanlistid ? chanlistid : nil,
+		"mudlistid" : mudlistid ? mudlistid : nil,
+		"password" : password ? password : nil,
+		"rejections" : rejections ? rejections : nil,
+		"reset" : reset ? reset : nil
+	]) );
+
+	SECRETD->make_dir(".");
+	SECRETD->remove_file("intermud-tmp");
+	SECRETD->write_file("intermud-tmp", buf + "\n");
+	SECRETD->remove_file("intermud");
+	SECRETD->rename_file("intermud-tmp", "intermud");
+}
+
+/* hooks */
+
+static void create()
+{
+	mudlistid = 0;
+	chanlistid = 0;
+	rejections = 0;
+	router = "*wpr";
+
+	routers = ([ ]);
+	muds = ([ ]);
+	channels = ([ ]);
+
+	call_out("connect_i3", 0);
+
+	restore();
+
+	if (!router) {
+		router = "*wpr";
+		call_out("save", 0);
+	}
+
+	if (!routers || !map_sizeof(routers)) {
+		reset_routers();
+	}
+}
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (!routers) {
+		routers = ([ ]);
+	}
+}
 
 int login(string input)
 {
@@ -742,6 +843,46 @@ void connect_failed(int refused)
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed");
 
 	call_out("connect_i3", 30);
+}
+
+string query_banner(object LIB_CONN connection)
+{
+	mixed *arr;
+
+	arr = startup_packet();
+
+	return make_packet(arr);
+}
+
+int query_timeout(object LIB_CONN connection)
+{
+	return 3;
+}
+
+object select(string input)
+{
+	return this_object();
+}
+
+/* calls */
+
+void send_channel_message(string channel, string sender, string visible, string text)
+{
+	mixed *arr;
+
+	arr = ({
+		"channel-m",
+		5,
+		mudname,
+		sender ? sender : 0,
+		0,
+		0,
+		channel,
+		visible,
+		text
+	});
+
+	send_packet(arr);
 }
 
 static void destruct()
@@ -829,26 +970,6 @@ void send_emote(string from, string decofrom, string mud, string user, string me
 	send_packet(arr);
 }
 
-void listen_channel(string channel, int on)
-{
-	mixed *arr;
-
-	ACCESS_CHECK(INTERFACE() || CHANNEL());
-
-	arr = ({
-		"channel-listen",
-		5,
-		mudname,
-		0,
-		router,
-		0,
-		channel,
-		on
-	});
-
-	send_packet(arr);
-}
-
 void add_channel(string channel)
 {
 	mixed *arr;
@@ -902,75 +1023,6 @@ void remove_channel(string channel)
 	});
 
 	send_packet(arr);
-}
-
-static void save()
-{
-	string buf;
-
-	buf = hybrid_sprint( ([
-		"chanlistid" : chanlistid,
-		"mudlistid" : mudlistid,
-		"password" : password,
-		"router" : router,
-		"routers" : routers
-	]) );
-
-	SECRETD->make_dir(".");
-	SECRETD->remove_file("intermud-tmp");
-	SECRETD->write_file("intermud-tmp", buf + "\n");
-	SECRETD->remove_file("intermud");
-	SECRETD->rename_file("intermud-tmp", "intermud");
-}
-
-private void restore()
-{
-	mapping map;
-	string buf;
-
-	routers = ([ ]);
-	router = nil;
-
-	mudlistid = 0;
-	muds = ([ ]);
-
-	chanlistid = 0;
-	channels = ([ ]);
-
-	password = 0;
-
-	buf = SECRETD->read_file("intermud");
-
-	if (buf) {
-		catch {
-			map = PARSER_VALUE->parse(buf);
-
-			if (map["password"]) {
-				password = map["password"];
-			}
-
-			if (map["routers"]) {
-				routers = map["routers"];
-			}
-
-			if (map["router"]) {
-				router = map["router"];
-			}
-		} : {
-			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
-			SECRETD->remove_file("intermud-bad");
-			SECRETD->rename_file("intermud", "intermud-bad");
-		}
-	}
-
-	if (!routers) {
-		call_out("reset_routers", 0);
-	}
-
-	if (!router) {
-		router = "*wpr";
-		call_out("save", 0);
-	}
 }
 
 void add_router(string name, string ip, int port)
