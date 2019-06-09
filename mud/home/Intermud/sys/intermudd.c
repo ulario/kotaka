@@ -61,69 +61,18 @@ mapping channels;
 static void save();
 private void restore();
 
-static void create()
+private void reset_routers()
 {
-	mudlistid = 0;
-	chanlistid = 0;
-	rejections = 0;
+	routers = ([
+		"*dalet": ({ "97.107.133.86", 8787 }),
+		"*Kelly": ({ "150.101.219.57", 8080 }),
+		"*i4": ({ "204.209.44.3", 8080 }),
+		"*wpr": ({ "136.144.155.250", 8080 })
+	]);
+
 	router = "*wpr";
 
-	routers = ([ ]);
-	muds = ([ ]);
-	channels = ([ ]);
-
-	call_out("connect_i3", 0);
-
-	restore();
-
-	if (!router) {
-		router = "*wpr";
-		call_out("save", 0);
-	}
-
-	if (!routers || !map_sizeof(routers)) {
-		call_out("reset_routers", 0);
-	}
-}
-
-void listen_channel(string channel, int on);
-private string mudmode_sprint(mixed data);
-
-static void connect_i3()
-{
-	string ip;
-	int port;
-
-	if (!router) {
-		error("No router selected");
-	}
-
-	if (!routers[router]) {
-		error("No such router: " + router);
-	}
-
-	({ ip, port }) = routers[router];
-
-	connect(ip, port);
-}
-
-private string make_packet(mixed *data)
-{
-	int len;
-	string str;
-	string bigendian;
-
-	str = mudmode_sprint(data);
-	len = strlen(str) + 1;
-
-	bigendian = "    ";
-
-	bigendian[0] = len >> 24;
-	bigendian[1] = len >> 16;
-	bigendian[2] = len >> 8;
-	bigendian[3] = len;
-
-	return bigendian + str + "\000";
+	call_out("save", 0);
 }
 
 private string mudmode_sprint(mixed data)
@@ -189,25 +138,71 @@ private string mudmode_sprint(mixed data)
 	}
 }
 
-/* logging */
-
-private void log_outbound(mixed *arr)
+private string make_packet(mixed *data)
 {
-/*	LOGD->post_message("debug", LOG_DEBUG, "I3 packet out: " + mixed_sprint(arr));*/
+	int len;
+	string str;
+	string bigendian;
+
+	str = mudmode_sprint(data);
+	len = strlen(str) + 1;
+
+	bigendian = "    ";
+
+	bigendian[0] = len >> 24;
+	bigendian[1] = len >> 16;
+	bigendian[2] = len >> 8;
+	bigendian[3] = len;
+
+	return bigendian + str + "\000";
 }
 
-private void log_inbound(mixed *arr)
+private void send_packet(mixed *arr)
 {
-/*	LOGD->post_message("debug", LOG_DEBUG, "I3 packet in: " + mixed_sprint(arr));*/
+	message(make_packet(arr));
 }
 
-void upgrade()
+static void create()
 {
-	ACCESS_CHECK(previous_program() == OBJECTD);
+	mudlistid = 0;
+	chanlistid = 0;
+	rejections = 0;
+	router = "*wpr";
 
-	if (!routers) {
-		routers = ([ ]);
+	routers = ([ ]);
+	muds = ([ ]);
+	channels = ([ ]);
+
+	call_out("connect_i3", 0);
+
+	restore();
+
+	if (!router) {
+		router = "*wpr";
+		call_out("save", 0);
 	}
+
+	if (!routers || !map_sizeof(routers)) {
+		reset_routers();
+	}
+}
+
+static void connect_i3()
+{
+	string ip;
+	int port;
+
+	if (!router) {
+		error("No router selected");
+	}
+
+	if (!routers[router]) {
+		error("No such router: " + router);
+	}
+
+	({ ip, port }) = routers[router];
+
+	connect(ip, port);
 }
 
 private mixed *startup_packet()
@@ -244,13 +239,22 @@ private mixed *startup_packet()
 
 }
 
+/* hooks */
+
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	if (!routers) {
+		routers = ([ ]);
+	}
+}
+
 string query_banner(object LIB_CONN connection)
 {
 	mixed *arr;
 
 	arr = startup_packet();
-
-	log_outbound(arr);
 
 	return make_packet(arr);
 }
@@ -281,9 +285,7 @@ void send_channel_message(string channel, string sender, string visible, string 
 		text
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 private void do_chanlist_reply(mixed *value)
@@ -338,9 +340,7 @@ private void do_emoteto(mixed *value)
 			value
 		});
 
-		log_outbound(arr);
-
-		message(make_packet(arr));
+		send_packet(arr);
 	}
 }
 
@@ -453,9 +453,7 @@ private void do_tell(mixed *value)
 			value
 		});
 
-		log_outbound(arr);
-
-		message(make_packet(arr));
+		send_packet(arr);
 	}
 }
 
@@ -592,9 +590,7 @@ private void bounce_packet(mixed *value)
 		value
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 private void process_packet(mixed *value)
@@ -672,8 +668,6 @@ static void process()
 
 	arr = PARSER_MUDMODE->parse(packet);
 
-	log_inbound(arr);
-
 	process_packet(arr);
 
 	handle = call_out("process", 0);
@@ -694,9 +688,7 @@ static void keepalive()
 		0
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 /* communication */
@@ -794,9 +786,7 @@ void send_who(string from, string mud)
 		0
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 void send_tell(string from, string decofrom, string mud, string user, string message)
@@ -816,9 +806,7 @@ void send_tell(string from, string decofrom, string mud, string user, string mes
 		message
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 void send_emote(string from, string decofrom, string mud, string user, string message)
@@ -838,9 +826,7 @@ void send_emote(string from, string decofrom, string mud, string user, string me
 		message
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 void listen_channel(string channel, int on)
@@ -860,9 +846,7 @@ void listen_channel(string channel, int on)
 		on
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 void add_channel(string channel)
@@ -888,9 +872,7 @@ void add_channel(string channel)
 		0
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 void remove_channel(string channel)
@@ -919,9 +901,7 @@ void remove_channel(string channel)
 		channel
 	});
 
-	log_outbound(arr);
-
-	message(make_packet(arr));
+	send_packet(arr);
 }
 
 static void save()
@@ -948,11 +928,14 @@ private void restore()
 	mapping map;
 	string buf;
 
-	muds = ([ ]);
-	mudlistid = 0;
+	routers = ([ ]);
+	router = nil;
 
-	channels = ([ ]);
+	mudlistid = 0;
+	muds = ([ ]);
+
 	chanlistid = 0;
+	channels = ([ ]);
 
 	password = 0;
 
@@ -962,15 +945,15 @@ private void restore()
 		catch {
 			map = PARSER_VALUE->parse(buf);
 
-			if (map && map["password"]) {
+			if (map["password"]) {
 				password = map["password"];
 			}
 
-			if (map && map["routers"]) {
+			if (map["routers"]) {
 				routers = map["routers"];
 			}
 
-			if (map && map["router"]) {
+			if (map["router"]) {
 				router = map["router"];
 			}
 		} : {
@@ -1024,18 +1007,4 @@ string *query_routers()
 mixed *query_router(string name)
 {
 	return routers[name];
-}
-
-void reset_routers()
-{
-	routers = ([
-		"*dalet": ({ "97.107.133.86", 8787 }),
-		"*Kelly": ({ "150.101.219.57", 8080 }),
-		"*i4": ({ "204.209.44.3", 8080 }),
-		"*wpr": ({ "136.144.155.250", 8080 })
-	]);
-
-	router = "*wpr";
-
-	call_out("save", 0);
 }
