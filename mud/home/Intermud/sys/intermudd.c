@@ -48,6 +48,7 @@ int reset;
 
 /* i3 interface */
 int password;
+mapping passwords;
 int chanlistid;
 int mudlistid;
 string router;
@@ -206,10 +207,7 @@ private void bounce_packet(mixed *value)
 
 	/* send back an error packet */
 	LOGD->post_message("system", LOG_ERR,
-		"IntermudD: Unhandled packet:\n" + hybrid_sprint(value) + "\n");
-
-	LOGD->post_message("system", LOG_ERR,
-		"IntermudD: Bouncing back an error to \"" + value[2] + "\"\n");
+		"IntermudD: Unhandled packet, bouncing an error back to \"" + value[2] + "\":\n" + hybrid_sprint(value) + "\n");
 
 	arr = ({
 		"error",
@@ -301,12 +299,19 @@ private void do_error(mixed *value)
 			badpkt = value[8];
 
 			if (badpkt[0] == "startup-req-3") {
-				LOGD->post_message("system", LOG_ERR, "I3: Rejected for having a bad password, incrementing");
+				LOGD->post_message("system", LOG_ERR, "I3: Rejected for having a bad password");
+
+				if (rejections) {
+					LOGD->post_message("system", LOG_ERR, "I3: Removing invalid password for " + mudname);
+					passwords[mudname] = nil;
+				} else {
+					LOGD->post_message("system", LOG_ERR, "I3: Removing invalid base password for " + mudname);
+					password = 0;
+				}
 
 				/* either we got bumped or we lost the password */
 				/* try again in a day */
 				rejections++;
-				password = 0;
 				reset = time() + 86400;
 
 				call_out("reset", 86401);
@@ -354,7 +359,21 @@ private void do_startup_reply(mixed *value)
 
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Received startup reply");
 
-	password = value[7];
+	if (rejections) {
+		/* this is a temporary password for an alternate version of our mudname */
+		/* we probably forgot the password associated with the original name */
+		if (!passwords) {
+			passwords = ([ ]);
+		}
+
+		LOGD->post_message("debug", LOG_DEBUG, "On alternate mudname, saving password for " + mudname);
+
+		passwords[mudname] = value[7];
+	} else {
+		LOGD->post_message("debug", LOG_DEBUG, "Successful initial login, wiping alternate passwords");
+		passwords = nil;
+		password = value[7];
+	}
 
 	call_out("save", 0);
 
@@ -525,7 +544,25 @@ private void do_who_reply(mixed *value)
 
 private mixed *startup_packet()
 {
-	mudname = rejections ? "Kotaka" + (rejections + 1) : "Kotaka";
+	int active_password;
+	string basename;
+
+	basename = "Kotaka";
+	mudname = rejections ? basename + (rejections + 1) : basename;
+
+	if (rejections) {
+		mixed trial;
+		/* our original password quit working */
+
+		if (passwords && (trial = passwords[mudname])) {
+			LOGD->post_message("debug", LOG_DEBUG, "Using saved alternate password for " + mudname);
+			active_password = trial;
+		} else {
+			LOGD->post_message("debug", LOG_DEBUG, "No saved alternate password for " + mudname);
+		}
+	} else {
+		active_password = password;
+	}
 
 	return ({
 		"startup-req-3",
@@ -535,7 +572,7 @@ private mixed *startup_packet()
 		router,
 		0,
 
-		password,
+		active_password,
 		0,
 		0,
 
@@ -631,6 +668,10 @@ private void restore()
 
 			if (map["password"]) {
 				password = map["password"];
+			}
+
+			if (map["passwords"]) {
+				passwords = map["passwords"];
 			}
 
 			if (map["routers"]) {
@@ -767,6 +808,7 @@ static void save()
 		"chanlistid" : chanlistid ? chanlistid : nil,
 		"mudlistid" : mudlistid ? mudlistid : nil,
 		"password" : password ? password : nil,
+		"passwords" : passwords && map_sizeof(passwords) ? passwords : nil,
 		"rejections" : rejections ? rejections : nil,
 		"reset" : reset ? reset : nil
 	]) );
