@@ -71,8 +71,6 @@ private void reset_routers()
 	]);
 
 	router = "*wpr";
-
-	call_out("save", 0);
 }
 
 private string mudmode_sprint(mixed data)
@@ -310,6 +308,8 @@ private void do_error(mixed *value)
 				rejections++;
 				password = 0;
 				reset = time() + 86400;
+
+				call_out("reset", 86401);
 
 				disconnect();
 
@@ -655,12 +655,8 @@ private void restore()
 		}
 	}
 
-	if (!routers) {
+	if (!routers || !router) {
 		reset_routers();
-	}
-
-	if (!router) {
-		router = "*wpr";
 		call_out("save", 0);
 	}
 
@@ -688,6 +684,30 @@ static void connect_i3()
 	({ ip, port }) = routers[router];
 
 	connect(ip, port);
+}
+
+void reset()
+{
+	ACCESS_CHECK(VERB() || INTERMUD());
+
+	disconnect();
+
+	chanlistid = 0;
+	channels = ([ ]);
+
+	mudlistid = 0;
+	muds = ([ ]);
+
+	password = 0;
+	rejections = 0;
+	reset = 0;
+
+	routers = ([ ]);
+	router = nil;
+
+	reset_routers();
+
+	call_out("connect_i3", 1);
 }
 
 static void process()
@@ -782,6 +802,13 @@ static void create()
 
 	if (!routers || !map_sizeof(routers)) {
 		reset_routers();
+	}
+}
+
+static void destruct()
+{
+	if (query_conn()) {
+		disconnect();
 	}
 }
 
@@ -883,13 +910,6 @@ void send_channel_message(string channel, string sender, string visible, string 
 	});
 
 	send_packet(arr);
-}
-
-static void destruct()
-{
-	if (query_conn()) {
-		disconnect();
-	}
 }
 
 string *query_channels()
