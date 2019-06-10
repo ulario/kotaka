@@ -296,30 +296,32 @@ private void recompile_kernel()
 
 static void create()
 {
-	check_config();
-	check_versions();
-	set_version();
-
 	catch {
-		load_object(KERNELD);		/* needed for LogD */
+		rlimits(100; 250000) {
+			check_config();
+			check_versions();
+			set_version();
 
-		KERNELD->set_global_access("System", 1);
+			load_object(KERNELD);		/* needed for LogD */
 
-		configure_klib();
-		configure_rsrc();
-		set_limits();
-		clear_admin();
+			KERNELD->set_global_access("System", 1);
 
-		load_object(SECRETD);		/* needed for LogD */
-		load_object(LOGD);		/* we need to log any error messages */
-		load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
-		load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
+			configure_klib();
+			configure_rsrc();
+			set_limits();
+			clear_admin();
 
-		SECRETD->remove_file("logs/session.log");
+			load_object(SECRETD);		/* needed for LogD */
+			load_object(LOGD);		/* we need to log any error messages */
+			load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
+			load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
 
-		call_out("boot", 0);
+			SECRETD->remove_file("logs/session.log");
 
-		LOGD->post_message("system", LOG_NOTICE, "System core loaded");
+			call_out("boot", 0);
+
+			LOGD->post_message("system", LOG_NOTICE, "System core loaded");
+		}
 	} : {
 		LOGD->flush();
 		shutdown();
