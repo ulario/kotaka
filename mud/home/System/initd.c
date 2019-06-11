@@ -593,11 +593,12 @@ string query_patcher(string path)
 
 void abort(string message)
 {
-	ACCESS_CHECK(TEST());
+	shutdown();
 
 	DRIVER->message("Abort: " + message + "\n");
+	DRIVER->message("Stack trace: " + ERRORD->print_stack(call_trace()) + "\n");
 
-	shutdown();
+	DRIVER->set_error_manager(nil);
 
 	error("Abort");
 }
