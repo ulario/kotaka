@@ -573,7 +573,9 @@ int forbid_inherit(string from, string path, int priv)
 	initd = find_object(initd_of(DRIVER->creator(path)));
 
 	if (initd) {
-		return initd->forbid_inherit(from, path, priv);
+		rlimits(0; 250000) {
+			return initd->forbid_inherit(from, path, priv);
+		}
 	} else if (!initd && DRIVER->creator(path) != "System") {
 		error("No initd loaded for " + path + " (compiling " + from + ")");
 	}

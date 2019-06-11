@@ -227,7 +227,9 @@ void runtime_error(string error, int caught, mixed **trace)
 		}
 	}
 
-	error = catch(handle_error(error, trace));
+	rlimits (50; 250000) {
+		error = catch(handle_error(error, trace));
+	}
 
 	if (error) {
 		DRIVER->message("Error in ErrorD::runtime_error: " + error + "\n");

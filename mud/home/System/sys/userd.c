@@ -257,6 +257,7 @@ string query_banner(object LIB_CONN connection)
 	object manager;
 	object root;
 	string ip;
+	mapping ban;
 
 	ACCESS_CHECK(SYSTEM() || KERNEL());
 
@@ -273,7 +274,11 @@ string query_banner(object LIB_CONN connection)
 		return "No connection manager\n";
 	}
 
-	if (BAND->check_siteban(query_ip_number(root))) {
+	rlimits (5; 250000) {
+		ban = BAND->check_siteban(query_ip_number(root));
+	}
+
+	if (ban) {
 		mixed timeout;
 
 		TLSD->set_tls_value("System", "abort-connection", 1);
@@ -284,7 +289,9 @@ string query_banner(object LIB_CONN connection)
 
 		if (function_object("query_sitebanned_timeout", manager)) {
 			catch {
-				timeout = manager->query_sitebanned_timeout(connection);
+				rlimits (50; 250000) {
+					timeout = manager->query_sitebanned_timeout(connection);
+				}
 			}
 
 			if ((float)timeout > 1.0) {
@@ -296,7 +303,9 @@ string query_banner(object LIB_CONN connection)
 
 		if (function_object("query_sitebanned_banner", manager)) {
 			catch {
-				return manager->query_sitebanned_banner(connection);
+				rlimits (50; 250000) {
+					return manager->query_sitebanned_banner(connection);
+				}
 			} : {
 				return "Sitebanned\n";
 			}
@@ -316,7 +325,9 @@ string query_banner(object LIB_CONN connection)
 
 		if (function_object("query_blocked_timeout", manager)) {
 			catch {
-				timeout = manager->query_blocked_timeout(connection);
+				rlimits (50; 250000) {
+					timeout = manager->query_blocked_timeout(connection);
+				}
 			}
 
 			if ((float)timeout > 1.0) {
@@ -328,7 +339,9 @@ string query_banner(object LIB_CONN connection)
 
 		if (function_object("query_blocked_banner", manager)) {
 			catch {
-				return manager->query_blocked_banner(connection);
+				rlimits (50; 250000) {
+					return manager->query_blocked_banner(connection);
+				}
 			} : {
 				return "Connection manager fault\n\nConnections blocked\n";
 			}
@@ -348,7 +361,9 @@ string query_banner(object LIB_CONN connection)
 
 		if (function_object("query_overloaded_timeout", manager)) {
 			catch {
-				timeout = manager->query_overloaded_timeout(connection);
+				rlimits (50; 250000) {
+					timeout = manager->query_overloaded_timeout(connection);
+				}
 			}
 
 			if ((float)timeout > 1.0) {
@@ -362,7 +377,9 @@ string query_banner(object LIB_CONN connection)
 
 		if (function_object("query_overloaded_banner", manager)) {
 			catch {
-				return manager->query_overloaded_banner(connection);
+				rlimits (50; 250000) {
+					return manager->query_overloaded_banner(connection);
+				}
 			} : {
 				return "Connection manager fault\n\nSystem busy\n";
 			}
@@ -371,7 +388,9 @@ string query_banner(object LIB_CONN connection)
 		}
 	}
 
-	return manager->query_banner(connection);
+	rlimits (50; 250000) {
+		return manager->query_banner(connection);
+	}
 }
 
 int query_timeout(object LIB_CONN connection)
@@ -419,7 +438,9 @@ int query_timeout(object LIB_CONN connection)
 		return -1;
 	}
 
-	return manager->query_timeout(connection);
+	rlimits (50; 250000) {
+		return manager->query_timeout(connection);
+	}
 }
 
 object select(string str)

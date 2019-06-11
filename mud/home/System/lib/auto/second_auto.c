@@ -316,9 +316,9 @@ nomask int _F_sys_create(int clone)
 
 	if (sscanf(oname, "%*s" + CLONABLE_SUBDIR) == 0 &&
 		sscanf(oname, "%*s" + LIGHTWEIGHT_SUBDIR) == 0) {
-		create();
+		call_limited("create");
 	} else {
-		create(clone);
+		call_limited("create", clone);
 	}
 
 	return 1;
