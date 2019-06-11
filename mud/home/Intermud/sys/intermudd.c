@@ -39,12 +39,9 @@ inherit "/lib/string/sprint";
 inherit "/lib/string/replace";
 
 /* daemon state */
-int handle;
-int keepalive;
 string buffer;
 string mudname;
 int rejections;
-int reset;
 
 /* i3 interface */
 int password;
@@ -61,6 +58,24 @@ mapping muds;
 mapping channels;
 
 /* utility */
+
+private void wipe_callouts_function(string func)
+{
+	int sz;
+	mixed **callouts;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		mixed *callout;
+
+		callout = callouts[sz];
+
+		if (callout[CO_FUNCTION] == func) {
+			remove_call_out(callout[CO_HANDLE]);
+		}
+	}
+}
 
 private void reset_routers()
 {
@@ -312,9 +327,6 @@ private void do_error(mixed *value)
 				/* either we got bumped or we lost the password */
 				/* try again in a day */
 				rejections++;
-				reset = time() + 86400;
-
-				call_out("reset", 86401);
 
 				disconnect();
 
@@ -394,7 +406,7 @@ private void do_startup_reply(mixed *value)
 		}
 	}
 
-	keepalive = call_out("keepalive", 0);
+	call_out("keepalive", 0);
 }
 
 private void do_tell(mixed *value)
@@ -561,6 +573,11 @@ private mixed *startup_packet()
 			LOGD->post_message("debug", LOG_DEBUG, "No saved alternate password for " + mudname);
 		}
 	} else {
+		if (password) {
+			LOGD->post_message("debug", LOG_DEBUG, "Using saved base password for " + mudname);
+		} else {
+			LOGD->post_message("debug", LOG_DEBUG, "No saved base password for " + mudname);
+		}
 		active_password = password;
 	}
 
@@ -685,10 +702,6 @@ private void restore()
 			if (map["rejections"]) {
 				rejections = map["rejections"];
 			}
-
-			if (map["reset"]) {
-				reset = map["reset"];
-			}
 		} : {
 			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
 			SECRETD->remove_file("intermud-bad");
@@ -698,13 +711,6 @@ private void restore()
 
 	if (!routers || !router) {
 		reset_routers();
-		call_out("save", 0);
-	}
-
-	if (reset < time()) {
-		reset = 0;
-		rejections = 0;
-		password = 0;
 		call_out("save", 0);
 	}
 }
@@ -727,37 +733,13 @@ static void connect_i3()
 	connect(ip, port);
 }
 
-void reset()
-{
-	ACCESS_CHECK(VERB() || INTERMUD());
-
-	disconnect();
-
-	chanlistid = 0;
-	channels = ([ ]);
-
-	mudlistid = 0;
-	muds = ([ ]);
-
-	password = 0;
-	rejections = 0;
-	reset = 0;
-
-	routers = ([ ]);
-	router = nil;
-
-	reset_routers();
-
-	call_out("connect_i3", 1);
-}
-
 static void process()
 {
 	mixed *arr;
 	int len;
 	string packet;
 
-	handle = 0;
+	wipe_callouts_function("process");
 
 	if (strlen(buffer) < 4) {
 		return;
@@ -777,14 +759,16 @@ static void process()
 
 	process_packet(arr);
 
-	handle = call_out("process", 0);
+	call_out("process", 0);
 }
 
 static void keepalive()
 {
 	mixed *arr;
 
-	keepalive = call_out("keepalive", 60);
+	wipe_callouts_function("keepalive");
+
+	call_out("keepalive", 60);
 
 	arr = ({
 		"who-req",
@@ -802,15 +786,14 @@ static void save()
 {
 	string buf;
 
+	wipe_callouts_function("save");
+
 	buf = hybrid_sprint( ([
 		"router" : router,
 		"routers" : routers && map_sizeof(routers) ? routers : nil,
-		"chanlistid" : chanlistid ? chanlistid : nil,
-		"mudlistid" : mudlistid ? mudlistid : nil,
 		"password" : password ? password : nil,
 		"passwords" : passwords && map_sizeof(passwords) ? passwords : nil,
-		"rejections" : rejections ? rejections : nil,
-		"reset" : reset ? reset : nil
+		"rejections" : rejections ? rejections : nil
 	]) );
 
 	SECRETD->make_dir(".");
@@ -822,6 +805,7 @@ static void save()
 
 /* hooks */
 
+/* objectd hooks */
 static void create()
 {
 	mudlistid = 0;
@@ -863,12 +847,14 @@ void upgrade()
 	}
 }
 
+/* user hooks */
 int login(string input)
 {
 	connection(previous_object());
 
 	buffer = input;
-	handle = call_out("process", 0);
+
+	call_out("process", 0);
 
 	return MODE_NOCHANGE;
 }
@@ -877,9 +863,7 @@ int receive_message(string input)
 {
 	buffer += input;
 
-	if (!handle) {
-		handle = call_out("process", 0);
-	}
+	call_out("process", 0);
 
 	return MODE_NOCHANGE;
 }
@@ -891,17 +875,29 @@ int message_done()
 
 void logout(int quit)
 {
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		mixed *callout;
+
+		callout = callouts[sz];
+
+		switch(callout[CO_FUNCTION]) {
+		case "save":
+			break;
+		default:
+			remove_call_out(callout[CO_HANDLE]);
+		}
+	}
+
 	if (quit) {
 		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection closed");
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection lost, reconnecting");
-
-		call_out("connect_i3", 5);
-	}
-
-	if (handle) {
-		remove_call_out(handle);
-		handle = 0;
+		call_out("connect_i3", 1);
 	}
 
 	buffer = nil;
@@ -911,9 +907,10 @@ void connect_failed(int refused)
 {
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed");
 
-	call_out("connect_i3", 30);
+	call_out("connect_i3", 5);
 }
 
+/* userd hooks */
 string query_banner(object LIB_CONN connection)
 {
 	mixed *arr;
@@ -934,6 +931,29 @@ object select(string input)
 }
 
 /* calls */
+
+void reset()
+{
+	ACCESS_CHECK(VERB() || INTERMUD());
+
+	disconnect();
+
+	chanlistid = 0;
+	channels = ([ ]);
+
+	mudlistid = 0;
+	muds = ([ ]);
+
+	password = 0;
+	rejections = 0;
+
+	routers = ([ ]);
+	router = nil;
+
+	reset_routers();
+
+	call_out("connect_i3", 1);
+}
 
 void send_channel_message(string channel, string sender, string visible, string text)
 {
