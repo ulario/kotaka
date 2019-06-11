@@ -135,6 +135,7 @@ private object setup_program_info(string path, string *inherited)
 		int i;
 		int sz;
 		string creator;
+		string initdpath;
 
 		string constructor, destructor, patcher;
 		string *iconstructors, *idestructors, *ipatchers;
@@ -142,20 +143,22 @@ private object setup_program_info(string path, string *inherited)
 		creator = DRIVER->creator(path);
 
 		if (creator) {
-			initd = find_object(USR_DIR + "/" + creator + "/initd");
+			initdpath = USR_DIR + "/" + creator + "/initd";
 		} else {
-			initd = find_object("/initd");
+			initdpath = "/initd";
 		}
 
-		if (initd) {
-			constructor = initd->query_constructor(path);
-			destructor = initd->query_destructor(path);
-			patcher = initd->query_patcher(path);
-		}
+		if (initd && path != initdpath) {
+			rlimits (0; 250000) {
+				constructor = initd->query_constructor(path);
+				destructor = initd->query_destructor(path);
+				patcher = initd->query_patcher(path);
+			}
 
-		pinfo->set_constructor(constructor);
-		pinfo->set_destructor(destructor);
-		pinfo->set_patcher(patcher);
+			pinfo->set_constructor(constructor);
+			pinfo->set_destructor(destructor);
+			pinfo->set_patcher(patcher);
+		}
 
 		sz = sizeof(inherited);
 
