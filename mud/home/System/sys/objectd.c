@@ -346,6 +346,8 @@ void upgrade()
 	convert_progdb();
 }
 
+/* driver hooks */
+
 void compiling(string path)
 {
 	string creator;
@@ -387,46 +389,48 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 	ACCESS_CHECK(previous_program() == DRIVER);
 
-	path = object_name(obj);
+	rlimits(0; 250000) {
+		path = object_name(obj);
 
-	if (path != DRIVER) {
-		inherited = ({ AUTO }) + inherited;
-	}
-
-	pinfo = setup_program_info(path, inherited);
-
-	if (sscanf(path, "/kernel/%*s")) {
-		return;
-	}
-
-	creator = DRIVER->creator(path);
-
-	if (creator && path == USR_DIR + "/" + creator + "/_code") {
-		call_out("destruct_object", 0, obj);
-
-		return;
-	}
-
-	if (upgrading) {
-		string patcher;
-		string *patchers;
-
-		upgrading = 0;
-
-		if (function_object("upgrading", obj)) {
-			catch {
-				obj->upgrading();
-			}
+		if (path != DRIVER) {
+			inherited = ({ AUTO }) + inherited;
 		}
 
-		INITD->enqueue_task_prefix(OBJECTD, "upgrade_object", obj);
+		pinfo = setup_program_info(path, inherited);
 
-		patcher = pinfo->query_patcher();
-		patchers = pinfo->query_inherited_patchers();
+		if (sscanf(path, "/kernel/%*s")) {
+			return;
+		}
 
-		INITD->enqueue_task_prefix(PATCHD, "mark_patch", path, !(patcher || sizeof(patchers)));
-	} else if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
-		pinfo->clear_clones();
+		creator = DRIVER->creator(path);
+
+		if (creator && path == USR_DIR + "/" + creator + "/_code") {
+			call_out("destruct_object", 0, obj);
+
+			return;
+		}
+
+		if (upgrading) {
+			string patcher;
+			string *patchers;
+
+			upgrading = 0;
+
+			if (function_object("upgrading", obj)) {
+				catch {
+					obj->upgrading();
+				}
+			}
+
+			INITD->enqueue_task_prefix(OBJECTD, "upgrade_object", obj);
+
+			patcher = pinfo->query_patcher();
+			patchers = pinfo->query_inherited_patchers();
+
+			INITD->enqueue_task_prefix(PATCHD, "mark_patch", path, !(patcher || sizeof(patchers)));
+		} else if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
+			pinfo->clear_clones();
+		}
 	}
 
 	check_inherits(path, inherited);
@@ -479,7 +483,9 @@ void destruct(varargs mixed owner_arg, mixed obj_arg)
 		obj = obj_arg;
 
 		if (function_object("_F_sys_destruct", obj) && TLSD->query_tls_value("System", "destruct_force") != obj) {
-			obj->_F_sys_destruct();
+			rlimits (0; 250000) {
+				obj->_F_sys_destruct();
+			}
 		}
 
 		if (function_object("query_object_name", obj)) {
@@ -508,6 +514,8 @@ void destruct(varargs mixed owner_arg, mixed obj_arg)
 void destruct_lib(string owner, string path)
 {
 	object pinfo;
+
+	ACCESS_CHECK(previous_program() == DRIVER);
 
 	pinfo = fetch_program_info(status(path, O_INDEX));
 
