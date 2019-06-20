@@ -18,7 +18,7 @@ static_chunk	= 64512;		/* static memory chunk */
 dynamic_chunk	= 261120;		/* dynamic memory chunk */
 dump_file	= "../state/snapshot";	/* snapshot file */
 dump_interval	= 3600;			/* snapshot interval in seconds */
-hotboot		= ({ "/home/shentino/git/kotaka/script/hotboot" }); /* hotboot */
+hotboot		= ({ "../script/hotboot" }); /* hotboot */
 
 typechecking	= 2;			/* highest level of typechecking */
 include_file	= "/include/std.h";	/* standard include file */
