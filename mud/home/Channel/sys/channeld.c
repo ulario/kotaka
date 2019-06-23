@@ -119,7 +119,7 @@ private void write_node(string channel)
 
 static void flush()
 {
-	if (buffers && map_sizeof(buffers)) {
+	while (buffers && map_sizeof(buffers)) {
 		string *channels;
 		int sz;
 
@@ -128,14 +128,8 @@ static void flush()
 		sz = sizeof(channels);
 
 		write_node(channels[random(sz)]);
-	}
 
-	if (!map_sizeof(buffers)) {
 		buffers = nil;
-	}
-
-	if (buffers) {
-		schedule();
 	}
 }
 
