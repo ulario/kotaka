@@ -380,19 +380,17 @@ object *query_subscribers(string channel)
 /* message management */
 /**********************/
 
-private void paste_to_log(string channel, string stamp, string sender, string message)
+private void paste_to_log(string channel, string sender, string message)
 {
 	if (sender) {
 		if (message) {
-			append_node(channel, stamp + " " + sender + ": " + message + "\n");
+			write_secret_log(channel, sender + ": " + message);
 		} else {
-			append_node(channel, stamp + " " + sender + " (no message)\n");
+			write_secret_log(channel, sender + " (no message)");
 		}
 	} else {
-		append_node(channel, stamp + " " + message + "\n");
+		write_secret_log(channel, message + "\n");
 	}
-
-	schedule();
 }
 
 void post_message(string channel, string sender, string message, varargs int norelay)
@@ -439,7 +437,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	stamp += mstamp;
 
-	paste_to_log(channel, stamp, sender, message);
+	paste_to_log(channel, sender, message);
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
