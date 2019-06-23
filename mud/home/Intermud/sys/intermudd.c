@@ -37,6 +37,7 @@ inherit "/lib/copy";
 inherit "/lib/string/case";
 inherit "/lib/string/sprint";
 inherit "/lib/string/replace";
+inherit "/lib/secretlog";
 
 /* daemon state */
 string buffer;
@@ -451,6 +452,7 @@ private void do_channel_m(mixed *value)
 	string newmessage;
 	string header;
 	string channel;
+	string fullname;
 	int i, sz;
 	int cflag;
 
@@ -479,6 +481,14 @@ private void do_channel_m(mixed *value)
 	channel = value[6];
 	visname = value[7];
 
+	if (to_lower(name) == to_lower(visname)) {
+		fullname = visname + "@" + mud;
+	} else {
+		fullname = visname + " (" + name + ")@" + mud;
+	}
+
+	write_secret_log(channel, fullname + ": " + message);
+
 	if (sscanf(message, "%*s%%^")) {
 		message = TEXT_SUBD->pinkfish2ansi(message) + "\033[0m";
 	}
@@ -489,11 +499,7 @@ private void do_channel_m(mixed *value)
 	}
 
 	if (CHANNELD->test_channel(channel)) {
-		if (to_lower(name) == to_lower(visname)) {
-			CHANNELD->post_message(channel, visname + "@" + mud, message, 1);
-		} else {
-			CHANNELD->post_message(channel, visname + " (" + name + ")@" + mud, message, 1);
-		}
+		CHANNELD->post_message(channel, fullname, message, 1);
 	}
 }
 
