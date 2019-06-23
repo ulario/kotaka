@@ -32,6 +32,7 @@
 inherit "~System/lib/struct/list";
 inherit "/lib/string/sprint";
 inherit "/lib/copy";
+inherit "/lib/secretlog";
 
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
