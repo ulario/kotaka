@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -68,6 +68,18 @@ private void start()
 	}
 }
 
+private void configure()
+{
+	interval = 60 * 5; /* a dump every 5 minutes */
+	steps = 3600 / interval; /* one full dump every hour */
+	offset = 0;
+}
+
+static void create()
+{
+	configure();
+}
+
 static void dump(varargs int full)
 {
 	int now;
@@ -83,8 +95,7 @@ void upgrade()
 {
 	ACCESS_CHECK(SYSTEM());
 
-	stop();
-	start();
+	configure();
 }
 
 void reboot()

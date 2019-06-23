@@ -77,13 +77,6 @@ private void configure_rsrc()
 	KERNELD->set_rsrc("callout usage", -1, 1, 1);
 }
 
-private void configure_system()
-{
-	DUMPD->set_interval(3600);
-	DUMPD->set_offset(0);
-	DUMPD->set_steps(24);
-}
-
 private void clear_admin()
 {
 	string *resources;
@@ -349,8 +342,6 @@ static void boot()
 		load();
 		LOGD->post_message("system", LOG_NOTICE, "System loaded");
 
-		configure_system();
-
 		call_out("ready", 0);
 	} : {
 		log_boot_error();
@@ -390,8 +381,6 @@ static void upgrade_system_post_recompile_2()
 
 static void upgrade_system_post_recompile_3()
 {
-	configure_system();
-
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules");
 	MODULED->upgrade_modules();
 
