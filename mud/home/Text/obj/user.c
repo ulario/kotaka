@@ -30,7 +30,7 @@
 #include <kotaka/ustate.h>
 
 inherit "~/lib/user";
-inherit "~/lib/logging";
+inherit "~/lib/log";
 inherit "/lib/string/replace";
 
 object mobile;
@@ -39,7 +39,6 @@ int destructing;
 int quitting;
 int logging_out;
 string username;
-string ip;
 
 static void unsubscribe_channels();
 
@@ -50,36 +49,14 @@ static void create(int clone)
 	}
 }
 
-void set_ip()
-{
-	object conn;
-
-	ACCESS_CHECK(TEXT() || SYSTEM());
-
-	conn = query_conn();
-
-	while (conn <- LIB_USER) {
-		conn = conn->query_conn();
-	}
-
-	ip = query_ip_number(conn);
-}
-
 void send_out(string msg)
 {
 	ASSERT(msg);
 
 	::send_out(msg);
 
-	if (!sscanf(msg, "%*s\n")) {
-		msg += "\n";
-	}
-
 	if (!query_top_state()->forbid_log_outbound()) {
-		if (!ip) {
-			set_ip();
-		}
-		"~/sys/logd"->log_message(username ? username : ip, " >>> " + msg);
+		log_message(">>> " + msg);
 	}
 }
 
@@ -336,15 +313,8 @@ private int do_receive(string msg)
 
 	logmsg = msg;
 
-	if (!sscanf(logmsg, "%*s\n")) {
-		logmsg += "\n";
-	}
-
 	if (!query_top_state()->forbid_log_inbound()) {
-		if (!ip) {
-			set_ip();
-		}
-		"~/sys/logd"->log_message(username ? username : ip, " <<< " + msg);
+		log_message("<<< " + msg);
 	}
 
 	ret = ::receive_message(msg);

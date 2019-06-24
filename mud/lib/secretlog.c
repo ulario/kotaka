@@ -112,7 +112,11 @@ static void write_secret_log(string file, string message)
 
 	stamp += mstamp;
 
-	append_node(file, stamp + " " + message + "\n");
+	if (message[strlen(message) - 1] != '\n') {
+		message += "\n";
+	}
+
+	append_node(file, stamp + " " + message);
 
 	callouts = status(this_object(), O_CALLOUTS);
 
