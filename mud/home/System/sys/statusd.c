@@ -291,7 +291,7 @@ int login(string str)
 	if (is_trusted(conn)) {
 		interval = 0.02;
 	} else {
-		interval = 5.0;
+		interval = 1.0;
 	}
 
 	connections[conn] = ({ 0, interval, skip });
