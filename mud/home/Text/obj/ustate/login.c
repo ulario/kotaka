@@ -396,3 +396,8 @@ void receive_in(string input)
 		pending = 1;
 	}
 }
+
+int forbid_log_inbound()
+{
+	return state == STATE_GETPASSWORD || state == STATE_CHKPASSWORD;
+}
