@@ -58,9 +58,9 @@ static nomask void secret_flush()
 		sz = sizeof(files);
 
 		write_node(files[random(sz)]);
-
-		buffers = nil;
 	}
+
+	buffers = nil;
 }
 
 static void flush()
