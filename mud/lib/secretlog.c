@@ -72,6 +72,8 @@ static void write_secret_log(string file, string message)
 {
 	mixed *mtime;
 	string stamp, mstamp;
+	mixed **callouts;
+	int sz;
 
 	mtime = millitime();
 
@@ -91,6 +93,14 @@ static void write_secret_log(string file, string message)
 	stamp += mstamp;
 
 	append_node(file, stamp + " " + message + "\n");
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		if (callouts[sz][CO_FUNCTION] == "secret_flush") {
+			return;
+		}
+	}
 
 	call_out("secret_flush", 0);
 }
