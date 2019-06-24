@@ -36,7 +36,7 @@ function execdgd
 	trap - SIGHUP
 	trap - SIGINT
 	trap - SIGTERM
-	exec ~/bin/dgd $*
+	exec ../dgd/bin/dgd $*
 }
 
 function boot
@@ -90,7 +90,7 @@ function crashed
 	then
 		rm -rf crash
 		mkdir crash
-		gdb dgd mud/core -batch -ex bt > crash/trace
+		gdb ../dgd/bin/dgd mud/core -batch -ex bt > crash/trace
 		mv mud/core crash
 		echo "+++ DGD terminated by SIG$SIGNAME (core dump processed) +++"
 	else
