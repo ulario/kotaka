@@ -283,14 +283,14 @@ void receive_in(string input)
 			return;
 		} else {
 			send_out("This account was just deleted!\n");
-			query_user()->query_quit("nuked");
+			query_user()->quit("nuked");
 			return;
 		}
 
 	case STATE_CHKDUPLICATE:
 		if (!ACCOUNTD->query_is_registered(username)) {
 			send_out("Your account was just deleted!\n");
-			query_user()->query_quit("nuked");
+			query_user()->quit("nuked");
 			return;
 		}
 
