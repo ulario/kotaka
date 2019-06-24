@@ -39,6 +39,7 @@ int destructing;
 int quitting;
 int logging_out;
 string username;
+string ip;
 
 static void unsubscribe_channels();
 
@@ -49,10 +50,23 @@ static void create(int clone)
 	}
 }
 
+void set_ip()
+{
+	object conn;
+
+	ACCESS_CHECK(TEXT() || SYSTEM());
+
+	conn = query_conn();
+
+	while (conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	ip = query_ip_number(conn);
+}
+
 void send_out(string msg)
 {
-	string user;
-
 	ASSERT(msg);
 
 	::send_out(msg);
@@ -61,14 +75,11 @@ void send_out(string msg)
 		msg += "\n";
 	}
 
-	user = whoami();
-
-	if (!user) {
-		user = "(anonymous)";
-	}
-
 	if (!query_top_state()->forbid_log_outbound()) {
-		log_message_out(user, msg);
+		if (!ip) {
+			set_ip();
+		}
+		"~/sys/logd"->log_message(username ? username : ip, " >>> " + msg);
 	}
 }
 
@@ -320,11 +331,8 @@ private void do_login()
 private int do_receive(string msg)
 {
 	int ret;
-	string user;
 	string logmsg;
 	mixed *mtime;
-
-	user = whoami();
 
 	logmsg = msg;
 
@@ -333,7 +341,10 @@ private int do_receive(string msg)
 	}
 
 	if (!query_top_state()->forbid_log_inbound()) {
-		log_message_in(user, logmsg);
+		if (!ip) {
+			set_ip();
+		}
+		"~/sys/logd"->log_message(username ? username : ip, " <<< " + msg);
 	}
 
 	ret = ::receive_message(msg);

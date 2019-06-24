@@ -110,3 +110,11 @@ static void destruct()
 {
 	destruct_object("sys/userd");
 }
+
+string query_patcher(string path)
+{
+	switch(path) {
+	case USR_DIR + "/obj/user":
+		return "set_ip";
+	}
+}

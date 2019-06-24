@@ -23,52 +23,13 @@
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
+inherit "/lib/secretlog";
 inherit "~System/lib/struct/list";
 
 mixed **buf;
 
-static void create()
-{
-	buf = ({ nil, nil });
-}
-
-void upgrade()
-{
-	int sz;
-	mixed **callouts;
-
-	ACCESS_CHECK(SYSTEM());
-
-	buf = ({ nil, nil });
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
-	}
-
-	call_out("flush", 0);
-}
-
-void post_message(string file, string msg)
-{
-	ACCESS_CHECK(TEXT());
-
-	if (!buf) {
-		buf = ({ nil, nil });
-	}
-
-	if (list_empty(buf)) {
-		call_out("flush", 0);
-	}
-
-	list_push_back(buf, ({ file, msg }) );
-}
-
 static void flush()
 {
-	SECRETD->make_dir(".");
-	SECRETD->make_dir("log");
-
 	if (!buf) {
 		return;
 	}
@@ -90,6 +51,9 @@ static void flush()
 			buf = nil;
 		}
 
+		SECRETD->make_dir(".");
+		SECRETD->make_dir("log");
+
 		if (info = SECRETD->file_info(file)) {
 			/* ({ file size, file modification time, object }) */
 			int size;
@@ -106,4 +70,11 @@ static void flush()
 
 		SECRETD->write_file(file, msg);
 	}
+}
+
+void log_message(string sender, string message)
+{
+	ACCESS_CHECK(TEXT());
+
+	write_secret_log(sender, message);
 }
