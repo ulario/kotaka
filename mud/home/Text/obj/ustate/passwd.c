@@ -142,3 +142,8 @@ void receive_in(string input)
 		}
 	}
 }
+
+int forbid_log_inbound()
+{
+	return 1;
+}
