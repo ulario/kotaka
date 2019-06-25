@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd ~/git/kotaka
-
 exec 1>&2
 
 rm -f state/swap
