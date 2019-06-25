@@ -5,14 +5,6 @@
 # note: we don't CARE if wait gets interrupted
 # all handled signals are fatal for the script
 
-function sigterm
-{
-	echo "+++ Monitor received SIGTERM, terminating DGD +++"
-	trap - SIGTERM
-	kill -TERM $DGDPID
-	kill -TERM $$
-}
-
 function sigint
 {
 	echo "+++ Monitor received SIGINT, killing DGD +++"
@@ -32,7 +24,6 @@ function execdgd
 {
 	trap - SIGHUP
 	trap - SIGINT
-	trap - SIGTERM
 	exec ../dgd/bin/dgd $*
 }
 
@@ -125,7 +116,6 @@ exec < /dev/null
 exec >> kotaka.err
 exec 2>&1
 
-trap sigterm SIGTERM
 trap sigint SIGINT
 trap sighup SIGHUP
 
