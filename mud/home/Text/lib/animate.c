@@ -60,7 +60,7 @@ void begin()
 {
 	query_user()->set_mode(MODE_NOECHO);
 
-	framerate = 60;
+	framerate = 30;
 
 	ACCESS_CHECK(previous_object() == query_user());
 }
