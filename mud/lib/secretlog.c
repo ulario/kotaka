@@ -95,6 +95,14 @@ static void write_secret_log(string file, string message)
 	mixed **callouts;
 	int sz;
 
+	if (!file) {
+		error("Invalid filename");
+	}
+
+	if (!message) {
+		error("Invalid message");
+	}
+
 	mtime = millitime();
 
 	/* ctime format: */
