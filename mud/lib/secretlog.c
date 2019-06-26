@@ -22,24 +22,24 @@
 
 inherit "~System/lib/struct/list";
 
-private mapping buffers;
+private mapping queues;
 
 private void append_node(string file, string fragment)
 {
 	mixed **list;
 
-	if (!buffers) {
-		buffers = ([ ]);
+	if (!queues) {
+		queues = ([ ]);
 	}
 
-	list = buffers[file];
+	list = queues[file];
 
 	if (!list) {
 		list = ({ nil, nil });
-		buffers[file] = list;
+		queues[file] = list;
 	}
 
-	list_append_string(list, fragment);
+	list_push_back(list, fragment);
 }
 
 private void write_node(string file)
@@ -47,7 +47,7 @@ private void write_node(string file)
 	mixed **list;
 	mixed *info;
 
-	list = buffers[file];
+	list = queues[file];
 
 	info = SECRETD->file_info("logs/" + file + ".log");
 
@@ -63,29 +63,44 @@ private void write_node(string file)
 	list_pop_front(list);
 
 	if (list_empty(list)) {
-		buffers[file] = nil;
+		queues[file] = nil;
+	}
+
+	if (!map_sizeof(queues)) {
+		queues = nil;
 	}
 }
 
 static nomask void secret_flush()
 {
-	while (buffers && map_sizeof(buffers)) {
-		string *files;
-		int sz;
+	int ticks;
 
-		files = map_indices(buffers);
+	ticks = status(ST_TICKS);
 
-		sz = sizeof(files);
-
-		write_node(files[random(sz)]);
+	if (ticks == -1 || ticks > 50000) {
+		ticks = 50000;
 	}
 
-	buffers = nil;
-}
+	rlimits(0; ticks - 500) {
+		while (status(ST_TICKS) > 5000) {
+			if (queues && map_sizeof(queues)) {
+				string *files;
+				int sz;
 
-static void flush()
-{
-	call_out("secret_flush", 0);
+				files = map_indices(queues);
+
+				sz = sizeof(files);
+
+				write_node(files[random(sz)]);
+			} else {
+				return;
+			}
+		}
+	}
+
+	if (queues && map_sizeof(queues)) {
+		call_out("secret_flush", 0);
+	}
 }
 
 static void write_secret_log(string file, string message)
