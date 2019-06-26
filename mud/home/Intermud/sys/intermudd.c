@@ -31,6 +31,8 @@
 /* Enable and redefine to suit */
 /* Also inspect the query_banner function below to validate the information provided to the router */
 
+#define MUDNAME "Kotaka"
+
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 inherit "/lib/copy";
@@ -59,6 +61,18 @@ mapping muds;
 mapping channels;
 
 /* utility */
+
+private void upgrade_password()
+{
+	if (password) {
+		if (!passwords) {
+			passwords = ([ ]);
+		}
+
+		passwords[MUDNAME] = password;
+		password = 0;
+	}
+}
 
 private void wipe_callouts_function(string func)
 {
@@ -315,6 +329,7 @@ private void do_error(mixed *value)
 			badpkt = value[8];
 
 			if (badpkt[0] == "startup-req-3") {
+				upgrade_password();
 				LOGD->post_message("system", LOG_ERR, "I3: Rejected for having a bad password");
 
 				LOGD->post_message("system", LOG_ERR, "I3: Removing invalid password for " + mudname);
@@ -368,6 +383,8 @@ private void do_startup_reply(mixed *value)
 	mixed oldpass, newpass;
 
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Received startup reply, saving password");
+
+	upgrade_password();
 
 	if (!passwords) {
 		passwords = ([ ]);
@@ -560,15 +577,15 @@ private void do_who_reply(mixed *value)
 
 private mixed *startup_packet()
 {
-	string basename;
-	int password;
+	int trialpassword;
 
-	basename = "Kotaka";
-	mudname = rejections ? basename + (rejections + 1) : basename;
+	mudname = rejections ? MUDNAME + (rejections + 1) : MUDNAME;
+
+	upgrade_password();
 
 	if (passwords && passwords[mudname]) {
 		LOGD->post_message("system", LOG_NOTICE, "Using saved password for " + mudname);
-		password = passwords[mudname];
+		trialpassword = passwords[mudname];
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "No saved password for " + mudname);
 	}
@@ -581,7 +598,7 @@ private mixed *startup_packet()
 		router,
 		0,
 
-		password,
+		trialpassword,
 		0,
 		0,
 
@@ -682,7 +699,7 @@ private void restore()
 			}
 
 			if (map["password"]) {
-				passwords[mudname] = map["password"];
+				password = map["password"];
 			}
 
 			if (map["routers"]) {
@@ -698,6 +715,8 @@ private void restore()
 			SECRETD->rename_file("intermud", "intermud-bad");
 		}
 	}
+
+	upgrade_password();
 
 	if (!routers || !router) {
 		reset_routers();
@@ -778,11 +797,12 @@ static void save()
 
 	wipe_callouts_function("save");
 
+	upgrade_password();
+
 	buf = hybrid_sprint( ([
 		"router" : router,
 		"routers" : routers && map_sizeof(routers) ? routers : nil,
-		"passwords" : passwords && map_sizeof(passwords) ? passwords : nil,
-		"rejections" : rejections ? rejections : nil
+		"passwords" : passwords && map_sizeof(passwords) ? passwords : nil
 	]) );
 
 	SECRETD->make_dir(".");
@@ -797,7 +817,6 @@ static void save()
 /* objectd hooks */
 static void create()
 {
-	mudname = "Kotaka";
 	mudlistid = 0;
 	chanlistid = 0;
 	rejections = 0;
@@ -836,13 +855,7 @@ void upgrade()
 		routers = ([ ]);
 	}
 
-	if (password) {
-		if (!passwords) {
-			passwords = ([ ]);
-		}
-		passwords[mudname] = password;
-		password = 0;
-	}
+	upgrade_password();
 }
 
 /* user hooks */
