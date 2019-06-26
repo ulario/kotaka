@@ -23,7 +23,6 @@
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/bigstruct.h>
 #include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;

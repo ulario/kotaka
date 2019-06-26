@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
@@ -277,94 +276,4 @@ mapping list_directory(string name)
 	} else {
 		return root->query_key();
 	}
-}
-
-private void gather(string path, object dir, mixed **list)
-{
-	string *names;
-	mapping key;
-	int *vals;
-	int sz;
-
-	key = dir->query_key();
-	names = map_indices(key);
-	vals = map_values(key);
-
-	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
-		switch(vals[sz]) {
-		case 1:
-			if (!dir->query_entry_value(names[sz])) {
-				list_push_back(
-					list,
-					path ?
-					(path + ":" + names[sz]) :
-					names[sz]
-				);
-			}
-			break;
-
-		case 2:
-			gather(
-				path ?
-				path + ":" + names[sz] :
-				names[sz], dir->query_entry_value(names[sz]), list
-			);
-		}
-	}
-}
-
-void fix()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	rlimits(0; -1) {
-		mixed **list;
-
-		list = ({ nil, nil });
-
-		gather(nil, root, list);
-
-		while (!list_empty(list)) {
-			remove_object(list_front(list));
-			list_pop_front(list);
-		}
-	}
-}
-
-private void dump_directory(object dir, int indent)
-{
-	mapping key;
-	string *indices;
-	object *values;
-	int sz, i;
-
-	key = dir->query_key();
-
-	indices = map_indices(key);
-	values = map_values(key);
-
-	for (sz = sizeof(indices), i = 0; i < sz; i++) {
-		object obj;
-		string name;
-
-		name = indices[i];
-
-		switch (key[name]) {
-		case 1:
-			obj = dir->query_entry_value(name);
-			LOGD->post_message("debug", LOG_DEBUG, spaces(indent * 2) + name + ": " + (obj ? "<" + object_name(obj) + ">" : "nil"));
-			break;
-		case 2:
-			LOGD->post_message("debug", LOG_DEBUG, spaces(indent * 2) + name);
-			dump_directory(dir->query_entry_value(name), indent + 1);
-			break;
-		}
-	}
-}
-
-void dump()
-{
-	LOGD->post_message("debug", LOG_DEBUG, "Dumping CatalogD");
-
-	dump_directory(root, 0);
 }

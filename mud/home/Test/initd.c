@@ -26,8 +26,6 @@ inherit UTILITY_COMPILE;
 
 private void load()
 {
-	MODULED->boot_module("Bigstruct");
-
 	load_dir("lwo");
 	load_dir("obj");
 	load_dir("sys");
