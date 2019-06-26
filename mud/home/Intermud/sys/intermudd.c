@@ -317,13 +317,8 @@ private void do_error(mixed *value)
 			if (badpkt[0] == "startup-req-3") {
 				LOGD->post_message("system", LOG_ERR, "I3: Rejected for having a bad password");
 
-				if (rejections) {
-					LOGD->post_message("system", LOG_ERR, "I3: Removing invalid password for " + mudname);
-					passwords[mudname] = nil;
-				} else {
-					LOGD->post_message("system", LOG_ERR, "I3: Removing invalid base password for " + mudname);
-					password = 0;
-				}
+				LOGD->post_message("system", LOG_ERR, "I3: Removing invalid password for " + mudname);
+				passwords[mudname] = nil;
 
 				/* either we got bumped or we lost the password */
 				/* try again in a day */
@@ -370,22 +365,25 @@ private void do_startup_reply(mixed *value)
 	mixed *raw;
 	int sz;
 
-	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Received startup reply");
+	mixed oldpass, newpass;
 
-	if (rejections) {
-		/* this is a temporary password for an alternate version of our mudname */
-		/* we probably forgot the password associated with the original name */
-		if (!passwords) {
-			passwords = ([ ]);
+	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Received startup reply, saving password");
+
+	if (!passwords) {
+		passwords = ([ ]);
+	}
+
+	oldpass = passwords[mudname];
+	passwords[mudname] = newpass = value[7];
+
+	if (oldpass != newpass) {
+		if (!oldpass) {
+			LOGD->post_message("debug", LOG_DEBUG, "A new password " + newpass + " was issued");
+		} else {
+			LOGD->post_message("debug", LOG_DEBUG, "The password was changed from " + oldpass + " to " + newpass);
 		}
-
-		LOGD->post_message("debug", LOG_DEBUG, "On alternate mudname, saving password for " + mudname);
-
-		passwords[mudname] = value[7];
 	} else {
-		LOGD->post_message("debug", LOG_DEBUG, "Successful initial login, wiping alternate passwords");
-		passwords = nil;
-		password = value[7];
+		LOGD->post_message("debug", LOG_DEBUG, "Issued password matches saved password " + newpass);
 	}
 
 	call_out("save", 0);
@@ -562,29 +560,17 @@ private void do_who_reply(mixed *value)
 
 private mixed *startup_packet()
 {
-	int active_password;
 	string basename;
+	int password;
 
 	basename = "Kotaka";
 	mudname = rejections ? basename + (rejections + 1) : basename;
 
-	if (rejections) {
-		mixed trial;
-		/* our original password quit working */
-
-		if (passwords && (trial = passwords[mudname])) {
-			LOGD->post_message("debug", LOG_DEBUG, "Using saved alternate password for " + mudname);
-			active_password = trial;
-		} else {
-			LOGD->post_message("debug", LOG_DEBUG, "No saved alternate password for " + mudname);
-		}
+	if (passwords && passwords[mudname]) {
+		LOGD->post_message("system", LOG_NOTICE, "Using saved password for " + mudname);
+		password = passwords[mudname];
 	} else {
-		if (password) {
-			LOGD->post_message("debug", LOG_DEBUG, "Using saved base password for " + mudname);
-		} else {
-			LOGD->post_message("debug", LOG_DEBUG, "No saved base password for " + mudname);
-		}
-		active_password = password;
+		LOGD->post_message("system", LOG_NOTICE, "No saved password for " + mudname);
 	}
 
 	return ({
@@ -595,7 +581,7 @@ private mixed *startup_packet()
 		router,
 		0,
 
-		active_password,
+		password,
 		0,
 		0,
 
@@ -682,6 +668,8 @@ private void restore()
 	channels = ([ ]);
 
 	password = 0;
+	passwords = ([ ]);
+	rejections = 0;
 
 	buf = SECRETD->read_file("intermud");
 
@@ -689,12 +677,12 @@ private void restore()
 		catch {
 			map = PARSER_VALUE->parse(buf);
 
-			if (map["password"]) {
-				password = map["password"];
-			}
-
 			if (map["passwords"]) {
 				passwords = map["passwords"];
+			}
+
+			if (map["password"]) {
+				passwords[mudname] = map["password"];
 			}
 
 			if (map["routers"]) {
@@ -703,10 +691,6 @@ private void restore()
 
 			if (map["router"]) {
 				router = map["router"];
-			}
-
-			if (map["rejections"]) {
-				rejections = map["rejections"];
 			}
 		} : {
 			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
@@ -797,7 +781,6 @@ static void save()
 	buf = hybrid_sprint( ([
 		"router" : router,
 		"routers" : routers && map_sizeof(routers) ? routers : nil,
-		"password" : password ? password : nil,
 		"passwords" : passwords && map_sizeof(passwords) ? passwords : nil,
 		"rejections" : rejections ? rejections : nil
 	]) );
@@ -814,6 +797,7 @@ static void save()
 /* objectd hooks */
 static void create()
 {
+	mudname = "Kotaka";
 	mudlistid = 0;
 	chanlistid = 0;
 	rejections = 0;
@@ -850,6 +834,14 @@ void upgrade()
 
 	if (!routers) {
 		routers = ([ ]);
+	}
+
+	if (password) {
+		if (!passwords) {
+			passwords = ([ ]);
+		}
+		passwords[mudname] = password;
+		password = 0;
 	}
 }
 
@@ -937,29 +929,6 @@ object select(string input)
 }
 
 /* calls */
-
-void reset()
-{
-	ACCESS_CHECK(VERB() || INTERMUD());
-
-	disconnect();
-
-	chanlistid = 0;
-	channels = ([ ]);
-
-	mudlistid = 0;
-	muds = ([ ]);
-
-	password = 0;
-	rejections = 0;
-
-	routers = ([ ]);
-	router = nil;
-
-	reset_routers();
-
-	call_out("connect_i3", 1);
-}
 
 void send_channel_message(string channel, string sender, string visible, string text)
 {
