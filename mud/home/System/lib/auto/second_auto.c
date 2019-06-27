@@ -486,3 +486,19 @@ string query_object_name()
 
 	return name;
 }
+
+static void call_out_unique(string func, mixed delay)
+{
+	mixed **callouts;
+	int sz;
+
+	callouts = status(this_object(), O_CALLOUTS);
+
+	for (sz = sizeof(callouts); --sz >= 0; ) {
+		if (callouts[sz][CO_FUNCTION] == func) {
+			return;
+		}
+	}
+
+	call_out(func, delay);
+}
