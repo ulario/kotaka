@@ -750,7 +750,9 @@ static void process()
 
 	process_packet(arr);
 
-	call_out("process", 0);
+	if (strlen(buffer) > 4) {
+		call_out("process", 0);
+	}
 }
 
 static void keepalive()
@@ -806,18 +808,9 @@ static void create()
 	muds = ([ ]);
 	channels = ([ ]);
 
-	call_out("connect_i3", 0);
-
 	restore();
 
-	if (!router) {
-		router = "*wpr";
-		call_out("save", 0);
-	}
-
-	if (!routers || !map_sizeof(routers)) {
-		reset_routers();
-	}
+	call_out("connect_i3", 0);
 }
 
 static void destruct()
