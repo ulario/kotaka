@@ -652,10 +652,12 @@ private void process_packet(mixed *value)
 	}
 }
 
-private void restore()
+void restore()
 {
 	mapping map;
 	string buf;
+
+	ACCESS_CHECK(INTERMUD() || VERB());
 
 	routers = ([ ]);
 	router = nil;
@@ -769,11 +771,11 @@ static void keepalive()
 	send_packet(arr);
 }
 
-static void save()
+void save()
 {
 	string buf;
 
-	wipe_callouts_function("save");
+	ACCESS_CHECK(INTERMUD() || VERB() || KERNEL() || SYSTEM());
 
 	upgrade_password();
 
