@@ -74,24 +74,6 @@ private void upgrade_password()
 	}
 }
 
-private void wipe_callouts_function(string func)
-{
-	int sz;
-	mixed **callouts;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		mixed *callout;
-
-		callout = callouts[sz];
-
-		if (callout[CO_FUNCTION] == func) {
-			remove_call_out(callout[CO_HANDLE]);
-		}
-	}
-}
-
 private void reset_routers()
 {
 	routers = ([
@@ -282,7 +264,7 @@ private void do_chanlist_reply(mixed *value)
 		}
 	}
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 }
 
 private void do_emoteto(mixed *value)
@@ -371,7 +353,7 @@ private void do_mudlist(mixed *value)
 		}
 	}
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 }
 
 private void do_startup_reply(mixed *value)
@@ -403,7 +385,7 @@ private void do_startup_reply(mixed *value)
 		LOGD->post_message("debug", LOG_DEBUG, "Issued password matches saved password " + newpass);
 	}
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 
 	ch = CHANNELD->query_channels();
 	sz = sizeof(ch);
@@ -422,7 +404,7 @@ private void do_startup_reply(mixed *value)
 		}
 	}
 
-	call_out("keepalive", 0);
+	call_out_unique("keepalive", 0);
 }
 
 private void do_tell(mixed *value)
@@ -720,7 +702,7 @@ private void restore()
 
 	if (!routers || !router) {
 		reset_routers();
-		call_out("save", 0);
+		call_out_unique("save", 0);
 	}
 }
 
@@ -748,8 +730,6 @@ static void process()
 	int len;
 	string packet;
 
-	wipe_callouts_function("process");
-
 	if (strlen(buffer) < 4) {
 		return;
 	}
@@ -774,8 +754,6 @@ static void process()
 static void keepalive()
 {
 	mixed *arr;
-
-	wipe_callouts_function("keepalive");
 
 	call_out("keepalive", 60);
 
@@ -1105,7 +1083,7 @@ void add_router(string name, string ip, int port)
 
 	routers[name] = ({ ip, port });
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 }
 
 void remove_router(string name)
@@ -1118,7 +1096,7 @@ void remove_router(string name)
 
 	routers[name] = nil;
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 }
 
 string *query_routers()
