@@ -34,6 +34,8 @@ static void create()
 	conn::create("telnet");
 }
 
+/* helpers */
+
 static void self_destruct()
 {
 	destruct_object(this_object());
@@ -41,7 +43,14 @@ static void self_destruct()
 
 static void self_disconnect()
 {
-	disconnect();
+	user::disconnect();
+}
+
+/* LIB_CONN hooks */
+
+static void timeout()
+{
+	::timeout(allocate(DRIVER->query_tls_size()));
 }
 
 int login(string str)
@@ -53,54 +62,6 @@ int login(string str)
 
 	return conn::receive_message(nil, str);
 }
-
-/*
-
-/kernel/lib/connection
-
-static void close(mixed *tls, int dest)
-{
-    mixed stack;
-    mixed ticks;
-
-    stack = status(ST_STACKDEPTH);
-    ticks = status(ST_TICKS);
-
-    rlimits (-1; -1) {
-	if (user) {
-	    catch {
-		rlimits (stack; ticks) {
-		    user->logout(dest);
-		}
-	    }
-	}
-	if (!dest) {
-	    destruct_object(this_object());
-	}
-    }
-}
-
-/kernel/obj/user
-
-void logout(int quit)
-{
-    if (previous_program() == LIB_CONN && --nconn == 0) {
-	if (query_conn()) {
-	    if (quit) {
-		tell_audience(Name + " logs out.\n");
-	    } else {
-		tell_audience(Name + " disconnected.\n");
-	    }
-	}
-	::logout();
-	if (wiztool) {
-	    destruct_object(wiztool);
-	}
-	destruct_object(this_object());
-    }
-}
-
-*/
 
 void logout(int quit)
 {
@@ -144,6 +105,8 @@ void receive_datagram(string packet)
 	conn::receive_datagram(nil, packet);
 }
 
+/* LIB_USER hooks */
+
 int message(string str)
 {
 	ACCESS_CHECK(previous_object() == query_user()
@@ -174,11 +137,6 @@ int datagram(string str)
 		|| calling_object() == this_object());
 
 	return user::datagram(str);
-}
-
-static void timeout()
-{
-	::timeout(allocate(DRIVER->query_tls_size()));
 }
 
 void set_mode(int new_mode)
