@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,7 @@
  */
 #include <kernel/user.h>
 #include <kotaka/log.h>
+#include <kotaka/assert.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
@@ -62,16 +63,76 @@ mapping channels;
 
 /* utility */
 
-private void upgrade_password()
+private void clean_passwords()
 {
-	if (password) {
-		if (!passwords) {
-			passwords = ([ ]);
-		}
+	int time;
+	int sz;
+	string *names;
+	mixed *vals;
 
-		passwords[MUDNAME] = password;
+	time = time();
+
+	if (!passwords) {
+		passwords = ([ ]);
+	}
+
+	names = map_indices(passwords);
+	vals = map_values(passwords);
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		int expire;
+		int pass;
+		string name;
+		mixed val;
+
+		name = names[sz];
+		val = vals[sz];
+
+		switch(typeof(val)) {
+		case T_ARRAY:
+			({ pass, expire }) = val;
+
+			if (expire <= time) {
+				passwords[name] = nil;
+			}
+			break;
+
+		case T_INT:
+			passwords[name] = ({ val, time + 7 * 86400 });
+		}
+	}
+
+	if (password) {
+		passwords[MUDNAME] = ({ password, time + 7 * 86400 });
 		password = 0;
 	}
+}
+
+private int query_password(string name)
+{
+	int *arr;
+
+	clean_passwords();
+
+	if (arr = passwords[name]) {
+		return arr[0];
+	} else {
+		return 0;
+	}
+}
+
+private void set_password(string name, int pass)
+{
+	clean_passwords();
+
+	passwords[name] = ({ pass, time() + 7 * 86400 });
+}
+
+private void clear_password(string name)
+{
+	clean_passwords();
+
+	passwords[name] = nil;
 }
 
 private void reset_routers()
@@ -168,7 +229,7 @@ private string make_packet(mixed *data)
 	return bigendian + str + "\000";
 }
 
-private void send_packet(mixed *arr)
+private void i3_send_packet(mixed *arr)
 {
 	message(make_packet(arr));
 }
@@ -190,7 +251,7 @@ private void unlisten_channel(string channel)
 		0
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 private void listen_channel(string channel)
@@ -210,7 +271,7 @@ private void listen_channel(string channel)
 		1
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 private void bounce_packet(mixed *value)
@@ -233,12 +294,12 @@ private void bounce_packet(mixed *value)
 		value
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 /* i3 handlers */
 
-private void do_chanlist_reply(mixed *value)
+private void i3_handle_chanlist_reply(mixed *value)
 {
 	mapping delta;
 	string *names;
@@ -267,7 +328,7 @@ private void do_chanlist_reply(mixed *value)
 	call_out_unique("save", 0);
 }
 
-private void do_emoteto(mixed *value)
+private void i3_handle_emoteto(mixed *value)
 {
 	string mud;
 	string message;
@@ -290,11 +351,11 @@ private void do_emoteto(mixed *value)
 			value
 		});
 
-		send_packet(arr);
+		i3_send_packet(arr);
 	}
 }
 
-private void do_error(mixed *value)
+private void i3_handle_error(mixed *value)
 {
 	if (value[2] == mudname) {
 		if (value[6] == "keepalive") {
@@ -311,27 +372,18 @@ private void do_error(mixed *value)
 			badpkt = value[8];
 
 			if (badpkt[0] == "startup-req-3") {
-				upgrade_password();
-				LOGD->post_message("system", LOG_ERR, "I3: Rejected for having a bad password");
+				LOGD->post_message("system", LOG_ERR, "I3: Removing rejected password for " + mudname);
+				clear_password(mudname);
 
-				LOGD->post_message("system", LOG_ERR, "I3: Removing invalid password for " + mudname);
-				passwords[mudname] = nil;
-
-				/* either we got bumped or we lost the password */
-				/* try again in a day */
 				rejections++;
 
-				disconnect();
-
-				buffer = "";
-
-				call_out("connect_i3", 1);
+				call_out("i3_reconnect", 0);
 			}
 		}
 	}
 }
 
-private void do_mudlist(mixed *value)
+private void i3_handle_mudlist(mixed *value)
 {
 	mapping delta;
 	string *names;
@@ -356,34 +408,27 @@ private void do_mudlist(mixed *value)
 	call_out_unique("save", 0);
 }
 
-private void do_startup_reply(mixed *value)
+private void i3_handle_startup_reply(mixed *value)
 {
 	string *ch;
 	mixed *raw;
 	int sz;
-
 	mixed oldpass, newpass;
 
-	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Received startup reply, saving password");
+	LOGD->post_message("system", LOG_NOTICE, "I3: Received startup reply");
 
-	upgrade_password();
-
-	if (!passwords) {
-		passwords = ([ ]);
-	}
-
-	oldpass = passwords[mudname];
-	passwords[mudname] = newpass = value[7];
+	oldpass = query_password(mudname);
+	newpass = value[7];
 
 	if (oldpass != newpass) {
 		if (!oldpass) {
-			LOGD->post_message("debug", LOG_DEBUG, "A new password " + newpass + " was issued");
+			LOGD->post_message("debug", LOG_DEBUG, "Saving password");
 		} else {
-			LOGD->post_message("debug", LOG_DEBUG, "The password was changed from " + oldpass + " to " + newpass);
+			LOGD->post_message("debug", LOG_DEBUG, "Saving changed password");
 		}
-	} else {
-		LOGD->post_message("debug", LOG_DEBUG, "Issued password matches saved password " + newpass);
 	}
+
+	set_password(mudname, newpass);
 
 	call_out_unique("save", 0);
 
@@ -407,7 +452,7 @@ private void do_startup_reply(mixed *value)
 	call_out_unique("keepalive", 0);
 }
 
-private void do_tell(mixed *value)
+private void i3_handle_tell(mixed *value)
 {
 	object user;
 
@@ -436,11 +481,11 @@ private void do_tell(mixed *value)
 			value
 		});
 
-		send_packet(arr);
+		i3_send_packet(arr);
 	}
 }
 
-private void do_channel_m(mixed *value)
+private void i3_handle_channel_m(mixed *value)
 {
 	string name;
 	string visname;
@@ -500,7 +545,7 @@ private void do_channel_m(mixed *value)
 	}
 }
 
-private void do_channel_e(mixed *value)
+private void i3_handle_channel_e(mixed *value)
 {
 	if (CHANNELD->test_channel(value[6])) {
 		string text;
@@ -512,7 +557,7 @@ private void do_channel_e(mixed *value)
 	}
 }
 
-private void do_who_reply(mixed *value)
+private void i3_handle_who_reply(mixed *value)
 {
 	object user;
 	string buffer;
@@ -559,15 +604,14 @@ private void do_who_reply(mixed *value)
 
 private mixed *startup_packet()
 {
-	int trialpassword;
+	int pass;
 
 	mudname = rejections ? MUDNAME + (rejections + 1) : MUDNAME;
 
-	upgrade_password();
+	pass = query_password(mudname);
 
-	if (passwords && passwords[mudname]) {
+	if (pass) {
 		LOGD->post_message("system", LOG_NOTICE, "Using saved password for " + mudname);
-		trialpassword = passwords[mudname];
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "No saved password for " + mudname);
 	}
@@ -580,7 +624,7 @@ private mixed *startup_packet()
 		router,
 		0,
 
-		trialpassword,
+		pass,
 		0,
 		0,
 
@@ -605,39 +649,39 @@ private void process_packet(mixed *value)
 {
 	switch(value[0]) {
 	case "chanlist-reply":
-		do_chanlist_reply(value);
+		i3_handle_chanlist_reply(value);
 		break;
 
 	case "channel-m":
-		do_channel_m(value);
+		i3_handle_channel_m(value);
 		break;
 
 	case "channel-e":
-		do_channel_e(value);
+		i3_handle_channel_e(value);
 		break;
 
 	case "emoteto":
-		do_emoteto(value);
+		i3_handle_emoteto(value);
 		break;
 
 	case "error":
-		do_error(value);
+		i3_handle_error(value);
 		break;
 
 	case "mudlist":
-		do_mudlist(value);
+		i3_handle_mudlist(value);
 		break;
 
 	case "startup-reply":
-		do_startup_reply(value);
+		i3_handle_startup_reply(value);
 		break;
 
 	case "tell":
-		do_tell(value);
+		i3_handle_tell(value);
 		break;
 
 	case "who-reply":
-		do_who_reply(value);
+		i3_handle_who_reply(value);
 		break;
 
 	/* we don't care about these right now */
@@ -650,6 +694,13 @@ private void process_packet(mixed *value)
 	default:
 		bounce_packet(value);
 	}
+}
+
+static void i3_reconnect()
+{
+	disconnect();
+
+	call_out("i3_connect", 1.0);
 }
 
 void restore()
@@ -700,7 +751,7 @@ void restore()
 		}
 	}
 
-	upgrade_password();
+	clean_passwords();
 
 	if (!routers || !router) {
 		reset_routers();
@@ -708,7 +759,7 @@ void restore()
 	}
 }
 
-static void connect_i3()
+static void i3_connect()
 {
 	string ip;
 	int port;
@@ -722,6 +773,8 @@ static void connect_i3()
 	}
 
 	({ ip, port }) = routers[router];
+
+	disconnect();
 
 	connect(ip, port);
 }
@@ -750,7 +803,7 @@ static void process()
 
 	process_packet(arr);
 
-	if (strlen(buffer) > 4) {
+	if (buffer && strlen(buffer) > 4) {
 		call_out("process", 0);
 	}
 }
@@ -770,7 +823,7 @@ static void keepalive()
 		0
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 void save()
@@ -779,7 +832,7 @@ void save()
 
 	ACCESS_CHECK(INTERMUD() || VERB() || KERNEL() || SYSTEM());
 
-	upgrade_password();
+	clean_passwords();
 
 	buf = hybrid_sprint( ([
 		"router" : router,
@@ -810,7 +863,7 @@ static void create()
 
 	restore();
 
-	call_out("connect_i3", 0);
+	call_out("i3_connect", 0);
 }
 
 static void destruct()
@@ -828,7 +881,7 @@ void upgrade()
 		routers = ([ ]);
 	}
 
-	upgrade_password();
+	clean_passwords();
 }
 
 /* user hooks */
@@ -864,6 +917,13 @@ void logout(int quit)
 
 	callouts = status(this_object(), O_CALLOUTS);
 
+	if (quit) {
+		LOGD->post_message("system", LOG_NOTICE, "I3: Connection closed");
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "I3: Connection lost");
+		call_out_unique("i3_connect", 30.0);
+	}
+
 	for (sz = sizeof(callouts); --sz >= 0; ) {
 		mixed *callout;
 
@@ -871,31 +931,25 @@ void logout(int quit)
 
 		switch(callout[CO_FUNCTION]) {
 		case "save":
+		case "i3_reconnect":
+		case "i3_connect":
 			break;
 		default:
+			LOGD->post_message("system", LOG_NOTICE, "I3: Killing callout " + callout[CO_FUNCTION]);
 			remove_call_out(callout[CO_HANDLE]);
 		}
 	}
-
-	if (quit) {
-		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection closed");
-	} else {
-		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection lost, reconnecting");
-		call_out("connect_i3", 1);
-	}
-
-	buffer = nil;
 }
 
 void connect_failed(int refused)
 {
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed");
 
-	call_out("connect_i3", 5);
+	call_out("i3_connect", 1.0);
 }
 
 /* userd hooks */
-string query_banner(object LIB_CONN connection)
+string query_banner(object LIB_CONN conn)
 {
 	mixed *arr;
 
@@ -904,7 +958,7 @@ string query_banner(object LIB_CONN connection)
 	return make_packet(arr);
 }
 
-int query_timeout(object LIB_CONN connection)
+int query_timeout(object LIB_CONN conn)
 {
 	return 3;
 }
@@ -932,7 +986,7 @@ void send_channel_message(string channel, string sender, string visible, string 
 		text
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 string *query_channels()
@@ -970,7 +1024,7 @@ void send_who(string from, string mud)
 		0
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 void send_tell(string from, string decofrom, string mud, string user, string message)
@@ -990,7 +1044,7 @@ void send_tell(string from, string decofrom, string mud, string user, string mes
 		message
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 void send_emote(string from, string decofrom, string mud, string user, string message)
@@ -1010,7 +1064,7 @@ void send_emote(string from, string decofrom, string mud, string user, string me
 		message
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 void add_channel(string channel)
@@ -1036,7 +1090,7 @@ void add_channel(string channel)
 		0
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 void remove_channel(string channel)
@@ -1065,7 +1119,7 @@ void remove_channel(string channel)
 		channel
 	});
 
-	send_packet(arr);
+	i3_send_packet(arr);
 }
 
 void add_router(string name, string ip, int port)
