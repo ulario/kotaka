@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -69,7 +69,7 @@ private void convert_pflagdb()
 	}
 }
 
-private void queue_patch(object obj)
+private void enqueue_patch(object obj)
 {
 	if (!patch_queue) {
 		patch_queue = ({ nil, nil });
@@ -77,26 +77,18 @@ private void queue_patch(object obj)
 
 	list_push_back(patch_queue, obj);
 
-	if (!processing) {
-		processing = call_out("process", 0);
-	}
+	call_out_unique("process", 0);
 }
 
-private void queue_sweep(string path, int master_index)
+private void enqueue_sweep(string path, int mindex)
 {
 	if (!sweep_queue) {
 		sweep_queue = ({ nil, nil });
 	}
 
-	list_push_back(sweep_queue, ({ path, master_index, status(ST_OTABSIZE) }));
+	list_push_back(sweep_queue, ({ path, mindex, 0, status(ST_OTABSIZE) }));
 
-	if (!processing) {
-		processing = call_out("process", 0);
-	}
-}
-
-static void create()
-{
+	call_out_unique("process", 0);
 }
 
 static void process()
@@ -104,7 +96,7 @@ static void process()
 	if (patch_queue) {
 		object obj;
 
-		call_out("process", 0);
+		call_out_unique("process", 0);
 
 		obj = list_front(patch_queue);
 		list_pop_front(patch_queue);
@@ -119,46 +111,62 @@ static void process()
 	} else if (sweep_queue) {
 		mixed *head;
 		string path;
-		int master_index;
-		int clone_index;
+		int mindex;
+		int cindex;
+		int otabsize;
 		int ticks;
+		object clone;
 
-		call_out("process", 0);
+		call_out_unique("process", 0);
 
 		head = list_front(sweep_queue);
+		ticks = status(ST_TICKS) - 10000;
 
-		({ path, master_index, clone_index }) = head;
+		switch(sizeof(head)) {
+		case 3: /* ({ path, mindex, cindex }) */
+			({ path, mindex, cindex }) = head;
 
-		ticks = status(ST_TICKS);
+			while (cindex && status(ST_TICKS) > ticks) {
+				cindex--;
 
-		do {
-			object clone;
+				clone = find_object(path + "#" + cindex);
 
-			clone_index--;
-
-			clone = find_object(path + "#" + clone_index);
-
-			if (clone && status(clone, O_INDEX) == master_index && query_marked(clone)) {
-				clone->_F_dummy();
-
-				break;
+				if (clone && status(clone, O_INDEX) == mindex && query_marked(clone)) {
+					clone->_F_dummy();
+				}
 			}
-		} while (clone_index > 0 && status(ST_TICKS) + 100000 > ticks);
 
-		if (clone_index) {
-			head[2] = clone_index;
-		} else {
-			list_pop_front(sweep_queue);
+			if (cindex) {
+				head[2] = cindex;
+			} else {
+				LOGD->post_message("system", LOG_NOTICE, "Completed backward sweep of " + path);
+				list_pop_front(sweep_queue);
+			}
+			break;
 
-			if (list_empty(sweep_queue)) {
-				sweep_queue = nil;
+		case 4: /* ({ path, mindex, cindex, otabsize }) */
+			({ path, mindex, cindex, otabsize }) = head;
+
+			while (cindex < otabsize && status(ST_TICKS) > ticks) {
+				clone = find_object(path + "#" + cindex++);
+
+				if (clone && status(clone, O_INDEX) == mindex && query_marked(clone)) {
+					clone->_F_dummy();
+				}
+			}
+
+			if (cindex < otabsize) {
+				head[2] = cindex;
+			} else {
+				LOGD->post_message("system", LOG_NOTICE, "Completed forward sweep of " + path);
+				list_pop_front(sweep_queue);
 			}
 		}
-	} else {
-		pflagdb = nil;
-		sweep_queue = nil;
-		patch_queue = nil;
-		processing = 0;
+
+		if (list_empty(sweep_queue)) {
+			sweep_queue = nil;
+		}
+
 	}
 }
 
@@ -177,16 +185,19 @@ void mark_patch(string path, varargs int clear)
 
 	ACCESS_CHECK(SYSTEM());
 
-	if (typeof(pflagdb) != T_MAPPING) {
-		convert_pflagdb();
-	}
-
 	master = find_object(path);
 	index = status(master, O_INDEX);
 	pinfo = OBJECTD->query_program_info(index);
 
+	if (!pflagdb) {
+		pflagdb = ([ ]);
+	}
+
 	sparsearray_set_element(pflagdb, index, master);
-	queue_patch(master);
+	call_touch(master);
+	enqueue_patch(master);
+
+	call_out_unique("process", 0);
 
 	if (pinfo->query_clone_count()) {
 		object *clones;
@@ -208,31 +219,37 @@ void mark_patch(string path, varargs int clear)
 				} else {
 					sparsearray_set_element(pflagdb, cindex, clone);
 					call_touch(clone);
-					queue_patch(clone);
+					enqueue_patch(clone);
 				}
 			}
 		} else {
 			int sz;
 
-			LOGD->post_message("system", LOG_WARNING, "Clone overflow for " + path + ", sweeping");
+			LOGD->post_message("system", LOG_NOTICE, "Sweeping clones of " + path);
 
 			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 				object clone;
 
 				clone = find_object(path + "#" + sz);
 
-				if (clone && status(clone, O_INDEX) == index) {
-					if (clear) {
-						sparsearray_set_element(pflagdb, sz, nil);
-					} else {
-						call_touch(clone);
-						sparsearray_set_element(pflagdb, sz, clone);
-					}
+				if (!clone) {
+					continue;
+				}
+
+				if (status(clone, O_INDEX) != index) {
+					continue;
+				}
+
+				if (clear) {
+					sparsearray_set_element(pflagdb, sz, nil);
+				} else {
+					call_touch(clone);
+					sparsearray_set_element(pflagdb, sz, clone);
 				}
 			}
 
 			if (!clear) {
-				queue_sweep(path, index);
+				enqueue_sweep(path, index);
 			}
 		}
 	}
