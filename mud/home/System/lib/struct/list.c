@@ -65,7 +65,7 @@ static mixed *list_prev_node(mixed *node)
 
 static mixed *list_next_node(mixed *node)
 {
-	return node[1];
+	return node[2];
 }
 
 static void list_push_front(mixed **list, mixed data)

@@ -201,7 +201,7 @@ void add_clone(object clone)
 
 	if (nclones >= status(ST_ARRAYSIZE)) {
 		clones = nil;
-	} else {
+	} else if (clones) {
 		clones[clone] = 1;
 	}
 }
@@ -228,11 +228,13 @@ atomic void reset_clones()
 
 	clear_clones();
 
-	for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
-		object obj;
+	rlimits(0; -1) {
+		for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
+			object obj;
 
-		if (obj = find_object(path + "#" + sz)) {
-			add_clone(obj);
+			if (obj = find_object(path + "#" + sz)) {
+				add_clone(obj);
+			}
 		}
 	}
 }
