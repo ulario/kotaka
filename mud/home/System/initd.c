@@ -573,13 +573,6 @@ void end_task()
 	ACCESS_CHECK(SYSTEM());
 }
 
-string query_patcher(string path)
-{
-	if (path == SECOND_AUTO) {
-		return "patch_object_name";
-	}
-}
-
 void abort(string message)
 {
 	shutdown();
