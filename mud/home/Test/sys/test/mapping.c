@@ -75,8 +75,6 @@ static void test()
 	mixed msec;
 	object map;
 
-	LOGD->post_message("debug", LOG_DEBUG, "Testing mapping...");
-
 	map = test_mapping_1();
 
 	count = 1;
