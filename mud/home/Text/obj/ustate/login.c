@@ -155,10 +155,10 @@ void receive_in(string input)
 
 			ip = get_ip();
 
-			LOGD->post_message("system", LOG_WARNING, "Telnet login: sitebanning " + ip + " for sending " + garbage + " garbage");
+			LOGD->post_message("system", LOG_WARNING, "Text: sitebanning " + ip + " for 90 days for sending " + garbage + " garbage during login");
 
 			BAND->ban_site(ip, ([
-				"expire": time() + 30 * 24 * 60 * 60,
+				"expire": time() + 90 * 86400,
 				"issuer": "Text",
 				"message": "Spam (" + garbage + ")"
 			]) );

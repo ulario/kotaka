@@ -33,11 +33,11 @@ static void create()
 
 static void ban_site(string ip)
 {
-	LOGD->post_message("system", LOG_NOTICE, "Too many strikes, sitebanning " + ip);
+	LOGD->post_message("system", LOG_NOTICE, "Too many authentication strikes, sitebanning " + ip + " for 90 days");
 
 	BAND->ban_site(ip,
 		([
-			"expire" : time() + 30 * 24 * 60 * 60,
+			"expire" : time() + 86400 * 90,
 			"message" : "Too many authentication failures",
 			"issuer" : "Text"
 		])

@@ -167,6 +167,8 @@ void quit(string cause)
 {
 	unsubscribe_channels();
 
+	log_message("QUIT" + (cause ? " >>> " + cause : ""));
+
 	quitting = 1;
 
 	switch(cause) {
@@ -249,6 +251,8 @@ void logout(int dest)
 			/* remote closure, we're linkdead */
 		}
 	}
+
+	log_message("LOGOUT");
 
 	unsubscribe_channels(); /* we won't be able to receive channel messages once we nuke our ustate tree */
 	::logout();
@@ -414,6 +418,7 @@ object query_telnet_obj()
 		if (conn <- "~Text/obj/filter/telnet") {
 			return conn;
 		}
+
 		conn = conn->query_conn();
 	}
 }
