@@ -150,7 +150,6 @@ void siteban_notify(object LIB_CONN connection)
 
 string query_banner(object LIB_CONN connection)
 {
-	return nil;
 }
 
 int query_timeout(object LIB_CONN connection)

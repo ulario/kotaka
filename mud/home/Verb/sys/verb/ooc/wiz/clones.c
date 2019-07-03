@@ -63,5 +63,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	call_out("clones", 0, roles["raw"], status(ST_OTABSIZE));
+	call_out("lazy_clones", 0, roles["raw"], status(ST_OTABSIZE));
 }

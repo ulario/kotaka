@@ -42,6 +42,4 @@ void main(object actor, mapping roles)
 
 	proxy->dump_state(1);
 	proxy->shutdown(1);
-
-	send_out("Hotboot scheduled\n");
 }

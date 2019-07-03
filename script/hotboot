@@ -2,6 +2,8 @@
 
 exec 1>&2
 
+cd ..
+
 rm -f state/swap
 
 if [ -f state/snapshot ]
