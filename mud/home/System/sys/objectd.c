@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -147,7 +147,9 @@ private object setup_program_info(string path, string *inherited)
 			initdpath = "/initd";
 		}
 
-		if (initd && path != initdpath) {
+		initd = find_object(initdpath);
+
+		if (initd && (path != initdpath)) {
 			rlimits (0; 250000) {
 				constructor = initd->query_constructor(path);
 				destructor = initd->query_destructor(path);
