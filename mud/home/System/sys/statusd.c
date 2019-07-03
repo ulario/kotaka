@@ -34,6 +34,8 @@ inherit SECOND_AUTO;
 string message;
 mapping connections;
 
+/* helpers */
+
 private void schedule(object conn)
 {
 	int handle;
@@ -166,6 +168,8 @@ static void clear(object conn)
 	conn->message("\033[1;1H\033[2J");
 }
 
+/* hooks */
+
 void upgrade()
 {
 	object *conns;
@@ -199,6 +203,9 @@ void upgrade()
 		connections[conn] = ({ handle, interval, skip });
 	}
 }
+
+
+/* SYS_USERD hooks */
 
 string query_banner(object conn)
 {
@@ -270,6 +277,9 @@ object select(string input)
 
 	return this_object();
 }
+
+
+/* LIB_CONN hooks */
 
 int login(string str)
 {
