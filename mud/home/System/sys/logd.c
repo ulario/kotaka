@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -61,22 +61,6 @@ static void create()
 	facilities = ([ ]);
 
 	INITD->configure_logging();
-}
-
-private void schedule()
-{
-	mixed **callouts;
-	int sz;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		if (callouts[sz][CO_FUNCTION] == "flush") {
-			return;
-		}
-	}
-
-	call_out("flush", 0);
 }
 
 void clear_targets()
@@ -190,7 +174,7 @@ private void write_logfile(string file, string timestamp, string message)
 		list_push_back(filebuf, ({ file, timestamp + " " + lines[i] + "\n" }));
 	}
 
-	schedule();
+	call_out_unique("flush", 5);
 }
 
 private void commit_logfile(string base, string message)
