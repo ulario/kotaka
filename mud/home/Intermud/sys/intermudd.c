@@ -703,6 +703,17 @@ static void i3_reconnect()
 	call_out("i3_connect", 1.0);
 }
 
+void reboot()
+{
+	ACCESS_CHECK(INTERMUD());
+
+	LOGD->post_message("system", LOG_NOTICE, "I3: Reconnecting after reboot");
+
+	disconnect();
+
+	call_out("i3_connect", 0);
+}
+
 void restore()
 {
 	mapping map;

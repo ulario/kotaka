@@ -52,3 +52,10 @@ void upgrade()
 
 	set_limits();
 }
+
+void reboot()
+{
+	ACCESS_CHECK(SYSTEM());
+
+	"sys/intermudd"->reboot();
+}
