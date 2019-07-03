@@ -170,30 +170,10 @@ private mixed **decode_comperrs(string buffer)
 	return comperrs;
 }
 
-/*
-
-encoded error format:
-
-	original error
-	null
-
-	frames, separated by 2 nulls
-
-	3 nulls
-
-	compile errors, separated by 2 nulls
-
-frame:
-
-	object name
-	null
-	program name
-	null
-	function
-	null
-	line number
-
-*/
+static void restore_errord()
+{
+	DRIVER->set_error_manager(this_object());
+}
 
 void runtime_error(string error, int caught, mixed **trace)
 {
@@ -202,6 +182,10 @@ void runtime_error(string error, int caught, mixed **trace)
 	ACCESS_CHECK(previous_program() == DRIVER);
 
 	DRIVER->message("Runtime error\n" + error + "\n");
+
+	DRIVER->set_error_manager(nil);
+
+	call_out("restore_errord", 0);
 
 	if (sscanf(error, "%*s\000%s", buffer)) {
 		string compbuf;
@@ -242,6 +226,10 @@ string atomic_error(string error, int atom, mixed **trace)
 	string err;
 
 	ACCESS_CHECK(previous_program() == DRIVER);
+
+	DRIVER->set_error_manager(nil);
+
+	call_out("restore_errord", 0);
 
 	DRIVER->message("Atomic error\n" + error + "\n");
 
