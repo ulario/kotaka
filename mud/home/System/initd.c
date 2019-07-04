@@ -261,37 +261,6 @@ static void ready()
 	MODULED->boot_module("Game");
 }
 
-static void upgrade_system_post_recompile()
-{
-	upgrade_check_kotaka_version();
-	set_version();
-
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library");
-	recompile_kernel();
-
-	call_out("upgrade_system_post_recompile_2", 0);
-}
-
-static void upgrade_system_post_recompile_2()
-{
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling System");
-
-	rlimits (0; -1) {
-		upgrade_purge();
-		upgrade_build();
-	}
-
-	call_out("upgrade_system_post_recompile_3", 0);
-}
-
-static void upgrade_system_post_recompile_3()
-{
-	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules");
-	MODULED->upgrade_modules();
-
-	call_out("do_upgrade_rebuild", 0);
-}
-
 static void do_upgrade_rebuild()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules");
