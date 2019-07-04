@@ -202,27 +202,20 @@ private void reboot_common()
 	DRIVER->fix_filequota();
 }
 
-private void upgrade_check_kotaka_version()
+private void upgrade_check_current_version()
 {
-	if (version_major) {
-		error("Cannot upgrade from current version");
-	}
+	string *safe_versions;
+	int sz;
 
-	switch(version_minor) {
-	case 58:
-	case 59:
-		switch(version_patch) {
-		case 0:
-			break;
+	safe_versions = explode(read_file("~/data/upgrade"), "\n") - ({ "" });
 
-		default:
-			error("Cannot upgrade from current version");
+	for (sz = sizeof(safe_versions); --sz >= 0; ) {
+		if (KOTAKA_VERSION == safe_versions[sz]) {
+			return;
 		}
-		break;
-
-	default:
-		error("Cannot upgrade from current version");
 	}
+
+	error("Cannot safely upgrade from current version");
 }
 
 private void recompile_kernel()
