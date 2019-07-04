@@ -268,6 +268,32 @@ static void do_upgrade_rebuild()
 	MODULED->upgrade_build();
 }
 
+static void upgrade_system_post_recompile()
+{
+	/* we are now version 0.60 */
+	/* Version 0.59 already destructed our libraries */
+	upgrade_check_current_version();
+
+	/* first recompile the kernel library */
+	destruct_dir("/kernel/lib");
+	compile_dir("/kernel/obj");
+	compile_dir("/kernel/sys");
+
+	/* recompile System */
+	compile_dir("lwo");
+	compile_dir("obj");
+	compile_dir("sys");
+
+	call_out("upgrade_system_post_rebuild", 0);
+}
+
+static void upgrade_system_post_rebuild()
+{
+	MODULED->upgrade_modules();
+
+	do_upgrade_rebuild();
+}
+
 /* hooks */
 
 static void create()
@@ -395,13 +421,20 @@ void upgrade_system()
 {
 	ACCESS_CHECK(VERB());
 
-	LOGD->post_message("system", LOG_NOTICE, "Destructing System libraries");
-	destruct_dir("lib");
+	upgrade_check_current_version();
 
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling InitD");
+	destruct_dir("/kernel/lib");
+	compile_dir("/kernel/obj");
+	compile_dir("/kernel/sys");
+
+	destruct_dir("lib");
 	compile_object(INITD);
 
-	call_out("upgrade_system_post_recompile", 0);
+	compile_dir("lwo");
+	compile_dir("obj");
+	compile_dir("sys");
+
+	call_out("upgrade_system_post_rebuild", 0);
 }
 
 void configure_logging()
