@@ -104,8 +104,8 @@ private void check_config()
 		error("Array size too small (minimum 256)");
 	}
 
-	if (status(ST_COTABSIZE) < 100) {
-		error("Callout table too small (minimum 100)");
+	if (status(ST_COTABSIZE) < 128) {
+		error("Callout table too small (minimum 128)");
 	}
 
 	if (status(ST_UTABSIZE) < 3) {
