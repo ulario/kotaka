@@ -41,6 +41,8 @@ int version_patch;
 
 mixed **tasks;
 
+/* helpers */
+
 private void load()
 {
 	load_dir("lwo");
@@ -287,40 +289,7 @@ private void recompile_kernel()
 	compile_dir("/kernel/sys");
 }
 
-static void create()
-{
-	catch {
-		rlimits(100; 250000) {
-			check_config();
-			check_versions();
-			set_version();
-
-			load_object(KERNELD);		/* needed for LogD */
-
-			KERNELD->set_global_access("System", 1);
-
-			configure_klib();
-			configure_rsrc();
-			set_limits();
-			clear_admin();
-
-			load_object(SECRETD);		/* needed for LogD */
-			load_object(LOGD);		/* we need to log any error messages */
-			load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
-			load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
-
-			SECRETD->remove_file("logs/session.log");
-
-			call_out("boot", 0);
-
-			LOGD->post_message("system", LOG_NOTICE, "System core loaded");
-		}
-	} : {
-		LOGD->flush();
-		shutdown();
-		error("Failed to load system core");
-	}
-}
+/* static helpers */
 
 static void boot()
 {
@@ -394,6 +363,45 @@ static void do_upgrade_rebuild()
 	MODULED->upgrade_build();
 }
 
+/* hooks */
+
+static void create()
+{
+	catch {
+		rlimits(100; 250000) {
+			check_config();
+			check_versions();
+			set_version();
+
+			load_object(KERNELD);		/* needed for LogD */
+
+			KERNELD->set_global_access("System", 1);
+
+			configure_klib();
+			configure_rsrc();
+			set_limits();
+			clear_admin();
+
+			load_object(SECRETD);		/* needed for LogD */
+			load_object(LOGD);		/* we need to log any error messages */
+			load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
+			load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
+
+			SECRETD->remove_file("logs/session.log");
+
+			call_out("boot", 0);
+
+			LOGD->post_message("system", LOG_NOTICE, "System core loaded");
+		}
+	} : {
+		LOGD->flush();
+		shutdown();
+		error("Failed to load system core");
+	}
+}
+
+/* driver hooks */
+
 void prepare_reboot()
 {
 	ACCESS_CHECK(KERNEL());
@@ -439,6 +447,8 @@ void hotboot()
 	}
 }
 
+/* objectd hooks */
+
 void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
@@ -473,6 +483,8 @@ int forbid_inherit(string from, string path, int priv)
 
 	return 0;
 }
+
+/* calls */
 
 void upgrade_system()
 {
