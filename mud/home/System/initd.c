@@ -225,63 +225,6 @@ private void upgrade_check_kotaka_version()
 	}
 }
 
-private void destruct_dir(string dir)
-{
-	string *names;
-	int *sizes;
-	int *times;
-	mixed *objs;
-	int sz;
-
-	if (dir == "/") {
-		dir = "";
-	}
-
-	({ names, sizes, times, objs }) = get_dir(dir + "/*");
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		string name;
-
-		name = names[sz];
-
-		if (sizes[sz] == -2) {
-			destruct_dir(dir + "/" + name);
-			continue;
-		} else if (sscanf(name, "%s.c", name)) {
-			if (objs[sz]) {
-				destruct_object(dir + "/" + name);
-			}
-		}
-	}
-}
-
-private void compile_dir(string dir)
-{
-	string *names;
-	int *sizes;
-	int *times;
-	mixed *objs;
-	int sz;
-
-	if (dir == "/") {
-		dir = "";
-	}
-
-	({ names, sizes, times, objs }) = get_dir(dir + "/*");
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		string name;
-
-		name = names[sz];
-
-		if (sizes[sz] == -2) {
-			compile_dir(dir + "/" + name);
-		} else if (sscanf(name, "%s.c", name)) {
-			compile_object(dir + "/" + name);
-		}
-	}
-}
-
 private void recompile_kernel()
 {
 	destruct_dir("/kernel/lib");
