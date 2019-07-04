@@ -79,6 +79,7 @@ static void process_dir(string dir, string func)
 				}
 				break;
 			}
+
 			compile_object(path);
 			break;
 
@@ -94,7 +95,6 @@ static void process_dir(string dir, string func)
 				destruct_object(path);
 			}
 			break;
-
 		}
 	}
 }
