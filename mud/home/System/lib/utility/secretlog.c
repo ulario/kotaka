@@ -103,20 +103,10 @@ static nomask void secret_flush()
 	}
 }
 
-static void write_secret_log(string file, string message)
+static string timestamp()
 {
 	mixed *mtime;
 	string stamp, mstamp;
-	mixed **callouts;
-	int sz;
-
-	if (!file) {
-		error("Invalid filename");
-	}
-
-	if (!message) {
-		error("Invalid message");
-	}
 
 	mtime = millitime();
 
@@ -134,6 +124,23 @@ static void write_secret_log(string file, string message)
 	mstamp = mstamp[strlen(mstamp) - 3 ..];
 
 	stamp += mstamp;
+
+	return stamp;
+}
+
+static void write_secret_log(string file, string message)
+{
+	mixed **callouts;
+	int sz;
+
+	if (!file) {
+		error("Invalid filename");
+	}
+
+	if (!message) {
+		error("Invalid message");
+	}
+
 
 	if (message[strlen(message) - 1] != '\n') {
 		message += "\n";
