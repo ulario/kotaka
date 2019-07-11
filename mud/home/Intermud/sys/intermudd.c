@@ -40,7 +40,7 @@ inherit "/lib/copy";
 inherit "/lib/string/case";
 inherit "/lib/string/sprint";
 inherit "/lib/string/replace";
-inherit "/lib/secretlog";
+inherit "~System/lib/utility/secretlog";
 
 /* daemon state */
 string buffer;
@@ -529,7 +529,7 @@ private void i3_handle_channel_m(mixed *value)
 		fullname = visname + " (" + name + ")@" + mud;
 	}
 
-	write_secret_log(channel, fullname + ": " + message);
+	write_secret_log(channel, timestamp() + " " + fullname + ": " + message);
 
 	if (sscanf(message, "%*s%%^")) {
 		message = TEXT_SUBD->pinkfish2ansi(message) + "\033[0m";
