@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
 #include <kotaka/checkarg.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/intermud.h>
@@ -32,7 +33,7 @@
 inherit "~System/lib/struct/list";
 inherit "/lib/string/sprint";
 inherit "/lib/copy";
-inherit "/lib/secretlog";
+inherit "~System/lib/utility/secretlog";
 
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
@@ -56,22 +57,6 @@ static void create()
 	configure_channels();
 
 	save();
-}
-
-private void schedule()
-{
-	mixed **callouts;
-	int sz;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		if (callouts[sz][CO_FUNCTION] == "flush") {
-			return;
-		}
-	}
-
-	call_out("flush", 0);
 }
 
 private void append_node(string channel, string fragment)
@@ -133,6 +118,13 @@ static void flush()
 	}
 }
 
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	call_out_unique("flush", 0);
+}
+
 void save()
 {
 	string buf;
@@ -164,10 +156,6 @@ void restore()
 		intermud = save["intermud"];
 	}
 }
-
-/**********************/
-/* channel management */
-/**********************/
 
 void add_channel(string channel)
 {
@@ -278,10 +266,6 @@ int query_intermud(string channel)
 	return !!intermud[channel];
 }
 
-/*******************/
-/* user management */
-/*******************/
-
 void subscribe_channel(string channel, object subscriber)
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
@@ -380,29 +364,45 @@ object *query_subscribers(string channel)
 /* message management */
 /**********************/
 
-private void paste_to_log(string channel, string sender, string message)
+private string *timestamps(mixed *mtime)
 {
-	if (sender) {
-		if (message) {
-			write_secret_log(channel, sender + ": " + message);
-		} else {
-			write_secret_log(channel, sender + " (no message)");
-		}
-	} else {
-		write_secret_log(channel, message + "\n");
-	}
+	string ctime;
+
+	string date;
+	string hms;
+	mixed msec;
+
+	mtime = millitime();
+
+	ctime = ctime(mtime[0]);
+
+	/* 012345678901234567890123456789 */
+	/* Tue Aug  3 14:40:18 1993 */
+
+	date = ctime[0 .. 9] + " " + ctime[20 .. 23];
+	hms = ctime[11 .. 18];
+	msec = mtime[1];
+	msec *= 1000.0;
+	msec = floor(msec + 0.5);
+	msec = "000" + msec;
+	msec = msec[strlen(msec) - 3 ..];
+
+	return ({ date + hms + "." + msec, hms });
 }
 
 void post_message(string channel, string sender, string message, varargs int norelay)
 {
 	object *send_list;
-	mixed mtime;
-	string stamp;
-	string mstamp;
+	mixed *mtime;
+	string *timestamps;
+
+	ASSERT(message);
 
 	if (!channels[channel]) {
 		error("No such channel");
 	}
+
+	mtime = millitime();
 
 	if (!norelay) {
 		if (intermud && intermud[channel]) {
@@ -420,24 +420,9 @@ void post_message(string channel, string sender, string message, varargs int nor
 		}
 	}
 
-	mtime = millitime();
+	timestamps = timestamps(mtime);
 
-	/* ctime format: */
-	/* Tue Aug  3 14:40:18 1993 */
-	/* 012345678901234567890123 */
-	stamp = ctime(mtime[0]);
-	stamp = stamp[0 .. 2] + ", " + stamp[4 .. 9] + ", " + stamp[20 .. 23] + " " + stamp[11 .. 18];
-
-	stamp += ".";
-
-	/* millitime resolution is 1m anyway */
-	mstamp = "" + floor(mtime[1] * 1000.0 + 0.5);
-	mstamp = "000" + mstamp;
-	mstamp = mstamp[strlen(mstamp) - 3 ..];
-
-	stamp += mstamp;
-
-	paste_to_log(channel, sender, message);
+	write_secret_log(channel, timestamps[0] + " " + message);
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
@@ -447,12 +432,9 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	if (send_list) {
 		int sz;
-		int index;
 
-		sz = sizeof(send_list);
-
-		for (index = 0; index < sz; index++) {
-			send_list[index]->channel_message(channel, mtime, sender, message);
+		for (sz = sizeof(send_list); --sz >= 0; ) {
+			send_list[sz]->channel_message(channel, mtime, sender, message);
 		}
 	}
 }
