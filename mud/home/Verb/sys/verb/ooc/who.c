@@ -159,15 +159,23 @@ void main(object actor, mapping roles)
 		list = allocate(sz);
 
 		for (i = 0; i < sz; i++) {
-			user = users[i];
+			object user, conn;
 
-			while (user && user <- LIB_USER) {
-				user = user->query_conn();
+			user = users[i];
+			conn = user->query_conn();
+
+			while (conn && conn <- LIB_USER) {
+				user = conn;
+				conn = conn->query_conn();
 			}
 
-			list[i] = query_ip_number(user);
+			if (conn) {
+				list[i] = query_ip_number(conn);
+			} else {
+				list[i] = "(broken chain ending at " + object_name(user) + ")";
+			}
 		}
 
-		send_out("Guest IPs: " + implode(list, ", ") + "\n\n");
+		send_out("Guest IPs:\n" + implode(list, "\n") + "\n\n");
 	}
 }
