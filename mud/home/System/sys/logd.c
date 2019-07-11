@@ -27,6 +27,7 @@
 #include <kotaka/privilege.h>
 
 inherit SECOND_AUTO;
+inherit "~/lib/utility/secretlog";
 inherit "~/lib/struct/list";
 
 mixed **filebuf;
@@ -159,22 +160,7 @@ private void append_node(string file, string fragment)
 
 private void write_logfile(string file, string timestamp, string message)
 {
-	int sz, i;
-	string *lines;
-
-	lines = explode("\n" + message + "\n", "\n");
-
-	sz = sizeof(lines);
-
-	if (!filebuf) {
-		filebuf = ({ nil, nil });
-	}
-
-	for (i = 0; i < sz; i++) {
-		list_push_back(filebuf, ({ file, timestamp + " " + lines[i] + "\n" }));
-	}
-
-	call_out_unique("flush", 5);
+	write_secret_log(file, timestamp + " " + message);
 }
 
 private void commit_logfile(string base, string message)
