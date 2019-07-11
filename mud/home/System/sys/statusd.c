@@ -308,7 +308,7 @@ int login(string str)
 
 	conn->message("\033[1;1H\033[2J");
 
-	schedule(conn);
+	report(conn);
 
 	return MODE_NOECHO;
 }
