@@ -263,7 +263,7 @@ static void ready()
 
 static void do_upgrade_rebuild()
 {
-	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules");
+	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules...");
 	MODULED->upgrade_purge();
 	MODULED->upgrade_build();
 }
@@ -289,9 +289,10 @@ static void upgrade_system_post_recompile()
 
 static void upgrade_system_post_rebuild()
 {
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules...");
 	MODULED->upgrade_modules();
 
-	do_upgrade_rebuild();
+	call_out("do_upgrade_rebuild", 0);
 }
 
 /* hooks */
@@ -421,12 +422,17 @@ void upgrade_system()
 {
 	ACCESS_CHECK(VERB());
 
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading system...");
+
+	LOGD->post_message("system", LOG_NOTICE, "Checking version...");
 	upgrade_check_current_version();
 
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library...");
 	destruct_dir("/kernel/lib");
 	compile_dir("/kernel/obj");
 	compile_dir("/kernel/sys");
 
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling System...");
 	destruct_dir("lib");
 	compile_object(INITD);
 
