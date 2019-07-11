@@ -120,7 +120,7 @@ static void process()
 		call_out_unique("process", 0);
 
 		head = list_front(sweep_queue);
-		ticks = status(ST_TICKS) - 10000;
+		ticks = status(ST_TICKS) - 200000;
 
 		switch(sizeof(head)) {
 		case 3: /* ({ path, mindex, cindex }) */
@@ -157,8 +157,9 @@ static void process()
 
 			if (cindex < otabsize) {
 				head[2] = cindex;
+				LOGD->post_message("debug", LOG_DEBUG, "Clone sweep in progress of " + path + " at " + cindex + " of " + otabsize);
 			} else {
-				LOGD->post_message("system", LOG_NOTICE, "Completed forward sweep of " + path);
+				LOGD->post_message("system", LOG_NOTICE, "Completed clone sweep of " + path);
 				list_pop_front(sweep_queue);
 			}
 		}
@@ -224,8 +225,7 @@ void mark_patch(string path, varargs int clear)
 			}
 		} else {
 			int sz;
-
-			LOGD->post_message("system", LOG_NOTICE, "Sweeping clones of " + path);
+			int marks;
 
 			for (sz = status(ST_OTABSIZE); --sz >= 0; ) {
 				object clone;
@@ -243,6 +243,7 @@ void mark_patch(string path, varargs int clear)
 				if (clear) {
 					sparsearray_set_element(pflagdb, sz, nil);
 				} else {
+					marks++;
 					call_touch(clone);
 					sparsearray_set_element(pflagdb, sz, clone);
 				}
@@ -251,6 +252,8 @@ void mark_patch(string path, varargs int clear)
 			if (!clear) {
 				enqueue_sweep(path, index);
 			}
+
+			LOGD->post_message("system", LOG_NOTICE, "Marked " + marks + " clones of " + path + " for upgrade");
 		}
 	}
 }
