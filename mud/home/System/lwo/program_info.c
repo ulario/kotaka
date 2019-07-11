@@ -43,6 +43,8 @@ string *inherited_patchers;
 int nclones;
 mapping clones;
 
+atomic void reset_clones();
+
 static void create(varargs int clone)
 {
 	if (clone) {
@@ -214,6 +216,8 @@ void remove_clone(object clone)
 
 	if (clones) {
 		clones[clone] = nil;
+	} else if (nclones < status(ST_ARRAYSIZE) / 2) {
+		reset_clones();
 	}
 }
 
