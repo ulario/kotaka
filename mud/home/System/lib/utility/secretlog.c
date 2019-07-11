@@ -20,6 +20,7 @@
 #include <kotaka/paths/system.h>
 #include <status.h>
 
+inherit SECOND_AUTO;
 inherit "~System/lib/struct/list";
 
 private mapping queues;
