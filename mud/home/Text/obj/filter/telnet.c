@@ -454,7 +454,7 @@ int login(string str)
 
 	log_set_ip();
 
-	retval = ::login(str);
+	retval = ::receive_message(str);
 
 	if (retval == MODE_DISCONNECT) {
 		return MODE_DISCONNECT;
