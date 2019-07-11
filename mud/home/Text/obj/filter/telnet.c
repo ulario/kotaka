@@ -450,6 +450,10 @@ int login(string str)
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
+	connection(previous_object());
+
+	log_set_ip();
+
 	retval = ::login(str);
 
 	if (retval == MODE_DISCONNECT) {
@@ -543,6 +547,7 @@ int receive_message(string str)
 
 			case TELNET_IAC: /* escaped IAC means a literal 255 */
 				inbuf = suffix[1 ..];
+
 				if (subcode == -1) {
 					linebuf += "\377";
 				} else {
@@ -551,9 +556,10 @@ int receive_message(string str)
 				break;
 
 			default:
-				::message
-					("Unknown telnet command: "
-					+ suffix[0] + "\n");
+				::message(
+					"Unknown telnet command: "
+					+ suffix[0] + "\n"
+				);
 				inbuf = suffix[1..];
 				break;
 			}

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,6 +39,12 @@ int destructing;
 int quitting;
 int logging_out;
 string username;
+
+/* helpers */
+
+/* hooks */
+
+/* functions */
 
 static void unsubscribe_channels();
 
@@ -296,19 +302,6 @@ private void do_banner()
 	::send_out(ansi);
 }
 
-private void do_login()
-{
-	connection(previous_object());
-
-	do_banner();
-
-	set_mode(MODE_ECHO);
-
-	set_root_state(clone_object(USTATE_DIR + "/login"));
-
-	TEXT_USERD->add_guest(this_object());
-}
-
 private int do_receive(string msg)
 {
 	int ret;
@@ -332,7 +325,19 @@ int login(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	do_login();
+	connection(previous_object());
+
+	ASSERT(query_conn());
+
+	log_set_ip();
+
+	set_mode(MODE_ECHO);
+
+	do_banner();
+
+	set_root_state(clone_object(USTATE_DIR + "/login"));
+
+	TEXT_USERD->add_guest(this_object());
 
 	if (str != nil) {
 		return do_receive(str);

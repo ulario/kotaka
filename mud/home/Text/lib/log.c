@@ -17,39 +17,82 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kernel/kernel.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/log.h>
+#include <kotaka/assert.h>
 #include <kernel/user.h>
 
-private string whoami()
+private string saved_ip;
+
+static void log_set_ip()
 {
-	object user;
-	object conn;
-	string id;
+	catch {
+		object conn;
 
-	user = this_object();
+		conn = this_object()->query_conn();
 
-	while (user <- LIB_CONN) {
-		user = user->query_user();
-	}
+		ASSERT(conn);
 
-	if (id = user->query_username()) {
-		return id;
-	}
+		while (conn <- LIB_USER) {
+			conn = conn->query_conn();
+		}
 
-	conn = this_object()->query_conn();
+		saved_ip = query_ip_number(conn);
 
-	while (conn && conn <- LIB_USER) {
-		conn = conn->query_conn();
-	}
-
-	if (conn) {
-		return query_ip_number(conn);
-	} else {
-		return "(linkdead)";
+		ASSERT(saved_ip);
 	}
 }
 
 static void log_message(string message)
 {
-	"~/sys/logd"->log_message(whoami(), message);
+	object this, user, conn;
+
+	this = this_object();
+	user = this;
+
+	while (user <- LIB_CONN) {
+		user = user->query_user();
+	}
+
+	if (user) {
+		string username;
+
+		username = user->query_username();
+
+		if (username) {
+			"~/sys/logd"->log_message(username, message);
+			return;
+		}
+	} else {
+		LOGD->post_message("system", LOG_WARNING, "While logging: Object " + object_name(this_object()) + " has no user");
+		LOGD->post_message("system", LOG_WARNING, "Log message: " + message);
+		return;
+	}
+
+	conn = this->query_conn();
+
+	while (conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	if (conn) {
+		string ip;
+
+		ip = query_ip_number(conn);
+
+		if (ip) {
+			"~/sys/logd"->log_message(ip, message);
+			return;
+		}
+
+		if (saved_ip) {
+			"~/sys/logd"->log_message(saved_ip, message);
+		} else {
+			LOGD->post_message("system", LOG_WARNING, "While logging: Object " + object_name(this_object()) + " is linkdead and no saved IP");
+			LOGD->post_message("system", LOG_WARNING, "Log message: " + message);
+		}
+	} else {
+		LOGD->post_message("system", LOG_WARNING, "While logging: Object " + object_name(this_object()) + " has no connection");
+		LOGD->post_message("system", LOG_WARNING, "Log message: " + message);
+	}
 }

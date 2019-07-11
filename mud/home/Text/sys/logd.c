@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,7 +23,7 @@
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
-inherit "/lib/secretlog";
+inherit "~System/lib/utility/secretlog";
 inherit "~System/lib/struct/list";
 
 mixed **buf;
@@ -76,5 +76,5 @@ void log_message(string sender, string message)
 {
 	ACCESS_CHECK(TEXT());
 
-	write_secret_log(sender, message);
+	write_secret_log(sender, timestamp() + " " + message);
 }
