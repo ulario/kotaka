@@ -112,7 +112,6 @@ exec >> kotaka.err
 exec 2>&1
 
 trap sigint SIGINT
-trap sighup SIGHUP
 
 echo "--- Monitor starting ---"
 
