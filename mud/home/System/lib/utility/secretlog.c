@@ -147,7 +147,7 @@ static void write_secret_log(string file, string message)
 		message += "\n";
 	}
 
-	append_node(file, stamp + " " + message);
+	append_node(file, message);
 
 	callouts = status(this_object(), O_CALLOUTS);
 
