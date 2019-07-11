@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -301,7 +301,7 @@ int login(string str)
 	if (is_trusted(conn)) {
 		interval = 0.02;
 	} else {
-		interval = 1.0;
+		interval = 0.25;
 	}
 
 	connections[conn] = ({ 0, interval, skip });
