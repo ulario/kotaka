@@ -13,11 +13,6 @@ function sigint
 	kill -INT $$
 }
 
-function sighup
-{
-	echo "--- Monitor received SIGHUP ---"
-}
-
 # subroutines
 
 function execdgd
