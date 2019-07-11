@@ -368,7 +368,7 @@ int receive_message(string str)
 
 				sscanf(params[1], "%f", interval);
 
-				if (interval < 1.0 && !is_trusted(conn)) {
+				if (interval < 0.05 && !is_trusted(conn)) {
 					conn->message("Intervals less than 1 second are only allowed for local connections.\n");
 					break;
 				}
