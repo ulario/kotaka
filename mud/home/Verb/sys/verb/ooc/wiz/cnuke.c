@@ -25,18 +25,21 @@
 
 inherit LIB_VERB;
 
-static void nuke(string path, int index, object proxy)
+static void nuke(object proxy, string path, int index, int max)
 {
 	object obj;
 
-	if (obj = find_object(path + "#" + index)) {
-		proxy->destruct_object(obj);
-	}
+	do {
+		if (obj = find_object(path + "#" + index)) {
+			proxy->destruct_object(obj);
+		}
 
-	index++;
+		index++;
+	} while (index < max && status(ST_TICKS) > 50000);
 
-	if (index < status(ST_OTABSIZE)) {
-		call_out("nuke", 0, path, index, proxy);
+	if (index < max) {
+		LOGD->post_message("debug", LOG_DEBUG, "Nuking clones of " + path + ", at index " + index + " of " + max);
+		call_out("nuke", 0, proxy, path, index, max);
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "Nuked clones of " + path);
 	}
@@ -68,5 +71,5 @@ void main(object actor, mapping roles)
 
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
-	call_out("nuke", 0, path, 0, proxy);
+	call_out("nuke", 0, proxy, path, 0, status(ST_OTABSIZE));
 }
