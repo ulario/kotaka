@@ -1,8 +1,9 @@
 # Upgrading
 
+To upgrade your mud, simply call INITD->upgrade_system()
 Every upgrade has the following sequence of events:
 
-## advanced notice
+## Advanced notice
 
 Any API changes will be announced at least one version in advance.
 
@@ -15,12 +16,12 @@ the old API is used.
 
 Please consult UPGRADE-API for currently planned API changes.
 
-## preparation
+## Preparation
 
 If anything needs done to prepare for an upgrade, those instructions will
 be provided, and should be completed before the actual upgrade.
 
-## upgrade
+## Upgrade
 
 Use the upgrade command to start the upgrade process.
 
