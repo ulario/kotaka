@@ -15,6 +15,11 @@ module.
 It is the heart of the system and holds rule over the other modules in
 the library, therefore it must be treated specially.
 
+2.  Bridge the gap
+
+We should strive to resist the temptation to force someone depending on
+us to dump stuff out.  We should migrate when possible.
+
 ## Current upgrade procedure:
 
 ### Have INITD recompile itself.
