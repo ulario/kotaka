@@ -628,7 +628,7 @@ private mixed *startup_packet()
 		0,
 		0,
 
-		50000,
+		61440,
 		0,
 		0,
 		"Kotaka",
