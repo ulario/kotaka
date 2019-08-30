@@ -102,17 +102,17 @@ string print_bans(string header, string *targets, mixed *bans)
 		}
 	}
 
-	buffer = "\033[1m" + lalign(header, len[0])
+	buffer = lalign(header, len[0])
 		+ "  " + lalign("Issuer", len[1])
 		+ "  " + lalign("Exp", len[2])
-		+ "  Message\033[0m\n";
+		+ "  Message\n";
 
 	for (i = 0; i < sz; i++) {
 		buffer +=
 			lalign(table[i][0], len[0])
 			+ "  " + lalign(table[i][1], len[1])
 			+ "  " + lalign(table[i][2], len[2])
-			+ "  " + table[i][3] + "\033[0m\n";
+			+ "  " + table[i][3] + "\n";
 
 		if (i % 5 == 4 && i + 1 != sz) {
 			buffer += "\n";
