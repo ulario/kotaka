@@ -359,24 +359,30 @@ int receive_message(string str)
 
 void channel_message(string channel, mixed *mtime, string sender, string message)
 {
+	string *parts;
 	string stamp;
 
 	ACCESS_CHECK(previous_program() == CHANNELD);
 
 	stamp = ctime(mtime[0])[11 .. 15];
 
-	if (sender) {
-		if (message) {
-			send_out("[\033[1m" + channel + "\033[0m] \033[1;32m" + stamp +
-				"\033[0m \033[1;34m" + sender + "\033[0m: " + message + "\n");
-		} else {
-			send_out("[\033[1m" + channel + "\033[0m] \033[1;32m" + stamp +
-				"\033[0m \033[1;34m" + sender + "\033[0m\n");
-		}
-	} else {
-		send_out("[\033[1m" + channel + "\033[0m] \033[1;32m" + stamp +
-			"\033[0m " + message + "\n");
+	parts = ({ });
+
+	if (channel) {
+		parts += ({ "#" + channel });
 	}
+
+	parts += ({ "[" + stamp + "]" });
+
+	if (sender) {
+		parts += ({ "<" + sender + ">" });
+	}
+
+	if (message) {
+		parts += ({ message });
+	}
+
+	send_out(implode(parts, " ") + "\n");
 }
 
 static void subscribe_channels()
