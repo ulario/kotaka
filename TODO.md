@@ -7,7 +7,11 @@ future.
 
 Tasks should be listed in order of desired completion.
 
-## Secretlog
+## Ongoing
+
+The following TODO items are in progress.
+
+### Secretlog
 
 This is a new library meant to consolidate the logic for writing logs to
 ~Secret to protect them from snooping.
@@ -26,7 +30,7 @@ Affected users:
 
 ChannelD, IntermudD, and ~Text/sys/logd
 
-## Mudlib upgrading
+### Mudlib upgrading
 
 From now on, to avoid accidents of versions being skipped by premature
 recompiles or upgrades, all necessary checks will be done in a
@@ -43,3 +47,15 @@ information to see if the current version is an acceptable upgrade
 source.
 
 After these checks are completed the upgrade will commence.
+
+## Long term
+
+These are on the list but are not yet in progress.
+
+### Consolidate Kotaka
+
+We're at the point of ravioli.  There are certain things that are going
+to comprise the unprivileged core of Kotaka, so they should be
+consolidated into the Kotaka module.
+
+Channel and Help in particular.
