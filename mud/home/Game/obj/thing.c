@@ -48,6 +48,7 @@ mapping save()
 		"id": query_id(),
 		"inventory": query_inventory(),
 		"mass": query_mass(),
+		"name": query_object_name(),
 		"max_mass": query_max_mass(),
 		"name": query_object_name(),
 		"properties": query_local_properties(),
@@ -80,4 +81,5 @@ void load(mapping data)
 	set_max_mass(data["max_mass"]);
 	set_object_name(data["name"]);
 	set_local_properties(data["properties"]);
+	set_object_name(data["name"]);
 }
