@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,12 +32,50 @@ inherit "/lib/string/format";
 private void draw_object(object gc, object viewer, object obj);
 private void draw_contents(object gc, object viewer, object obj);
 
+private object *initialize_painter()
+{
+	object gc;
+	object painter;
+
+	painter = new_object(LWO_PAINTER);
+	painter->set_size(80, 21);
+
+	/* bottom */
+	painter->add_layer("canvas");
+	painter->set_layer_size("canvas", 80, 21);
+	painter->set_layer_position("canvas", 0, 0);
+
+	/* the window */
+	painter->add_layer("view");
+	painter->set_layer_size("view", 17, 17);
+	painter->set_layer_position("view", 61, 2);
+
+	/* grid points and tick marks */
+	painter->add_layer("grid");
+	painter->set_layer_size("grid", 19, 19);
+	painter->set_layer_position("grid", 60, 1);
+
+	/* exits */
+	painter->add_layer("exits");
+	painter->set_layer_size("exits", 17, 17);
+	painter->set_layer_position("exits", 61, 2);
+
+	/* objects and mobs */
+	painter->add_layer("sprites");
+	painter->set_layer_size("sprites", 17, 17);
+	painter->set_layer_position("sprites", 61, 2);
+
+	gc = painter->create_gc();
+
+	return ({ painter, gc });
+}
+
 private void draw_tickmarks(object gc)
 {
 	int i;
 
-	gc->set_layer("canvas");
-	gc->set_offset(69, 10);
+	gc->set_layer("grid");
+	gc->set_offset(9, 9);
 	gc->set_clip(-9, -9, 9, 9);
 
 	for (i = -8; i <= 8; i += 1) {
@@ -63,7 +101,7 @@ private void draw_grid(object gc)
 	int x, y;
 
 	gc->set_layer("grid");
-	gc->set_offset(8, 8);
+	gc->set_offset(9, 9);
 	gc->set_clip(-4, -4, 4, 4);
 
 	for (y = -4; y <= 4; y += 4) {
@@ -321,12 +359,13 @@ int position_sort(object a, object b)
 	return 1;
 }
 
-private void draw_bsod(object gc)
+private void draw_bsod(object gc, string code, string title, string message)
 {
 	int x, y;
 
+	gc->set_layer("view");
+	gc->set_offset(8, 8);
 	gc->set_clip(-8, -8, 8, 8);
-	gc->set_offset(70, 10);
 	gc->set_color(0x47);
 
 	for (y = -8; y <= 8; y++) {
@@ -334,13 +373,13 @@ private void draw_bsod(object gc)
 		gc->draw(chars(' ', 17));
 	}
 
-	gc->move_pen(-3, -1);
+	gc->move_pen(-(strlen(title) / 2), -1);
 	gc->set_color(0x74);
-	gc->draw(" Error ");
+	gc->draw(title);
 
+	gc->move_pen(-(strlen(message) / 2), 1);
 	gc->set_color(0x47);
-	gc->move_pen(-3, 1);
-	gc->draw("No body");
+	gc->draw(message);
 }
 
 private void draw_object(object gc, object viewer, object obj)
@@ -397,42 +436,10 @@ private void draw_contents(object gc, object viewer, object obj)
 	}
 }
 
-private string draw_look_xyz(object viewer)
+private void draw_xyz(object gc, object viewer)
 {
 	object oenv;
 	int x, y, sz, i;
-	object painter;
-	object gc;
-	string render;
-
-	painter = new_object(LWO_PAINTER);
-	painter->set_size(80, 21);
-
-	painter->add_layer("canvas");
-	painter->set_layer_size("canvas", 80, 21);
-	painter->set_layer_position("canvas", 0, 0);
-
-	painter->add_layer("view");
-	painter->set_layer_size("view", 17, 17);
-	painter->set_layer_position("view", 61, 2);
-
-	painter->add_layer("grid");
-	painter->set_layer_size("grid", 17, 17);
-	painter->set_layer_position("grid", 61, 2);
-
-	painter->add_layer("exits");
-	painter->set_layer_size("exits", 17, 17);
-	painter->set_layer_position("exits", 61, 2);
-
-	painter->add_layer("sprites");
-	painter->set_layer_size("sprites", 17, 17);
-	painter->set_layer_position("sprites", 61, 2);
-
-	gc = painter->create_gc();
-
-	gc->set_layer("canvas");
-	gc->set_clip(0, 0, 79, 21);
-	gc->set_offset(0, 0);
 
 	draw_frame(gc);
 	draw_banner(gc, viewer ? viewer->query_environment() : nil);
@@ -477,47 +484,12 @@ private string draw_look_xyz(object viewer)
 		gc->set_color(0x0F);
 		gc->draw("@");
 	} else {
-		draw_bsod(gc);
+		draw_bsod(gc, "error", " Error ", "No actor");
 	}
-
-	render = implode(painter->render_color(), "\n") + "\n";
-
-	{
-		object origin;
-
-		origin = viewer->query_outer_origin();
-
-		if (!origin) {
-			render += "No origin.\n";
-		} else {
-			string csystem;
-
-			csystem = origin->query_coordinate_system();
-
-			render += "Coordinate system: " + csystem + "\n";
-			render += "Origin: " + TEXT_SUBD->generate_brief_proper(origin) + "\n";
-
-			switch(csystem) {
-			case "xyz":
-				{
-					int *d;
-
-					d = GEOMETRY_SUBD->query_position_difference(origin, viewer);
-
-					render += "Your coordinates are: (" + d[0] + ", " + d[1] + ", " + d[2] + ")\n";
-				}
-				break;
-
-			case "void":
-				render += "You don't have any coordinates here.\n";
-			}
-		}
-	}
-
-	return render;
 }
 
-private string draw_void(object viewer)
+
+private string look_void(object viewer)
 {
 	object env;
 	string output;
@@ -548,23 +520,85 @@ private string draw_void(object viewer)
 	return output;
 }
 
-string draw_look(object viewer)
+private string look_xyz(object viewer)
+{
+	object origin;
+	string output;
+	object painter, gc;
+
+	({ painter, gc }) = initialize_painter();
+
+	draw_xyz(gc, viewer);
+	output = implode(painter->render_color(), "\n") + "\n\n";
+	origin = viewer->query_outer_origin();
+
+	if (!origin) {
+		output += "No origin.\n";
+	} else {
+		string csystem;
+
+		csystem = origin->query_coordinate_system();
+
+		output += "Coordinate system: " + csystem + "\n";
+		output += "Origin: " + TEXT_SUBD->generate_brief_proper(origin) + "\n";
+
+		switch(csystem) {
+		case "xyz":
+			{
+				int *d;
+
+				d = GEOMETRY_SUBD->query_position_difference(origin, viewer);
+
+				output += "Your coordinates are: (" + d[0] + ", " + d[1] + ", " + d[2] + ")\n";
+			}
+			break;
+
+		case "void":
+			output += "You don't have any coordinates here.\n";
+		}
+	}
+
+	return output;
+}
+
+/* draw_* = use the gc to doodle on it */
+/* look_* = simple text, no gc */
+
+/* called by the look verb, returns a string of what to send back to the user */
+string look(object viewer)
 {
 	object origin;
 
 	ACCESS_CHECK(TEXT() || GAME() || VERB());
 
+	if (!viewer->query_character_lwo()) {
+		return "You are not a character.\n";
+	}
+
+	if (!viewer->query_living_lwo()) {
+		object painter, gc;
+
+		({ painter, gc }) = initialize_painter();
+
+		draw_frame(gc);
+
+		draw_bsod(gc, "dead", " Error ", "You're dead");
+
+		return implode(painter->render_color(), "\n") + "\n";
+	}
+
 	origin = viewer->query_outer_origin();
 
 	if (!origin) {
-		return draw_void(viewer);
+		return look_void(viewer);
 	}
 
 	switch (origin->query_coordinate_system()) {
 	case "xyz":
-		return draw_look_xyz(viewer);
+		return look_xyz(viewer);
 
 	case "void":
-		return draw_void(viewer);
+		return look_void(viewer);
 	}
+
 }
