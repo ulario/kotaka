@@ -68,6 +68,16 @@ void main(object actor, mapping roles)
 		return;
 	}
 
+	if (!actor->query_character_lwo()) {
+		send_out("You are not a character.\n");
+		return;
+	}
+
+	if (!actor->query_living_lwo()) {
+		send_out("Dead men tell no tales.\n");
+		return;
+	}
+
 	user = query_user();
 	text = roles["evoke"];
 
