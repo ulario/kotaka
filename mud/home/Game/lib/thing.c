@@ -22,6 +22,8 @@
 inherit thing LIB_THING;
 inherit geometry "~Geometry/lib/thing";
 inherit "thing/exit";
+inherit "thing/character";
+inherit "thing/living";
 
 static void create()
 {
