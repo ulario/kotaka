@@ -62,7 +62,7 @@ void main(object actor, mapping roles)
 
 	if (!dob) {
 		emit_from(actor, actor, " ", ({ "look", "looks" }), " around.");
-		send_out(RENDERD->draw_look(actor));
+		send_out(RENDERD->look(actor));
 		return;
 	}
 
@@ -127,6 +127,7 @@ void main(object actor, mapping roles)
 			}
 		}
 		break;
+
 	default:
 		send_out("todo: handle preposition " + prep + "\n");
 	}
