@@ -37,9 +37,12 @@ static void destruct(int clone)
 
 mapping save()
 {
+	mapping map;
+	object lwo;
+
 	ACCESS_CHECK(GAME());
 
-	return ([
+	map = ([
 		"archetype": query_archetype(),
 		"capacity": query_capacity(),
 		"density": query_density(),
@@ -48,17 +51,34 @@ mapping save()
 		"id": query_id(),
 		"inventory": query_inventory(),
 		"mass": query_mass(),
-		"name": query_object_name(),
 		"max_mass": query_max_mass(),
 		"name": query_object_name(),
 		"properties": query_local_properties(),
 		"virtual": query_virtual()
 	]);
+
+	if (lwo = query_character_lwo()) {
+		map["character"] = ([
+			"attack": lwo->query_attack(),
+			"defense": lwo->query_defense(),
+			"maxhp": lwo->query_max_hp()
+		]);
+	}
+
+	if (lwo = query_living_lwo()) {
+		map["living"] = ([
+			"hp": lwo->query_hp()
+		]);
+	}
+
+	return map;
 }
 
 void load(mapping data)
 {
 	mixed arch;
+	mixed map;
+	object lwo;
 
 	ACCESS_CHECK(GAME());
 
@@ -82,4 +102,14 @@ void load(mapping data)
 	set_object_name(data["name"]);
 	set_local_properties(data["properties"]);
 	set_object_name(data["name"]);
+
+	if (map = data["character"]) {
+		initialize_character(map["attack"], map["defense"], map["maxhp"]);
+	}
+
+	if (map = data["living"]) {
+		initialize_living();
+		lwo = query_living_lwo();
+		lwo->set_hp(map["hp"]);
+	}
 }
