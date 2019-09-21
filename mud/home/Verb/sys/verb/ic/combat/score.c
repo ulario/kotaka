@@ -135,7 +135,7 @@ void main(object actor, mapping roles)
 	aliv = actor->query_living_lwo();
 
 	if (!aliv) {
-		send_out("You're dead.\n");
+		send_out("Dead.\n");
 		return;
 	}
 
@@ -147,4 +147,10 @@ void main(object actor, mapping roles)
 	send_out("HP: " + hp + "/" + max + "\n");
 	send_out("Atk: " + attack + "\n");
 	send_out("Def: " + defense + "\n");
+
+	if (hp < max / 4) {
+		send_out("You are seriously injured!\n");
+	} else if (hp < max / 2) {
+		send_out("You are hurt.\n");
+	}
 }
