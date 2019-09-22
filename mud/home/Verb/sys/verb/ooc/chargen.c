@@ -91,11 +91,16 @@ void main(object actor, mapping roles)
 
 	send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 
-	world = IDD->find_object_by_name("start");
+	body->initialize_character(10, 5, 20);
+	body->initialize_living();
+	body->set_hp(20);
+
+	world = IDD->find_object_by_name("planets:aerth");
 
 	if (world) {
 		body->move(world);
 	} else {
 		send_out("Warning: start room not found, your character's body was spawned in the void.\n");
+		send_out("Please contact a wizard to move you to the game world.\n");
 	}
 }
