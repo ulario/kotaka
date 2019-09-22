@@ -23,6 +23,7 @@
 
 inherit LIB_EMIT;
 inherit LIB_VERB;
+inherit "~/lib/ic";
 
 string *query_parse_methods()
 {
@@ -50,21 +51,6 @@ void main(object actor, mapping roles)
 	object *worn;
 	string *parts;
 	int i, sz, hlayer;
-
-	if (!actor) {
-		send_out("You must be in character to use this command.\n");
-		return;
-	}
-
-	if (!actor->query_character_lwo()) {
-		send_out("You are not a character.\n");
-		return;
-	}
-
-	if (!actor->query_living_lwo()) {
-		send_out("You're dead, you can't do that.\n");
-		return;
-	}
 
 	dob = roles["dob"];
 

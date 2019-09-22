@@ -52,18 +52,36 @@ void main(object actor, mapping roles)
 	mixed obj;
 	string prep;
 	string look;
+	int mute;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
 		return;
 	}
 
+	if (!actor->query_character_lwo()) {
+		send_out("You are not a character.\n");
+		return;
+	}
+
+	if (!actor->query_living_lwo()) {
+		mute = 1;
+	}
+
 	dob = roles["dob"];
 
 	if (!dob) {
-		emit_from(actor, actor, " ", ({ "look", "looks" }), " around.");
+		if (!mute) {
+			emit_from(actor, actor, " ", ({ "look", "looks" }), " around.");
+		}
+		/* it's ok to look around while dead, RenderD checks for this itself */
 		send_out(RENDERD->look(actor));
 		return;
+	} else {
+		if (mute) {
+			send_out("You cannot try to focus on anything while your mortal soul is departed the physical realm.");
+			return;
+		}
 	}
 
 	prep = dob[0];

@@ -52,3 +52,14 @@ string *query_help_contents()
 {
 	return ({ "This verb has no help content." });
 }
+
+/* allows the verb to tamper with the arguments or even abort the parse completely */
+int pre_bind(object actor, mapping roles)
+{
+}
+
+/* actually executes the verb */
+void main(object actor, mapping roles)
+{
+	send_out("The verb you used didn't have a main function.\n");
+}
