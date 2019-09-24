@@ -55,6 +55,21 @@ void main(object actor, mapping roles)
 	string stepqueue;
 	int boundflag;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
+	if (!actor->query_character_lwo()) {
+		send_out("You are not a character.\n");
+		return;
+	}
+
+	if (!actor->query_living_lwo()) {
+		send_out("You're dead, you can't do that.\n");
+		return;
+	}
+
 	env = actor->query_environment();
 
 	if (!env) {
