@@ -48,8 +48,58 @@ string *query_help_contents()
 	});
 }
 
-private void do_attack(object attacker, object defender)
+private void do_attack(object actor, object dob)
 {
+	object achar, aliv;
+	object dchar, dliv;
+	int damage;
+
+	achar = actor->query_character_lwo();
+
+	if (!achar) {
+		send_out("You are not a character.\n");
+		return;
+	}
+
+	aliv = actor->query_living_lwo();
+
+	if (!aliv) {
+		send_out("You're dead, Jim.\n");
+		return;
+	}
+
+	dchar = dob->query_character_lwo();
+
+	if (!dchar) {
+		send_out("That is not a character.\n");
+		return;
+	}
+
+	dliv = dob->query_living_lwo();
+
+	if (!dliv) {
+		send_out("It's dead, Jim\n");
+		return;
+	}
+
+	damage = achar->query_attack() - dchar->query_defense();
+
+	if (damage <= 0) {
+		send_out("Your attack is ineffective\n");
+		emit_from(actor, actor, " harmlessly ", ({ "hit", "hits" }), " ", dob, ".");
+		return;
+	}
+
+	if (dliv->subtract_hp(damage) <= 0) {
+		emit_from(actor, actor, " ", ({ "kill", "kills" }), " ", dob, "!");
+		dob->clear_living();
+		emit_to(actor, actor, "You fatally deal " + damage + " points of damage!");
+		emit_to(dob, dob, "You suffer " + damage + " points of damage and die!");
+	} else {
+		emit_from(actor, actor, " ", ({ "hit", "hits" }), " ", dob, ".");
+		emit_to(actor, actor, "You deal " + damage + " points of damage.");
+		emit_to(dob, dob, "You suffer " + damage + " points of damage.");
+	}
 }
 
 void main(object actor, mapping roles)
@@ -79,81 +129,16 @@ void main(object actor, mapping roles)
 
 	switch(typeof(dob)) {
 	case T_OBJECT:
-		{
-			object achar, aliv;
-			object dchar, dliv;
-			int damage;
-
-			if (dob->query_environment() != actor->query_environment()) {
-				send_out("You can only attack someone in the same room.\n");
-				return;
-			}
-
-			if (dob == actor) {
-				send_out("You can't fight yourself.\n");
-				return;
-			}
-
-			achar = actor->query_character_lwo();
-
-			if (!achar) {
-				send_out("You are not a character.\n");
-				return;
-			}
-
-			aliv = actor->query_living_lwo();
-
-			if (!aliv) {
-				send_out("You're dead, Jim.\n");
-				return;
-			}
-
-			dchar = dob->query_character_lwo();
-
-			if (!dchar) {
-				send_out("That is not a character.\n");
-				return;
-			}
-
-			dliv = dob->query_living_lwo();
-
-			if (!dliv) {
-				send_out("It's dead, Jim\n");
-				return;
-			}
-
-			damage = achar->query_attack() - dchar->query_defense();
-
-			if (damage <= 0) {
-				send_out("Your attack is ineffective\n");
-				emit_from(actor, actor, " harmlessly ", ({ "hit", "hits" }), " ", dob, ".");
-				return;
-			}
-
-			{
-				int hp;
-
-				hp = dliv->subtract_hp(damage);
-
-				if (hp <= 0) {
-					dob->clear_living();
-					emit_from(actor, actor, " ", ({ "kill", "kills" }), " ", dob, "!");
-					emit_to(actor, actor, "You fatally deal " + damage + " points of damage!");
-					emit_to(dob, dob, "You suffer " + damage + " points of damage and die!");
-				} else {
-					emit_from(actor, actor, " ", ({ "hit", "hits" }), " ", dob, ".");
-					emit_to(actor, actor, "You deal " + damage + " points of damage.");
-					emit_to(dob, dob, "You suffer " + damage + " points of damage.");
-				}
-			}
+		if (dob == actor) {
+			send_out("You can't fight yourself.\n");
+		} else if (dob->query_environment() != actor->query_environment()) {
+			send_out("You can only attack someone in the same room.\n");
+		} else {
+			do_attack(actor, dob);
 		}
 		break;
 
 	case T_ARRAY:
-		{
-			send_out("You can only attack one foe at a time.\n");
-			return;
-		}
-		break;
+		send_out("You can only attack one foe at a time.\n");
 	}
 }
