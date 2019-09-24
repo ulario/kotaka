@@ -533,9 +533,7 @@ private mixed *english_process(string command, object ustate, object actor, obje
 		}
 	}
 
-	roles["actor"] = actor;
-
-	if (verb->pre_bind(roles)) {
+	if (verb->pre_bind(actor, roles)) {
 		return ({ 2, "Verb veto" });
 	}
 
