@@ -48,6 +48,13 @@ string *query_help_contents()
 	});
 }
 
+void initialize_combatant(object fighter)
+{
+	fighter->clear_character(); /* also wipes living */
+	fighter->initialize_character(5 + random(6), random(6), 20 + random(11));
+	fighter->initialize_living();
+}
+
 void main(object actor, mapping roles)
 {
 	string name;
@@ -91,9 +98,7 @@ void main(object actor, mapping roles)
 
 	send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 
-	body->initialize_character(10, 5, 20);
-	body->initialize_living();
-	body->set_hp(20);
+	initialize_combatant(body);
 
 	world = IDD->find_object_by_name("planets:aerth");
 

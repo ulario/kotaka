@@ -62,7 +62,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	actor->initialize_character(10 + random(5), random(5), 20 + random(10));
+	"../../ooc/chargen"->initialize_combatant(actor);
 
 	send_out("You are now a character.\n");
 }
