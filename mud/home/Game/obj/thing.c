@@ -113,3 +113,8 @@ void load(mapping data)
 		lwo->set_hp(map["hp"]);
 	}
 }
+
+void self_destruct()
+{
+	destruct_object(this_object());
+}
