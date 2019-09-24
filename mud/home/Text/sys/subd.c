@@ -177,7 +177,15 @@ private string primitive_brief(object thing)
 
 string generate_brief_proper(object thing)
 {
-	return primitive_brief(thing);
+	string brief;
+
+	brief = primitive_brief(thing);
+
+	if (thing->query_character_lwo() && !thing->query_living_lwo()) {
+		brief += "'s corpse";
+	}
+
+	return brief;
 }
 
 string generate_brief_definite(object thing)
