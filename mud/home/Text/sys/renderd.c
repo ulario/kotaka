@@ -200,6 +200,10 @@ private string prose(object viewer)
 		return "You don't exist.\n";
 	} else if (!env) {
 		return "You are in the formless void.\n";
+	} else if (!viewer->query_character_lwo()) {
+		return "You aren't a character.\n";
+	} else if (!viewer->query_living_lwo()) {
+		return "Being dead, you are unable to see.\n";
 	} else {
 		string *lines;
 		string desc;
@@ -359,7 +363,7 @@ int position_sort(object a, object b)
 	return 1;
 }
 
-private void draw_bsod(object gc, string code, string title, string message)
+private void draw_bsod(object gc, string title, string message)
 {
 	int x, y;
 
@@ -484,7 +488,7 @@ private void draw_xyz(object gc, object viewer)
 		gc->set_color(0x0F);
 		gc->draw("@");
 	} else {
-		draw_bsod(gc, "error", " Error ", "No actor");
+		draw_bsod(gc, " Error ", "No actor");
 	}
 }
 
@@ -571,8 +575,28 @@ string look(object viewer)
 
 	ACCESS_CHECK(TEXT() || GAME() || VERB());
 
+	if (!viewer) {
+		object painter, gc;
+
+		({ painter, gc }) = initialize_painter();
+
+		draw_frame(gc);
+
+		draw_bsod(gc, " Error ", "No body");
+
+		return implode(painter->render_color(), "\n") + "\n";
+	}
+
 	if (!viewer->query_character_lwo()) {
-		return "You are not a character.\n";
+		object painter, gc;
+
+		({ painter, gc }) = initialize_painter();
+
+		draw_frame(gc);
+		draw_bsod(gc, " Error ", "Not a body");
+		draw_prose(gc, viewer);
+
+		return implode(painter->render_color(), "\n") + "\n";
 	}
 
 	if (!viewer->query_living_lwo()) {
@@ -581,8 +605,8 @@ string look(object viewer)
 		({ painter, gc }) = initialize_painter();
 
 		draw_frame(gc);
-
-		draw_bsod(gc, "dead", " Error ", "You're dead");
+		draw_bsod(gc, " Error ", "Deceased");
+		draw_prose(gc, viewer);
 
 		return implode(painter->render_color(), "\n") + "\n";
 	}

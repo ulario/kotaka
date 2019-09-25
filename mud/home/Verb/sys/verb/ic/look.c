@@ -54,17 +54,7 @@ void main(object actor, mapping roles)
 	string look;
 	int mute;
 
-	if (!actor) {
-		send_out("You must be in character to use this command.\n");
-		return;
-	}
-
-	if (!actor->query_character_lwo()) {
-		send_out("You are not a character.\n");
-		return;
-	}
-
-	if (!actor->query_living_lwo()) {
+	if (!actor || !actor->query_living_lwo()) {
 		mute = 1;
 	}
 
