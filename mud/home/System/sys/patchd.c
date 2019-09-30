@@ -35,12 +35,10 @@ mixed pflagdb;
 mixed **patch_queue; /* ({ obj }) */
 mixed **sweep_queue; /* ({ path, master_index, clone_index }) */
 
-private void convert_pflagdb()
+void convert_pflagdb()
 {
 	switch(typeof(pflagdb)) {
 	case T_NIL:
-		pflagdb = ([ ]);
-
 	case T_MAPPING:
 		break;
 
@@ -181,7 +179,9 @@ void mark_patch(string path, varargs int clear)
 	index = status(master, O_INDEX);
 	pinfo = OBJECTD->query_program_info(index);
 
-	if (!pflagdb) {
+	if (typeof(pflagdb) == T_OBJECT) {
+		convert_pflagdb();
+	} else if (!pflagdb) {
 		pflagdb = ([ ]);
 	}
 
@@ -261,7 +261,7 @@ int query_marked(object obj)
 		return 0;
 	}
 
-	if (typeof(pflagdb) != T_MAPPING) {
+	if (typeof(pflagdb) == T_OBJECT) {
 		convert_pflagdb();
 	}
 
@@ -285,7 +285,7 @@ void clear_mark(object obj)
 		return;
 	}
 
-	if (typeof(pflagdb) != T_MAPPING) {
+	if (typeof(pflagdb) == T_OBJECT) {
 		convert_pflagdb();
 	}
 
