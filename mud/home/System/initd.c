@@ -202,6 +202,22 @@ private void reboot_common()
 	DRIVER->fix_filequota();
 }
 
+private void upgrade_check_current_version_0_60()
+{
+	string *safe_versions;
+	int sz;
+
+	safe_versions = explode(read_file("~/data/upgrade"), "\n") - ({ "" });
+
+	for (sz = sizeof(safe_versions); --sz >= 0; ) {
+		if (KOTAKA_VERSION == safe_versions[sz]) {
+			return;
+		}
+	}
+
+	error("Inconsistent versioning, please revert your snapshot to a pre 0.60 version and redo your upgrade");
+}
+
 private void upgrade_check_current_version()
 {
 	string *safe_versions;
@@ -268,31 +284,57 @@ static void do_upgrade_rebuild()
 	MODULED->upgrade_build();
 }
 
+/* Interception of upgrade call from 0.59 */
+
+/* also intercepts callout from v0.59 */
 static void upgrade_system_post_recompile()
 {
-	/* we are now version 0.60 */
-	/* Version 0.59 already destructed our libraries */
-	upgrade_check_current_version();
+	call_out("upgrade_system_intercept_0_59", 0);
+}
 
-	/* first recompile the kernel library */
+/* more specific call */
+static void upgrade_system_intercept_0_59()
+{
+	/* check to make sure we're actually sane */
+	/* warn the user if there's a mistake */
+	upgrade_check_current_version_0_60();
+
+	/* recompile kernel library */
 	destruct_dir("/kernel/lib");
 	compile_dir("/kernel/obj");
 	compile_dir("/kernel/sys");
 
 	/* recompile System */
+	destruct_dir("lib");
 	compile_dir("lwo");
 	compile_dir("obj");
 	compile_dir("sys");
 
-	call_out("upgrade_system_post_rebuild", 0);
+	call_out("upgrade_system_intercept_0_59_post_recompile", 0);
 }
 
-static void upgrade_system_post_rebuild()
+static void upgrade_system_intercept_0_59_post_recompile()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules...");
 	MODULED->upgrade_modules();
 
 	call_out("do_upgrade_rebuild", 0);
+}
+
+/* v0.60 upgrade checks */
+private void upgrade_check_0_60()
+{
+	/* when we upgrade FROM 0.60 in 0.61, make sure these are taken care of first */
+
+	/* no pending patches */
+	if (PATCHD->busy()) {
+		error("Cannot upgrade, pending patches");
+	}
+
+	/* no pending flushes in logs */
+	if (LOGD->busy() || CHANNELD->busy() || "~Text/sys/logd"->busy()) {
+		error("Cannot upgrade, pending log flushes");
+	}
 }
 
 /* hooks */
@@ -418,6 +460,7 @@ int forbid_inherit(string from, string path, int priv)
 
 /* calls */
 
+/* called differently in 0.59 */
 void upgrade_system()
 {
 	ACCESS_CHECK(VERB());
