@@ -84,6 +84,8 @@ void upgrade_module()
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	set_limits();
+
+	"sys/logd"->flush();
 }
 
 private void booted_channel()

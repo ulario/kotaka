@@ -28,7 +28,7 @@ inherit "~System/lib/struct/list";
 
 mixed **buf;
 
-static void flush()
+void flush()
 {
 	if (!buf) {
 		return;
@@ -76,7 +76,11 @@ void log_message(string sender, string message)
 {
 	ACCESS_CHECK(TEXT());
 
-	write_secret_log(sender, timestamp() + " " + message);
+	if (buf) {
+		list_push_back(buf, ({ sender, timestamp() + " " + message }) );
+	} else {
+		write_secret_log(sender, timestamp() + " " + message);
+	}
 }
 
 int busy()
