@@ -160,7 +160,11 @@ private void append_node(string file, string fragment)
 
 private void write_logfile(string file, string timestamp, string message)
 {
-	write_secret_log(file, timestamp + " " + message);
+	if (buffers || filebuf) {
+		append_node(file, timestamp + " " + message);
+	} else {
+		write_secret_log(file, timestamp + " " + message);
+	}
 }
 
 private void commit_logfile(string base, string message)
