@@ -492,6 +492,7 @@ static void upgrade_system_0_60_upgrade_system_module()
 	rlimits(0; -1) {
 		PATCHD->convert_pflagdb();
 		CATALOGD->purge();
+		LOGD->flush();
 	}
 
 	call_out("upgrade_system_0_60_upgrade_modules", 0);
