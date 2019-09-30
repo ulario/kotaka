@@ -164,6 +164,8 @@ object find_object_by_name(string name)
 	if (map) {
 		return map[parts[sz - 1]];
 	}
+
+	return "catalogd"->lookup_object(name);
 }
 
 string *query_names(string name)
@@ -172,6 +174,7 @@ string *query_names(string name)
 	int sz, i;
 	string *parts;
 	string *keys;
+	string *names;
 
 	map = tree;
 
@@ -215,7 +218,21 @@ string *query_names(string name)
 		}
 	}
 
-	return keys - ({ nil });
+	keys -= ({ nil });
+
+	map = "catalogd"->list_directory(name);
+	names = map_indices(map);
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		if (map[names[sz]] != 1) {
+			names[sz] = nil;
+		}
+	}
+
+	names -= ({ nil });
+	keys += names;
+
+	return keys;
 }
 
 string *query_directories(string name)
@@ -268,5 +285,19 @@ string *query_directories(string name)
 		}
 	}
 
-	return keys - ({ nil });
+	keys -= ({ nil });
+
+	map = "catalogd"->list_directory(name);
+	names = map_indices(map);
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		if (map[names[sz]] != 2) {
+			names[sz] = nil;
+		}
+	}
+
+	names -= ({ nil });
+	keys += names;
+
+	return keys;
 }
