@@ -116,35 +116,27 @@ private void send_module_shutdown_signal(string module)
 
 static void purge_module_tick(string module, varargs int reboot)
 {
-	int ticks;
+	object cursor;
 
-	ticks = status(ST_TICKS);
+	cursor = KERNELD->first_link(module);
 
-	while (status(ST_TICKS) + 200000 > ticks) {
-		object cursor;
+	if (cursor) {
+		TLSD->set_tls_value("System", "destruct_force", cursor);
 
-		cursor = KERNELD->first_link(module);
+		destruct_object(cursor);
 
-		if (cursor) {
-			TLSD->set_tls_value("System", "destruct_force", cursor);
+		call_out("purge_module_tick", 0, module, reboot);
+	} else {
+		modules[module] = nil;
 
-			destruct_object(cursor);
-		} else {
-			modules[module] = nil;
+		LOGD->post_message("system", LOG_NOTICE, "Shut down " + (module ? module : "Ecru"));
 
-			LOGD->post_message("system", LOG_NOTICE, "Shut down " + (module ? module : "Ecru"));
+		thaw_module(module);
 
-			thaw_module(module);
-
-			if (reboot) {
-				call_out("boot_module", 0, module, 1);
-			}
-
-			return;
+		if (reboot) {
+			call_out("boot_module", 0, module, 1);
 		}
 	}
-
-	call_out("purge_module_tick", 0, module, reboot);
 }
 
 static void upgrade_module(string module)
