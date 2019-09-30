@@ -25,8 +25,8 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
-inherit "call_guard";
-inherit "catalog";
+inherit cg "call_guard";
+inherit cat "catalog";
 
 private string name;
 
@@ -440,14 +440,14 @@ void patch_object_name()
 		return;
 	}
 
-	name = ::query_object_name();
+	name = cat::query_object_name();
 
 	if (name) {
 		LOGD->post_message("system", LOG_NOTICE, "Migrating name " + name);
 
 		IDD->add_object_name(name, this_object());
 
-		::set_object_name(nil);
+		cat::set_object_name(nil);
 	}
 }
 

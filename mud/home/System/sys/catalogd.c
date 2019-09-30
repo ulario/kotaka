@@ -29,7 +29,6 @@ object root;
 
 static void create()
 {
-	root = clone_object("../obj/directory");
 }
 
 void validate_name(string name)
@@ -275,5 +274,49 @@ mapping list_directory(string name)
 		return dir->query_entry_value(path[i])->query_key();
 	} else {
 		return root->query_key();
+	}
+}
+
+static void purge_directories(mixed **list)
+{
+	object dir;
+	object *objs;
+	int sz;
+
+	dir = list_front(list);
+	list_pop_front(list);
+
+	objs = map_values(dir->query_map());
+
+	for (sz = sizeof(objs); --sz >= 0; ) {
+		object obj;
+
+		obj = objs[sz];
+
+		if (obj <- "~/obj/directory") {
+			list_push_front(list, obj);
+		} else {
+			obj->patch_object_name();
+		}
+	}
+
+	if (!list_empty(list)) {
+		call_out("purge_directories", 0, list);
+	} else {
+		destruct_object(root);
+	}
+}
+
+/* get rid of the directories once and for all */
+void purge()
+{
+	if (root) {
+		mixed **list;
+
+		list = ({ nil, nil });
+
+		list_push_front(root);
+
+		call_out("purge_directory", 0, list);
 	}
 }

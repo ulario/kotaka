@@ -125,3 +125,10 @@ mapping query_key()
 
 	return key[..];
 }
+
+mapping query_map()
+{
+	ACCESS_CHECK(previous_program() == CATALOGD);
+
+	return map;
+}
