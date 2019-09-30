@@ -460,30 +460,58 @@ int forbid_inherit(string from, string path, int priv)
 
 /* calls */
 
+static void upgrade_system_0_60_recompile_kernel()
+{
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library...");
+
+	destruct_dir("/kernel/lib");
+	compile_dir("/kernel/obj");
+	compile_dir("/kernel/sys");
+
+	call_out("upgrade_system_0_60_recompile_system", 0);
+}
+
+static void upgrade_system_0_60_recompile_system()
+{
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling System module...");
+
+	destruct_dir("lib");
+
+	compile_object(INITD);
+	compile_dir("lwo");
+	compile_dir("obj");
+	compile_dir("sys");
+
+	call_out("upgrade_system_0_60_upgrade_modules", 0);
+}
+
+static void upgrade_system_0_60_upgrade_modules()
+{
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules...");
+
+	MODULED->upgrade_modules();
+}
+
+static void upgrade_system_0_60_rebuild_modules()
+{
+	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules...");
+
+	MODULED->upgrade_purge();
+	MODULED->upgrade_build();
+}
+
 /* called differently in 0.59 */
 void upgrade_system()
 {
 	ACCESS_CHECK(VERB());
 
-	LOGD->post_message("system", LOG_NOTICE, "Upgrading system...");
+	/* check to make sure 0_60 is ready */
+	upgrade_check_0_60();
 
-	LOGD->post_message("system", LOG_NOTICE, "Checking version...");
+	/* check if new version lists us as an upgrade path */
 	upgrade_check_current_version();
 
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library...");
-	destruct_dir("/kernel/lib");
-	compile_dir("/kernel/obj");
-	compile_dir("/kernel/sys");
-
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling System...");
-	destruct_dir("lib");
-	compile_object(INITD);
-
-	compile_dir("lwo");
-	compile_dir("obj");
-	compile_dir("sys");
-
-	call_out("upgrade_system_post_rebuild", 0);
+	call_out("upgrade_system_0_60_recompile_kernel", 0);
 }
 
 void configure_logging()
