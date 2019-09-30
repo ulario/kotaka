@@ -66,3 +66,10 @@ void reboot()
 
 	CHANNELD->restore();
 }
+
+void upgrade_module()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	CHANNELD->flush();
+}

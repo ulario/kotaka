@@ -106,7 +106,7 @@ private void write_node(string channel)
 	}
 }
 
-static void flush()
+void flush()
 {
 	while (buffers && map_sizeof(buffers)) {
 		string *channels;
@@ -426,7 +426,11 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	timestamps = timestamps(mtime);
 
-	write_secret_log(channel, timestamps[0] + " " + message);
+	if (buffers) {
+		append_node(channel, timestamps[0] + " " + message);
+	} else {
+		write_secret_log(channel, timestamps[0] + " " + message);
+	}
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
