@@ -34,7 +34,6 @@ int query_marked(object obj);
 mixed pflagdb;
 mixed **patch_queue; /* ({ obj }) */
 mixed **sweep_queue; /* ({ path, master_index, clone_index }) */
-int processing;
 
 private void convert_pflagdb()
 {
@@ -167,15 +166,7 @@ static void process()
 		if (list_empty(sweep_queue)) {
 			sweep_queue = nil;
 		}
-
 	}
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	convert_pflagdb();
 }
 
 void mark_patch(string path, varargs int clear)
