@@ -482,6 +482,18 @@ static void upgrade_system_0_60_recompile_system()
 	compile_dir("obj");
 	compile_dir("sys");
 
+	call_out("upgrade_system_0_60_upgrade_system_module", 0);
+}
+
+static void upgrade_system_0_60_upgrade_system_module()
+{
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module...");
+
+	rlimits(0; -1) {
+		PATCHD->convert_pflagdb();
+		CATALOGD->purge();
+	}
+
 	call_out("upgrade_system_0_60_upgrade_modules", 0);
 }
 
