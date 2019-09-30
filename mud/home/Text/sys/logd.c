@@ -78,3 +78,10 @@ void log_message(string sender, string message)
 
 	write_secret_log(sender, timestamp() + " " + message);
 }
+
+int busy()
+{
+	if (buf) {
+		return 1;
+	}
+}

@@ -100,6 +100,10 @@ private void write_node(string channel)
 	if (list_empty(list)) {
 		buffers[channel] = nil;
 	}
+
+	if (!map_sizeof(buffers)) {
+		buffers = nil;
+	}
 }
 
 static void flush()
@@ -457,4 +461,13 @@ void configure_channels()
 			add_channel(channels[sz]);
 		}
 	}
+}
+
+int busy()
+{
+	if (buffers) {
+		return 1;
+	}
+
+	return ::busy();
 }

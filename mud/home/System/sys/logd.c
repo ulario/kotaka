@@ -478,3 +478,14 @@ void post_message(string facility, int priority, string message)
 		DRIVER->message("Error logging: " + creator + ": " + facility + ": " + message + "\n");
 	}
 }
+
+int busy()
+{
+	if (filebuf || map_sizeof(buffers)) {
+		return 1;
+	}
+
+	if (::busy()) {
+		return 1;
+	}
+}
