@@ -540,7 +540,7 @@ void upgrade_build()
 				if (initd = initd_of(module)) {
 					initd->upgrade_build();
 				} else {
-					awol_shutdown(module);
+					call_out("shutdown_module", 0, module);
 				}
 			}
 		}
