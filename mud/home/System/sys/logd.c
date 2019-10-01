@@ -210,32 +210,36 @@ private void write_node(string base)
 
 void flush()
 {
-	string *files;
-	int sz;
-
 	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
 
-	rlimits (0; -1) {
-		while (buffers) {
-			files = map_indices(buffers);
+	if (buffers) {
+		string *files;
+		int sz;
 
-			sz = sizeof(files);
+		files = map_indices(buffers);
+		sz = sizeof(files);
 
-			write_node(files[random(sz)]);
+		write_node(files[random(sz)]);
+
+		call_out_unique("flush", 0);
+
+		return;
+	}
+
+	if (filebuf) {
+		string file, message;
+
+		if (list_empty(filebuf)) {
+			filebuf = nil;
+
+			return;
 		}
 
-		while (filebuf) {
-			string file, message;
+		({ file, message }) = list_front(filebuf);
+		list_pop_front(filebuf);
+		commit_logfile(file, message);
 
-			if (list_empty(filebuf)) {
-				filebuf = nil;
-				break;
-			}
-
-			({ file, message }) = list_front(filebuf);
-			list_pop_front(filebuf);
-			commit_logfile(file, message);
-		}
+		call_out_unique("flush", 0);
 	}
 }
 

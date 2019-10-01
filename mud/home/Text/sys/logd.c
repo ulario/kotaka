@@ -42,7 +42,7 @@ void flush()
 		string msg;
 		mixed *info;
 
-		call_out("flush", 0);
+		call_out_unique("flush", 0);
 
 		({ file, msg }) = list_front(buf);
 		list_pop_front(buf);
