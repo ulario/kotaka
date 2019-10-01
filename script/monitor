@@ -7,6 +7,7 @@
 
 function sigint
 {
+	# this probably means we were probably started from the command line
 	echo "+++ Monitor received SIGINT, killing DGD +++"
 	trap - SIGINT
 	kill -KILL $DGDPID # DGD ignores SIGINT
