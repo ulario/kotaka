@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -86,8 +86,13 @@ private void send_module_boot_signal(string module)
 		}
 
 		catch {
-			find_object(initd_of(others[sz]))
-			->booted_module(module);
+			object initd;
+
+			if (initd = find_object(initd_of(others[sz]))) {
+				initd->booted_module(module);
+			} else {
+				call_out("shutdown_module", 0, module);
+			}
 		}
 	}
 }
@@ -108,8 +113,13 @@ private void send_module_shutdown_signal(string module)
 		}
 
 		catch {
-			find_object(initd_of(others[sz]))
-			->shutdown_module(module);
+			object initd;
+
+			if (initd = find_object(initd_of(others[sz]))) {
+				initd->shutdown_module(module);
+			} else {
+				call_out("shutdown_module", 0, module);
+			}
 		}
 	}
 }
@@ -147,7 +157,13 @@ static void upgrade_module(string module)
 
 	rlimits(0; -1) {
 		rlimits(0; MODULE_BOOT_TICKS) {
-			initd_of(module)->upgrade_module();
+			object initd;
+
+			if (initd = find_object(initd_of(module))) {
+				initd->upgrade_module();
+			} else {
+				call_out("shutdown_module", 0, module);
+			}
 		}
 	}
 }
@@ -192,7 +208,13 @@ void prepare_reboot()
 		}
 
 		catch {
-			initd_of(module)->prepare_reboot();
+			object initd;
+
+			if (initd = find_object(initd_of(module))) {
+				initd->prepare_reboot();
+			} else {
+				call_out("shutdown_module", 0, module);
+			}
 		}
 	}
 }
@@ -218,7 +240,13 @@ void reboot()
 		}
 
 		catch {
-			initd_of(module)->reboot();
+			object initd;
+
+			if (initd = find_object(initd_of(module))) {
+				initd->reboot();
+			} else {
+				call_out("shutdown_module", 0, module);
+			}
 		}
 	}
 }
@@ -244,7 +272,48 @@ void hotboot()
 		}
 
 		catch {
-			initd_of(module)->hotboot();
+			object initd;
+
+			if (initd = find_object(initd_of(module))) {
+				initd->hotboot();
+			} else {
+				call_out("shutdown_module", 0, module);
+			}
+		}
+	}
+}
+
+void upgrade_check_modules()
+{
+	int sz;
+	string *list;
+
+	ACCESS_CHECK(SYSTEM());
+
+	list = map_indices(modules);
+	list -= ({ "System" });
+
+	scramble(list);
+
+	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+		string module;
+
+		module = list[sz];
+
+		if (modules[module] == -1) {
+			error("Cannot upgrade system with module pending shutdown");
+		}
+
+		rlimits(0; -1) {
+			rlimits(0; 100000) {
+				object initd;
+
+				if (initd = find_object(initd_of(module))) {
+					initd->upgrade_check();
+				} else {
+					call_out("shutdown_module", 0, module);
+				}
+			}
 		}
 	}
 }
@@ -261,23 +330,28 @@ void upgrade_modules()
 
 	scramble(list);
 
-	rlimits(0; -1) {
-		for (sz = sizeof(list) - 1; sz >= 0; --sz) {
-			string module;
+	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+		string module;
 
-			module = list[sz];
+		module = list[sz];
 
-			if (modules[module] == -1) {
-				continue;
-			}
+		if (modules[module] == -1) {
+			error("Cannot upgrade system with module pending shutdown");
+		}
 
-			rlimits(0; 100000) {
-				if (!file_info(initd_of(module) + ".c")) {
-					LOGD->post_message("debug", LOG_DEBUG, "Initd missing for module " + module + ", shutting down");
+		rlimits(0; -1) {
+			rlimits(0; MODULE_BOOT_TICKS) {
+				string initd;
+
+				initd = initd_of(module);
+
+				/* if this is an upgrade it may be a new module, compile it */
+				if (!file_info(initd + ".c")) {
+					/* loaded module with source removed, shut it down */
 					call_out("shutdown_module", 0, module);
 				} else {
 					catch {
-						compile_object(initd_of(module));
+						compile_object(initd);
 
 						call_out("upgrade_module", 0, module);
 					}
@@ -461,7 +535,13 @@ void upgrade_build()
 			}
 
 			rlimits(0; MODULE_BOOT_TICKS) {
-				initd_of(module)->upgrade_build();
+				object initd;
+
+				if (initd = initd_of(module)) {
+					initd->upgrade_build();
+				} else {
+					awol_shutdown(module);
+				}
 			}
 		}
 	}

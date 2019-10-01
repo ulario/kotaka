@@ -335,6 +335,8 @@ private void upgrade_check_0_60()
 	if (LOGD->busy() || CHANNELD->busy() || "~Text/sys/logd"->busy()) {
 		error("Cannot upgrade, pending log flushes");
 	}
+
+	MODULED->upgrade_check();
 }
 
 /* hooks */
