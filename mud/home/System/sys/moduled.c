@@ -537,7 +537,7 @@ void upgrade_build()
 			rlimits(0; MODULE_BOOT_TICKS) {
 				object initd;
 
-				if (initd = initd_of(module)) {
+				if (initd = find_object(initd_of(module))) {
 					initd->upgrade_build();
 				} else {
 					call_out("shutdown_module", 0, module);
