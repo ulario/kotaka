@@ -179,6 +179,8 @@ private void check_versions()
 	if (minor == 3 && patch < 4) {
 		error("Kernel library patch version " + major + "." + minor + "." + patch + " too low for this version of kotaka");
 	}
+
+	DRIVER->message("Kotaka version: " + KOTAKA_VERSION + "\n");
 }
 
 private void set_version()
