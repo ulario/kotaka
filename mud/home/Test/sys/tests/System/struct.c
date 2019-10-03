@@ -77,11 +77,7 @@ static void test()
 
 	LOGD->post_message("debug", LOG_DEBUG, "Testing mapping...");
 
-	remove_file("dump");
-
 	map = test_mapping_1();
-
-	write_file("dump", hybrid_sprint(map->query_root(), 0, nil, 1) + "\n\n");
 
 	count = 1;
 
@@ -111,8 +107,6 @@ static void test()
 
 	LOGD->post_message("debug", LOG_DEBUG, "Tested mapping");
 	LOGD->post_message("system", LOG_NOTICE, "Big mapping benchmark, " + (int)((float)count / diff) + " ops/sec");
-
-	write_file("dump", hybrid_sprint(map->query_root(), 0, nil, 1) + "\n\n");
 }
 
 void schedule_test()
