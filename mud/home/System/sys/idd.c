@@ -242,6 +242,7 @@ string *query_directories(string name)
 	int sz, i;
 	string *parts;
 	string *keys;
+	string *names;
 
 	map = tree;
 

@@ -73,6 +73,10 @@ void add_object(string name, object obj)
 
 	ACCESS_CHECK(SYSTEM());
 
+	if (!root) {
+		error("CatalogD disabled");
+	}
+
 	if (obj <- "../obj/directory") {
 		error("Reserved object type");
 	}
@@ -111,6 +115,10 @@ void remove_object(string name)
 	int i;
 
 	ACCESS_CHECK(SYSTEM());
+
+	if (!root) {
+		error("CatalogD disabled");
+	}
 
 	path = explode(name, ":");
 
@@ -162,6 +170,10 @@ object lookup_object(string name)
 	int sz;
 	int i;
 
+	if (!root) {
+		return nil;
+	}
+
 	if (!name) {
 		error("Invalid object name");
 	}
@@ -210,6 +222,10 @@ int test_name(string name)
 	int sz;
 	int i;
 
+	if (!root) {
+		return 0;
+	}
+
 	if (name) {
 		path = explode(name, ":");
 
@@ -244,6 +260,10 @@ mapping list_directory(string name)
 	string *path;
 	int sz;
 	int i;
+
+	if (!root) {
+		return ([ ]);
+	}
 
 	if (name) {
 		path = explode(name, ":");
@@ -286,17 +306,19 @@ static void purge_directories(mixed **list)
 	dir = list_front(list);
 	list_pop_front(list);
 
-	objs = map_values(dir->query_map());
+	if (dir) {
+		objs = map_values(dir->query_map());
 
-	for (sz = sizeof(objs); --sz >= 0; ) {
-		object obj;
+		for (sz = sizeof(objs); --sz >= 0; ) {
+			object obj;
 
-		obj = objs[sz];
+			obj = objs[sz];
 
-		if (obj <- "~/obj/directory") {
-			list_push_front(list, obj);
-		} else {
-			obj->patch_object_name();
+			if (obj <- "~/obj/directory") {
+				list_push_front(list, obj);
+			} else {
+				obj->patch_object_name();
+			}
 		}
 	}
 
@@ -315,7 +337,7 @@ void purge()
 
 		list = ({ nil, nil });
 
-		list_push_front(root);
+		list_push_front(list, root);
 
 		call_out("purge_directory", 0, list);
 	}
