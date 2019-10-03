@@ -24,8 +24,6 @@
 #include <type.h>
 #include <status.h>
 
-inherit "/lib/string/sprint";
-
 private object test_mapping_1()
 {
 	mapping arr;
@@ -62,13 +60,7 @@ private object test_mapping_2(int count)
 
 		map->set_element(a, b);
 
-		catch {
-			ASSERT(map->query_element(a) == b);
-		} : {
-			remove_file("crash");
-			write_file("crash", hybrid_sprint(map->query_root(), 0, nil, 1));
-			INITD->abort("Test failed trying to insert " + b + " at " + a);
-		}
+		ASSERT(map->query_element(a) == b);
 	}
 
 	return map;
