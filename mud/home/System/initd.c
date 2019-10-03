@@ -215,7 +215,7 @@ private void upgrade_check_current_version_0_60()
 		}
 	}
 
-	error("Inconsistent versioning, please revert your snapshot to a pre 0.60 version and redo your upgrade");
+	error("Inconsistent versioning, cannot find " + KOTAKA_VERSION + ", please revert your snapshot to a pre 0.60 version and redo your upgrade");
 }
 
 private void upgrade_check_current_version()
