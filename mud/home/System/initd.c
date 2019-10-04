@@ -489,6 +489,8 @@ static void upgrade_system_0_60_upgrade_modules()
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules...");
 
 	MODULED->upgrade_modules();
+
+	call_out("upgrade_system_0_60_rebuild_modules", 0);
 }
 
 static void upgrade_system_0_60_rebuild_modules()
