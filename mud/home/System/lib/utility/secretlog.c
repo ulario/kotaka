@@ -162,5 +162,5 @@ static void write_secret_log(string file, string message)
 
 static int busy()
 {
-	return !!map_sizeof(queues);
+	return queues && !!map_sizeof(queues);
 }

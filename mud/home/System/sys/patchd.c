@@ -302,3 +302,8 @@ void reset()
 	patch_queue = nil;
 	sweep_queue = nil;
 }
+
+int busy()
+{
+	return patch_queue || sweep_queue;
+}

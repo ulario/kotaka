@@ -489,7 +489,11 @@ void post_message(string facility, int priority, string message)
 
 int busy()
 {
-	if (filebuf || map_sizeof(buffers)) {
+	if (filebuf) {
+		return 1;
+	}
+
+	if (buffers && !!map_sizeof(buffers)) {
 		return 1;
 	}
 
