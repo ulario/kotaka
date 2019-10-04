@@ -119,7 +119,11 @@ void flush()
 		write_node(channels[random(sz)]);
 
 		call_out_unique("flush", 0);
+
+		return;
 	}
+
+	LOGD->post_message("system", LOG_NOTICE, "ChannelD flush complete");
 }
 
 void upgrade()
