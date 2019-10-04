@@ -290,36 +290,19 @@ static void do_upgrade_rebuild()
 /* also intercepts callout from v0.59 */
 static void upgrade_system_post_recompile()
 {
-	call_out("upgrade_system_intercept_0_59", 0);
-}
+	LOGD->post_message("system", LOG_NOTICE, "Intercepted callout from 0.59");
 
-/* more specific call */
-static void upgrade_system_intercept_0_59()
-{
-	/* check to make sure we're actually sane */
-	/* warn the user if there's a mistake */
 	upgrade_check_current_version_0_60();
 
-	/* recompile kernel library */
+	LOGD->post_message("system", LOG_NOTICE, "Intercept: Recompiling InitD");
+
 	destruct_dir("/kernel/lib");
-	compile_dir("/kernel/obj");
-	compile_dir("/kernel/sys");
-
-	/* recompile System */
 	destruct_dir("lib");
-	compile_dir("lwo");
-	compile_dir("obj");
-	compile_dir("sys");
+	compile_object("initd");
 
-	call_out("upgrade_system_intercept_0_59_post_recompile", 0);
-}
+	LOGD->post_message("system", LOG_NOTICE, "Intercept: Transferring to 0.60 upgrade chain");
 
-static void upgrade_system_intercept_0_59_post_recompile()
-{
-	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules...");
-	MODULED->upgrade_modules();
-
-	call_out("do_upgrade_rebuild", 0);
+	call_out("upgrade_system_0_60_recompile_kernel", 0);
 }
 
 /* v0.60 upgrade checks */
