@@ -320,7 +320,7 @@ private void upgrade_check_0_60()
 		error("Cannot upgrade, pending log flushes");
 	}
 
-	MODULED->upgrade_check();
+	MODULED->upgrade_check_modules();
 }
 
 /* hooks */
