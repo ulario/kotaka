@@ -280,6 +280,7 @@ static void ready()
 static void do_upgrade_rebuild()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules...");
+
 	MODULED->upgrade_purge();
 	MODULED->upgrade_build();
 }

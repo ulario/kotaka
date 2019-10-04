@@ -85,6 +85,13 @@ void upgrade_module()
 
 	set_limits();
 
+	compile_object("sys/logd");
+
+	call_out("upgrade_module_post_recompile", 0);
+}
+
+static void upgrade_module_post_recompile()
+{
 	"sys/logd"->flush();
 }
 
