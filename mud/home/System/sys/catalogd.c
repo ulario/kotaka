@@ -339,6 +339,6 @@ void purge()
 
 		list_push_front(list, root);
 
-		call_out("purge_directory", 0, list);
+		call_out("purge_directories", 0, list);
 	}
 }
