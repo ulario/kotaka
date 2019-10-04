@@ -85,7 +85,10 @@ void upgrade_module()
 
 	set_limits();
 
-	compile_object("sys/logd");
+	destruct_dir("lib");
+	compile_dir("lwo");
+	compile_dir("obj");
+	compile_dir("sys");
 
 	call_out("upgrade_module_post_recompile", 0);
 }

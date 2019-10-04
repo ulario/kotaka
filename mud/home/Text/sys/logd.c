@@ -36,6 +36,9 @@ void flush()
 
 	if (list_empty(buf)) {
 		buf = nil;
+
+		LOGD->post_message("system", LOG_NOTICE, "Text LogD flush completed");
+
 		return;
 	} else {
 		string file;
