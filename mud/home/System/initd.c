@@ -506,11 +506,11 @@ void upgrade_system()
 {
 	ACCESS_CHECK(VERB());
 
-	/* check to make sure 0_60 is ready */
-	upgrade_check_0_60();
-
 	/* check if new version lists us as an upgrade path */
 	upgrade_check_current_version();
+
+	/* check to make sure 0_60 is ready */
+	upgrade_check_0_60();
 
 	call_out("upgrade_system_0_60_recompile_kernel", 0);
 }
