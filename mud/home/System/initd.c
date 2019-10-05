@@ -306,7 +306,8 @@ static void upgrade_system_post_recompile()
 }
 
 /* v0.60 upgrade checks */
-private void upgrade_check_0_60()
+/* called prior to recompile and upgrade for 0.61 */
+private void upgrade_check_0_60_ready()
 {
 	/* when we upgrade FROM 0.60 in 0.61, make sure these are taken care of first */
 
@@ -510,7 +511,7 @@ void upgrade_system()
 	upgrade_check_current_version();
 
 	/* check to make sure 0_60 is ready */
-	upgrade_check_0_60();
+	upgrade_check_0_60_ready();
 
 	call_out("upgrade_system_0_60_recompile_kernel", 0);
 }
