@@ -147,6 +147,13 @@ static void purge_orphans(string module)
 	}
 }
 
+/* pre-compilation, check current module to see if it's ready to be upgraded */
+void upgrade_check()
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+}
+
+/* destruct libs and removed objects */
 void upgrade_purge()
 {
 	string module;
@@ -162,6 +169,7 @@ void upgrade_purge()
 	purge_dir(USR_DIR + "/" + module);
 }
 
+/* compile everything */
 void upgrade_build()
 {
 	string module;

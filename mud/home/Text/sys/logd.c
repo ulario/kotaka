@@ -30,11 +30,7 @@ mixed **buf;
 
 void flush()
 {
-	if (!buf) {
-		return;
-	}
-
-	if (list_empty(buf)) {
+	if (!buf || list_empty(buf)) {
 		buf = nil;
 
 		LOGD->post_message("system", LOG_NOTICE, "Text LogD flush completed");
@@ -91,4 +87,6 @@ int busy()
 	if (buf) {
 		return 1;
 	}
+
+	return ::busy();
 }
