@@ -76,8 +76,8 @@ void load(mapping data)
 	set_density(data["density"]);
 	set_flexible(data["flexible"]);
 	set_id(data["id"]);
-	rearrange_inventory(data["inventory"]);
 	set_mass(data["mass"]);
 	set_max_mass(data["max_mass"]);
+	set_object_name(data["name"]);
 	set_local_properties(data["properties"]);
 }
