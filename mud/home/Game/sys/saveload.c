@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,29 +28,21 @@
 #include <status.h>
 #include <type.h>
 
+/* terms: */
+/* object index: the object's index in the otable */
+/* object number: the number assigned to the object's save file */
+
 inherit "~System/lib/struct/list";
 inherit "/lib/string/sprint";
 
-#define FANOUT 100
+object oi2on; /* ([ oindex : onum ]) */
+object on2ob; /* ([ onum : obj ]) */
+object on2op; /* ([ onum : path ]) */
+object on2oi; /* ([ onum : inv ]) */
 
-object oindex2onum; /* ([ oindex: idnum ]) */
-object objlist;	/* ({ idnum: obj, data }) */
+/* general helpers */
 
-private void purge_object(object obj, mixed **list)
-{
-	object *inv;
-	int sz;
-
-	inv = obj->query_inventory();
-
-	for (sz = sizeof(inv); --sz >= 0; ) {
-		list_push_front(list, inv[sz]);
-	}
-
-	destruct_object(obj);
-}
-
-private void purge_object_directory(string dir, mixed **list)
+private void list_enqueue_directory(mixed **list, varargs string dir)
 {
 	string *names;
 	string *directories;
@@ -59,352 +51,414 @@ private void purge_object_directory(string dir, mixed **list)
 	directories = IDD->query_directories(dir);
 	names = IDD->query_names(dir);
 
-	if (!directories) {
-		return;
-	}
-
 	for (sz = sizeof(directories); --sz >= 0; ) {
-		if (dir) {
-			list_push_back(list, dir + ":" + directories[sz]);
-		} else {
-			list_push_back(list, directories[sz]);
-		}
+		list_push_back(list, (dir ? dir + ":": "") + directories[sz]);
 	}
 
 	for (sz = sizeof(names); --sz >= 0; ) {
-		if (dir) {
-			list_push_back(list, IDD->find_object_by_name(dir + ":" + names[sz]));
-		} else {
-			list_push_back(list, IDD->find_object_by_name(names[sz]));
-		}
+		list_push_back(list, IDD->find_object_by_name((dir ? dir + ":": "") + names[sz]));
 	}
 }
 
-static void load_world_purge(mixed **list)
+/* load helpers */
+
+private void enqueue_save_directory(mixed **list, varargs string dir)
 {
-	catch {
-		int done;
-		mixed data;
+	string *names;
+	int sz;
+
+	names = CONFIGD->get_dir("save/" + (dir ? dir + "/" : "") + "*")[0];
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		list_push_front(list, (dir ? dir + "/" : "") + names[sz]);
+	}
+}
+
+static void load_purge_tick(mixed **list)
+{
+	mixed head;
+
+	head = list_front(list);
+	list_pop_front(list);
+
+	switch(typeof(head)) {
+	case T_NIL:
+		/* most likely an enqueued object got destructed before we hit it */
+		break;
+
+	case T_OBJECT:
+		{
+			object *inv;
+			int sz;
+
+			inv = head->query_inventory();
+
+			for (sz = sizeof(inv); --sz >= 0; ) {
+				list_push_front(list, inv[sz]);
+			}
+		}
+		destruct_object(head);
+		break;
+
+	case T_STRING:
+		/* directory */
+		list_enqueue_directory(list, head);
+	}
+
+	if (list_empty(list)) {
+		mixed *info;
+
+		info = CONFIGD->file_info("save");
+
+		if (!info) {
+			error("No save folder");
+		}
+
+		if (info[0] != -2) {
+			error("Corrupt save file");
+		}
+
+		enqueue_save_directory(list);
 
 		if (!list_empty(list)) {
-			data = list_front(list);
-			list_pop_front(list);
+			on2ob = new_object("~System/lwo/struct/sparse_array");
+			on2op = new_object("~System/lwo/struct/sparse_array");
 
-			switch(typeof(data)) {
-			case T_STRING:
-				purge_object_directory(data, list);
-				break;
-
-			case T_OBJECT:
-				purge_object(data, list);
-				break;
-
-			case T_NIL:
-				/* object already destructed */
-				break;
-			}
+			call_out("load_scan_tick", 0, list, -1);
 		} else {
-			done = 1;
+			error("Nothing to load");
 		}
-
-		if (done) {
-			call_out("load_world_spawn", 0, 0);
-		} else {
-			call_out("load_world_purge", 0, list);
-		}
-	} : {
-		LOGD->post_message("system", LOG_INFO, "World load aborted");
+	} else {
+		call_out("load_purge_tick", 0, list);
 	}
 }
 
-private void spawn_object(int i, string data)
+static void load_scan_tick(mixed **list, int top)
+{
+	string path;
+	mixed *info;
+
+	path = list_front(list);
+	list_pop_front(list);
+
+	info = CONFIGD->file_info("save/" + path);
+
+	if (!info) {
+		error("Path not found");
+	}
+
+	if (info[0] == -2) {
+		enqueue_save_directory(list, path);
+	} else {
+		int pos;
+		int on;
+		string opath;
+		object obj;
+
+		pos = strlen(path) - 1;
+		opath = path;
+
+		while (pos >= 0) {
+			if (path[pos] == '/') {
+				path = path[pos + 1 ..];
+				break;
+			}
+
+			pos--;
+		}
+
+		sscanf(path, "%d.obj", on);
+
+		on2ob->set_element(on, 1);
+		on2op->set_element(on, opath);
+
+		if (on > top) {
+			top = on;
+		}
+	}
+
+	if (list_empty(list)) {
+		oi2on = new_object("~System/lwo/struct/sparse_array");
+
+		call_out("load_spawn_tick", 0, top, top);
+	} else {
+		call_out("load_scan_tick", 0, list, top);
+	}
+}
+
+static void load_spawn_tick(int cur, int top)
+{
+	if (on2ob->query_element(cur)) {
+		object obj;
+		int oi;
+
+		obj = clone_object("~/obj/thing");
+
+		sscanf(object_name(obj), "%*s#%d", oi);
+
+		on2ob->set_element(cur, obj);
+		oi2on->set_element(oi, cur);
+	}
+
+	if (cur) {
+		call_out("load_spawn_tick", 0, cur - 1, top);
+	} else {
+		on2oi = new_object("~System/lwo/struct/sparse_array");
+
+		call_out("load_read_tick", 0, top, top);
+	}
+}
+
+static void load_read_tick(int cur, int top)
 {
 	object obj;
-	int j;
 
-	obj = GAME_INITD->create_thing();
-	sscanf(object_name(obj), "%*s#%d", j);
+	obj = on2ob->query_element(cur);
 
-	oindex2onum->set_element(j, i);
-	objlist->push_back( ({ obj, data }) );
-}
+	if (obj) {
+		string save;
+		mapping map;
 
-static void load_world_spawn(int i)
-{
-	catch {
-		int done;
-		string data;
+		save = CONFIGD->read_file("save/" + on2op->query_element(cur));
 
-		if (CONFIGD->file_info("save/" + i + ".obj")) {
-			data = CONFIGD->read_file("save/" + i + ".obj");
-		} else if (CONFIGD->file_info("save/" + (i - i % FANOUT) + "/" + i + ".obj")) {
-			data = CONFIGD->read_file("save/" + (i - i % FANOUT) + "/" + i + ".obj");
-		} else if (i > 10) {
-			call_out("load_world_name", 0, i);
-			return;
-		}
+		map = PARSER_VALUE->parse(save);
 
-		if (data) {
-			spawn_object(i, data);
-		}
+		on2oi->set_element(cur, map["inventory"]);
 
-		i++;
+		/* inventory will be set after everything is loaded */
+		map["inventory"] = nil;
 
-		call_out("load_world_spawn", 0, i);
-	} : {
-		LOGD->post_message("system", LOG_INFO, "World load aborted");
+		obj->load(map);
+	}
+
+	if (cur) {
+		call_out("load_read_tick", 0, cur - 1, top);
+	} else {
+		oi2on = nil;
+		on2op = nil;
+
+		call_out("load_move_tick", 0, top);
 	}
 }
 
-static void load_world_name(int i)
+static void load_move_tick(int cur)
 {
-	catch {
-		if (i > 0) {
-			object obj;
-			mixed *arr;
-			mixed data;
+	object obj, *inv;
 
-			({ obj, data }) = objlist->query_element(i - 1);
+	obj = on2ob->query_element(cur);
+	inv = on2oi->query_element(cur);
 
-			data = PARSER_VALUE->parse(data);
-
-			obj->move(data["environment"]);
-			data["environment"] = nil;
-
-			obj->set_object_name(data["name"]);
-			data["name"] = nil;
-
-			objlist->set_element(i - 1, ({ obj, data }) );
-
-			i--;
-
-			call_out("load_world_name", 0, i);
-		} else {
-			call_out("load_world_set", 0, objlist->query_size() - 1);
-		}
-	} : {
-		LOGD->post_message("system", LOG_INFO, "World load aborted parsing data for object " + i);
-	}
-}
-
-static void load_world_set(int i)
-{
-	catch {
-		if (i > 0) {
-			object obj;
-			mixed data;
-
-			({ obj, data }) = objlist->query_element(i - 1);
-
-			obj->load(data);
-			i--;
-
-			call_out("load_world_set", 0, i);
-		} else {
-			LOGD->post_message("system", LOG_INFO, "World loaded");
-		}
-	} : {
-		LOGD->post_message("system", LOG_INFO, "World load aborted loading data for object " + i);
-	}
-}
-
-private void purge_directory(string dir)
-{
-	string *names;
-
-	LOGD->post_message("system", LOG_NOTICE, "Purging directory " + dir);
-
-	// loop in case of overflow
-	do {
-		mixed **arr;
-		int *sizes;
+	if (obj && inv) {
 		int sz;
 
-		arr = CONFIGD->get_dir(dir + "/*");
-
-		if (!arr) {
-			return;
+		/* newly inserted objects are put at the front */
+		/* just insert from back to front */
+		for (sz = sizeof(inv); --sz >= 0; ) {
+			inv[sz]->move(obj);
 		}
+	}
 
-		names = arr[0];
-		sizes = arr[1];
+	if (cur) {
+		call_out("load_move_tick", 0, cur - 1);
+	} else {
+		LOGD->post_message("debug", LOG_NOTICE, "World load complete");
 
-		// loop in case of overflow
-		LOGD->post_message("system", LOG_NOTICE, "There are " + sizeof(names) + " entries");
-
-		for (sz = sizeof(names); --sz >= 0; ) {
-			if (sizes[sz] == -2) {
-				purge_directory(dir + "/" + names[sz]);
-			} else {
-				LOGD->post_message("system", LOG_NOTICE, "Removing file " + names[sz]);
-				CONFIGD->remove_file(dir + "/" + names[sz]);
-			}
-		}
-	} while (names && sizeof(names));
-
-	CONFIGD->remove_dir(dir);
+		on2ob = nil;
+		on2oi = nil;
+	}
 }
 
-private void put_object(object obj, mixed **list)
+/* scan for objects to save and generate their onums */
+static void save_scan_tick(mixed **list, int on)
 {
-	object *inv;
-	int oindex;
-	int sz;
+	mixed head;
+	int oi;
+	mixed val;
 
-	ASSERT(sscanf(object_name(obj), "%*s#%d", oindex));
+	head = list_front(list);
+	list_pop_front(list);
 
-	if (oindex2onum->query_element(oindex) != nil) {
+	switch(typeof(head)) {
+	case T_NIL:
+		error("Object destructed during scan");
+
+	case T_STRING:
+		list_enqueue_directory(list, head);
+		break;
+
+	case T_OBJECT:
+		if (!sscanf(object_name(head), "%*s#%d", oi)) {
+			error("Tried to scan a master object");
+		}
+
+		val = oi2on->query_element(oi);
+
+		if (val == nil) {
+			/* new object, register it and add its inventory to the list */
+			object *inv;
+			int sz;
+
+			/* register new onum to oindex */
+			oi2on->set_element(oi, on);
+			on2ob->set_element(on, head);
+
+			on++;
+
+			inv = head->query_inventory();
+
+			for (sz = sizeof(inv); --sz >= 0; ) {
+				list_push_front(list, inv[sz]);
+			}
+		}
+		break;
+
+	default:
+		error("Bad type in scan queue");
+	}
+
+	if (list_empty(list)) {
+		call_out("save_write_tick", 0, on - 1);
+	} else {
+		call_out("save_scan_tick", 0, list, on);
+	}
+}
+
+/* write objects to disk */
+static void save_write_tick(int on)
+{
+	object obj;
+	mapping map;
+	string save;
+
+	obj = on2ob->query_element(on);
+
+	if (obj) {
+		map = obj->save();
+
+		save = hybrid_sprint(map);
+
+		CONFIGD->write_file("save-tmp/" + on + ".obj", save);
+	}
+
+	if (on) {
+		call_out("save_write_tick", 0, on - 1);
+	} else {
+		call_out("save_post_tick", 0);
+	}
+}
+
+/* finalize save */
+static void save_post_tick()
+{
+	mixed *info;
+
+	/* current save?  move it to old */
+	/*   old already exists?  delete it */
+	info = CONFIGD->file_info("save-old");
+
+	if (info) {
+		if (info[0] == -2) {
+			call_out("save_purgedir_tick", 0, ({ nil, nil }), "save-old");
+			return;
+		} else {
+			/* corrupt */
+			CONFIGD->remove_file("save");
+		}
+	}
+
+	CONFIGD->rename_file("save", "save-old");
+	CONFIGD->rename_file("save-tmp", "save");
+
+	oi2on = nil;
+	on2ob = nil;
+
+	LOGD->post_message("debug", LOG_NOTICE, "World save complete");
+}
+
+/* purge folder */
+static void save_purgedir_tick(mixed **list, string dir)
+{
+	string path;
+	int size;
+
+	if (list_empty(list)) {
+		mixed *info;
+
+		info = CONFIGD->file_info(dir);
+
+		if (info) {
+			if (info[0] == -2) {
+				string *names;
+				int sz;
+
+				names = CONFIGD->get_dir(dir + "/*")[0];
+
+				for (sz = sizeof(names); --sz >= 0; ) {
+					list_push_front(list, names[sz]);
+				}
+
+				if (!list_empty(list)) {
+					call_out("save_purgedir_tick", 0, list, dir);
+					return;
+				}
+
+				CONFIGD->remove_dir(dir);
+			} else {
+				CONFIGD->remove_file(dir);
+			}
+		}
+
+		switch(dir) {
+		case "save-tmp":
+			/* we were wiping the temp dir */
+			list = ({ nil, nil });
+			oi2on = new_object("~System/lwo/struct/sparse_array");
+			on2ob = new_object("~System/lwo/struct/sparse_array");
+			list_enqueue_directory(list);
+			CONFIGD->make_dir("save-tmp");
+			call_out("save_scan_tick", 0, list, 0);
+			break;
+
+		case "save-old":
+			/* we were wiping the archive */
+			call_out("save_post_tick", 0);
+		}
+
 		return;
 	}
 
-	sz = objlist->query_size();
-	oindex2onum->set_element(oindex, sz + 1);
-	objlist->push_back( ({ obj, obj->save() }) );
+	path = list_front(list);
+	list_pop_front(list);
 
-	inv = obj->query_inventory();
+	size = CONFIGD->file_info(dir + "/" + path)[0];
 
-	for (sz = sizeof(inv); --sz >= 0; ) {
-		list_push_front(list, inv[sz]);
+	if (size == -2) {
+		string *names;
+		int sz;
+
+		names = CONFIGD->get_dir(dir + "/" + path + "/*")[0];
+
+		for (sz = sizeof(names); --sz >= 0; ) {
+			list_push_front(list, path + "/" + names[sz]);
+		}
+	} else {
+		CONFIGD->remove_file(dir + "/" + path);
 	}
+
+	call_out("save_purgedir_tick", 0, list, dir);
 }
 
-private void put_object_directory(string dir, mixed **list)
-{
-	string *directories;
-	string *names;
-	int sz;
-
-	directories = IDD->query_directories(dir);
-	names = IDD->query_names(dir);
-
-	for (sz = sizeof(directories); --sz >= 0; ) {
-		if (dir) {
-			list_push_front(list, dir + ":" + directories[sz]);
-		} else {
-			list_push_front(list, directories[sz]);
-		}
-	}
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		if (dir) {
-			list_push_front(list, IDD->find_object_by_name(dir + ":" + names[sz]));
-		} else {
-			list_push_front(list, IDD->find_object_by_name(names[sz]));
-		}
-	}
-}
-
-private void prepare_save_dirs(int n)
-{
-	int i;
-
-	for (i = n - n % FANOUT; i >= FANOUT; i -= FANOUT) {
-		CONFIGD->make_dir("save-tmp/" + i);
-	}
-}
-
-static void save_world_put(mixed **list)
-{
-	catch {
-		int done;
-		mixed data;
-
-		if (!list_empty(list)) {
-			data = list_front(list);
-			list_pop_front(list);
-
-			switch(typeof(data)) {
-			case T_STRING:
-				put_object_directory(data, list);
-				break;
-
-			case T_OBJECT:
-				put_object(data, list);
-				break;
-
-			case T_NIL:
-				ASSERT(0);
-			}
-		} else {
-			done = 1;
-		}
-
-		if (done) {
-			int nobj;
-
-			nobj = objlist->query_size();
-
-			if (!nobj) {
-				return;
-			}
-
-			if (nobj > FANOUT * FANOUT) {
-				error("Too many objects to save");
-			}
-
-			CONFIGD->make_dir(".");
-			CONFIGD->make_dir("save-tmp");
-
-			if (nobj > FANOUT) {
-				prepare_save_dirs(nobj);
-			}
-
-			call_out("save_world_write", 0, nobj - 1);
-		} else {
-			call_out("save_world_put", 0, list);
-		}
-	} : {
-		LOGD->post_message("system", LOG_INFO, "World save aborted");
-	}
-}
-
-static void save_world_write(int i)
-{
-	catch {
-		string sprint;
-
-		sprint = hybrid_sprint(
-			objlist->query_element(i)[1]
-		) + "\n";
-
-		switch(i) {
-		case 0 .. FANOUT - 1:
-			CONFIGD->write_file("save-tmp/" + i + ".obj", sprint);
-			break;
-
-		case FANOUT .. FANOUT * FANOUT - 1:
-			CONFIGD->write_file("save-tmp/" + (i - i % FANOUT) + "/" + i + ".obj", sprint);
-			break;
-		}
-
-		if (i > 0) {
-			call_out("save_world_write", 0, i - 1);
-		} else {
-			if (CONFIGD->file_info("save")) {
-				if (CONFIGD->file_info("save-old")) {
-					purge_directory("save-old");
-				}
-
-				CONFIGD->rename_file("save", "save-old");
-			}
-
-			CONFIGD->rename_file("save-tmp", "save");
-			LOGD->post_message("system", LOG_INFO, "World saved");
-		}
-	} : {
-		LOGD->post_message("system", LOG_INFO, "World save aborted, error writing object #" + i);
-	}
-}
+/* parse and print helpers */
 
 object *parse_object(string input)
 {
-	int onum;
-	string uname;
+	int on;
+	string username;
 
-	if (sscanf(input, "O:%d", onum)) {
-		return ({ objlist->query_element(onum - 1)[0] });
-	} else if (sscanf(input, "U:%s", uname)) {
-		return ({ TEXT_USERD->find_user(uname) });
+	if (sscanf(input, "O:%d", on)) {
+		return ({ on2ob->query_element(on) });
+	} else if (sscanf(input, "U:%s", username)) {
+		return ({ TEXT_USERD->find_user(username) });
 	} else {
 		error("Cannot parse: " + input);
 	}
@@ -418,7 +472,7 @@ string sprint_object(object obj, varargs mapping seen)
 	if (sscanf(object_name(obj), "%s#%d", path, oindex)) {
 		switch(path) {
 		case USR_DIR + "/Game/obj/thing":
-			return "<O:" + oindex2onum->query_element(oindex) + ">";
+			return "<O:" + oi2on->query_element(oindex) + ">";
 
 		case USR_DIR + "/Text/obj/user":
 			return "<U:" + obj->query_name() + ">";
@@ -431,45 +485,44 @@ string sprint_object(object obj, varargs mapping seen)
 	}
 }
 
+/* main */
+
 void load_world()
 {
-	int sz;
-	int count;
 	mixed **list;
+	mixed *info;
 
-	oindex2onum = new_object(BIGSTRUCT_MAP_LWO);
-	oindex2onum->claim();
-	oindex2onum->set_type(T_INT);
+	info = CONFIGD->file_info("save");
 
-	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
-	objlist->claim();
+	if (!info) {
+		error("No save folder");
+	}
+
+	if (info[0] != -2) {
+		error("Corrupt save file");
+	}
 
 	list = ({ nil, nil });
 
-	purge_object_directory(nil, list);
+	list_enqueue_directory(list);
 
-	call_out("load_world_purge", 0, list);
+	if (list_empty(list)) {
+		enqueue_save_directory(list);
+
+		on2ob = new_object("~System/lwo/struct/sparse_array");
+		on2op = new_object("~System/lwo/struct/sparse_array");
+
+		call_out("load_scan_tick", 0, list, -1);
+	} else {
+		call_out("load_purge_tick", 0, list);
+	}
 }
 
 void save_world()
 {
-	int sz;
 	mixed **list;
-
-	oindex2onum = new_object(BIGSTRUCT_MAP_LWO);
-	oindex2onum->claim();
-	oindex2onum->set_type(T_INT);
-
-	objlist = new_object(BIGSTRUCT_ARRAY_LWO);
-	objlist->claim();
 
 	list = ({ nil, nil });
 
-	if (CONFIGD->file_info("save-tmp")) {
-		purge_directory("save-tmp");
-	}
-
-	put_object_directory(nil, list);
-
-	call_out("save_world_put", 0, list);
+	call_out("save_purgedir_tick", 0, list, "save-tmp");
 }
