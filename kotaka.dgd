@@ -6,7 +6,7 @@ binary_port	= ([
 	"*": 50000,		/* binary login port */
 	"*": 50080		/* http */
 ]);		/* binary port number */
-directory	= "/home/dgd/git/kotaka/mud";/* base directory (MUST be absolute) */
+directory	= "/home/shentino/git/kotaka/mud";/* base directory (MUST be absolute) */
 users		= 32;			/* max # of users */
 editors		= 0;			/* max # of editor sessions */
 ed_tmpfile	= "../state/ed";	/* proto editor tmpfile */
@@ -18,7 +18,7 @@ static_chunk	= 64512;		/* static memory chunk */
 dynamic_chunk	= 261120;		/* dynamic memory chunk */
 dump_file	= "../state/snapshot";	/* snapshot file */
 dump_interval	= 3600;			/* snapshot interval in seconds */
-hotboot		= ({ "/home/dgd/git/kotaka/script/hotboot" }); /* hotboot */
+hotboot		= ({ "/home/shentino/git/kotaka/script/hotboot" }); /* hotboot */
 
 typechecking	= 2;			/* highest level of typechecking */
 include_file	= "/include/std.h";	/* standard include file */
