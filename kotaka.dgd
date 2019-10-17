@@ -1,9 +1,10 @@
 telnet_port	= ([
-	"*": 61441		/* status port */
+	"*": 50001		/* status port */
 ]);		/* telnet port number */
 binary_port	= ([
-	"localhost": 61442,	/* kernel library backdoor */
-	"*": 61440		/* binary login port */
+	"localhost": 50002,	/* kernel library backdoor */
+	"*": 50000,		/* binary login port */
+	"*": 50080		/* HTTP port */
 ]);		/* binary port number */
 directory	= "/home/shentino/git/kotaka/mud";/* base directory (MUST be absolute) */
 users		= 32;			/* max # of users */
