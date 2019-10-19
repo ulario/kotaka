@@ -139,8 +139,8 @@ static void list_append_string(mixed **list, string str)
 
 	max = status(ST_STRSIZE);
 
-	if (max > 4096) {
-		max = 4096;
+	if (max > 512) {
+		max = 512;
 	}
 
 	if (list_empty(list)) {
