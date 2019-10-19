@@ -62,10 +62,6 @@ void upgrade()
 void upgrade_check()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
-
-	if ("sys/logd"->busy()) {
-		error("Text LogD not flushed yet");
-	}
 }
 
 void prepare_reboot()
@@ -92,20 +88,10 @@ void hotboot()
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
-
-	set_limits();
-
-	destruct_dir("lib");
-	compile_dir("lwo");
-	compile_dir("obj");
-	compile_dir("sys");
-
-	call_out("upgrade_module_post_recompile", 0);
 }
 
 static void upgrade_module_post_recompile()
 {
-	"sys/logd"->flush();
 }
 
 private void booted_channel()
