@@ -84,9 +84,5 @@ void log_message(string sender, string message)
 
 int busy()
 {
-	if (buf) {
-		return 1;
-	}
-
-	return ::busy();
+	return !!buf;
 }

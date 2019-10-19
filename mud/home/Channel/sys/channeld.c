@@ -476,6 +476,4 @@ int busy()
 	if (buffers) {
 		return 1;
 	}
-
-	return ::busy();
 }

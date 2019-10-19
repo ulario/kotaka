@@ -202,6 +202,22 @@ private void reboot_common()
 	DRIVER->fix_filequota();
 }
 
+private void recompile_kernel()
+{
+	destruct_dir("/kernel/lib");
+	compile_dir("/kernel/obj");
+	compile_dir("/kernel/sys");
+}
+
+private void recompile_system()
+{
+	destruct_dir("lib");
+	compile_dir("lwo");
+	compile_dir("obj");
+	compile_dir("sys");
+	compile_object("initd");
+}
+
 private void upgrade_check_current_version()
 {
 	string *safe_versions;
@@ -218,21 +234,27 @@ private void upgrade_check_current_version()
 	error("Cannot safely upgrade from current version");
 }
 
-private void recompile_kernel()
+private void upgrade_check_ready()
 {
-	destruct_dir("/kernel/lib");
-	compile_dir("/kernel/obj");
-	compile_dir("/kernel/sys");
+	if (PATCHD->busy()) {
+		error("Cannot upgrade, PatchD busy");
+	}
+
+	if (LOGD->busy()) {
+		error("Cannot upgrade, LogD busy");
+	}
+
+	if (CHANNELD->busy()) {
+		error("Cannot upgrade, ChannelD busy");
+	}
+
+	if ("~Text/sys/logd"->busy()) {
+		error("Cannot upgrade, Text LogD busy");
+	}
+
+	MODULED->upgrade_check_modules();
 }
 
-private void recompile_system()
-{
-	destruct_dir("lib");
-	compile_dir("lwo");
-	compile_dir("obj");
-	compile_dir("sys");
-	compile_object("initd");
-}
 
 /* static helpers */
 
@@ -270,27 +292,6 @@ static void ready()
 	MODULED->boot_module("Game");
 }
 
-
-private void upgrade_check_ready()
-{
-	if (PATCHD->busy()) {
-		error("Cannot upgrade, PatchD busy");
-	}
-
-	if (LOGD->busy()) {
-		error("Cannot upgrade, LogD busy");
-	}
-
-	if (CHANNELD->busy()) {
-		error("Cannot upgrade, ChannelD busy");
-	}
-
-	if ("~Text/sys/logd"->busy()) {
-		error("Cannot upgrade, Text LogD busy");
-	}
-
-	MODULED->upgrade_check_modules();
-}
 
 /* hooks */
 

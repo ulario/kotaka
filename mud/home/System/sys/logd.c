@@ -496,8 +496,4 @@ int busy()
 	if (buffers && !!map_sizeof(buffers)) {
 		return 1;
 	}
-
-	if (::busy()) {
-		return 1;
-	}
 }
