@@ -236,22 +236,6 @@ private void upgrade_check_current_version()
 
 private void upgrade_check_ready()
 {
-	if (PATCHD->busy()) {
-		error("Cannot upgrade, PatchD busy");
-	}
-
-	if (LOGD->busy()) {
-		error("Cannot upgrade, LogD busy");
-	}
-
-	if (CHANNELD->busy()) {
-		error("Cannot upgrade, ChannelD busy");
-	}
-
-	if ("~Text/sys/logd"->busy()) {
-		error("Cannot upgrade, Text LogD busy");
-	}
-
 	MODULED->upgrade_check_modules();
 }
 
@@ -449,12 +433,6 @@ static void upgrade_system_recompile_system()
 static void upgrade_system_upgrade_system_module()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module...");
-
-	rlimits(0; -1) {
-		LOGD->flush();
-		PATCHD->convert_pflagdb();
-		CATALOGD->purge();
-	}
 
 	call_out("upgrade_system_upgrade_modules", 0);
 }
