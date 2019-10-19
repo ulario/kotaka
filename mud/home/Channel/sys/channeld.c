@@ -38,9 +38,6 @@ inherit "~System/lib/utility/secretlog";
 mapping intermud;	/*< set of channels to be relayed to intermud */
 mapping channels;	/*< channel configuration */
 mapping subscribers;	/*< channel subscribers */
-mapping buffers;
-
-/* buffers: ([ channel name: linked list ]) */
 
 void configure_channels();
 void save();
@@ -59,78 +56,9 @@ static void create()
 	save();
 }
 
-private void append_node(string channel, string fragment)
-{
-	mixed **list;
-
-	if (!buffers) {
-		buffers = ([ ]);
-	}
-
-	list = buffers[channel];
-
-	if (!list) {
-		list = ({ nil, nil });
-		buffers[channel] = list;
-	}
-
-	list_append_string(list, fragment);
-}
-
-private void write_node(string channel)
-{
-	mixed **list;
-	mixed *info;
-
-	list = buffers[channel];
-
-	info = SECRETD->file_info("logs/" + channel + ".log");
-
-	if (info && info[0] >= 1 << 30) {
-		SECRETD->remove_file("logs/" + channel + ".log.old");
-		SECRETD->rename_file("logs/" + channel + ".log", "logs/" + channel + ".log.old");
-	}
-
-	SECRETD->make_dir(".");
-	SECRETD->make_dir("logs");
-	SECRETD->write_file("logs/" + channel + ".log", list_front(list));
-
-	list_pop_front(list);
-
-	if (list_empty(list)) {
-		buffers[channel] = nil;
-	}
-
-	if (!map_sizeof(buffers)) {
-		buffers = nil;
-	}
-}
-
-void flush()
-{
-	if (buffers && map_sizeof(buffers)) {
-		string *channels;
-		int sz;
-
-		channels = map_indices(buffers);
-
-		sz = sizeof(channels);
-
-		write_node(channels[random(sz)]);
-
-		call_out_unique("flush", 0);
-
-		return;
-	}
-
-	LOGD->post_message("system", LOG_NOTICE, "ChannelD flush complete");
-}
-
 void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	call_out_unique("flush", 0);
 }
 
 void save()
@@ -430,11 +358,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	timestamps = timestamps(mtime);
 
-	if (buffers) {
-		append_node(channel, timestamps[0] + " " + message);
-	} else {
-		write_secret_log(channel, timestamps[0] + " " + message);
-	}
+	write_secret_log(channel, timestamps[0] + " " + message);
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
@@ -468,12 +392,5 @@ void configure_channels()
 		if (!test_channel(channels[sz])) {
 			add_channel(channels[sz]);
 		}
-	}
-}
-
-int busy()
-{
-	if (buffers) {
-		return 1;
 	}
 }
