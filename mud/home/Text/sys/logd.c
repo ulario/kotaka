@@ -17,72 +17,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/system.h>
-#include <kotaka/paths/utility.h>
-#include <status.h>
 #include <kotaka/privilege.h>
-#include <kotaka/log.h>
 
 inherit "~System/lib/utility/secretlog";
-inherit "~System/lib/struct/list";
-
-mixed **buf;
-
-void flush()
-{
-	if (!buf || list_empty(buf)) {
-		buf = nil;
-
-		LOGD->post_message("system", LOG_NOTICE, "Text LogD flush completed");
-
-		return;
-	} else {
-		string file;
-		string msg;
-		mixed *info;
-
-		call_out_unique("flush", 0);
-
-		({ file, msg }) = list_front(buf);
-		list_pop_front(buf);
-
-		if (list_empty(buf)) {
-			buf = nil;
-		}
-
-		SECRETD->make_dir(".");
-		SECRETD->make_dir("log");
-
-		if (info = SECRETD->file_info(file)) {
-			/* ({ file size, file modification time, object }) */
-			int size;
-			int time;
-			mixed obj;
-
-			({ size, time, obj }) = info;
-
-			if (size + strlen(msg) > (32 << 20)) {
-				SECRETD->remove_file(file + ".old");
-				SECRETD->rename_file(file, file + ".old");
-			}
-		}
-
-		SECRETD->write_file(file, msg);
-	}
-}
 
 void log_message(string sender, string message)
 {
 	ACCESS_CHECK(TEXT());
 
-	if (buf) {
-		list_push_back(buf, ({ sender, timestamp() + " " + message }) );
-	} else {
-		write_secret_log(sender, timestamp() + " " + message);
-	}
-}
-
-int busy()
-{
-	return !!buf;
+	write_secret_log(sender, timestamp() + " " + message);
 }
