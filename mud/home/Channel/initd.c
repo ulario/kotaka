@@ -53,14 +53,9 @@ void upgrade()
 	set_limits();
 }
 
-/* to be called in 0.60 prior to upgrade to 0.61 */
 void upgrade_check()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
-
-	if (CHANNELD->busy()) {
-		error("ChannelD not flushed yet");
-	}
 }
 
 void prepare_reboot()
