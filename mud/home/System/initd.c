@@ -202,22 +202,6 @@ private void reboot_common()
 	DRIVER->fix_filequota();
 }
 
-private void upgrade_check_current_version_0_60()
-{
-	string *safe_versions;
-	int sz;
-
-	safe_versions = explode(read_file("~/data/upgrade"), "\n") - ({ "" });
-
-	for (sz = sizeof(safe_versions); --sz >= 0; ) {
-		if (KOTAKA_VERSION == safe_versions[sz]) {
-			return;
-		}
-	}
-
-	error("Inconsistent versioning, cannot find " + KOTAKA_VERSION + ", please revert your snapshot to a pre 0.60 version and redo your upgrade");
-}
-
 private void upgrade_check_current_version()
 {
 	string *safe_versions;
@@ -239,6 +223,15 @@ private void recompile_kernel()
 	destruct_dir("/kernel/lib");
 	compile_dir("/kernel/obj");
 	compile_dir("/kernel/sys");
+}
+
+private void recompile_system()
+{
+	destruct_dir("lib");
+	compile_dir("lwo");
+	compile_dir("obj");
+	compile_dir("sys");
+	compile_object("initd");
 }
 
 /* static helpers */
@@ -277,48 +270,23 @@ static void ready()
 	MODULED->boot_module("Game");
 }
 
-static void do_upgrade_rebuild()
+
+private void upgrade_check_ready()
 {
-	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules...");
-
-	MODULED->upgrade_purge();
-	MODULED->upgrade_build();
-}
-
-/* Interception of upgrade call from 0.59 */
-
-/* also intercepts callout from v0.59 */
-static void upgrade_system_post_recompile()
-{
-	LOGD->post_message("system", LOG_NOTICE, "Intercepted callout from 0.59");
-
-	upgrade_check_current_version_0_60();
-
-	LOGD->post_message("system", LOG_NOTICE, "Intercept: Recompiling InitD");
-
-	destruct_dir("/kernel/lib");
-	destruct_dir("lib");
-	compile_object("initd");
-
-	LOGD->post_message("system", LOG_NOTICE, "Intercept: Transferring to 0.60 upgrade chain");
-
-	call_out("upgrade_system_0_60_recompile_kernel", 0);
-}
-
-/* v0.60 upgrade checks */
-/* called prior to recompile and upgrade for 0.61 */
-private void upgrade_check_0_60_ready()
-{
-	/* when we upgrade FROM 0.60 in 0.61, make sure these are taken care of first */
-
-	/* no pending patches */
 	if (PATCHD->busy()) {
-		error("Cannot upgrade, pending patches");
+		error("Cannot upgrade, PatchD busy");
 	}
 
-	/* no pending flushes in logs */
-	if (LOGD->busy() || CHANNELD->busy() || "~Text/sys/logd"->busy()) {
-		error("Cannot upgrade, pending log flushes");
+	if (LOGD->busy()) {
+		error("Cannot upgrade, LogD busy");
+	}
+
+	if (CHANNELD->busy()) {
+		error("Cannot upgrade, ChannelD busy");
+	}
+
+	if ("~Text/sys/logd"->busy()) {
+		error("Cannot upgrade, Text LogD busy");
 	}
 
 	MODULED->upgrade_check_modules();
@@ -386,9 +354,11 @@ void reboot()
 	catch {
 		SYSTEM_USERD->reboot();
 	}
+
 	catch {
 		ACCESSD->restore();
 	}
+
 	catch {
 		MODULED->reboot();
 	}
@@ -403,6 +373,7 @@ void hotboot()
 	catch {
 		SYSTEM_USERD->hotboot();
 	}
+
 	catch {
 		MODULED->hotboot();
 	}
@@ -447,54 +418,56 @@ int forbid_inherit(string from, string path, int priv)
 
 /* calls */
 
-static void upgrade_system_0_60_recompile_kernel()
+/* also intercepts callout from v0.59 */
+static void upgrade_system_post_recompile()
+{
+	LOGD->post_message("system", LOG_NOTICE, "Intercepted post recompile callout from 0.59");
+
+	call_out("upgrade_system_recompile_kernel", 0);
+}
+
+static void upgrade_system_recompile_kernel()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library...");
 
-	destruct_dir("/kernel/lib");
-	compile_dir("/kernel/obj");
-	compile_dir("/kernel/sys");
+	recompile_kernel();
 
-	call_out("upgrade_system_0_60_recompile_system", 0);
+	call_out("upgrade_system_recompile_system", 0);
 }
 
-static void upgrade_system_0_60_recompile_system()
+
+static void upgrade_system_recompile_system()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Recompiling System module...");
 
-	destruct_dir("lib");
+	recompile_system();
 
-	compile_object(INITD);
-	compile_dir("lwo");
-	compile_dir("obj");
-	compile_dir("sys");
-
-	call_out("upgrade_system_0_60_upgrade_system_module", 0);
+	call_out("upgrade_system_upgrade_system_module", 0);
 }
 
-static void upgrade_system_0_60_upgrade_system_module()
+static void upgrade_system_upgrade_system_module()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module...");
 
 	rlimits(0; -1) {
+		LOGD->flush();
 		PATCHD->convert_pflagdb();
 		CATALOGD->purge();
-		LOGD->flush();
 	}
 
-	call_out("upgrade_system_0_60_upgrade_modules", 0);
+	call_out("upgrade_system_upgrade_modules", 0);
 }
 
-static void upgrade_system_0_60_upgrade_modules()
+static void upgrade_system_upgrade_modules()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules...");
 
 	MODULED->upgrade_modules();
 
-	call_out("upgrade_system_0_60_rebuild_modules", 0);
+	call_out("upgrade_system_rebuild_modules", 0);
 }
 
-static void upgrade_system_0_60_rebuild_modules()
+static void upgrade_system_rebuild_modules()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules...");
 
@@ -507,13 +480,13 @@ void upgrade_system()
 {
 	ACCESS_CHECK(VERB());
 
+	/* check to make sure current version is ready */
+	upgrade_check_ready();
+
 	/* check if new version lists us as an upgrade path */
 	upgrade_check_current_version();
 
-	/* check to make sure 0_60 is ready */
-	upgrade_check_0_60_ready();
-
-	call_out("upgrade_system_0_60_recompile_kernel", 0);
+	call_out("upgrade_system_recompile_kernel", 0);
 }
 
 void configure_logging()
