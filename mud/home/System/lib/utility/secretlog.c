@@ -157,10 +157,5 @@ static void write_secret_log(string file, string message)
 		}
 	}
 
-	call_out("secret_flush", 0);
-}
-
-static int busy()
-{
-	return queues && !!map_sizeof(queues);
+	call_out_unique("secret_flush", 0);
 }
