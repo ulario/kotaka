@@ -28,16 +28,8 @@
 
 inherit SECOND_AUTO;
 inherit "~/lib/utility/secretlog";
-inherit "~/lib/struct/list";
-
-mixed **filebuf;
 
 mapping facilities;
-mapping buffers;
-
-/* buffers: ([ filename: header ]) */
-/* header: ({ first, last }) */
-/* node: ({ prev, text, next }) */
 
 /*
 targets:
@@ -140,109 +132,6 @@ private string timestamp()
 	return "[" + c[.. 18] + "." + thousands(mtime[1]) + c[19 ..] + "]";
 }
 
-private void append_node(string file, string fragment)
-{
-	mixed **list;
-
-	if (!buffers) {
-		buffers = ([ ]);
-	}
-
-	list = buffers[file];
-
-	if (!list) {
-		list = ({ nil, nil });
-		buffers[file] = list;
-	}
-
-	list_append_string(list, fragment);
-}
-
-private void write_logfile(string file, string timestamp, string message)
-{
-	if (buffers || filebuf) {
-		append_node(file, timestamp + " " + message);
-	} else {
-		write_secret_log(file, timestamp + " " + message);
-	}
-}
-
-private void commit_logfile(string base, string message)
-{
-	mixed *info;
-
-	info = SECRETD->file_info("logs/" + base + ".log");
-
-	if (info && info[0] + strlen(message) > 1 << 30) {
-		SECRETD->remove_file("logs/" + base + ".dir.log");
-		SECRETD->rename_file("logs/" + base + ".log", "logs/" + base + ".dir/old.log");
-	}
-
-	catch {
-		SECRETD->make_dir(".");
-		SECRETD->make_dir("logs");
-		SECRETD->write_file("logs/" + base + ".log", message);
-	} : {
-		DRIVER->message("Error writing to " + base + "\n");
-	}
-}
-
-private void write_node(string base)
-{
-	mixed **list;
-	mixed *node;
-	string front;
-
-	list = buffers[base];
-	front = list_front(list);
-	list_pop_front(list);
-
-	commit_logfile(base, front);
-
-	if (list_empty(list)) {
-		buffers[base] = nil;
-
-		if (!map_sizeof(buffers)) {
-			buffers = nil;
-		}
-	}
-}
-
-void flush()
-{
-	ACCESS_CHECK(SYSTEM() || KADMIN() || KERNEL());
-
-	if (buffers) {
-		string *files;
-		int sz;
-
-		files = map_indices(buffers);
-		sz = sizeof(files);
-
-		write_node(files[random(sz)]);
-
-		call_out_unique("flush", 0);
-
-		return;
-	}
-
-	if (filebuf) {
-		string file, message;
-
-		if (list_empty(filebuf)) {
-			filebuf = nil;
-
-			return;
-		}
-
-		({ file, message }) = list_front(filebuf);
-		list_pop_front(filebuf);
-		commit_logfile(file, message);
-
-		call_out_unique("flush", 0);
-	}
-}
-
 private void send_to_target(string target, string timestamp, string message)
 {
 	string prefix, info;
@@ -286,7 +175,7 @@ private void send_to_target(string target, string timestamp, string message)
 		case "file":
 			ASSERT(info);
 
-			write_logfile(info, timestamp, line);
+			write_secret_log(info, timestamp + " " + line);
 
 			break;
 
@@ -484,16 +373,5 @@ void post_message(string facility, int priority, string message)
 		}
 
 		DRIVER->message("Error logging: " + creator + ": " + facility + ": " + message + "\n");
-	}
-}
-
-int busy()
-{
-	if (filebuf) {
-		return 1;
-	}
-
-	if (buffers && !!map_sizeof(buffers)) {
-		return 1;
 	}
 }
