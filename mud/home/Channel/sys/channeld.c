@@ -332,8 +332,6 @@ void post_message(string channel, string sender, string message, varargs int nor
 	mixed *mtime;
 	string *timestamps;
 
-	ASSERT(message);
-
 	if (!channels[channel]) {
 		error("No such channel");
 	}
