@@ -113,9 +113,6 @@ static string timestamp()
 
 static void write_secret_log(string file, string message)
 {
-	mixed **callouts;
-	int sz;
-
 	if (!file) {
 		error("Invalid filename");
 	}
@@ -130,14 +127,6 @@ static void write_secret_log(string file, string message)
 	}
 
 	append_node(file, message);
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		if (callouts[sz][CO_FUNCTION] == "secret_flush") {
-			return;
-		}
-	}
 
 	call_out_unique("secret_flush", 0);
 }
