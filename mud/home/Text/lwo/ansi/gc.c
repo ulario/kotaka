@@ -53,19 +53,9 @@ void set_clip(int lx, int ly, int hx, int hy)
 	clip_hy = hy;
 }
 
-/*
-0x01 = foreground red
-0x02 = foreground green
-0x04 = foreground blue
-0x08 = foreground intense
-0x10 = background red
-0x20 = background green
-0x40 = background blue
-0x80 = background transparent
-*/
 void set_color(int new_color)
 {
-	color = new_color & 0xFF;
+	color = new_color & 0xff;
 }
 
 void move_pen(int new_x, int new_y)

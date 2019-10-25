@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,6 @@
 #include <kotaka/assert.h>
 #include <kotaka/log.h>
 #include <kotaka/paths/account.h>
-#include <kotaka/paths/ansi.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 

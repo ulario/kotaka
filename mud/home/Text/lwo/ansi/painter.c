@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -44,6 +44,7 @@ void set_size(int dx, int dy)
 void add_layer(string name)
 {
 	stack += ({ name });
+
 	layers[name] = new_object("layer");
 }
 
@@ -59,13 +60,9 @@ void set_layer_position(string name, int px, int py)
 
 object query_layer(string name)
 {
-	ACCESS_CHECK(ANSI());
+	ACCESS_CHECK(TEXT());
 
-	if (layers[name]) {
-		return layers[name];
-	} else {
-		error("No such layer");
-	}
+	return layers[name];
 }
 
 object create_gc()

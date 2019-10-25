@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/privilege.h>
-
 inherit "/lib/string/char";
 
 string *chars;
@@ -39,16 +37,12 @@ static void create(int clone)
 
 void set_position(int x, int y)
 {
-	ACCESS_CHECK(ANSI());
-
 	pos_x = x;
 	pos_y = y;
 }
 
 int *query_position()
 {
-	ACCESS_CHECK(ANSI());
-
 	return ({ pos_x, pos_y });
 }
 
@@ -88,8 +82,6 @@ void set_size(int x, int y)
 {
 	int i;
 
-	ACCESS_CHECK(ANSI());
-
 	if (!chars) {
 		chars = ({ });
 		colors = ({ });
@@ -123,8 +115,6 @@ void set_size(int x, int y)
 
 int *query_size()
 {
-	ACCESS_CHECK(ANSI());
-
 	return ({ size_x, size_y });
 }
 
@@ -132,8 +122,6 @@ void draw(string brush, int pen_x, int pen_y, int color)
 {
 	int i;
 	int sz;
-
-	ACCESS_CHECK(ANSI());
 
 	sz = strlen(brush);
 
@@ -176,8 +164,6 @@ void erase(int length, int pen_x, int pen_y)
 	int i;
 	int sz;
 
-	ACCESS_CHECK(ANSI());
-
 	sz = length;
 
 	if (pen_y < 0 || pen_y >= size_y || pen_x >= size_x || pen_x + sz < 0) {
@@ -204,21 +190,15 @@ void erase(int length, int pen_x, int pen_y)
 
 string *query_colors()
 {
-	ACCESS_CHECK(ANSI());
-
 	return colors;
 }
 
 string *query_chars()
 {
-	ACCESS_CHECK(ANSI());
-
 	return chars;
 }
 
 string *query_mask()
 {
-	ACCESS_CHECK(ANSI());
-
 	return mask;
 }

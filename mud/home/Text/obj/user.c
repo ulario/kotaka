@@ -19,7 +19,6 @@
  */
 #include <kernel/user.h>
 #include <kotaka/assert.h>
-#include <kotaka/paths/ansi.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/utility.h>
@@ -284,7 +283,7 @@ private void do_banner()
 	ansi = read_file("~/data/splash/telnet_banners/ansi/" + files[splash]);
 
 	if (!ansi) {
-		ansi = ANSI_SUBD->simple_ansify(
+		ansi = ANSID->simple_ansify(
 			read_file("~/data/splash/telnet_banners/chars/" + files[splash]),
 			read_file("~/data/splash/telnet_banners/fgcolor/" + files[splash]),
 			read_file("~/data/splash/telnet_banners/bgcolor/" + files[splash])

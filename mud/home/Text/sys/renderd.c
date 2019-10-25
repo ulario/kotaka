@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/utility.h>
-#include <kotaka/paths/ansi.h>
 #include <kotaka/paths/geometry.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>

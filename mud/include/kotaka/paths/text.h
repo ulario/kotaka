@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2019  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,9 +25,14 @@
 #define LIB_USERIO		(USR_DIR + "/Text/lib/userio")
 #define TEXT_LIB_USTATE		(USR_DIR + "/Text/lib/ustate")
 
+/* lwo */
+
+#define LWO_PAINTER		(USR_DIR + "/Text/lwo/ansi/painter")
+
 /* sys */
 
 #define ALIASD			(USR_DIR + "/Text/sys/aliasd")
+#define ANSID			(USR_DIR + "/Text/sys/ansid")
 #define BIND			(USR_DIR + "/Text/sys/bind")
 #define ENGLISHD		(USR_DIR + "/Text/sys/englishd")
 #define RENDERD			(USR_DIR + "/Text/sys/renderd")
