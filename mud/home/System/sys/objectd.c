@@ -380,6 +380,11 @@ void compiling(string path)
 	}
 }
 
+static void upgrading_object(object obj)
+{
+	obj->upgrading();
+}
+
 void compile(string owner, object obj, string *source, string inherited ...)
 {
 	string creator;
@@ -419,7 +424,7 @@ void compile(string owner, object obj, string *source, string inherited ...)
 
 			if (function_object("upgrading", obj)) {
 				catch {
-					obj->upgrading();
+					call_limited("upgrading_object", obj);
 				}
 			}
 
@@ -744,13 +749,11 @@ void reset()
 	ACCESS_CHECK(PRIVILEGED() || VERB());
 
 	rlimits (0; -1) {
-		rlimits (0; 1000000000) {
-			progdb = ([ ]);
+		progdb = ([ ]);
 
-			register_ghosts();
-			discover_clones();
-			discover_objects();
-		}
+		register_ghosts();
+		discover_clones();
+		discover_objects();
 	}
 }
 
@@ -759,10 +762,8 @@ void full_rebuild()
 	ACCESS_CHECK(PRIVILEGED() || VERB());
 
 	rlimits (0; -1) {
-		rlimits (0; 1000000000) {
-			purge_dir("/");
-			compile_dir("/");
-		}
+		purge_dir("/");
+		compile_dir("/");
 	}
 }
 
