@@ -457,7 +457,7 @@ static void upgrade_system_rebuild_modules()
 /* called differently in 0.59 */
 void upgrade_system()
 {
-	ACCESS_CHECK(VERB());
+	ACCESS_CHECK(VERB() || INTERFACE() || KADMIN());
 
 	/* check to make sure current version is ready */
 	upgrade_check_ready();
