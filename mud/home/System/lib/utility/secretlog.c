@@ -72,35 +72,17 @@ private void write_node(string file)
 	}
 }
 
-static nomask void secret_flush()
+private void flush_one()
 {
-	int ticks;
-
-	ticks = status(ST_TICKS);
-
-	if (ticks == -1 || ticks > 50000) {
-		ticks = 50000;
-	}
-
-	rlimits(0; ticks - 500) {
-		while (status(ST_TICKS) > 5000) {
-			if (queues && map_sizeof(queues)) {
-				string *files;
-				int sz;
-
-				files = map_indices(queues);
-
-				sz = sizeof(files);
-
-				write_node(files[random(sz)]);
-			} else {
-				return;
-			}
-		}
-	}
-
 	if (queues && map_sizeof(queues)) {
-		call_out("secret_flush", 0);
+		string *files;
+		int sz;
+
+		files = map_indices(queues);
+
+		sz = sizeof(files);
+
+		write_node(files[random(sz)]);
 	}
 }
 
@@ -158,4 +140,20 @@ static void write_secret_log(string file, string message)
 	}
 
 	call_out_unique("secret_flush", 0);
+}
+
+static void secret_flush()
+{
+	flush_one();
+
+	if (queues) {
+		call_out_unique("secret_flush", 0);
+	}
+}
+
+void flush()
+{
+	while (queues) {
+		flush_one();
+	}
 }
