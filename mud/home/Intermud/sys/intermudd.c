@@ -551,7 +551,8 @@ private void i3_handle_channel_e(mixed *value)
 		string text;
 
 		text = replace(
-			value[8], "$N", value[7] + "@" + value[2]);
+			value[8], "$N", value[7] + "@" + value[2]
+		);
 
 		CHANNELD->post_message(value[6], text, nil, 1);
 	}
