@@ -118,9 +118,6 @@ string *render_color()
 	int i, sz;
 	int x, y;
 
-	int delta;
-	int color;
-
 	string *chars;
 	string *colors;
 	string *buffers;
@@ -134,7 +131,6 @@ string *render_color()
 	}
 
 	sz = sizeof(stack);
-	color = 0x07;
 
 	for (i = 0; i < sz; i++) {
 		int sx, sy;
@@ -192,8 +188,12 @@ string *render_color()
 	buffers = allocate(size_y);
 
 	for (y = 0; y < size_y; y++) {
+		int delta;
+		int color;
 		string buffer;
 		buffer = "";
+
+		color = 0x7;
 
 		for (x = 0; x < size_x; x++) {
 			int new_color;
@@ -205,11 +205,6 @@ string *render_color()
 
 			if (delta) {
 				buffer += "\033[";
-
-				if (delta && new_color == 0x7) {
-					buffer += "0";
-					delta = 0;
-				}
 
 				if (delta & 0x8) {
 					dirty = 1;
@@ -255,10 +250,8 @@ string *render_color()
 			buffer += chars[y][x .. x];
 		}
 
-		if (color != 0x07) {
-			buffer += "\033[0m";
-			color = 0x07;
-		}
+		buffer += "\033[0m";
+		color = 0x07;
 
 		buffers[y] = buffer;
 	}
