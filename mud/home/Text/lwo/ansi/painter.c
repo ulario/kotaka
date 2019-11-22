@@ -200,7 +200,7 @@ string *render_color()
 			int dirty;
 
 			new_color = colors[y][x];
-			delta = x == 0 ? 0xf : color ^ new_color;
+			delta = x == 0 ? 0x7f : color ^ new_color;
 			color = new_color;
 
 			if (delta) {
