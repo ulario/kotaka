@@ -29,6 +29,8 @@ source.
 
 After these checks are completed the upgrade will commence.
 
+This should be documented in upgrading.md.
+
 ## Long term
 
 These are on the list but are not yet in progress.
