@@ -1,4 +1,4 @@
-# TODO
+# Todo
 
 This is the master, active TODO list for kotaka development.
 
@@ -10,25 +10,6 @@ Tasks should be listed in order of desired completion.
 ## Ongoing
 
 The following TODO items are in progress.
-
-### Secretlog
-
-This is a new library meant to consolidate the logic for writing logs to
-~Secret to protect them from snooping.
-
-As with all API changes, both the old and new APIs need to be supported
-at the same time, so we need to migrate the old stuff before we drop it.
-
-To preserve ordering, we must have the old stuff flushed completely
-before we start using the new system.
-
-Secretlog will be formally introduced in 0.60, with all existing use
-cases set to flush their current methods before enabling secretlog to
-preserve ordering.  Version 0.60
-
-Affected users:
-
-ChannelD, IntermudD, and ~Text/sys/logd
 
 ### Mudlib upgrading
 
