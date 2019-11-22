@@ -1,18 +1,19 @@
 # Kotaka
 
-Kotaka is a mudlib designed to work on DGD, on top of the kernel library
+Kotaka is a mudlib designed to work on DGD, on top of the kernel library.
 
 ## Legal
 
-Please see COPYING for a full copy of the license for this software.
+Kotaka is licensed to all members of the public under the terms of
+version 3 of the GNU Affero General Public License.
 
-It is licensed to all under the terms of the AGPLv3.
+Please see COPYING for a full copy of the license for this software.
 
 ## Getting Started
 
 First, install DGD.
 
-Second, install the kernel library
+Second, install the kernel library.
 
 ## Deployment
 
