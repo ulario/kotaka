@@ -27,15 +27,8 @@ new versions of Kotaka.
 
 ## Support
 
-Primary support should be sought on the DGD mailing list so that other
-members of the DGD community can benefit from the exchange.
+Please use the github issue tracker for kotaka to get support or report bugs.
 
-Please also use the DGD mailing list for issues with the underlying
-kernel library or with DGD itself.
-
-The github issue tracker for Kotaka may be used by users and developers
-alike to keep track of suggestions or bugs.
-
-Please email shentino@gmail.com if you need support beyond what the above
-can provide, or if there are any problems with the support process
-itself.
+If you need to discuss a support or bug related issue confidentially, or
+if you are having problems using the issue tracker, please email
+shentino@gmail.com.
