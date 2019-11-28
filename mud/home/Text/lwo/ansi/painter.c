@@ -217,31 +217,23 @@ string *render_color()
 				}
 
 				if (delta & 0x7) {
-					int fcolor;
-
 					if (dirty) {
 						buffer += ";";
 					}
 
 					dirty = 1;
 
-					fcolor = new_color & 0x7;
-
-					buffer += "3" + (fcolor == 0 ? 9 : fcolor);
+					buffer += "3" + (new_color & 0x7);
 				}
 
 				if (delta & 0x70) {
-					int bcolor;
-
 					if (dirty) {
 						buffer += ";";
 					}
 
 					dirty = 1;
 
-					bcolor = (new_color >> 4) & 0x7;
-
-					buffer += "4" + (bcolor == 0 ? 9 : bcolor);
+					buffer += "4" + ((new_color >> 4) & 0x7);
 				}
 
 				buffer += "m";
