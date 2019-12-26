@@ -172,7 +172,7 @@ void save()
 		name = names[sz];
 
 		if (SECRETD->file_info("accounts/" + name + ".old")) {
-			SECRETD->remove_file("accounts/" + name ".old");
+			SECRETD->remove_file("accounts/" + name + ".old");
 		}
 
 		SECRETD->rename_file("accounts/" + names[sz], "accounts/" + name + ".old");
