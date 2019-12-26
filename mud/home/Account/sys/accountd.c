@@ -71,7 +71,7 @@ void unregister_account(string name)
 
 		SECRETD->rename_file("accounts/" + name, "accounts/" + name + ".old");
 	} else {
-		LOGD->post_message("system", LOG_WARN, "Unregistering unsaved account " + name);
+		LOGD->post_message("system", LOG_WARNING, "Unregistering unsaved account " + name);
 	}
 }
 
