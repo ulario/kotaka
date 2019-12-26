@@ -93,15 +93,6 @@ string query_name()
 	return name;
 }
 
-void delete_account()
-{
-	ACCESS_CHECK(ACCOUNT());
-
-	SECRETD->remove_file("accounts/" + name);
-
-	destruct_object(this_object());
-}
-
 void set_password(string new_password)
 {
 	ACCESS_CHECK(ACCOUNT());

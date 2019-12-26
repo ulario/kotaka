@@ -62,7 +62,9 @@ void unregister_account(string name)
 		error("No such account");
 	}
 
-	accounts[name]->delete_account();
+	destruct_object(accounts[name]);
+
+	SECRETD->remove_file("accounts/" + name);
 }
 
 int query_is_registered(string name)
