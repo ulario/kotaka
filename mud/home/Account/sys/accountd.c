@@ -64,7 +64,15 @@ void unregister_account(string name)
 
 	destruct_object(accounts[name]);
 
-	SECRETD->remove_file("accounts/" + name);
+	if (SECRETD->file_info("accounts/" + name)) {
+		if (SECRETD->file_info("accounts/" + name + ".old")) {
+			SECRETD->remove_file("accounts/" + name + ".old");
+		}
+
+		SECRETD->rename_file("accounts/" + name, "accounts/" + name + ".old");
+	} else {
+		LOGD->post_message("system", LOG_WARN, "Unregistering unsaved account " + name);
+	}
 }
 
 int query_is_registered(string name)
@@ -154,15 +162,21 @@ void save()
 	SECRETD->make_dir(".");
 	SECRETD->make_dir("accounts");
 
-	do {
-		names = SECRETD->get_dir("accounts/*")[0];
+	names = SECRETD->get_dir("accounts/*")[0];
 
-		ASSERT(names);
+	ASSERT(names);
 
-		for (sz = sizeof(names); --sz >= 0; ) {
-			SECRETD->remove_file("accounts/" + names[sz]);
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+
+		name = names[sz];
+
+		if (SECRETD->file_info("accounts/" + name + ".old")) {
+			SECRETD->remove_file("accounts/" + name ".old");
 		}
-	} while (sizeof(names) == status(ST_ARRAYSIZE));
+
+		SECRETD->rename_file("accounts/" + names[sz], "accounts/" + name + ".old");
+	}
 
 	names = map_indices(accounts);
 
@@ -205,6 +219,10 @@ void restore()
 		string name;
 
 		name = names[sz];
+
+		if (sscanf(name, "%*s.old")) {
+			continue;
+		}
 
 		if (!accounts[name]) {
 			accounts[name] = clone_object("../obj/account");

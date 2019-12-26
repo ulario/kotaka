@@ -52,7 +52,15 @@ void save()
 
 	SECRETD->remove_file("accounts/" + name + ".tmp");
 	SECRETD->write_file("accounts/" + name + ".tmp", buf + "\n");
-	SECRETD->remove_file("accounts/" + name);
+
+	if (SECRETD->file_info("accounts/" + name)) {
+		if (SECRETD->file_info("accounts/" + name + ".old")) {
+			SECRETD->remove_file("accounts/" + name + ".old");
+		}
+
+		SECRETD->rename_file("accounts/" + name, "accounts/" + name + ".old");
+	}
+
 	SECRETD->rename_file("accounts/" + name + ".tmp", "accounts/" + name);
 }
 
