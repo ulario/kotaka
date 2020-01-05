@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,10 +21,12 @@
 #include <kotaka/log.h>
 #include <kotaka/privilege.h>
 
-static void test()
+void test()
 {
 	object sparse;
 	int i;
+
+	ACCESS_CHECK(TEST());
 
 	sparse = new_object("~System/lwo/struct/sparse_array");
 
@@ -42,11 +44,4 @@ static void test()
 	}
 
 	LOGD->post_message("debug", LOG_DEBUG, "Tested sparse array");
-}
-
-void schedule_test()
-{
-	ACCESS_CHECK(TEST());
-
-	call_out("test", 0);
 }

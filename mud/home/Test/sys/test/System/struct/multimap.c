@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,10 +23,12 @@
 
 inherit "~System/lib/struct/multimap";
 
-static void test()
+void test()
 {
 	mapping map;
 	int i;
+
+	ACCESS_CHECK(TEST());
 
 	map = ([ ]);
 
@@ -48,11 +50,4 @@ static void test()
 	ASSERT(map_sizeof(map) == 0);
 
 	LOGD->post_message("debug", LOG_DEBUG, "Tested multimap");
-}
-
-void schedule_test()
-{
-	ACCESS_CHECK(TEST());
-
-	call_out("test", 0);
 }
