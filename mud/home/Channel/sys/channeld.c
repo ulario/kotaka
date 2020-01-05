@@ -338,6 +338,10 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	mtime = millitime();
 
+	if (!message) {
+		message = "(nil)";
+	}
+
 	if (!norelay) {
 		if (intermud && intermud[channel]) {
 			object user;
