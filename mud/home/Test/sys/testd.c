@@ -14,7 +14,7 @@ private void run_tests(string dirname)
 		if (sizes[sz] == -2) {
 			run_tests(dirname + "/" + names[sz]);
 		} else if (sscanf(names[sz], "%*s.c")) {
-			objs[sz]->schedule_test();
+			objs[sz]->test();
 		}
 	}
 }
