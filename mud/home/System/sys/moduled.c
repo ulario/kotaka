@@ -385,7 +385,7 @@ void boot_module(string module, varargs int reboot)
 	}
 
 	if (!file_info(initd_of(module) + ".c")) {
-		error("No initd for module");
+		error("No initd for " + (module ? module : "Ecru") + " module");
 	}
 
 	existed = !!find_object(initd_of(module));
