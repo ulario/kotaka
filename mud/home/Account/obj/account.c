@@ -91,7 +91,7 @@ void set_name(string new_name)
 {
 	ACCESS_CHECK(ACCOUNT());
 
-	ASSERT(!name)
+	ASSERT(!name);
 
 	name = new_name;
 }
