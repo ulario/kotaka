@@ -51,7 +51,7 @@ string *query_help_contents()
 void initialize_combatant(object fighter)
 {
 	fighter->clear_character(); /* also wipes living */
-	fighter->initialize_character(5 + random(6), random(6), 20 + random(11));
+	fighter->initialize_character(10 + random(11), random(11), 20 + random(11));
 	fighter->initialize_living();
 }
 
