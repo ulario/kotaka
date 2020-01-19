@@ -36,7 +36,6 @@ function boot
 			execdgd kotaka.dgd state/snapshot state/snapshot.old &
 		else
 			# only the full one
-			CATCH=1
 			execdgd kotaka.dgd state/snapshot &
 		fi
 	else
