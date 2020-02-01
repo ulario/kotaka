@@ -235,6 +235,14 @@ void restore()
 		sitebans = save["sitebans"];
 	}
 
+	if (!bans) {
+		bans = ([ ]);
+	}
+
+	if (!sitebans) {
+		sitebans = ([ ]);
+	}
+
 	prune_bans();
 	prune_sitebans();
 }
