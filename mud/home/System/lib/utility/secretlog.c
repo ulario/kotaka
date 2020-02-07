@@ -88,7 +88,6 @@ private void flush_one()
 
 static string timestamp(varargs mixed *mtime)
 {
-	mixed *mtime;
 	string stamp, mstamp;
 
 	if (!mtime) {
