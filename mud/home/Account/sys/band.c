@@ -203,8 +203,8 @@ void save()
 	prune_sitebans();
 
 	buf = hybrid_sprint( ([
-		"bans": bans,
-		"sitebans": sitebans
+		"bans": map_sizeof(bans) ? bans : nil,
+		"sitebans": map_sizeof(sitebans) ? sitebans : nil
 	]) );
 
 	SECRETD->make_dir(".");
