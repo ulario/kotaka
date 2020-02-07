@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,20 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/privilege.h>
+#include <kotaka/paths/thing.h>
 
-inherit "../lib/thing";
+inherit thing LIB_THING;
+inherit "../lib/thing/exit";
+inherit "../lib/thing/character";
+inherit "../lib/thing/living";
 
 static void create(int clone)
 {
 	if (clone) {
-		::create();
+		thing::create();
 	}
 }
 
 static void destruct(int clone)
 {
 	if (clone) {
-		::destruct();
+		thing::destruct();
 	}
 }
 
