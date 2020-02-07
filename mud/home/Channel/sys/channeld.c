@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -300,37 +300,11 @@ object *query_subscribers(string channel)
 /* message management */
 /**********************/
 
-private string *timestamps(mixed *mtime)
-{
-	string ctime;
-
-	string date;
-	string hms;
-	mixed msec;
-
-	mtime = millitime();
-
-	ctime = ctime(mtime[0]);
-
-	/* 012345678901234567890123456789 */
-	/* Tue Aug  3 14:40:18 1993 */
-
-	date = ctime[0 .. 9] + " " + ctime[20 .. 23];
-	hms = ctime[11 .. 18];
-	msec = mtime[1];
-	msec *= 1000.0;
-	msec = floor(msec + 0.5);
-	msec = "000" + msec;
-	msec = msec[strlen(msec) - 3 ..];
-
-	return ({ date + hms + "." + msec, hms });
-}
-
 void post_message(string channel, string sender, string message, varargs int norelay)
 {
 	object *send_list;
 	mixed *mtime;
-	string *timestamps;
+	string timestamp;
 
 	if (!channels[channel]) {
 		error("No such channel");
@@ -358,9 +332,9 @@ void post_message(string channel, string sender, string message, varargs int nor
 		}
 	}
 
-	timestamps = timestamps(mtime);
+	timestamp = timestamp(mtime);
 
-	write_secret_log(channel, timestamps[0] + " " + message);
+	write_secret_log(channel, timestamp + " " + message);
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);

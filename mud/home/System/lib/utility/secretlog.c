@@ -86,12 +86,14 @@ private void flush_one()
 	}
 }
 
-static string timestamp()
+static string timestamp(varargs mixed *mtime)
 {
 	mixed *mtime;
 	string stamp, mstamp;
 
-	mtime = millitime();
+	if (!mtime) {
+		mtime = millitime();
+	}
 
 	/* ctime format: */
 	/* Tue Aug  3 14:40:18 1993 */

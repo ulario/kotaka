@@ -110,28 +110,6 @@ MMM DD HH:MM
 MMM DD  YYYY
 */
 
-private string thousands(float fraction)
-{
-	mixed whole;
-
-	whole = (int)floor(fraction * 1000.0 + 0.5);
-
-	whole = "000" + whole;
-
-	return whole[strlen(whole) - 3 ..];
-}
-
-private string timestamp()
-{
-	mixed *mtime;
-	string c;
-
-	mtime = millitime();
-	c = ctime(mtime[0]);
-
-	return "[" + c[.. 18] + "." + thousands(mtime[1]) + c[19 ..] + "]";
-}
-
 private void send_to_target(string target, string timestamp, string message)
 {
 	string prefix, info;
