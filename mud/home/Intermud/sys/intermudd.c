@@ -48,7 +48,7 @@ string mudname;
 int rejections;
 
 /* i3 interface */
-int password;
+int password; /* deprecated */
 mapping passwords;
 int chanlistid;
 int mudlistid;
@@ -422,9 +422,10 @@ private void i3_handle_startup_reply(mixed *value)
 
 	if (oldpass != newpass) {
 		if (!oldpass) {
-			LOGD->post_message("debug", LOG_DEBUG, "Saving password");
+			LOGD->post_message("debug", LOG_DEBUG, "I3: Saving password");
 		} else {
-			LOGD->post_message("debug", LOG_DEBUG, "Saving changed password");
+			LOGD->post_message("system", LOG_WARNING, "I3: Password was changed");
+			LOGD->post_message("debug", LOG_DEBUG, "I3: Saving changed password");
 		}
 	}
 
@@ -746,7 +747,7 @@ void restore()
 			}
 
 			if (map["password"]) {
-				password = map["password"];
+				passwords[MUDNAME] = ({ map["password"], time() + 7 * 86400 });
 			}
 
 			if (map["routers"]) {
@@ -758,6 +759,7 @@ void restore()
 			}
 		} : {
 			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
+
 			SECRETD->remove_file("intermud-bad");
 			SECRETD->rename_file("intermud", "intermud-bad");
 		}
