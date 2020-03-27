@@ -21,6 +21,7 @@
 #include <kotaka/paths/thing.h>
 
 inherit thing LIB_THING;
+inherit "~Geometry/lib/thing";
 inherit "../lib/thing/exit";
 inherit "../lib/thing/character";
 inherit "../lib/thing/living";
