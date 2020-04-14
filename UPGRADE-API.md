@@ -35,26 +35,37 @@ compiled, will be an anomalous state that will generate a
 runtime error.  Such a detected status will cause the
 defunct module's missing initd to be deprived of signals.
 
-## Amendment of constructors and destructors
+## Deprecation of constructors and destructors
 
-Constructors and destructors are still useful, they are therefore
-being reinstated.
+Due to being more complicated than they are worth and due to the data
+burden, constructors and destructors are once again deprecated and are foreseen to remain so permanently.
 
-However, due to the ability of a program to arbitrarily add and
-remove inheritables on recompilation, a caveat is announced.
+### 0.61
 
-Inheritables are warned that their constructor might not be
-properly called if an object inherits them after a clone has been
-created.  It is advisable to have a patcher registered to check
-for this.
+Formal deprecation and no support will be offered for continued usage.
 
-Inheritables are also warned that they may be removed at any time
-from an object before the object is destructed, and thus, that
-the destructor might not be called.
+Warnings will be issued if an initd attempts to register a constructor or
+a destructor, however ObjectD will continue to query for them when
+programs are compiled.
 
-If an inheritable needs to be prepared for use after construction
-due to post-clone recompilation, have a patcher registered to
-intercept the object that was recompiled.
+### 0.62
+
+ObjectD will cease support for registering constructors and destructors.
+
+ObjectD will query initd's for them, but will return errors if any are returned.
+
+### 0.63
+
+All programs should be recompiled by the end of the 0.62 upgrade, so no
+constructors or destructors should be registered.
+
+Before the 0.63 upgrade is allowed to commence, all program_info objects
+will be checked to make sure that constructors and destructors have been
+removed.
+
+### 0.64
+
+Program info lwo's will be stripped of all information regarding constructors and destructors
 
 ## Amendment of patching
 
