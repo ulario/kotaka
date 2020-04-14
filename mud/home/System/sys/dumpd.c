@@ -31,8 +31,13 @@ static void create()
 	call_out("dump", 3600);
 }
 
-static void dump()
+static void dump(varargs int steps)
 {
-	dump_state();
-	call_out("dump", 3600);
+	if (steps) {
+		dump_state(1);
+		call_out("dump", 600, steps - 1);
+	} else {
+		dump_state();
+		call_out("dump", 600, (86400 / 600) - 1);
+	}
 }
