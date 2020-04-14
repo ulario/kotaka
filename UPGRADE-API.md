@@ -7,7 +7,7 @@ This file will hold notes of pending changes in APIs going forward.
 In the future, the existence of a module's InitD will no longer
 be the official indication of the module's being online.
 
-### Step 1
+### 0.61
 
 Usage of the module's initd's existence as an indication
 of the module's status will be formally deprecated.
@@ -21,7 +21,7 @@ should be used exclusively.
 A module can be nuked even if it's shut down to enforce a
 complete purge of its owned objects.
 
-### Step 2
+### 0.62
 
 ModuleD's record on the status of a particular module
 will no longer automatically reflect the status of the
