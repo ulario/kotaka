@@ -80,6 +80,8 @@ newly inherit an inheritable after being originally created.
 
 ## Deprecation of SortD
 
+To be completed in version 0.61
+
 I decided awhile ago that I should prefer libraries to daemons
 when it comes to shared code.  It's more robust since the callers
 have a reference to the inheritable instead of just a pointer. 
@@ -91,3 +93,5 @@ been moved to /lib/sort and existing calls to SortD have been
 converted to local calls to /lib/sort.  As it is SortD has
 already for awhile been turned into simply a stub that inherits
 /lib/sort.
+
+(completed)
