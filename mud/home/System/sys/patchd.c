@@ -35,6 +35,8 @@ mixed pflagdb;
 mixed **patch_queue; /* ({ obj }) */
 mixed **sweep_queue; /* ({ path, master_index, clone_index }) */
 
+/* convert to new format */
+
 void convert_pflagdb()
 {
 	switch(typeof(pflagdb)) {
@@ -91,6 +93,7 @@ private void enqueue_sweep(string path, int mindex)
 static void process()
 {
 	if (patch_queue) {
+		/* individual objects needing patched */
 		object obj;
 
 		call_out_unique("process", 0);
@@ -106,6 +109,7 @@ static void process()
 			obj->_F_dummy();
 		}
 	} else if (sweep_queue) {
+		/* a sweep was sent because we recompiled a master that had too many clones to queue individually */
 		mixed *head;
 		string path;
 		int mindex;
@@ -117,7 +121,7 @@ static void process()
 		call_out_unique("process", 0);
 
 		head = list_front(sweep_queue);
-		ticks = status(ST_TICKS) - 200000;
+		ticks = status(ST_TICKS) - 200000 + random(20000);
 
 		switch(sizeof(head)) {
 		case 3: /* ({ path, mindex, cindex }) */
@@ -307,3 +311,26 @@ int busy()
 {
 	return patch_queue || sweep_queue;
 }
+
+/*
+
+There are two parts to patch management.
+
+The first part is keeping track of which objects need to be patched and how.
+
+This involves taking a census of all patchable objects for a given
+trigger, which is a recompilation with associated patchers.
+
+What we do here is to tag all patchable objects with call_touch such that
+any attempt to access them will give them an opportunity to be patched
+first.
+
+Just as important however is to remove objects from the patchable queue
+after they've been patched, so that we don't repatch the same object
+twice.  We also must avoid patching an object that did not exist when its
+master was recompiled.
+
+The second part, technically optional, is timely provocation of patches
+and having a method to trigger a patch on any pending patchables
+
+*/

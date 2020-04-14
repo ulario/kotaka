@@ -69,25 +69,27 @@ Program info lwo's will be stripped of all information regarding constructors an
 
 ## Amendment of patching
 
-For the same reason as for constructors and destructors,
-inheritors being able to rewrite the inheritance tree of their
-objects at any time they see fit also makes guarantees for
-patching impossible.
+To be completed in version 0.61
 
-Therefore, going forward, we will simplify the regime, and the
-responsibilities of affected programs will be amended.
+Patching will be simplified.
 
-A patcher can be registered with a program when the program is compiled.
-The patcher will be queried from the InitD responsible for the program in
-question at the time the program is compiled.
+In version 0.61, any program, inheritable or otherwise, may have a
+patcher associated with it by the corresponding initd during its
+compilation.  ObjectD will query the initd for the patcher during
+compilation and record it in the corresponding program's pinfo.
 
-When a non inheritable program is compiled, it is checked for patchers in
-either itself or any other program it inherits, and they are called as
-soon as the program is compiled.  All the object's clones will also be
-touched to ensure they are patched before being accessed again.
+Upon recompilation of an object, if the object or any of its inherits,
+direct or otherwise, has a registered patcher, the object and all its
+clones will be tagged with call_touch and all such patchers will be
+called before the object is handled.
 
-It's possible to use a patcher to intercept objects that
-newly inherit an inheritable after being originally created.
+Recompiling an object will abort any pending patches for it and its
+clones, regardless of if there are any patchers for the new version of
+the object.
+
+Please note that patchers are executed in the context of the new version
+of the object, so care should probably be taken to refrain from removing
+any variables that will be required during patching until patching is completed.
 
 ## Deprecation of SortD
 
