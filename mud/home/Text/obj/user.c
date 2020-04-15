@@ -363,7 +363,7 @@ void channel_message(string channel, mixed *mtime, string sender, string message
 
 	ACCESS_CHECK(previous_program() == CHANNELD);
 
-	stamp = ctime(mtime[0])[11 .. 15];
+	stamp = ctime(mtime[0])[11 .. 18];
 
 	parts = ({ });
 
