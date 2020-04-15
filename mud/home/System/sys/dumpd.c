@@ -82,7 +82,6 @@ static void dump(int goal)
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Full statedump");
 		dump_state();
 	} else {
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: Incremental statedump");
 		dump_state(1);
 	}
 
