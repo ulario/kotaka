@@ -368,13 +368,13 @@ void channel_message(string channel, mixed *mtime, string sender, string message
 	parts = ({ });
 
 	if (channel) {
-		parts += ({ "#" + channel });
+		parts += ({ "\033[1;34m#" + channel + "\033[0m"});
 	}
 
-	parts += ({ "[" + stamp + "]" });
+	parts += ({ "[\033[1;32m" + stamp + "\033[0m]" });
 
 	if (sender) {
-		parts += ({ "<" + sender + ">" });
+		parts += ({ "<\033[1;37m" + sender + "\033[0m>" });
 	}
 
 	if (message) {
