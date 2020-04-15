@@ -63,7 +63,7 @@ private void start()
 
 private void configure()
 {
-	steps = 86400 / 10; /* ten minutes between incremental dumps */
+	steps = 86400 / 600; /* ten minutes between incremental dumps */
 	interval = 86400 / steps; /* one day between full dumps */
 }
 
