@@ -52,6 +52,12 @@ private void start()
 	goal += interval;
 	delay = goal - now;
 
+	if (delay < interval / 4) {
+		/* too soon, skip */
+		goal += interval;
+		delay += interval;
+	}
+
 	call_out("dump", delay, goal);
 }
 
