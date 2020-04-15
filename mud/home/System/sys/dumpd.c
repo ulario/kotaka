@@ -34,8 +34,6 @@ private void wipe()
 	int sz;
 	mixed *callouts;
 
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: Wiping callouts");
-
 	for (sz = sizeof(callouts = status(this_object(), O_CALLOUTS)); --sz >= 0; ) {
 		remove_call_out(callouts[sz][CO_HANDLE]);
 	}
@@ -48,8 +46,6 @@ private void start()
 	int delay;
 
 	now = time();
-
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: Starting dump cycle");
 
 	goal = now;
 	goal -= goal % interval;
@@ -88,17 +84,13 @@ static void dump(int goal)
 
 	delta = now - goal;
 
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: timestamp delta is " + delta);
-
 	if (delta > interval) {
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: schedule ruined, restarting");
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Stalled by excessive lag, restarting cycle");
 		wipe();
 		start();
 	} else {
 		goal += interval;
 		delta = goal - now;
-
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: scheduling next dump, due in " + delta + " seconds");
 
 		wipe();
 		call_out("dump", delta, goal);
@@ -107,6 +99,8 @@ static void dump(int goal)
 
 void upgrade()
 {
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Recompiled, restarting dump cycle");
+
 	wipe();
 	configure();
 	start();
@@ -114,6 +108,8 @@ void upgrade()
 
 void reboot()
 {
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Rebooted, restarting dump cycle");
+
 	wipe();
 	configure();
 	start();
