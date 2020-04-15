@@ -26,18 +26,95 @@
 
 inherit SECOND_AUTO;
 
-static void create()
+int interval;
+int steps;
+
+private void wipe()
 {
-	call_out("dump", 3600);
+	int sz;
+	mixed *callouts;
+
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Wiping callouts");
+
+	for (sz = sizeof(callouts = status(this_object(), O_CALLOUTS)); --sz >= 0; ) {
+		remove_call_out(callouts[sz][CO_HANDLE]);
+	}
 }
 
-static void dump(varargs int steps)
+private void start()
 {
-	if (steps) {
-		dump_state(1);
-		call_out("dump", 600, steps - 1);
-	} else {
+	int now;
+	int goal;
+	int delay;
+
+	now = time();
+
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Starting dump cycle");
+
+	goal = now;
+	goal -= goal % interval;
+	goal += interval;
+	delay = goal - now;
+
+	call_out("dump", delay, goal);
+}
+
+private void configure()
+{
+	steps = 86400 / 10; /* ten minutes between incremental dumps */
+	interval = 86400 / steps; /* one day between full dumps */
+}
+
+static void create()
+{
+	configure();
+	start();
+}
+
+static void dump(int goal)
+{
+	int now;
+	int delta;
+
+	if (goal % interval == goal % (interval * steps)) {
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Full statedump");
 		dump_state();
-		call_out("dump", 600, (86400 / 600) - 1);
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Incremental statedump");
+		dump_state(1);
 	}
+
+	now = time();
+
+	delta = now - goal;
+
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: timestamp delta is " + delta);
+
+	if (delta > interval) {
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: schedule ruined, restarting");
+		wipe();
+		start();
+	} else {
+		goal += interval;
+		delta = goal - now;
+
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: scheduling next dump, due in " + delta + " seconds");
+
+		wipe();
+		call_out("dump", delta, goal);
+	}
+}
+
+void upgrade()
+{
+	wipe();
+	configure();
+	start();
+}
+
+void reboot()
+{
+	wipe();
+	configure();
+	start();
 }
