@@ -260,9 +260,9 @@ static void cmd_rebuild(object user, string cmd, string arg)
 				destruct_object(path);
 			}
 		}
-	}
 
-	compile_dir("/");
+		compile_dir("/");
+	}
 }
 
 static void cmd_orphans(object user, string cmd, string arg)
