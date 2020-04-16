@@ -432,6 +432,35 @@ static void upgrade_system_upgrade_system_module()
 {
 	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module...");
 
+	/* purge orphans */
+	rlimits (0; -1) {
+		mixed **list;
+
+		list = OBJECTD->query_program_indices();
+
+		while (!list_empty(list)) {
+			int index;
+			object pinfo;
+			string path;
+
+			index = list_front(list);
+			list_pop_front(list);
+
+			pinfo = OBJECTD->query_program_info(index);
+
+			if (!pinfo) {
+				continue;
+			}
+
+			path = pinfo->query_path();
+
+			if (!file_info(path + ".c")) {
+				LOGD->post_message("system", LOG_NOTICE, "Destructing " + path + " due to missing source");
+				destruct_object(path);
+			}
+		}
+	}
+
 	call_out("upgrade_system_upgrade_modules", 0);
 }
 
