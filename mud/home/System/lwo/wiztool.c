@@ -136,6 +136,7 @@ static void process(string str)
     case "dormants":
     case "orphans":
     case "hotboot":
+    case "rebuild":
 	call_other(this_object(), "cmd_" + str, user, str, arg);
 	break;
 
@@ -254,7 +255,7 @@ static void cmd_rebuild(object user, string cmd, string arg)
 
 			path = pinfo->query_path();
 
-			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR) || !file_info(path)) {
+			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR) || !file_info(path + ".c")) {
 				LOGD->post_message("system", LOG_NOTICE, "Destructing " + path);
 				destruct_object(path);
 			}
