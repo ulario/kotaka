@@ -231,3 +231,14 @@ void shutdown(varargs int hotboot)
 
 	::shutdown(hotboot);
 }
+
+object get_wiztool()
+{
+	object wiztool;
+	object user;
+
+	ACCESS_CHECK(INTERFACE() || PRIVILEGED());
+	ACCESS_CHECK(user = this_user());
+
+	return new_object("~/lwo/wiztool", user->query_name());
+}

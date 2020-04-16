@@ -69,7 +69,7 @@ void dispatch_wiztool(string line)
 {
 	ACCESS_CHECK(TEXT());
 
-	PROXYD->get_wiztool(query_name())->input(line);
+	KERNELD->get_wiztool()->input(line);
 }
 
 static void destruct(int clone)
