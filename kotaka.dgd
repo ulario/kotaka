@@ -17,7 +17,7 @@ swap_fragment	= 64;			/* fragment to swap out */
 static_chunk	= 64512;		/* static memory chunk */
 dynamic_chunk	= 261120;		/* dynamic memory chunk */
 dump_file	= "../state/snapshot";	/* snapshot file */
-dump_interval	= 3600;			/* snapshot interval in seconds */
+dump_interval	= 86400;		/* snapshot interval in seconds */
 hotboot		= ({ "../script/hotboot" }); /* hotboot */
 
 typechecking	= 2;			/* highest level of typechecking */
