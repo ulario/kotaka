@@ -150,14 +150,14 @@ static void process(string str)
  * NAME:	cmd_statedump()
  * DESCRIPTION:	create a state dump, optionally making it incremental
  */
-static void cmd_statedump(object user, string cmd, string str)
+static void cmd_statedump(object user, string cmd, string arg)
 {
-    if (str && str != "-i") {
+    if (arg && arg != "-i") {
 	message("Usage: " + cmd + " [-i]\n");
 	return;
     }
 
-    if (str == "-i") {
+    if (arg == "-i") {
 	dump_state(1);
     } else {
 	dump_state();
