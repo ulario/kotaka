@@ -133,6 +133,7 @@ static void process(string str)
     case "statedump":
     case "shutdown":
     case "reboot":
+    case "hotboot":
 	call_other(this_object(), "cmd_" + str, user, str, arg);
 	break;
 
@@ -158,4 +159,14 @@ static void cmd_statedump(object user, string cmd, string str)
     } else {
 	dump_state();
     }
+}
+
+static void cmd_hotboot(object user, string cmd, string arg)
+{
+    if (arg) {
+	message("Usage: hotboot\n");
+    }
+
+    dump_state(1);
+    shutdown(1);
 }
