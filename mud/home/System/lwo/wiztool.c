@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,9 +20,12 @@
 # include <kernel/kernel.h>
 # include <kernel/user.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/log.h>
 
 inherit a SECOND_AUTO;
 inherit w LIB_SYSTEM_WIZTOOL;
+inherit "~/lib/struct/list";
+inherit "~/lib/utility/compile";
 
 private object user;		/* associated user object */
 
@@ -35,7 +38,7 @@ static void process(string str);
 static void create(int clone)
 {
     if (clone) {
-	w::create(200);
+	w::create(0);
 
 	user = this_user();
 
@@ -61,11 +64,7 @@ static void message(string str)
 void input(string str)
 {
     if (previous_object() == user) {
-	if (query_owner() == "admin") {
-	    process(str);
-	} else {
-	    call_limited("process", str);
-	}
+	call_limited("process", str);
     } else {
 	error("Security violation:  Caller is "
 		+ object_name(previous_object())
@@ -133,6 +132,9 @@ static void process(string str)
     case "statedump":
     case "shutdown":
     case "reboot":
+
+    case "dormants":
+    case "orphans":
     case "hotboot":
 	call_other(this_object(), "cmd_" + str, user, str, arg);
 	break;
@@ -172,23 +174,24 @@ static void cmd_hotboot(object user, string cmd, string arg)
 	shutdown(1);
 }
 
-private void list_dormants(mixed **list, string dir)
+private void list_dormants(string dir, mixed **list)
 {
 	string *names;
 	mixed *objs;
-	mixed *dummy;
+	int *times;
+	int *sizes;
 	int sz;
 
 	if (dir == "/") {
 		dir = "";
 	}
 
-	({ names, dummy, dummy, objs }) = get_dir(dir + "/*");
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
 
 	for (sz = sizeof(names); --sz >= 0; ) {
 		if (sizes[sz] == -2) {
 			if (names[sz] != "lib") {
-				list_dormants(list, dir + "/" + names[sz]);
+				list_dormants(dir + "/" + names[sz], list);
 			}
 
 			continue;
@@ -214,19 +217,84 @@ static void cmd_dormants(object user, string cmd, string arg)
 	}
 
 	list = ({ nil, nil });
-	proxy = PROXYD->get_proxy(query_user()->query_name());
 
-	list_dormants(list, proxy, "/");
+	list_dormants("/", list);
 
-	if (list_empty(list)) {
-		send_out("There are no dormant LPC source files.\n");
+	while (!list_empty(list)) {
+		message(list_front(list) + "\n");
+		list_pop_front(list);
+	}
+}
+
+static void cmd_rebuild(object user, string cmd, string arg)
+{
+	if (arg) {
+		message("Usage: rebuild\n");
 		return;
 	}
 
-	send_out("These LPC files are not compiled:\n");
+	rlimits (0; -1) {
+		mixed **list;
 
-	while (!list_empty(list)) {
-		send_out(list_front(list) + "\n");
-		list_pop_front(list);
+		list = OBJECTD->query_program_indices();
+
+		while (!list_empty(list)) {
+			int index;
+			object pinfo;
+			string path;
+
+			index = list_front(list);
+			list_pop_front(list);
+
+			pinfo = OBJECTD->query_program_info(index);
+
+			if (!pinfo) {
+				continue;
+			}
+
+			path = pinfo->query_path();
+
+			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR) || !file_info(path)) {
+				LOGD->post_message("system", LOG_NOTICE, "Destructing " + path);
+				destruct_object(path);
+			}
+		}
+	}
+
+	compile_dir("/");
+}
+
+static void cmd_orphans(object user, string cmd, string arg)
+{
+	mixed **list;
+
+	if (arg) {
+		message("Usage: orphans\n");
+		return;
+	}
+
+	list = OBJECTD->query_program_indices();
+
+	rlimits(0; -1) {
+		while (!list_empty(list)) {
+			int index;
+			string path;
+			object pinfo;
+
+			index = list_front(list);
+			list_pop_front(list);
+
+			pinfo = OBJECTD->query_program_info(index);
+
+			if (pinfo->query_destructed()) {
+				continue;
+			}
+
+			path = pinfo->query_path();
+
+			if (!file_info(path + ".c")) {
+				message(path + "\n");
+			}
+		}
 	}
 }
