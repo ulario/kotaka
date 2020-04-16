@@ -175,7 +175,31 @@ static void load_module(string module)
 
 static void create()
 {
+	string *names;
+	int sz;
 	modules = ([ ]);
+
+	if (find_object("/initd")) {
+		LOGD->post_message("system", LOG_WARNING, "ModuleD: Rogue Ecru module discovered");
+		modules[nil] = 1;
+	}
+
+	names = get_dir(USR_DIR + "/*")[0];
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+
+		name = names[sz];
+
+		if (name == "System") {
+			continue;
+		}
+
+		if (find_object(USR_DIR + "/" + name + "/initd")) {
+			LOGD->post_message("system", LOG_WARNING, "ModuleD: Rogue " + name + " module discovered");
+			modules[name] = 1;
+		}
+	}
 }
 
 void upgrade()
