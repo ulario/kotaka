@@ -163,10 +163,70 @@ static void cmd_statedump(object user, string cmd, string str)
 
 static void cmd_hotboot(object user, string cmd, string arg)
 {
-    if (arg) {
-	message("Usage: hotboot\n");
-    }
+	if (arg) {
+		message("Usage: hotboot\n");
+		return;
+	}
 
-    dump_state(1);
-    shutdown(1);
+	dump_state(1);
+	shutdown(1);
+}
+
+private void list_dormants(mixed **list, string dir)
+{
+	string *names;
+	mixed *objs;
+	mixed *dummy;
+	int sz;
+
+	if (dir == "/") {
+		dir = "";
+	}
+
+	({ names, dummy, dummy, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		if (sizes[sz] == -2) {
+			if (names[sz] != "lib") {
+				list_dormants(list, dir + "/" + names[sz]);
+			}
+
+			continue;
+		}
+
+		if (!sscanf(names[sz], "%*s.c")) {
+			continue;
+		}
+
+		if (!objs[sz]) {
+			list_push_back(list, dir + "/" + names[sz]);
+		}
+	}
+}
+
+static void cmd_dormants(object user, string cmd, string arg)
+{
+	mixed **list;
+
+	if (arg) {
+		message("Usage: dormants\n");
+		return;
+	}
+
+	list = ({ nil, nil });
+	proxy = PROXYD->get_proxy(query_user()->query_name());
+
+	list_dormants(list, proxy, "/");
+
+	if (list_empty(list)) {
+		send_out("There are no dormant LPC source files.\n");
+		return;
+	}
+
+	send_out("These LPC files are not compiled:\n");
+
+	while (!list_empty(list)) {
+		send_out(list_front(list) + "\n");
+		list_pop_front(list);
+	}
 }
