@@ -104,6 +104,8 @@ static void dump(int goal)
 
 void upgrade()
 {
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Recompiled, restarting dump cycle");
 
 	wipe();
@@ -113,6 +115,8 @@ void upgrade()
 
 void reboot()
 {
+	ACCESS_CHECK(previous_program() == INITD);
+
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Rebooted, restarting dump cycle");
 
 	wipe();

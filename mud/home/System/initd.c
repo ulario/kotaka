@@ -239,7 +239,6 @@ private void upgrade_check_ready()
 	MODULED->upgrade_check_modules();
 }
 
-
 /* static helpers */
 
 static void boot()
@@ -419,7 +418,6 @@ static void upgrade_system_recompile_kernel()
 
 	call_out("upgrade_system_recompile_system", 0);
 }
-
 
 static void upgrade_system_recompile_system()
 {
