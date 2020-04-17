@@ -58,7 +58,7 @@ void save()
 {
 	string buf;
 
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || VERB());
 
 	buf = hybrid_sprint(aliases);
 
@@ -73,7 +73,7 @@ void restore()
 {
 	string buf;
 
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || VERB());
 
 	buf = CONFIGD->read_file("aliases");
 
