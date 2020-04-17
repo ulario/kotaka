@@ -22,7 +22,8 @@
 
 inherit SECOND_AUTO;
 
-static void process_dir(string dir, string func)
+/* load */
+static void load_dir(string dir)
 {
 	string *names;
 	int *sizes;
@@ -42,84 +43,205 @@ static void process_dir(string dir, string func)
 
 		name = names[sz];
 
-		/* directory */
 		if (sizes[sz] == -2) {
-			process_dir(dir + "/" + name, func);
+			/* directory */
+			load_dir(dir + "/" + name);
 			continue;
 		}
 
-		/* not a .c file */
 		if (strlen(name) <= 2 || name[strlen(name) - 2 ..] != ".c") {
+			/* not a .c file */
 			continue;
 		}
 
 		path = dir + "/" + name[.. strlen(name) - 3];
 
-		switch(func) {
-		case "load":
-		case "compile":
-		case "recompile":
-			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
-				/* inheritable */
-				continue;
-			}
+		if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+			/* inheritable */
+			continue;
+		}
 
-			switch(func) {
-			case "load":
-				if (objs[sz]) {
-					/* already loaded */
-					continue;
-				}
-				break;
+		if (objs[sz]) {
+			/* already loaded */
+			continue;
+		}
 
-			case "recompile":
-				if (!objs[sz]) {
-					/* not loaded */
-					continue;
-				}
-				break;
-			}
+		compile_object(path);
+	}
+}
 
-			compile_object(path);
-			break;
+/* destruct */
+static void destruct_dir(string dir)
+{
+	/* destruct if exists */
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+	int sz;
 
-		case "purge":
-			if (!sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
-				/* not inheritable */
-				continue;
-			}
-			/* fall through */
+	if (dir == "/") {
+		dir = "";
+	}
 
-		case "destruct":
-			if (objs[sz]) {
-				destruct_object(path);
-			}
-			break;
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+		string path;
+
+		name = names[sz];
+
+		if (sizes[sz] == -2) {
+			/* directory */
+			destruct_dir(dir + "/" + name);
+			continue;
+		}
+
+		if (strlen(name) <= 2 || name[strlen(name) - 2 ..] != ".c") {
+			/* not a .c file */
+			continue;
+		}
+
+		path = dir + "/" + name[.. strlen(name) - 3];
+
+		if (objs[sz]) {
+			destruct_object(path);
 		}
 	}
 }
 
-static void load_dir(string dir)
-{
-	process_dir(dir, "load");
-}
-
-static void destruct_dir(string dir)
-{
-	process_dir(dir, "destruct");
-}
-
-static void recompile_dir(string dir)
-{
-	process_dir(dir, "recompile");
-}
-
+/* compile, even if already loaded */
 static void compile_dir(string dir)
 {
-	process_dir(dir, "compile");
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+	int sz;
+
+	if (dir == "/") {
+		dir = "";
+	}
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+		string path;
+
+		name = names[sz];
+
+		if (sizes[sz] == -2) {
+			/* directory */
+			compile_dir(dir + "/" + name);
+			continue;
+		}
+
+		if (strlen(name) <= 2 || name[strlen(name) - 2 ..] != ".c") {
+			/* not a .c file */
+			continue;
+		}
+
+		path = dir + "/" + name[.. strlen(name) - 3];
+
+		if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+			/* inheritable */
+			continue;
+		}
+
+		compile_object(path);
+	}
 }
 
+/* recompile only if loaded */
+static void recompile_dir(string dir)
+{
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+	int sz;
+
+	if (dir == "/") {
+		dir = "";
+	}
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+		string path;
+
+		name = names[sz];
+
+		if (sizes[sz] == -2) {
+			/* directory */
+			recompile_dir(dir + "/" + name);
+			continue;
+		}
+
+		if (strlen(name) <= 2 || name[strlen(name) - 2 ..] != ".c") {
+			/* not a .c file */
+			continue;
+		}
+
+		path = dir + "/" + name[.. strlen(name) - 3];
+
+		if (sscanf(path, "%*s" + INHERITABLE_SUBDIR + "%*s")) {
+			/* inheritable */
+			continue;
+		}
+
+		if (!objs[sz]) {
+			/* not yet loaded */
+			continue;
+		}
+
+		compile_object(path);
+	}
+}
+
+/* destruct libraries */
 static void purge_dir(string dir)
 {
-	process_dir(dir, "purge");
+	string *names;
+	int *sizes;
+	int *times;
+	mixed *objs;
+	int sz;
+
+	if (dir == "/") {
+		dir = "";
+	}
+
+	({ names, sizes, times, objs }) = get_dir(dir + "/*");
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+		string path;
+
+		name = names[sz];
+
+		if (sizes[sz] == -2) {
+			/* directory */
+			purge_dir(dir + "/" + name);
+			continue;
+		}
+
+		if (strlen(name) <= 2 || name[strlen(name) - 2 ..] != ".c") {
+			/* not a .c file */
+			continue;
+		}
+
+		path = dir + "/" + name[.. strlen(name) - 3];
+
+		if (!sscanf(path, "%*s" + INHERITABLE_SUBDIR)) {
+			continue;
+		}
+
+		if (objs[sz]) {
+			destruct_object(path);
+		}
+	}
 }
