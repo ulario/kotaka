@@ -73,21 +73,29 @@ void main(object actor, mapping roles)
 		}
 	}
 
-	send_out("Program: " + path + " (#" + index);
+	send_out("Program: " + path + " (#" + index + ")");
 
-	if (sscanf(path, "%*s" + CLONABLE_SUBDIR + "%*s")) {
+	if (pinfo->query_destructed()) {
+		send_out(" (destructed)");
+	}
+
+	arr = pinfo->query_inherits();
+
+	if (!arr) {
+		send_out(" (unregistered)");
+	}
+
+	if (sscanf(path, "%*s" + CLONABLE_SUBDIR)) {
 		int clones;
 
 		clones = pinfo->query_clone_count();
 
-		send_out(", " + clones + " " + (clones == 1 ? "clone" : "clones"));
+		send_out(" (" + clones + " " + (clones == 1 ? "clone" : "clones") + ")");
 	}
 
-	send_out(")\n\n");
+	send_out("\n\n");
 
-	arr = pinfo->query_inherits();
-
-	if (sz = sizeof(arr)) {
+	if (arr && (sz = sizeof(arr))) {
 		int i;
 
 		send_out("Inherits:\n");
@@ -108,7 +116,7 @@ void main(object actor, mapping roles)
 					send_out("    " + libpath + " (#" + arr[i] + ")\n");
 				}
 			} else {
-				send_out("    (unregistered program #" + arr[i] + ")\n");
+				send_out("    (unregistered #" + arr[i] + ")\n");
 			}
 		}
 
