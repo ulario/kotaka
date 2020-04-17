@@ -42,6 +42,7 @@ mapping subscribers;	/*< channel subscribers */
 void configure_channels();
 void save();
 void restore();
+void i3_sync();
 
 static void create()
 {
@@ -54,6 +55,32 @@ static void create()
 	configure_channels();
 
 	save();
+
+	if (find_object(INTERMUDD)) {
+		i3_sync();
+	}
+}
+
+void i3_sync()
+{
+	int sz;
+	string *check;
+
+	check = map_indices(channels);
+
+	for (sz = sizeof(check); --sz >= 0; ) {
+		string chan;
+
+		chan = check[sz];
+
+		if (intermud[chan]) {
+			INTERMUDD->listen_channel(chan);
+			LOGD->post_message("system", LOG_NOTICE, "ChannelD: Listening to i3 channel " + chan);
+		} else {
+			INTERMUDD->unlisten_channel(chan);
+			LOGD->post_message("system", LOG_NOTICE, "ChannelD: Unlistening to i3 channel " + chan);
+		}
+	}
 }
 
 void upgrade()
@@ -188,11 +215,11 @@ void set_intermud(string channel, int true)
 
 	if (true) {
 		intermud[channel] = 1;
+		INTERMUDD->listen_channel(channel);
 	} else {
 		intermud[channel] = nil;
+		INTERMUDD->unlisten_channel(channel);
 	}
-
-	INTERMUDD->listen_channel(channel, true);
 
 	save();
 }

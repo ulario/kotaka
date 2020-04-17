@@ -313,16 +313,21 @@ private void i3_handle_chanlist_reply(mixed *value)
 	values = map_values(delta);
 	sz = sizeof(names);
 
-	for (sz = sizeof(names) - 1; sz >= 0; --sz) {
-		if (values[sz] == 0) {
-			channels[names[sz]] = nil;
-		} else {
-			channels[names[sz]] = values[sz];
+	if (find_object(CHANNELD)) {
+		for (sz = sizeof(names) - 1; sz >= 0; --sz) {
+			if (values[sz] == 0) {
+				channels[names[sz]] = nil;
+			} else {
+				channels[names[sz]] = values[sz];
 
-			if (CHANNELD->query_intermud(names[sz])) {
-				listen_channel(names[sz]);
+				if (CHANNELD->query_intermud(names[sz])) {
+					listen_channel(names[sz]);
+				}
 			}
 		}
+	} else {
+		/* if ChannelD is down then it will have to ask us to listen manually when it starts */
+		LOGD->post_message("system", LOG_WARNING, "IntermudD: Received chanlist reply while ChannelD offline");
 	}
 
 	call_out_unique("save", 0);

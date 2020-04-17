@@ -41,7 +41,6 @@ void main(object actor, mapping roles)
 	}
 
 	CHANNELD->set_intermud(roles["raw"], 0);
-	INTERMUDD->listen_channel(roles["raw"], 0);
 
 	send_out("Channel disconnected from Intermud3.\n");
 }
