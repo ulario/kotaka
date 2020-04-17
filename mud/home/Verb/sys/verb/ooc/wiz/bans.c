@@ -102,7 +102,7 @@ string print_bans(string header, string *targets, mixed *bans)
 		}
 	}
 
-	buffer = "\033[1m" + lalign(header, len[0])
+	buffer = "\033[1;37m" + lalign(header, len[0])
 		+ "  " + lalign("Issuer", len[1])
 		+ "  " + lalign("Exp", len[2])
 		+ "  Message\033[0m\n";
