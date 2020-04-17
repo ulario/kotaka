@@ -628,7 +628,6 @@ void discover_objects()
 	ACCESS_CHECK(SYSTEM());
 
 	purge_dir("/");
-
 	recompile_dir("/");
 }
 

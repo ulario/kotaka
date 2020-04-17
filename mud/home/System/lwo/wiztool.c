@@ -249,18 +249,18 @@ static void cmd_rebuild(object user, string cmd, string arg)
 
 			pinfo = OBJECTD->query_program_info(index);
 
-			if (!pinfo) {
+			if (!pinfo || pinfo->query_destructed()) {
 				continue;
 			}
 
 			path = pinfo->query_path();
 
 			if (sscanf(path, "%*s" + INHERITABLE_SUBDIR) || !file_info(path + ".c")) {
-				LOGD->post_message("system", LOG_NOTICE, "Destructing " + path);
 				destruct_object(path);
 			}
 		}
 
+		purge_dir("/");
 		compile_dir("/");
 	}
 }
