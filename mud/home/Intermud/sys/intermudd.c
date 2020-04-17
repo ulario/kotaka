@@ -234,7 +234,7 @@ private void i3_send_packet(mixed *arr)
 	message(make_packet(arr));
 }
 
-private void unlisten_channel(string channel)
+void unlisten_channel(string channel)
 {
 	mixed *arr;
 
@@ -254,7 +254,7 @@ private void unlisten_channel(string channel)
 	i3_send_packet(arr);
 }
 
-private void listen_channel(string channel)
+void listen_channel(string channel)
 {
 	mixed *arr;
 
