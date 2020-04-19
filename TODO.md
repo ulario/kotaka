@@ -4,8 +4,13 @@ Master TODO list for kotaka
 
 ## Deprecate implicit module registration
 
-In the future, the existence of a module's InitD will no longer
-be the official indication of the module's being online.
+In the future, the existence of a module's InitD will no longer be the
+official indication of the module's being online.
+
+Henceforth a module's official status is determined by ModuleD's records.
+
+However, in the event of ModuleD's destruction and recompilation, it will
+audit the existence of existing initds to recreate its data.
 
 ### 0.61
 
