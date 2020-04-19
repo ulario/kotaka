@@ -26,13 +26,13 @@
 inherit "/lib/string/case";
 inherit "/lib/string/sprint";
 
+mapping bans;
+mapping sitebans;
+
 void save();
 void restore();
 void prune_bans();
 void prune_sitebans();
-
-mapping bans;
-mapping sitebans;
 
 private string cidr_mask(string site, int cidr)
 {
