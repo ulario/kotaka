@@ -29,42 +29,23 @@
 
 inherit SECOND_AUTO;
 
-int angst;
-
 static void create()
 {
-	call_out("check", 1);
-}
-
-void upgrade()
-{
-	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	wipe_callouts();
 }
 
 static void check()
 {
-	float smem_size;
-	float smem_used;
 	float dmem_size;
 	float dmem_used;
-
-	int swap;
-	int full;
-	int frag;
-	int slack;
 
 	wipe_callouts();
 
 	call_out("check", 1);
 
-	smem_size = (float)status(ST_SMEMSIZE);
-	smem_used = (float)status(ST_SMEMUSED);
 	dmem_size = (float)status(ST_DMEMSIZE);
 	dmem_used = (float)status(ST_DMEMUSED);
 
-	if ((smem_size + dmem_used) / (smem_size + dmem_size) < 0.75) {
+	if (dmem_used / dmem_size < 0.75) {
 		frag = 1;
 	}
 
@@ -73,14 +54,6 @@ static void check()
 	}
 
 	if (frag && slack) {
-		angst++;
-
-		if (angst > 30) {
-			angst = 0;
-			LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out");
-			swapout();
-		}
-	} else if (angst) {
-		angst--;
+		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out");
 	}
 }
