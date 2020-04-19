@@ -454,6 +454,11 @@ static void upgrade_system_upgrade_system_module()
 
 			path = pinfo->query_path();
 
+			if (!sscanf(path, USR_DIR + "/System/")) {
+				/* not ours */
+				continue;
+			}
+
 			if (!file_info(path + ".c")) {
 				LOGD->post_message("system", LOG_NOTICE, "Destructing " + path + " due to missing source");
 				destruct_object(path);
