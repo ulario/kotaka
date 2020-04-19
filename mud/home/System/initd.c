@@ -452,6 +452,10 @@ static void upgrade_system_upgrade_system_module()
 				continue;
 			}
 
+			if (pinfo->query_destructed()) {
+				continue;
+			}
+
 			path = pinfo->query_path();
 
 			if (!sscanf(path, USR_DIR + "/System/")) {
