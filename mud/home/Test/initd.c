@@ -21,6 +21,9 @@
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
+#define M 1000000
+#define G 1000000000
+
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
@@ -35,7 +38,7 @@ private void set_limits()
 {
 	reset_limits();
 
-	KERNELD->rsrc_set_limit("Test", "ticks", 2000000000);
+	KERNELD->rsrc_set_limit("Test", "ticks", 2 * G);
 }
 
 static void test()
