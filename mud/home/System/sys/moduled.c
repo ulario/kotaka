@@ -91,8 +91,6 @@ private void send_module_boot_signal(string module)
 
 			if (initd = find_object(initd_of(others[sz]))) {
 				initd->booted_module(module);
-			} else {
-				call_out("shutdown_module", 0, module);
 			}
 		}
 	}
