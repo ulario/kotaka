@@ -21,7 +21,7 @@
 #include <kotaka/assert.h>
 
 inherit "~System/lib/struct/list";
-inherit "/lib/search";
+inherit "~System/lib/search";
 
 int branch;
 int leaf;
