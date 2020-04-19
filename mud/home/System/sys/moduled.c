@@ -459,18 +459,8 @@ private void do_module_shutdown(string module, int reboot)
 {
 	string initd;
 
-	switch(module) {
-	case "String":
-		if (reboot) {
-			break;
-		}
-	case "Bigstruct":
-	case "System":
-		if (reboot) {
-			error("Cannot reboot " + module);
-		} else {
-			error("Cannot shut down " + module);
-		}
+	if (module == "System") {
+		error("Cannot reboot or shut down System module");
 	}
 
 	modules[module] = -1;
