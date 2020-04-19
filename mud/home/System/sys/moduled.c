@@ -358,90 +358,6 @@ void upgrade_modules()
 	}
 }
 
-/**********/
-/* public */
-/**********/
-
-string *query_modules()
-{
-	return map_indices(modules) - ({ "System" });
-}
-
-/* directive, start up a module */
-void boot_module(string module, varargs int reboot)
-{
-	string *others;
-	int sz;
-	int existed;
-	string creator;
-
-	creator = DRIVER->creator(previous_program());
-
-	if (module == "System") {
-		error("Cannot boot System module");
-	}
-
-	if (!file_info(initd_of(module) + ".c")) {
-		error("No initd for " + (module ? module : "Ecru") + " module");
-	}
-
-	existed = !!find_object(initd_of(module));
-
-	if (module && !sizeof(KERNELD->query_users() & ({ module }))) {
-		KERNELD->add_user(module);
-	}
-
-	if (!sizeof(KERNELD->query_owners() & ({ module }))) {
-		KERNELD->add_owner(module);
-	}
-
-	if (!existed) {
-		thaw_module(module);
-
-		rlimits(0; -1) {
-			rlimits(0; MODULE_BOOT_TICKS) {
-				string err;
-				
-				err = catch(call_limited("load_module", module));
-
-				if (err) {
-					if (module) {
-						error("Error booting module " + module + ": " + err);
-					} else {
-						error("Error booting nil module: " + err);
-					}
-				}
-			}
-		}
-	}
-
-	modules[module] = 1;
-
-	if (!existed) {
-		if (reboot) {
-			LOGD->post_message("system", LOG_NOTICE, "Rebooted " + (module ? module : "Ecru"));
-		} else {
-			LOGD->post_message("system", LOG_NOTICE, "Booted " + (module ? module : "Ecru"));
-		}
-
-		send_module_boot_signal(module);
-	}
-}
-
-void shutdown_module(string module)
-{
-	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
-
-	do_module_shutdown(module, 0);
-}
-
-void reboot_module(string module)
-{
-	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
-
-	do_module_shutdown(module, 1);
-}
-
 /*******************/
 /* called by INITD */
 /*******************/
@@ -606,4 +522,88 @@ void hotboot()
 			}
 		}
 	}
+}
+
+/**********/
+/* public */
+/**********/
+
+string *query_modules()
+{
+	return map_indices(modules) - ({ "System" });
+}
+
+/* directive, start up a module */
+void boot_module(string module, varargs int reboot)
+{
+	string *others;
+	int sz;
+	int existed;
+	string creator;
+
+	creator = DRIVER->creator(previous_program());
+
+	if (module == "System") {
+		error("Cannot boot System module");
+	}
+
+	if (!file_info(initd_of(module) + ".c")) {
+		error("No initd for " + (module ? module : "Ecru") + " module");
+	}
+
+	existed = !!find_object(initd_of(module));
+
+	if (module && !sizeof(KERNELD->query_users() & ({ module }))) {
+		KERNELD->add_user(module);
+	}
+
+	if (!sizeof(KERNELD->query_owners() & ({ module }))) {
+		KERNELD->add_owner(module);
+	}
+
+	if (!existed) {
+		thaw_module(module);
+
+		rlimits(0; -1) {
+			rlimits(0; MODULE_BOOT_TICKS) {
+				string err;
+
+				err = catch(call_limited("load_module", module));
+
+				if (err) {
+					if (module) {
+						error("Error booting module " + module + ": " + err);
+					} else {
+						error("Error booting nil module: " + err);
+					}
+				}
+			}
+		}
+	}
+
+	modules[module] = 1;
+
+	if (!existed) {
+		if (reboot) {
+			LOGD->post_message("system", LOG_NOTICE, "Rebooted " + (module ? module : "Ecru"));
+		} else {
+			LOGD->post_message("system", LOG_NOTICE, "Booted " + (module ? module : "Ecru"));
+		}
+
+		send_module_boot_signal(module);
+	}
+}
+
+void shutdown_module(string module)
+{
+	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
+
+	do_module_shutdown(module, 0);
+}
+
+void reboot_module(string module)
+{
+	ACCESS_CHECK(KERNEL() || SYSTEM() || INTERFACE() || KADMIN() || module == DRIVER->creator(object_name(previous_object())));
+
+	do_module_shutdown(module, 1);
 }
