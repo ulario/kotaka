@@ -162,6 +162,35 @@ private void purge_objects(string module)
 	}
 }
 
+private void do_module_shutdown(string module, int reboot)
+{
+	string initd;
+
+	if (module == "System") {
+		error("Cannot reboot or shut down System module");
+	}
+
+	modules[module] = -1;
+
+	LOGD->post_message("system", LOG_NOTICE, (reboot ? "Rebooting" : "Shutting down") + " " + (module ? module : "Ecru"));
+
+	send_module_shutdown_signal(module);
+
+	initd = initd_of(module);
+
+	/* give it a chance to shut down cleanly first */
+	if (find_object(initd)) {
+		catch {
+			destruct_object(initd);
+		}
+	}
+
+	freeze_module(module);
+	purge_objects(module);
+
+	call_out("purge_module_tick", 0, module, reboot);
+}
+
 static void purge_module_tick(string module, varargs int reboot)
 {
 	object cursor;
@@ -491,35 +520,6 @@ void boot_module(string module, varargs int reboot)
 
 		send_module_boot_signal(module);
 	}
-}
-
-private void do_module_shutdown(string module, int reboot)
-{
-	string initd;
-
-	if (module == "System") {
-		error("Cannot reboot or shut down System module");
-	}
-
-	modules[module] = -1;
-
-	LOGD->post_message("system", LOG_NOTICE, (reboot ? "Rebooting" : "Shutting down") + " " + (module ? module : "Ecru"));
-
-	send_module_shutdown_signal(module);
-
-	initd = initd_of(module);
-
-	/* give it a chance to shut down cleanly first */
-	if (find_object(initd)) {
-		catch {
-			destruct_object(initd);
-		}
-	}
-
-	freeze_module(module);
-	purge_objects(module);
-
-	call_out("purge_module_tick", 0, module, reboot);
 }
 
 void shutdown_module(string module)
