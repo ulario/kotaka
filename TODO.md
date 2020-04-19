@@ -92,3 +92,11 @@ Seems that Utility is no longer a needed module.
 ### 0.61
 
 The module is simply going to be removed.
+
+## Consolidate Kotaka
+
+We're at the point of ravioli.  There are certain things that are going
+to comprise the unprivileged core of Kotaka, so they should be
+consolidated into the Kotaka module.
+
+Channel and Help in particular.
