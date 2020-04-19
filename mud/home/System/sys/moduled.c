@@ -280,12 +280,18 @@ void upgrade()
 	modules["System"] = nil;
 }
 
+/*******************/
+/* called by INITD */
+/*******************/
+
+/* part of system upgrade */
+
 void upgrade_check_modules()
 {
 	int sz;
 	string *list;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
 	list -= ({ "System" });
@@ -314,12 +320,6 @@ void upgrade_check_modules()
 		}
 	}
 }
-
-/*******************/
-/* called by INITD */
-/*******************/
-
-/* part of system upgrade */
 
 void upgrade_modules()
 {
