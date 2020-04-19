@@ -315,6 +315,12 @@ void upgrade_check_modules()
 	}
 }
 
+/*******************/
+/* called by INITD */
+/*******************/
+
+/* part of system upgrade */
+
 void upgrade_modules()
 {
 	int sz;
@@ -357,12 +363,6 @@ void upgrade_modules()
 		}
 	}
 }
-
-/*******************/
-/* called by INITD */
-/*******************/
-
-/* part of system upgrade */
 
 /* instruct all modules to purge */
 /* destruct inheritables and objects with removed sources */
