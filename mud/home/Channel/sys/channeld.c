@@ -34,9 +34,9 @@ inherit "/lib/string/sprint";
 inherit "/lib/copy";
 inherit "~System/lib/utility/secretlog";
 
-mapping intermud;	/*< set of channels to be relayed to intermud */
-mapping channels;	/*< channel configuration */
-mapping subscribers;	/*< channel subscribers */
+mapping intermud;	/* set of channels to be relayed to intermud */
+mapping channels;	/* channel configuration */
+mapping subscribers;	/* channel subscribers */
 
 void configure_channels();
 void save();
@@ -360,7 +360,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 
 	timestamp = timestamp(mtime);
 
-	write_secret_log(channel, timestamp + " " + message);
+	write_secret_log(channel, timestamp + " " + (sender ? sender + ": " : "") + message);
 
 	if (subscribers[channel]) {
 		send_list = map_indices(subscribers[channel]);
