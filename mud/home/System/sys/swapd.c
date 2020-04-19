@@ -58,5 +58,6 @@ static void check()
 
 	if (frag && slack) {
 		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out");
+		swapout();
 	}
 }
