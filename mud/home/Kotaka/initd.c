@@ -34,7 +34,6 @@ private void load()
 	MODULED->boot_module("String");
 	MODULED->boot_module("Text");
 	MODULED->boot_module("Thing");
-	MODULED->boot_module("Utility");
 
 	load_dir("sys");
 }
