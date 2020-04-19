@@ -31,6 +31,7 @@
 inherit SECOND_AUTO;
 inherit UTILITY_COMPILE;
 inherit LIB_SYSTEM;
+inherit "~/lib/struct/list";
 
 mapping modules;
 
@@ -120,6 +121,43 @@ private void send_module_shutdown_signal(string module)
 			} else {
 				call_out("shutdown_module", 0, module);
 			}
+		}
+	}
+}
+
+static void purge_objects(string module)
+{
+	rlimits (0; -1) {
+		mixed **list;
+
+		list = OBJECTD->query_program_indices();
+
+		while (!list_empty(list)) {
+			int index;
+			object pinfo;
+			string path;
+
+			index = list_front(list);
+			list_pop_front(list);
+
+			pinfo = OBJECTD->query_program_info(index);
+
+			if (!pinfo) {
+				continue;
+			}
+
+			if (pinfo->query_destructed()) {
+				continue;
+			}
+
+			path = pinfo->query_path();
+
+			if (DRIVER->creator(path) != module) {
+				/* not theirs */
+				continue;
+			}
+
+			destruct_object(path);
 		}
 	}
 }
@@ -479,6 +517,7 @@ private void do_module_shutdown(string module, int reboot)
 	}
 
 	freeze_module(module);
+	purge_objects(module);
 
 	call_out("purge_module_tick", 0, module, reboot);
 }
