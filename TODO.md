@@ -71,3 +71,24 @@ removed.
 ### 0.64
 
 Program info lwo's will be stripped of all information regarding constructors and destructors
+
+## Removal of Bigstruct
+
+Bigstruct has outlived its usefulness, and shall be removed.
+
+### 0.61
+
+Usage of Bigstruct in all forms is deprecated, and clients should switch
+to the linked list and mapping facilities provided.
+
+### 0.62
+
+The Bigstruct module will be removed.
+
+## Removal of Utility
+
+Seems that Utility is no longer a needed module.
+
+### 0.61
+
+The module is simply going to be removed.
