@@ -240,6 +240,10 @@ static void load_module(string module)
 	load_object(initd_of(module));
 }
 
+/***********/
+/* creator */
+/***********/
+
 static void create()
 {
 	string *names;
