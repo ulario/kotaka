@@ -31,12 +31,13 @@ inherit SECOND_AUTO;
 
 static void create()
 {
+	call_out("check", 1);
 }
 
 static void check()
 {
-	float dmem_size;
-	float dmem_used;
+	float mem_size;
+	float mem_used;
 	int frag;
 	int slack;
 
@@ -44,14 +45,14 @@ static void check()
 
 	call_out("check", 1);
 
-	dmem_size = (float)status(ST_DMEMSIZE);
-	dmem_used = (float)status(ST_DMEMUSED);
+	mem_size = (float)status(ST_DMEMSIZE) + (float)status(ST_SMEMSIZE);
+	mem_used = (float)status(ST_DMEMUSED) + (float)status(ST_SMEMUSED);
 
-	if (dmem_used / dmem_size < 0.75) {
+	if (mem_used / mem_size < 0.5) {
 		frag = 1;
 	}
 
-	if (dmem_size - dmem_used > (float)M * 64.0) {
+	if (mem_size - mem_used > (float)M * 64.0) {
 		slack = 1;
 	}
 
