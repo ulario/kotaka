@@ -280,7 +280,7 @@ void upgrade()
 	modules["System"] = nil;
 }
 
-/* initd hooks */
+/* boot hooks */
 
 void prepare_reboot()
 {
