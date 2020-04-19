@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,6 @@
 #include <kernel/kernel.h>
 #include <kotaka/paths/bigstruct.h>
 #include <kotaka/paths/system.h>
-#include <kotaka/paths/utility.h>
 #include <kotaka/paths/verb.h>
 #include <status.h>
 #include <type.h>

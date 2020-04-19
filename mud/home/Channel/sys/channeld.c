@@ -24,7 +24,6 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
-#include <kotaka/paths/utility.h>
 #include <kotaka/privilege.h>
 #include <status.h>
 
