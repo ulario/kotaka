@@ -536,6 +536,12 @@ void reboot_module(string module)
 	do_module_shutdown(module, 1);
 }
 
+/*******************/
+/* called by INITD */
+/*******************/
+
+/* part of system upgrade */
+
 /* instruct all modules to purge */
 /* destruct inheritables and objects with removed sources */
 void upgrade_purge()
