@@ -116,8 +116,6 @@ private void send_module_shutdown_signal(string module)
 
 			if (initd = find_object(initd_of(others[sz]))) {
 				initd->shutdown_module(module);
-			} else {
-				call_out("shutdown_module", 0, module);
 			}
 		}
 	}
