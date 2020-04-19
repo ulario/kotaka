@@ -2,38 +2,6 @@
 
 This file will hold notes of pending changes in APIs going forward.
 
-## Deprecation of constructors and destructors
-
-Due to being more complicated than they are worth and due to the data
-burden, constructors and destructors are once again deprecated and are foreseen to remain so permanently.
-
-### 0.61
-
-Formal deprecation and no support will be offered for continued usage.
-
-Warnings will be issued if an initd attempts to register a constructor or
-a destructor, however ObjectD will continue to query for them when
-programs are compiled.
-
-### 0.62
-
-ObjectD will cease support for registering constructors and destructors.
-
-ObjectD will query initd's for them, but will return errors if any are returned.
-
-### 0.63
-
-All programs should be recompiled by the end of the 0.62 upgrade, so no
-constructors or destructors should be registered.
-
-Before the 0.63 upgrade is allowed to commence, all program_info objects
-will be checked to make sure that constructors and destructors have been
-removed.
-
-### 0.64
-
-Program info lwo's will be stripped of all information regarding constructors and destructors
-
 ## Amendment of patching
 
 To be completed in version 0.61
