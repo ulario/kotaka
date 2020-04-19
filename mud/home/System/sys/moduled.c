@@ -280,104 +280,6 @@ void upgrade()
 	modules["System"] = nil;
 }
 
-/* boot hooks */
-
-void prepare_reboot()
-{
-	int sz;
-	string *list;
-
-	ACCESS_CHECK(previous_program() == INITD);
-
-	list = map_indices(modules);
-	list -= ({ "System" });
-	scramble(list);
-
-	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
-		string module;
-
-		module = list[sz];
-
-		if (modules[module] == -1) {
-			continue;
-		}
-
-		catch {
-			object initd;
-
-			if (initd = find_object(initd_of(module))) {
-				initd->prepare_reboot();
-			} else {
-				call_out("shutdown_module", 0, module);
-			}
-		}
-	}
-}
-
-void reboot()
-{
-	int sz;
-	string *list;
-
-	ACCESS_CHECK(previous_program() == INITD);
-
-	list = map_indices(modules);
-	list -= ({ "System" });
-	scramble(list);
-
-	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
-		string module;
-
-		module = list[sz];
-
-		if (modules[module] == -1) {
-			continue;
-		}
-
-		catch {
-			object initd;
-
-			if (initd = find_object(initd_of(module))) {
-				initd->reboot();
-			} else {
-				call_out("shutdown_module", 0, module);
-			}
-		}
-	}
-}
-
-void hotboot()
-{
-	int sz;
-	string *list;
-
-	ACCESS_CHECK(previous_program() == INITD);
-
-	list = map_indices(modules);
-	list -= ({ "System" });
-	scramble(list);
-
-	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
-		string module;
-
-		module = list[sz];
-
-		if (modules[module] == -1) {
-			continue;
-		}
-
-		catch {
-			object initd;
-
-			if (initd = find_object(initd_of(module))) {
-				initd->hotboot();
-			} else {
-				call_out("shutdown_module", 0, module);
-			}
-		}
-	}
-}
-
 void upgrade_check_modules()
 {
 	int sz;
@@ -603,6 +505,104 @@ void upgrade_build()
 
 			rlimits(0; MODULE_BOOT_TICKS) {
 				initd_of(module)->upgrade_build();
+			}
+		}
+	}
+}
+
+/* boot hooks */
+
+void prepare_reboot()
+{
+	int sz;
+	string *list;
+
+	ACCESS_CHECK(previous_program() == INITD);
+
+	list = map_indices(modules);
+	list -= ({ "System" });
+	scramble(list);
+
+	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+		string module;
+
+		module = list[sz];
+
+		if (modules[module] == -1) {
+			continue;
+		}
+
+		catch {
+			object initd;
+
+			if (initd = find_object(initd_of(module))) {
+				initd->prepare_reboot();
+			} else {
+				call_out("shutdown_module", 0, module);
+			}
+		}
+	}
+}
+
+void reboot()
+{
+	int sz;
+	string *list;
+
+	ACCESS_CHECK(previous_program() == INITD);
+
+	list = map_indices(modules);
+	list -= ({ "System" });
+	scramble(list);
+
+	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+		string module;
+
+		module = list[sz];
+
+		if (modules[module] == -1) {
+			continue;
+		}
+
+		catch {
+			object initd;
+
+			if (initd = find_object(initd_of(module))) {
+				initd->reboot();
+			} else {
+				call_out("shutdown_module", 0, module);
+			}
+		}
+	}
+}
+
+void hotboot()
+{
+	int sz;
+	string *list;
+
+	ACCESS_CHECK(previous_program() == INITD);
+
+	list = map_indices(modules);
+	list -= ({ "System" });
+	scramble(list);
+
+	for (sz = sizeof(list) - 1; sz >= 0; --sz) {
+		string module;
+
+		module = list[sz];
+
+		if (modules[module] == -1) {
+			continue;
+		}
+
+		catch {
+			object initd;
+
+			if (initd = find_object(initd_of(module))) {
+				initd->hotboot();
+			} else {
+				call_out("shutdown_module", 0, module);
 			}
 		}
 	}
