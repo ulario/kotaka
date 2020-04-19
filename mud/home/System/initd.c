@@ -399,8 +399,6 @@ int forbid_inherit(string from, string path, int priv)
 /* also intercepts callout from v0.59 */
 static void upgrade_system_post_recompile()
 {
-	LOGD->post_message("system", LOG_NOTICE, "Intercepted post recompile callout from 0.59");
-
 	call_out("upgrade_system_recompile_kernel", 0);
 }
 
