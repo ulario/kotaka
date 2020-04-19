@@ -73,22 +73,14 @@ static void check()
 	}
 
 	if (frag && slack) {
-		if (!angst) {
-			LOGD->post_message("system", LOG_NOTICE, "Memory fragmented");
-		}
-
 		angst++;
 
 		if (angst > 30) {
 			angst = 0;
-			LOGD->post_message("system", LOG_NOTICE, "Memory still fragmented, swapping out");
+			LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out");
 			swapout();
 		}
 	} else if (angst) {
 		angst--;
-
-		if (!angst) {
-			LOGD->post_message("system", LOG_NOTICE, "Memory no longer fragmented");
-		}
 	}
 }
