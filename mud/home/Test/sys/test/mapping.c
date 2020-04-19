@@ -24,21 +24,33 @@
 #include <type.h>
 #include <status.h>
 
+inherit "~System/lib/struct/list";
+inherit "/lib/string/sprint";
+
 private object test_mapping_1()
 {
 	mapping arr;
 	object map;
 	int i;
+	mixed **indices;
 
 	arr = ([ ]);
 
 	map = new_object("/lwo/struct/mapping");
 	map->set_type(T_INT);
+	map->set_branch_limit(3);
+	map->set_leaf_limit(3);
 
-	for (i = 1; i < 1 << 25; i *= 3) {
+	for (i = 2; i < (1 << 25); i *= 3, i /= 2) {
 		map->set_element(i, i);
-
 		ASSERT(map->query_element(i) == i);
+	}
+
+	indices = map->query_indices();
+
+	for (i = 2; i < (1 << 25); i *= 3, i /= 2) {
+		ASSERT(list_front(indices) == i);
+		list_pop_front(indices);
 	}
 
 	return map;
@@ -74,10 +86,13 @@ void test()
 	int sec;
 	mixed msec;
 	object map;
+	mixed **indices;
 
 	ACCESS_CHECK(TEST());
 
-	map = test_mapping_1();
+	rlimits (0; 100000) {
+		map = test_mapping_1();
+	}
 
 	count = 1;
 
@@ -94,7 +109,7 @@ void test()
 			break;
 		}
 
-		count <<= 2;
+		count <<= 1;
 	}
 
 	msec = (int)floor(diff * 1000.0 + 0.5);

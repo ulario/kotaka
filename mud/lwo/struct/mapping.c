@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,7 @@
 #include <type.h>
 #include <kotaka/assert.h>
 
+inherit "~System/lib/struct/list";
 inherit "/lib/search";
 
 int branch;
@@ -222,6 +223,39 @@ private mixed sub_query_element(mixed *node, mixed key)
 	}
 }
 
+private void sub_query_indices(mixed *node, mixed **list)
+{
+	mixed head;
+
+	head = node[0];
+
+	switch(typeof(head)) {
+	case T_INT:
+		{
+			int i, sz;
+
+			head = map_indices(node[1]);
+			sz = sizeof(head);
+
+			for (i = 0; i < sz; i++) {
+				list_push_back(list, head[i]);
+			}
+		}
+		break;
+
+	case T_ARRAY:
+		{
+			int i, sz;
+
+			sz = sizeof(head);
+
+			for (i = 0; i < sz; i++) {
+				sub_query_indices(node[1][i], list);
+			}
+		}
+	}
+}
+
 void set_leaf_limit(int new_leaf)
 {
 	leaf = new_leaf;
@@ -296,4 +330,15 @@ mixed query_element(mixed key)
 mixed *query_root()
 {
 	return root;
+}
+
+mixed **query_indices()
+{
+	mixed **list;
+
+	list = ({ nil, nil });
+
+	sub_query_indices(root, list);
+
+	return list;
 }
