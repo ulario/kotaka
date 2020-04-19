@@ -93,7 +93,7 @@ private void clear_admin()
 
 private void log_boot_error()
 {
-	LOGD->post_message("system", LOG_ERR, "Runtime error during boot");
+	LOGD->post_message("system", LOG_ERR, "INITD: Runtime error during boot");
 	LOGD->post_message("system", LOG_ERR, TLSD->query_tls_value("System", "error-string"));
 	LOGD->post_message("system", LOG_ERR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
 }
@@ -198,7 +198,7 @@ private void reboot_common()
 	check_config();
 	check_versions();
 
-	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
+	LOGD->post_message("debug", LOG_NOTICE, "INITD: Auditing filequota");
 	DRIVER->fix_filequota();
 }
 
@@ -256,10 +256,10 @@ static void boot()
 			OBJECTD->reset();
 		}
 
-		LOGD->post_message("system", LOG_NOTICE, "System discovered");
+		LOGD->post_message("system", LOG_NOTICE, "INITD: System discovered");
 
 		load();
-		LOGD->post_message("system", LOG_NOTICE, "System loaded");
+		LOGD->post_message("system", LOG_NOTICE, "INITD: System loaded");
 
 		call_out("ready", 0);
 	} : {
@@ -304,7 +304,7 @@ static void create()
 
 			call_out("boot", 0);
 
-			LOGD->post_message("system", LOG_NOTICE, "System core loaded");
+			LOGD->post_message("system", LOG_NOTICE, "INITD: System core loaded");
 		}
 	} : {
 		LOGD->flush();
@@ -412,7 +412,7 @@ static void upgrade_system_post_recompile()
 
 static void upgrade_system_recompile_kernel()
 {
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library...");
+	LOGD->post_message("system", LOG_NOTICE, "INITD: Recompiling kernel library...");
 
 	recompile_kernel();
 
@@ -421,7 +421,7 @@ static void upgrade_system_recompile_kernel()
 
 static void upgrade_system_recompile_system()
 {
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling System module...");
+	LOGD->post_message("system", LOG_NOTICE, "INITD: Recompiling System module...");
 
 	recompile_system();
 
@@ -430,7 +430,7 @@ static void upgrade_system_recompile_system()
 
 static void upgrade_system_upgrade_system_module()
 {
-	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module...");
+	LOGD->post_message("system", LOG_NOTICE, "INITD: Upgrading System module...");
 
 	/* purge orphans */
 	rlimits (0; -1) {
@@ -475,7 +475,7 @@ static void upgrade_system_upgrade_system_module()
 
 static void upgrade_system_upgrade_modules()
 {
-	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules...");
+	LOGD->post_message("system", LOG_NOTICE, "INITD: Upgrading modules...");
 
 	MODULED->upgrade_modules();
 
@@ -484,7 +484,7 @@ static void upgrade_system_upgrade_modules()
 
 static void upgrade_system_rebuild_modules()
 {
-	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules...");
+	LOGD->post_message("system", LOG_NOTICE, "INITD: Rebuilding modules...");
 
 	MODULED->upgrade_purge();
 	MODULED->upgrade_build();
