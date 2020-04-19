@@ -37,6 +37,8 @@ static void check()
 {
 	float dmem_size;
 	float dmem_used;
+	int frag;
+	int slack;
 
 	wipe_callouts();
 
