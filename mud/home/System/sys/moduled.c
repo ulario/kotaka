@@ -225,6 +225,7 @@ static void upgrade_module(string module)
 			if (initd = find_object(initd_of(module))) {
 				initd->upgrade_module();
 			} else {
+				LOGD->post_message("system", LOG_NOTICE, "Shutting down " + (module ? module : "Ecru") + " module, missing initd in upgrade_module");
 				call_out("shutdown_module", 0, module);
 			}
 		}
@@ -310,6 +311,7 @@ void upgrade_check_modules()
 				if (initd = find_object(initd_of(module))) {
 					initd->upgrade_check();
 				} else {
+					LOGD->post_message("system", LOG_WARNING, "ModuleD: Shutting down " + (module ? module : "Ecru") + ", missing initd in upgrade_check_modules");
 					call_out("shutdown_module", 0, module);
 				}
 			}
@@ -347,6 +349,7 @@ void upgrade_modules()
 				/* if this is an upgrade it may be a new module, compile it */
 				if (!file_info(initd + ".c")) {
 					/* loaded module with source removed, shut it down */
+					LOGD->post_message("system", LOG_WARNING, "ModuleD: Shutting down " + (module ? module : "Ecru") + ", missing initd.c in upgrade_modules");
 					call_out("shutdown_module", 0, module);
 				} else {
 					catch {
