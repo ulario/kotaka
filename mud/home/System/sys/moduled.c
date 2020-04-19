@@ -507,6 +507,8 @@ void reboot_module(string module)
 	do_module_shutdown(module, 1);
 }
 
+/* instruct all modules to purge */
+/* destruct inheritables and objects with removed sources */
 void upgrade_purge()
 {
 	int sz;
@@ -536,6 +538,8 @@ void upgrade_purge()
 	}
 }
 
+/* instruct all modules to build */
+/* compile all objects, includes recompiling those that already exist */
 void upgrade_build()
 {
 	int sz;
@@ -559,13 +563,7 @@ void upgrade_build()
 			}
 
 			rlimits(0; MODULE_BOOT_TICKS) {
-				object initd;
-
-				if (initd = find_object(initd_of(module))) {
-					initd->upgrade_build();
-				} else {
-					call_out("shutdown_module", 0, module);
-				}
+				initd_of(module)->upgrade_build();
 			}
 		}
 	}
