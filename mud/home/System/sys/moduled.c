@@ -125,7 +125,7 @@ private void send_module_shutdown_signal(string module)
 	}
 }
 
-static void purge_objects(string module)
+private void purge_objects(string module)
 {
 	rlimits (0; -1) {
 		mixed **list;
