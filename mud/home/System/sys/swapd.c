@@ -38,32 +38,9 @@ static void create()
 
 void upgrade()
 {
-	mixed **callouts;
-	int sz;
-
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	angst = 0;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
-	}
-
-	call_out("check", 0);
-}
-
-private void remove_callouts()
-{
-	mixed **callouts;
-	int sz;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
-	}
+	wipe_callouts();
 }
 
 static void check()
@@ -78,7 +55,7 @@ static void check()
 	int frag;
 	int slack;
 
-	remove_callouts();
+	wipe_callouts();
 
 	call_out("check", 1);
 
