@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -47,9 +47,10 @@ private void usage()
 {
 	send_out("Usage: module <subcommand> <module name>\n");
 	send_out("Subcommands:\n");
-	send_out("boot     - to boot a module.\n");
-	send_out("reboot   - to reboot a module.\n");
-	send_out("shutdown - to shutdown a module.\n");
+	send_out("boot     - boot a module.\n");
+	send_out("reboot   - reboot a module.\n");
+	send_out("shutdown - shutdown a module.\n");
+	send_out("list     - list active modules.\n");
 }
 
 void main(object actor, mapping roles)
@@ -57,7 +58,7 @@ void main(object actor, mapping roles)
 	object user;
 	string name;
 	string command;
-	string module;
+	string args;
 
 	user = query_user();
 	name = user->query_username();
@@ -68,46 +69,73 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(command, "%s %s", command, module) < 2) {
-		usage();
-		return;
-	}
+	sscanf(command, "%s %s", command, args);
 
 	switch(command) {
 	case "boot":
-		if (!check_module_name(module)) {
+		if (!args) {
+			usage();
 			return;
 		}
 
-		if (module == "Ecru") {
-			module = nil;
+		if (!check_module_name(args)) {
+			return;
 		}
 
-		MODULED->boot_module(module);
+		if (args == "Ecru") {
+			args = nil;
+		}
+
+		MODULED->boot_module(args);
 		break;
 
 	case "reboot":
-		if (!check_module_name(module)) {
+		if (!args) {
+			usage();
 			return;
 		}
 
-		if (module == "Ecru") {
-			module = nil;
+		if (!check_module_name(args)) {
+			return;
 		}
 
-		MODULED->reboot_module(module);
+		if (args == "Ecru") {
+			args = nil;
+		}
+
+		MODULED->reboot_module(args);
 		break;
 
 	case "shutdown":
-		if (!check_module_name(module)) {
+		if (!args) {
+			usage();
 			return;
 		}
 
-		if (module == "Ecru") {
-			module = nil;
+		if (!check_module_name(args)) {
+			return;
 		}
 
-		MODULED->shutdown_module(module);
+		if (args == "Ecru") {
+			args = nil;
+		}
+
+		MODULED->shutdown_module(args);
+		break;
+
+	case "list":
+		{
+			string *modules;
+
+			modules = MODULED->query_modules();
+
+			if (sizeof(modules & ({ nil }))) {
+				modules -= ({ nil });
+				modules = ({ "Ecru" }) | modules;
+			}
+
+			send_out("Active modules: " + implode(modules, ", ") + "\n");
+		}
 		break;
 
 	default:
