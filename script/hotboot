@@ -11,10 +11,10 @@ then
 	if [ -f state/snapshot.old ]
 	then
 		echo "--- DGD hotbooting ---"
-		exec ../dgd/bin/dgd kotaka.dgd state/snapshot state/snapshot.old
+		exec ../dgd/bin/dgd-small kotaka.dgd state/snapshot state/snapshot.old
 	else
 		echo "--- DGD hotbooting ---"
-		exec ../dgd/bin/dgd kotaka.dgd state/snapshot
+		exec ../dgd/bin/dgd-small kotaka.dgd state/snapshot
 	fi
 else
 	echo "+++ Hotboot aborted (missing snapshot) +++"

@@ -20,7 +20,7 @@ function execdgd
 {
 	trap - SIGHUP
 	trap - SIGINT
-	exec ../dgd/bin/dgd $*
+	exec ../dgd/bin/dgd-small $*
 }
 
 function boot
