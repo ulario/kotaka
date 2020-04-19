@@ -272,7 +272,7 @@ nomask void _F_dummy()
 {
 }
 
-nomask int _F_sys_create(int clone)
+nomask void _F_sys_create(int clone)
 {
 	string oname;
 	object this;
@@ -313,15 +313,6 @@ nomask int _F_sys_create(int clone)
 			}
 		}
 	}
-
-	if (sscanf(oname, "%*s" + CLONABLE_SUBDIR) == 0 &&
-		sscanf(oname, "%*s" + LIGHTWEIGHT_SUBDIR) == 0) {
-		call_limited("create");
-	} else {
-		call_limited("create", clone);
-	}
-
-	return 1;
 }
 
 nomask void _F_sys_destruct()
