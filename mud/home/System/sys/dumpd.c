@@ -45,6 +45,10 @@ private void start()
 	int goal;
 	int delay;
 
+	if (interval <= 0) {
+		return;
+	}
+
 	now = time();
 
 	goal = now;
