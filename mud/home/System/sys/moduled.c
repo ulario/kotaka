@@ -370,7 +370,7 @@ void upgrade_purge()
 	int sz;
 	string *list;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
 	list -= ({ "System" });
@@ -401,7 +401,7 @@ void upgrade_build()
 	int sz;
 	string *list;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == INITD);
 
 	list = map_indices(modules);
 	list -= ({ "System" });
