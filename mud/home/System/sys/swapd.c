@@ -36,27 +36,21 @@ static void create()
 
 static void check()
 {
+	float dmem_size;
+	float dmem_used;
 	float mem_size;
 	float mem_used;
-	int frag;
-	int slack;
 
 	wipe_callouts();
 
 	call_out("check", 1);
 
-	mem_size = (float)status(ST_DMEMSIZE) + (float)status(ST_SMEMSIZE);
-	mem_used = (float)status(ST_DMEMUSED) + (float)status(ST_SMEMUSED);
+	dmem_size = (float)status(ST_DMEMSIZE);
+	dmem_used = (float)status(ST_DMEMSIZE);
+	mem_size = dmem_size + (float)status(ST_SMEMSIZE);
+	mem_used = dmem_used + (float)status(ST_SMEMUSED);
 
-	if (mem_used / mem_size < 0.5) {
-		frag = 1;
-	}
-
-	if (mem_size - mem_used > (float)M * 64.0) {
-		slack = 1;
-	}
-
-	if (frag && slack) {
+	if (mem_used / mem_size < 0.75 && dmem_size - dmem_used > (float)(256 * M)) {
 		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out");
 		swapout();
 	}
