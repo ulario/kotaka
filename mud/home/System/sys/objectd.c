@@ -39,6 +39,8 @@ string *includes;	/* include files of currently compiling object */
 int upgrading;		/* are we upgrading or making a new compile? */
 mixed progdb;		/* program database */
 
+/* private */
+
 private void convert_progdb()
 {
 	switch(typeof(progdb)) {
@@ -597,6 +599,8 @@ int forbid_inherit(string from, string path, int priv)
 		error("No initd loaded for " + path + " (compiling " + from + ")");
 	}
 }
+
+/* public */
 
 void upgrade_object(object obj)
 {
