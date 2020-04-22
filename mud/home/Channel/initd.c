@@ -57,17 +57,3 @@ void upgrade_check()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 }
-
-void prepare_reboot()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	CHANNELD->save();
-}
-
-void reboot()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	CHANNELD->restore();
-}

@@ -63,27 +63,6 @@ void upgrade_check()
 	ACCESS_CHECK(previous_program() == MODULED);
 }
 
-void prepare_reboot()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	"sys/aliasd"->save();
-}
-
-void reboot()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	"sys/aliasd"->restore();
-}
-
-void hotboot()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-
-	"sys/aliasd"->restore();
-}
-
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
