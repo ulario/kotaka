@@ -448,13 +448,7 @@ void prepare_reboot()
 		}
 
 		catch {
-			object initd;
-
-			if (initd = find_object(initd_of(module))) {
-				initd->prepare_reboot();
-			} else {
-				call_out("shutdown_module", 0, module);
-			}
+			initd_of(module)->prepare_reboot();
 		}
 	}
 }
@@ -480,13 +474,7 @@ void reboot()
 		}
 
 		catch {
-			object initd;
-
-			if (initd = find_object(initd_of(module))) {
-				initd->reboot();
-			} else {
-				call_out("shutdown_module", 0, module);
-			}
+			initd_of(module)->reboot();
 		}
 	}
 }
@@ -512,13 +500,7 @@ void hotboot()
 		}
 
 		catch {
-			object initd;
-
-			if (initd = find_object(initd_of(module))) {
-				initd->hotboot();
-			} else {
-				call_out("shutdown_module", 0, module);
-			}
+			initd_of(module)->hotboot();
 		}
 	}
 }
