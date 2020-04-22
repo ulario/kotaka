@@ -760,16 +760,6 @@ void reset()
 	}
 }
 
-void full_rebuild()
-{
-	ACCESS_CHECK(PRIVILEGED() || VERB());
-
-	rlimits (0; -1) {
-		purge_dir("/");
-		compile_dir("/");
-	}
-}
-
 void call_touch(object obj)
 {
 	ACCESS_CHECK(SYSTEM());
