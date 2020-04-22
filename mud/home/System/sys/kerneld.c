@@ -245,7 +245,7 @@ object get_wiztool()
 
 void reset_accessd()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || VERB());
 
 	ACCESSD->reset();
 }
@@ -253,14 +253,14 @@ void reset_accessd()
 
 void save_accessd()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || VERB());
 
 	ACCESSD->save();
 }
 
 void restore_accessd()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(PRIVILEGED() || VERB());
 
 	ACCESSD->restore();
 }
