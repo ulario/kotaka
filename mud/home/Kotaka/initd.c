@@ -47,6 +47,8 @@ private void set_limits()
 
 static void create()
 {
+	KERNELD->set_global_access("Kotaka", 1);
+
 	set_limits();
 
 	load();
