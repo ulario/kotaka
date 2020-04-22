@@ -242,3 +242,25 @@ object get_wiztool()
 
 	return new_object("~/lwo/wiztool", user->query_name());
 }
+
+void reset_accessd()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	ACCESSD->reset();
+}
+
+
+void save_accessd()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	ACCESSD->save();
+}
+
+void restore_accessd()
+{
+	ACCESS_CHECK(PRIVILEGED());
+
+	ACCESSD->restore();
+}
