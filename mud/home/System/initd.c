@@ -332,11 +332,6 @@ void reboot()
 	catch {
 		SYSTEM_USERD->reboot();
 	}
-
-	catch {
-		ACCESSD->restore();
-	}
-
 	catch {
 		MODULED->reboot();
 	}
