@@ -66,6 +66,8 @@ void main(object actor, mapping roles)
 		send_out("users     List users\n");
 		send_out("adduser   Add a user\n");
 		send_out("rmuser    Remove a user\n");
+		send_out("save      Save ACCESSD data\n");
+		send_out("restore   Restore ACCESSD data\n");
 		return;
 	}
 
@@ -148,6 +150,22 @@ void main(object actor, mapping roles)
 			proxy->remove_user(args);
 		}
 		break;
+
+	case "save":
+		if (args != nil) {
+			send_out("Usage: kernel save\n");
+		} else {
+			KERNELD->save_accessd();
+		}
+		return;
+
+	case "restore":
+		if (args != nil) {
+			send_out("Usage: kernel restore\n");
+		} else {
+			KERNELD->restore_accessd();
+		}
+		return;
 
 	default:
 		send_out("Not a valid kernel subcommand.\n");
