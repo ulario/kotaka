@@ -5,6 +5,13 @@
 # note: we don't CARE if wait gets interrupted
 # all handled signals are fatal for the script
 
+DGD=dgd
+CONFIG=kotaka.dgd
+SWAP=swap
+DUMP=snapshot.old
+OLDDUMP=snapshot.old
+ERR=kotaka.err
+
 function sigint
 {
 	# this probably means we were probably started from the command line
@@ -20,34 +27,34 @@ function execdgd
 {
 	trap - SIGHUP
 	trap - SIGINT
-	exec ../dgd/bin/dgd $*
+	exec $DGD $*
 }
 
 function boot
 {
-	rm -f state/swap
+	rm -f state/$SWAP
 
-	if [ -f state/snapshot ]
+	if [ -f state/$DUMP ]
 	then
 		echo "--- DGD warm booting ---"
-		if [ -f state/snapshot.old ]
+		if [ -f state/$DUMP.old ]
 		then
 			# both are present, possible incremental snapshot
-			execdgd kotaka.dgd state/snapshot state/snapshot.old &
+			execdgd $CONFIG state/$DUMP state/$DUMP.old &
 		else
 			# only the full one
-			execdgd kotaka.dgd state/snapshot &
+			execdgd $CONFIG state/$DUMP &
 		fi
 	else
-		if [ -f state/snapshot.old ]
+		if [ -f state/$DUMP.old ]
 		then
 			# we only have the old one
 			echo "--- DGD cool booting ---"
-			execdgd kotaka.dgd state/snapshot.old &
+			execdgd $CONFIG state/$DUMP.old &
 		else
 			# complete cold start
 			echo "--- DGD cold booting ---"
-			execdgd kotaka.dgd &
+			execdgd $CONFIG &
 		fi
 	fi
 
@@ -73,7 +80,7 @@ function crashed
 	then
 		rm -rf crash
 		mkdir crash
-		gdb ../dgd/bin/dgd mud/core -batch -ex bt > crash/trace
+		gdb $DGD mud/core -batch -ex bt > crash/trace
 		mv mud/core crash
 		echo "+++ DGD terminated by SIG$SIGNAME (core dump processed) +++"
 	else
@@ -108,7 +115,7 @@ function doexit
 }
 
 exec < /dev/null
-exec >> kotaka.err
+exec >> $ERR
 exec 2>&1
 
 trap sigint SIGINT

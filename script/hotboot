@@ -1,20 +1,25 @@
 #!/bin/bash
 
+DGD=dgd
+CONFIG=kotaka.dgd
+DUMP=snapshot
+SWAP=swap
+
 exec 1>&2
 
 cd ..
 
-rm -f state/swap
+rm -f state/$SWAP
 
-if [ -f state/snapshot ]
+if [ -f state/$DUMP ]
 then
-	if [ -f state/snapshot.old ]
+	if [ -f state/$DUMP.old ]
 	then
 		echo "--- DGD hotbooting ---"
-		exec ../dgd/bin/dgd kotaka.dgd state/snapshot state/snapshot.old
+		exec $DGD $CONFIG state/$DUMP state/$DUMP.old
 	else
 		echo "--- DGD hotbooting ---"
-		exec ../dgd/bin/dgd kotaka.dgd state/snapshot
+		exec $DGD $CONFIG state/$DUMP
 	fi
 else
 	echo "+++ Hotboot aborted (missing snapshot) +++"
