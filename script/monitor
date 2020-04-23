@@ -21,8 +21,6 @@ function sigint
 	kill -INT $$
 }
 
-# subroutines
-
 function execdgd
 {
 	trap - SIGHUP
