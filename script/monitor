@@ -8,8 +8,7 @@
 DGD=dgd
 CONFIG=kotaka.dgd
 SWAP=swap
-DUMP=snapshot.old
-OLDDUMP=snapshot.old
+DUMP=snapshot
 ERR=kotaka.err
 
 function sigint
