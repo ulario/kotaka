@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,13 +33,9 @@ inherit SECOND_AUTO;
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
-void configure_logging();
-
-int version_major;
-int version_minor;
-int version_patch;
-
 mixed **tasks;
+
+void configure_logging();
 
 /* private */
 
@@ -178,21 +174,6 @@ private void check_versions()
 	DRIVER->message("Kotaka version: " + KOTAKA_VERSION + "\n");
 }
 
-private void set_version()
-{
-	if (sscanf(KOTAKA_VERSION, "%d.%d.%d", version_major, version_minor, version_patch) != 3) {
-		version_patch = 0;
-
-		if (sscanf(KOTAKA_VERSION, "%d.%d", version_major, version_minor) != 2) {
-			version_minor = 0;
-
-			if(sscanf(KOTAKA_VERSION, "%d", version_major) != 1) {
-				error("Cannot parse Kotaka version");
-			}
-		}
-	}
-}
-
 private void reboot_common()
 {
 	check_config();
@@ -247,7 +228,6 @@ static void create()
 		rlimits(100; 250000) {
 			check_config();
 			check_versions();
-			set_version();
 
 			load_object(KERNELD);		/* needed for LogD */
 
