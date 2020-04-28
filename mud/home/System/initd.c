@@ -412,6 +412,8 @@ int forbid_inherit(string from, string path, int priv)
 
 /* upgrade */
 
+/* pre recompile */
+
 static void upgrade_system_post_recompile()
 {
 	call_out("upgrade_system_recompile_kernel", 0);
@@ -435,9 +437,11 @@ static void upgrade_system_recompile_system()
 	call_out("upgrade_system_upgrade_system_module", 0);
 }
 
+/* post recompile */
+
 static void upgrade_system_upgrade_system_module()
 {
-	LOGD->post_message("system", LOG_NOTICE, "INITD: Upgrading System module...");
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading System module...");
 
 	/* purge orphans */
 	rlimits (0; -1) {
@@ -476,13 +480,7 @@ static void upgrade_system_upgrade_system_module()
 		}
 	}
 
-	call_out("upgrade_system_upgrade_modules", 0);
-}
-
-static void upgrade_system_upgrade_modules()
-{
-	LOGD->post_message("system", LOG_NOTICE, "INITD: Upgrading modules...");
-
+	LOGD->post_message("system", LOG_NOTICE, "Upgrading modules...");
 	MODULED->upgrade_modules();
 
 	call_out("upgrade_system_rebuild_modules", 0);
@@ -490,8 +488,7 @@ static void upgrade_system_upgrade_modules()
 
 static void upgrade_system_rebuild_modules()
 {
-	LOGD->post_message("system", LOG_NOTICE, "INITD: Rebuilding modules...");
-
+	LOGD->post_message("system", LOG_NOTICE, "Rebuilding modules...");
 	MODULED->upgrade_purge();
 	MODULED->upgrade_build();
 }
@@ -500,13 +497,16 @@ void upgrade_system()
 {
 	ACCESS_CHECK(VERB() || INTERFACE() || KADMIN());
 
-	/* check to make sure current version is ready */
 	upgrade_check_ready();
-
-	/* check if new version lists us as an upgrade path */
 	upgrade_check_current_version();
 
-	call_out("upgrade_system_recompile_kernel", 0);
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel module...");
+	recompile_kernel();
+
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling System module...");
+	recompile_system();
+
+	call_out("upgrade_system_upgrade_system_module", 0);
 }
 
 /* task hooks */
