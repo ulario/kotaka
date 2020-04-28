@@ -41,7 +41,7 @@ int version_patch;
 
 mixed **tasks;
 
-/* helpers */
+/* private */
 
 private void load()
 {
@@ -239,7 +239,44 @@ private void upgrade_check_ready()
 	MODULED->upgrade_check_modules();
 }
 
-/* static helpers */
+/* creator */
+
+static void create()
+{
+	catch {
+		rlimits(100; 250000) {
+			check_config();
+			check_versions();
+			set_version();
+
+			load_object(KERNELD);		/* needed for LogD */
+
+			KERNELD->set_global_access("System", 1);
+
+			configure_klib();
+			configure_rsrc();
+			set_limits();
+			clear_admin();
+
+			load_object(SECRETD);		/* needed for LogD */
+			load_object(LOGD);		/* we need to log any error messages */
+			load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
+			load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
+
+			SECRETD->remove_file("logs/session.log");
+
+			call_out("boot", 0);
+
+			LOGD->post_message("system", LOG_NOTICE, "INITD: System core loaded");
+		}
+	} : {
+		LOGD->flush();
+		shutdown();
+		error("Failed to load system core");
+	}
+}
+
+/* boot */
 
 static void boot()
 {
@@ -275,42 +312,46 @@ static void ready()
 	MODULED->boot_module("Game");
 }
 
+/* configure */
 
-/* hooks */
-
-static void create()
+void configure_logging()
 {
-	catch {
-		rlimits(100; 250000) {
-			check_config();
-			check_versions();
-			set_version();
+	ACCESS_CHECK(SYSTEM());
 
-			load_object(KERNELD);		/* needed for LogD */
+	LOGD->clear_targets();
 
-			KERNELD->set_global_access("System", 1);
+	LOGD->set_target("*", 63, "driver");
 
-			configure_klib();
-			configure_rsrc();
-			set_limits();
-			clear_admin();
+	LOGD->set_target("debug", 0, "driver");
+	LOGD->set_target("compile", 255, "driver");
+	LOGD->set_target("error", 255, "driver");
+	LOGD->set_target("trace", 255, "driver");
 
-			load_object(SECRETD);		/* needed for LogD */
-			load_object(LOGD);		/* we need to log any error messages */
-			load_object(TLSD);		/* depends on an updated tls size, also needed by ObjectD */
-			load_object(SYSTEM_USERD);	/* prevents default logins, suspends connections */
+	LOGD->set_target("debug", 255, "null");
+	LOGD->set_target("compile", 255, "null");
+	LOGD->set_target("trace", 255, "null");
 
-			SECRETD->remove_file("logs/session.log");
+	LOGD->set_target("*", 255, "file:general");
 
-			call_out("boot", 0);
+	LOGD->set_target("error", 255, "file:error");
+	LOGD->set_target("trace", 255, "file:error");
+	LOGD->set_target("compile", 255, "file:error");
 
-			LOGD->post_message("system", LOG_NOTICE, "INITD: System core loaded");
-		}
-	} : {
-		LOGD->flush();
-		shutdown();
-		error("Failed to load system core");
-	}
+	LOGD->set_target("*", 127, "file:session");
+	LOGD->set_target("debug", 0, "file:session");
+
+	LOGD->set_target("*", 128, "file:debug");
+	LOGD->set_target("debug", 255, "file:debug");
+
+	LOGD->set_target("system", 255, "file:general");
+	LOGD->set_target("system", 255, "file:session");
+
+	LOGD->set_target("system", 63, "channel:system");
+
+	LOGD->set_target("compile", 255, "channel:compile");
+	LOGD->set_target("error", 255, "channel:error");
+	LOGD->set_target("trace", 255, "channel:trace");
+	LOGD->set_target("debug", 255, "channel:debug");
 }
 
 /* driver hooks */
@@ -389,9 +430,8 @@ int forbid_inherit(string from, string path, int priv)
 	return 0;
 }
 
-/* calls */
+/* upgrade */
 
-/* also intercepts callout from v0.59 */
 static void upgrade_system_post_recompile()
 {
 	call_out("upgrade_system_recompile_kernel", 0);
@@ -476,7 +516,6 @@ static void upgrade_system_rebuild_modules()
 	MODULED->upgrade_build();
 }
 
-/* called differently in 0.59 */
 void upgrade_system()
 {
 	ACCESS_CHECK(VERB() || INTERFACE() || KADMIN());
@@ -490,45 +529,7 @@ void upgrade_system()
 	call_out("upgrade_system_recompile_kernel", 0);
 }
 
-void configure_logging()
-{
-	ACCESS_CHECK(SYSTEM());
-
-	LOGD->clear_targets();
-
-	LOGD->set_target("*", 63, "driver");
-
-	LOGD->set_target("debug", 0, "driver");
-	LOGD->set_target("compile", 255, "driver");
-	LOGD->set_target("error", 255, "driver");
-	LOGD->set_target("trace", 255, "driver");
-
-	LOGD->set_target("debug", 255, "null");
-	LOGD->set_target("compile", 255, "null");
-	LOGD->set_target("trace", 255, "null");
-
-	LOGD->set_target("*", 255, "file:general");
-
-	LOGD->set_target("error", 255, "file:error");
-	LOGD->set_target("trace", 255, "file:error");
-	LOGD->set_target("compile", 255, "file:error");
-
-	LOGD->set_target("*", 127, "file:session");
-	LOGD->set_target("debug", 0, "file:session");
-
-	LOGD->set_target("*", 128, "file:debug");
-	LOGD->set_target("debug", 255, "file:debug");
-
-	LOGD->set_target("system", 255, "file:general");
-	LOGD->set_target("system", 255, "file:session");
-
-	LOGD->set_target("system", 63, "channel:system");
-
-	LOGD->set_target("compile", 255, "channel:compile");
-	LOGD->set_target("error", 255, "channel:error");
-	LOGD->set_target("trace", 255, "channel:trace");
-	LOGD->set_target("debug", 255, "channel:debug");
-}
+/* task hooks */
 
 void enqueue_task_prefix(string path, string func, mixed args ...)
 {
