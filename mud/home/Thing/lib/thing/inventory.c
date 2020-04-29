@@ -179,7 +179,7 @@ void move(object new_env, varargs int force)
 
 			levels++;
 
-			if (levels >= 40) {
+			if (levels >= 32) {
 				error("Object nesting overflow");
 			}
 
