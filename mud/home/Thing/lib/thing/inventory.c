@@ -202,15 +202,11 @@ void move(object new_env, varargs int force)
 
 void rearrange_inventory(object *new_inventory)
 {
-	/* nil */
 	CHECKARG(sizeof(new_inventory & ({ nil })) == 0, 1, "rearrange_inventory");
-
-	/* duplicates */
 	CHECKARG(sizeof( ({ }) | new_inventory) == sizeof(new_inventory), 1, "rearrange_inventory");
 
 	inventory -= ({ nil });
 
-	/* new or removed */
 	CHECKARG(sizeof(inventory ^ new_inventory) == 0, 1, "rearrange_inventory");
 
 	inventory = new_inventory[..];
