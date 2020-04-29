@@ -72,6 +72,20 @@ void thing_del_inventory(object departing)
 	inventory -= ({ departing, nil });
 }
 
+object thing_query_environment()
+{
+	ACCESS_CHECK(THING());
+
+	return environment;
+}
+
+object *thing_query_inventory()
+{
+	ACCESS_CHECK(THING());
+
+	return inventory -= ({ nil });
+}
+
 /* hooks */
 
 static int forbid_move(object new_env)
@@ -138,7 +152,7 @@ object query_environment()
 
 object *query_inventory()
 {
-	return (inventory -= ({ nil }))[..];
+	return thing_query_inventory();
 }
 
 void move(object new_env, varargs int force)
