@@ -19,6 +19,8 @@
  */
 #include <kotaka/assert.h>
 #include <kotaka/privilege.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/log.h>
 #include <status.h>
 
 inherit "/lib/sort";
