@@ -30,6 +30,8 @@ void test()
 
 	ACCESS_CHECK(TEST());
 
+	LOGD->post_message("debug", LOG_DEBUG, "Testing multimap...");
+
 	map = ([ ]);
 
 	rlimits (0; 1000000) {
@@ -48,6 +50,4 @@ void test()
 	compact_multimap(map);
 
 	ASSERT(map_sizeof(map) == 0);
-
-	LOGD->post_message("debug", LOG_DEBUG, "Tested multimap");
 }

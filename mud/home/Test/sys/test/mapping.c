@@ -90,6 +90,8 @@ void test()
 
 	ACCESS_CHECK(TEST());
 
+	LOGD->post_message("debug", LOG_DEBUG, "Testing mapping...");
+
 	rlimits (0; 100000) {
 		map = test_mapping_1();
 	}
@@ -120,6 +122,5 @@ void test()
 	msec = "000" + msec;
 	msec = msec[strlen(msec) - 3 ..];
 
-	LOGD->post_message("debug", LOG_DEBUG, "Tested mapping");
 	LOGD->post_message("system", LOG_NOTICE, "Big mapping benchmark, " + (int)((float)count / diff) + " ops/sec");
 }

@@ -69,6 +69,8 @@ void test()
 
 	ACCESS_CHECK(TEST());
 
+	LOGD->post_message("debug", LOG_DEBUG, "Testing qsort...");
+
 	arr = allocate(status(ST_ARRAYSIZE));
 
 	fill(arr);

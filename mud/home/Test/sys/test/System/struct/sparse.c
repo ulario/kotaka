@@ -28,6 +28,8 @@ void test()
 
 	ACCESS_CHECK(TEST());
 
+	LOGD->post_message("debug", LOG_DEBUG, "Testing sparse array...");
+
 	sparse = new_object("~System/lwo/struct/sparse_array");
 
 	rlimits (0; 1000000) {
@@ -42,6 +44,4 @@ void test()
 			ASSERT(sparse->query_element(i) == nil);
 		}
 	}
-
-	LOGD->post_message("debug", LOG_DEBUG, "Tested sparse array");
 }
