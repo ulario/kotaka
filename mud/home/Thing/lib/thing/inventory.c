@@ -26,12 +26,55 @@ private object *inventory;
 
 void reset_id_number();
 
+/* private helpers */
+
+private atomic void move_core(object new_env)
+{
+	if (environment) {
+		environment->thing_del_inventory(this_object());
+		environment->bulk_invalidate();
+	}
+
+	environment = new_env;
+	reset_id_number();
+
+	if (environment) {
+		environment->thing_add_inventory(this_object());
+		environment->bulk_invalidate();
+	}
+}
+
+/* creator */
+
 static void create()
 {
 	inventory = ({ });
 }
 
-int forbid_move(object new_env)
+/* internal */
+
+void thing_add_inventory(object arriving)
+{
+	ACCESS_CHECK(THING());
+
+	ASSERT(arriving);
+	ASSERT(!sizeof(inventory & ({ arriving })));
+
+	inventory = ({ arriving }) + (inventory - ({ nil }));
+}
+
+void thing_del_inventory(object departing)
+{
+	ACCESS_CHECK(THING());
+
+	ASSERT(departing);
+
+	inventory -= ({ departing, nil });
+}
+
+/* hooks */
+
+static int forbid_move(object new_env)
 {
 	return 0;
 }
@@ -58,24 +101,7 @@ void remove_notify(object obj)
 {
 }
 
-void thing_add_inventory(object arriving)
-{
-	ACCESS_CHECK(THING());
-
-	ASSERT(arriving);
-	ASSERT(!sizeof(inventory & ({ arriving })));
-
-	inventory = ({ arriving }) + (inventory - ({ nil }));
-}
-
-void thing_del_inventory(object departing)
-{
-	ACCESS_CHECK(THING());
-
-	ASSERT(departing);
-
-	inventory -= ({ departing, nil });
-}
+/* public */
 
 int is_container_of(object test)
 {
@@ -113,22 +139,6 @@ object query_environment()
 object *query_inventory()
 {
 	return (inventory -= ({ nil }))[..];
-}
-
-private atomic void move_core(object new_env)
-{
-	if (environment) {
-		environment->thing_del_inventory(this_object());
-		environment->bulk_invalidate();
-	}
-
-	environment = new_env;
-	reset_id_number();
-
-	if (environment) {
-		environment->thing_add_inventory(this_object());
-		environment->bulk_invalidate();
-	}
 }
 
 void move(object new_env, varargs int force)
