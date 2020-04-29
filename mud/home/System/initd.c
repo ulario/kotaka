@@ -556,15 +556,3 @@ void end_task()
 {
 	ACCESS_CHECK(SYSTEM());
 }
-
-void abort(string message)
-{
-	shutdown();
-
-	DRIVER->message("Abort: " + message + "\n");
-	DRIVER->message("Stack trace: " + ERRORD->print_stack(call_trace()) + "\n");
-
-	DRIVER->set_error_manager(nil);
-
-	error("Abort");
-}
