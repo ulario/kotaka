@@ -89,7 +89,7 @@ private void clear_admin()
 
 private void log_boot_error()
 {
-	LOGD->post_message("system", LOG_ERR, "INITD: Runtime error during boot");
+	LOGD->post_message("system", LOG_ERR, "Runtime error during boot");
 	LOGD->post_message("system", LOG_ERR, TLSD->query_tls_value("System", "error-string"));
 	LOGD->post_message("system", LOG_ERR, ERRORD->print_stack(TLSD->query_tls_value("System", "error-trace")));
 }
@@ -179,7 +179,7 @@ private void reboot_common()
 	check_config();
 	check_versions();
 
-	LOGD->post_message("debug", LOG_NOTICE, "INITD: Auditing filequota");
+	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
 	DRIVER->fix_filequota();
 }
 
@@ -247,7 +247,7 @@ static void create()
 
 			call_out("boot", 0);
 
-			LOGD->post_message("system", LOG_NOTICE, "INITD: System core loaded");
+			LOGD->post_message("system", LOG_NOTICE, "System core loaded");
 		}
 	} : {
 		LOGD->flush();
@@ -273,10 +273,10 @@ static void boot()
 			OBJECTD->reset();
 		}
 
-		LOGD->post_message("system", LOG_NOTICE, "INITD: System discovered");
+		LOGD->post_message("system", LOG_NOTICE, "System discovered");
 
 		load();
-		LOGD->post_message("system", LOG_NOTICE, "INITD: System loaded");
+		LOGD->post_message("system", LOG_NOTICE, "System loaded");
 
 		call_out("ready", 0);
 	} : {
@@ -421,7 +421,7 @@ static void upgrade_system_post_recompile()
 
 static void upgrade_system_recompile_kernel()
 {
-	LOGD->post_message("system", LOG_NOTICE, "INITD: Recompiling kernel library...");
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library...");
 
 	recompile_kernel();
 
@@ -430,7 +430,7 @@ static void upgrade_system_recompile_kernel()
 
 static void upgrade_system_recompile_system()
 {
-	LOGD->post_message("system", LOG_NOTICE, "INITD: Recompiling System module...");
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling System module...");
 
 	recompile_system();
 
