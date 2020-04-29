@@ -1,6 +1,6 @@
 # TODO
 
-Master TODO list for kotaka
+Master TODO list for kotaka.
 
 ## Deprecate implicit module registration
 
@@ -9,8 +9,8 @@ official indication of the module's being online.
 
 Henceforth a module's official status is determined by ModuleD's records.
 
-However, in the event of ModuleD's destruction and recompilation, it will
-audit the existence of existing initds to recreate its data.
+Existence of the initds will however be used to restore ModuleD's initd
+database if ModuleD is destructed and later reloaded.
 
 ### 0.61
 
@@ -25,6 +25,9 @@ should be used exclusively.
 
 A module can be nuked even if it's shut down to enforce a
 complete purge of its owned objects.
+
+During the 0.61 upgrade, ModuleD will be instructed to reset its list to
+conform to the initds currently existing.
 
 ### 0.62
 
@@ -43,7 +46,14 @@ defunct module's missing initd to be deprived of signals.
 ## Deprecation of constructors and destructors
 
 Due to being more complicated than they are worth and due to the data
-burden, constructors and destructors are once again deprecated and are foreseen to remain so permanently.
+burden, constructors and destructors are once again deprecated and are
+foreseen to remain so permanently.
+
+From now on, objects should use their creator functions to initialize any
+libraries, and libraries themselves should be prepared to be called by
+their inheritors on create and should prepare for objects that neglect to
+do so.  It is advisable to declare a patcher in the library's initd to
+ensure that any belated creation tasks are called on upgrade.
 
 ### 0.61
 
@@ -51,26 +61,25 @@ Formal deprecation and no support will be offered for continued usage.
 
 Warnings will be issued if an initd attempts to register a constructor or
 a destructor, however ObjectD will continue to query for them when
-programs are compiled.
+programs are compiled as a check on compliance.
 
 ### 0.62
 
 ObjectD will cease support for registering constructors and destructors.
 
-ObjectD will query initd's for them, but will return errors if any are returned.
+ObjectD will audit compliance by querying the initd and returning an
+error if it attempts to register a constructor or destructor.
+
+A check will be added to 0.62 requiring all program_info's to be pruned
+of constructors and destructors before an upgrade will be allowed to 0.63.
 
 ### 0.63
 
-All programs should be recompiled by the end of the 0.62 upgrade, so no
-constructors or destructors should be registered.
+0.62 will have checked the program database to ensure removal of
+constructors and destructors before permitting the upgrade to 0.63.
 
-Before the 0.63 upgrade is allowed to commence, all program_info objects
-will be checked to make sure that constructors and destructors have been
-removed.
-
-### 0.64
-
-Program info lwo's will be stripped of all information regarding constructors and destructors
+Program info lwo's will be stripped of all information regarding
+constructors and destructors.
 
 ## Removal of Bigstruct
 
