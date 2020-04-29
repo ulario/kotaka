@@ -53,7 +53,7 @@ static void create()
 
 /* internal */
 
-void thing_add_inventory(object arriving)
+nomask void thing_add_inventory(object arriving)
 {
 	ACCESS_CHECK(THING());
 
@@ -63,7 +63,7 @@ void thing_add_inventory(object arriving)
 	inventory = ({ arriving }) + (inventory - ({ nil }));
 }
 
-void thing_del_inventory(object departing)
+nomask void thing_del_inventory(object departing)
 {
 	ACCESS_CHECK(THING());
 
@@ -72,14 +72,14 @@ void thing_del_inventory(object departing)
 	inventory -= ({ departing, nil });
 }
 
-object thing_query_environment()
+nomask object thing_query_environment()
 {
 	ACCESS_CHECK(THING());
 
 	return environment;
 }
 
-object *thing_query_inventory()
+nomask object *thing_query_inventory()
 {
 	ACCESS_CHECK(THING());
 
