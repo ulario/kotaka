@@ -191,9 +191,8 @@ string *render_color()
 		int delta;
 		int color;
 		string buffer;
-		buffer = "";
 
-		color = 0x7;
+		buffer = "";
 
 		for (x = 0; x < size_x; x++) {
 			int new_color;
@@ -243,8 +242,6 @@ string *render_color()
 		}
 
 		buffer += "\033[0m";
-		color = 0x07;
-
 		buffers[y] = buffer;
 	}
 
