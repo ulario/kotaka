@@ -147,3 +147,11 @@ In DumpD we can just modulo the delay after adding the offset (todo, reaudit to 
 Simplify DumpD by using the wipe_callouts safun
 IntermudD doesn't want or need to save chanlistid or mudlistid, so don't bother recording them, or saving if they change
 Migrate Game thing bits to a thing library, we want to have different kinds of things in the future, like hungry wolves.  At least until we have proper scripting.
+Todo note about auditing ansi code usage
+Swap out if fragmentation is over 50 percent
+Only use actual color codes when we're rendering, plain text markup can just use standard bolding.
+Default terminal color should be considered undefined
+We need to implement emote handling.  Considering, IntermudD isn't the only thing that could use it, standard channels could use emotes too.
+Clean up more automated module shutdowns.
+Simplify thing code, especially when it comes to inventory management.
+Make sure we don't get masked out of important functions in thing library.
