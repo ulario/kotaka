@@ -50,6 +50,7 @@ private void start()
 	delay %= interval;
 	goal = now + delay;
 
+	wipe_callouts();
 	call_out("dump", delay, goal);
 }
 
@@ -83,13 +84,11 @@ static void dump(int goal)
 
 	if (delta > interval) {
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Stalled by excessive lag, restarting cycle");
-		wipe_callouts();
 		start();
 	} else {
 		goal += interval;
 		delta = goal - now;
 
-		wipe_callouts();
 		call_out("dump", delta, goal);
 	}
 }
@@ -100,7 +99,6 @@ void upgrade()
 
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Recompiled, restarting dump cycle");
 
-	wipe();
 	configure();
 	start();
 }
@@ -111,7 +109,6 @@ void reboot()
 
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Rebooted, restarting dump cycle");
 
-	wipe();
 	configure();
 	start();
 }
