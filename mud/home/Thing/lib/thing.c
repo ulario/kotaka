@@ -23,8 +23,6 @@ inherit inv "thing/inventory";
 inherit prop "thing/property";
 inherit bulk "thing/bulk";
 
-int destructing;
-
 /*****************/
 /* General stuff */
 /*****************/
@@ -36,11 +34,6 @@ static void create()
 	inv::create();
 	prop::create();
 	bulk::create();
-}
-
-int forbid_insert(object obj)
-{
-	return destructing;
 }
 
 static void destruct()
