@@ -113,3 +113,5 @@ Channel and Help in particular.
 ## Miscellaneous
 
 Audit the mud's usage of ansi color codes
+
+Implement proper emote handling for users, ChannelD, and IntermudD
