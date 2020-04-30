@@ -49,8 +49,6 @@ int rejections;
 /* i3 interface */
 int password; /* deprecated */
 mapping passwords;
-int chanlistid;
-int mudlistid;
 string router;
 
 /* local */
@@ -305,7 +303,6 @@ private void i3_handle_chanlist_reply(mixed *value)
 	mixed *values;
 	int sz;
 
-	chanlistid = value[6];
 	delta = value[7];
 
 	names = map_indices(delta);
@@ -328,8 +325,6 @@ private void i3_handle_chanlist_reply(mixed *value)
 		/* if ChannelD is down then it will have to ask us to listen manually when it starts */
 		LOGD->post_message("system", LOG_WARNING, "IntermudD: Received chanlist reply while ChannelD offline");
 	}
-
-	call_out_unique("save", 0);
 }
 
 private void i3_handle_emoteto(mixed *value)
@@ -381,7 +376,9 @@ private void i3_handle_error(mixed *value)
 
 				rejections++;
 
-				call_out("i3_reconnect", 0);
+				disconnect();
+
+				call_out_unique("i3_connect", 1);
 			}
 		}
 	}
@@ -394,7 +391,6 @@ private void i3_handle_mudlist(mixed *value)
 	mixed *values;
 	int sz;
 
-	mudlistid = value[6];
 	delta = value[7];
 
 	names = map_indices(delta);
@@ -408,8 +404,6 @@ private void i3_handle_mudlist(mixed *value)
 			muds[names[sz]] = values[sz];
 		}
 	}
-
-	call_out_unique("save", 0);
 }
 
 private void i3_handle_startup_reply(mixed *value)
@@ -702,13 +696,6 @@ private void process_packet(mixed *value)
 	}
 }
 
-static void i3_reconnect()
-{
-	disconnect();
-
-	call_out("i3_connect", 1.0);
-}
-
 void reboot()
 {
 	ACCESS_CHECK(INTERMUD());
@@ -730,10 +717,7 @@ void restore()
 	routers = ([ ]);
 	router = nil;
 
-	mudlistid = 0;
 	muds = ([ ]);
-
-	chanlistid = 0;
 	channels = ([ ]);
 
 	password = 0;
@@ -830,7 +814,7 @@ static void keepalive()
 {
 	mixed *arr;
 
-	call_out("keepalive", 60);
+	call_out_unique("keepalive", 10);
 
 	arr = ({
 		"who-req",
@@ -870,8 +854,6 @@ void save()
 /* objectd hooks */
 static void create()
 {
-	mudlistid = 0;
-	chanlistid = 0;
 	rejections = 0;
 	router = "*wpr";
 
@@ -930,40 +912,20 @@ int message_done()
 
 void logout(int quit)
 {
-	mixed **callouts;
-	int sz;
-
-	callouts = status(this_object(), O_CALLOUTS);
-
 	if (quit) {
 		LOGD->post_message("system", LOG_NOTICE, "I3: Connection closed");
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "I3: Connection lost");
-		call_out_unique("i3_connect", 30.0);
 	}
 
-	for (sz = sizeof(callouts); --sz >= 0; ) {
-		mixed *callout;
-
-		callout = callouts[sz];
-
-		switch(callout[CO_FUNCTION]) {
-		case "save":
-		case "i3_reconnect":
-		case "i3_connect":
-			break;
-		default:
-			LOGD->post_message("system", LOG_NOTICE, "I3: Killing callout " + callout[CO_FUNCTION]);
-			remove_call_out(callout[CO_HANDLE]);
-		}
-	}
+	call_out_unique("i3_connect", 5);
 }
 
 void connect_failed(int refused)
 {
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed");
 
-	call_out("i3_connect", 1.0);
+	call_out("i3_connect", 1);
 }
 
 /* userd hooks */
