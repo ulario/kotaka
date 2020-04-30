@@ -50,7 +50,7 @@ static void check()
 	mem_size = dmem_size + (float)status(ST_SMEMSIZE);
 	mem_used = dmem_used + (float)status(ST_SMEMUSED);
 
-	if (mem_used / mem_size < 0.75 && dmem_size - dmem_used > (float)(256 * M)) {
+	if (mem_used / mem_size < 0.5) {
 		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out");
 		swapout();
 	}
