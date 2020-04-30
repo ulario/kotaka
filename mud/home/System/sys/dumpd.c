@@ -30,16 +30,6 @@ int interval;
 int steps;
 int offset;
 
-private void wipe()
-{
-	int sz;
-	mixed *callouts;
-
-	for (sz = sizeof(callouts = status(this_object(), O_CALLOUTS)); --sz >= 0; ) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
-	}
-}
-
 private void start()
 {
 	int now;
@@ -93,13 +83,13 @@ static void dump(int goal)
 
 	if (delta > interval) {
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Stalled by excessive lag, restarting cycle");
-		wipe();
+		wipe_callouts();
 		start();
 	} else {
 		goal += interval;
 		delta = goal - now;
 
-		wipe();
+		wipe_callouts();
 		call_out("dump", delta, goal);
 	}
 }
