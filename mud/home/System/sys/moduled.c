@@ -330,7 +330,7 @@ void upgrade_modules()
 		module = list[sz];
 
 		if (modules[module] == -1) {
-			error("Cannot upgrade system with module pending shutdown");
+			continue;
 		}
 
 		rlimits(0; -1) {
