@@ -299,14 +299,7 @@ void upgrade_check_modules()
 
 		rlimits(0; -1) {
 			rlimits(0; 100000) {
-				object initd;
-
-				if (initd = find_object(initd_of(module))) {
-					initd->upgrade_check();
-				} else {
-					LOGD->post_message("system", LOG_WARNING, "ModuleD: Shutting down " + (module ? module : "Ecru") + ", missing initd in upgrade_check_modules");
-					call_out("shutdown_module", 0, module);
-				}
+				initd_of(module)->upgrade_check();
 			}
 		}
 	}
