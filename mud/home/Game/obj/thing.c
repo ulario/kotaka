@@ -20,103 +20,34 @@
 #include <kotaka/privilege.h>
 #include <kotaka/paths/thing.h>
 
-inherit thing LIB_THING;
-inherit "~Geometry/lib/thing";
-inherit "../lib/thing/exit";
-inherit "../lib/thing/character";
-inherit "../lib/thing/living";
+inherit "~/lib/thing";
 
 static void create(int clone)
 {
 	if (clone) {
-		thing::create();
+		::create();
 	}
 }
 
 static void destruct(int clone)
 {
 	if (clone) {
-		thing::destruct();
+		::destruct();
 	}
 }
 
 mapping save()
 {
-	mapping map;
-	object lwo;
-
 	ACCESS_CHECK(GAME());
 
-	map = ([
-		"archetype": query_archetype(),
-		"capacity": query_capacity(),
-		"density": query_density(),
-		"environment": query_environment(),
-		"flexible": query_flexible(),
-		"id": query_id(),
-		"inventory": query_inventory(),
-		"mass": query_mass(),
-		"max_mass": query_max_mass(),
-		"name": query_object_name(),
-		"properties": query_local_properties(),
-		"virtual": query_virtual()
-	]);
-
-	if (lwo = query_character_lwo()) {
-		map["character"] = ([
-			"attack": lwo->query_attack(),
-			"defense": lwo->query_defense(),
-			"maxhp": lwo->query_max_hp()
-		]);
-	}
-
-	if (lwo = query_living_lwo()) {
-		map["living"] = ([
-			"hp": lwo->query_hp()
-		]);
-	}
-
-	return map;
+	return ::save();
 }
 
 void load(mapping data)
 {
-	mixed arch;
-	mixed map;
-	object lwo;
-
 	ACCESS_CHECK(GAME());
 
-	if (arch = data["archetype"]) {
-		set_archetype(arch);
-	} else if (arch = data["archetypes"]) {
-		if (sizeof(arch)) {
-			set_archetype(arch[0]);
-		} else {
-			set_archetype(nil);
-		}
-	}
-
-	set_virtual(data["virtual"]);
-	set_capacity(data["capacity"]);
-	set_density(data["density"]);
-	set_flexible(data["flexible"]);
-	set_id(data["id"]);
-	set_mass(data["mass"]);
-	set_max_mass(data["max_mass"]);
-	set_object_name(data["name"]);
-	set_local_properties(data["properties"]);
-	set_object_name(data["name"]);
-
-	if (map = data["character"]) {
-		initialize_character(map["attack"], map["defense"], map["maxhp"]);
-	}
-
-	if (map = data["living"]) {
-		initialize_living();
-		lwo = query_living_lwo();
-		lwo->set_hp(map["hp"]);
-	}
+	::load(data);
 }
 
 void self_destruct()
