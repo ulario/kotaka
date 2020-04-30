@@ -28,6 +28,7 @@ inherit SECOND_AUTO;
 
 int interval;
 int steps;
+int offset;
 
 private void wipe()
 {
@@ -53,14 +54,11 @@ private void start()
 
 	goal = now;
 	goal -= goal % interval;
+	goal += offset;
 	goal += interval;
 	delay = goal - now;
-
-	if (delay < interval / 4) {
-		/* too soon, skip */
-		goal += interval;
-		delay += interval;
-	}
+	delay %= interval;
+	goal = now + delay;
 
 	call_out("dump", delay, goal);
 }
@@ -91,7 +89,6 @@ static void dump(int goal)
 	}
 
 	now = time();
-
 	delta = now - goal;
 
 	if (delta > interval) {
