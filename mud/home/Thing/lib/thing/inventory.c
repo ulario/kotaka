@@ -26,24 +26,6 @@ private object *inventory;
 
 void reset_id_number();
 
-/* private helpers */
-
-private atomic void move_core(object new_env)
-{
-	if (environment) {
-		environment->thing_del_inventory(this_object());
-		environment->bulk_invalidate();
-	}
-
-	environment = new_env;
-	reset_id_number();
-
-	if (environment) {
-		environment->thing_add_inventory(this_object());
-		environment->bulk_invalidate();
-	}
-}
-
 /* creator */
 
 static void create()
@@ -201,7 +183,18 @@ void move(object new_env, varargs int force)
 		}
 	}
 
-	move_core(new_env);
+	if (environment) {
+		environment->thing_del_inventory(this_object());
+		environment->bulk_invalidate();
+	}
+
+	environment = new_env;
+	reset_id_number();
+
+	if (environment) {
+		environment->thing_add_inventory(this_object());
+		environment->bulk_invalidate();
+	}
 
 	if (old_env) {
 		old_env->remove_notify(this);
