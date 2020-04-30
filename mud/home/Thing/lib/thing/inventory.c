@@ -146,9 +146,11 @@ void move(object new_env, varargs int force)
 
 	this = this_object();
 
-	PERMISSION_CHECK(!old_env || !old_env->forbid_remove(this));
-	PERMISSION_CHECK(!forbid_move(new_env));
-	PERMISSION_CHECK(!new_env || !new_env->forbid_insert(this));
+	if (!force) {
+		PERMISSION_CHECK(!old_env || !old_env->forbid_remove(this));
+		PERMISSION_CHECK(!forbid_move(new_env));
+		PERMISSION_CHECK(!new_env || !new_env->forbid_insert(this));
+	}
 
 	if (new_env == environment) {
 		return;
