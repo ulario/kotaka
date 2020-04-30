@@ -168,7 +168,7 @@ void move(object new_env, varargs int force)
 			error("Destination object too cluttered");
 		}
 
-		test = new_env->query_environment();
+		test = new_env->thing_query_environment();
 
 		while (test) {
 			if (test == this) {
@@ -181,7 +181,7 @@ void move(object new_env, varargs int force)
 				error("Object nesting overflow");
 			}
 
-			test = test->query_environment();
+			test = test->thing_query_environment();
 		}
 	}
 
