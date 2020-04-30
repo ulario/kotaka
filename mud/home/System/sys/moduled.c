@@ -220,14 +220,7 @@ static void upgrade_module(string module)
 
 	rlimits(0; -1) {
 		rlimits(0; MODULE_BOOT_TICKS) {
-			object initd;
-
-			if (initd = find_object(initd_of(module))) {
-				initd->upgrade_module();
-			} else {
-				LOGD->post_message("system", LOG_NOTICE, "Shutting down " + (module ? module : "Ecru") + " module, missing initd in upgrade_module");
-				call_out("shutdown_module", 0, module);
-			}
+			initd_of(module)->upgrade_module();
 		}
 	}
 }
