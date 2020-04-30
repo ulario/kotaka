@@ -112,6 +112,6 @@ Channel and Help in particular.
 
 ## Miscellaneous
 
-Audit the mud's usage of ansi color codes
-
-Implement proper emote handling for users, ChannelD, and IntermudD
+Rework IntermudD and ChannelD handling of emotes.  They're common enough
+I should probably standardize them instead of backdooring them as regular
+messages.
