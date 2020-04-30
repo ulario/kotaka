@@ -109,3 +109,7 @@ to comprise the unprivileged core of Kotaka, so they should be
 consolidated into the Kotaka module.
 
 Channel and Help in particular.
+
+## Miscellaneous
+
+Audit the mud's usage of ansi color codes
