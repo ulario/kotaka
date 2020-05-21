@@ -104,25 +104,15 @@ private string object2string(object obj)
 private void do_thing(object obj)
 {
 	mapping lprops;
-	object *archs;
+	object arch;
 	object env;
 	object *inv;
 	int sz;
 
-	archs = obj->query_archetypes();
-	sz = sizeof(archs);
+	arch = obj->query_archetype();
 
-	if (sz) {
-		int i;
-
-		message("<p>Archetypes:</p>\n");
-		message("<ul>\n");
-
-		for (i = 0; i < sz; i++) {
-			message("<li>" + object2string(archs[i]) + "</li>\n");
-		}
-
-		message("</ul>\n");
+	if (arch) {
+		message("<p>Archetypes: " + object2string(arch) + "</li>\n");
 	}
 
 	env = obj->query_environment();
