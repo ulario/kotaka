@@ -546,15 +546,7 @@ private void i3_handle_channel_m(mixed *value)
 
 private void i3_handle_channel_e(mixed *value)
 {
-	if (CHANNELD->test_channel(value[6])) {
-		string text;
-
-		text = replace(
-			value[8], "$N", value[7] + "@" + value[2]
-		);
-
-		CHANNELD->post_message(value[6], text, nil, 1);
-	}
+	i3_handle_channel_m(value);
 }
 
 private void i3_handle_who_reply(mixed *value)
