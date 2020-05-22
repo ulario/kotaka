@@ -8,11 +8,19 @@ static string oinfobox(string header, int level, string content)
 	buf = "<h" + level + ">" + header + "</h" + level + ">\n";
 	buf += "<table>\n";
 	buf += "<tr>\n";
-	buf += "<td class=\"infobox\">\n";
+	buf += "<td class=\"frame\">\n";
+	buf += "<table>\n";
+	buf += "<tr>\n";
+	buf += "<td class=\"box\">\n";
 	buf += content;
 	buf += "</td>\n";
 	buf += "</tr>\n";
 	buf += "</table>\n";
+	buf += "</td>\n";
+	buf += "</tr>\n";
+	buf += "</table>\n";
+
+	return buf;
 }
 
 static string simplename(object obj)

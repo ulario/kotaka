@@ -1,5 +1,6 @@
 inherit "support";
 inherit "bulk";
+inherit "form/thing";
 inherit "/lib/string/sprint";
 
 static string thing_text(object obj)
@@ -14,35 +15,38 @@ static string thing_text(object obj)
 	mapping props;
 
 	string buffer;
-
-	buffer = "<h2>Thing</h2>";
+	string subbuffer;
 
 	arch = obj->query_archetype();
 
+	subbuffer = "";
+
 	if (arch) {
-		buffer += "<p>Archetypes: " + object2link(arch) + "</li>\n";
+		subbuffer += "<p>Archetype: " + object2link(arch) + "</p>\n";
 	}
 
 	env = obj->query_environment();
 
 	if (env) {
-		buffer += "<p>Environment: " + object2link(env) + "</p>\n";
+		subbuffer += "<p>Environment: " + object2link(env) + "</p>\n";
 	}
+
+	buffer = oinfobox("Thing", 2, subbuffer);
 
 	inv = obj->query_inventory();
 	sz = sizeof(inv);
 
 	if (sz) {
 		int i;
+		string subbuffer;
 
-		buffer += "<p>Inventory:</p>\n";
-		buffer +="<ul>\n";
+		subbuffer = "";
 
 		for (i = 0; i < sz; i++) {
-			buffer += "<li>" + object2link(inv[i]) + "</li>\n";
+			subbuffer += "<p>" + object2link(inv[i]) + "</p>\n";
 		}
 
-		buffer += "</ul>\n";
+		buffer += oinfobox("Inventory", 3, subbuffer);
 	}
 
 	buffer += bulk_text(obj);
@@ -52,17 +56,20 @@ static string thing_text(object obj)
 	values = map_values(props);
 	sz = sizeof(names);
 
+	buffer += "</td><td>\n";
+
 	if (sz) {
 		int i;
+		string subbuffer;
 
-		buffer += "<h3>Local properties</h3>\n";
-		buffer += "<dl>\n";
+		subbuffer = "<dl>\n";
 
 		for (i = 0; i < sz; i++) {
-			buffer += "<dt>" + names[i] + "</dt><dd>" + hybrid_sprint(values[i]) + "</dd>\n";
+			subbuffer += "<dt>" + names[i] + "</dt><dd>" + hybrid_sprint(values[i]) + "</dd>\n";
 		}
 
-		buffer += "</dl>\n";
+		subbuffer += "</dl>\n";
+		buffer += oinfobox("Properties", 3, subbuffer);
 	}
 
 	return buffer;

@@ -32,6 +32,7 @@
 inherit LIB_SYSTEM_USER;
 inherit "~/lib/object";
 
+string ip;
 string request;
 int state;
 mapping headers;
@@ -53,6 +54,28 @@ static void create(int clone)
 	}
 }
 
+static string query_ip()
+{
+	return ip;
+}
+
+private void do_style()
+{
+	message("<style>\n");
+	message("h1, h2, h3 { margin: 0 auto; color: blue; border: .125em solid blue; background-color: #aaf; padding: .5em; text-align: center; }\n");
+	message("p, dl, ul { margin: 0; }\n");
+	message("table { margin: 0 auto; }\n");
+	if (ip == "127.0.0.1") {
+		message("table.page { border: .25em solid red; background-color: #faa; }\n");
+	} else {
+		message("table.page { border: .25em solid green; background-color: #afa; }\n");
+	}
+	message("td { padding: 1em; }\n");
+	message("td.box, h1, h2, h3, table.page { border-radius: 1em; }\n");
+	message("td.box { background-color: yellow; border: .125em solid brown; }\n");
+	message("</style>\n");
+}
+
 private void handle_get_object(string objectname)
 {
 	mixed obj;
@@ -68,9 +91,7 @@ private void handle_get_object(string objectname)
 		message(header->generate_header());
 		message("<html>\n");
 		message("<head>\n");
-		message("<style>\n");
-		message("p { margin: 0; }\n");
-		message("</style>\n");
+		do_style();
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
@@ -106,6 +127,83 @@ private int handle_get_pattern(string path)
 		case "object":
 			if (sscanf(path, "/object.lpc?obj=%s", args)) {
 				handle_get_object(args);
+				return 1;
+			} else {
+				object header;
+
+				header = new_object("~/lwo/http_response");
+				header->set_status(400, "Invalid format");
+
+				message(header->generate_header());
+				message("<p>Malformed arguments</p>");
+				message("<p>path: " + path + "</p>");
+				return 1;
+			}
+		}
+	}
+}
+
+private void handle_post_object(string objectname)
+{
+	mixed obj;
+
+	obj = string2object(objectname);
+
+	if (typeof(obj) == T_OBJECT) {
+		object header;
+		float new_mass;
+
+		header = new_object("~/lwo/http_response");
+		header->set_status(200, "Object report");
+
+		message(header->generate_header());
+		message("<html>\n");
+		message("<head>\n");
+		do_style();
+		message("<title>Object report</title>\n");
+		message("</head>\n");
+		message("<body>\n");
+		if (sscanf(entity, "mass=%f", new_mass)) {
+			obj->set_mass(new_mass);
+			message("<h1>Changes</h1>\n");
+			message("<p>Mass changed to " + new_mass + "</p>\n");
+		}
+		message(object_text(obj));
+		message("<h1>Returned entity</h1>\n");
+		message("<pre>\n");
+		message(entity);
+		message("</pre>\n");
+		message("</body>\n");
+		message("</html>\n");
+	} else {
+		object header;
+
+		header = new_object("~/lwo/http_response");
+		header->set_status(404, "No such object");
+
+		message(header->generate_header());
+		message("<html>\n");
+		message("<head>\n");
+		message("<title>No such object</title>\n");
+		message("</head>\n");
+		message("<body>\n");
+		message("<h1 style=\"color: red\">No such object</h1>\n");
+		message("<p>" + obj + "</p>");
+		message("</body>\n");
+		message("</html>\n");
+	}
+}
+
+private int handle_post_pattern(string path)
+{
+	string handler;
+	string args;
+
+	if (sscanf(path, "/%s.lpc", handler)) {
+		switch(handler) {
+		case "object":
+			if (sscanf(path, "/object.lpc?obj=%s", args)) {
+				handle_post_object(args);
 				return 1;
 			} else {
 				object header;
@@ -207,6 +305,24 @@ private void handle_get()
 	}
 }
 
+private void handle_post()
+{
+	if (ip != "127.0.0.1") {
+		message(HTTPD->generate_error_page(403, "Access denied", "Privileged IP required"));
+		return;
+	}
+
+	catch {
+		if (handle_post_pattern(path)) {
+			return;
+		}
+
+		message(nohandler_text());
+	} : {
+		message(HTTPD->generate_error_page(503, "Internal server error", "Unspecified server error."));
+	}
+}
+
 int receiving_entity;
 
 private int input(string message)
@@ -260,22 +376,19 @@ static void self_destruct()
 	}
 }
 
-void spill_post()
-{
-	message(
-		HTTPD->generate_error_page(
-			500, "Unimplemented",
-			"This server doesn't know how to handle POST yet, but got this:\n",
-			entity + "\n"
-		)
-	);
-
-	disconnect();
-}
-
 int login(string str)
 {
-	connection(previous_object());
+	object conn;
+
+	conn = previous_object();
+
+	connection(conn);
+
+	while (conn <- LIB_USER) {
+		conn = conn->query_conn();
+	}
+
+	ip = query_ip_number(conn);
 
 	request = str + "\n";
 
@@ -329,9 +442,17 @@ int receive_message(string message)
 							message(HTTPD->generate_error_page(400, "Bad request"
 								, "POST sent with malformed Content-Length header.")
 							);
+							return MODE_DISCONNECT;
 						}
 					}
 
+					if (explen == 0) {
+						/* empty entity, process immediately */
+						handle_post();
+						return MODE_DISCONNECT;
+					}
+
+					/* wait for entity */
 					return MODE_NOCHANGE;
 				}
 			}
@@ -352,8 +473,14 @@ int receive_message(string message)
 
 		entity += message;
 
-		if (strlen(entity) >= explen) {
-			spill_post();
+		if (strlen(entity) > explen) {
+			message(HTTPD->generate_error_page("400", "Overflow", "Sent entity size exceeds Content-Length header"));
+			return MODE_DISCONNECT;
+		}
+
+		if (strlen(entity) == explen) {
+			handle_post();
+			return MODE_DISCONNECT;
 		}
 
 		return MODE_NOCHANGE;

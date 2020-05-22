@@ -2,21 +2,32 @@
 
 inherit "thing";
 
+static string query_ip();
+
 static string object_text(object obj)
 {
+	string subbuffer;
 	string buffer;
 	string name;
 
-	buffer = "<h1>Object</h2>";
-	buffer += "<p>Object owner: " + obj->query_owner() + "</p>\n";
+	subbuffer = "<p>Object owner: " + obj->query_owner() + "</p>\n";
 
 	if (name = obj->query_object_name()) {
-		buffer += "<p>Object name: " + name + "</p>\n";
+		subbuffer += "<p>Object name: " + name + "</p>\n";
 	}
+
+	buffer = "<table class=\"page\"><tr><td>\n";
+	buffer += oinfobox("Object", 1, subbuffer);
 
 	if (obj <- LIB_THING) {
 		buffer += thing_text(obj);
+
+		if (query_ip() == "127.0.0.1") {
+			buffer += thing_form(obj);
+		}
 	}
+
+	buffer += "</td></tr></table>\n";
 
 	return buffer;
 }
