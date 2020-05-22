@@ -71,7 +71,7 @@ static string thing_text(object obj)
 	if (sz) {
 		int i;
 
-		buffer += "<h3>Local properties:</h3>\n";
+		buffer += "<h3>Local properties</h3>\n";
 		buffer += "<dl>\n";
 
 		for (i = 0; i < sz; i++) {
