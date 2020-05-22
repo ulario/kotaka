@@ -222,10 +222,6 @@ void restore()
 
 	buf = SECRETD->read_file("bans");
 
-	if (!buf) {
-		buf = CONFIGD->read_file("bans");
-	}
-
 	if (buf) {
 		mapping save;
 
