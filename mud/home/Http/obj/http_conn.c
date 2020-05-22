@@ -197,13 +197,6 @@ static string nohandler_text()
 private void handle_get()
 {
 	catch {
-		switch(path) {
-		case "/formtest":
-			do_formtest();
-			return;
-
-		}
-
 		if (handle_get_pattern(path)) {
 			return;
 		}
