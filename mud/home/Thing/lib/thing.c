@@ -47,6 +47,54 @@ static void destruct()
 	}
 }
 
+static mapping save()
+{
+	mixed v;
+
+	return ([
+		"name": query_object_name(),
+		"id": query_id(),
+
+		"archetype": query_archetype(),
+
+		"environment": query_environment(),
+		"inventory": query_inventory(),
+
+		"virtual": query_virtual() ? 1 : 0,
+
+		"mass": (v = query_mass()) ? v : nil,
+		"density": query_density(),
+		"flexible": query_flexible() ? 1 : 0,
+		"capacity": (v = query_capacity()) ? v : nil,
+		"max_mass": (v = query_max_mass()) ? v : nil,
+
+		"properties": query_local_properties()
+	]);
+}
+
+static void load(mapping data)
+{
+	set_object_name(data["name"]);
+	set_id(data["id"]);
+
+	set_archetype(data["archetype"]);
+
+	if (data["virtual"]) {
+		set_virtual(1);
+	} else {
+		mixed v;
+
+		set_virtual(0);
+		set_mass((v = data["mass"]) ? v : 0.0);
+		set_density((v = data["density"]) ? v : 1.0);
+		set_flexible(data["flexible"] ? 1 : 0);
+		set_capacity((v = data["capacity"]) ? v : 0.0);
+		set_max_mass((v = data["max_mass"]) ? v : 0.0);
+	}
+
+	set_local_properties(data["properties"]);
+}
+
 void self_destruct()
 {
 	destruct_object(this_object());
