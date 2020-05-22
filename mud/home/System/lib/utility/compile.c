@@ -155,7 +155,7 @@ static void compile_dir(string dir)
 }
 
 /* recompile only if loaded */
-static void recompile_dir(string dir)
+static void recompile_dir(string dir, varargs int cont)
 {
 	string *names;
 	int *sizes;
@@ -177,7 +177,7 @@ static void recompile_dir(string dir)
 
 		if (sizes[sz] == -2) {
 			/* directory */
-			recompile_dir(dir + "/" + name);
+			recompile_dir(dir + "/" + name, cont);
 			continue;
 		}
 
@@ -198,7 +198,13 @@ static void recompile_dir(string dir)
 			continue;
 		}
 
-		compile_object(path);
+		if (cont) {
+			catch {
+				compile_object(path);
+			}
+		} else {
+			compile_object(path);
+		}
 	}
 }
 
