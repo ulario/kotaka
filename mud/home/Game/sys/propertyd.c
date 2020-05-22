@@ -39,7 +39,7 @@ void configure_properties()
 	PROPERTYD->add_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
 
 	/* inheritance */
-	PROPERTYD->add_property("archetype", T_ARRAY, PROP_MAGIC, ({ "query_archetype", "set_archetype" }) );
+	PROPERTYD->add_property("archetype", T_OBJECT, PROP_MAGIC, ({ "query_archetype", "set_archetype" }) );
 
 	/* descriptions */
 	PROPERTYD->add_property("snouns", T_ARRAY, PROP_COMBO, ({ "local_snouns", "removed_snouns" }) );
