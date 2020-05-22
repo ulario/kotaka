@@ -98,14 +98,27 @@ private void handle_get_object(string objectname)
 
 private int handle_get_pattern(string path)
 {
-	string a, b;
+	string handler;
+	string args;
 
-	if (sscanf(path, "/%s-%s", a, b) && a == "object") {
-		handle_get_object(b);
-		return 1;
+	if (sscanf(path, "/%s.lpc", handler)) {
+		switch(handler) {
+		case "object":
+			if (sscanf(path, "/object.lpc?obj=%s", args)) {
+				handle_get_object(args);
+				return 1;
+			} else {
+				object header;
+
+				header = new_object("~/lwo/http_response");
+				header->set_status(400, "Invalid format");
+
+				message(header->generate_header());
+				message("Malformed arguments");
+				return 1;
+			}
+		}
 	}
-
-	return 0;
 }
 
 private void do_formtest()
@@ -113,7 +126,6 @@ private void do_formtest()
 	object header;
 
 	header = new_object("~/lwo/http_response");
-
 	header->set_status(200, "Ok");
 
 	message(header->generate_header());

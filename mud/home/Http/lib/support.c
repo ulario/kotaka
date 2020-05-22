@@ -68,7 +68,7 @@ static string object2link(object obj)
 
 	str = object2string(obj);
 
-	return "<a href=\"./object-" + str + "\">" + str + "</a>";
+	return "<a href=\"object.lpc?obj=" + str + "\">" + str + "</a>";
 }
 
 static mixed string2object(string str)
