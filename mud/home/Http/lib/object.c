@@ -10,7 +10,7 @@ static string object_text(object obj)
 	buffer = "<h1>Object</h2>";
 	buffer += "<p>Object owner: " + obj->query_owner() + "</p>\n";
 
-	if (name = query_object_name()) {
+	if (name = obj->query_object_name()) {
 		buffer += "<p>Object name: " + name + "</p>\n";
 	}
 
