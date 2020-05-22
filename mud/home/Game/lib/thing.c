@@ -73,6 +73,9 @@ static void load(mapping data)
 	mixed map;
 	object lwo;
 
+	set_object_name(data["name"]);
+	set_id(data["id"]);
+
 	if (arch = data["archetype"]) {
 		set_archetype(arch);
 	} else if (arch = data["archetypes"]) {
@@ -83,16 +86,20 @@ static void load(mapping data)
 		}
 	}
 
-	set_virtual(data["virtual"]);
-	set_capacity(data["capacity"]);
-	set_density(data["density"]);
-	set_flexible(data["flexible"]);
-	set_id(data["id"]);
-	set_mass(data["mass"]);
-	set_max_mass(data["max_mass"]);
-	set_object_name(data["name"]);
+	if (data["virtual"]) {
+		set_virtual(1);
+	} else {
+		mixed v;
+
+		set_virtual(0);
+		set_mass((v = data["mass"]) ? v : 0.0);
+		set_density((v = data["density"]) ? v : 1.0);
+		set_flexible(data["flexible"] ? 1 : 0);
+		set_capacity((v = data["capacity"]) ? v : 0.0);
+		set_max_mass((v = data["max_mass"]) ? v : 0.0);
+	}
+
 	set_local_properties(data["properties"]);
-	set_object_name(data["name"]);
 
 	if (map = data["character"]) {
 		initialize_character(map["attack"], map["defense"], map["maxhp"]);
