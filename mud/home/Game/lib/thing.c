@@ -34,20 +34,26 @@ static mapping save()
 {
 	mapping map;
 	object lwo;
+	mixed v;
 
 	map = ([
-		"archetype": query_archetype(),
-		"capacity": query_capacity(),
-		"density": query_density(),
-		"environment": query_environment(),
-		"flexible": query_flexible(),
-		"id": query_id(),
-		"inventory": query_inventory(),
-		"mass": query_mass(),
-		"max_mass": query_max_mass(),
 		"name": query_object_name(),
+		"id": query_id(),
+
+		"archetype": query_archetype(),
+
+		"environment": query_environment(),
+		"inventory": query_inventory(),
+
+		"virtual": query_virtual() ? 1 : 0
+
+		"mass": (v = query_mass()) ? v : nil,
+		"density": query_density()),
+		"flexible": query_flexible() ? 1 : 0,
+		"capacity": (v = query_capacity()) ? v : nil,
+		"max_mass": (v = query_max_mass()) ? v : nil,
+
 		"properties": query_local_properties(),
-		"virtual": query_virtual()
 	]);
 
 	if (lwo = query_character_lwo()) {
