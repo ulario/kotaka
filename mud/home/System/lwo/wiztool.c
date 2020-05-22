@@ -266,7 +266,7 @@ static void cmd_rebuild(object user, string cmd, string arg)
 		}
 
 		purge_dir("/");
-		compile_dir("/");
+		compile_dir("/", 1);
 	}
 }
 
