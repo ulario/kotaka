@@ -166,13 +166,18 @@ static void cmd_statedump(object user, string cmd, string arg)
 
 static void cmd_hotboot(object user, string cmd, string arg)
 {
-	if (arg) {
-		message("Usage: hotboot\n");
-		return;
-	}
+    if (arg && arg != "-i") {
+	message("Usage: " + cmd + " [-i]\n");
+	return;
+    }
 
+    if (arg == "-i") {
 	dump_state(1);
-	shutdown(1);
+    } else {
+	dump_state();
+    }
+
+    shutdown(1);
 }
 
 private void list_dormants(string dir, mixed **list)
