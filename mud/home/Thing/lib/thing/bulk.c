@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/thing.h>
 
+object query_archetype();
 object query_environment();
 object *query_inventory();
 
@@ -49,7 +50,7 @@ static void create()
 
 /* mass */
 
-void set_mass(float new_mass)
+void set_local_mass(float new_mass)
 {
 	object env;
 
@@ -68,9 +69,41 @@ void set_mass(float new_mass)
 	mass = new_mass;
 }
 
-float query_mass()
+float query_local_mass()
 {
 	return mass;
+}
+
+void set_mass(float new_mass)
+{
+	object arch;
+	float factor;
+
+	arch = query_archetype();
+
+	if (!arch || arch->query_virtual()) {
+		factor = 1.0;
+	} else {
+		factor = arch->query_mass();
+	}
+
+	set_local_mass(new_mass / factor);
+}
+
+float query_mass()
+{
+	object arch;
+	float factor;
+
+	arch = query_archetype();
+
+	if (!arch || arch->query_virtual()) {
+		factor = 1.0;
+	} else {
+		factor = arch->query_mass();
+	}
+
+	return mass * factor;
 }
 
 float query_total_mass()
