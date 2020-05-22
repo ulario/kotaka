@@ -30,7 +30,7 @@
 #define STATE_RESPONDING 3
 
 inherit LIB_SYSTEM_USER;
-inherit "~/lib/thing";
+inherit "~/lib/object";
 
 string request;
 int state;
@@ -55,14 +55,14 @@ static void create(int clone)
 
 private void handle_get_object(string objectname)
 {
-	object header;
 	mixed obj;
 
 	obj = string2object(objectname);
 
 	if (typeof(obj) == T_OBJECT) {
-		header = new_object("~/lwo/http_response");
+		object header;
 
+		header = new_object("~/lwo/http_response");
 		header->set_status(200, "Object report");
 
 		message(header->generate_header());
@@ -71,19 +71,13 @@ private void handle_get_object(string objectname)
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
-		message("<h1 style=\"color: green\">Object report</h1>\n");
-		message("<p>Object name: " + objectname);
-		message("<p>Object owner: " + obj->query_owner());
-
-		if (obj <- LIB_THING) {
-			message(thing_text(obj));
-		}
-
+		message(object_text(obj));
 		message("</body>\n");
 		message("</html>\n");
 	} else {
-		header = new_object("~/lwo/http_response");
+		object header;
 
+		header = new_object("~/lwo/http_response");
 		header->set_status(404, "No such object");
 
 		message(header->generate_header());
@@ -200,8 +194,6 @@ private void handle_get()
 		}
 
 		message(nohandler_text());
-
-		return;
 	} : {
 		message(HTTPD->generate_error_page(503, "Internal server error", "Unspecified server error."));
 	}
