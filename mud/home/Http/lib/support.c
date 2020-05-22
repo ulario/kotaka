@@ -62,6 +62,15 @@ static string object2string(object obj)
 	}
 }
 
+static string object2link(object obj)
+{
+	string str;
+
+	str = object2string(obj);
+
+	return "<a href=\"./object-" + str + "\">" + str + "</a>";
+}
+
 static mixed string2object(string str)
 {
 	string semisuffix;

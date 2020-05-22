@@ -15,13 +15,13 @@ static string thing_text(object obj)
 	arch = obj->query_archetype();
 
 	if (arch) {
-		buffer += "<p>Archetypes: " + object2string(arch) + "</li>\n";
+		buffer += "<p>Archetypes: " + object2link(arch) + "</li>\n";
 	}
 
 	env = obj->query_environment();
 
 	if (env) {
-		buffer += "<p>Environment: " + object2string(env) + "</p>\n";
+		buffer += "<p>Environment: " + object2link(env) + "</p>\n";
 	}
 
 	inv = obj->query_inventory();
@@ -34,7 +34,7 @@ static string thing_text(object obj)
 		buffer +="<ul>\n";
 
 		for (i = 0; i < sz; i++) {
-			buffer += "<li>" + object2string(inv[i]) + "</li>\n";
+			buffer += "<li>" + object2link(inv[i]) + "</li>\n";
 		}
 
 		buffer += "</ul>\n";
