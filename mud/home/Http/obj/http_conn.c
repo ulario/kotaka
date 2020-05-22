@@ -68,6 +68,9 @@ private void handle_get_object(string objectname)
 		message(header->generate_header());
 		message("<html>\n");
 		message("<head>\n");
+		message("<style>\n");
+		message("p { margin: 0; }\n");
+		message("</style>\n");
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
