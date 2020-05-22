@@ -605,6 +605,7 @@ int do_verb(object verb, string command, string args)
 {
 	object ustate;
 	object actor;
+	object possessee;
 	mixed roles;
 	int i, sz;
 	string *methods;
@@ -616,6 +617,10 @@ int do_verb(object verb, string command, string args)
 	CHECKARG(args, 3, "do_verb");
 
 	actor = ustate->query_user()->query_body();
+
+	while (possessee = actor->query_possessee()) {
+		actor = possessee;
+	}
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
 
