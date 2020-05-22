@@ -1,4 +1,5 @@
 inherit "support";
+inherit "bulk";
 
 static string thing_text(object obj)
 {
@@ -38,6 +39,8 @@ static string thing_text(object obj)
 
 		buffer += "</ul>\n";
 	}
+
+	buffer += bulk_text(obj);
 
 	return buffer;
 }
