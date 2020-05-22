@@ -112,7 +112,7 @@ static void destruct_dir(string dir)
 }
 
 /* compile, even if already loaded */
-static void compile_dir(string dir)
+static void compile_dir(string dir, varargs int cont)
 {
 	string *names;
 	int *sizes;
@@ -134,7 +134,7 @@ static void compile_dir(string dir)
 
 		if (sizes[sz] == -2) {
 			/* directory */
-			compile_dir(dir + "/" + name);
+			compile_dir(dir + "/" + name, cont);
 			continue;
 		}
 
@@ -150,7 +150,13 @@ static void compile_dir(string dir)
 			continue;
 		}
 
-		compile_object(path);
+		if (cont) {
+			catch {
+				compile_object(path);
+			}
+		} else {
+			compile_object(path);
+		}
 	}
 }
 
