@@ -135,12 +135,59 @@ private void do_formtest()
 	message("</html>\n");
 }
 
+static string nohandler_text()
+{
+	object header;
+	string buffer;
+	object conn;
+
+	header = new_object("~/lwo/http_response");
+	header->set_status(503, "No handler");
+
+	buffer = header->generate_header();
+
+	buffer += "<html>\n";
+	buffer += "<head>\n";
+	buffer += "<title>No handler</title>\n";
+	buffer += "</head>\n";
+	buffer += "<body>\n";
+	buffer += "<h1 style=\"color: red\">No handler</h1>\n";
+	buffer += "<table>\n";
+	buffer += "<tr><td>Method</td><td>" + method + "</td></tr>\n";
+	buffer += "<tr><td>Path</td><td>" + path + "</td></tr>\n";
+	buffer += "<tr><td>Version</td><td>" + version + "</td></tr>\n";
+	buffer += "</table>\n";
+	buffer += "<p>There is no handler for that path.</p>\n";
+	buffer += "<p>For the curious, here's a list of all objects involved in this connection:</p>\n";
+
+	conn = this_object();
+
+	buffer += "<p style=\"color: darkgreen\">\n";
+
+	while(conn) {
+		buffer += object_name(conn) + "<br />\n";
+
+		if (conn <- LIB_USER) {
+			conn = conn->query_conn();
+		} else {
+			break;
+		}
+	}
+
+	buffer += "</p>\n";
+	buffer += "<p>And here is the request your browser sent:</p>";
+	buffer += "<pre>\n";
+	buffer += request;
+	buffer += "</pre>\n";
+	buffer += "</body>\n";
+	buffer += "</html>\n";
+
+	return buffer;
+}
+
 private void handle_get()
 {
 	catch {
-		object conn;
-		object header;
-
 		switch(path) {
 		case "/formtest":
 			do_formtest();
@@ -152,46 +199,9 @@ private void handle_get()
 			return;
 		}
 
-		header = new_object("~/lwo/http_response");
+		message(nohandler_text());
 
-		header->set_status(503, "No handler");
-
-		message(header->generate_header());
-		message("<html>\n");
-		message("<head>\n");
-		message("<title>No handler</title>\n");
-		message("</head>\n");
-		message("<body>\n");
-		message("<h1 style=\"color: red\">No handler</h1>\n");
-		message("<table>\n");
-		message("<tr><td>Method</td><td>" + method + "</td></tr>\n");
-		message("<tr><td>Path</td><td>" + path + "</td></tr>\n");
-		message("<tr><td>Version</td><td>" + version + "</td></tr>\n");
-		message("</table>\n");
-		message("<p>There is no handler for that path.</p>\n");
-		message("<p>For the curious, here's a list of all objects involved in this connection:</p>\n");
-
-		conn = this_object();
-
-		message("<p style=\"color: darkgreen\">\n");
-
-		while(conn) {
-			message(object_name(conn) + "<br />\n");
-
-			if (conn <- LIB_USER) {
-				conn = conn->query_conn();
-			} else {
-				break;
-			}
-		}
-
-		message("</p>\n");
-		message("<p>And here is the request your browser sent:</p>");
-		message("<pre>\n");
-		message(request);
-		message("</pre>\n");
-		message("</body>\n");
-		message("</html>\n");
+		return;
 	} : {
 		message(HTTPD->generate_error_page(503, "Internal server error", "Unspecified server error."));
 	}
