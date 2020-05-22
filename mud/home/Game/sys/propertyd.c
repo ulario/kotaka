@@ -105,6 +105,7 @@ void configure_properties()
 
 	/* body/mobile handling */
 	PROPERTYD->add_property("mobiles", T_ARRAY, PROP_SIMPLE, ({ }) );
+	PROPERTYD->add_property("possessee", T_OBJECT, PROP_MAGIC, ({ "query_possessee", "possess" }) );
 
 	/* exits */
 	PROPERTYD->add_property("exit_return", T_OBJECT, PROP_MAGIC, ({ "query_exit_return", "set_exit_return" }));
