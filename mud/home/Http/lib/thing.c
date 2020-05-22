@@ -45,22 +45,6 @@ static string thing_text(object obj)
 		buffer += "</ul>\n";
 	}
 
-	inv = obj->query_inventory();
-	sz = sizeof(inv);
-
-	if (sz) {
-		int i;
-
-		buffer += "<p>Inventory:</p>\n";
-		buffer +="<ul>\n";
-
-		for (i = 0; i < sz; i++) {
-			buffer += "<li>" + object2link(inv[i]) + "</li>\n";
-		}
-
-		buffer += "</ul>\n";
-	}
-
 	buffer += bulk_text(obj);
 
 	props = obj->query_local_properties();
