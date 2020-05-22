@@ -26,9 +26,9 @@
 /* daemons */
 
 #define CATALOGD	(USR_DIR + "/System/sys/catalogd")
-#define CONFIGD		(USR_DIR + "/System/sys/configd")
 #define DUMPD		(USR_DIR + "/System/sys/dumpd")
 #define ERRORD		(USR_DIR + "/System/sys/errord")
+#define ETCD		(USR_DIR + "/System/sys/etcd")
 #define FILTERD		(USR_DIR + "/System/sys/filterd")
 #define IDD		(USR_DIR + "/System/sys/idd")
 #define KERNELD		(USR_DIR + "/System/sys/kerneld")
@@ -43,6 +43,7 @@
 #define SYSTEM_USERD	(USR_DIR + "/System/sys/userd")
 #define TLSD		(USR_DIR + "/System/sys/tlsd")
 #define TOUCHD		(USR_DIR + "/System/sys/touchd")
+#define VARD		(USR_DIR + "/System/sys/vard")
 #define WATCHDOGD	(USR_DIR + "/System/sys/watchdogd")
 
 /* libs */

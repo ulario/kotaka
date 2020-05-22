@@ -72,7 +72,7 @@ static void create()
 
 	create_channels();
 
-	if (CONFIGD->file_info("save")) {
+	if (VARD->file_info("save")) {
 		"sys/saveload"->load_world();
 	} else {
 		build_world();

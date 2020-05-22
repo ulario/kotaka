@@ -62,11 +62,11 @@ void save()
 
 	buf = hybrid_sprint(aliases);
 
-	CONFIGD->make_dir(".");
-	CONFIGD->remove_file("aliases-tmp");
-	CONFIGD->write_file("aliases-tmp", buf + "\n");
-	CONFIGD->remove_file("aliases");
-	CONFIGD->rename_file("aliases-tmp", "aliases");
+	ETCD->make_dir(".");
+	ETCD->remove_file("aliases-tmp");
+	ETCD->write_file("aliases-tmp", buf + "\n");
+	ETCD->remove_file("aliases");
+	ETCD->rename_file("aliases-tmp", "aliases");
 }
 
 void restore()
@@ -75,7 +75,7 @@ void restore()
 
 	ACCESS_CHECK(INTERFACE() || VERB());
 
-	buf = CONFIGD->read_file("aliases");
+	buf = ETCD->read_file("aliases");
 
 	if (buf) {
 		aliases = PARSER_VALUE->parse(buf);

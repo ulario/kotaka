@@ -67,7 +67,7 @@ private void enqueue_save_directory(mixed **list, varargs string dir)
 	string *names;
 	int sz;
 
-	names = CONFIGD->get_dir("save/" + (dir ? dir + "/" : "") + "*")[0];
+	names = VARD->get_dir("save/" + (dir ? dir + "/" : "") + "*")[0];
 
 	for (sz = sizeof(names); --sz >= 0; ) {
 		list_push_front(list, (dir ? dir + "/" : "") + names[sz]);
@@ -108,7 +108,7 @@ static void load_purge_tick(mixed **list)
 	if (list_empty(list)) {
 		mixed *info;
 
-		info = CONFIGD->file_info("save");
+		info = VARD->file_info("save");
 
 		if (!info) {
 			error("No save folder");
@@ -141,7 +141,7 @@ static void load_scan_tick(mixed **list, int top)
 	path = list_front(list);
 	list_pop_front(list);
 
-	info = CONFIGD->file_info("save/" + path);
+	info = VARD->file_info("save/" + path);
 
 	if (!info) {
 		error("Path not found");
@@ -219,7 +219,7 @@ static void load_read_tick(int cur, int top)
 		string save;
 		mapping map;
 
-		save = CONFIGD->read_file("save/" + on2op->query_element(cur));
+		save = VARD->read_file("save/" + on2op->query_element(cur));
 
 		map = PARSER_VALUE->parse(save);
 
@@ -337,7 +337,7 @@ static void save_write_tick(int on)
 
 		save = hybrid_sprint(map);
 
-		CONFIGD->write_file("save-tmp/" + on + ".obj", save);
+		VARD->write_file("save-tmp/" + on + ".obj", save);
 	}
 
 	if (on) {
@@ -354,7 +354,7 @@ static void save_post_tick()
 
 	/* current save?  move it to old */
 	/*   old already exists?  delete it */
-	info = CONFIGD->file_info("save-old");
+	info = VARD->file_info("save-old");
 
 	if (info) {
 		if (info[0] == -2) {
@@ -362,12 +362,12 @@ static void save_post_tick()
 			return;
 		} else {
 			/* corrupt */
-			CONFIGD->remove_file("save");
+			VARD->remove_file("save");
 		}
 	}
 
-	CONFIGD->rename_file("save", "save-old");
-	CONFIGD->rename_file("save-tmp", "save");
+	VARD->rename_file("save", "save-old");
+	VARD->rename_file("save-tmp", "save");
 
 	oi2on = nil;
 	on2ob = nil;
@@ -384,14 +384,14 @@ static void save_purgedir_tick(mixed **list, string dir)
 	if (list_empty(list)) {
 		mixed *info;
 
-		info = CONFIGD->file_info(dir);
+		info = VARD->file_info(dir);
 
 		if (info) {
 			if (info[0] == -2) {
 				string *names;
 				int sz;
 
-				names = CONFIGD->get_dir(dir + "/*")[0];
+				names = VARD->get_dir(dir + "/*")[0];
 
 				for (sz = sizeof(names); --sz >= 0; ) {
 					list_push_front(list, names[sz]);
@@ -402,9 +402,9 @@ static void save_purgedir_tick(mixed **list, string dir)
 					return;
 				}
 
-				CONFIGD->remove_dir(dir);
+				VARD->remove_dir(dir);
 			} else {
-				CONFIGD->remove_file(dir);
+				VARD->remove_file(dir);
 			}
 		}
 
@@ -415,7 +415,7 @@ static void save_purgedir_tick(mixed **list, string dir)
 			oi2on = new_object("~System/lwo/struct/sparse_array");
 			on2ob = new_object("~System/lwo/struct/sparse_array");
 			list_enqueue_directory(list);
-			CONFIGD->make_dir("save-tmp");
+			VARD->make_dir("save-tmp");
 			call_out("save_scan_tick", 0, list, 0);
 			break;
 
@@ -430,19 +430,19 @@ static void save_purgedir_tick(mixed **list, string dir)
 	path = list_front(list);
 	list_pop_front(list);
 
-	size = CONFIGD->file_info(dir + "/" + path)[0];
+	size = VARD->file_info(dir + "/" + path)[0];
 
 	if (size == -2) {
 		string *names;
 		int sz;
 
-		names = CONFIGD->get_dir(dir + "/" + path + "/*")[0];
+		names = VARD->get_dir(dir + "/" + path + "/*")[0];
 
 		for (sz = sizeof(names); --sz >= 0; ) {
 			list_push_front(list, path + "/" + names[sz]);
 		}
 	} else {
-		CONFIGD->remove_file(dir + "/" + path);
+		VARD->remove_file(dir + "/" + path);
 	}
 
 	call_out("save_purgedir_tick", 0, list, dir);
@@ -492,7 +492,7 @@ void load_world()
 	mixed **list;
 	mixed *info;
 
-	info = CONFIGD->file_info("save");
+	info = VARD->file_info("save");
 
 	if (!info) {
 		error("No save folder");

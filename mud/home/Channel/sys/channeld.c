@@ -91,17 +91,17 @@ void save()
 {
 	string buf;
 
-	CONFIGD->make_dir(".");
+	ETCD->make_dir(".");
 
 	buf = hybrid_sprint( ([
 		"channels": channels,
 		"intermud": intermud
 	]) );
 
-	CONFIGD->remove_file("config-tmp");
-	CONFIGD->write_file("config-tmp", buf + "\n");
-	CONFIGD->remove_file("config");
-	CONFIGD->rename_file("config-tmp", "config");
+	ETCD->remove_file("config-tmp");
+	ETCD->write_file("config-tmp", buf + "\n");
+	ETCD->remove_file("config");
+	ETCD->rename_file("config-tmp", "config");
 }
 
 void restore()
@@ -109,7 +109,7 @@ void restore()
 	string buf;
 	mapping save;
 
-	buf = CONFIGD->read_file("config");
+	buf = ETCD->read_file("config");
 
 	if (buf) {
 		save = PARSER_VALUE->parse(buf);
