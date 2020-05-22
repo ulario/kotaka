@@ -30,6 +30,7 @@
 #define STATE_RESPONDING 3
 
 inherit LIB_SYSTEM_USER;
+inherit "~/lib/thing";
 
 string request;
 int state;
@@ -50,133 +51,6 @@ static void create(int clone)
 	if (clone) {
 		call_out("self_destruct", 5);
 	}
-}
-
-private int input(string message);
-
-private string simplename(object obj)
-{
-	string name;
-
-	name = obj->query_object_name();
-
-	if (name) {
-		return name;
-	} else {
-		return object_name(obj);
-	}
-}
-
-private string object2string(object obj)
-{
-	string name;
-
-	name = "";
-
-	if (obj <- LIB_THING) {
-		object env;
-		string id;
-
-		name = obj->query_object_name();
-
-		if (name) {
-			return name;
-		}
-
-		env = obj->query_environment();
-
-		if (env) {
-			id = obj->query_id();
-
-			if (id) {
-				return object2string(env) + ";" + id;
-			} else {
-				return simplename(obj);
-			}
-		} else {
-			return simplename(obj);
-		}
-	} else {
-		return simplename(obj);
-	}
-}
-
-private void do_thing(object obj)
-{
-	mapping lprops;
-	object arch;
-	object env;
-	object *inv;
-	int sz;
-
-	arch = obj->query_archetype();
-
-	if (arch) {
-		message("<p>Archetypes: " + object2string(arch) + "</li>\n");
-	}
-
-	env = obj->query_environment();
-
-	if (env) {
-		message("<p>Environment: " + object2string(env) + "</p>\n");
-	}
-
-	inv = obj->query_inventory();
-	sz = sizeof(inv);
-
-	if (sz) {
-		int i;
-
-		message("<p>Inventory:</p>\n");
-		message("<ul>\n");
-
-		for (i = 0; i < sz; i++) {
-			message("<li>" + object2string(inv[i]) + "</li>\n");
-		}
-
-		message("</ul>\n");
-	}
-}
-
-private mixed string2object(string str)
-{
-	string semisuffix;
-	object obj;
-
-	if (sscanf(str, "%s;%s", str, semisuffix)) {
-		semisuffix = ";" + semisuffix;
-	}
-
-	obj = find_object(str);
-
-	if (!obj) {
-		obj = IDD->find_object_by_name(str);
-	}
-
-	if (!obj) {
-		return "Could not find " + str;
-	}
-
-	if (semisuffix) {
-		string *parts;
-		int i;
-		int sz;
-
-		parts = explode(semisuffix[1 ..], ";");
-		sz = sizeof(parts);
-
-		for (i = 0; i < sz; i++) {
-			obj = obj->find_by_id(parts[i]);
-
-			if (!obj) {
-				return "Could not find " + parts[i] + " within " + str;
-			}
-
-			str += ";" + parts[i];
-		}
-	}
-
-	return obj;
 }
 
 private void handle_get_object(string objectname)
@@ -202,7 +76,7 @@ private void handle_get_object(string objectname)
 		message("<p>Object owner: " + obj->query_owner());
 
 		if (obj <- LIB_THING) {
-			do_thing(obj);
+			message(thing_text(obj));
 		}
 
 		message("</body>\n");
