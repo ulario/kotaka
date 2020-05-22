@@ -53,8 +53,8 @@ void set_mass(float new_mass)
 {
 	object env;
 
-	if (virtual && new_mass != 0.0) {
-		error("Virtual objects must be massless");
+	if (virtual) {
+		error("Cannot set mass of virtual object");
 	}
 
 	if (new_mass == mass) {
@@ -102,16 +102,12 @@ void set_density(float new_density)
 {
 	object env;
 
-	if (virtual && new_density != 1.0) {
-		error("Virtual objects cannot change density from 1.0");
+	if (virtual) {
+		error("Cannot set density of virtual object");
 	}
 
 	if (new_density == density) {
 		return;
-	}
-
-	if (new_density == 0.0) {
-		error("Invalid density");
 	}
 
 	if (env = query_environment()) {
@@ -166,8 +162,8 @@ void set_capacity(float new_capacity)
 {
 	object env;
 
-	if (virtual && new_capacity != 0.0) {
-		error("Virtual objects cannot have capacity");
+	if (virtual) {
+		error("Cannot set capacity of virtual object");
 	}
 
 	if (capacity == new_capacity) {
@@ -189,8 +185,8 @@ float query_capacity()
 
 void set_max_mass(float new_max_mass)
 {
-	if (virtual && new_max_mass != 0.0) {
-		error("Virtual objects cannot have maximum mass");
+	if (virtual) {
+		error("Cannot set max mass of virtual object");
 	}
 
 	max_mass = new_max_mass;
@@ -229,27 +225,10 @@ void set_virtual(int new_virtual)
 {
 	object env;
 
-	if (mass != 0.0) {
-		error("Virtual objects cannot have mass");
-	}
-
-	if (density != 1.0) {
-		error("Virtual objects cannot have density different from 1.0");
-	}
-
-	if (capacity != 0.0) {
-		error("Virtual objects cannot have capacity");
-	}
-
-	if (max_mass != 0.0) {
-		error("Virtual objects cannot have maximum mass");
-	}
-
-	new_virtual = !!new_virtual;
-
-	if (virtual == new_virtual) {
-		return;
-	}
+	mass = 0.0;
+	density = 0.0;
+	capacity = 0.0;
+	max_mass = 0.0;
 
 	virtual = new_virtual;
 }
