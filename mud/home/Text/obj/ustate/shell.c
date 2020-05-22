@@ -49,6 +49,12 @@ private void prompt()
 	body = query_user()->query_body();
 
 	if (body) {
+		object possessee;
+
+		while (possessee = body->query_possessee()) {
+			body = possessee;
+		}
+
 		send_out(TEXT_SUBD->generate_brief_indefinite(body) + "> ");
 	} else {
 		string name;
