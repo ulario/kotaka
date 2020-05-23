@@ -193,7 +193,11 @@ private void handle_input(string input, varargs mapping dup)
 		return;
 	}
 
-	"~/sys/englishd"->do_verb(verb, first, input);
+	catch {
+		"~/sys/englishd"->do_verb(verb, first, input);
+	} : {
+		send_out("Uh oh!...\n");
+	}
 }
 
 void receive_in(string input)
