@@ -118,6 +118,45 @@ private void handle_get_object(string objectname)
 	}
 }
 
+private void handle_get_destruct(string objectname)
+{
+	mixed obj;
+
+	if (ip != "127.0.0.1") {
+		message(HTTPD->generate_error_page(403, "Forbidden", "Access denied"));
+		return;
+	}
+
+	obj = string2object(objectname);
+
+	if (typeof(obj) == T_OBJECT) {
+		object env;
+		object header;
+
+		env = obj->query_environment();
+		obj->self_destruct();
+
+		if (env) {
+			header = new_object("~/lwo/http_response");
+			header->set_status(300, "Object report");
+
+			message(header->generate_header());
+			message("<html>\n");
+			message("<head>\n");
+			do_style();
+			message("<title>Object report</title>\n");
+			message("</head>\n");
+			message("<body>\n");
+			message(object_text(obj));
+			message("</body>\n");
+			message("</html>\n");
+		} else {
+		}
+	} else {
+		message(HTTPD->generate_error_page(404, "No such object", "That object does not appear to exist"));
+	}
+}
+
 private int handle_get_pattern(string path)
 {
 	string handler;
@@ -130,14 +169,17 @@ private int handle_get_pattern(string path)
 				handle_get_object(args);
 				return 1;
 			} else {
-				object header;
+				message(HTTPD->generate_error_page(400, "Bad Request", "<p>Malformed arguments</p>"));
+				return 1;
+			}
+			break;
 
-				header = new_object("~/lwo/http_response");
-				header->set_status(400, "Invalid format");
-
-				message(header->generate_header());
-				message("<p>Malformed arguments</p>");
-				message("<p>path: " + path + "</p>");
+		case "destruct":
+			if (sscanf(path, "/destruct.lpc?obj=%s", args)) {
+				handle_get_destruct(args);
+				return 1;
+			} else {
+				message(HTTPD->generate_error_page(400, "Bad Request", "<p>Malformed arguments</p>"));
 				return 1;
 			}
 		}
