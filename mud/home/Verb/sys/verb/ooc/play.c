@@ -42,16 +42,12 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	string name;
-	object world;
-	object body;
 	object user;
-	object oldbody;
-	object *inv;
-	object *mobiles;
+	string name;
+
+	object ghost;
 
 	user = query_user();
-
 	name = user->query_name();
 
 	if (!(name = user->query_name())) {
@@ -59,31 +55,17 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] != "") {
-		if (user->query_class() < 2) {
-			send_out("Only a wizard can play someone other than their default character.\n");
-			return;
+	ghost = IDD->find_object_by_name("ghosts:" + name);
+
+	if (!ghost) {
+		if (IDD->find_object_by_name("template:" + name)) {
+			send_out("Alas, your soul is gone.\n");
+		} else {
+			send_out("Run chargen, you don't have a character.\n");
 		}
-
-		body = IDD->find_object_by_name(roles["raw"]);
-
-		if (!body) {
-			send_out("No such body found\n");
-		}
-	}
-
-	body = IDD->find_object_by_name("players:" + name);
-
-	if (!body) {
-		send_out("You don't have a character.  Please use chargen to create one.\n");
 		return;
 	}
 
-	if (oldbody = user->query_body()) {
-		send_out("Departing " + TEXT_SUBD->generate_brief_definite(oldbody) + ".\n");
-	}
-
-	send_out("Inhabiting " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
-
-	user->set_body(body);
+	send_out("Inhabiting " + TEXT_SUBD->generate_brief_definite(ghost) + ".\n");
+	user->set_body(ghost);
 }
