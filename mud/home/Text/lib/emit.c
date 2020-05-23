@@ -23,16 +23,16 @@
 
 inherit "/lib/string/case";
 
-private string from_object(object obj, mapping seen, object viewer)
+private string from_object(object obj, mapping seen, object witness)
 {
 	if (seen[obj]) {
-		if (obj == viewer) {
+		if (obj == witness) {
 			return "yourself";
 		} else {
 			return "itself";
 		}
 	} else {
-		if (obj == viewer) {
+		if (obj == witness) {
 			return "you";
 		} else {
 			return TEXT_SUBD->generate_brief_definite(obj);
@@ -40,7 +40,7 @@ private string from_object(object obj, mapping seen, object viewer)
 	}
 }
 
-void emit_to(object actor, object viewer, mixed chain ...)
+void emit_to(object witness, object actor, mixed chain ...)
 {
 	string buffer;
 	mapping seen;
@@ -67,7 +67,7 @@ void emit_to(object actor, object viewer, mixed chain ...)
 			break;
 
 		case T_OBJECT:
-			buffer += from_object(item, seen, viewer);
+			buffer += from_object(item, seen, witness);
 			break;
 
 		case T_ARRAY:
@@ -75,7 +75,7 @@ void emit_to(object actor, object viewer, mixed chain ...)
 			case T_STRING:
 				/* verb */
 				{
-					if (actor == viewer) {
+					if (actor == witness) {
 						buffer += item[0];
 					} else {
 						buffer += item[1];
@@ -93,7 +93,7 @@ void emit_to(object actor, object viewer, mixed chain ...)
 					list = ({ });
 
 					for (j = 0; j < sz2; j++) {
-						list += ({ from_object(item[j], seen, viewer) });
+						list += ({ from_object(item[j], seen, witness) });
 					}
 
 					list[sz2 - 1] = "and " + list[sz2 - 1];
@@ -111,11 +111,11 @@ void emit_to(object actor, object viewer, mixed chain ...)
 		buffer = to_upper(buffer);
 	}
 
-	while (possessor = viewer->query_possessor()) {
-		viewer = possessor;
+	while (possessor = witness->query_possessor()) {
+		witness = possessor;
 	}
 
-	mobiles = viewer->query_property("mobiles");
+	mobiles = witness->query_property("mobiles");
 
 	sz = sizeof(mobiles -= ({ nil }) );
 
@@ -144,7 +144,7 @@ void emit_from(object actor, mixed chain ...)
 	sz = sizeof(cand);
 
 	for (i = 0; i < sz; i++) {
-		emit_to(actor, cand[i], chain ...);
+		emit_to(cand[i], actor, chain ...);
 	}
 }
 
