@@ -16,6 +16,10 @@ static string object_text(object obj)
 		subbuffer += "<p>Object name: " + name + "</p>\n";
 	}
 
+	if (query_ip() == "127.0.0.1") {
+		subbuffer += "<p><a href=\"destruct.lpc?obj=" + object2string(obj) + "\">Destruct</p>\n";
+	}
+
 	buffer = "<table class=\"page\"><tr><td>\n";
 	buffer += oinfobox("Object", 1, subbuffer);
 
