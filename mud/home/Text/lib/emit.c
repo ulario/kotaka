@@ -19,8 +19,11 @@
  */
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/text.h>
+#include <kotaka/paths/system.h>
+#include <kotaka/log.h>
 #include <type.h>
 
+inherit "/lib/string/sprint";
 inherit "/lib/string/case";
 
 private string from_object(object obj, mapping seen, object witness)
@@ -68,6 +71,7 @@ void emit_to(object witness, object actor, mixed chain ...)
 
 		case T_OBJECT:
 			buffer += from_object(item, seen, witness);
+			seen[item] = 1;
 			break;
 
 		case T_ARRAY:
@@ -126,25 +130,26 @@ void emit_to(object witness, object actor, mixed chain ...)
 
 void emit_from(object actor, mixed chain ...)
 {
-	object env;
 	object *cand;
-	int i, sz;
+	int sz;
+
+	object env;
 
 	cand = ({ actor });
 
 	env = actor->query_environment();
 
 	if (env) {
-		cand |= env->query_inventory();
 		cand |= ({ env });
+		cand |= env->query_inventory();
 	}
 
 	cand |= actor->query_inventory();
 
-	sz = sizeof(cand);
+	LOGD->post_message("debug", LOG_DEBUG, "Witnesses: " + mixed_sprint(cand));
 
-	for (i = 0; i < sz; i++) {
-		emit_to(cand[i], actor, chain ...);
+	for (sz = sizeof(cand); --sz >= 0; ) {
+		emit_to(cand[sz], actor, chain ...);
 	}
 }
 
