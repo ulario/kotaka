@@ -44,15 +44,12 @@ void main(object actor, mapping roles)
 	object user;
 
 	user = query_user();
-
 	body = user->query_body();
 
 	if (body) {
-		ASSERT(actor == body);
+		"~Action/sys/action/logout"->action( ([ "actor": actor ]) );
 
 		user->set_body(nil);
-
-		send_out("Departing " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	} else {
 		query_user()->quit("quit");
 	}

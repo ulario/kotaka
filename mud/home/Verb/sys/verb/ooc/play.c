@@ -46,6 +46,8 @@ void main(object actor, mapping roles)
 	string name;
 
 	object ghost;
+	object body;
+	object newbody;
 
 	user = query_user();
 	name = user->query_name();
@@ -66,6 +68,13 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	send_out("Inhabiting " + TEXT_SUBD->generate_brief_definite(ghost) + ".\n");
+	body = ghost;
+
+	while (newbody = body->query_possessee()) {
+		body = newbody;
+	}
+
+	send_out("Inhabiting " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
 	user->set_body(ghost);
+	"~Action/sys/action/login"->action( ([ "actor": body ]) );
 }
