@@ -47,30 +47,15 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	object achar;
-	object aliv;
-
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
 		return;
 	}
 
-	achar = actor->query_character_lwo();
-
-	if (!achar) {
-		send_out("BUG: You are not a character.  Please contact a wizard.\n");
+	if (!actor->query_character_lwo()) {
+		send_out("Odd, you aren't a character right now so you can't really die.\n");
 		return;
 	}
 
-	aliv = actor->query_living_lwo();
-
-	if (!aliv) {
-		send_out("You're dead, Jim.\n");
-		return;
-	}
-
-	actor->clear_living();
-	actor->query_possessor()->possess(nil);
-
-	send_out("You're dead.\n");
+	"~Action/sys/action/die"->action( ([ "actor": actor ]) );
 }
