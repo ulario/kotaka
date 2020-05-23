@@ -19,6 +19,7 @@
  */
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
+#include <kotaka/paths/system.h>
 
 inherit LIB_EMIT;
 inherit LIB_VERB;
@@ -47,29 +48,83 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	object achar;
-	object aliv;
+	object user;
+	string name;
+
+	object template;
+	object ghost;
+	object body;
 
 	if (!actor) {
 		send_out("You must be in character to use this command.\n");
 		return;
 	}
 
-	achar = actor->query_character_lwo();
+	user = query_user();
+	name = user->query_name();
 
-	if (!achar) {
-		send_out("BUG: You are not a character.  Please contact a wizard.\n");
+	template = IDD->find_object_by_name("templates:" + name);
+
+	if (!template) {
+		send_out("You don't have a character, please run chargen.\n");
 		return;
 	}
 
-	aliv = actor->query_living_lwo();
+	ghost = IDD->find_object_by_name("ghosts:" + name);
 
-	if (aliv) {
+	if (!ghost) {
+		send_out("Sadness...your soul has been consigned to oblivion.\n");
+		return;
+	}
+
+	body = IDD->find_object_by_name("players:" + name);
+
+	if (!body) {
+		send_out("Bummer, your body is gone.  Looks like you're stuck in the afterlife.\n");
+		return;
+	}
+
+	if (!body->query_character_lwo()) {
+		send_out("BUG: Your body doesn't appear to be a valid character, yell at a wizard.\n");
+		return;
+	}
+
+	if (body->query_living_lwo()) {
+		object possessee;
+
 		send_out("You're already alive.\n");
-		return;
+
+		possessee = ghost->query_possessee();
+
+		if (!possessee) {
+			send_out("But your soul wasn't attached properly, fixing that...\n");
+
+			ghost->move(body);
+			ghost->possess(body);
+		} else if (possessee != body) {
+			send_out("Somehow you're possessing something other than your natural body...\n");
+		}
+	} else {
+		object possessee;
+
+		possessee = ghost->query_possessee();
+
+		if (possessee) {
+			if (possessee != body) {
+				send_out("Somehow you're possessing something other than your natural body...\n");
+				return;
+			} else {
+				send_out("Weird, you were already possessing your body.\n");
+			}
+		} else {
+			send_out("Returning your soul to its body...\n");
+
+			ghost->move(body);
+			ghost->possess(body);
+
+			send_out("Reviving you...\n");
+			body->initialize_living();
+			body->set_local_property("brief", nil);
+		}
 	}
-
-	actor->initialize_living();
-
-	send_out("You're alive!\n");
 }
