@@ -62,9 +62,10 @@ static string query_ip()
 private void do_style()
 {
 	message("<style>\n");
-	message("h1, h2, h3 { margin: 0 auto; color: blue; border: .125em solid blue; background-color: #aaf; padding: .5em; text-align: center; }\n");
-	message("p, dl, ul { margin: 0; }\n");
+	message("* { margin: 0; padding: 0; }\n");
+	message("h1, h2, h3 { color: blue; border: .125em solid blue; background-color: #aaf; padding: .5em; text-align: center; }\n");
 	message("table { margin: 0 auto; }\n");
+	message("td { vertical-align: top; }\n");
 	if (ip == "127.0.0.1") {
 		message("table.page { border: .25em solid red; background-color: #faa; }\n");
 	} else {
