@@ -191,10 +191,11 @@ private void handle_post_object(string objectname)
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
-		if (sscanf(entity, "mass=%f", new_mass)) {
-			obj->set_mass(new_mass);
+		if (sscanf(entity, "localmass=%f", new_mass)) {
+			obj->set_local_mass(new_mass);
 			message("<h1>Changes</h1>\n");
-			message("<p>Mass changed to " + new_mass + "</p>\n");
+			message("<p>Local mass changed to " + new_mass + "</p>\n");
+			message("<p>New object mass: " + obj->query_mass() + " kg</p>\n");
 		}
 		message(object_text(obj));
 		message("<h1>Returned entity</h1>\n");
