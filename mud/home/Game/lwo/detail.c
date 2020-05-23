@@ -1,0 +1,85 @@
+string *snouns;
+string *pnouns;
+string *adjectives;
+
+mapping descriptions;
+
+/* craetor */
+
+static void create(int clone)
+{
+	if (clone) {
+		snouns = ({ });
+		pnouns = ({ });
+		adjectives = ({ });
+		descriptions = ([ ]);
+	}
+}
+
+/** public **/
+
+/* nouns */
+
+void add_snoun(string snoun)
+{
+	snouns |= ({ snoun });
+}
+
+void remove_snoun(string snoun)
+{
+	snouns -= ({ snoun });
+}
+
+string *query_snouns()
+{
+	return snouns;
+}
+
+void add_pnoun(string pnoun)
+{
+	pnouns |= ({ pnoun });
+}
+
+void remove_pnoun(string pnoun)
+{
+	pnouns -= ({ pnoun });
+}
+
+string *query_pnouns()
+{
+	return pnouns;
+}
+
+/* adjectives */
+
+void add_adjective(string adjective)
+{
+	adjectives |= ({ adjective });
+}
+
+void remove_adjective(string adjective)
+{
+	adjectives -= ({ adjective });
+}
+
+string *query_adjectives()
+{
+	return adjectives;
+}
+
+/* descriptions */
+
+string *query_descriptions()
+{
+	return map_indices(descriptions);
+}
+
+void set_description(string description, string text)
+{
+	descriptions[description] = text;
+}
+
+string query_description(string description)
+{
+	return descriptions[description];
+}
