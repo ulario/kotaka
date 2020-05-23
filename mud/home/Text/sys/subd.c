@@ -181,10 +181,6 @@ string generate_brief_proper(object thing)
 
 	brief = primitive_brief(thing);
 
-	if (thing->query_character_lwo() && !thing->query_living_lwo()) {
-		brief += "'s corpse";
-	}
-
 	return brief;
 }
 
