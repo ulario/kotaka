@@ -46,6 +46,7 @@ void emit_to(object actor, object viewer, mixed chain ...)
 	mapping seen;
 	string phrase;
 	object *mobiles;
+	object possessor;
 
 	int i, sz;
 
@@ -108,6 +109,10 @@ void emit_to(object actor, object viewer, mixed chain ...)
 		buffer = to_upper(buffer[0 .. 0]) + buffer[1 ..];
 	} else {
 		buffer = to_upper(buffer);
+	}
+
+	while (possessor = viewer->query_possessor()) {
+		viewer = possessor;
 	}
 
 	mobiles = viewer->query_property("mobiles");
