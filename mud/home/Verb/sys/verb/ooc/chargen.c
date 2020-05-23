@@ -78,7 +78,7 @@ void main(object actor, mapping roles)
 	human = IDD->find_object_by_name("class:race:human");
 
 	if (!human) {
-		send_out("BUG: Human race archetype not found, yell at a wizard.\n");
+		send_out("BUG: human race not found, yell at a wizard.\n");
 		return;
 	}
 
