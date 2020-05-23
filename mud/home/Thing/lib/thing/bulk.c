@@ -164,6 +164,10 @@ void figure_density(float volume)
 
 float query_volume()
 {
+	if (virtual) {
+		return 0.0;
+	}
+
 	return mass / density / 1000.0;
 }
 
