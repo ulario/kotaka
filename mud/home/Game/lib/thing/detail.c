@@ -122,3 +122,58 @@ void set_prep(string new_prep)
 {
 	prep = new_prep;
 }
+
+/* saveload */
+
+mapping detail_save()
+{
+	mapping map;
+	string *dnames;
+	int sz;
+
+	dnames = map_indices(details);
+	sz = map_sizeof(dnames);
+
+	if (!sz) {
+		return nil;
+	}
+
+	map = ([ ]);
+
+	for (; --sz >= 0; ) {
+		string dname;
+		string *arr;
+
+		object detail;
+		string *descriptions;
+		int dsz;
+
+		dname = dnames[sz];
+		detail = details[dname];
+
+		map[dname] = detail->save();
+	}
+}
+
+void detail_load(mapping data)
+{
+	details = ([ ]);
+
+	if (data) {
+		string *dnames;
+		int sz;
+
+		dnames = map_indices(data);
+
+		for (sz = sizeof(dnames); --sz >= 0; ) {
+			string dname;
+			object detail;
+
+			dname = dnames[sz];
+
+			detail = new_object("~/lwo/detail");
+			details[dname] = detail;
+			detail->load(data["dname"]);
+		}
+	}
+}

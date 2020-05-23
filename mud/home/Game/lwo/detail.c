@@ -83,3 +83,25 @@ string query_description(string description)
 {
 	return descriptions[description];
 }
+
+/* saveload */
+
+mapping save()
+{
+	return ([
+		"snouns": sizeof(snouns) ? snouns : nil,
+		"pnouns": sizeof(pnouns) ? snouns : nil,
+		"adjectives": sizeof(snouns) ? snouns : nil,
+		"descriptions": map_sizeof(descriptions) ? descriptions : nil
+	]);
+}
+
+void load(mapping data)
+{
+	mixed v;
+
+	snouns = (v = data["snouns"]) ? v : ({ });
+	pnouns = (v = data["pnouns"]) ? v : ({ });
+	adjectives = (v = data["adjectives"]) ? v : ({ });
+	descriptions = (v = data["descriptions"]) ? v : ([ ]);
+}

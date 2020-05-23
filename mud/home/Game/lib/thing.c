@@ -57,6 +57,8 @@ static mapping save()
 
 	map["possessee"] = query_possessee();
 
+	map["details"] = detail_save();
+
 	return map;
 }
 
@@ -82,4 +84,6 @@ static void load(mapping data)
 	if (pos = data["possessee"]) {
 		possess(pos);
 	}
+
+	detail_load(data["details"]);
 }
