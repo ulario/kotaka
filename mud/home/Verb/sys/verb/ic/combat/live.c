@@ -21,6 +21,7 @@
 #include <kotaka/paths/verb.h>
 #include <kotaka/paths/system.h>
 
+inherit "/lib/string/case";
 inherit LIB_EMIT;
 inherit LIB_VERB;
 
@@ -119,12 +120,14 @@ void main(object actor, mapping roles)
 		} else {
 			send_out("Returning your soul to its body...\n");
 
+			emit_from(ghost, ghost, " ", ({ "enter", "enters" }), " ", body);
 			ghost->move(body);
 			ghost->possess(body);
 
 			send_out("Reviving you...\n");
 			body->initialize_living();
-			body->set_local_property("brief", nil);
+			body->set_local_property("brief", to_title(name));
+			emit_from(body, body, " ", ({ "revive", "revives" }), "!");
 		}
 	}
 }
