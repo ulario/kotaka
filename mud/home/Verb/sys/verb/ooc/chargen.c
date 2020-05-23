@@ -103,45 +103,6 @@ void main(object actor, mapping roles)
 		if (newchar) {
 			send_out("Creating ghost...\n");
 			ghost = GAME_INITD->create_thing();
-			ghost->set_id(name);
-			ghost->set_archetype(template);
-			ghost->set_virtual(1);
-			ghost->set_local_property("local_snouns", ({ "ghost" }) );
-			ghost->set_local_property("local_pnouns", ({ "ghosts" }) );
-			ghost->set_local_property("local_adjectives", ({ name }) );
-			ghost->set_local_property("brief", to_title(name) + "'s ghost");
-		} else {
-			send_out("Alas, your soul is gone.\n");
-			return;
-		}
-	}
-
-	body = IDD->find_object_by_name("players:" + name);
-
-	if (!body) {
-		if (newchar) {
-			send_out("Creating body...\n");
-			body = GAME_INITD->create_thing();
-			body->set_archetype(template);
-			body->set_local_property("local_snouns", ({ "body" }) );
-			body->set_local_property("local_pnouns", ({ "bodies" }) );
-			body->set_local_property("local_adjectives", ({ name }) );
-			body->initialize_character(10 + random(11), random(11), 30 + random(11));
-			ghost->move(body);
-			ghost->possess(body);
-			body->move(world);
-		} else {
-			send_out("Alas, your body is gone.\n");
-			return;
-		}
-	}
-
-	ghost = IDD->find_object_by_name("ghosts:" + name);
-
-	if (!ghost) {
-		if (newchar) {
-			send_out("Creating ghost...\n");
-			ghost = GAME_INITD->create_thing();
 			ghost->set_object_name("ghosts:" + name);
 			ghost->set_id(name);
 			ghost->set_archetype(template);
@@ -163,7 +124,9 @@ void main(object actor, mapping roles)
 			send_out("Creating body...\n");
 			body = GAME_INITD->create_thing();
 			body->set_object_name("players:" + name);
+			body->set_id(name);
 			body->set_archetype(template);
+			body->set_local_mass(1.0);
 			body->set_local_property("local_snouns", ({ "body" }) );
 			body->set_local_property("local_pnouns", ({ "bodies" }) );
 			body->set_local_property("local_adjectives", ({ name }) );
