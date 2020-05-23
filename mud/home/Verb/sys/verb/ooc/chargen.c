@@ -47,20 +47,18 @@ string *query_help_contents()
 	});
 }
 
-void initialize_combatant(object fighter)
-{
-	fighter->clear_character(); /* also wipes living */
-	fighter->initialize_character(10 + random(11), random(11), 20 + random(11));
-	fighter->initialize_living();
-}
-
 void main(object actor, mapping roles)
 {
-	string name;
-	object body;
 	object user;
-	object human;
+	string name;
+
 	object world;
+	object human;
+	object template;
+	object ghost;
+	object body;
+
+	int newchar;
 
 	user = query_user();
 	name = user->query_name();
@@ -70,41 +68,75 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (IDD->find_object_by_name("players:" + name)) {
-		send_out("You already have a character.\n");
-		return;
-	}
-
-	human = IDD->find_object_by_name("class:race:humanoid:human");
-
-	if (!human) {
-		send_out("Yell at a wizard, there's no human archetype to spawn your character from.\n");
-		return;
-	}
-
-	body = GAME_INITD->create_thing();
-
-	body->set_density(1.0);
-	body->set_mass(100.0 + rnd() * 10.0);
-
-	body->set_property("id", name);
-	body->set_property("local_snouns", ({ name }) );
-	body->set_property("is_proper", 1);
-	body->set_property("brief", to_title(name));
-
-	body->set_archetype(IDD->find_object_by_name("class:race:humanoid:human"));
-	body->set_object_name("players:" + name);
-
-	send_out("Created " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
-
-	initialize_combatant(body);
-
 	world = IDD->find_object_by_name("planets:aerth");
 
-	if (world) {
-		body->move(world);
-	} else {
-		send_out("Warning: start room not found, your character's body was spawned in the void.\n");
-		send_out("Please contact a wizard to move you to the game world.\n");
+	if (!world) {
+		send_out("BUG: Starting world not found, yell at a wizard.\n");
+		return;
+	}
+
+	human = IDD->find_object_by_name("class:race:human");
+
+	if (!human) {
+		send_out("BUG: Human race archetype not found, yell at a wizard.\n");
+		return;
+	}
+
+	template = IDD->find_object_by_name("templates:" + name);
+
+	if (!template) {
+		send_out("Creating template...\n");
+		template = GAME_INITD->create_thing();
+		template->set_id(name);
+		template->set_archetype(human);
+		template->set_mass(100.0 + (rnd() - rnd()) * 10.0);
+		template->set_local_property("local_snouns", ({ name }) );
+		template->set_local_property("is_proper", 1);
+		template->set_local_property("brief", to_title(name));
+		newchar = 1;
+	}
+
+	ghost = IDD->find_object_by_name("ghosts:" + name);
+
+	if (!ghost) {
+		if (newchar) {
+			send_out("Creating ghost...\n");
+			ghost = GAME_INITD->create_thing();
+			ghost->set_id(name);
+			ghost->set_archetype(template);
+			ghost->set_virtual(1);
+			ghost->set_local_property("local_snouns", ({ "ghost" }) );
+			ghost->set_local_property("local_pnouns", ({ "ghosts" }) );
+			ghost->set_local_property("local_adjectives", ({ name }) );
+			ghost->set_local_property("brief", to_title(name) + "'s ghost");
+		} else {
+			send_out("Alas, your soul is gone.\n");
+			return;
+		}
+	}
+
+	body = IDD->find_object_by_name("players:" + name);
+
+	if (!body) {
+		if (newchar) {
+			send_out("Creating body...\n");
+			body = GAME_INITD->create_thing();
+			body->set_archetype(template);
+			body->set_local_property("local_snouns", ({ "body" }) );
+			body->set_local_property("local_pnouns", ({ "bodies" }) );
+			body->set_local_property("local_adjectives", ({ name }) );
+			body->initialize_character(10 + random(11), random(11), 30 + random(11));
+			ghost->move(body);
+			ghost->possess(body);
+			body->move(world);
+		} else {
+			send_out("Alas, your body is gone.\n");
+			return;
+		}
+	}
+
+	if (ghost->query_possessee() != body) {
+		send_out("Yikes, you're having an out of body experience right now!\n");
+		send_out("If you're not supposed to be severed from your body, yell at a wizard.\n");
 	}
 }
