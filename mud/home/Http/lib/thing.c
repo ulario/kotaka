@@ -6,6 +6,7 @@ inherit "/lib/string/sprint";
 static string thing_text(object obj)
 {
 	object arch;
+	object po, pe;
 	object env;
 	object *inv;
 	string *names;
@@ -29,6 +30,14 @@ static string thing_text(object obj)
 
 	if (env) {
 		subbuffer += "<p>Environment: " + object2link(env) + "</p>\n";
+	}
+
+	if (po = obj->query_possessor()) {
+		subbuffer += "<p>Possessed by: " + object2link(po) + "</p>\n";
+	}
+
+	if (pe = obj->query_possessee()) {
+		subbuffer += "<p>Possesing: " + object2link(pe) + "</p>\n";
 	}
 
 	buffer = oinfobox("Thing", 2, subbuffer);
