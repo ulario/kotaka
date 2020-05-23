@@ -55,13 +55,15 @@ static mapping save()
 		]);
 	}
 
+	map["possessee"] = query_possessee();
+
 	return map;
 }
 
 static void load(mapping data)
 {
-	object lwo;
 	mapping map;
+	object pos;
 
 	::load(data);
 
@@ -70,8 +72,14 @@ static void load(mapping data)
 	}
 
 	if (map = data["living"]) {
+		object lwo;
+
 		initialize_living();
 		lwo = query_living_lwo();
 		lwo->set_hp(map["hp"]);
+	}
+
+	if (pos = data["possessee"]) {
+		possess(pos);
 	}
 }
