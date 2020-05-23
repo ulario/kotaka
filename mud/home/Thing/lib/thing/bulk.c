@@ -112,7 +112,7 @@ float query_total_mass()
 		bulk_sync();
 	}
 
-	return mass + cached_content_mass;
+	return query_mass() + cached_content_mass;
 }
 
 float query_contained_mass()
