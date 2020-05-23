@@ -124,22 +124,19 @@ private void handle_get_destruct(string objectname)
 		env = obj->query_environment();
 		obj->self_destruct();
 
-		if (env) {
-			header = new_object("~/lwo/http_response");
-			header->set_status(300, "Object report");
+		header = new_object("~/lwo/http_response");
+		header->set_status(200, "Object destroyed");
 
-			message(header->generate_header());
-			message("<html>\n");
-			message("<head>\n");
-			do_style();
-			message("<title>Object report</title>\n");
-			message("</head>\n");
-			message("<body>\n");
-			message(object_text(obj));
-			message("</body>\n");
-			message("</html>\n");
-		} else {
-		}
+		message(header->generate_header());
+		message("<html>\n");
+		message("<head>\n");
+		do_style();
+		message("<title>Object destroyed</title>\n");
+		message("</head>\n");
+		message("<body>\n");
+		message("<p>Object destroyed</p>\n");
+		message("</body>\n");
+		message("</html>\n");
 	} else {
 		message(HTTPD->generate_error_page(404, "No such object", "That object does not appear to exist"));
 	}
