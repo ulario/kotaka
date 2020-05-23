@@ -59,13 +59,13 @@ static string thing_text(object obj)
 	}
 
 	buffer += bulk_text(obj);
+	buffer += "</td><td>\n";
 
 	props = obj->query_local_properties();
 	names = map_indices(props);
 	values = map_values(props);
-	sz = sizeof(names);
 
-	buffer += "</td><td>\n";
+	sz = sizeof(names);
 
 	if (sz) {
 		int i;
