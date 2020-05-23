@@ -70,6 +70,7 @@ void main(object actor, mapping roles)
 	}
 
 	actor->clear_living();
+	actor->query_possessor()->possess(nil);
 
 	send_out("You're dead.\n");
 }

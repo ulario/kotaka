@@ -618,8 +618,10 @@ int do_verb(object verb, string command, string args)
 
 	actor = ustate->query_user()->query_body();
 
-	while (possessee = actor->query_possessee()) {
-		actor = possessee;
+	if (actor) {
+		while (possessee = actor->query_possessee()) {
+			actor = possessee;
+		}
 	}
 
 	TLSD->set_tls_value("Text", "ustate", ustate);
