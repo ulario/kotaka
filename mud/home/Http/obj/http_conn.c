@@ -102,21 +102,7 @@ private void handle_get_object(string objectname)
 		message("</body>\n");
 		message("</html>\n");
 	} else {
-		object header;
-
-		header = new_object("~/lwo/http_response");
-		header->set_status(404, "No such object");
-
-		message(header->generate_header());
-		message("<html>\n");
-		message("<head>\n");
-		message("<title>No such object</title>\n");
-		message("</head>\n");
-		message("<body>\n");
-		message("<h1 style=\"color: red\">No such object</h1>\n");
-		message("<p>" + obj + "</p>");
-		message("</body>\n");
-		message("</html>\n");
+		message(HTTPD->generate_error_page(404, "No such object", "That object does not appear to exist"));
 	}
 }
 
