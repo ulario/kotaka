@@ -94,7 +94,7 @@ private void do_attack(object actor, object dob)
 		emit_from(actor, actor, " ", ({ "kill", "kills" }), " ", dob, "!");
 		emit_to(actor, actor, "You fatally deal " + damage + " points of damage!");
 		emit_to(dob, dob, "You suffer " + damage + " points of damage and die!");
-		"~Action/sys/action/die"->action( ([ "actor": dob ]) );
+		"~Action/sys/action/combat/die"->action( ([ "actor": dob ]) );
 	} else {
 		emit_from(actor, actor, " ", ({ "hit", "hits" }), " ", dob, ".");
 		emit_to(actor, actor, "You deal " + damage + " points of damage.");

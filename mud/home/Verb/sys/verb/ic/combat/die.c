@@ -57,5 +57,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	"~Action/sys/action/die"->action( ([ "actor": actor ]) );
+	"~Action/sys/action/combat/die"->action( ([ "actor": actor ]) );
 }

@@ -60,6 +60,8 @@ void action(mapping roles)
 
 		if (ghost->query_environment() == body) {
 			ghost->move(body->query_environment());
+			ghost->set_prox(body->query_prox());
+			ghost->set_prep(body->query_prep());
 			emit_from(ghost, ghost, " ", ({ "emerge", "emerges" }), " from ", body, ".");
 		}
 	}
