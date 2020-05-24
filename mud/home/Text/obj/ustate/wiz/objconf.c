@@ -41,6 +41,7 @@ int stopped;
 int dead;
 
 object obj;
+string detail;
 
 static void create(int clone)
 {
@@ -54,7 +55,11 @@ static void destruct(int clone)
 
 private void prompt()
 {
-	send_out("[\033[1;34mobject configuration\033[0m] ");
+	if (detail) {
+		send_out("[\033[1;34mobject configuration (" + detail + ")\033[0m] ");
+	} else {
+		send_out("[\033[1;34mobject configuration\033[0m] ");
+	}
 }
 
 void set_object(object o)
@@ -188,6 +193,7 @@ private void do_input(string input)
 		pop_state();
 		return;
 
+	/* properties */
 	case "pset":
 		do_pop(args, POP_SET);
 		break;
@@ -232,22 +238,6 @@ private void do_input(string input)
 		}
 		break;
 
-	case "walk":
-	case "look":
-		{
-			object verb;
-
-			verb = VERBD->find_verb(first);
-
-			if (!verb) {
-				send_out("No such command.\n");
-				break;
-			}
-
-			"~/sys/englishd"->do_verb(verb, first, args);
-			break;
-		}
-
 	case "plist":
 		{
 			string *props;
@@ -256,7 +246,145 @@ private void do_input(string input)
 
 			send_out(wordwrap(implode(props, ", "), 60) + "\n");
 		}
+		break;
 
+	/* details */
+	case "dadd":
+		{
+			if (args == "") {
+				args = nil;
+			}
+
+			obj->add_detail(args);
+			if (args) {
+				send_out("Detail \"" + args + "\" added, configuring it now.\n");
+			} else {
+				send_out("Default detail added, configuring it now.\n");
+			}
+			detail = args;
+		}
+		break;
+
+	case "ddel":
+		{
+			if (args == "") {
+				obj->remove_detail(nil);
+				obj->remove_detail("");
+				send_out("Default detail \"" + args + "\" removed.\n");
+			} else {
+				obj->remove_detail(args);
+				send_out("Detail \"" + args + "\" removed.\n");
+			}
+		}
+		break;
+
+	case "dselect":
+		{
+			detail = strlen(args) ? args : nil;
+		}
+		break;
+
+	case "dlist":
+		{
+			string *details;
+
+			details = obj->query_details();
+
+			if (sizeof(details & ({ nil }))) {
+				details = ({ "(default)" }) + (details - ({ nil }));
+			}
+
+			if (sizeof(details)) {
+				send_out("Details: " + implode(details, ", ") + "\n");
+			} else {
+				send_out("No details.\n");
+			}
+		}
+		break;
+
+	case "dview":
+		{
+			string dname;
+			string *descriptions;
+			int sz;
+
+			dname = strlen(args) ? args : nil;
+
+			if (!obj->has_detail(dname)) {
+				send_out("No such detail.\n");
+				break;
+			}
+
+			send_out((dname ? "Detail " + dname : "(default detail)") + "\n");
+			send_out("Singular nouns: " + implode(obj->query_snouns(dname), ", ") + "\n");
+			send_out("Plural nouns: " + implode(obj->query_pnouns(dname), ", ") + "\n");
+			send_out("Adjectives: " + implode(obj->query_adjectives(dname), ", ") + "\n");
+
+			descriptions = obj->query_descriptions(dname);
+
+			if (sz = sizeof(descriptions)) {
+				int i;
+
+				for (i = 0; i < sz; i++) {
+					string description;
+
+					description = descriptions[i];
+					send_out(description + ": " + obj->query_description(dname, description) + "\n");
+				}
+			}
+		}
+		break;
+
+	case "snoun":
+		if (strlen(args)) {
+			if (args[0] == '-') {
+				obj->remove_snoun(detail, args[1 ..]);
+			} else {
+				obj->add_snoun(detail, args);
+			}
+		} else {
+			send_out("Usage: snoun [-]noun\n");
+		}
+		break;
+
+	case "pnoun":
+		if (strlen(args)) {
+			if (args[0] == '-') {
+				obj->remove_pnoun(detail, args[1 ..]);
+			} else {
+				obj->add_pnoun(detail, args);
+			}
+		} else {
+			send_out("Usage: pnoun [-]noun\n");
+		}
+		break;
+
+	case "adjective":
+		if (strlen(args)) {
+			if (args[0] == '-') {
+				obj->remove_pnoun(detail, args[1 ..]);
+			} else {
+				obj->add_pnoun(detail, args);
+			}
+		} else {
+			send_out("Usage: pnoun [-]noun\n");
+		}
+		break;
+
+	case "brief":
+		if (strlen(args)) {
+			obj->set_description(detail, "brief", args);
+		} else {
+			obj->set_description(detail, "brief", nil);
+		}
+		break;
+
+	case "look":
+		if (strlen(args)) {
+			obj->set_description(detail, "look", args);
+		} else {
+			obj->set_description(detail, "look", nil);
+		}
 		break;
 
 	default:
