@@ -128,26 +128,35 @@ void main(object actor, mapping roles)
 	mixed obj;
 	string prep;
 	string look;
-	int mute;
-
-	if (!actor || !actor->query_living_lwo()) {
-		mute = 1;
-	}
 
 	dob = roles["dob"];
 
 	if (!dob) {
-		if (!mute) {
-			emit_from(actor, actor, " ", ({ "look", "looks" }), " around.");
+		string prox;
+
+		if (actor && (prox = actor->query_prox())) {
+			if (actor->query_prep() == "in") {
+				object env;
+
+				env = actor->query_environment();
+
+				ASSERT(env);
+
+				send_out(brief_of(env, prox) + "\n");
+
+				if (env->has_detail(prox)) {
+					send_out(wordwrap(env->query_description(prox, "look"), 60) + "\n");
+					send_out(contents(env, actor) + "\n");
+					return;
+				} else {
+					send_out("...that doesn't actually exist...\n");
+				}
+			}
 		}
+
 		/* it's ok to look around while dead, RenderD checks for this itself */
 		send_out(RENDERD->look(actor));
 		return;
-	} else {
-		if (mute) {
-			send_out("You cannot try to focus on anything while your mortal soul is departed the physical realm.");
-			return;
-		}
 	}
 
 	prep = dob[0];
