@@ -1,8 +1,5 @@
 mapping details;
 
-string prox;
-string prep;
-
 /* creator */
 
 static void create()
