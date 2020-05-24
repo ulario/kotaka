@@ -1,5 +1,6 @@
 inherit "support";
 inherit "bulk";
+inherit "detail";
 inherit "form/thing";
 inherit "/lib/string/sprint";
 
@@ -11,6 +12,8 @@ static string thing_text(object obj)
 	object *inv;
 	string *names;
 	mixed *values;
+	string *details;
+	string prox, prep;
 	int sz;
 
 	mapping props;
@@ -30,6 +33,17 @@ static string thing_text(object obj)
 
 	if (env) {
 		subbuffer += "<p>Environment: " + object2link(env) + "</p>\n";
+	}
+
+	prox = obj->query_prox();
+	prep = obj->query_prep();
+
+	if (prox) {
+		if (!prep) {
+			prep = "???";
+		}
+
+		subbuffer += "<p>Prox: " + prep + " " + prox + "</p>\n";
 	}
 
 	if (po = obj->query_possessor()) {
@@ -59,6 +73,11 @@ static string thing_text(object obj)
 	}
 
 	buffer += bulk_text(obj);
+
+	if (sizeof(details = obj->query_details())) {
+		buffer += detail_text(obj, details);
+	}
+
 	buffer += "</td><td class=\"pane\">\n";
 
 	props = obj->query_local_properties();
