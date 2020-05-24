@@ -238,7 +238,33 @@ private void do_input(string input)
 		}
 		break;
 
-	case "plist":
+	case "lpget":
+		if (args != "") {
+			send_out(mixed_sprint(obj->query_local_property(args)) + "\n");
+		} else {
+			send_out("What property?\n");
+		}
+		break;
+
+	case "lpset":
+		if (args != "") {
+			string pname, pvalue;
+			mixed value;
+
+			if (!sscanf(args, "%s %s", pname, pvalue)) {
+				send_out("Property value?\n");
+				return;
+			}
+
+			value = PARSER_VALUE->parse(pvalue);
+
+			obj->set_local_property(pname, value);
+		} else {
+			send_out("What property?\n");
+		}
+		break;
+
+	case "lplist":
 		{
 			string *props;
 
