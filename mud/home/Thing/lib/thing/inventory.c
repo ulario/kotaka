@@ -137,7 +137,7 @@ object *query_inventory()
 	return thing_query_inventory();
 }
 
-void move(object new_env, varargs int force)
+atomic void move(object new_env, varargs int force)
 {
 	object old_env;
 	object this;
