@@ -69,6 +69,8 @@ void configure_properties()
 	PROPERTYD->add_property("inventory", T_ARRAY, PROP_MAGIC, ({ "query_inventory", nil }) );
 	PROPERTYD->add_property("is_immobile", T_INT, PROP_INHERIT, 0);
 	PROPERTYD->add_property("is_invisible", T_INT, PROP_INHERIT, 0); /* prevents targeting */
+	PROPERTYD->add_property("prox", T_OBJECT, PROP_MAGIC, ({ "query_prox", "set_prox" }) );
+	PROPERTYD->add_property("prep", T_STRING, PROP_MAGIC, ({ "query_prep", "set_prep" }) );
 
 	/* bulk */
 	PROPERTYD->add_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
