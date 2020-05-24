@@ -20,10 +20,86 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 #include <type.h>
+#include <kotaka/assert.h>
 
 inherit "/lib/string/format";
 inherit LIB_EMIT;
 inherit LIB_VERB;
+
+private string inventory_list(object *inv)
+{
+	string *desc;
+	int i, sz;
+
+	desc = ({ });
+	sz = sizeof(inv);
+
+	for (i = 0; i < sz; i++) {
+		desc += ({ TEXT_SUBD->generate_brief_indefinite(inv[i]) });
+	}
+
+	return TEXT_SUBD->generate_list(desc);
+}
+
+private string contents(object env, object viewer)
+{
+	string prox;
+	object *inv;
+	int sz;
+
+	prox = viewer->query_prox();
+
+	inv = env->query_inventory() - ({ viewer });
+
+	for (sz = sizeof(inv); --sz >= 0; ) {
+		if (inv[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
+			inv[sz] = nil;
+			continue;
+		}
+
+		if (inv[sz]->query_prox() != prox) {
+			inv[sz] = nil;
+			continue;
+		}
+	}
+
+	inv -= ({ nil });
+
+	if (sizeof(inv)) {
+		return wordwrap("You see " + inventory_list(inv) + ".", 55) + "\n";
+	} else {
+		return "";
+	}
+}
+
+private string brief_of(object env, string prox)
+{
+	string brief;
+
+	if (env->has_detail(prox)) {
+		brief = env->query_description(prox, "brief");
+	}
+
+	if (!brief) {
+		if (!prox) {
+			brief = env->query_property("brief");
+		}
+	}
+
+	if (!brief) {
+		brief = (prox ? prox + " of " : "") + env->query_object_name();
+	}
+
+	if (!brief) {
+		brief = (prox ? prox + " of " : "") + env->query_id();
+	}
+
+	if (!brief) {
+		brief = "no brief";
+	}
+
+	return brief;
+}
 
 string *query_parse_methods()
 {
