@@ -22,7 +22,7 @@ string *query_details()
 {
 	detail_patch();
 
-	return map_indices(snouns);
+	return map_indices(details);
 }
 
 void add_detail(string detail)
@@ -37,6 +37,13 @@ void remove_detail(string detail)
 	detail_patch();
 
 	details[detail] = nil;
+}
+
+int has_detail(string detail)
+{
+	detail_patch();
+
+	return !!details[detail];
 }
 
 /* nouns */
@@ -55,6 +62,20 @@ string *query_snouns(string detail)
 	return details[detail]->query_snouns();
 }
 
+void add_snoun(string detail, string snoun)
+{
+	detail_patch();
+
+	details[detail]->add_snoun(snoun);
+}
+
+void remove_snoun(string detail, string snoun)
+{
+	detail_patch();
+
+	details[detail]->remove_snoun(snoun);
+}
+
 void set_pnouns(string detail, string *pnouns)
 {
 	detail_patch();
@@ -67,6 +88,20 @@ string *query_pnouns(string detail)
 	detail_patch();
 
 	return details[detail]->query_pnouns();
+}
+
+void add_pnoun(string detail, string pnoun)
+{
+	detail_patch();
+
+	details[detail]->add_pnoun(pnoun);
+}
+
+void remove_pnoun(string detail, string pnoun)
+{
+	detail_patch();
+
+	details[detail]->remove_pnoun(pnoun);
 }
 
 /* adjectives */
@@ -83,6 +118,20 @@ string *query_adjectives(string detail)
 	detail_patch();
 
 	return details[detail]->query_adjectives();
+}
+
+void add_adjective(string detail, string adjective)
+{
+	detail_patch();
+
+	details[detail]->add_adjective(adjective);
+}
+
+void remove_adjective(string detail, string adjective)
+{
+	detail_patch();
+
+	details[detail]->remove_adjective(adjective);
 }
 
 /* descriptions */
@@ -108,18 +157,6 @@ string query_description(string detail, string description)
 	return details[detail]->query_description(description);
 }
 
-/* prox */
-
-void set_prox(string new_prox)
-{
-	prox = new_prox;
-}
-
-void set_prep(string new_prep)
-{
-	prep = new_prep;
-}
-
 /* saveload */
 
 mapping detail_save()
@@ -129,7 +166,7 @@ mapping detail_save()
 	int sz;
 
 	dnames = map_indices(details);
-	sz = map_sizeof(dnames);
+	sz = sizeof(dnames);
 
 	if (!sz) {
 		return nil;
