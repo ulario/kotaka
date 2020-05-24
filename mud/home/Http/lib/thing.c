@@ -97,7 +97,7 @@ static string thing_text(object obj)
 		}
 
 		subbuffer += "</dl>\n";
-		buffer += oinfobox("Properties", 3, subbuffer);
+		buffer += oinfobox("Local properties", 2, subbuffer);
 	}
 
 	return buffer;
