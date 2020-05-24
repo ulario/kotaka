@@ -1,5 +1,3 @@
-#include <kotaka/paths/thing.h>
-
 inherit "thing";
 
 static string query_ip();
@@ -20,10 +18,10 @@ static string object_text(object obj)
 		subbuffer += "<p><a href=\"destruct.lpc?obj=" + object2string(obj) + "\">Destruct</p>\n";
 	}
 
-	buffer = "<table class=\"page\"><tr><td>\n";
+	buffer = "<table class=\"page\"><tr><td class=\"pane\">\n";
 	buffer += oinfobox("Object", 1, subbuffer);
 
-	if (obj <- LIB_THING) {
+	if (obj <- "~Thing/lib/thing") {
 		buffer += thing_text(obj);
 
 		if (query_ip() == "127.0.0.1") {

@@ -5,7 +5,7 @@ static string thing_form(object obj)
 {
 	string buffer;
 
-	buffer = "<h1>Object form</h1>\n";
+	buffer = "<p>Fun little boxes:</p>\n";
 
 	buffer += "<form action=\"object.lpc?obj=" + object2string(obj) + "\" method=\"post\">\n";
 	buffer += "Mass: <input type=\"text\" name=\"mass\" value=\"" + mixed_sprint(obj->query_mass()) + "\"/>\n";
@@ -17,5 +17,5 @@ static string thing_form(object obj)
 	buffer += "<input type=\"submit\" value=\"change local mass\" />\n";
 	buffer += "</form>\n";
 
-	return buffer;
+	return oinfobox("Configuration", 2, buffer);
 }

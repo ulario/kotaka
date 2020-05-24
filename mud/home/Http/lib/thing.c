@@ -59,7 +59,7 @@ static string thing_text(object obj)
 	}
 
 	buffer += bulk_text(obj);
-	buffer += "</td><td>\n";
+	buffer += "</td><td class=\"pane\">\n";
 
 	props = obj->query_local_properties();
 	names = map_indices(props);
