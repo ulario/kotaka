@@ -53,6 +53,11 @@ void emit_to(object witness, object actor, mixed chain ...)
 
 	int i, sz;
 
+	if (witness->query_possessee()) {
+		/* incarnated ghosts can only see with their bodies */
+		return;
+	}
+
 	buffer = "";
 
 	seen = ([ ]);
@@ -145,8 +150,6 @@ void emit_from(object actor, mixed chain ...)
 	}
 
 	cand |= actor->query_inventory();
-
-	LOGD->post_message("debug", LOG_DEBUG, "Witnesses: " + mixed_sprint(cand));
 
 	for (sz = sizeof(cand); --sz >= 0; ) {
 		emit_to(cand[sz], actor, chain ...);
