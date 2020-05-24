@@ -305,8 +305,20 @@ private void do_input(string input)
 		break;
 
 	case "dselect":
-		{
-			detail = strlen(args) ? args : nil;
+		if (args == "") {
+			detail = nil;
+		} else {
+			detail = args;
+		}
+		break;
+
+	case "combine":
+		if (strlen(args)) {
+			obj->set_combine(detail, args);
+		} else {
+			send_out("Usage: combine <combine>\n");
+			send_out("overlap - use local values, and inherit from archetype\n");
+			send_out("replace - ignore detail from archetype, use only local values\n");
 		}
 		break;
 
@@ -333,6 +345,7 @@ private void do_input(string input)
 			string dname;
 			string *descriptions;
 			int sz;
+			string combine;
 
 			dname = strlen(args) ? args : nil;
 
@@ -342,6 +355,15 @@ private void do_input(string input)
 			}
 
 			send_out((dname ? "Detail " + dname : "(default detail)") + "\n");
+
+			combine = obj->query_combine(dname);
+
+			if (combine) {
+				send_out("Combine policy: " + combine + "\n");
+			} else {
+				send_out("Default combine policy\n");
+			}
+
 			send_out("Singular nouns: " + implode(obj->query_snouns(dname), ", ") + "\n");
 			send_out("Plural nouns: " + implode(obj->query_pnouns(dname), ", ") + "\n");
 			send_out("Adjectives: " + implode(obj->query_adjectives(dname), ", ") + "\n");
