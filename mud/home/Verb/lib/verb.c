@@ -58,6 +58,16 @@ int pre_bind(object actor, mapping roles)
 {
 }
 
+object *pre_search(object actor, string role)
+{
+	return ({ actor, actor->query_environment() }) - ({ nil });
+}
+
+object *pre_filter(object actor, string role, object *cand)
+{
+	return cand;
+}
+
 /* actually executes the verb */
 void main(object actor, mapping roles)
 {
