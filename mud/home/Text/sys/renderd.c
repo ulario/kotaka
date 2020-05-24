@@ -198,10 +198,6 @@ private string prose(object viewer)
 		return "You don't exist.\n";
 	} else if (!env) {
 		return "You are in the formless void.\n";
-	} else if (!viewer->query_character_lwo()) {
-		return "You aren't a character.\n";
-	} else if (!viewer->query_living_lwo()) {
-		return "Being dead, you are unable to see.\n";
 	} else {
 		string *lines;
 		string desc;
@@ -585,30 +581,6 @@ string look(object viewer)
 		return implode(painter->render_color(), "\n") + "\n";
 	}
 
-	if (!viewer->query_character_lwo()) {
-		object painter, gc;
-
-		({ painter, gc }) = initialize_painter();
-
-		draw_frame(gc);
-		draw_bsod(gc, " Error ", "Not a body");
-		draw_prose(gc, viewer);
-
-		return implode(painter->render_color(), "\n") + "\n";
-	}
-
-	if (!viewer->query_living_lwo()) {
-		object painter, gc;
-
-		({ painter, gc }) = initialize_painter();
-
-		draw_frame(gc);
-		draw_bsod(gc, " Error ", "Deceased");
-		draw_prose(gc, viewer);
-
-		return implode(painter->render_color(), "\n") + "\n";
-	}
-
 	origin = viewer->query_outer_origin();
 
 	if (!origin) {
@@ -622,5 +594,4 @@ string look(object viewer)
 	case "void":
 		return look_void(viewer);
 	}
-
 }
