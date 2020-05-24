@@ -134,7 +134,7 @@ object query_environment()
 
 object *query_inventory()
 {
-	return thing_query_inventory();
+	return thing_query_inventory()[..];
 }
 
 atomic void move(object new_env, varargs int force)
