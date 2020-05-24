@@ -27,6 +27,8 @@ inherit "thing/exit";
 inherit "thing/character";
 inherit "thing/living";
 inherit "thing/possess";
+inherit "thing/detail";
+inherit "thing/prox";
 
 static void create()
 {
