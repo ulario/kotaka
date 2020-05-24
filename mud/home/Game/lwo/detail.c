@@ -4,6 +4,8 @@ string *adjectives;
 
 mapping descriptions;
 
+string combine;
+
 /* craetor */
 
 static void create(int clone)
@@ -17,6 +19,30 @@ static void create(int clone)
 }
 
 /** public **/
+
+/*
+
+combine styles:
+
+replace:
+	detail from archetype is ignored
+overlap:
+	add nouns and adjectives
+	local override, default to archetype
+nil:
+	(defaults to overlap)
+
+*/
+
+void set_combine(string new_combine)
+{
+	combine = new_combine;
+}
+
+string query_combine()
+{
+	return combine;
+}
 
 /* nouns */
 
@@ -89,6 +115,7 @@ string query_description(string description)
 mapping save()
 {
 	return ([
+		"combine": combine,
 		"snouns": sizeof(snouns) ? snouns : nil,
 		"pnouns": sizeof(pnouns) ? snouns : nil,
 		"adjectives": sizeof(snouns) ? snouns : nil,
@@ -100,6 +127,7 @@ void load(mapping data)
 {
 	mixed v;
 
+	combine = data["combine"];
 	snouns = (v = data["snouns"]) ? v : ({ });
 	pnouns = (v = data["pnouns"]) ? v : ({ });
 	adjectives = (v = data["adjectives"]) ? v : ({ });

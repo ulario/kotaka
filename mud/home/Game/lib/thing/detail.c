@@ -46,6 +46,22 @@ int has_detail(string detail)
 	return !!details[detail];
 }
 
+/* inheritance */
+
+void set_combine(string detail, string type)
+{
+	detail_patch();
+
+	details[detail]->set_combine(type);
+}
+
+string query_combine(string detail)
+{
+	detail_patch();
+
+	return details[detail]->query_combine();
+}
+
 /* nouns */
 
 void set_snouns(string detail, string *snouns)
