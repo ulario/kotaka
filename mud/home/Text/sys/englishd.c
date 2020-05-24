@@ -540,50 +540,54 @@ private mixed *english_process(string command, object ustate, object actor, obje
 	/* phase 3: bind */
 	{
 		string *rlist;
+		object *search;
+		object *cand;
 		object env;
-		object *icand;
-		int i, sz;
+		int sz, i;
 
 		rlist = map_indices(roles);
-		sz = sizeof(rlist);
+
+		search = ({ });
+		cand = ({ });
 
 		if (actor) {
+			search |= ({ actor });
+
 			env = actor->query_environment();
 
 			if (env) {
-				icand = actor->query_inventory() + env->query_inventory() + ({ env });
-			} else {
-				icand = ({ actor }) + actor->query_inventory();
+				search |= ({ env });
 			}
 		}
 
-		if (icand) {
-			int sz;
-
-			for (sz = sizeof(icand); --sz >= 0; ) {
-				if (icand[sz]->query_property("is_invisible") && this_user()->query_class() < 2) {
-					icand[sz] = nil;
-				}
-			}
-
-			icand -= ({ nil });
-		}
+		cand |= search;
+		sz = sizeof(rlist);
 
 		for (i = 0; i < sz; i++) {
 			string role;
+			mixed *result;
 
 			role = rlist[i];
 
 			if (raw[role]) {
 				roles[role] = bind_raw(roles[role]);
 			} else {
-				mixed *result;
+				object *rsearch;
+				object *rcand;
 
-				if (!actor) {
-					return ({ 2, "You must be in character to use this command." });
+				rsearch = verb->pre_search(actor, role);
+
+				rcand = cand[..];
+
+				sz = sizeof(rsearch);
+
+				for (i = 0; i < sz; i++) {
+					rcand |= rsearch[i]->query_inventory();
 				}
 
-				result = bind_english(roles[role], icand);
+				rcand = verb->pre_filter(actor, role, rcand);
+
+				result = bind_english(roles[role], rcand);
 
 				switch(result[0]) {
 				case 0 .. 2:
