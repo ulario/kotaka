@@ -26,18 +26,18 @@
 
 inherit LIB_VERB;
 
-static void allcall(string path, string func, int index)
+static void allcall(string path, string func, int index, int limit)
 {
 	object obj;
 
-	index--;
-
 	obj = find_object(path + "#" + index);
 
-	call_other(obj, func);
+	if (obj) {
+		call_other(obj, func);
+	}
 
-	if (index) {
-		call_out("allcall", 0, path, func, index);
+	if (index < limit) {
+		call_out("allcall", 0, path, func, index + 1, limit);
 	} else {
 		LOGD->post_message("debug", LOG_DEBUG, "Allcall finished");
 	}
@@ -74,5 +74,5 @@ void main(object actor, mapping roles)
 		call_other(path, func);
 	}
 
-	call_out("allcall", 0, path, func, status(ST_OTABSIZE));
+	call_out("allcall", 0, path, func, 0, status(ST_OTABSIZE));
 }
