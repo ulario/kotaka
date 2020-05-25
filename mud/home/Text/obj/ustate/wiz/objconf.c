@@ -304,6 +304,26 @@ private void do_input(string input)
 		}
 		break;
 
+	case "dveto":
+		if (args == "") {
+			obj->veto_detail(nil);
+			send_out("Default detail \"" + args + "\" vetoed.\n");
+		} else {
+			obj->veto_detail(args);
+			send_out("Detail \"" + args + "\" vetoed.\n");
+		}
+		break;
+
+	case "dunveto":
+		if (args == "") {
+			obj->unveto_detail(nil);
+			send_out("Default detail \"" + args + "\" unvetoed.\n");
+		} else {
+			obj->unveto_detail(args);
+			send_out("Detail \"" + args + "\" unvetoed.\n");
+		}
+		break;
+
 	case "dselect":
 		if (args == "") {
 			detail = nil;
