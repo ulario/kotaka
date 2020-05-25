@@ -24,6 +24,9 @@
 #include <kotaka/log.h>
 #include <status.h>
 
+#define FULL 600
+#define INCR 600
+
 inherit SECOND_AUTO;
 
 int interval;
@@ -56,8 +59,8 @@ private void start()
 
 private void configure()
 {
-	steps = 86400 / 600; /* ten minutes between incremental dumps */
-	interval = 86400 / steps; /* one day between full dumps */
+	steps = FULL / INCR; /* ten minutes between incremental dumps */
+	interval = FULL / steps; /* one day between full dumps */
 }
 
 static void create()
@@ -82,15 +85,20 @@ static void dump(int goal)
 	now = time();
 	delta = now - goal;
 
-	if (delta > interval) {
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: Stalled by excessive lag, restarting cycle");
-		start();
-	} else {
-		goal += interval;
-		delta = goal - now;
+	if (delta) {
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + delta + " seconds late");
 
-		call_out("dump", delta, goal);
+		if (delta > interval) {
+			LOGD->post_message("system", LOG_NOTICE, "DumpD: Stall exceeds interval, restarting cycle");
+			start();
+			return;
+		}
 	}
+
+	goal += interval;
+	delta = goal - now;
+
+	call_out("dump", delta, goal);
 }
 
 void upgrade()
