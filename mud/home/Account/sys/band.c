@@ -189,8 +189,6 @@ static void create()
 void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
-
-	call_out("save", 0);
 }
 
 void save()
