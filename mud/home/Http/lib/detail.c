@@ -6,14 +6,9 @@ private string detail_box(object obj, string detail)
 	string buffer;
 	string *descriptions;
 	string *words;
-	string combine;
 	int sz;
 
 	buffer = "";
-
-	if (combine = obj->query_combine(detail)) {
-		buffer += "<p>Archetype combine: " + combine + "</p>\n";
-	}
 
 	if (sizeof(words = obj->query_snouns(detail))) {
 		buffer += "<p>Singular nouns: " + implode(words, ", ") + "</p>\n";
