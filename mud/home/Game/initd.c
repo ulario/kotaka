@@ -27,6 +27,9 @@
 #include <kotaka/property.h>
 #include <type.h>
 
+#define M 1000000
+#define G 1000000000
+
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
@@ -51,6 +54,8 @@ private void load()
 private void set_limits()
 {
 	reset_limits();
+
+	KERNELD->rsrc_set_limit("Game", "ticks", 10 * M);
 }
 
 private void create_channels()
