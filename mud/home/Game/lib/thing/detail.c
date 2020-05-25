@@ -1,10 +1,12 @@
 mapping details;
+string *vetoed_details;
 
 /* creator */
 
 static void create()
 {
 	details = ([ ]);
+	vetoed_details = ({ });
 }
 
 /* setup */
@@ -13,6 +15,10 @@ void detail_patch()
 {
 	if (!details) {
 		details = ([ ]);
+	}
+
+	if (!vetoed_details) {
+		vetoed_details = ({ });
 	}
 }
 
@@ -23,6 +29,13 @@ string *query_details()
 	detail_patch();
 
 	return map_indices(details);
+}
+
+string *query_vetoed_details()
+{
+	detail_patch();
+
+	return vetoed_details[..];
 }
 
 void add_detail(string detail)
@@ -39,27 +52,25 @@ void remove_detail(string detail)
 	details[detail] = nil;
 }
 
+void veto_detail(string detail)
+{
+	detail_patch();
+
+	vetoed_details |= ({ detail });
+}
+
+void unveto_detail(string detail)
+{
+	detail_patch();
+
+	vetoed_details -= ({ detail });
+}
+
 int has_detail(string detail)
 {
 	detail_patch();
 
 	return !!details[detail];
-}
-
-/* inheritance */
-
-void set_combine(string detail, string type)
-{
-	detail_patch();
-
-	details[detail]->set_combine(type);
-}
-
-string query_combine(string detail)
-{
-	detail_patch();
-
-	return details[detail]->query_combine();
 }
 
 /* nouns */
