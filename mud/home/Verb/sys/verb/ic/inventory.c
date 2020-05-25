@@ -24,6 +24,68 @@ inherit LIB_EMIT;
 inherit LIB_VERB;
 inherit "~/lib/ic";
 
+private string describe(object thing)
+{
+	string brief;
+	string id;
+	string prox;
+	string buffer;
+
+	if (thing->has_detail(nil)) {
+		brief = thing->query_description(nil, "brief");
+	}
+
+	if (!brief) {
+		brief = thing->query_property("brief");
+	}
+
+	buffer = "";
+
+	if (brief) {
+		buffer += brief + " (";
+	}
+
+	if (id = thing->query_object_name()) {
+		buffer += id;
+	} else if (id = thing->query_id()) {
+		buffer += id;
+	} else {
+		buffer += object_name(thing);
+	}
+
+	if (brief) {
+		buffer += ")";
+	}
+
+	if (prox = thing->query_prox()) {
+		string prep;
+
+		prep = thing->query_prep();
+
+		if (prep) {
+			buffer += ": " + prep + " " + prox;
+		} else {
+			buffer += ": " + prox;
+		}
+	}
+
+	return buffer;
+}
+
+private void debug_inventory(object actor)
+{
+	object *inv;
+	int sz;
+
+	send_out("Debug inventory:\n");
+
+	inv = actor->query_inventory();
+
+	for (sz = sizeof(inv); --sz >= 0; ) {
+		send_out(describe(inv[sz]) + "\n");
+	}
+}
+
 string *query_parse_methods()
 {
 	return ({ "raw" });
@@ -71,6 +133,11 @@ void main(object actor, mapping roles)
 {
 	object *inv;
 	int sz;
+
+	if (roles["raw"] == "-d") {
+		debug_inventory(actor);
+		return;
+	}
 
 	inv = actor->query_inventory();
 
