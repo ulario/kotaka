@@ -292,15 +292,13 @@ private void do_input(string input)
 		break;
 
 	case "ddel":
-		{
-			if (args == "") {
-				obj->remove_detail(nil);
-				obj->remove_detail("");
-				send_out("Default detail \"" + args + "\" removed.\n");
-			} else {
-				obj->remove_detail(args);
-				send_out("Detail \"" + args + "\" removed.\n");
-			}
+		if (args == "") {
+			obj->remove_detail(nil);
+			obj->remove_detail("");
+			send_out("Default detail \"" + args + "\" removed.\n");
+		} else {
+			obj->remove_detail(args);
+			send_out("Detail \"" + args + "\" removed.\n");
 		}
 		break;
 
