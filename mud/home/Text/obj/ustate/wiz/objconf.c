@@ -355,6 +355,18 @@ private void do_input(string input)
 			} else {
 				send_out("No details.\n");
 			}
+
+			details = obj->query_vetoed_details();
+
+			if (sizeof(details & ({ nil }))) {
+				details = ({ "(default)" }) + (details - ({ nil }));
+			}
+
+			if (sizeof(details)) {
+				send_out("Vetoed details: " + implode(details, ", ") + "\n");
+			} else {
+				send_out("No vetoed details.\n");
+			}
 		}
 		break;
 
