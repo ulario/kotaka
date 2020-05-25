@@ -276,19 +276,19 @@ private void do_input(string input)
 
 	/* details */
 	case "dadd":
-		{
-			if (args == "") {
-				args = nil;
-			}
-
-			obj->add_detail(args);
-			if (args) {
-				send_out("Detail \"" + args + "\" added, configuring it now.\n");
-			} else {
-				send_out("Default detail added, configuring it now.\n");
-			}
-			detail = args;
+		if (args == "") {
+			args = nil;
 		}
+
+		obj->add_detail(args);
+
+		if (args) {
+			send_out("Detail \"" + args + "\" added, configuring it now.\n");
+		} else {
+			send_out("Default detail added, configuring it now.\n");
+		}
+
+		detail = args;
 		break;
 
 	case "ddel":
