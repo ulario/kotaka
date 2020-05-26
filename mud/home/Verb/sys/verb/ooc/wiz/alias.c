@@ -105,22 +105,22 @@ void main(object actor, mapping roles)
 		ALIASD->save();
 		break;
 
-	case "gload":
+	case "grestore":
 		if (args && sscanf(args, "%s %s", alias, args)) {
 			send_out("Don't specify an expansion when loading aliases\n");
 			break;
 		}
 
-		ALIASD->load();
+		ALIASD->restore();
 		break;
 
 	default:
 		send_out("Invalid alias command.\n");
 		send_out("Choices:\n");
-		send_out("gadd   Add global alias\n");
-		send_out("gdel   Delete global alias\n");
-		send_out("glist  List global aliases\n");
-		send_out("gsave  Save global aliases\n");
-		send_out("gload  Load global aliases\n");
+		send_out("gadd      Add global alias\n");
+		send_out("gdel      Delete global alias\n");
+		send_out("glist     List global aliases\n");
+		send_out("gsave     Save global aliases\n");
+		send_out("grestore  Restore global aliases\n");
 	}
 }
