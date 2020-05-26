@@ -1,12 +1,23 @@
-string prox;
+string environment_detail;
+object prox;
 string prep;
 
-void set_prox(string new_prox)
+void set_environment_detail(string new_environment_detail)
+{
+	environment_detail = new_environment_detail;
+}
+
+string query_environment_detail()
+{
+	return environment_detail;
+}
+
+void set_prox(object new_prox)
 {
 	prox = new_prox;
 }
 
-string query_prox()
+object query_prox()
 {
 	return prox;
 }
