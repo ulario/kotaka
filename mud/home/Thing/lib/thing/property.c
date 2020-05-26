@@ -128,7 +128,9 @@ void set_property(string name, mixed value)
 
 nomask mixed query_local_property(string name)
 {
-	return deep_copy(properties[name]);
+	if (properties) {
+		return deep_copy(properties[name]);
+	}
 }
 
 mixed query_property(string name)
