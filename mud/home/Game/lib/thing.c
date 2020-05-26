@@ -58,8 +58,8 @@ static mapping save()
 	}
 
 	map["possessee"] = query_possessee();
-
 	map["details"] = detail_save();
+	map["prox"] = prox_save();
 
 	return map;
 }
@@ -87,5 +87,6 @@ static void load(mapping data)
 		possess(pos);
 	}
 
+	prox_load(data["prox"]);
 	detail_load(data["details"]);
 }
