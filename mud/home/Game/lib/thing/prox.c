@@ -31,3 +31,25 @@ string query_prep()
 {
 	return prep;
 }
+
+mapping prox_save()
+{
+	return ([
+		"environment_detail": environment_detail,
+		"prox": prox,
+		"prep": prep
+	]);
+}
+
+void prox_load(mapping data)
+{
+	if (data) {
+		environment_detail = data["environment_detail"];
+		prox = data["prox"];
+		prep = data["prep"];
+	} else {
+		environment_detail = nil;
+		prox = nil;
+		prep = nil;
+	}
+}
