@@ -1,17 +1,9 @@
 mapping details;
 string *vetoed_details;
 
-/* creator */
+/* private */
 
-static void create()
-{
-	details = ([ ]);
-	vetoed_details = ({ });
-}
-
-/* setup */
-
-void detail_patch()
+private void patch_details_init()
 {
 	if (!details) {
 		details = ([ ]);
@@ -22,53 +14,63 @@ void detail_patch()
 	}
 }
 
+/* creator */
+
+static void create()
+{
+	details = ([ ]);
+	vetoed_details = ({ });
+}
+
+/* setup */
+
 /* details */
 
 string *query_details()
 {
-	detail_patch();
+	patch_details_init();
 
 	return map_indices(details);
 }
 
 string *query_vetoed_details()
 {
-	detail_patch();
+	patch_details_init();
 
 	return vetoed_details[..];
 }
 
 void add_detail(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail] = new_object("~/lwo/detail");
 }
 
 void remove_detail(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail] = nil;
 }
 
 void veto_detail(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	vetoed_details |= ({ detail });
 }
 
 void unveto_detail(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	vetoed_details -= ({ detail });
 }
 
 int has_detail(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	return !!details[detail];
 }
@@ -77,56 +79,56 @@ int has_detail(string detail)
 
 void set_snouns(string detail, string *snouns)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->set_snouns(snouns);
 }
 
 string *query_snouns(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	return details[detail]->query_snouns();
 }
 
 void add_snoun(string detail, string snoun)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->add_snoun(snoun);
 }
 
 void remove_snoun(string detail, string snoun)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->remove_snoun(snoun);
 }
 
 void set_pnouns(string detail, string *pnouns)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->set_pnouns(pnouns);
 }
 
 string *query_pnouns(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	return details[detail]->query_pnouns();
 }
 
 void add_pnoun(string detail, string pnoun)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->add_pnoun(pnoun);
 }
 
 void remove_pnoun(string detail, string pnoun)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->remove_pnoun(pnoun);
 }
@@ -135,28 +137,28 @@ void remove_pnoun(string detail, string pnoun)
 
 void set_adjectives(string detail, string *adjectives)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->set_adjectives(adjectives);
 }
 
 string *query_adjectives(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	return details[detail]->query_adjectives();
 }
 
 void add_adjective(string detail, string adjective)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->add_adjective(adjective);
 }
 
 void remove_adjective(string detail, string adjective)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->remove_adjective(adjective);
 }
@@ -165,21 +167,21 @@ void remove_adjective(string detail, string adjective)
 
 string *query_descriptions(string detail)
 {
-	detail_patch();
+	patch_details_init();
 
 	return details[detail]->query_descriptions();
 }
 
 void set_description(string detail, string description, string text)
 {
-	detail_patch();
+	patch_details_init();
 
 	details[detail]->set_description(description, text);
 }
 
 string query_description(string detail, string description)
 {
-	detail_patch();
+	patch_details_init();
 
 	return details[detail]->query_description(description);
 }
