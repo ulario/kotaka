@@ -279,15 +279,17 @@ private void register_ghosts_dir(string dir)
 
 private void check_inherits(string path, string *inherits)
 {
+	string creator;
+
 	if (sscanf(path, "/kernel/%*s")) {
 		return;
 	}
 
-	if (DRIVER->creator(path) == "System") {
-		int has_sa;
-		int sz;
+	creator = DRIVER->creator(path);
 
-		has_sa = 0;
+	if (creator == "System") {
+		int sz;
+		int has_sa;
 
 		for (sz = sizeof(inherits); --sz >= 0; ) {
 			string inh;
@@ -295,7 +297,7 @@ private void check_inherits(string path, string *inherits)
 			inh = inherits[sz];
 
 			if (DRIVER->creator(inh) != "System") {
-				error(path + " must not inherit from " + inh);
+				error(path + " cannot inherit foreign " + inh);
 			}
 
 			if (inh == SECOND_AUTO) {
@@ -305,6 +307,22 @@ private void check_inherits(string path, string *inherits)
 
 		if (has_sa == 0 && !sscanf(path, USR_DIR + "/System/lib/auto/%*s")) {
 			error(path + " doesn't inherit second auto");
+		}
+	}
+
+	if (path == "/initd" || sscanf(path, USR_DIR + "/%*s/initd")) {
+		int sz;
+
+		for (sz = sizeof(inherits); --sz >= 0; ) {
+			string inh;
+			string icreator;
+
+			inh = inherits[sz];
+			icreator = DRIVER->creator(inh);
+
+			if (icreator != "System" && icreator != creator) {
+				error(path + " cannot inherit foreign " + inh);
+			}
 		}
 	}
 }
