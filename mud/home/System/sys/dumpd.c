@@ -85,7 +85,7 @@ static void dump(int goal)
 	now = time();
 	delta = now - goal;
 
-	if (delta) {
+	if (delta > 0) {
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + delta + " seconds late");
 
 		if (delta > interval) {
