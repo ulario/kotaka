@@ -21,6 +21,8 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
+#define M 1000000
+
 inherit LIB_INITD;
 inherit UTILITY_COMPILE;
 
@@ -42,7 +44,7 @@ private void set_limits()
 {
 	reset_limits();
 
-	KERNELD->rsrc_set_limit("Kotaka", "ticks", 1000000);
+	KERNELD->rsrc_set_limit("Kotaka", "ticks", 1 * M);
 }
 
 static void create()
