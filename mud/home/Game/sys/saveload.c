@@ -51,12 +51,16 @@ private void list_enqueue_directory(mixed **list, varargs string dir)
 	directories = IDD->query_directories(dir);
 	names = IDD->query_names(dir);
 
-	for (sz = sizeof(directories); --sz >= 0; ) {
-		list_push_back(list, (dir ? dir + ":": "") + directories[sz]);
+	if (directories) {
+		for (sz = sizeof(directories); --sz >= 0; ) {
+			list_push_back(list, (dir ? dir + ":": "") + directories[sz]);
+		}
 	}
 
-	for (sz = sizeof(names); --sz >= 0; ) {
-		list_push_back(list, IDD->find_object_by_name((dir ? dir + ":": "") + names[sz]));
+	if (names) {
+		for (sz = sizeof(names); --sz >= 0; ) {
+			list_push_back(list, IDD->find_object_by_name((dir ? dir + ":": "") + names[sz]));
+		}
 	}
 }
 
