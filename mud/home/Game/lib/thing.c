@@ -90,3 +90,58 @@ static void load(mapping data)
 	prox_load(data["prox"]);
 	detail_load(data["details"]);
 }
+
+void patch_details()
+{
+	string brief;
+	string look;
+
+	string *snouns;
+	string *pnouns;
+	string *adjectives;
+
+	brief = query_local_property("brief");
+	look = query_local_property("look");
+
+	snouns = query_local_property("local_snouns");
+	pnouns = query_local_property("local_pnouns");
+	adjectives = query_local_property("local_adjectives");
+
+	if (brief || look || snouns || pnouns || adjectives) {
+		if (!has_detail(nil)) {
+			add_detail(nil);
+		}
+
+		if (brief) {
+			set_description(nil, "brief", brief);
+		}
+
+		if (look) {
+			set_description(nil, "look", look);
+		}
+
+		if (snouns) {
+			int sz;
+
+			for (sz = sizeof(snouns); --sz >= 0; ) {
+				add_snoun(nil, snouns[sz]);
+			}
+		}
+
+		if (pnouns) {
+			int sz;
+
+			for (sz = sizeof(pnouns); --sz >= 0; ) {
+				add_pnoun(nil, pnouns[sz]);
+			}
+		}
+
+		if (adjectives) {
+			int sz;
+
+			for (sz = sizeof(adjectives); --sz >= 0; ) {
+				add_adjective(nil, adjectives[sz]);
+			}
+		}
+	}
+}
