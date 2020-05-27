@@ -125,4 +125,6 @@ do
 	wait $DGDPID
 	EXITCODE=$?
 	doexit
+	exec >> $ERR
+	exec 2>&1
 done
