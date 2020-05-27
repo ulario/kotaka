@@ -27,6 +27,10 @@ object *query_inventory();
 private float mass;		/* kg */
 private float density;		/* kg/l */
 
+private string mass_derivation;
+/* absolute: mass is fixed */
+/* inherit: mass is local mass times mass of archetype */
+
 private int flexible;		/* flexible container */
 private int virtual;		/* virtual container */
 
@@ -74,17 +78,53 @@ float query_local_mass()
 	return mass;
 }
 
+atomic void set_mass_derivation(string derivation)
+{
+	object env;
+
+	switch (derivation) {
+	case nil: /* default: inherit */
+	case "inherit":
+	case "absolute":
+		if (mass_derivation != derivation) {
+			/* changed derivation, preserve value */
+			float old_mass;
+
+			old_mass = query_mass();
+			mass_derivation = derivation;
+			set_mass(old_mass); /* will invalidate */
+		}
+		break;
+
+	default:
+		error("Invalid mass derivation");
+	}
+}
+
+string query_mass_derivation()
+{
+	return mass_derivation;
+}
+
 void set_mass(float new_mass)
 {
 	object arch;
 	float factor;
 
-	arch = query_archetype();
+	switch(mass_derivation) {
+	case nil:
+	case "inherit":
+		arch = query_archetype();
 
-	if (!arch || arch->query_virtual()) {
+		if (!arch || arch->query_virtual()) {
+			set_local_mass(new_mass);
+		} else {
+			set_local_mass(new_mass / arch->query_mass());
+		}
+		break;
+
+	case "absolute":
 		factor = 1.0;
-	} else {
-		factor = arch->query_mass();
 	}
 
 	set_local_mass(new_mass / factor);
@@ -95,15 +135,21 @@ float query_mass()
 	object arch;
 	float factor;
 
-	arch = query_archetype();
+	switch(mass_derivation) {
+	case nil:
+	case "inherit":
+		arch = query_archetype();
 
-	if (!arch || arch->query_virtual()) {
-		factor = 1.0;
-	} else {
-		factor = arch->query_mass();
+		if (!arch || arch->query_virtual()) {
+			return mass;
+		} else {
+			return mass * arch->query_mass();
+		}
+		break;
+
+	case "absolute":
+		return mass;
 	}
-
-	return mass * factor;
 }
 
 float query_total_mass()
