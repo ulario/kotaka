@@ -124,10 +124,8 @@ void set_mass(float new_mass)
 		break;
 
 	case "absolute":
-		factor = 1.0;
+		set_local_mass(new_mass);
 	}
-
-	set_local_mass(new_mass / factor);
 }
 
 float query_mass()
