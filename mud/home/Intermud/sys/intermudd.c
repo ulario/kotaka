@@ -41,6 +41,10 @@ inherit "/lib/string/sprint";
 inherit "/lib/string/replace";
 inherit "~System/lib/utility/secretlog";
 
+/* i3 information */
+static mapping muds;
+static mapping channels;
+
 /* daemon state */
 string buffer;
 string mudname;
@@ -54,9 +58,7 @@ string router;
 /* local */
 mapping routers;
 
-/* i3 information */
-static mapping muds;
-static mapping channels;
+/* utility */
 
 private void clean_passwords()
 {
@@ -223,6 +225,8 @@ private string make_packet(mixed *data)
 
 	return bigendian + str + "\000";
 }
+
+/* i3 handlers */
 
 private void i3_send_packet(mixed *arr)
 {
