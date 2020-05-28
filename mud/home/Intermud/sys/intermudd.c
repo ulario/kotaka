@@ -554,25 +554,6 @@ private void i3_handle_who_reply(mixed *value)
 	user->message("\033[0m");
 }
 
-
-static void keepalive()
-{
-	mixed *arr;
-
-	call_out_unique("keepalive", 10);
-
-	arr = ({
-		"who-req",
-		5,
-		mudname,
-		0,
-		mudname,
-		0
-	});
-
-	i3_send_packet(arr);
-}
-
 void unlisten_channel(string channel)
 {
 	mixed *arr;
@@ -730,6 +711,26 @@ static void destruct()
 	if (query_conn()) {
 		disconnect();
 	}
+}
+
+/* callouts */
+
+static void keepalive()
+{
+	mixed *arr;
+
+	call_out_unique("keepalive", 10);
+
+	arr = ({
+		"who-req",
+		5,
+		mudname,
+		0,
+		mudname,
+		0
+	});
+
+	i3_send_packet(arr);
 }
 
 void reboot()
