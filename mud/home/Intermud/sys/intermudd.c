@@ -688,6 +688,29 @@ private void process_packet(mixed *value)
 	}
 }
 
+/* creator */
+
+static void create()
+{
+	rejections = 0;
+	router = "*wpr";
+
+	routers = ([ ]);
+	muds = ([ ]);
+	channels = ([ ]);
+
+	restore();
+
+	call_out("i3_connect", 0);
+}
+
+static void destruct()
+{
+	if (query_conn()) {
+		disconnect();
+	}
+}
+
 void reboot()
 {
 	ACCESS_CHECK(INTERMUD());
@@ -844,26 +867,6 @@ void save()
 /* hooks */
 
 /* objectd hooks */
-static void create()
-{
-	rejections = 0;
-	router = "*wpr";
-
-	routers = ([ ]);
-	muds = ([ ]);
-	channels = ([ ]);
-
-	restore();
-
-	call_out("i3_connect", 0);
-}
-
-static void destruct()
-{
-	if (query_conn()) {
-		disconnect();
-	}
-}
 
 void upgrade()
 {
