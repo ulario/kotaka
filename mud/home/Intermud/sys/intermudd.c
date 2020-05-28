@@ -229,6 +229,24 @@ private void i3_send_packet(mixed *arr)
 	message(make_packet(arr));
 }
 
+static void keepalive()
+{
+	mixed *arr;
+
+	call_out_unique("keepalive", 10);
+
+	arr = ({
+		"who-req",
+		5,
+		mudname,
+		0,
+		mudname,
+		0
+	});
+
+	i3_send_packet(arr);
+}
+
 void unlisten_channel(string channel)
 {
 	mixed *arr;
@@ -821,24 +839,6 @@ static void process()
 	if (buffer && strlen(buffer) > 4) {
 		call_out("process", 0);
 	}
-}
-
-static void keepalive()
-{
-	mixed *arr;
-
-	call_out_unique("keepalive", 10);
-
-	arr = ({
-		"who-req",
-		5,
-		mudname,
-		0,
-		mudname,
-		0
-	});
-
-	i3_send_packet(arr);
 }
 
 void save()
