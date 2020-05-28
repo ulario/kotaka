@@ -55,10 +55,8 @@ string router;
 mapping routers;
 
 /* i3 information */
-mapping muds;
-mapping channels;
-
-/* utility */
+static mapping muds;
+static mapping channels;
 
 private void clean_passwords()
 {
