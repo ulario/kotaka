@@ -793,81 +793,6 @@ void reboot()
 	call_out("i3_connect", 0);
 }
 
-void restore()
-{
-	mapping map;
-	string buf;
-
-	ACCESS_CHECK(INTERMUD() || VERB());
-
-	routers = ([ ]);
-	router = nil;
-
-	muds = ([ ]);
-	channels = ([ ]);
-
-	password = 0;
-	passwords = ([ ]);
-	rejections = 0;
-
-	buf = SECRETD->read_file("intermud");
-
-	if (buf) {
-		catch {
-			map = PARSER_VALUE->parse(buf);
-
-			if (map["passwords"]) {
-				passwords = map["passwords"];
-			}
-
-			if (map["password"]) {
-				passwords[MUDNAME] = ({ map["password"], time() + 7 * 86400 });
-			}
-
-			if (map["routers"]) {
-				routers = map["routers"];
-			}
-
-			if (map["router"]) {
-				router = map["router"];
-			}
-		} : {
-			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
-
-			SECRETD->remove_file("intermud-bad");
-			SECRETD->rename_file("intermud", "intermud-bad");
-		}
-	}
-
-	clean_passwords();
-
-	if (!routers || !router) {
-		reset_routers();
-		call_out_unique("save", 0);
-	}
-}
-
-void save()
-{
-	string buf;
-
-	ACCESS_CHECK(INTERMUD() || VERB() || KERNEL() || SYSTEM());
-
-	clean_passwords();
-
-	buf = hybrid_sprint( ([
-		"router" : router,
-		"routers" : routers && map_sizeof(routers) ? routers : nil,
-		"passwords" : passwords && map_sizeof(passwords) ? passwords : nil
-	]) );
-
-	SECRETD->make_dir(".");
-	SECRETD->remove_file("intermud-tmp");
-	SECRETD->write_file("intermud-tmp", buf + "\n");
-	SECRETD->remove_file("intermud");
-	SECRETD->rename_file("intermud-tmp", "intermud");
-}
-
 /* hooks */
 
 /* objectd hooks */
@@ -950,6 +875,81 @@ object select(string input)
 }
 
 /* calls */
+
+void save()
+{
+	string buf;
+
+	ACCESS_CHECK(INTERMUD() || VERB() || KERNEL() || SYSTEM());
+
+	clean_passwords();
+
+	buf = hybrid_sprint( ([
+		"router" : router,
+		"routers" : routers && map_sizeof(routers) ? routers : nil,
+		"passwords" : passwords && map_sizeof(passwords) ? passwords : nil
+	]) );
+
+	SECRETD->make_dir(".");
+	SECRETD->remove_file("intermud-tmp");
+	SECRETD->write_file("intermud-tmp", buf + "\n");
+	SECRETD->remove_file("intermud");
+	SECRETD->rename_file("intermud-tmp", "intermud");
+}
+
+void restore()
+{
+	mapping map;
+	string buf;
+
+	ACCESS_CHECK(INTERMUD() || VERB());
+
+	routers = ([ ]);
+	router = nil;
+
+	muds = ([ ]);
+	channels = ([ ]);
+
+	password = 0;
+	passwords = ([ ]);
+	rejections = 0;
+
+	buf = SECRETD->read_file("intermud");
+
+	if (buf) {
+		catch {
+			map = PARSER_VALUE->parse(buf);
+
+			if (map["passwords"]) {
+				passwords = map["passwords"];
+			}
+
+			if (map["password"]) {
+				passwords[MUDNAME] = ({ map["password"], time() + 7 * 86400 });
+			}
+
+			if (map["routers"]) {
+				routers = map["routers"];
+			}
+
+			if (map["router"]) {
+				router = map["router"];
+			}
+		} : {
+			LOGD->post_message("system", LOG_ERR, "IntermudD: Error parsing Intermud state, resetting");
+
+			SECRETD->remove_file("intermud-bad");
+			SECRETD->rename_file("intermud", "intermud-bad");
+		}
+	}
+
+	clean_passwords();
+
+	if (!routers || !router) {
+		reset_routers();
+		call_out_unique("save", 0);
+	}
+}
 
 void send_channel_message(string channel, string sender, string visible, string text)
 {
