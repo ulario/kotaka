@@ -226,7 +226,14 @@ private string make_packet(mixed *data)
 	return bigendian + str + "\000";
 }
 
-private void bounce_packet(mixed *value)
+/* I3 utility */
+
+private void i3_send_packet(mixed *arr)
+{
+	message(make_packet(arr));
+}
+
+private void i3_bounce_packet(mixed *value)
 {
 	mixed *arr;
 
@@ -247,13 +254,6 @@ private void bounce_packet(mixed *value)
 	});
 
 	i3_send_packet(arr);
-}
-
-/* I3 utility */
-
-private void i3_send_packet(mixed *arr)
-{
-	message(make_packet(arr));
 }
 
 /* I3 packet handlers */
@@ -686,7 +686,7 @@ private void process_packet(mixed *value)
 		break;
 
 	default:
-		bounce_packet(value);
+		i3_bounce_packet(value);
 	}
 }
 
