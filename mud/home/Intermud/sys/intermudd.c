@@ -733,6 +733,26 @@ static void keepalive()
 	i3_send_packet(arr);
 }
 
+static void i3_connect()
+{
+	string ip;
+	int port;
+
+	if (!router) {
+		error("No router selected");
+	}
+
+	if (!routers[router]) {
+		error("No such router: " + router);
+	}
+
+	({ ip, port }) = routers[router];
+
+	disconnect();
+
+	connect(ip, port);
+}
+
 void reboot()
 {
 	ACCESS_CHECK(INTERMUD());
@@ -796,26 +816,6 @@ void restore()
 		reset_routers();
 		call_out_unique("save", 0);
 	}
-}
-
-static void i3_connect()
-{
-	string ip;
-	int port;
-
-	if (!router) {
-		error("No router selected");
-	}
-
-	if (!routers[router]) {
-		error("No such router: " + router);
-	}
-
-	({ ip, port }) = routers[router];
-
-	disconnect();
-
-	connect(ip, port);
 }
 
 static void process()
