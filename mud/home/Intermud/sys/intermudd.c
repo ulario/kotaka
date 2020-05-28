@@ -256,6 +256,46 @@ private void i3_bounce_packet(mixed *value)
 	i3_send_packet(arr);
 }
 
+private void i3_listen_channel(string channel)
+{
+	mixed *arr;
+
+	ACCESS_CHECK(INTERFACE() || CHANNEL());
+
+	arr = ({
+		"channel-listen",
+		5,
+		mudname,
+		0,
+		router,
+		0,
+		channel,
+		1
+	});
+
+	i3_send_packet(arr);
+}
+
+private void i3_unlisten_channel(string channel)
+{
+	mixed *arr;
+
+	ACCESS_CHECK(INTERFACE() || CHANNEL());
+
+	arr = ({
+		"channel-listen",
+		5,
+		mudname,
+		0,
+		router,
+		0,
+		channel,
+		0
+	});
+
+	i3_send_packet(arr);
+}
+
 /* I3 packet handlers */
 
 private void i3_handle_chanlist_reply(mixed *value)
@@ -552,46 +592,6 @@ private void i3_handle_who_reply(mixed *value)
 	}
 
 	user->message("\033[0m");
-}
-
-void unlisten_channel(string channel)
-{
-	mixed *arr;
-
-	ACCESS_CHECK(INTERFACE() || CHANNEL());
-
-	arr = ({
-		"channel-listen",
-		5,
-		mudname,
-		0,
-		router,
-		0,
-		channel,
-		0
-	});
-
-	i3_send_packet(arr);
-}
-
-void listen_channel(string channel)
-{
-	mixed *arr;
-
-	ACCESS_CHECK(INTERFACE() || CHANNEL());
-
-	arr = ({
-		"channel-listen",
-		5,
-		mudname,
-		0,
-		router,
-		0,
-		channel,
-		1
-	});
-
-	i3_send_packet(arr);
 }
 
 /* helpers */
@@ -1101,6 +1101,20 @@ void remove_channel(string channel)
 	});
 
 	i3_send_packet(arr);
+}
+
+void listen_channel(string channel)
+{
+	ACCESS_CHECK(CHANNEL());
+
+	i3_listen_channel(channel);
+}
+
+void unlisten_channel(string channel)
+{
+	ACCESS_CHECK(CHANNEL());
+
+	i3_unlisten_channel(channel);
 }
 
 void add_router(string name, string ip, int port)
