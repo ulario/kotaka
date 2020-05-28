@@ -58,6 +58,8 @@ string router;
 /* local */
 mapping routers;
 
+void restore();
+
 /* utility */
 
 private void clean_passwords()
