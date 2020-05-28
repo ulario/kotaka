@@ -315,7 +315,7 @@ private void i3_handle_chanlist_reply(mixed *value)
 				channels[names[sz]] = values[sz];
 
 				if (CHANNELD->query_intermud(names[sz])) {
-					listen_channel(names[sz]);
+					i3_listen_channel(names[sz]);
 				}
 			}
 		}
