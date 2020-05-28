@@ -808,6 +808,27 @@ void upgrade()
 	clean_passwords();
 }
 
+/* userd hooks */
+
+string query_banner(object LIB_CONN conn)
+{
+	mixed *arr;
+
+	arr = startup_packet();
+
+	return make_packet(arr);
+}
+
+int query_timeout(object LIB_CONN conn)
+{
+	return 3;
+}
+
+object select(string input)
+{
+	return this_object();
+}
+
 /* user hooks */
 
 int login(string input)
@@ -851,27 +872,6 @@ void connect_failed(int refused)
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed");
 
 	call_out("i3_connect", 1);
-}
-
-/* userd hooks */
-
-string query_banner(object LIB_CONN conn)
-{
-	mixed *arr;
-
-	arr = startup_packet();
-
-	return make_packet(arr);
-}
-
-int query_timeout(object LIB_CONN conn)
-{
-	return 3;
-}
-
-object select(string input)
-{
-	return this_object();
 }
 
 /* calls */
