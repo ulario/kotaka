@@ -226,6 +226,29 @@ private string make_packet(mixed *data)
 	return bigendian + str + "\000";
 }
 
+private void bounce_packet(mixed *value)
+{
+	mixed *arr;
+
+	/* send back an error packet */
+	LOGD->post_message("system", LOG_ERR,
+		"IntermudD: Unhandled packet, bouncing an error back to \"" + value[2] + "\":\n" + hybrid_sprint(value) + "\n");
+
+	arr = ({
+		"error",
+		5,
+		mudname,
+		0,
+		value[2],
+		value[3],
+		"unk-type",
+		"Unhandled packet type: " + value[0],
+		value
+	});
+
+	i3_send_packet(arr);
+}
+
 /* I3 utility */
 
 private void i3_send_packet(mixed *arr)
@@ -585,29 +608,6 @@ void listen_channel(string channel)
 		0,
 		channel,
 		1
-	});
-
-	i3_send_packet(arr);
-}
-
-private void bounce_packet(mixed *value)
-{
-	mixed *arr;
-
-	/* send back an error packet */
-	LOGD->post_message("system", LOG_ERR,
-		"IntermudD: Unhandled packet, bouncing an error back to \"" + value[2] + "\":\n" + hybrid_sprint(value) + "\n");
-
-	arr = ({
-		"error",
-		5,
-		mudname,
-		0,
-		value[2],
-		value[3],
-		"unk-type",
-		"Unhandled packet type: " + value[0],
-		value
 	});
 
 	i3_send_packet(arr);
