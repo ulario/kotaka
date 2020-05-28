@@ -878,6 +878,7 @@ void upgrade()
 }
 
 /* user hooks */
+
 int login(string input)
 {
 	connection(previous_object());
@@ -922,6 +923,7 @@ void connect_failed(int refused)
 }
 
 /* userd hooks */
+
 string query_banner(object LIB_CONN conn)
 {
 	mixed *arr;
