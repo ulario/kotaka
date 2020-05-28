@@ -851,9 +851,8 @@ void logout(int quit)
 		LOGD->post_message("system", LOG_NOTICE, "I3: Connection closed");
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "I3: Connection lost");
+		call_out_unique("i3_connect", 5);
 	}
-
-	call_out_unique("i3_connect", 5);
 }
 
 void connect_failed(int refused)
