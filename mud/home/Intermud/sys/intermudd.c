@@ -733,6 +733,35 @@ static void keepalive()
 	i3_send_packet(arr);
 }
 
+static void process()
+{
+	mixed *arr;
+	int len;
+	string packet;
+
+	if (strlen(buffer) < 4) {
+		return;
+	}
+
+	len = buffer[3] + (buffer[2] << 8) + (buffer[1] << 16) + (buffer[0] << 24);
+
+	if (strlen(buffer) < len + 4) {
+		return;
+	}
+
+	buffer = buffer[4 ..];
+	packet = buffer[0 .. len - 2];
+	buffer = buffer[len ..];
+
+	arr = PARSER_MUDMODE->parse(packet);
+
+	process_packet(arr);
+
+	if (buffer && strlen(buffer) > 4) {
+		call_out("process", 0);
+	}
+}
+
 static void i3_connect()
 {
 	string ip;
@@ -815,35 +844,6 @@ void restore()
 	if (!routers || !router) {
 		reset_routers();
 		call_out_unique("save", 0);
-	}
-}
-
-static void process()
-{
-	mixed *arr;
-	int len;
-	string packet;
-
-	if (strlen(buffer) < 4) {
-		return;
-	}
-
-	len = buffer[3] + (buffer[2] << 8) + (buffer[1] << 16) + (buffer[0] << 24);
-
-	if (strlen(buffer) < len + 4) {
-		return;
-	}
-
-	buffer = buffer[4 ..];
-	packet = buffer[0 .. len - 2];
-	buffer = buffer[len ..];
-
-	arr = PARSER_MUDMODE->parse(packet);
-
-	process_packet(arr);
-
-	if (buffer && strlen(buffer) > 4) {
-		call_out("process", 0);
 	}
 }
 
