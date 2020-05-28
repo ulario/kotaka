@@ -773,11 +773,17 @@ static void i3_connect()
 
 void reboot()
 {
+	int handle;
+
 	ACCESS_CHECK(INTERMUD());
 
 	LOGD->post_message("system", LOG_NOTICE, "I3: Reconnecting after reboot");
 
 	disconnect();
+
+	while (handle = find_call_out("i3_connect")) {
+		remove_call_out(handle);
+	}
 
 	call_out("i3_connect", 0);
 }
