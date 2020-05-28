@@ -260,8 +260,6 @@ private void i3_listen_channel(string channel)
 {
 	mixed *arr;
 
-	ACCESS_CHECK(INTERFACE() || CHANNEL());
-
 	arr = ({
 		"channel-listen",
 		5,
@@ -279,8 +277,6 @@ private void i3_listen_channel(string channel)
 private void i3_unlisten_channel(string channel)
 {
 	mixed *arr;
-
-	ACCESS_CHECK(INTERFACE() || CHANNEL());
 
 	arr = ({
 		"channel-listen",
