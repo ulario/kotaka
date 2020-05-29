@@ -436,7 +436,6 @@ void prepare_reboot()
 {
 	ACCESS_CHECK(KERNEL());
 
-	ACCESSD->save();
 	MODULED->prepare_reboot();
 }
 
