@@ -445,12 +445,11 @@ void reboot()
 
 	reboot_common();
 
-	catch {
-		SYSTEM_USERD->reboot();
-	}
-	catch {
-		MODULED->reboot();
-	}
+	LOGD->post_message("system", LOG_NOTICE, "Rebooted");
+
+	DUMPD->reboot();
+	SYSTEM_USERD->reboot();
+	MODULED->reboot();
 }
 
 void hotboot()
@@ -459,13 +458,10 @@ void hotboot()
 
 	reboot_common();
 
-	catch {
-		SYSTEM_USERD->hotboot();
-	}
+	LOGD->post_message("system", LOG_NOTICE, "Hotbooted");
 
-	catch {
-		MODULED->hotboot();
-	}
+	SYSTEM_USERD->hotboot();
+	MODULED->hotboot();
 }
 
 /* objectd hooks */
