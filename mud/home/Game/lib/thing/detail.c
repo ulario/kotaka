@@ -26,7 +26,7 @@ static void create()
 
 /* details */
 
-string *query_details()
+string *query_local_details()
 {
 	patch_details_init();
 
@@ -40,14 +40,14 @@ string *query_vetoed_details()
 	return vetoed_details[..];
 }
 
-void add_detail(string detail)
+void add_local_detail(string detail)
 {
 	patch_details_init();
 
 	details[detail] = new_object("~/lwo/detail");
 }
 
-void remove_detail(string detail)
+void remove_local_detail(string detail)
 {
 	patch_details_init();
 
@@ -68,7 +68,7 @@ void unveto_detail(string detail)
 	vetoed_details -= ({ detail });
 }
 
-int has_detail(string detail)
+int has_local_detail(string detail)
 {
 	patch_details_init();
 
@@ -77,7 +77,7 @@ int has_detail(string detail)
 
 /* nouns */
 
-void set_snouns(string detail, string *snouns)
+void set_local_snouns(string detail, string *snouns)
 {
 	patch_details_init();
 
@@ -88,7 +88,7 @@ void set_snouns(string detail, string *snouns)
 	details[detail]->set_snouns(snouns);
 }
 
-string *query_snouns(string detail)
+string *query_local_snouns(string detail)
 {
 	patch_details_init();
 
@@ -99,7 +99,7 @@ string *query_snouns(string detail)
 	return details[detail]->query_snouns();
 }
 
-void add_snoun(string detail, string snoun)
+void add_local_snoun(string detail, string snoun)
 {
 	patch_details_init();
 
@@ -110,7 +110,7 @@ void add_snoun(string detail, string snoun)
 	details[detail]->add_snoun(snoun);
 }
 
-void remove_snoun(string detail, string snoun)
+void remove_local_snoun(string detail, string snoun)
 {
 	patch_details_init();
 
@@ -121,7 +121,7 @@ void remove_snoun(string detail, string snoun)
 	details[detail]->remove_snoun(snoun);
 }
 
-void set_pnouns(string detail, string *pnouns)
+void set_local_pnouns(string detail, string *pnouns)
 {
 	patch_details_init();
 
@@ -132,7 +132,7 @@ void set_pnouns(string detail, string *pnouns)
 	details[detail]->set_pnouns(pnouns);
 }
 
-string *query_pnouns(string detail)
+string *query_local_pnouns(string detail)
 {
 	patch_details_init();
 
@@ -143,7 +143,7 @@ string *query_pnouns(string detail)
 	return details[detail]->query_pnouns();
 }
 
-void add_pnoun(string detail, string pnoun)
+void add_local_pnoun(string detail, string pnoun)
 {
 	patch_details_init();
 
@@ -154,7 +154,7 @@ void add_pnoun(string detail, string pnoun)
 	details[detail]->add_pnoun(pnoun);
 }
 
-void remove_pnoun(string detail, string pnoun)
+void remove_local_pnoun(string detail, string pnoun)
 {
 	patch_details_init();
 
@@ -167,7 +167,7 @@ void remove_pnoun(string detail, string pnoun)
 
 /* adjectives */
 
-void set_adjectives(string detail, string *adjectives)
+void set_local_adjectives(string detail, string *adjectives)
 {
 	patch_details_init();
 
@@ -178,7 +178,7 @@ void set_adjectives(string detail, string *adjectives)
 	details[detail]->set_adjectives(adjectives);
 }
 
-string *query_adjectives(string detail)
+string *query_local_adjectives(string detail)
 {
 	patch_details_init();
 
@@ -189,7 +189,7 @@ string *query_adjectives(string detail)
 	return details[detail]->query_adjectives();
 }
 
-void add_adjective(string detail, string adjective)
+void add_local_adjective(string detail, string adjective)
 {
 	patch_details_init();
 
@@ -200,7 +200,7 @@ void add_adjective(string detail, string adjective)
 	details[detail]->add_adjective(adjective);
 }
 
-void remove_adjective(string detail, string adjective)
+void remove_local_adjective(string detail, string adjective)
 {
 	patch_details_init();
 
@@ -213,7 +213,7 @@ void remove_adjective(string detail, string adjective)
 
 /* descriptions */
 
-string *query_descriptions(string detail)
+string *query_local_descriptions(string detail)
 {
 	patch_details_init();
 
@@ -224,7 +224,7 @@ string *query_descriptions(string detail)
 	return details[detail]->query_descriptions();
 }
 
-void set_description(string detail, string description, string text)
+void set_local_description(string detail, string description, string text)
 {
 	patch_details_init();
 
@@ -235,7 +235,7 @@ void set_description(string detail, string description, string text)
 	details[detail]->set_description(description, text);
 }
 
-string query_description(string detail, string description)
+string query_local_description(string detail, string description)
 {
 	patch_details_init();
 
