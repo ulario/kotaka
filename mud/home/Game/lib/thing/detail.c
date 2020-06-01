@@ -81,12 +81,20 @@ void set_snouns(string detail, string *snouns)
 {
 	patch_details_init();
 
+	if (!details[detail]) {
+		error("No such detail");
+	}
+
 	details[detail]->set_snouns(snouns);
 }
 
 string *query_snouns(string detail)
 {
 	patch_details_init();
+
+	if (!details[detail]) {
+		error("No such detail");
+	}
 
 	return details[detail]->query_snouns();
 }
@@ -95,12 +103,20 @@ void add_snoun(string detail, string snoun)
 {
 	patch_details_init();
 
+	if (!details[detail]) {
+		error("No such detail");
+	}
+
 	details[detail]->add_snoun(snoun);
 }
 
 void remove_snoun(string detail, string snoun)
 {
 	patch_details_init();
+
+	if (!details[detail]) {
+		error("No such detail");
+	}
 
 	details[detail]->remove_snoun(snoun);
 }
@@ -109,12 +125,20 @@ void set_pnouns(string detail, string *pnouns)
 {
 	patch_details_init();
 
+	if (!details[detail]) {
+		error("No such detail");
+	}
+
 	details[detail]->set_pnouns(pnouns);
 }
 
 string *query_pnouns(string detail)
 {
 	patch_details_init();
+
+	if (!details[detail]) {
+		error("No such detail");
+	}
 
 	return details[detail]->query_pnouns();
 }
@@ -123,12 +147,20 @@ void add_pnoun(string detail, string pnoun)
 {
 	patch_details_init();
 
+	if (!details[detail]) {
+		error("No such detail");
+	}
+
 	details[detail]->add_pnoun(pnoun);
 }
 
 void remove_pnoun(string detail, string pnoun)
 {
 	patch_details_init();
+
+	if (!details[detail]) {
+		error("No such detail");
+	}
 
 	details[detail]->remove_pnoun(pnoun);
 }
@@ -139,12 +171,20 @@ void set_adjectives(string detail, string *adjectives)
 {
 	patch_details_init();
 
+	if (!details[detail]) {
+		error("No such detail");
+	}
+
 	details[detail]->set_adjectives(adjectives);
 }
 
 string *query_adjectives(string detail)
 {
 	patch_details_init();
+
+	if (!details[detail]) {
+		error("No such detail");
+	}
 
 	return details[detail]->query_adjectives();
 }
@@ -153,12 +193,20 @@ void add_adjective(string detail, string adjective)
 {
 	patch_details_init();
 
+	if (!details[detail]) {
+		error("No such detail");
+	}
+
 	details[detail]->add_adjective(adjective);
 }
 
 void remove_adjective(string detail, string adjective)
 {
 	patch_details_init();
+
+	if (!details[detail]) {
+		error("No such detail");
+	}
 
 	details[detail]->remove_adjective(adjective);
 }
@@ -169,6 +217,10 @@ string *query_descriptions(string detail)
 {
 	patch_details_init();
 
+	if (!details[detail]) {
+		error("No such detail");
+	}
+
 	return details[detail]->query_descriptions();
 }
 
@@ -176,12 +228,20 @@ void set_description(string detail, string description, string text)
 {
 	patch_details_init();
 
+	if (!details[detail]) {
+		error("No such detail");
+	}
+
 	details[detail]->set_description(description, text);
 }
 
 string query_description(string detail, string description)
 {
 	patch_details_init();
+
+	if (!details[detail]) {
+		error("No such detail");
+	}
 
 	return details[detail]->query_description(description);
 }
