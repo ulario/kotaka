@@ -334,7 +334,7 @@ private void do_input(string input)
 		{
 			string *details;
 
-			details = obj->query_details();
+			details = obj->query_local_details();
 
 			if (sizeof(details & ({ nil }))) {
 				details = ({ "(default)" }) + (details - ({ nil }));
@@ -368,16 +368,16 @@ private void do_input(string input)
 
 			dname = strlen(args) ? args : nil;
 
-			if (!obj->has_detail(dname)) {
+			if (!obj->has_local_detail(dname)) {
 				send_out("No such detail.\n");
 				break;
 			}
 
-			send_out((dname ? "Detail " + dname : "(default detail)") + "\n");
+			send_out((dname ? dname + " detail" : "(default detail)") + "\n");
 
-			send_out("Singular nouns: " + implode(obj->query_snouns(dname), ", ") + "\n");
-			send_out("Plural nouns: " + implode(obj->query_pnouns(dname), ", ") + "\n");
-			send_out("Adjectives: " + implode(obj->query_adjectives(dname), ", ") + "\n");
+			send_out("Local singular nouns: " + implode(obj->query_local_snouns(dname), ", ") + "\n");
+			send_out("Local plural nouns: " + implode(obj->query_local_pnouns(dname), ", ") + "\n");
+			send_out("Local adjectives: " + implode(obj->query_local_adjectives(dname), ", ") + "\n");
 
 			descriptions = obj->query_descriptions(dname);
 
@@ -397,9 +397,9 @@ private void do_input(string input)
 	case "snoun":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_snoun(detail, args[1 ..]);
+				obj->remove_local_snoun(detail, args[1 ..]);
 			} else {
-				obj->add_snoun(detail, args);
+				obj->add_local_snoun(detail, args);
 			}
 		} else {
 			send_out("Usage: snoun [-]noun\n");
@@ -409,9 +409,9 @@ private void do_input(string input)
 	case "pnoun":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_pnoun(detail, args[1 ..]);
+				obj->remove_local_pnoun(detail, args[1 ..]);
 			} else {
-				obj->add_pnoun(detail, args);
+				obj->add_local_pnoun(detail, args);
 			}
 		} else {
 			send_out("Usage: pnoun [-]noun\n");
@@ -421,28 +421,28 @@ private void do_input(string input)
 	case "adjective":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_pnoun(detail, args[1 ..]);
+				obj->remove_local_adjective(detail, args[1 ..]);
 			} else {
-				obj->add_pnoun(detail, args);
+				obj->add_local_adjective(detail, args);
 			}
 		} else {
-			send_out("Usage: pnoun [-]noun\n");
+			send_out("Usage: adjective [-]adjective\n");
 		}
 		break;
 
 	case "brief":
 		if (strlen(args)) {
-			obj->set_description(detail, "brief", args);
+			obj->set_local_description(detail, "brief", args);
 		} else {
-			obj->set_description(detail, "brief", nil);
+			obj->set_local_description(detail, "brief", nil);
 		}
 		break;
 
 	case "look":
 		if (strlen(args)) {
-			obj->set_description(detail, "look", args);
+			obj->set_local_description(detail, "look", args);
 		} else {
-			obj->set_description(detail, "look", nil);
+			obj->set_local_description(detail, "look", nil);
 		}
 		break;
 
