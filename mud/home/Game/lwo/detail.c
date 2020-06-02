@@ -30,7 +30,7 @@ void remove_snoun(string snoun)
 
 string *query_snouns()
 {
-	return snouns;
+	return snouns[..];
 }
 
 void add_pnoun(string pnoun)
@@ -45,7 +45,7 @@ void remove_pnoun(string pnoun)
 
 string *query_pnouns()
 {
-	return pnouns;
+	return pnouns[..];
 }
 
 /* adjectives */
@@ -62,7 +62,7 @@ void remove_adjective(string adjective)
 
 string *query_adjectives()
 {
-	return adjectives;
+	return adjectives[..];
 }
 
 /* descriptions */
@@ -87,9 +87,9 @@ string query_description(string description)
 mapping save()
 {
 	return ([
-		"snouns": sizeof(snouns) ? snouns : nil,
-		"pnouns": sizeof(pnouns) ? snouns : nil,
-		"adjectives": sizeof(snouns) ? snouns : nil,
+		"snouns": sizeof(snouns) ? snouns[..] : nil,
+		"pnouns": sizeof(pnouns) ? pnouns[..] : nil,
+		"adjectives": sizeof(snouns) ? adjectives[..] : nil,
 		"descriptions": map_sizeof(descriptions) ? descriptions : nil
 	]);
 }
