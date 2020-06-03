@@ -31,6 +31,7 @@ mapping sitebans;
 
 void save();
 void restore();
+void absorb();
 void prune_bans();
 void prune_sitebans();
 
@@ -173,6 +174,47 @@ private void check_property(string name, mixed value)
 	}
 }
 
+private void absorb_bans(mapping ourbans, mapping theirbans)
+{
+	string *names;
+	int sz;
+
+	names = map_indices(theirbans);
+
+	for (sz = sizeof(names); --sz >= 0; ) {
+		string name;
+		mapping ourban, theirban;
+
+		name = names[sz];
+
+		theirban = theirbans[name];
+		ourban = ourbans[name];
+
+		if (!ourban) {
+			LOGD->post_message("debug", LOG_DEBUG, "Absorbing their ban for " + name + ", we didn't have one");
+			ourbans[name] = theirban;
+		} else {
+			mixed ourexpire;
+			mixed theirexpire;
+
+			ourexpire = ourban["expire"];
+			theirexpire = theirban["expire"];
+
+			if (ourexpire == nil || ourexpire == -1) {
+				LOGD->post_message("debug", LOG_DEBUG, "Not absorbing their ban for " + name + ", ours is already permanent");
+			} else if (theirexpire == nil || theirexpire == -1) {
+				ourbans[name] = theirban;
+				LOGD->post_message("debug", LOG_DEBUG, "Absorbing their ban for " + name + ", theirs is permanent");
+			} else if (theirexpire > ourexpire) {
+				ourbans[name] = theirban;
+				LOGD->post_message("debug", LOG_DEBUG, "Absorbing their ban for " + name + ", theirs expires later");
+			} else {
+				LOGD->post_message("debug", LOG_DEBUG, "Not absorbing their ban for " + name + ", ours expires later");
+			}
+		}
+	}
+}
+
 static void create()
 {
 	restore();
@@ -210,6 +252,42 @@ void save()
 	SECRETD->write_file("bans-tmp", buf + "\n");
 	SECRETD->remove_file("bans");
 	SECRETD->rename_file("bans-tmp", "bans");
+}
+
+void absorb()
+{
+	string buf;
+	mapping map;
+	int sz;
+
+	ACCESS_CHECK(ACCOUNT() || GAME() || INTERFACE() || KADMIN() || VERB());
+
+	if (!bans) {
+		bans = ([ ]);
+	}
+
+	if (!sitebans) {
+		sitebans = ([ ]);
+	}
+
+	buf = SECRETD->read_file("bans");
+
+	if (buf) {
+		mapping save;
+
+		save = PARSER_VALUE->parse(buf);
+
+		if (save["bans"]) {
+			absorb_bans(bans, save["bans"]);
+		}
+
+		if (save["sitebans"]) {
+			absorb_bans(sitebans, save["sitebans"]);
+		}
+	}
+
+	prune_bans();
+	prune_sitebans();
 }
 
 void restore()
