@@ -209,7 +209,10 @@ string *query_snouns(string detail)
 
 	snouns = ({ });
 
-	if (!sizeof(vetoed_details & ({ detail }) ) && arch = query_archetype())
+	if (!sizeof(vetoed_details & ({ detail }) )
+		&& (arch = query_archetype())
+		&& arch->has_detail(detail)
+	) {
 		good = 1;
 		snouns = arch->query_snouns(detail);
 	}
@@ -278,7 +281,10 @@ string *query_pnouns(string detail)
 
 	pnouns = ({ });
 
-	if (!sizeof(vetoed_details & ({ detail }) ) && arch = query_archetype())
+	if (!sizeof(vetoed_details & ({ detail }) )
+		&& (arch = query_archetype())
+		&& arch->has_detail(detail)
+	) {
 		good = 1;
 		pnouns = arch->query_pnouns(detail);
 	}
@@ -349,7 +355,10 @@ string *query_adjectives(string detail)
 
 	adjectives = ({ });
 
-	if (!sizeof(vetoed_details & ({ detail }) ) && arch = query_archetype())
+	if (!sizeof(vetoed_details & ({ detail }) )
+		&& (arch = query_archetype())
+		&& arch->has_detail(detail)
+	) {
 		good = 1;
 		adjectives = arch->query_adjectives(detail);
 	}
@@ -407,9 +416,14 @@ string *query_descriptions(string detail)
 	object arch;
 	int good;
 
+	patch_details_init();
+
 	descriptions = ({ });
 
-	if (!sizeof(vetoed_details & ({ detail }) ) && arch = query_archetype())
+	if (!sizeof(vetoed_details & ({ detail }) )
+		&& (arch = query_archetype())
+		&& arch->has_detail(detail)
+	) {
 		good = 1;
 		descriptions = arch->query_descriptions(detail);
 	}
@@ -454,7 +468,10 @@ string query_description(string detail, string description)
 	string value;
 	int good;
 
+	patch_details_init();
+
 	if (details[detail]) {
+		good = 1;
 		value = details[detail]->query_description();
 	}
 
@@ -463,7 +480,11 @@ string query_description(string detail, string description)
 	}
 
 	if (sizeof(vetoed_details & ({ detail }) )) {
-		return nil;
+		if (good) {
+			return nil;
+		} else {
+			error("No such detail");
+		}
 	}
 
 	arch = query_archetype();
