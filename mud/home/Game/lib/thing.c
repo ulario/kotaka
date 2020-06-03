@@ -109,23 +109,23 @@ void patch_details()
 	adjectives = query_local_property("local_adjectives");
 
 	if (brief || look || snouns || pnouns || adjectives) {
-		if (!has_detail(nil)) {
-			add_detail(nil);
+		if (!has_local_detail(nil)) {
+			add_local_detail(nil);
 		}
 
 		if (brief) {
-			set_description(nil, "brief", brief);
+			set_local_description(nil, "brief", brief);
 		}
 
 		if (look) {
-			set_description(nil, "look", look);
+			set_local_description(nil, "look", look);
 		}
 
 		if (snouns) {
 			int sz;
 
 			for (sz = sizeof(snouns); --sz >= 0; ) {
-				add_snoun(nil, snouns[sz]);
+				add_local_snoun(nil, snouns[sz]);
 			}
 		}
 
@@ -133,7 +133,7 @@ void patch_details()
 			int sz;
 
 			for (sz = sizeof(pnouns); --sz >= 0; ) {
-				add_pnoun(nil, pnouns[sz]);
+				add_local_pnoun(nil, pnouns[sz]);
 			}
 		}
 
@@ -141,7 +141,7 @@ void patch_details()
 			int sz;
 
 			for (sz = sizeof(adjectives); --sz >= 0; ) {
-				add_adjective(nil, adjectives[sz]);
+				add_local_adjective(nil, adjectives[sz]);
 			}
 		}
 	}
