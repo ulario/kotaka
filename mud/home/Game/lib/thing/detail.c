@@ -24,6 +24,71 @@ static void create()
 	vetoed_details = ({ });
 }
 
+/* saveload */
+
+static mapping detail_save()
+{
+	mapping map;
+	string *dnames;
+	int sz;
+
+	dnames = map_indices(details);
+	sz = sizeof(dnames);
+
+	map = ([ ]);
+
+	for (; --sz >= 0; ) {
+		string dname;
+		string *arr;
+
+		object detail;
+		string *descriptions;
+		int dsz;
+
+		dname = dnames[sz];
+		detail = details[dname];
+
+		map[dname] = detail->save();
+	}
+
+	return ([
+		"details": map_sizeof(map) ? map : nil,
+		"vetoed_details": sizeof(vetoed_details) ? vetoed_details : nil
+	]);
+}
+
+static void detail_load(mapping data)
+{
+	mapping map;
+
+	vetoed_details = data["vetoed_details"];
+
+	if (!vetoed_details) {
+		vetoed_details = ({ });
+	}
+
+	details = ([ ]);
+
+	if (map = data["details"]) {
+		string *dnames;
+		int sz;
+
+		dnames = map_indices(map);
+
+		for (sz = sizeof(dnames); --sz >= 0; ) {
+			string dname;
+			object detail;
+
+			dname = dnames[sz];
+
+			detail = new_object("~/lwo/detail");
+			detail->load(map[dname]);
+
+			details[dname] = detail;
+		}
+	}
+}
+
 /* setup */
 
 /* details */
@@ -408,59 +473,4 @@ string query_description(string detail, string description)
 	}
 
 	return arch->query_description(detail, description);
-}
-
-/* saveload */
-
-mapping detail_save()
-{
-	mapping map;
-	string *dnames;
-	int sz;
-
-	dnames = map_indices(details);
-	sz = sizeof(dnames);
-
-	if (!sz) {
-		return nil;
-	}
-
-	map = ([ ]);
-
-	for (; --sz >= 0; ) {
-		string dname;
-		string *arr;
-
-		object detail;
-		string *descriptions;
-		int dsz;
-
-		dname = dnames[sz];
-		detail = details[dname];
-
-		map[dname] = detail->save();
-	}
-}
-
-void detail_load(mapping data)
-{
-	details = ([ ]);
-
-	if (data) {
-		string *dnames;
-		int sz;
-
-		dnames = map_indices(data);
-
-		for (sz = sizeof(dnames); --sz >= 0; ) {
-			string dname;
-			object detail;
-
-			dname = dnames[sz];
-
-			detail = new_object("~/lwo/detail");
-			details[dname] = detail;
-			detail->load(data["dname"]);
-		}
-	}
 }
