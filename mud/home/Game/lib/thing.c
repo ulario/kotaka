@@ -27,12 +27,13 @@ inherit "thing/exit";
 inherit "thing/character";
 inherit "thing/living";
 inherit "thing/possess";
-inherit "thing/detail";
+inherit detail "thing/detail";
 inherit "thing/prox";
 
 static void create()
 {
 	thing::create();
+	detail::create();
 }
 
 static mapping save()
