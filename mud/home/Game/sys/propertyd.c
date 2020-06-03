@@ -75,9 +75,9 @@ void configure_properties()
 	PROPERTYD->add_property("prep", T_STRING, PROP_MAGIC, ({ "query_prep", "set_prep" }) );
 
 	/* bulk */
-	PROPERTYD->add_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
 	PROPERTYD->add_property("local_mass", T_FLOAT, PROP_MAGIC, ({ "query_local_mass", "set_local_mass" }) );
-	PROPERTYD->add_property("total_mass", T_FLOAT, PROP_MAGIC, ({ "query_total_mass", nil }) );
+	PROPERTYD->add_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
+	PROPERTYD->add_property("mass_derivation", T_STRING, PROP_MAGIC, ({ "query_mass_derivation", "set_mass_derivation" }) );
 	PROPERTYD->add_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
 
 	PROPERTYD->add_property("volume", T_FLOAT, PROP_MAGIC, ({ "query_volume", nil }) );
