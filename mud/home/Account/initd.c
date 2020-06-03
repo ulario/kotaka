@@ -38,7 +38,7 @@ private void set_limits()
 {
 	reset_limits();
 
-	KERNELD->rsrc_set_limit("Account", "ticks", 5 * M);
+	KERNELD->rsrc_set_limit("Account", "ticks", 10 * M);
 }
 
 static void create()
