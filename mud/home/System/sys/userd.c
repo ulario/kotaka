@@ -219,7 +219,7 @@ int query_blocked()
 
 void set_binary_manager(int port, object LIB_USERD manager)
 {
-	ACCESS_CHECK(INTERFACE());
+	ACCESS_CHECK(INTERFACE() || TEST());
 
 	PERMISSION_CHECK(port != 0);
 
