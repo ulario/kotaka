@@ -27,6 +27,23 @@ static void create()
 	conns = ([ ]);
 
 	SYSTEM_USERD->set_binary_manager(3, this_object());
+
+	call_out("heartbeat", 5);
+}
+
+static void heartbeat()
+{
+	object *list;
+	int sz;
+
+	call_out("heartbeat", 5);
+
+	list = map_indices(conns);
+
+	for (sz = sizeof(list); --sz >= 0; ) {
+		LOGD->post_message("debug", LOG_DEBUG, "CommD: Sending heartbeat to " + conns[list[sz]]);
+		list[sz]->message("Heartbeat\n");
+	}
 }
 
 /* userd hooks */
@@ -89,7 +106,7 @@ int login(string str)
 
 	ip = query_ip_number(root);
 
-	conns[root] = ip;
+	conns[conn] = ip;
 
 	conn->message("Hello " + ip + "\n");
 
