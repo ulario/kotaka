@@ -25,7 +25,6 @@ private object root_of(object conn)
 static void create()
 {
 	conns = ([ ]);
-	buffers = ([ ]);
 
 	SYSTEM_USERD->set_binary_manager(3, this_object());
 }
@@ -106,7 +105,6 @@ void logout(int quit)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	conn = root_of(previous_object());
-	buffers[conn] = nil;
 
 	LOGD->post_message("debug", LOG_DEBUG, "CommD: logout from " + object_name(conn) + ", quit is " + quit);
 }
