@@ -811,6 +811,8 @@ string query_banner(object LIB_CONN conn)
 
 	arr = startup_packet();
 
+	conn->set_mode(MODE_RAW);
+
 	return make_packet(arr);
 }
 
