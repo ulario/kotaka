@@ -117,24 +117,16 @@ int login(string str)
 
 void logout(int quit)
 {
-	object conn;
-
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	conn = root_of(previous_object());
-
-	LOGD->post_message("debug", LOG_DEBUG, "CommD: logout from " + object_name(conn) + ", quit is " + quit);
+	LOGD->post_message("debug", LOG_DEBUG, "CommD: logout from " + conns[previous_object()] + ", quit is " + quit);
 }
 
 int receive_message(string str)
 {
-	object conn;
-
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	conn = root_of(previous_object());
-
-	LOGD->post_message("debug", LOG_DEBUG, "CommD: receive_message from " + conns[conn] + ", line is " + str);
+	LOGD->post_message("debug", LOG_DEBUG, "CommD: receive_message from " + conns[previous_object()] + ", line is " + str);
 
 	return MODE_NOCHANGE;
 }
