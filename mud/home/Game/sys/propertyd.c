@@ -32,14 +32,7 @@ static void create()
 
 void configure_properties()
 {
-	PROPERTYD->clear_properties();
-
-	/* identification */
-	PROPERTYD->add_property("id", T_STRING, PROP_MAGIC, ({ "query_id", "set_id" }) );
-	PROPERTYD->add_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
-
-	/* inheritance */
-	PROPERTYD->add_property("archetype", T_OBJECT, PROP_MAGIC, ({ "query_archetype", "set_archetype" }) );
+	PROPERTYD->reset_properties();
 
 	/* descriptions */
 	PROPERTYD->add_property("snouns", T_ARRAY, PROP_COMBO, ({ "local_snouns", "removed_snouns" }) );
@@ -65,28 +58,12 @@ void configure_properties()
 	PROPERTYD->add_property("is_transparent", T_INT, PROP_INHERIT, 0);
 
 	/* inventory */
-	PROPERTYD->add_property("environment", T_OBJECT, PROP_MAGIC, ({ "query_environment", "move" }) );
-	PROPERTYD->add_property("inventory", T_ARRAY, PROP_MAGIC, ({ "query_inventory", nil }) );
 	PROPERTYD->add_property("is_immobile", T_INT, PROP_INHERIT, 0);
 	PROPERTYD->add_property("is_invisible", T_INT, PROP_INHERIT, 0); /* prevents targeting */
 
 	PROPERTYD->add_property("environment_detail", T_STRING, PROP_MAGIC, ({ "query_environment_detail", "set_environment_detail" }) );
 	PROPERTYD->add_property("prox", T_OBJECT, PROP_MAGIC, ({ "query_prox", "set_prox" }) );
 	PROPERTYD->add_property("prep", T_STRING, PROP_MAGIC, ({ "query_prep", "set_prep" }) );
-
-	/* bulk */
-	PROPERTYD->add_property("local_mass", T_FLOAT, PROP_MAGIC, ({ "query_local_mass", "set_local_mass" }) );
-	PROPERTYD->add_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
-	PROPERTYD->add_property("mass_derivation", T_STRING, PROP_MAGIC, ({ "query_mass_derivation", "set_mass_derivation" }) );
-	PROPERTYD->add_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
-
-	PROPERTYD->add_property("volume", T_FLOAT, PROP_MAGIC, ({ "query_volume", nil }) );
-	PROPERTYD->add_property("total_volume", T_FLOAT, PROP_MAGIC, ({ "query_total_volume", nil }) );
-
-	PROPERTYD->add_property("capacity", T_FLOAT, PROP_MAGIC, ({ "query_capacity", "set_capacity" }) );
-	PROPERTYD->add_property("max_mass", T_FLOAT, PROP_MAGIC, ({ "query_max_mass", "set_max_mass" }) );
-	PROPERTYD->add_property("is_flexible", T_INT, PROP_MAGIC, ({ "query_flexible", "set_flexible" }) );
-	PROPERTYD->add_property("is_virtual", T_INT, PROP_MAGIC, ({ "query_virtual", "set_virtual" }) );
 
 	/* economics */
 	PROPERTYD->add_property("value", T_INT, PROP_INHERIT, 0);
