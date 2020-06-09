@@ -30,6 +30,7 @@
 #define STATE_CHKNEWUSER   4 /* ask if they want to create a new account */
 #define STATE_CHKPASSWORD  5 /* confirm password */
 
+inherit "~Account/lib/blacklist";
 inherit "/lib/string/validate";
 inherit TEXT_LIB_USTATE;
 
@@ -71,19 +72,6 @@ private string get_ip()
 	}
 
 	return query_ip_number(conn);
-}
-
-private string garbage(string input)
-{
-	if (strlen(input) >= 4 && input[0 .. 3] == "GET ") {
-		return "http";
-	}
-
-	if (strlen(input) >= 1 && input[0] < ' ') {
-		return "control";
-	}
-
-	return nil;
 }
 
 static void create(int clone)
@@ -157,11 +145,7 @@ void receive_in(string input)
 
 			LOGD->post_message("system", LOG_WARNING, "Text: sitebanning " + ip + " for 90 days for sending " + garbage + " garbage during login");
 
-			BAND->ban_site(ip, ([
-				"expire": time() + 90 * 86400,
-				"issuer": "Text",
-				"message": "Spam (" + garbage + ")"
-			]) );
+			siteban(ip, "Spam (" + garbage + ")");
 
 			destruct_object(this_object());
 
