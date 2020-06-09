@@ -43,6 +43,7 @@ private int bulk_dirty;			/* if cache is invalid */
 private float cached_content_mass;	/* cached mass of our contents */
 private float cached_content_volume;	/* cached volume of our contents */
 
+float query_mass();
 void set_mass(float new_mass);
 void bulk_invalidate();			/* invalidate */
 void bulk_sync(varargs int force);	/* synchronize bulk cache */
