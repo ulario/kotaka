@@ -4,6 +4,7 @@
 #include <kotaka/privilege.h>
 
 inherit "/lib/string/sprint";
+inherit "~Account/lib/blacklist";
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 
@@ -94,6 +95,7 @@ int login(string str)
 	object conn;
 	object root;
 	string ip;
+	string garbage;
 
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
@@ -102,6 +104,14 @@ int login(string str)
 
 	while (root <- LIB_USER) {
 		root = root->query_conn();
+	}
+
+	if (garbage = garbage(str)) {
+		LOGD->post_message("system", LOG_WARNING, "Test: sitebanning " + ip + " for 90 days for sending " + garbage + " garbage during login");
+
+		siteban(ip, "Spam (" + garbage + ")");
+
+		return MODE_DISCONNECT;
 	}
 
 	ip = query_ip_number(root);
