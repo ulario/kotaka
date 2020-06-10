@@ -25,12 +25,10 @@
 #include <status.h>
 
 #define FULL 600
-#define INCR 600
 
 inherit SECOND_AUTO;
 
 int interval;
-int steps;
 int offset;
 
 private void start()
@@ -59,8 +57,7 @@ private void start()
 
 private void configure()
 {
-	steps = FULL / INCR; /* ten minutes between incremental dumps */
-	interval = FULL / steps; /* one day between full dumps */
+	interval = FULL;
 }
 
 static void create()
@@ -74,13 +71,7 @@ static void dump(int goal)
 	int now;
 	int delta;
 
-	if (goal % interval == goal % (interval * steps)) {
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: Full statedump");
-		dump_state();
-	} else {
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: Incremental statedump");
-		dump_state(1);
-	}
+	dump_state();
 
 	now = time();
 	delta = now - goal;
