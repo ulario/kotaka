@@ -158,6 +158,10 @@ private object setup_program_info(string path, string *inherited)
 				patcher = initd->query_patcher(path);
 			}
 
+			if (constructor || destructor) {
+				LOGD->post_message("system", LOG_WARNING, initdpath + " is installing a constructor or destructor for " + path + ", this is deprecated");
+			}
+
 			pinfo->set_constructor(constructor);
 			pinfo->set_destructor(destructor);
 			pinfo->set_patcher(patcher);
