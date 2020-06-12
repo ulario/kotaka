@@ -94,10 +94,10 @@ static void wipe_callouts()
 static void dump_state(varargs int incr)
 {
 	if (incr) {
-		TLSD->set_tls_value("System", "incremental-snapshot", 1);
+		error("Incremental snapshots are banned");
 	}
 
-	::dump_state(incr);
+	::dump_state();
 }
 
 static int find_call_out(string func)
