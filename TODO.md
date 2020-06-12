@@ -55,7 +55,7 @@ their inheritors on create and should prepare for objects that neglect to
 do so.  It is advisable to declare a patcher in the library's initd to
 ensure that any belated creation tasks are called on upgrade.
 
-### 0.61
+### 0.62
 
 Formal deprecation and no support will be offered for continued usage.
 
@@ -63,19 +63,19 @@ Warnings will be issued if an initd attempts to register a constructor or
 a destructor, however ObjectD will continue to query for them when
 programs are compiled as a check on compliance.
 
-### 0.62
+### 0.63
 
 ObjectD will cease support for registering constructors and destructors.
 
 ObjectD will audit compliance by querying the initd and returning an
 error if it attempts to register a constructor or destructor.
 
-A check will be added to 0.62 requiring all program_info's to be pruned
+A check will be added to 0.63 requiring all program_info's to be pruned
 of constructors and destructors before an upgrade will be allowed to 0.63.
 
-### 0.63
+### 0.64
 
-0.62 will have checked the program database to ensure removal of
+0.63 will have checked the program database to ensure removal of
 constructors and destructors before permitting the upgrade to 0.63.
 
 Program info lwo's will be stripped of all information regarding
