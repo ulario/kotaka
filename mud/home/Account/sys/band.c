@@ -507,8 +507,6 @@ void ban_site(string mask, varargs mixed message_arg, mixed expire_arg)
 	mixed *pvalues;
 	int sz;
 
-	ACCESS_CHECK(GAME() || INTERFACE() || KADMIN());
-
 	mask = canonicalize_mask(mask);
 
 	switch(typeof(message_arg)) {
