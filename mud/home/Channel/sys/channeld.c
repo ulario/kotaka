@@ -29,9 +29,10 @@
 
 #define SYSTEM_CHANNELS ({ "compile", "debug", "error", "system", "trace" })
 
-inherit "~System/lib/struct/list";
-inherit "/lib/string/sprint";
 inherit "/lib/copy";
+inherit "/lib/string/case";
+inherit "/lib/string/sprint";
+inherit "~System/lib/struct/list";
 inherit "~System/lib/utility/secretlog";
 
 mapping intermud;	/* set of channels to be relayed to intermud */
@@ -349,7 +350,7 @@ void post_message(string channel, string sender, string message, varargs int nor
 			user = TEXT_USERD->find_user(sender);
 
 			if (user) {
-				INTERMUDD->send_channel_message(channel, sender, user->query_titled_name(), message);
+				INTERMUDD->send_channel_message(channel, sender, to_title(user->query_name()), message);
 			} else {
 				INTERMUDD->send_channel_message(channel, sender, sender, message);
 			}
