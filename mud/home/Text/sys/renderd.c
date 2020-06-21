@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/geometry.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
@@ -26,6 +25,7 @@ inherit "~System/lib/struct/list";
 inherit "/lib/string/case";
 inherit "/lib/string/char";
 inherit "/lib/string/format";
+inherit "~Geometry/lib/diff";
 
 private void draw_object(object gc, object viewer, object obj);
 private void draw_contents(object gc, object viewer, object obj);
@@ -124,7 +124,7 @@ private void default_painter(object gc, object neighbor, object viewer)
 		return;
 	}
 
-	({ dx, dy, dz }) = GEOMETRY_SUBD->query_position_difference(viewer, neighbor);
+	({ dx, dy, dz }) = query_position_difference(viewer, neighbor);
 
 	x = (int)dx;
 	y = (int)dy;
@@ -545,7 +545,7 @@ private string look_xyz(object viewer)
 			{
 				int *d;
 
-				d = GEOMETRY_SUBD->query_position_difference(origin, viewer);
+				d = query_position_difference(origin, viewer);
 
 				output += "Your coordinates are: (" + d[0] + ", " + d[1] + ", " + d[2] + ")\n";
 			}

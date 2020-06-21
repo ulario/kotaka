@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <config.h>
+#include <kotaka/paths/thing.h>
 
-#define GEOMETRY_SUBD		(USR_DIR + "/Geometry/sys/subd")
+inherit "~Thing/lib/inventory";
+
+static int *query_position_difference(object a, object b)
+{
+	object cc;
+
+	int dx, dy, dz;
+
+	cc = query_common_container(a, b);
+
+	if (!cc) {
+		error("Objects not on same plane of existence");
+	}
+
+	while (b != cc) {
+		dx += b->query_x_position();
+		dy += b->query_y_position();
+		dz += b->query_z_position();
+		b = b->query_environment();
+	}
+
+	while (a != cc) {
+		dx -= a->query_x_position();
+		dy -= a->query_y_position();
+		dz -= a->query_z_position();
+		a = a->query_environment();
+	}
+
+	return ({ dx, dy, dz });
+}

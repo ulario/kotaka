@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/geometry.h>
 #include <kotaka/paths/thing.h>
+
+inherit "~Thing/lib/inventory";
 
 object query_environment();
 mixed query_local_property(string name);
@@ -127,7 +128,7 @@ static void xyz_move_notify(object old_env)
 		return;
 	}
 
-	common = THING_SUBD->query_common_container(old_env, new_env);
+	common = query_common_container(old_env, new_env);
 
 	if (!common) {
 		nx = 0;
