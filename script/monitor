@@ -5,7 +5,7 @@
 # note: we don't CARE if wait gets interrupted
 # all handled signals are fatal for the script
 
-DGD=dgd
+DGD=./dgd
 CONFIG=kotaka.dgd
 SWAP=swap
 DUMP=snapshot
