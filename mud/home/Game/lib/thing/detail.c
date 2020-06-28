@@ -472,7 +472,7 @@ string query_description(string detail, string description)
 
 	if (details[detail]) {
 		good = 1;
-		value = details[detail]->query_description();
+		value = details[detail]->query_description(description);
 	}
 
 	if (value) {
