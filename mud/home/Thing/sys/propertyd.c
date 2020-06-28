@@ -40,7 +40,7 @@ static void create()
 
 void add_property(string name, int type, int code, varargs mixed extra)
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(THING() || GAME());
 
 	if (sscanf(name, "base:")) {
 		error("Reserved property");
@@ -71,7 +71,7 @@ void del_property(string name)
 
 void reset_properties()
 {
-	ACCESS_CHECK(PRIVILEGED());
+	ACCESS_CHECK(THING() || GAME());
 
 	pinfo = ([ ]);
 
