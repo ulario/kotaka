@@ -29,6 +29,7 @@
 
 inherit "~/lib/user";
 inherit "~/lib/log";
+inherit "~/lib/sub";
 inherit "/lib/string/replace";
 
 object mobile;
@@ -89,12 +90,12 @@ string query_username()
 
 int query_class()
 {
-	return TEXT_SUBD->query_user_class(username);
+	return query_user_class(username);
 }
 
 string query_titled_name()
 {
-	return TEXT_SUBD->query_titled_name(username);
+	return query_titled_name(username);
 }
 
 string query_name()

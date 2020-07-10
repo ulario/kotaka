@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
 
 inherit LIB_VERB;
 inherit "/lib/string/case";
+inherit "~Text/lib/sub";
 
 string *query_parse_methods()
 {
@@ -72,7 +73,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	switch(TEXT_SUBD->query_user_class(username)) {
+	switch(query_user_class(username)) {
 	case 3: /* administrator.  Only the mud owner can ban them */
 		if (user->query_username() != "admin") {
 			send_out("Only the mud owner can ban an administrator.\n");
@@ -106,9 +107,9 @@ void main(object actor, mapping roles)
 		string turkey_name;
 
 		kicker_name = user->query_titled_name();
-		turkey_name = TEXT_SUBD->query_titled_name(username);
+		turkey_name = query_titled_name(username);
 
-		TEXT_SUBD->send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud!\n", ({ turkey, query_user() }) );
+		send_to_all_except(kicker_name + " bans " + turkey_name + " from the mud!\n", ({ turkey, query_user() }) );
 
 		turkey->message(kicker_name + " bans you from the mud!\n");
 		turkey->quit("banned");

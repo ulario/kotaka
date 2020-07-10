@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "~Text/lib/sub";
 
 string *query_parse_methods()
 {
@@ -52,7 +53,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	switch(TEXT_SUBD->query_user_class(username)) {
+	switch(query_user_class(username)) {
 	case 3: /* administrator.  Only the mud owner can ban them */
 		if (user->query_username() != "admin") {
 			send_out("Only the mud owner can unban an administrator.\n");

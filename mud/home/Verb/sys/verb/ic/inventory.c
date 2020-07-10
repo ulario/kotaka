@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
 inherit LIB_EMIT;
 inherit LIB_VERB;
 inherit "~/lib/ic";
+inherit "~Text/lib/sub";
 
 private string describe(object thing)
 {
@@ -117,11 +118,11 @@ private string print_values(mapping values)
 	for (i = 0; i < sz; i++) {
 		switch(c[i]) {
 		case "us":
-			bits += ({ TEXT_SUBD->print_us(v[i]) });
+			bits += ({ print_us(v[i]) });
 			break;
 
 		case "fantasy":
-			bits += ({ TEXT_SUBD->print_fantasy(v[i]) });
+			bits += ({ print_fantasy(v[i]) });
 			break;
 		}
 	}
@@ -169,7 +170,7 @@ void main(object actor, mapping roles)
 		values = ([ ]);
 
 		for (i = 0; i < sz; i++) {
-			pieces += ({ TEXT_SUBD->generate_brief_indefinite(inv[i]) });
+			pieces += ({ generate_brief_indefinite(inv[i]) });
 
 			if (inv[i]->query_property("value")) {
 				value = inv[i]->query_property("value");

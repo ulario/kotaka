@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,7 @@
 inherit LIB_USERIO;
 inherit LIB_EMIT;
 inherit LIB_ACTION;
+inherit "~Text/lib/sub";
 
 void action(mapping roles)
 {
@@ -40,7 +41,7 @@ void action(mapping roles)
 		target = retexit->query_environment();
 
 		if (!target) {
-			send_out("Oops, " + TEXT_SUBD->generate_brief_definite(exit) + "'s return exit is lost in the void.\n");
+			send_out("Oops, " + generate_brief_definite(exit) + "'s return exit is lost in the void.\n");
 			return;
 		}
 	} else {
@@ -48,7 +49,7 @@ void action(mapping roles)
 	}
 
 	if (!target) {
-		send_out("Oops, " + TEXT_SUBD->generate_brief_definite(exit) + " doesn't have a destination.\n");
+		send_out("Oops, " + generate_brief_definite(exit) + " doesn't have a destination.\n");
 		return;
 	}
 

@@ -26,6 +26,7 @@
 
 inherit "/lib/string/format";
 inherit TEXT_LIB_USTATE;
+inherit "~/lib/sub";
 
 int stopped;
 int reading;
@@ -55,7 +56,7 @@ private void prompt()
 			body = possessee;
 		}
 
-		send_out(TEXT_SUBD->generate_brief_indefinite(body) + "> ");
+		send_out(generate_brief_indefinite(body) + "> ");
 	} else {
 		string name;
 

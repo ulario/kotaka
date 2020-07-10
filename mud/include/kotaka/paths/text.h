@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,5 +37,4 @@
 #define ENGLISHD		(USR_DIR + "/Text/sys/englishd")
 #define RENDERD			(USR_DIR + "/Text/sys/renderd")
 #define PARSER_ENGLISH		(USR_DIR + "/Text/sys/parser/english")
-#define TEXT_SUBD		(USR_DIR + "/Text/sys/subd")
 #define TEXT_USERD		(USR_DIR + "/Text/sys/userd")

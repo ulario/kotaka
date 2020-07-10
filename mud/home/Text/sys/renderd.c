@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/paths/geometry.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
@@ -26,6 +27,7 @@ inherit "/lib/string/case";
 inherit "/lib/string/char";
 inherit "/lib/string/format";
 inherit "~Geometry/lib/diff";
+inherit "~Text/lib/sub";
 
 private void draw_object(object gc, object viewer, object obj);
 private void draw_contents(object gc, object viewer, object obj);
@@ -180,10 +182,10 @@ private string inventory_list(object *inv)
 	sz = sizeof(inv);
 
 	for (i = 0; i < sz; i++) {
-		desc += ({ TEXT_SUBD->generate_brief_indefinite(inv[i]) });
+		desc += ({ generate_brief_indefinite(inv[i]) });
 	}
 
-	return TEXT_SUBD->generate_list(desc);
+	return generate_list(desc);
 }
 
 private string prose(object viewer)
@@ -498,7 +500,7 @@ private string look_void(object viewer)
 	output = "";
 
 	if (env) {
-		output = TEXT_SUBD->generate_brief_proper(env) + "\n\n";
+		output = generate_brief_proper(env) + "\n\n";
 		output = to_upper(output[0 .. 0]) + output[1 ..];
 	}
 
@@ -510,7 +512,7 @@ private string look_void(object viewer)
 		csystem = origin->query_coordinate_system();
 
 		output += "Coordinate system: " + csystem + "\n";
-		output += "Origin: " + TEXT_SUBD->generate_brief_proper(origin) + "\n";
+		output += "Origin: " + generate_brief_proper(origin) + "\n";
 	} else {
 		output += "No origin\n";
 	}
@@ -538,7 +540,7 @@ private string look_xyz(object viewer)
 		csystem = origin->query_coordinate_system();
 
 		output += "Coordinate system: " + csystem + "\n";
-		output += "Origin: " + TEXT_SUBD->generate_brief_proper(origin) + "\n";
+		output += "Origin: " + generate_brief_proper(origin) + "\n";
 
 		switch(csystem) {
 		case "xyz":

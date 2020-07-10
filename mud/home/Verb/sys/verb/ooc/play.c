@@ -24,6 +24,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "~Text/lib/sub";
 
 string *query_parse_methods()
 {
@@ -74,7 +75,7 @@ void main(object actor, mapping roles)
 		body = newbody;
 	}
 
-	send_out("Inhabiting " + TEXT_SUBD->generate_brief_definite(body) + ".\n");
+	send_out("Inhabiting " + generate_brief_definite(body) + ".\n");
 	user->set_body(ghost);
 	"~Action/sys/action/login"->action( ([ "actor": body ]) );
 }

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "~Text/lib/sub";
 
 string *query_parse_methods()
 {
@@ -74,5 +75,5 @@ void main(object actor, mapping roles)
 	ACCOUNTD->unregister_account(roles["raw"]);
 
 	user->message("You nuke " + roles["raw"] + " from the mud.\n");
-	TEXT_SUBD->send_to_all_except(roles["raw"] + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
+	send_to_all_except(roles["raw"] + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
 }

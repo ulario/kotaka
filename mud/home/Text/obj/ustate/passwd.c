@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@
 #include <kotaka/privilege.h>
 
 inherit TEXT_LIB_USTATE;
+inherit "~/lib/sub";
 
 #define STATE_GETPASS	1
 #define STATE_CHKPASS	2
@@ -69,7 +70,7 @@ private int authorized()
 	user = query_user();
 
 	if (name != user->query_name()) {
-		switch(TEXT_SUBD->query_user_class(name)) {
+		switch(query_user_class(name)) {
 		case 4: /* owner */
 		case 3: /* administrator */
 			if (user->query_username() != "admin") {

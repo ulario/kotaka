@@ -40,6 +40,7 @@ inherit "/lib/string/case";
 inherit "/lib/string/sprint";
 inherit "/lib/string/replace";
 inherit "~System/lib/utility/secretlog";
+inherit "~Text/lib/sub";
 
 /* i3 information */
 static mapping muds;
@@ -522,7 +523,7 @@ private void i3_handle_channel_m(mixed *value)
 	write_secret_log(channel, timestamp() + " " + fullname + ": " + message);
 
 	if (sscanf(message, "%*s%%^")) {
-		message = TEXT_SUBD->pinkfish2ansi(message) + "\033[0m";
+		message = pinkfish2ansi(message) + "\033[0m";
 	}
 
 	if (cflag) {
@@ -567,10 +568,10 @@ private void i3_handle_who_reply(mixed *value)
 		idle = who_data[i][1];
 		extra = who_data[i][2];
 
-		user->message(TEXT_SUBD->pinkfish2ansi(visname));
+		user->message(pinkfish2ansi(visname));
 
 		if (extra) {
-			user->message(" - " + TEXT_SUBD->pinkfish2ansi(extra));
+			user->message(" - " + pinkfish2ansi(extra));
 		}
 
 		if (idle) {

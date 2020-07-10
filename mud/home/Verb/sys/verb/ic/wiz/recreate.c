@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,7 @@
 #include <type.h>
 
 inherit LIB_VERB;
+inherit "~Text/lib/sub";
 
 string *query_parse_methods()
 {
@@ -68,7 +69,7 @@ void main(object actor, mapping roles)
 
 	dob = dob[1];
 
-	send_out("You start to recreate " + TEXT_SUBD->generate_brief_definite(dob) + ".\n");
+	send_out("You start to recreate " + generate_brief_definite(dob) + ".\n");
 
 	creator = query_user()->clone_ustate("wiz/objcreate");
 	creator->set_object(dob);

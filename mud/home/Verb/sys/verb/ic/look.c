@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@
 inherit "/lib/string/format";
 inherit LIB_EMIT;
 inherit LIB_VERB;
+inherit "~Text/lib/sub";
 
 private string inventory_list(object *inv)
 {
@@ -35,10 +36,10 @@ private string inventory_list(object *inv)
 	sz = sizeof(inv);
 
 	for (i = 0; i < sz; i++) {
-		desc += ({ TEXT_SUBD->generate_brief_indefinite(inv[i]) });
+		desc += ({ generate_brief_indefinite(inv[i]) });
 	}
 
-	return TEXT_SUBD->generate_list(desc);
+	return generate_list(desc);
 }
 
 private string contents(object env, object viewer)
@@ -180,7 +181,7 @@ void main(object actor, mapping roles)
 			briefs = ({ });
 
 			for (i = 0; i < sz; i++) {
-				briefs += ({ TEXT_SUBD->generate_brief_indefinite(obj[i]) });
+				briefs += ({ generate_brief_indefinite(obj[i]) });
 			}
 
 			briefs[sz - 1] = "and " + briefs[sz - 1];
@@ -211,7 +212,7 @@ void main(object actor, mapping roles)
 				send_out("Contents:\n\n");
 
 				for (i = 0; i < sz; i++) {
-					send_out(TEXT_SUBD->generate_brief_indefinite(inv[i]) + "\n");
+					send_out(generate_brief_indefinite(inv[i]) + "\n");
 				}
 
 				send_out("\n");

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@
 
 inherit "/lib/string/sprint";
 inherit "/lib/string/case";
+inherit "sub";
 
 private string from_object(object obj, mapping seen, object witness)
 {
@@ -38,7 +39,7 @@ private string from_object(object obj, mapping seen, object witness)
 		if (obj == witness) {
 			return "you";
 		} else {
-			return TEXT_SUBD->generate_brief_definite(obj);
+			return generate_brief_definite(obj);
 		}
 	}
 }
@@ -162,8 +163,8 @@ void ooc_emit_to(string sender, string receiver, string message)
 	int sclass;
 	int rclass;
 
-	sclass = TEXT_SUBD->query_user_class(sender);
-	rclass = TEXT_SUBD->query_user_class(receiver);
+	sclass = query_user_class(sender);
+	rclass = query_user_class(receiver);
 
 	if (sender) {
 		sinvis = !!ACCOUNTD->query_account_property(sender, "invisible");

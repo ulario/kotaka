@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,6 +33,7 @@
 inherit "~Account/lib/blacklist";
 inherit "/lib/string/validate";
 inherit TEXT_LIB_USTATE;
+inherit "~/lib/sub";
 
 string username;
 string password;
@@ -325,8 +326,8 @@ void receive_in(string input)
 				} else {
 					send_out("Your previous connection went away before I could evict it.\n");
 
-					TEXT_SUBD->send_to_all_except(
-						TEXT_SUBD->query_titled_name(username)
+					send_to_all_except(
+						query_titled_name(username)
 						+ " logs in.\n", ({ user })
 					);
 				}
