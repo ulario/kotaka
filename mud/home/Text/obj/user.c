@@ -95,7 +95,7 @@ int query_class()
 
 string query_titled_name()
 {
-	return query_titled_name(username);
+	return ::query_titled_name(username);
 }
 
 string query_name()

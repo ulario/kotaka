@@ -26,9 +26,9 @@
 #include <kotaka/log.h>
 
 inherit "/lib/string/case";
-inherit LIB_EMIT;
-
-int query_user_class(string username);
+inherit "emit";
+inherit "class";
+inherit "generate";
 
 string query_titled_name(string username)
 {
@@ -128,113 +128,6 @@ void send_to_all_except(string phrase, object *exceptions)
 
 	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
 		users[sz]->message(phrase);
-	}
-}
-
-int query_user_class(string username)
-{
-	if (!username) {
-		return 0;
-	}
-
-	if (username == "admin") {
-		return 4;
-	}
-
-	if (!ACCOUNTD->query_is_registered(username)) {
-		return 0;
-	}
-
-	if (KERNELD->access(username, "/", FULL_ACCESS)) {
-		return 3;
-	}
-
-	if (sizeof( KERNELD->query_users() & ({ username }) )) {
-		return 2;
-	}
-
-	return 1;
-}
-
-private string primitive_brief(object thing)
-{
-	string brief;
-
-	brief = thing->query_property("brief");
-
-	if (brief) {
-		return brief;
-	}
-
-	brief = thing->query_property("id");
-
-	if (brief) {
-		return brief;
-	}
-
-	return "nondescript object";
-}
-
-string generate_brief_proper(object thing)
-{
-	string brief;
-
-	brief = primitive_brief(thing);
-
-	return brief;
-}
-
-string generate_brief_definite(object thing)
-{
-	if (thing->query_property("is_proper")) {
-		return generate_brief_proper(thing);
-	}
-
-	return "the " + primitive_brief(thing);
-}
-
-string generate_brief_indefinite(object thing)
-{
-	string brief;
-
-	if (thing->query_property("is_proper")) {
-		return generate_brief_proper(thing);
-	}
-
-	if (thing->query_property("is_definite")) {
-		return generate_brief_definite(thing);
-	}
-
-	brief = primitive_brief(thing);
-
-	if (strlen(brief) > 0) {
-		switch(to_lower(brief)[0]) {
-		case 'a':
-		case 'e':
-		case 'i':
-		case 'o':
-		case 'u':
-			return "an " + brief;
-		}
-	}
-
-	return "a " + brief;
-}
-
-string generate_list(string *phrases)
-{
-	int sz;
-
-	switch(sizeof(phrases)) {
-	case 0:
-		return nil;
-	case 1:
-		return phrases[0];
-	case 2:
-		return phrases[0] + " and " + phrases[1];
-	default:
-		sz = sizeof(phrases);
-		return implode(phrases[0 .. sz - 2], ", ") + ", and " + phrases[sz - 1];
 	}
 }
 

@@ -25,7 +25,10 @@
 
 inherit "/lib/string/sprint";
 inherit "/lib/string/case";
-inherit "sub";
+inherit "class";
+inherit "generate";
+
+int query_user_class(string username);
 
 private string from_object(object obj, mapping seen, object witness)
 {
