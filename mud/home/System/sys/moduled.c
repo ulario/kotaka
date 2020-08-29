@@ -230,7 +230,11 @@ static void upgrade_module(string module)
 
 static void load_module(string module)
 {
-	load_object(initd_of(module));
+	rlimits(0; -1) {
+		rlimits(0; MODULE_BOOT_TICKS) {
+			load_object(initd_of(module));
+		}
+	}
 }
 
 /***********/
@@ -532,21 +536,17 @@ void boot_module(string module, varargs int reboot)
 	}
 
 	if (!existed) {
+		string err;
+
 		thaw_module(module);
 
-		rlimits(0; -1) {
-			rlimits(0; MODULE_BOOT_TICKS) {
-				string err;
+		err = catch(load_module(module));
 
-				err = catch(call_limited("load_module", module));
-
-				if (err) {
-					if (module) {
-						error("Error booting module " + module + ": " + err);
-					} else {
-						error("Error booting nil module: " + err);
-					}
-				}
+		if (err) {
+			if (module) {
+				error("Error booting module " + module + ": " + err);
+			} else {
+				error("Error booting nil module: " + err);
 			}
 		}
 	}
