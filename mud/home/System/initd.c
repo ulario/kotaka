@@ -647,3 +647,8 @@ void end_task()
 {
 	ACCESS_CHECK(SYSTEM());
 }
+
+void message(string str)
+{
+	DRIVER->message(str);
+}
