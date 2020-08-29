@@ -40,7 +40,7 @@ private void set_limits()
 {
 	reset_limits();
 
-	KERNELD->rsrc_set_limit("Test", "ticks", 100 * M);
+	KERNELD->rsrc_set_limit("Test", "ticks", 1 * G);
 }
 
 static void test()
