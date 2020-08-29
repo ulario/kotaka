@@ -24,6 +24,7 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
+#include <kotaka/checkarg.h>
 
 inherit "/lib/string/case";
 inherit "emit";
@@ -33,15 +34,11 @@ inherit "generate";
 string query_titled_name(string username)
 {
 	string name;
-
 	int class;
 
-	if (username) {
-		name = to_title(username);
-	} else {
-		name = "guest";
-	}
+	CHECKARG(username, 1, "query_titled_name");
 
+	name = to_title(username);
 	class = query_user_class(username);
 
 	switch(class) {
