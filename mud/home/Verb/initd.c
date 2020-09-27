@@ -40,13 +40,6 @@ private void set_limits()
 	KERNELD->rsrc_set_limit("Verb", "ticks", 2000000);
 }
 
-static void reload_verb_help()
-{
-	LOGD->post_message("system", LOG_NOTICE, "Reloading verb help");
-
-	"sys/verbd"->sync_help();
-}
-
 static void create()
 {
 	KERNELD->set_global_access("Verb", 1);
@@ -55,7 +48,9 @@ static void create()
 
 	load();
 
-	reload_verb_help();
+	LOGD->post_message("system", LOG_WARNING, "Syncing verb help while booting Verb module");
+
+	"sys/verbd"->sync_help();
 }
 
 void upgrade()
@@ -71,7 +66,9 @@ void upgrade_build()
 
 	compile_dir("sys");
 
-	reload_verb_help();
+	LOGD->post_message("system", LOG_WARNING, "Syncing verb help after rebuilding Verb module");
+
+	"sys/verbd"->sync_help();
 }
 
 void booted_module(string module)
@@ -79,6 +76,8 @@ void booted_module(string module)
 	ACCESS_CHECK(previous_program() == MODULED);
 
 	if (module == "Kotaka") {
-		reload_verb_help();
+		LOGD->post_message("system", LOG_WARNING, "Syncing verb help after rebooting Kotaka module");
+
+		"sys/verbd"->sync_help();
 	}
 }
