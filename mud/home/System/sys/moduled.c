@@ -507,6 +507,19 @@ string *query_modules()
 	return map_indices(modules) - ({ "System" });
 }
 
+int query_module(string module)
+{
+	if (module == "System") {
+		return 1;
+	}
+
+	if (!modules[module]) {
+		return 0;
+	}
+
+	return modules[module];
+}
+
 /* directive, start up a module */
 void boot_module(string module, varargs int reboot)
 {
