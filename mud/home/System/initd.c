@@ -591,7 +591,7 @@ void upgrade_system()
 	upgrade_check_ready();
 	upgrade_check_current_version();
 
-	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel module...");
+	LOGD->post_message("system", LOG_NOTICE, "Recompiling kernel library...");
 	recompile_kernel();
 
 	LOGD->post_message("system", LOG_NOTICE, "Recompiling System module...");
