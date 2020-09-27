@@ -34,14 +34,18 @@ int offset;
 private void start()
 {
 	int now;
+	float fnow;
+
 	int goal;
+
 	int delay;
+	float fdelay;
 
 	if (interval <= 0) {
 		return;
 	}
 
-	now = time();
+	({ now, fnow }) = millitime();
 
 	goal = now;
 	goal -= goal % interval;
@@ -51,8 +55,13 @@ private void start()
 	delay %= interval;
 	goal = now + delay;
 
+	fdelay = (float)delay - fnow;
+	if (fdelay < 0.5) {
+		fdelay = 0.5;
+	}
+
 	wipe_callouts();
-	call_out("dump", delay, goal);
+	call_out("dump", fdelay, goal);
 }
 
 private void configure()
@@ -69,14 +78,18 @@ static void create()
 static void dump(int goal)
 {
 	int now;
+	float fnow;
+
 	int delta;
+	float fdelta;
 
 	dump_state();
 
-	now = time();
+	({ now, fnow }) = millitime();
+
 	delta = now - goal;
 
-	if (delta > 0) {
+	if (fdelta >= 1.0) {
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + delta + " seconds late");
 
 		if (delta > interval) {
@@ -88,8 +101,13 @@ static void dump(int goal)
 
 	goal += interval;
 	delta = goal - now;
+	fdelta = (float)delta - fnow;
 
-	call_out("dump", delta, goal);
+	if (fdelta < 0.5) {
+		fdelta = 0.5;
+	}
+
+	call_out("dump", fdelta, goal);
 }
 
 void upgrade()
