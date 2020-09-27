@@ -40,6 +40,13 @@ private void set_limits()
 	KERNELD->rsrc_set_limit("Verb", "ticks", 2000000);
 }
 
+static void reload_verb_help()
+{
+	LOGD->post_message("system", LOG_NOTICE, "Reloading verb help");
+
+	"sys/verbd"->sync_help();
+}
+
 static void create()
 {
 	KERNELD->set_global_access("Verb", 1);
@@ -47,13 +54,8 @@ static void create()
 	set_limits();
 
 	load();
-}
 
-static void reload_verb_help()
-{
-	LOGD->post_message("system", LOG_NOTICE, "Reloading verb help");
-
-	"sys/verbd"->sync_help();
+	reload_verb_help();
 }
 
 void upgrade()
@@ -69,5 +71,14 @@ void upgrade_build()
 
 	compile_dir("sys");
 
-	call_out("reload_verb_help", 0);
+	reload_verb_help();
+}
+
+void booted_module(string module)
+{
+	ACCESS_CHECK(previous_program() == MODULED);
+
+	if (module == "Kotaka") {
+		reload_verb_help();
+	}
 }
