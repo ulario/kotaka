@@ -490,6 +490,10 @@ static void self_destruct()
 	}
 }
 
+/**********/
+/* public */
+/**********/
+
 /* user hooks */
 
 int login(string str)
