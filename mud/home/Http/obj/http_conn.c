@@ -146,7 +146,41 @@ private void handle_get_destruct(string objectname)
 
 private void handle_get_siteban()
 {
-	
+	object header;
+	int i, sz;
+	string *sitebans;
+
+	header = new_object("~/lwo/http_response");
+	header->set_status(200, "Siteban list");
+
+	message("<html>\n");
+	message("<head>\n");
+	do_style();
+	message("<title>Sitebans</title>\n");
+	message("</head>\n");
+	message("<body>\n");
+	message("<h1>Sitebans</h1>\n");
+	message("<table>\n");
+	message("<tr><th>Site</th><th>Issuer</th><th>Expire</th><th>Message</th></tr>\n");
+
+	sitebans = BAND->query_sitebans();
+
+	for (i = 0, sz = sizeof(sitebans); i < sz; i++) {
+		string site;
+		mapping siteban;
+
+		site = sitebans[i];
+		siteban = BAND->query_siteban(site);
+
+		message("<tr><td>" + site + "</td><td>" + siteban["issuer"]
+			+ "</td><td>" + siteban["expire"] + "</td><td>" + siteban["message"] + "</td></tr>\n"
+		);
+	}
+
+	message("</table>\n");
+	message("</body>\n");
+	message("</html>\n");
+	message("</html>\n");
 }
 
 private int handle_get_pattern(string path)
