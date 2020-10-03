@@ -45,6 +45,7 @@ string version;
 
 string entity;
 int explen;
+int receiving_entity;
 
 static void create(int clone)
 {
@@ -432,8 +433,6 @@ private void handle_post()
 		message(HTTPD->generate_error_page(503, "Internal server error", "Unspecified server error."));
 	}
 }
-
-int receiving_entity;
 
 private int input(string message)
 {
