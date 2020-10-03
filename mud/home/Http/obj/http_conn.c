@@ -32,6 +32,7 @@
 
 inherit LIB_SYSTEM_USER;
 inherit "~/lib/object";
+inherit "~/lib/ban";
 
 string ip;
 string request;
