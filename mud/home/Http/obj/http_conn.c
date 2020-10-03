@@ -486,6 +486,8 @@ static void self_destruct()
 	}
 }
 
+/* user hooks */
+
 int login(string str)
 {
 	object conn;
@@ -515,6 +517,11 @@ int login(string str)
 	state = STATE_HEADERS;
 
 	return input(str);
+}
+
+void logout(int quit)
+{
+	destruct_object(this_object());
 }
 
 int receive_message(string message)
@@ -595,11 +602,6 @@ int receive_message(string message)
 
 		return MODE_NOCHANGE;
 	}
-}
-
-void logout(int quit)
-{
-	destruct_object(this_object());
 }
 
 int message_done()
