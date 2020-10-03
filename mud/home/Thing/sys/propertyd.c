@@ -69,7 +69,7 @@ void del_property(string name)
 	}
 }
 
-void reset_properties()
+atomic void reset_properties()
 {
 	ACCESS_CHECK(THING() || GAME());
 

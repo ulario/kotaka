@@ -30,7 +30,7 @@ static void create()
 	configure_properties();
 }
 
-void configure_properties()
+atomic void configure_properties()
 {
 	PROPERTYD->reset_properties();
 
