@@ -338,7 +338,7 @@ private void do_formtest()
 	message("</html>\n");
 }
 
-static string nohandler_text()
+private string nohandler_text()
 {
 	object header;
 	string buffer;
