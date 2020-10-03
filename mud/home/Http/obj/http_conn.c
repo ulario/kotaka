@@ -543,7 +543,8 @@ int receive_message(string message)
 				case "GET":
 					state = STATE_RESPONDING;
 					handle_get();
-					return MODE_DISCONNECT;
+					call_out("self_destruct", 0.25);
+					return MODE_BLOCK;
 
 				case "POST":
 					state = STATE_ENTITY;
@@ -573,7 +574,8 @@ int receive_message(string message)
 					if (explen == 0) {
 						/* empty entity, process immediately */
 						handle_post();
-						return MODE_DISCONNECT;
+						cal_out("self_destruct", 0.25);
+						return MODE_BLOCK;
 					}
 
 					/* wait for entity */
@@ -585,7 +587,8 @@ int receive_message(string message)
 				message(HTTPD->generate_error_page(400, "Bad request"
 					, "Your browser sent malformed headers.")
 				);
-				return MODE_DISCONNECT;
+				call_out("self_destruct", 0.25);
+				return MODE_BLOCK;
 			}
 
 			headers[name] = value;
