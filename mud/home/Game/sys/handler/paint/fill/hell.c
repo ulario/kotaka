@@ -38,10 +38,10 @@ void on_paint_text(object gc, object obj, object viewer)
 		return;
 	}
 
-	gc->set_color(0x08);
+	gc->set_color(0x01);
 
 	for (my = -8; my <= 8; my++) {
 		gc->move_pen(-8, my);
-		gc->draw(chars('\'', 17));
+		gc->draw(chars('.', 17));
 	}
 }
