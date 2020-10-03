@@ -76,29 +76,29 @@ void reset_properties()
 	pinfo = ([ ]);
 
 	/* identification */
-	add_property("id", T_STRING, PROP_MAGIC, ({ "query_id", "set_id" }) );
-	add_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
+	set_property("id", T_STRING, PROP_MAGIC, ({ "query_id", "set_id" }) );
+	set_property("name", T_STRING, PROP_MAGIC, ({ "query_object_name", "set_object_name" }) );
 
 	/* inheritance */
-	add_property("archetype", T_OBJECT, PROP_MAGIC, ({ "query_archetype", "set_archetype" }) );
+	set_property("archetype", T_OBJECT, PROP_MAGIC, ({ "query_archetype", "set_archetype" }) );
 
 	/* inventory */
-	add_property("environment", T_OBJECT, PROP_MAGIC, ({ "query_environment", "move" }) );
-	add_property("inventory", T_ARRAY, PROP_MAGIC, ({ "query_inventory", nil }) );
+	set_property("environment", T_OBJECT, PROP_MAGIC, ({ "query_environment", "move" }) );
+	set_property("inventory", T_ARRAY, PROP_MAGIC, ({ "query_inventory", nil }) );
 
 	/* bulk */
-	add_property("local_mass", T_FLOAT, PROP_MAGIC, ({ "query_local_mass", "set_local_mass" }) );
-	add_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
-	add_property("mass_derivation", T_STRING, PROP_MAGIC, ({ "query_mass_derivation", "set_mass_derivation" }) );
-	add_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
+	set_property("local_mass", T_FLOAT, PROP_MAGIC, ({ "query_local_mass", "set_local_mass" }) );
+	set_property("mass", T_FLOAT, PROP_MAGIC, ({ "query_mass", "set_mass" }) );
+	set_property("mass_derivation", T_STRING, PROP_MAGIC, ({ "query_mass_derivation", "set_mass_derivation" }) );
+	set_property("density", T_FLOAT, PROP_MAGIC, ({ "query_density", "set_density" }) );
 
-	add_property("volume", T_FLOAT, PROP_MAGIC, ({ "query_volume", nil }) );
-	add_property("total_volume", T_FLOAT, PROP_MAGIC, ({ "query_total_volume", nil }) );
+	set_property("volume", T_FLOAT, PROP_MAGIC, ({ "query_volume", nil }) );
+	set_property("total_volume", T_FLOAT, PROP_MAGIC, ({ "query_total_volume", nil }) );
 
-	add_property("capacity", T_FLOAT, PROP_MAGIC, ({ "query_capacity", "set_capacity" }) );
-	add_property("max_mass", T_FLOAT, PROP_MAGIC, ({ "query_max_mass", "set_max_mass" }) );
-	add_property("is_flexible", T_INT, PROP_MAGIC, ({ "query_flexible", "set_flexible" }) );
-	add_property("is_virtual", T_INT, PROP_MAGIC, ({ "query_virtual", "set_virtual" }) );
+	set_property("capacity", T_FLOAT, PROP_MAGIC, ({ "query_capacity", "set_capacity" }) );
+	set_property("max_mass", T_FLOAT, PROP_MAGIC, ({ "query_max_mass", "set_max_mass" }) );
+	set_property("is_flexible", T_INT, PROP_MAGIC, ({ "query_flexible", "set_flexible" }) );
+	set_property("is_virtual", T_INT, PROP_MAGIC, ({ "query_virtual", "set_virtual" }) );
 }
 
 mixed *query_property(string name)
