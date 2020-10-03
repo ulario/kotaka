@@ -475,6 +475,10 @@ private int input(string message)
 	return MODE_NOCHANGE;
 }
 
+/**********/
+/* static */
+/**********/
+
 static void self_destruct()
 {
 	if (query_conn()) {
