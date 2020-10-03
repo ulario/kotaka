@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -144,6 +144,11 @@ private void handle_get_destruct(string objectname)
 	}
 }
 
+private void handle_get_siteban()
+{
+	
+}
+
 private int handle_get_pattern(string path)
 {
 	string handler;
@@ -169,6 +174,16 @@ private int handle_get_pattern(string path)
 				message(HTTPD->generate_error_page(400, "Bad Request", "<p>Malformed arguments</p>"));
 				return 1;
 			}
+
+		case "siteban":
+			if (path == "/siteban.lpc") {
+				handle_get_siteban();
+				return 1;
+			} else {
+				message(HTTPD->generate_error_page(400, "Bad Request", "<p>Malformed arguments</p>"));
+				return 1;
+			}
+			break;
 		}
 	}
 }
