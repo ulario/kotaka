@@ -46,8 +46,24 @@ void set_property(string name, int type, int code, varargs mixed extra)
 		error("Reserved property");
 	}
 
+	if ((code == PROP_COMBO || code == PROP_MIXDOWN)
+		&& type < T_ARRAY) {
+		error("Combo properties must be of conglomerate type");
+	}
+
+	pinfo[name] = ({ type, code, extra });
+}
+
+void add_property(string name, int type, int code, varargs mixed extra)
+{
+	ACCESS_CHECK(THING() || GAME());
+
+	if (sscanf(name, "base:")) {
+		error("Reserved property");
+	}
+
 	if (pinfo[name]) {
-		error(name + ": duplicate property");
+		error("Duplicate property");
 	}
 
 	if ((code == PROP_COMBO || code == PROP_MIXDOWN)
@@ -58,15 +74,28 @@ void set_property(string name, int type, int code, varargs mixed extra)
 	pinfo[name] = ({ type, code, extra });
 }
 
+void clear_property(string name)
+{
+	ACCESS_CHECK(THING() || GAME());
+
+	pinfo[name] = nil;
+}
+
+void remove_property(string name)
+{
+	ACCESS_CHECK(THING() || GAME());
+
+	if (!pinfo[name]) {
+		error("No such property");
+	}
+
+	pinfo[name] = nil;
+}
+
+/* stub */
 void del_property(string name)
 {
-	ACCESS_CHECK(PRIVILEGED());
-
-	if (pinfo[name]) {
-		pinfo[name] = nil;
-	} else {
-		error(name + ": no such property");
-	}
+	remove_property(name);
 }
 
 atomic void reset_properties()
