@@ -47,21 +47,6 @@ string entity;
 int explen;
 int receiving_entity;
 
-static void create(int clone)
-{
-	explen = -1;
-	state = -1;
-
-	if (clone) {
-		call_out("self_destruct", 5);
-	}
-}
-
-static string query_ip()
-{
-	return ip;
-}
-
 private void do_style()
 {
 	message("<style>\n");
@@ -477,6 +462,21 @@ private int input(string message)
 /**********/
 /* static */
 /**********/
+
+static void create(int clone)
+{
+	explen = -1;
+	state = -1;
+
+	if (clone) {
+		call_out("self_destruct", 5);
+	}
+}
+
+static string query_ip()
+{
+	return ip;
+}
 
 static void self_destruct()
 {
