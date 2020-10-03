@@ -38,7 +38,7 @@ static void create()
 	reset_properties();
 }
 
-void add_property(string name, int type, int code, varargs mixed extra)
+void set_property(string name, int type, int code, varargs mixed extra)
 {
 	ACCESS_CHECK(THING() || GAME());
 
