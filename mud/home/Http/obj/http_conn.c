@@ -156,7 +156,6 @@ private void handle_get_siteban()
 	header->set_status(200, "Siteban list");
 
 	message(header->generate_header());
-
 	message("<html>\n");
 	message("<head>\n");
 	do_style();
