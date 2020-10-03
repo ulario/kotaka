@@ -148,7 +148,7 @@ private void handle_get_destruct(string objectname)
 private void handle_get_siteban()
 {
 	object header;
-	int i, sz;
+	int i, sz, time;
 	string *sitebans;
 
 	header = new_object("~/lwo/http_response");
@@ -166,17 +166,44 @@ private void handle_get_siteban()
 	message("<table>\n");
 	message("<tr><th>Site</th><th>Issuer</th><th>Expire</th><th>Message</th></tr>\n");
 
+	time = time();
 	sitebans = BAND->query_sitebans();
 
 	for (i = 0, sz = sizeof(sitebans); i < sz; i++) {
 		string site;
 		mapping siteban;
+		mixed expire;
+		mixed remaining;
 
 		site = sitebans[i];
 		siteban = BAND->query_siteban(site);
 
+		expire = siteban["expire"];
+
+		if (expire == nil) {
+			remaining = "Permanent";
+		} else {
+			remaining = expire - time;
+
+			if (remaining < 60) {
+				remaining += (remaining == 1 ? " second" : " seconds");
+			} else if (remaining < 3600) {
+				remaining += 59;
+				remaining /= 60;
+				remaining += (remaining == 1 ? " minute" : " minutes");
+			} else if (remaining < 86400) {
+				remaining += 3599;
+				remaining /= 3600;
+				remaining += (remaining == 1 ? " hour" : " hours");
+			} else {
+				remaining += 86399;
+				remaining /= 86400;;
+				remaining += (remaining == 1 ? " day" : " days");
+			}
+		}
+
 		message("<tr><td>" + site + "</td><td>" + siteban["issuer"]
-			+ "</td><td>" + siteban["expire"] + "</td><td>" + siteban["message"] + "</td></tr>\n"
+			+ "</td><td>" + remaining + "</td><td>" + siteban["message"] + "</td></tr>\n"
 		);
 	}
 
