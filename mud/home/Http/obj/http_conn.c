@@ -54,6 +54,7 @@ private void do_style()
 	message("h1, h2, h3 { padding: 1em; }\n");
 	message("h1, h2, h3 { background-color: #aaa; }\n");
 	message("table { margin: 0 auto; }\n");
+	message("div.infobox { margin: 1em; border: 1em solid #555; padding: 1em; background-color: #ffa; }\n");
 	message("td { margin: 0; vertical-align: top; }\n");
 	message("td.spacer { width: 2em; }\n");
 	message("</style>\n");
