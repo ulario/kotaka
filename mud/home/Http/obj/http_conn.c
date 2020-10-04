@@ -560,7 +560,7 @@ int receive_message(string message)
 					if (explen == 0) {
 						/* empty entity, process immediately */
 						handle_post();
-						cal_out("self_destruct", 0.05);
+						call_out("self_destruct", 0.05);
 						return MODE_BLOCK;
 					}
 
