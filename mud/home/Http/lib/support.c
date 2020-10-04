@@ -6,19 +6,10 @@ static string oinfobox(string header, int level, string content)
 	string buf;
 
 	buf = "<h" + level + ">" + header + "</h" + level + ">\n";
-	buf += "<table>\n";
-	buf += "<tr>\n";
-	buf += "<td class=\"frame\">\n";
-	buf += "<table>\n";
-	buf += "<tr>\n";
-	buf += "<td class=\"box\">\n";
+
+	buf += "<div class=\"infobox\">\n";
 	buf += content;
-	buf += "</td>\n";
-	buf += "</tr>\n";
-	buf += "</table>\n";
-	buf += "</td>\n";
-	buf += "</tr>\n";
-	buf += "</table>\n";
+	buf += "</div>\n";
 
 	return buf;
 }
