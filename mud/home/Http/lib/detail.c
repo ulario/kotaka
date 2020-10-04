@@ -51,7 +51,7 @@ static string detail_text(object obj, string *details)
 
 	sz = sizeof(details);
 
-	buffer = "<h2>Details</h2>\n<br />";
+	buffer = "<h2>Details</h2>\n";
 
 	for (i = 0; i < sz; i++) {
 		buffer += detail_box(obj, details[i]);
