@@ -50,12 +50,11 @@ int receiving_entity;
 private void do_style()
 {
 	message("<style>\n");
-	message("h1, h2, h3 { text-align: center; }\n");
-	message("h1, h2, h3 { padding: 1em; }\n");
-	message("h1, h2, h3 { background-color: #aaa; }\n");
+	message("h1, h2, h3 { padding: 1em; text-align: center; background-color: #aaa; border: .25em solid black; border-radius: .5em; }\n");
 	message("table { margin: 0 auto; }\n");
-	message("div.infobox { margin: 1em; border: 1em solid #555; padding: 1em; background-color: #ffa; }\n");
-	message("td { margin: 0; vertical-align: top; }\n");
+	message("div.infobox { margin: 1em; padding: 1em; background-color: #ffa; border: 1em solid #aa0; border-radius: 2em; }\n");
+	message("td { margin: 0; vertical-align: top; padding: 0 1em; }\n");
+	message("table { margin: 0 auto; }\n");
 	message("td.spacer { width: 2em; }\n");
 	message("</style>\n");
 }
