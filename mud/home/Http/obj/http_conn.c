@@ -55,8 +55,7 @@ private void do_style()
 	message("h1, h2, h3 { background-color: #aaa; }\n");
 	message("table { margin: 0 auto; }\n");
 	message("td { margin: 0; vertical-align: top; }\n");
-	message("td.pane:first-child { padding-right: 1em; }\n");
-	message("td.pane:last-child { padding-left: 1em; }\n");
+	message("td.spacer { width: 2em; }\n");
 	message("</style>\n");
 }
 
