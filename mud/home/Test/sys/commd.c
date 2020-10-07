@@ -129,7 +129,7 @@ void logout(int quit)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	LOGD->post_message("debug", LOG_DEBUG, "CommD: logout from " + conns[conn] + ", quit is " + quit);
+	LOGD->post_message("debug", LOG_DEBUG, "CommD: logout from " + conns[previous_object()] + ", quit is " + quit);
 }
 
 int receive_message(string str)
