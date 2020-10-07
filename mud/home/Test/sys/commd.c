@@ -103,6 +103,12 @@ int login(string str)
 	root = root_of(conn);
 
 	ip = query_ip_number(root);
+
+	if (!ip) {
+		conns[conn] = "nil";
+		error("No IP address");
+	}
+
 	conns[conn] = ip;
 
 	if (garbage = garbage(str)) {
