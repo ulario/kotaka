@@ -52,6 +52,7 @@ private void do_style()
 	message("<style>\n");
 	message("h1, h2, h3 { padding: 1em; text-align: center; background-color: #aaa; border: .25em solid black; border-radius: .5em; }\n");
 	message("table { margin: 0 auto; }\n");
+	message("div.column { column-count: 2; column-gap: 2em; column-fill: auto; }\n");
 	message("div.infobox { margin: 1em; padding: 1em; background-color: #ffa; border: 1em solid #aa0; border-radius: 2em; }\n");
 	message("td { margin: 0; vertical-align: top; padding: 0 1em; }\n");
 	message("table { margin: 0 auto; }\n");
@@ -78,7 +79,9 @@ private void handle_get_object(string objectname)
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
+		message("<div class=\"column\">\n");
 		message(object_text(obj));
+		message("</div>\n");
 		message("</body>\n");
 		message("</html>\n");
 	} else {

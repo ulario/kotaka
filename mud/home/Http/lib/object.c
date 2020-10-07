@@ -18,8 +18,7 @@ static string object_text(object obj)
 		subbuffer += "<p><a href=\"destruct.lpc?obj=" + object2string(obj) + "\">Destruct</p>\n";
 	}
 
-	buffer = "<table class=\"page\"><tr><td class=\"pane\">\n";
-	buffer += oinfobox("Object", 1, subbuffer);
+	buffer = oinfobox("Object", 1, subbuffer);
 
 	if (obj <- "~Thing/lib/thing") {
 		buffer += thing_text(obj);
@@ -28,8 +27,6 @@ static string object_text(object obj)
 			buffer += thing_form(obj);
 		}
 	}
-
-	buffer += "</td></tr></table>\n";
 
 	return buffer;
 }

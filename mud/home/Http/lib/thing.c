@@ -78,8 +78,6 @@ static string thing_text(object obj)
 		buffer += detail_text(obj, details);
 	}
 
-	buffer += "</td><td class=\"spacer\"></td><td class=\"pane\">\n";
-
 	props = obj->query_local_properties();
 	names = map_indices(props);
 	values = map_values(props);
