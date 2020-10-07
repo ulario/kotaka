@@ -100,11 +100,10 @@ int login(string str)
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	conn = previous_object();
-	root = conn;
+	root = root_of(conn);
 
-	while (root <- LIB_USER) {
-		root = root->query_conn();
-	}
+	ip = query_ip_number(root);
+	conns[conn] = ip;
 
 	if (garbage = garbage(str)) {
 		LOGD->post_message("system", LOG_WARNING, "Test: sitebanning " + ip + " for 90 days for sending " + garbage + " garbage during login");
@@ -114,12 +113,7 @@ int login(string str)
 		return MODE_DISCONNECT;
 	}
 
-	ip = query_ip_number(root);
-
-	conns[conn] = ip;
-
 	conn->message("Hello " + ip + "\n");
-
 	LOGD->post_message("debug", LOG_DEBUG, "CommD: login from " + ip + ", first line is " + str);
 
 	return MODE_NOCHANGE;
@@ -129,7 +123,7 @@ void logout(int quit)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	LOGD->post_message("debug", LOG_DEBUG, "CommD: logout from " + conns[previous_object()] + ", quit is " + quit);
+	LOGD->post_message("debug", LOG_DEBUG, "CommD: logout from " + conns[conn] + ", quit is " + quit);
 }
 
 int receive_message(string str)
