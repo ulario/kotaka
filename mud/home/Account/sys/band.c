@@ -416,7 +416,7 @@ void ban_user(string username, varargs mixed message_arg, mixed expire_arg)
 		bans[username] = message_arg[..];
 	}
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 }
 
 void unban_user(string username)
@@ -425,7 +425,7 @@ void unban_user(string username)
 
 	bans[username] = nil;
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 }
 
 int query_is_user_banned(string username)
@@ -543,7 +543,7 @@ void ban_site(string mask, varargs mixed message_arg, mixed expire_arg)
 		sitebans[mask] = message_arg[..];
 	}
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 
 	SYSTEM_USERD->check_sitebans();
 }
@@ -556,7 +556,7 @@ void unban_site(string mask)
 
 	sitebans[mask] = nil;
 
-	call_out("save", 0);
+	call_out_unique("save", 0);
 }
 
 int query_is_site_banned(string site)
