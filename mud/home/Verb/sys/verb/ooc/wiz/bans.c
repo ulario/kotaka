@@ -145,8 +145,20 @@ void main(object actor, mapping roles)
 		bans = allocate(sz);
 
 		for (i = 0; i < sz; i++) {
-			bans[i] = BAND->query_ban(users[i]);
+			mapping ban;
+
+			ban = BAND->query_ban(users[i]);
+
+			if (!ban) {
+				users[i] = nil;
+				continue;
+			}
+
+			bans[i] = ban;
 		}
+
+		users -= ({ nil });
+		bans -= ({ nil });
 
 		send_out(print_bans("User", users, bans));
 
