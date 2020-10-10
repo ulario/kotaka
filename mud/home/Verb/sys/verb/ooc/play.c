@@ -45,6 +45,7 @@ void main(object actor, mapping roles)
 {
 	object user;
 	string name;
+	string args;
 
 	object ghost;
 	object body;
@@ -58,21 +59,41 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	ghost = IDD->find_object_by_name("ghosts:" + name);
+	args = roles["raw"];
 
-	if (!ghost) {
-		if (IDD->find_object_by_name("template:" + name)) {
-			send_out("Alas, your soul is gone.\n");
-		} else {
-			send_out("Run chargen, you don't have a character.\n");
+	if (args) {
+		if (user->query_class() < 2) {
+			send_out("Only wizards can play characters other than their own.\n");
+			return;
 		}
-		return;
+
+		ghost = IDD->find_object_by_name(args);
+
+		if (!ghost) {
+			send_out("No such thing found.\n");
+			return;
+		}
+	} else {
+		ghost = IDD->find_object_by_name("ghosts:" + name);
+
+		if (!ghost) {
+			if (IDD->find_object_by_name("template:" + name)) {
+				send_out("Alas, your soul is gone.\n");
+			} else {
+				send_out("Run chargen, you don't have a character.\n");
+			}
+			return;
+		}
 	}
 
 	body = ghost;
 
 	while (newbody = body->query_possessee()) {
 		body = newbody;
+	}
+
+	if (ghost->query_possessor() && user->query_class() >= 2) {
+		send_out("Warning: you are playing a possessed object.\n");
 	}
 
 	send_out("Inhabiting " + generate_brief_definite(body) + ".\n");
