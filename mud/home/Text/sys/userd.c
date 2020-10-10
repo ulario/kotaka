@@ -87,13 +87,6 @@ string query_sitebanned_banner(object LIB_CONN connection)
 		blacklist = ([ ]);
 	}
 
-	time = time();
-
-	if (blacklist[ip] == nil || blacklist[ip] + 3600 < time) {
-		LOGD->post_message("system", LOG_NOTICE, "Telnet connection from sitebanned ip " + ip + ", further reports suppressed for an hour");
-		blacklist[ip] = time;
-	}
-
 	ban = BAND->check_siteban(ip);
 
 	output = "You are sitebanned\n";
