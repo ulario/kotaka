@@ -31,6 +31,7 @@
 #define STATE_RESPONDING 3
 
 inherit LIB_SYSTEM_USER;
+inherit "/lib/sort";
 inherit "~/lib/object";
 inherit "~/lib/ban";
 
@@ -125,11 +126,37 @@ private void handle_get_destruct(string objectname)
 	}
 }
 
+static int compare_sitebans(mixed *a, mixed *b)
+{
+	mixed ae, be;
+
+	ae = a[1]["expire"];
+	be = b[1]["expire"];
+
+	if (ae) {
+		if (be) {
+			if (ae < be) {
+				return -1;
+			} else if (ae > be) {
+				return 1;
+			}
+		} else {
+			return -1;
+		}
+	} else if (be) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 private void handle_get_siteban()
 {
 	object header;
 	int i, sz, time;
-	string *sitebans;
+
+	mixed *sitebans;
+	string *sites;
 
 	header = new_object("~/lwo/http_response");
 	header->set_status(200, "Siteban list");
@@ -146,7 +173,28 @@ private void handle_get_siteban()
 	message("<tr><th>Site</th><th>Issuer</th><th>Expire</th><th>Message</th></tr>\n");
 
 	time = time();
-	sitebans = BAND->query_sitebans();
+	sites = BAND->query_sitebans();
+	sz = sizeof(sites);
+	sitebans = allocate(sz);
+
+	for (i = 0; i < sz; i++) {
+		mapping ban;
+		string site;
+
+		site = sites[i];
+
+		ban = BAND->query_siteban(site);
+
+		if (!ban) {
+			continue;
+		}
+
+		sitebans[i] = ({ site, ban });
+	}
+
+	sitebans -= ({ nil });
+
+	quicksort(sitebans, 0, sizeof(sitebans), "compare_sitebans");
 
 	for (i = 0, sz = sizeof(sitebans); i < sz; i++) {
 		string site;
@@ -154,8 +202,8 @@ private void handle_get_siteban()
 		mixed expire;
 		mixed remaining;
 
-		site = sitebans[i];
-		siteban = BAND->query_siteban(site);
+		site = sitebans[i][0];
+		siteban = sitebans[i][1];
 
 		expire = siteban["expire"];
 
