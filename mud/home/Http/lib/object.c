@@ -15,7 +15,7 @@ static string object_text(object obj)
 	}
 
 	if (query_ip() == "127.0.0.1") {
-		subbuffer += "<a href=\"destruct.lpc?obj=" + object2string(obj) + "\">Destruct<br />\n";
+		subbuffer += "<a href=\"destruct.lpc?obj=" + object2string(obj) + "\">Destruct</a><br />\n";
 	}
 
 	buffer = oinfobox("Object", 1, subbuffer);
