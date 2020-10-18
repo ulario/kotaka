@@ -2,7 +2,7 @@ h1, h2, h3
 {
 	padding: 1em;
 	text-align: center;
-	background-color: #aaaaaa;
+	background-color: white;
 	border: .25em solid black;
 	border-radius: .5em;
 }
@@ -23,7 +23,7 @@ div.infobox
 {
 	margin: 1em;
 	padding: 1em;
-	background-color: #ffffaa;
+	background-color: white;
 	border: 1em solid #aaaa00;
 	border-radius: 2em;
 }
