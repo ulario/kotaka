@@ -1,6 +1,6 @@
 static string style()
 {
 	return "<style>\n"
-		+ read_file("http.css")
+		+ read_file("~/lib/http.css")
 		+ "</style>\n";
 }
