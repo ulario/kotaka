@@ -34,6 +34,7 @@ inherit LIB_SYSTEM_USER;
 inherit "/lib/sort";
 inherit "~/lib/object";
 inherit "~/lib/ban";
+inherit "~/lib/style";
 
 string ip;
 string request;
@@ -47,19 +48,6 @@ string version;
 string entity;
 int explen;
 int receiving_entity;
-
-private void do_style()
-{
-	message("<style>\n");
-	message("h1, h2, h3 { padding: 1em; text-align: center; background-color: #aaa; border: .25em solid black; border-radius: .5em; }\n");
-	message("table { margin: 0 auto; }\n");
-	message("div.column { column-count: 2; column-gap: 2em; column-fill: auto; }\n");
-	message("div.infobox { margin: 1em; padding: 1em; background-color: #ffa; border: 1em solid #aa0; border-radius: 2em; }\n");
-	message("td { margin: 0; vertical-align: top; padding: 0 1em; }\n");
-	message("table { margin: 0 auto; }\n");
-	message("td.spacer { width: 2em; }\n");
-	message("</style>\n");
-}
 
 private void handle_get_object(string objectname)
 {
@@ -76,7 +64,7 @@ private void handle_get_object(string objectname)
 		message(header->generate_header());
 		message("<html>\n");
 		message("<head>\n");
-		do_style();
+		message(style());
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
@@ -114,7 +102,7 @@ private void handle_get_destruct(string objectname)
 		message(header->generate_header());
 		message("<html>\n");
 		message("<head>\n");
-		do_style();
+		message(style());
 		message("<title>Object destroyed</title>\n");
 		message("</head>\n");
 		message("<body>\n");
@@ -295,7 +283,7 @@ private void handle_post_object(string objectname)
 		message(header->generate_header());
 		message("<html>\n");
 		message("<head>\n");
-		do_style();
+		message(style());
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
