@@ -1,3 +1,16 @@
+h1
+{
+	margin-top: 0;
+}
+
+p:first-child {
+	margin-top: 0;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+
 h1, h2, h3
 {
 	padding: 1em;
@@ -24,8 +37,8 @@ div.infobox
 	margin: 1em;
 	padding: 1em;
 	background-color: white;
-	border: 1em solid #aaaa00;
-	border-radius: 2em;
+	border: .25em solid #aaaa00;
+	border-radius: .5em;
 }
 
 td
