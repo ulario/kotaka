@@ -5,10 +5,12 @@ static string oinfobox(string header, int level, string content)
 {
 	string buf;
 
-	buf = "<h" + level + ">" + header + "</h" + level + ">\n";
+	buf = "<div class=\"infobox\">\n";
+	buf += "<h" + level + ">" + header + "</h" + level + ">\n";
 
-	buf += "<div class=\"infobox\">\n";
+	buf += "<div class=\"infopane\">\n";
 	buf += content;
+	buf += "</div>\n";
 	buf += "</div>\n";
 
 	return buf;
