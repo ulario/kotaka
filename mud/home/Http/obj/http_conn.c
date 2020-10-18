@@ -334,46 +334,6 @@ private void handle_post()
 	}
 }
 
-private int input(string message)
-{
-	switch(method) {
-	case "GET":
-		if (message == "") {
-			handle_get();
-			break;
-		}
-		return MODE_NOCHANGE;
-
-	case "POST":
-		if (message == "") {
-			entity = "";
-			set_mode(MODE_RAW);
-			receiving_entity = 1;
-			break;
-		}
-
-		if (receiving_entity) {
-			entity += message;
-		}
-
-		return MODE_NOCHANGE;
-
-	default:
-		message(
-			HTTPD->generate_error_page(
-				500, "Bad request",
-				"This server can't handle the " + method + " method yet.\n",
-				"Request:\n",
-				request
-			)
-		);
-
-		return MODE_DISCONNECT;
-	}
-
-	return MODE_NOCHANGE;
-}
-
 /**********/
 /* static */
 /**********/
@@ -438,7 +398,7 @@ int login(string str)
 
 	state = STATE_HEADERS;
 
-	return input(str);
+	return MODE_NOCHANGE;
 }
 
 void logout(int quit)
