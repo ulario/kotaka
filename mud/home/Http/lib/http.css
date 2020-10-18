@@ -1,0 +1,7 @@
+h1, h2, h3 { padding: 1em; text-align: center; background-color: #aaa; border: .25em solid black; border-radius: .5em; }
+table { margin: 0 auto; }
+div.column { column-count: 2; column-gap: 2em; column-fill: auto; }
+div.infobox { margin: 1em; padding: 1em; background-color: #ffa; border: 1em solid #aa0; border-radius: 2em; }
+td { margin: 0; vertical-align: top; padding: 0 1em; }
+table { margin: 0 auto; }
+td.spacer { width: 2em; }
