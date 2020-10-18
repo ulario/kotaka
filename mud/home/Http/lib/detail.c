@@ -8,18 +8,18 @@ private string detail_box(object obj, string detail)
 	string *words;
 	int sz;
 
-	buffer = "";
+	buffer = "<p>";
 
 	if (sizeof(words = obj->query_snouns(detail))) {
-		buffer += "<p>Singular nouns: " + implode(words, ", ") + "</p>\n";
+		buffer += "Singular nouns: " + implode(words, ", ") + "<br />\n";
 	}
 
 	if (sizeof(words = obj->query_pnouns(detail))) {
-		buffer += "<p>Plural nouns: " + implode(words, ", ") + "</p>\n";
+		buffer += "Plural nouns: " + implode(words, ", ") + "<br />\n";
 	}
 
 	if (sizeof(words = obj->query_adjectives(detail))) {
-		buffer += "<p>Adjectives: " + implode(words, ", ") + "</p>\n";
+		buffer += "Adjectives: " + implode(words, ", ") + "<br />\n";
 	}
 
 	descriptions = obj->query_descriptions(detail);
@@ -28,13 +28,17 @@ private string detail_box(object obj, string detail)
 	if (sz) {
 		int i;
 
+		buffer += "</p>\n<p>";
+
 		for (i = 0; i < sz; i++) {
 			string description;
 
 			description = descriptions[i];
 
-			buffer += "<p>" + description + ": " + obj->query_description(detail, description) + "</p>\n";
+			buffer += description + ": " + obj->query_description(detail, description) + "<br />\n";
 		}
+
+		buffer += "</p>\n";
 	}
 
 	if (detail) {

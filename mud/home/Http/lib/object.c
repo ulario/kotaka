@@ -8,14 +8,14 @@ static string object_text(object obj)
 	string buffer;
 	string name;
 
-	subbuffer = "<p>Object owner: " + obj->query_owner() + "</p>\n";
+	subbuffer = "<p>Object owner: " + obj->query_owner() + "<br />\n";
 
 	if (name = obj->query_object_name()) {
-		subbuffer += "<p>Object name: " + name + "</p>\n";
+		subbuffer += "Object name: " + name + "<br />\n";
 	}
 
 	if (query_ip() == "127.0.0.1") {
-		subbuffer += "<p><a href=\"destruct.lpc?obj=" + object2string(obj) + "\">Destruct</p>\n";
+		subbuffer += "<a href=\"destruct.lpc?obj=" + object2string(obj) + "\">Destruct<br />\n";
 	}
 
 	buffer = oinfobox("Object", 1, subbuffer);

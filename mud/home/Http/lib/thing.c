@@ -23,16 +23,16 @@ static string thing_text(object obj)
 
 	arch = obj->query_archetype();
 
-	subbuffer = "";
+	subbuffer = "<p>";
 
 	if (arch) {
-		subbuffer += "<p>Archetype: " + object2link(arch) + "</p>\n";
+		subbuffer += "Archetype: " + object2link(arch) + "<br />\n";
 	}
 
 	env = obj->query_environment();
 
 	if (env) {
-		subbuffer += "<p>Environment: " + object2link(env) + "</p>\n";
+		subbuffer += "Environment: " + object2link(env) + "<br />\n";
 	}
 
 	prox = obj->query_prox();
@@ -43,16 +43,18 @@ static string thing_text(object obj)
 			prep = "???";
 		}
 
-		subbuffer += "<p>Prox: " + prep + " " + prox + "</p>\n";
+		subbuffer += "Prox: " + prep + " " + prox + "<br />\n";
 	}
 
 	if (po = obj->query_possessor()) {
-		subbuffer += "<p>Possessed by: " + object2link(po) + "</p>\n";
+		subbuffer += "Possessed by: " + object2link(po) + "<br />\n";
 	}
 
 	if (pe = obj->query_possessee()) {
-		subbuffer += "<p>Possesing: " + object2link(pe) + "</p>\n";
+		subbuffer += "Possesing: " + object2link(pe) + "<br />\n";
 	}
+
+	subbuffer += "</p>\n"; 
 
 	buffer = oinfobox("Thing", 2, subbuffer);
 
@@ -63,11 +65,13 @@ static string thing_text(object obj)
 		int i;
 		string subbuffer;
 
-		subbuffer = "";
+		subbuffer = "<p>\n";
 
 		for (i = 0; i < sz; i++) {
-			subbuffer += "<p>" + object2link(inv[i]) + "</p>\n";
+			subbuffer += object2link(inv[i]) + "<br />\n";
 		}
+
+		subbuffer += "</p>\n";
 
 		buffer += oinfobox("Inventory", 3, subbuffer);
 	}
