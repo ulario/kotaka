@@ -743,13 +743,13 @@ static void process()
 	packet = buffer[0 .. len - 2];
 	buffer = buffer[len ..];
 
-	arr = PARSER_MUDMODE->parse(packet);
-
-	process_packet(arr);
-
 	if (buffer && strlen(buffer) > 4) {
 		call_out("process", 0);
 	}
+
+	arr = PARSER_MUDMODE->parse(packet);
+
+	process_packet(arr);
 }
 
 static void i3_connect()
