@@ -50,6 +50,9 @@ static mapping channels;
 string buffer;
 string mudname;
 int rejections;
+int strikes;
+int pinged;
+int ponged;
 
 /* i3 interface */
 int password; /* deprecated */
@@ -95,6 +98,7 @@ private void clean_passwords()
 			if (expire <= time) {
 				passwords[name] = nil;
 			}
+
 			break;
 
 		case T_INT:
@@ -440,14 +444,26 @@ private void i3_handle_startup_reply(mixed *value)
 		}
 	}
 
-	call_out_unique("keepalive", 0);
+	pinged = 0;
+	ponged = 0;
+
+	call_out_unique("keepalive", 1);
 }
 
 private void i3_handle_tell(mixed *value)
 {
+	mixed username;
 	object user;
 
-	if (user = TEXT_USERD->find_user(value[5])) {
+	username = value[5];
+
+	if (username == 0) {
+		if (value[6] == "IntermudD Keepalive" && value[7] == "ping") {
+			ponged = 1;
+		} else {
+			LOGD->post_message("system", LOG_WARNING, "I3: Received spurious 0 tell from I3");
+		}
+	} else if (user = TEXT_USERD->find_user(value[5])) {
 		string msg;
 
 		msg = value[7];
@@ -709,18 +725,33 @@ static void keepalive()
 {
 	mixed *arr;
 
-	call_out_unique("keepalive", 10);
+	call_out_unique("keepalive", 1);
 
 	arr = ({
-		"who-req",
+		"tell",
 		5,
 		mudname,
 		0,
 		mudname,
-		0
+		0,
+		"IntermudD Keepalive",
+		"ping"
 	});
 
 	i3_send_packet(arr);
+
+	if (pinged) {
+		if (ponged) {
+			ponged = 0;
+		} else {
+			strikes++;
+
+			LOGD->post_message("system", LOG_NOTICE, "I3: Keepalive fail, strike " + strikes);
+		}
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "I3: Starting keepalive");
+		pinged = 1;
+	}
 }
 
 static void process()
@@ -860,6 +891,7 @@ void logout(int quit)
 		LOGD->post_message("system", LOG_NOTICE, "I3: Connection closed");
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "I3: Connection lost");
+
 		call_out_unique("i3_connect", 5);
 	}
 }
