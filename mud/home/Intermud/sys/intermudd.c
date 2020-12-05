@@ -352,12 +352,6 @@ private void i3_handle_emoteto(mixed *value)
 
 private void i3_handle_error(mixed *value)
 {
-	if (value[2] == mudname) {
-		if (value[6] == "keepalive") {
-			return;
-		}
-	}
-
 	LOGD->post_message("system", LOG_ERR, "IntermudD: I3 error: " + mixed_sprint(value));
 
 	if (value[6] == "not-allowed") {
