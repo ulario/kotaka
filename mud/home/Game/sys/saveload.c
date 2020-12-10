@@ -528,5 +528,7 @@ void save_world()
 
 	list = ({ nil, nil });
 
+	VARD->make_dir(".");
+
 	call_out("save_purgedir_tick", 0, list, "save-tmp");
 }
