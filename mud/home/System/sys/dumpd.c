@@ -56,6 +56,7 @@ private void start()
 	goal = now + delay;
 
 	fdelay = (float)delay - fnow;
+
 	if (fdelay < 0.5) {
 		fdelay = 0.5;
 	}
@@ -88,6 +89,7 @@ static void dump(int goal)
 	({ now, fnow }) = millitime();
 
 	delta = now - goal;
+	fdelta = (float)delta + fnow;
 
 	if (fdelta >= 1.0) {
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + delta + " seconds late");
