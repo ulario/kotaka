@@ -737,6 +737,8 @@ static void keepalive()
 	if (pinged) {
 		if (ponged) {
 			ponged = 0;
+
+			strikes = 0;
 		} else {
 			strikes++;
 
