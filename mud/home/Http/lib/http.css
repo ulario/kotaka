@@ -12,7 +12,8 @@ h1
 	margin-top: 0;
 }
 
-p, h1, h2, h3, div.infobox {
+p, h1, h2, h3, div.infobox
+{
 	margin: 12pt 0;
 }
 
@@ -42,12 +43,12 @@ table
 
 div.column
 {
-	column-count: 3;
+	column-count: 2;
 	column-gap: 2em;
 	column-fill: auto;
 }
 
-div.infobox
+div.infobox, h1, h2, h3
 {
 	break-inside: avoid;
 }
