@@ -62,11 +62,13 @@ private void prompt()
 
 		name = query_user()->query_username();
 
-		if (!name) {
+		if (name) {
+			name = query_user()->query_titled_name();
+		} else {
 			name = "guest";
 		}
 
-		send_out("[" + query_user()->query_titled_name() + "@ulario] ");
+		send_out("[" + name + "@ulario] ");
 	}
 }
 
