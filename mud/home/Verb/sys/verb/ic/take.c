@@ -75,6 +75,11 @@ void main(object actor, mapping roles)
 	string look;
 	object from;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	dob = roles["dob"];
 
 	if (!dob) {

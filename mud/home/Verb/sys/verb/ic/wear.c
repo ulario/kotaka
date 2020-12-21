@@ -52,6 +52,11 @@ void main(object actor, mapping roles)
 	string *parts;
 	int i, sz, hlayer;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	dob = roles["dob"];
 
 	if (!dob) {

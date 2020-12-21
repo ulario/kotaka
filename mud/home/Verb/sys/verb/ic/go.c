@@ -51,6 +51,11 @@ void main(object actor, mapping roles)
 
 	int i, sz;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	env = actor->query_environment();
 
 	if (!env) {

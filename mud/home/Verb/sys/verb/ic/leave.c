@@ -49,7 +49,12 @@ void main(object actor, mapping roles)
 	object user;
 	object def;
 
-	if (roles["raw"] != "") {
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
+	if (roles["raw"] && roles["raw"] != "") {
 		send_out("Just type \"leave\".\n");
 		return;
 	}

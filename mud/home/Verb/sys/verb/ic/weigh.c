@@ -49,6 +49,11 @@ void main(object actor, mapping roles)
 	mixed dob;
 	string look;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	dob = roles["dob"];
 
 	if (!dob) {

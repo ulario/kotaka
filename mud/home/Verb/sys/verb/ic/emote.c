@@ -59,6 +59,11 @@ void main(object actor, mapping roles)
 	object *listeners;
 	object *mobiles;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	user = query_user();
 	emote = roles["raw"];
 

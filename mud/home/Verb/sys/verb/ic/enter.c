@@ -57,6 +57,11 @@ void main(object actor, mapping roles)
 	object def;
 	string look;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	/* todo:  if object has a default entrance */
 	/* then use it as an exit */
 

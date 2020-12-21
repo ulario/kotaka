@@ -54,6 +54,11 @@ private void do_attack(object actor, object dob)
 	object dchar, dliv;
 	int damage;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	achar = actor->query_character_lwo();
 
 	if (!achar) {

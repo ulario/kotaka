@@ -135,6 +135,11 @@ void main(object actor, mapping roles)
 	object *inv;
 	int sz;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	if (roles["raw"] == "-d") {
 		debug_inventory(actor);
 		return;
