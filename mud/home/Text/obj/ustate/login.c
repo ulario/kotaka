@@ -85,6 +85,12 @@ static void destruct(int clone)
 	::destruct();
 }
 
+static void timeout()
+{
+	send_out("\nLogin timed out.\n");
+	query_user()->quit("timeout");
+}
+
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
@@ -99,6 +105,8 @@ void begin()
 	send_out("If you wish to connect as a guest, simply type enter.\n\n");
 
 	state = STATE_GETUSERNAME;
+
+	call_out("timeout", 60);
 
 	prompt();
 }
