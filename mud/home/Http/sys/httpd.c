@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2020  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,8 +24,6 @@
 #include <kernel/user.h>
 
 inherit LIB_USERD;
-
-mapping blacklist;
 
 static void create()
 {
@@ -112,17 +110,6 @@ string query_sitebanned_banner(object connection)
 	ip = query_ip_number(connection);
 
 	ASSERT(ip);
-
-	if (!blacklist) {
-		blacklist = ([ ]);
-	}
-
-	time = time();
-
-	if (blacklist[ip] == nil || blacklist[ip] + 3600 < time) {
-		LOGD->post_message("system", LOG_NOTICE, "HTTP connection from sitebanned ip " + ip + ", further reports suppressed for an hour");
-		blacklist[ip] = time;
-	}
 
 	ban = BAND->check_siteban(ip);
 
