@@ -144,11 +144,10 @@ private void reset_routers()
 	routers = ([
 		"*dalet": ({ "97.107.133.86", 8787 }),
 		"*Kelly": ({ "150.101.219.57", 8080 }),
-		"*i4": ({ "204.209.44.3", 8080 }),
 		"*wpr": ({ "136.144.155.250", 8080 })
 	]);
 
-	router = "*wpr";
+	router = "*dalet";
 }
 
 private string mudmode_sprint(mixed data)
