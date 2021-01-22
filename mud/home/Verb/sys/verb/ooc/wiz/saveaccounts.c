@@ -40,6 +40,5 @@ void main(object actor, mapping roles)
 	}
 
 	ACCOUNTD->save();
-
 	send_out("Accounts saved.\n");
 }
