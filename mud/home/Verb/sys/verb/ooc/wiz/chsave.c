@@ -42,4 +42,5 @@ void main(object actor, mapping roles)
 	}
 
 	CHANNELD->save();
+	send_out("Channels saved.\n");
 }

@@ -42,4 +42,5 @@ void main(object actor, mapping roles)
 	}
 
 	CHANNELD->restore();
+	send_out("Channels restored.\n");
 }
