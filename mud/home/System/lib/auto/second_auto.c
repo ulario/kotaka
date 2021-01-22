@@ -79,7 +79,7 @@ private mixed **convert_callouts(mixed **callouts)
 	return callouts;
 }
 
-static void wipe_callouts()
+static void wipe_callouts(varargs string func)
 {
 	mixed **callouts;
 	int sz;
@@ -87,7 +87,15 @@ static void wipe_callouts()
 	callouts = ::status(this_object(), O_CALLOUTS);
 
 	for (sz = sizeof(callouts); --sz >= 0; ) {
-		remove_call_out(callouts[sz][CO_HANDLE]);
+		mixed *callout;
+
+		callout = callouts[sz];
+
+		if (func && callout[CO_FUNCTION] != func) {
+			continue;
+		}
+
+		remove_call_out(callout[CO_HANDLE]);
 	}
 }
 
