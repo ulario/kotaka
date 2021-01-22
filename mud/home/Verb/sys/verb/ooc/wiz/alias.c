@@ -23,6 +23,15 @@
 
 inherit LIB_VERB;
 
+private void usage()
+{
+	send_out("gadd      Add global alias\n");
+	send_out("gdel      Delete global alias\n");
+	send_out("glist     List global aliases\n");
+	send_out("gsave     Save global aliases\n");
+	send_out("grestore  Restore global aliases\n");
+}
+
 string *query_parse_methods()
 {
 	return ({ "raw" });
@@ -41,9 +50,15 @@ void main(object actor, mapping roles)
 
 	args = roles["raw"];
 
+	if (!args) {
+		send_out("Usage:\n");
+		usage();
+		return;
+	}
+
 	if (!sscanf(args, "%s %s", first, args)) {
 		first = args;
-		args = "";
+		args = nil;
 	}
 
 	switch(first) {
@@ -117,10 +132,6 @@ void main(object actor, mapping roles)
 	default:
 		send_out("Invalid alias command.\n");
 		send_out("Choices:\n");
-		send_out("gadd      Add global alias\n");
-		send_out("gdel      Delete global alias\n");
-		send_out("glist     List global aliases\n");
-		send_out("gsave     Save global aliases\n");
-		send_out("grestore  Restore global aliases\n");
+		usage();
 	}
 }
