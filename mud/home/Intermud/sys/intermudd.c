@@ -875,6 +875,12 @@ int message_done()
 
 void logout(int quit)
 {
+	pinged = 0;
+	ponged = 0;
+	buffer = nil;
+
+	wipe_callouts("keepalive");
+
 	if (quit) {
 		LOGD->post_message("system", LOG_NOTICE, "I3: Connection closed");
 	} else {
