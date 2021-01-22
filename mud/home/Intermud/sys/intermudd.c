@@ -702,7 +702,7 @@ static void create()
 
 	restore();
 
-	call_out("i3_connect", 0);
+	call_out_unique("i3_connect", 0);
 }
 
 static void destruct()
@@ -770,7 +770,7 @@ static void process()
 	buffer = buffer[len ..];
 
 	if (buffer && strlen(buffer) > 4) {
-		call_out("process", 0);
+		call_out_unique("process", 0);
 	}
 
 	arr = PARSER_MUDMODE->parse(packet);
@@ -800,19 +800,12 @@ static void i3_connect()
 
 void reboot()
 {
-	int handle;
-
 	ACCESS_CHECK(INTERMUD());
 
 	LOGD->post_message("system", LOG_NOTICE, "I3: Reconnecting after reboot");
 
 	disconnect();
-
-	while (handle = find_call_out("i3_connect")) {
-		remove_call_out(handle);
-	}
-
-	call_out("i3_connect", 0);
+	call_out_unique("i3_connect", 0);
 }
 
 /* hooks */
@@ -861,7 +854,7 @@ int login(string input)
 
 	buffer = input;
 
-	call_out("process", 0);
+	call_out_unique("process", 0);
 
 	return MODE_NOCHANGE;
 }
@@ -870,7 +863,7 @@ int receive_message(string input)
 {
 	buffer += input;
 
-	call_out("process", 0);
+	call_out_unique("process", 0);
 
 	return MODE_NOCHANGE;
 }
@@ -895,7 +888,7 @@ void connect_failed(int refused)
 {
 	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed");
 
-	call_out("i3_connect", 1);
+	call_out_unique("i3_connect", 1);
 }
 
 /* calls */
