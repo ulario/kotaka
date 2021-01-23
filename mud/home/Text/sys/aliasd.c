@@ -65,6 +65,12 @@ void save()
 	ETCD->make_dir(".");
 	ETCD->remove_file("aliases-tmp");
 	ETCD->write_file("aliases-tmp", buf + "\n");
+
+	if (ETCD->file_info("aliases")) {
+		ETCD->remove_file("aliases.old");
+		ETCD->rename_file("aliases", "aliases.old");
+	}
+
 	ETCD->remove_file("aliases");
 	ETCD->rename_file("aliases-tmp", "aliases");
 }
