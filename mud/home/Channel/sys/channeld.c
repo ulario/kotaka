@@ -101,6 +101,12 @@ void save()
 
 	ETCD->remove_file("config-tmp");
 	ETCD->write_file("config-tmp", buf + "\n");
+
+	if (ETCD->file_info("config.old")) {
+		ETCD->remove_file("config.old");
+		ETCD->rename_file("config", "config.old");
+	}
+
 	ETCD->remove_file("config");
 	ETCD->rename_file("config-tmp", "config");
 }
