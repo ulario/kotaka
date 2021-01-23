@@ -51,7 +51,7 @@ void set_alias(string name, string value)
 
 	aliases[name] = value;
 
-	save();
+	call_out_unique("save", 0);
 }
 
 void save()
