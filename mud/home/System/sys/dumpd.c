@@ -109,6 +109,8 @@ static void dump(int goal)
 		fdelta = 0.5;
 	}
 
+	wipe_callouts();
+
 	call_out("dump", fdelta, goal);
 }
 
