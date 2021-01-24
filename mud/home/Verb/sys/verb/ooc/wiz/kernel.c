@@ -24,6 +24,20 @@
 
 inherit LIB_VERB;
 
+private void usage()
+{
+	send_out("Usage: kernel <command> <parameters>\n");
+	send_out("owners    List resource owners\n");
+	send_out("addowner  Add a resource owner\n");
+	send_out("rmowner   Remove a resource owner\n");
+	send_out("users     List users\n");
+	send_out("adduser   Add a user\n");
+	send_out("rmuser    Remove a user\n");
+	send_out("reset     Reset ACCESSD data\n");
+	send_out("save      Save ACCESSD data\n");
+	send_out("restore   Restore ACCESSD data\n");
+}
+
 string *query_parse_methods()
 {
 	return ({ "raw" });
@@ -59,22 +73,17 @@ void main(object actor, mapping roles)
 	({ command, args }) = split_first_word(args);
 
 	if (!command || command == "") {
-		send_out("Usage: kernel <command> <parameters>\n");
-		send_out("owners    List resource owners\n");
-		send_out("addowner  Add a resource owner\n");
-		send_out("rmowner   Remove a resource owner\n");
-		send_out("users     List users\n");
-		send_out("adduser   Add a user\n");
-		send_out("rmuser    Remove a user\n");
-		send_out("reset     Reset ACCESSD data\n");
-		send_out("save      Save ACCESSD data\n");
-		send_out("restore   Restore ACCESSD data\n");
+		usage();
 		return;
 	}
 
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
 	switch(command) {
+	case "help":
+		usage();
+		break;
+
 	case "owners":
 		if (args != nil) {
 			send_out("Usage: kernel owners\n");
@@ -165,6 +174,7 @@ void main(object actor, mapping roles)
 			send_out("Usage: kernel save\n");
 		} else {
 			KERNELD->save_accessd();
+			send_out("AccessD saved.\n");
 		}
 		return;
 
@@ -173,6 +183,7 @@ void main(object actor, mapping roles)
 			send_out("Usage: kernel restore\n");
 		} else {
 			KERNELD->restore_accessd();
+			send_out("AccessD restored.\n");
 		}
 		return;
 
