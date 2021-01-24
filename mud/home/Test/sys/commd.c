@@ -114,7 +114,7 @@ int login(string str)
 	if (garbage = garbage(str)) {
 		LOGD->post_message("system", LOG_WARNING, "Test: sitebanning " + ip + " for 90 days for sending " + garbage + " garbage during login");
 
-		// will disconnect automatically
+		/* will disconnect automatically */
 		siteban(ip, "Spam (" + garbage + ")");
 
 		return MODE_BLOCK;
