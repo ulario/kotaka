@@ -879,6 +879,9 @@ void logout(int quit)
 	ponged = 0;
 	buffer = nil;
 
+	channels = ([ ]);
+	muds = ([ ]);
+
 	wipe_callouts("keepalive");
 
 	if (quit) {
@@ -929,9 +932,6 @@ void restore()
 
 	routers = ([ ]);
 	router = nil;
-
-	muds = ([ ]);
-	channels = ([ ]);
 
 	password = 0;
 	passwords = ([ ]);
