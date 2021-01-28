@@ -125,10 +125,10 @@ void main(object actor, mapping roles)
 			qsort(list, 0, sz);
 
 			switch(i) {
-			case 4: send_out("Owners:\n"); break;
-			case 3: send_out("Administrators:\n"); break;
-			case 2: send_out("Wizards:\n"); break;
-			case 1: send_out("Players:\n"); break;
+			case 4: send_out("\033[1;37mOwners:\033[0m\n"); break;
+			case 3: send_out("\033[1;31mAdministrators:\033[0m\n"); break;
+			case 2: send_out("\033[1;33mWizards:\033[0m\n"); break;
+			case 1: send_out("\033[1;32mPlayers:\033[0m\n"); break;
 			}
 
 			for (j = 0; j < sz; j++) {
