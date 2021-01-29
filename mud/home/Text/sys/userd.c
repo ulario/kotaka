@@ -186,6 +186,7 @@ object select(string str)
 		if (conn <- "~/obj/filter/telnet") {
 			has_telnet = 1;
 		}
+
 		if (conn <- "~/obj/filter/mudclient") {
 			has_mudclient = 1;
 		}
@@ -213,6 +214,7 @@ object select(string str)
 		return clone_object("~/obj/user");
 	}
 }
+
 void add_user(string name, object user)
 {
 	ACCESS_CHECK(TEXT());
