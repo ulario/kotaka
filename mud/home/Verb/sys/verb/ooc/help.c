@@ -178,10 +178,12 @@ void main(object actor, mapping roles)
 
 	topic = roles["raw"];
 
-	topic = trim_whitespace(topic);
-	topic = replace(topic, " ", "_");
+	if (topic) {
+		topic = trim_whitespace(topic);
+		topic = replace(topic, " ", "_");
+	}
 
-	if (topic == "") {
+	if (topic == "" || topic == nil) {
 		list_category(nil);
 	} else {
 		mapping index;
