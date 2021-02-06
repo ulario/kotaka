@@ -143,39 +143,23 @@ void receive_in(string input)
 			return;
 		} else {
 			object parent;
-			object pager;
-			string text;
 
 			ACCOUNTD->register_account(username, password);
 
 			query_user()->login_user(username);
 
-			ACCOUNTD->set_account_property(username, "channels", ({ "chat" }));
-
-			pager = clone_object("page");
-			text = read_file("~/data/quickstartguide");
-
-			pager->set_text(
-				text ? text : "Yell at the admin, he broke the quick start guide."
-			);
+			ACCOUNTD->set_account_property(username, "channels", ({ "chat" }) );
 
 			parent = query_parent();
 
 			if (instanceof(parent, "login")) {
 				object shell;
 
-				suspend_user();
 				shell = clone_object("shell");
-				push_state(shell);
-				shell->push_state(pager);
-				release_user();
-				parent->collapse_state(this_object());
-				collapse_state(shell);
+				parent->swap_state(shell);
 			} else {
-				swap_state(pager);
+				pop_state();
 			}
-
-			return;
 		}
 	}
 }
