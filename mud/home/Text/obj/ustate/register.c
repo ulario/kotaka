@@ -156,6 +156,7 @@ void receive_in(string input)
 				object shell;
 
 				shell = clone_object("shell");
+				parent->push_state(shell);
 				parent->collapse_state(shell);
 			} else {
 				pop_state();
