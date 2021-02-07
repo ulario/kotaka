@@ -118,6 +118,7 @@ void main(object actor, mapping roles)
 		}
 
 		ALIASD->save();
+		send_out("Saved aliases.\n");
 		break;
 
 	case "grestore":
@@ -127,6 +128,7 @@ void main(object actor, mapping roles)
 		}
 
 		ALIASD->restore();
+		send_out("Restored aliases.\n");
 		break;
 
 	default:
