@@ -22,15 +22,15 @@
 #include <kotaka/paths/verb.h>
 #include <kotaka/privilege.h>
 
-#define POP_SET		0
-#define POP_ADD		1
-#define POP_AND		2
-#define POP_DIV		3
-#define POP_MUL		4
-#define POP_OR		5
-#define POP_RADD	6
-#define POP_SUB		7
-#define POP_XOR		8
+#define POP_SET  0
+#define POP_ADD  1
+#define POP_AND  2
+#define POP_DIV  3
+#define POP_MUL  4
+#define POP_OR   5
+#define POP_RADD 6
+#define POP_SUB  7
+#define POP_XOR  8
 
 inherit "/lib/string/format";
 inherit "/lib/string/sprint";
