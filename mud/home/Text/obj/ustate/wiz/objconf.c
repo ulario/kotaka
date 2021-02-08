@@ -164,10 +164,7 @@ private void do_pop(string input, int op)
 
 private void do_help()
 {
-	send_out("Commands\n");
-	send_out("--------\n");
-	send_out("help, quit, pset, padd, pand, pdiv, pul, por, pradd, psub, pxor, pget\n");
-	send_out("walk, look\n");
+	send_out(read_file("confhelp.txt"));
 }
 
 private void do_input(string input)

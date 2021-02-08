@@ -1,0 +1,41 @@
+Commands
+========
+
+General
+-------
+
+help  show command help
+quit  quit the configurer
+
+Property
+--------
+
+pset    Set property
+padd    Add property
+pand    Bitwise AND property
+pdiv    Divide property
+pmul    Multiply property
+por     Bitwise OR property
+pradd   Reverse add property
+psub    Subtract property
+pxor    Bitwise XOR property
+pget    Get property
+lpget   Get local property
+lpset   Set local property
+lplist  List local properties
+
+Detail
+------
+
+dadd       Add detail
+ddel       Remove detail
+dveto      Veto detail
+dunveto    Unveto detail
+dselect    Select detail
+dlist      List details
+dview      View details
+snoun      Add or remove singular noun
+pnoun      Add or remove plural noun
+adjective  Add or remove adjective
+brief      Change brief description
+look       Change look description
