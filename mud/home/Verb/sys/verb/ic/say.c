@@ -25,7 +25,7 @@ inherit LIB_VERB;
 
 string *query_parse_methods()
 {
-	return ({ "english", "raw" });
+	return ({ "english" });
 }
 
 mixed **query_roles()

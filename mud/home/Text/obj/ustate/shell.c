@@ -145,7 +145,7 @@ private void handle_input(string input, varargs mapping dup)
 			return;
 
 		case '\'':
-			input = input[1 ..];
+			input = "\"" + input[1 ..] + "\"";
 			first = "say";
 			break;
 
