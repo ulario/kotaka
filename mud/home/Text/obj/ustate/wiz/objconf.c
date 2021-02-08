@@ -277,7 +277,7 @@ private void do_input(string input)
 			args = nil;
 		}
 
-		obj->add_detail(args);
+		obj->add_local_detail(args);
 
 		if (args) {
 			send_out("Detail \"" + args + "\" added, configuring it now.\n");
@@ -290,11 +290,11 @@ private void do_input(string input)
 
 	case "ddel":
 		if (args == "") {
-			obj->remove_detail(nil);
-			obj->remove_detail("");
+			obj->remove_local_detail(nil);
+			obj->remove_local_detail("");
 			send_out("Default detail \"" + args + "\" removed.\n");
 		} else {
-			obj->remove_detail(args);
+			obj->remove_local_detail(args);
 			send_out("Detail \"" + args + "\" removed.\n");
 		}
 		break;
