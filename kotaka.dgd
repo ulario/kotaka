@@ -1,12 +1,12 @@
 telnet_port	= ([
 	"*": 49153		/* status port */
-]);		/* telnet port number */
+]);
 binary_port	= ([
 	"localhost": 49152,	/* kernel library backdoor */
 	"*": 49154,		/* binary login port */
 	"*": 49155,		/* HTTP port */
 	"*": 49156		/* CommD */
-]);		/* binary port number */
+]);
 directory	= "mud";/* base directory */
 users		= 32;			/* max # of users */
 editors		= 0;			/* max # of editor sessions */
