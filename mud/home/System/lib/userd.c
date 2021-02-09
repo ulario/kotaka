@@ -24,6 +24,24 @@
 
 inherit SECOND_AUTO;
 
+static void unbind_ports()
+{
+	int sz;
+	object this;
+
+	this = this_object();
+
+	for (sz = status(ST_ARRAYSIZE); --sz >= 0; ) {
+		object manager;
+
+		manager = SYSTEM_USERD->query_binary_manager(sz);
+
+		if (manager == this) {
+			SYSTEM_USERD->set_binary_manager(sz, nil);
+		}
+	}
+}
+
 string query_banner(object LIB_CONN connection)
 {
 	ACCESS_CHECK(previous_program() == SYSTEM_USERD);
