@@ -22,6 +22,7 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/ports.h>
 #include <kotaka/privilege.h>
 
 inherit LIB_USERD;
@@ -41,7 +42,7 @@ static void create()
 	users = ([ ]);
 	guests = ([ ]);
 
-	SYSTEM_USERD->set_binary_manager(1, this_object());
+	bind_binary_port(LOGIN_PORT);
 }
 
 static void destruct()
@@ -56,6 +57,13 @@ static void destruct()
 			destruct_object(turkeys[sz]);
 		}
 	}
+}
+
+void upgrade()
+{
+	unbind_binary_ports();
+
+	bind_binary_port(LOGIN_PORT);
 }
 
 string query_blocked_banner(object LIB_CONN connection)
