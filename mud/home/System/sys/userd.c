@@ -226,11 +226,21 @@ void set_binary_manager(int port, object LIB_USERD manager)
 	binary_managers[port] = manager;
 }
 
+object query_binary_manager(int port)
+{
+	return binary_managers[port];
+}
+
 void set_telnet_manager(int port, object LIB_USERD manager)
 {
 	ACCESS_CHECK(INTERFACE());
 
 	telnet_managers[port] = manager;
+}
+
+object query_telnet_manager(int port)
+{
+	return telnet_managers[port];
 }
 
 /* initd hooks */
