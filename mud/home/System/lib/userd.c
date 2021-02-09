@@ -24,7 +24,25 @@
 
 inherit SECOND_AUTO;
 
-static void unbind_ports()
+static void unbind_telnet_ports()
+{
+	int sz;
+	object this;
+
+	this = this_object();
+
+	for (sz = status(ST_ARRAYSIZE); --sz >= 0; ) {
+		object manager;
+
+		manager = SYSTEM_USERD->query_telnet_manager(sz);
+
+		if (manager == this) {
+			SYSTEM_USERD->set_telnet_manager(sz, nil);
+		}
+	}
+}
+
+static void unbind_binary_ports()
 {
 	int sz;
 	object this;
@@ -40,6 +58,40 @@ static void unbind_ports()
 			SYSTEM_USERD->set_binary_manager(sz, nil);
 		}
 	}
+}
+
+static void bind_telnet_port(int port)
+{
+	int sz;
+	int *ports;
+
+	ports = status(ST_TELNETPORTS);
+
+	for (sz = sizeof(ports); --sz >= 0; ) {
+		if (ports[sz] == port) {
+			SYSTEM_USERD->set_telnet_manager(sz, this_object());
+			return;
+		}
+	}
+
+	error("No such telnet port");
+}
+
+static void bind_binary_port(int port)
+{
+	int sz;
+	int *ports;
+
+	ports = status(ST_BINARYPORTS);
+
+	for (sz = sizeof(ports); --sz >= 1; ) {
+		if (ports[sz] == port) {
+			SYSTEM_USERD->set_binary_manager(sz, this_object());
+			return;
+		}
+	}
+
+	error("No such telnet port");
 }
 
 string query_banner(object LIB_CONN connection)
