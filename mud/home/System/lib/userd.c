@@ -21,6 +21,7 @@
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <status.h>
 
 inherit SECOND_AUTO;
 
@@ -74,7 +75,7 @@ static void bind_telnet_port(int port)
 		}
 	}
 
-	error("No such telnet port");
+	error("No such telnet port " + port);
 }
 
 static void bind_binary_port(int port)
@@ -91,7 +92,7 @@ static void bind_binary_port(int port)
 		}
 	}
 
-	error("No such telnet port");
+	error("No such binary port " + port);
 }
 
 string query_banner(object LIB_CONN connection)
