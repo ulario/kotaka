@@ -21,13 +21,21 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/ports.h>
 #include <kernel/user.h>
 
 inherit LIB_USERD;
 
 static void create()
 {
-	SYSTEM_USERD->set_binary_manager(2, this_object());
+	bind_binary_port(HTTP_PORT);
+}
+
+void upgrade()
+{
+	unbind_binary_ports();
+
+	bind_binary_port(HTTP_PORT);
 }
 
 string generate_error_page(int status_code, string status_message, string lines...)
