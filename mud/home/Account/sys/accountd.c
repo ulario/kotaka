@@ -90,6 +90,7 @@ string *query_accounts()
 void change_password(string name, string new_password)
 {
 	ACCESS_CHECK(TEXT() || ACCOUNT() || VERB() || KADMIN());
+
 	CHECKARG(name, 1, "change_password");
 
 	if (!accounts[name]) {
