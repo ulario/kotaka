@@ -102,7 +102,8 @@ void change_password(string name, string new_password)
 
 int authenticate(string name, string password)
 {
-	ACCESS_CHECK(TEXT());
+	ACCESS_CHECK(INTERFACE());
+
 	CHECKARG(name, 1, "authenticate");
 
 	if (!accounts[name]) {
