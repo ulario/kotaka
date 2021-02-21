@@ -36,11 +36,11 @@ void action(mapping roles)
 
 	body = roles["actor"];
 
-	emit_from(body, body, " ", ({ "log", "logs" }), " in.");
-
 	name = body->query_object_name();
 
 	if (name && sscanf(name, "players:%s", name)) {
 		body->set_local_property("brief", to_title(name));
 	}
+
+	emit_from(body, "(OOC) ", body, " ", ({ "log", "logs" }), " in.");
 }

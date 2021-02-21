@@ -36,7 +36,7 @@ void action(mapping roles)
 
 	body = roles["actor"];
 
-	emit_from(body, body, " ", ({ "log", "logs" }), " out.");
+	emit_from(body, "(OOC) ", body, " ", ({ "log", "logs" }), " out.");
 
 	name = body->query_object_name();
 
