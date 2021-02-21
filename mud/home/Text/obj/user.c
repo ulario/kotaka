@@ -39,13 +39,76 @@ int quitting;
 int logging_out;
 string username;
 
-/* helpers */
+/* private */
 
-/* hooks */
+private void do_banner()
+{
+	string *files;
+	string ansi;
+	int sz;
+	int level;
+	int rnd;
+	int splash;
 
-/* functions */
+	files = get_dir("~/data/splash/telnet_banners/chars/*")[0];
+	sz = sizeof(files);
+	splash = random(sz);
 
-static void unsubscribe_channels();
+	ansi = read_file("~/data/splash/telnet_banners/ansi/" + files[splash]);
+
+	if (!ansi) {
+		ansi = ANSID->simple_ansify(
+			read_file("~/data/splash/telnet_banners/chars/" + files[splash]),
+			read_file("~/data/splash/telnet_banners/fgcolor/" + files[splash]),
+			read_file("~/data/splash/telnet_banners/bgcolor/" + files[splash])
+		);
+
+		write_file("~/data/splash/telnet_banners/ansi/" + files[splash], ansi);
+	};
+
+	splash++;
+
+	ansi = replace(ansi, "\n", "\r\n");
+
+	ASSERT(ansi);
+
+	::send_out(ansi);
+}
+
+private int do_receive(string msg)
+{
+	int ret;
+	string logmsg;
+	mixed *mtime;
+
+	logmsg = msg;
+
+	if (!query_top_state()->forbid_log_inbound()) {
+		log_message("<<< " + msg);
+	}
+
+	ret = ::receive_message(msg);
+
+	set_mode(ret);
+
+	return ret;
+}
+
+private void linkdie()
+{
+	if (body) {
+		object puppet;
+
+		while (body) {
+			puppet = body;
+			body = body->query_possessee();
+		}
+
+		"~Action/sys/action/linkdie"->action( ([ "actor": puppet ]) );
+	}
+}
+
+/* static */
 
 static void create(int clone)
 {
@@ -53,6 +116,53 @@ static void create(int clone)
 		::create();
 	}
 }
+
+static void destruct(int clone)
+{
+	if (clone) {
+		destructing = 1;
+
+		if (!logging_out) {
+			disconnect();
+		}
+	}
+}
+
+static void subscribe_channels()
+{
+	string *channels;
+
+	channels = ACCOUNTD->query_account_property(username, "channels");
+
+	if (channels) {
+		int sz;
+
+		for (sz = sizeof(channels); --sz >= 0; ) {
+			if (CHANNELD->test_channel(channels[sz])) {
+				CHANNELD->subscribe_channel(channels[sz], this_object());
+			} else {
+				message("Warning: " + channels[sz] + " does not exist.\n");
+			}
+		}
+	}
+}
+
+static void unsubscribe_channels()
+{
+	string *subscriptions;
+	int sz;
+	object this;
+
+	this = this_object();
+
+	subscriptions = CHANNELD->query_subscriptions(this);
+
+	for (sz = sizeof(subscriptions); --sz >= 0; ) {
+		CHANNELD->unsubscribe_channel(subscriptions[sz], this);
+	}
+}
+
+/* public */
 
 void send_out(string msg)
 {
@@ -70,17 +180,6 @@ void dispatch_wiztool(string line)
 	ACCESS_CHECK(TEXT());
 
 	KERNELD->get_wiztool()->input(line);
-}
-
-static void destruct(int clone)
-{
-	if (clone) {
-		destructing = 1;
-
-		if (!logging_out) {
-			disconnect();
-		}
-	}
 }
 
 string query_username()
@@ -183,6 +282,7 @@ void quit(string cause)
 
 	case "banned": /* user was banned */
 		/* user's message handled by ban command */
+		linkdie();
 		break;
 
 	case "sitebanned": /* user was sitebanned */
@@ -217,6 +317,7 @@ void quit(string cause)
 				}
 			}
 		}
+		linkdie();
 		break;
 
 	case "bumped": /* user logged in on another connection */
@@ -226,98 +327,24 @@ void quit(string cause)
 		break; /* handled by login */
 
 	case "kicked": /* user was kicked */
+		linkdie();
 		break; /* handled by kick */
 
 	case "nuked": /* user's account was nuked */
+		linkdie();
 		break; /* handled by nuke */
 
 	case "timeout": /* user timed out at login process */
 		break; /* handled by login */
 
 	case "idle": /* user idled out */
+		linkdie();
 		break;
 	}
 
 	disconnect();
 
 	quitting = 0;
-}
-
-void logout(int dest)
-{
-	ACCESS_CHECK(previous_program() == LIB_CONN);
-
-	logging_out = 1;
-
-	if (username && !quitting) {
-		if (dest) {
-			/* connection object was destructed, manual logout */
-		} else {
-			/* remote closure, we're linkdead */
-		}
-	}
-
-	log_message("LOGOUT");
-
-	unsubscribe_channels(); /* we won't be able to receive channel messages once we nuke our ustate tree */
-	::logout();
-
-	if (!destructing) {
-		destruct_object(this_object());
-	}
-}
-
-private void do_banner()
-{
-	string *files;
-	string ansi;
-	int sz;
-	int level;
-	int rnd;
-	int splash;
-
-	files = get_dir("~/data/splash/telnet_banners/chars/*")[0];
-	sz = sizeof(files);
-	splash = random(sz);
-
-	ansi = read_file("~/data/splash/telnet_banners/ansi/" + files[splash]);
-
-	if (!ansi) {
-		ansi = ANSID->simple_ansify(
-			read_file("~/data/splash/telnet_banners/chars/" + files[splash]),
-			read_file("~/data/splash/telnet_banners/fgcolor/" + files[splash]),
-			read_file("~/data/splash/telnet_banners/bgcolor/" + files[splash])
-		);
-
-		write_file("~/data/splash/telnet_banners/ansi/" + files[splash], ansi);
-	};
-
-	splash++;
-
-	ansi = replace(ansi, "\n", "\r\n");
-
-	ASSERT(ansi);
-
-	::send_out(ansi);
-}
-
-private int do_receive(string msg)
-{
-	int ret;
-	string logmsg;
-	mixed *mtime;
-
-	logmsg = msg;
-
-	if (!query_top_state()->forbid_log_inbound()) {
-		log_message("<<< " + msg);
-	}
-
-	ret = ::receive_message(msg);
-
-	set_mode(ret);
-
-	return ret;
 }
 
 int login(string str)
@@ -343,6 +370,35 @@ int login(string str)
 	}
 
 	return MODE_NOCHANGE;
+}
+
+void logout(int dest)
+{
+	ACCESS_CHECK(previous_program() == LIB_CONN);
+
+	if (body) {
+		catch(error("Logging out with a body: " + object_name(body)));
+	}
+
+	logging_out = 1;
+
+	if (username && !quitting) {
+		if (dest) {
+			/* connection object was destructed, manual logout */
+		} else {
+			/* remote closure, we're linkdead */
+		}
+	}
+
+	linkdie();
+	log_message("LOGOUT");
+
+	unsubscribe_channels(); /* we won't be able to receive channel messages once we nuke our ustate tree */
+	::logout();
+
+	if (!destructing) {
+		destruct_object(this_object());
+	}
 }
 
 int receive_message(string str)
@@ -382,40 +438,6 @@ void channel_message(string channel, mixed *mtime, string sender, string message
 	}
 
 	send_out(implode(parts, " ") + "\n");
-}
-
-static void subscribe_channels()
-{
-	string *channels;
-
-	channels = ACCOUNTD->query_account_property(username, "channels");
-
-	if (channels) {
-		int sz;
-
-		for (sz = sizeof(channels); --sz >= 0; ) {
-			if (CHANNELD->test_channel(channels[sz])) {
-				CHANNELD->subscribe_channel(channels[sz], this_object());
-			} else {
-				message("Warning: " + channels[sz] + " does not exist.\n");
-			}
-		}
-	}
-}
-
-static void unsubscribe_channels()
-{
-	string *subscriptions;
-	int sz;
-	object this;
-
-	this = this_object();
-
-	subscriptions = CHANNELD->query_subscriptions(this);
-
-	for (sz = sizeof(subscriptions); --sz >= 0; ) {
-		CHANNELD->unsubscribe_channel(subscriptions[sz], this);
-	}
 }
 
 object query_telnet_obj()
