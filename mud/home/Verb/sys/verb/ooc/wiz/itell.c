@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,9 +31,7 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	object user;
-	string target;
-	string mud;
-	string msg;
+	string args, target, mud, msg;
 
 	user = query_user();
 
@@ -42,16 +40,14 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(roles["raw"], "\"%s@%s\" %s", target, mud, msg) != 3) {
-		if (sscanf(roles["raw"], "%s@%s %s", target, mud, msg) != 3) {
-			send_out("Usage: itell user@mud message\n");
-			send_out("If the mud has spaces in its name, put user@mud in quotation marks.\n");
-			return;
-		}
-	}
+	args = roles["raw"];
 
-	if (!find_object(INTERMUDD)) {
-		send_out("IntermudD is offline.\n");
+	if (!args
+		&& sscanf(args, "\"%s@%s\" %s", target, mud, msg) != 3
+		&& sscanf(args, "%s@%s %s", target, mud, msg) != 3
+	) {
+		send_out("Usage: itell user@mud message\n");
+		send_out("If the mud has spaces in its name, put user@mud in quotation marks.\n");
 		return;
 	}
 

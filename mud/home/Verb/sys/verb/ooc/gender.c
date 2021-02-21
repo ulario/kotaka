@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,7 +39,7 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	string name;
+	string name, gender;
 
 	name = query_user()->query_name();
 
@@ -48,7 +48,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
+	gender = roles["raw"];
+
+	if (!gender) {
 		switch(ACCOUNTD->query_account_property(name, "gender")) {
 		case nil:
 			send_out("You have no gender.\n");
@@ -63,7 +65,7 @@ void main(object actor, mapping roles)
 			break;
 		}
 	} else {
-		switch(roles["raw"]) {
+		switch(gender) {
 		case "male":
 			ACCOUNTD->set_account_property(name, "gender", "male");
 			send_out("You are now male.\n");

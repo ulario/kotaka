@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,15 +31,9 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	string *users;
-	object user;
-	object obj;
-	string oname;
-	string pname;
-	string operatur;
-	mixed pvalue;
-	mixed opvalue;
-	mixed *pinfo;
+	mixed opvalue, *pinfo, pvalue;
+	object obj, user;
+	string args, oname, operatur, pname, *users;
 
 	user = query_user();
 
@@ -48,8 +42,10 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(roles["raw"], "%s %s %s %s", operatur, oname, pname, pvalue) != 4) {
-		send_out("Usage: pop <operator> <object> <property name> <value>\n");
+	args = roles["raw"];
+
+	if (!args || sscanf(args, "%s %s %s %s", operatur, oname, pname, pvalue) != 4) {
+		send_out("Usage: pop <operator> <object> <property> <value>\n");
 		return;
 	}
 
@@ -85,27 +81,33 @@ void main(object actor, mapping roles)
 	case "add":
 		obj->set_property(pname, opvalue + pvalue);
 		break;
+
 	case "and":
 		obj->set_property(pname, opvalue & pvalue);
 		break;
+
 	case "div":
 		obj->set_property(pname, opvalue / pvalue);
 		break;
+
 	case "mul":
 		obj->set_property(pname, opvalue * pvalue);
 		break;
+
 	case "or":
 		obj->set_property(pname, opvalue | pvalue);
 		break;
+
 	case "radd":
 		obj->set_property(pname, pvalue + opvalue);
 		break;
+
 	case "sub":
 		obj->set_property(pname, opvalue - pvalue);
 		break;
+
 	case "xor":
 		obj->set_property(pname, opvalue ^ pvalue);
-		break;
 	}
 
 	send_out("Done.\n");

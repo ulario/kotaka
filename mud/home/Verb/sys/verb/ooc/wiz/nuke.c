@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,9 +31,8 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	object turkey;
-	object user;
-	string kicker_name;
+	object turkey, user;
+	string args, kicker, username;
 
 	user = query_user();
 
@@ -42,38 +41,38 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
-		send_out("Who do you wish to nuke?\n");
+	args = roles["raw"];
+
+	if (!args) {
+		send_out("Usage: nuke <user>\n");
 		return;
 	}
 
-	if (roles["raw"] == user->query_username()) {
+	if (username == user->query_username()) {
 		send_out("You cannot nuke yourself.\n");
 		return;
 	}
 
-	if (roles["raw"] == "admin") {
+	if (username == "admin") {
 		send_out("You cannot nuke admin.\n");
 		return;
 	}
 
-	if (!ACCOUNTD->query_is_registered(roles["raw"])) {
+	if (!ACCOUNTD->query_is_registered(username)) {
 		send_out("There is no such user.\n");
 		return;
 	}
 
-	catch {
-		turkey = TEXT_USERD->find_user(roles["raw"]);
-		kicker_name = user->query_titled_name();
+	turkey = TEXT_USERD->find_user(username);
+	kicker = user->query_titled_name();
 
-		if (turkey) {
-			turkey->message("You have been nuked from the mud by " + kicker_name + "!\n");
-			turkey->quit("nuked");
-		}
+	if (turkey) {
+		turkey->message("You have been nuked from the mud by " + kicker + "!\n");
+		turkey->quit("nuked");
 	}
 
-	ACCOUNTD->unregister_account(roles["raw"]);
+	ACCOUNTD->unregister_account(username);
 
-	user->message("You nuke " + roles["raw"] + " from the mud.\n");
-	send_to_all_except(roles["raw"] + " has been nuked from the mud by " + kicker_name + "!\n", ({ turkey, query_user() }) );
+	user->message("You nuke " + username + " from the mud!\n");
+	send_to_all_except(username + " has been nuked from the mud by " + kicker + "!\n", ({ turkey, query_user() }) );
 }

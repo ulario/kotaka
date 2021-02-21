@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,16 +29,17 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	string router;
-	string ip;
 	int port;
+	string args, ip, router;
 
 	if (query_user()->query_class() < 3) {
 		send_out("Only an administrator may add a router.\n");
 		return;
 	}
 
-	if (sscanf(roles["raw"], "%s %s %d", router, ip, port) != 3) {
+	args = roles["raw"];
+
+	if (!args || sscanf(args, "%s %s %d", router, ip, port) != 3) {
 		send_out("Usage: irouteradd name ip port\n");
 		return;
 	}

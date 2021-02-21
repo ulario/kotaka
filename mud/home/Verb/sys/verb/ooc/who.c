@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,13 +42,10 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	int class;
-	object user;
-	object *users;
+	int class, i, is_wiz, sz;
 	mapping lists;
+	object user, *users;
 	string myname;
-	int sz, i;
-	int is_wiz;
 
 	lists = ([
 		4: ({ }),
@@ -56,6 +53,11 @@ void main(object actor, mapping roles)
 		2: ({ }),
 		1: ({ })
 	]);
+
+	if (roles["raw"]) {
+		send_out("Usage: who\n");
+		return;
+	}
 
 	user = query_user();
 	myname = user->query_username();

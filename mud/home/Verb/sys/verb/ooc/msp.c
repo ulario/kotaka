@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,43 +40,42 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	object conn;
+	object obj;
 	string args;
 
 	args = roles["raw"];
-	conn = query_user();
-	conn = conn->query_mudclient_obj();
+	obj = query_user();
+	obj = obj->query_mudclient_obj();
 
 	switch(args) {
 	case "on":
-		if (conn) {
+		if (obj) {
 			send_out("Enabling MSP.\n");
-			conn->enable_msp();
+			obj->enable_msp();
 		} else {
-			send_out("Error: no mudclient filter detected on this connection\n");
+			send_out("No mudclient filter detected on this connection\n");
 		}
 		break;
 
 	case "off":
-		if (conn) {
+		if (obj) {
 			send_out("Disabling MSP.\n");
-			conn->disable_msp();
+			obj->disable_msp();
 		} else {
-			send_out("Error: no mudclient filter detected on this connection\n");
+			send_out("No mudclient filter detected on this connection\n");
 		}
 		break;
 
 	case "test":
-		if (conn) {
+		if (obj) {
 			send_out("Testing MSP.\n");
-			conn->beep();
+			obj->beep();
 		} else {
-			send_out("Error: no mudclient filter detected on this connection\n");
+			send_out("No mudclient filter detected on this connection\n");
 		}
 		break;
 
 	default:
 		send_out("Usage: msp <on|off|test>\n");
-		return;
 	}
 }

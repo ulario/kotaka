@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -43,16 +43,12 @@ an object is stale if:
 
 static void report_tick(mixed **list, object user, object proxy)
 {
-	int pindex;
-	object pinfo;
-	mixed *libs;
-	string *libnames;
-	string *incs;
-	int sz;
-	int ctime;
-	string path;
+	int ctime, pindex, sz;
 	mapping srcstat;
-	mixed *info;
+	mixed *info, *libs;
+	object pinfo;
+	string *incs, *libnames;
+	string path;
 
 	pindex = list_front(list);
 	list_pop_front(list);
@@ -182,6 +178,11 @@ void main(object actor, mapping roles)
 
 	if (user->query_class() < 2) {
 		send_out("Only a wizard can do that.\n");
+		return;
+	}
+
+	if (roles["raw"]) {
+		send_out("Usage: stale\n");
 		return;
 	}
 

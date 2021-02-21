@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,16 +29,23 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
+	int i, sz, tcount;
 	mixed *st;
-	int i, sz;
-	int tcount;
+	string path;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to touch all clones.\n");
 		return;
 	}
 
-	st = status(roles["raw"]);
+	path = roles["raw"];
+
+	if (!path) {
+		send_out("Usage: touchall <path>\n");
+		return;
+	}
+
+	st = status(path);
 
 	if (!st) {
 		send_out("No such object.\n");
@@ -50,7 +57,7 @@ void main(object actor, mapping roles)
 	for (i = 0; i < sz; i++) {
 		object obj;
 
-		obj = find_object(roles["raw"] + "#" + i);
+		obj = find_object(path + "#" + i);
 
 		if (obj) {
 			call_touch(obj);

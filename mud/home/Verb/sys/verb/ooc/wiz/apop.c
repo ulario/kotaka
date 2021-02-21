@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,6 +39,7 @@ void main(object actor, mapping roles)
 	mixed pvalue;
 	mixed opvalue;
 	mixed *pinfo;
+	string args;
 
 	user = query_user();
 
@@ -47,7 +48,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(roles["raw"], "%s %s %s %s", operatur, username, pname, pvalue) != 4) {
+	args = roles["raw"];
+
+	if (!args || sscanf(args, "%s %s %s %s", operatur, username, pname, pvalue) != 4) {
 		send_out("Usage: apop <operator> <user name> <property name> <value>\n");
 		return;
 	}
@@ -71,24 +74,31 @@ void main(object actor, mapping roles)
 	case "add":
 		ACCOUNTD->set_account_property(username, pname, opvalue + pvalue);
 		break;
+
 	case "and":
 		ACCOUNTD->set_account_property(username, pname, opvalue & pvalue);
 		break;
+
 	case "div":
 		ACCOUNTD->set_account_property(username, pname, opvalue / pvalue);
 		break;
+
 	case "mul":
 		ACCOUNTD->set_account_property(username, pname, opvalue * pvalue);
 		break;
+
 	case "or":
 		ACCOUNTD->set_account_property(username, pname, opvalue | pvalue);
 		break;
+
 	case "radd":
 		ACCOUNTD->set_account_property(username, pname, pvalue + opvalue);
 		break;
+
 	case "sub":
 		ACCOUNTD->set_account_property(username, pname, opvalue - pvalue);
 		break;
+
 	case "xor":
 		ACCOUNTD->set_account_property(username, pname, opvalue ^ pvalue);
 		break;

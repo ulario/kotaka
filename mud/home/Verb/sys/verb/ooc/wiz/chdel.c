@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,8 +30,7 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	object user;
-	string name;
-	string *subscriptions;
+	string channel, name, *subscriptions;
 
 	user = query_user();
 	name = user->query_username();
@@ -41,18 +40,19 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
-		send_out("Cat got your tongue?\n");
+	channel = roles["raw"];
+
+	if (!channel) {
+		send_out("Usage: chdel <channel>\n");
 		return;
 	}
 
-	if (!CHANNELD->test_channel(roles["raw"])) {
+	if (!CHANNELD->test_channel(channel)) {
 		send_out("That channel does not exist.\n");
 		return;
 	}
 
-	CHANNELD->del_channel(roles["raw"]);
+	CHANNELD->del_channel(channel);
 
 	send_out("Channel deleted.\n");
-	return;
 }

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,8 @@ inherit LIB_VERB;
 
 private void usage()
 {
-	send_out("Usage: kernel <command> <parameters>\n");
+	send_out("Usage: kernel <command> <parameters>\n\n");
+	send_out("Commands:\n");
 	send_out("owners    List resource owners\n");
 	send_out("addowner  Add a resource owner\n");
 	send_out("rmowner   Remove a resource owner\n");
@@ -43,23 +44,10 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
-string *split_first_word(string input)
-{
-	string first, second;
-
-	if (sscanf(input, "%s %s", first, second)) {
-		return ({ first, second });
-	} else {
-		return ({ input, nil });
-	}
-}
-
 void main(object actor, mapping roles)
 {
-	string command;
-	string args;
-	object user;
-	object proxy;
+	object proxy, user;
+	string args, command;
 
 	user = query_user();
 
@@ -70,11 +58,14 @@ void main(object actor, mapping roles)
 
 	args = roles["raw"];
 
-	({ command, args }) = split_first_word(args);
-
-	if (!command || command == "") {
+	if (!args) {
 		usage();
 		return;
+	}
+
+	if (!sscanf(args, "%s %s", command, args)) {
+		command = args;
+		args = nil;
 	}
 
 	proxy = PROXYD->get_proxy(query_user()->query_name());
@@ -85,9 +76,8 @@ void main(object actor, mapping roles)
 		break;
 
 	case "owners":
-		if (args != nil) {
+		if (args) {
 			send_out("Usage: kernel owners\n");
-			return;
 		} else {
 			string *owners;
 
@@ -99,35 +89,32 @@ void main(object actor, mapping roles)
 			}
 
 			send_out(implode(owners, ", ") + "\n");
-			return;
 		}
+		break;
 
 	case "users":
-		if (args != nil) {
+		if (args) {
 			send_out("Usage: kernel users\n");
-			return;
 		} else {
 			string *users;
 
 			users = KERNELD->query_users();
 
 			send_out(implode(users, ", ") + "\n");
-			return;
 		}
+		break;
 
 	case "addowner":
-		if (args == nil) {
+		if (!args) {
 			send_out("Usage: kernel addowner <owner>\n");
-			return;
 		} else {
 			proxy->add_owner(args);
 		}
 		break;
 
 	case "rmowner":
-		if (args == nil) {
+		if (!args) {
 			send_out("Usage: kernel rmowner <owner>\n");
-			return;
 		} else {
 			if (args == "admin") {
 				send_out("You cannot remove the admin owner.\n");
@@ -139,18 +126,16 @@ void main(object actor, mapping roles)
 		break;
 
 	case "adduser":
-		if (args == nil) {
+		if (!args) {
 			send_out("Usage: kernel adduser <user>\n");
-			return;
 		} else {
 			proxy->add_user(args);
 		}
 		break;
 
 	case "rmuser":
-		if (args == nil) {
+		if (!args) {
 			send_out("Usage: kernel rmuser <user>\n");
-			return;
 		} else {
 			if (args == "admin") {
 				send_out("You cannot remove the admin user.\n");
@@ -162,15 +147,16 @@ void main(object actor, mapping roles)
 		break;
 
 	case "reset":
-		if (args != nil) {
+		if (args) {
 			send_out("Usage: kernel reset\n");
 		} else {
 			KERNELD->reset_accessd();
+			send_out("AccessD reset.\n");
 		}
 		return;
 
 	case "save":
-		if (args != nil) {
+		if (args) {
 			send_out("Usage: kernel save\n");
 		} else {
 			KERNELD->save_accessd();

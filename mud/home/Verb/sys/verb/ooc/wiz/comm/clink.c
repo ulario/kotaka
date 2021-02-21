@@ -24,12 +24,10 @@ void main(object actor, mapping roles)
 
 	ip = roles["raw"];
 
-	if (ip == "") {
-		send_out("Usage: clink <target ip>\n");
+	if (!ip) {
+		send_out("Usage: clink <ip>\n");
 		return;
 	}
 
 	"~Test/sys/commd"->link(ip);
-
-	return;
 }

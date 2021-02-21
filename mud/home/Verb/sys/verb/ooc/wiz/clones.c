@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -58,10 +58,19 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
+	string path;
+
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to do a clone check.\n");
 		return;
 	}
 
-	call_out("lazy_clones", 0, roles["raw"], status(ST_OTABSIZE));
+	path = roles["raw"];
+
+	if (!path) {
+		send_out("Usage: clones <path>\n");
+		return;
+	}
+
+	call_out("lazy_clones", 0, path, status(ST_OTABSIZE));
 }

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,15 +32,22 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	mixed **list;
-	object proxy;
+	object proxy, user;
 
-	if (query_user()->query_class() < 2) {
+	user = query_user();
+
+	if (user->query_class() < 2) {
 		send_out("Only a wizard can do that.\n");
 		return;
 	}
 
+	if (roles["raw"]) {
+		send_out("Usage: orphans\n");
+		return;
+	}
+
 	list = OBJECTD->query_program_indices();
-	proxy = PROXYD->get_proxy(query_user()->query_name());
+	proxy = PROXYD->get_proxy(user->query_name());
 
 	while (!list_empty(list)) {
 		int index;

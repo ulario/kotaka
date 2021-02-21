@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,8 +31,7 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	object user;
-	string *list;
-	string **table;
+	string *list, **table;
 	int sz, i;
 
 	user = query_user();
@@ -42,8 +41,8 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (!find_object(INTERMUDD)) {
-		send_out("IntermudD is offline.\n");
+	if (roles["raw"]) {
+		send_out("Usage: irestore\n");
 		return;
 	}
 

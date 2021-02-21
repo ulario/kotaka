@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,7 @@ void main(object actor, mapping roles)
 
 	demo = roles["raw"];
 
-	if (demo == "") {
+	if (!demo) {
 		send_out("Usage: ansidemo <demo>\n");
 		send_out("Available demos:\n");
 		send_out("matrix - Demonstrate a cascading field of ones and zeroes in eerie green hues\n");

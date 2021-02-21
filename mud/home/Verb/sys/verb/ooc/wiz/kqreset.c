@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,9 +32,8 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	int sz;
-	string *resources;
 	object proxy;
-	string args;
+	string args, *resources;
 
 	if (query_user()->query_class() < 3) {
 		send_out("Permission denied.\n");
@@ -43,6 +42,15 @@ void main(object actor, mapping roles)
 
 	args = roles["raw"];
 
+	if (!args) {
+		send_out("Usage: kqreset <owner>\n");
+		return;
+	}
+
+	if (args == "Ecru") {
+		args = nil;
+	}
+
 	resources = KERNELD->query_resources();
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 
@@ -50,5 +58,5 @@ void main(object actor, mapping roles)
 		proxy->rsrc_set_limit(args, resources[sz], -1);
 	}
 
-	send_out("Resource limits for " + args + " removed.\n");
+	send_out("Resource limits for " + (args ? args : "Ecru") + " removed.\n");
 }

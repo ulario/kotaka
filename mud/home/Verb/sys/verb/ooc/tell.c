@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,10 +40,8 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	object user;
-	mixed tuser;
-	string channel;
-	string text;
+	object user, tuser;
+	string args, target, text;
 
 	user = query_user();
 
@@ -52,12 +50,14 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(roles["raw"], "%s %s", tuser, text) != 2) {
+	args = roles["raw"];
+
+	if (!args || !sscanf(args, "%s %s", target, text)) {
 		send_out("Usage: tell <user> <text>\n");
 		return;
 	}
 
-	tuser = TEXT_USERD->find_user(tuser);
+	tuser = TEXT_USERD->find_user(target);
 
 	if (!tuser) {
 		send_out("User not found.\n");

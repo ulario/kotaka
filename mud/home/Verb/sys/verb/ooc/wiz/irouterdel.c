@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,6 +37,11 @@ void main(object actor, mapping roles)
 	}
 
 	router = roles["raw"];
+
+	if (!router) {
+		send_out("Usage: irouterdel <router>\n");
+		return;
+	}
 
 	if (!sscanf(router, "*%*s")) {
 		send_out("I3 router names must begin with an asterisk.\n");

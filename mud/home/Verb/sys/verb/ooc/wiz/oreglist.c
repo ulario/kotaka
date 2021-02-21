@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,20 +40,28 @@ void main(object actor, mapping roles)
 
 	owner = roles["raw"];
 
-	first = KERNELD->first_link(owner == "Ecru" ? nil : owner);
+	if (!owner) {
+		send_out("Usage: oreglist <owner>\n");
+		return;
+	}
+
+	if (owner == "Ecru") {
+		owner = nil;
+	}
+
+	first = KERNELD->first_link(owner);
 
 	if (!first) {
-		send_out(owner + " owns no objects.\n");
+		send_out((owner ? owner : "Ecru") + " owns no objects.\n");
 		return;
 	}
 
 	obj = first;
 
-	send_out("Objects owned by " + owner + ":\n");
+	send_out("Objects owned by " + (owner ? owner : "Ecru") + ":\n");
 
 	do {
 		send_out(object_name(obj) + "\n");
-
 		obj = KERNELD->next_link(obj);
 	} while (obj != first);
 }

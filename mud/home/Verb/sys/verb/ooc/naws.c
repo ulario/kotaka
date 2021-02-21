@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,34 +40,33 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	object conn;
+	object obj;
 	string args;
 
 	args = roles["raw"];
-	conn = query_user();
-	conn = conn->query_telnet_obj();
+	obj = query_user();
+	obj = obj->query_telnet_obj();
 
 	switch(args) {
 	case "on":
-		if (conn) {
-			send_out("Enabling NAWS.\n");
-			conn->send_do(31);
+		if (obj) {
+			send_out("Enabling NAWS\n");
+			obj->send_do(31);
 		} else {
-			send_out("Error: no telnet filter detected on this connection\n");
+			send_out("No telnet filter detected on this connection\n");
 		}
 		break;
 
 	case "off":
-		if (conn) {
-			send_out("Disabling NAWS.\n");
-			conn->send_dont(31);
+		if (obj) {
+			send_out("Disabling NAWS\n");
+			obj->send_dont(31);
 		} else {
-			send_out("Error: no telnet filter detected on this connection\n");
+			send_out("No telnet filter detected on this connection\n");
 		}
 		break;
 
 	default:
 		send_out("Usage: naws <on|off>\n");
-		return;
 	}
 }

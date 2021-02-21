@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,10 +32,7 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	object user, *users;
-	string kicker_name;
-	string site;
-	string args;
-	int sz;
+	string args, message, site;
 
 	user = query_user();
 
@@ -46,19 +43,14 @@ void main(object actor, mapping roles)
 
 	args = roles["raw"];
 
-	switch(sscanf(args, "%s %s", site, args)) {
-	case 0:
-		if (args == "") {
-			send_out("Usage: siteban <site> <ban message, if any>\n");
-			return;
-		} else {
-			site = args;
-			args = nil;
-		}
-		break;
+	if (!args) {
+		send_out("Usage: siteban <site> [<message>]\n");
+		return;
+	}
 
-	case 2:
-		break;
+	if (!sscanf(args, "%s %s", site, message)) {
+		site = args;
+		message = nil;
 	}
 
 	if (sscanf(site, "127.%*s") || site == "::1") {
@@ -66,6 +58,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	BAND->ban_site(site, ([ "issuer": user->query_username(), "message" : args ]));
+	BAND->ban_site(site, ([ "issuer": user->query_username(), "message" : message ]) );
 	send_out("Site banned.\n");
 }

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -41,8 +41,9 @@ string *query_help_contents()
 void main(object actor, mapping roles)
 {
 	object user;
-	string name;
-	string *subscriptions;
+	string chname, name, *subscriptions;
+
+	chname = roles["raw"];
 
 	user = query_user();
 	name = user->query_username();
@@ -52,19 +53,19 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
-		send_out("Cat got your tongue?\n");
+	if (!chname) {
+		send_out("Usage: choff <channel name>\n");
 		return;
 	}
 
 	subscriptions = ACCOUNTD->query_account_property(name, "channels");
 
-	if (!subscriptions || !sizeof(subscriptions & ({ roles["raw"] }) )) {
+	if (!subscriptions || !sizeof(subscriptions & ({ chname }) )) {
 		send_out("You are not currently subscribed.\n");
 		return;
 	}
 
-	subscriptions -= ({ roles["raw"] });
+	subscriptions -= ({ chname });
 
 	if (!sizeof(subscriptions)) {
 		subscriptions = nil;
@@ -72,8 +73,8 @@ void main(object actor, mapping roles)
 
 	ACCOUNTD->set_account_property(name, "channels", subscriptions);
 
-	if (CHANNELD->test_channel(roles["raw"])) {
-		CHANNELD->unsubscribe_channel(roles["raw"], user);
+	if (CHANNELD->test_channel(chname)) {
+		CHANNELD->unsubscribe_channel(chname, user);
 		send_out("Channel unsubscribed.\n");
 	} else {
 		send_out("Removing deleted channel.\n");

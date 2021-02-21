@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,21 +32,23 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	mixed index;
-	string path;
-	object pinfo;
-	mixed val;
-	mixed *arr;
 	int sz;
+	mixed *arr, index, val;
+	object pinfo;
+	string path;
 
 	if (query_user()->query_class() < 2) {
 		send_out("Only a wizard can do that.\n");
 		return;
 	}
 
-	index = roles["raw"];
+	path = roles["raw"];
 
-	if (sscanf(index, "%d", index)) {
+	if (!path) {
+		send_out("Usage: pinfo <path|index>\n");
+	}
+
+	if (sscanf(path, "%d", index)) {
 		pinfo = OBJECTD->query_program_info(index);
 
 		if (!pinfo) {
@@ -56,12 +58,10 @@ void main(object actor, mapping roles)
 
 		path = pinfo->query_path();
 	} else {
-		path = index;
-		index = status(index, O_INDEX);
+		index = status(path, O_INDEX);
 
 		if (index == nil) {
 			send_out("No such program is in service\n");
-
 			return;
 		}
 

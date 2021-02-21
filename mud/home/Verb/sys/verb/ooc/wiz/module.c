@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -43,43 +43,44 @@ private int check_module_name(string module)
 	return 1;
 }
 
-private void usage()
-{
-	send_out("Usage: module <subcommand> <module name>\n");
-	send_out("Subcommands:\n");
-	send_out("boot     - boot a module.\n");
-	send_out("reboot   - reboot a module.\n");
-	send_out("shutdown - shutdown a module.\n");
-	send_out("list     - list active modules.\n");
-}
-
 void main(object actor, mapping roles)
 {
 	object user;
-	string name;
-	string command;
-	string args;
+	string args, command;
 
 	user = query_user();
-	name = user->query_username();
-	command = roles["raw"];
+
+	args = roles["raw"];
 
 	if (user->query_class() < 3) {
 		send_out("You do not have sufficient access rights to manage modules.\n");
 		return;
 	}
 
-	sscanf(command, "%s %s", command, args);
+	if (!args) {
+		send_out("Usage: module <command> <module name>\n\n");
+		send_out("Commands:\n");
+		send_out("boot     - boot a module.\n");
+		send_out("reboot   - reboot a module.\n");
+		send_out("shutdown - shutdown a module.\n");
+		send_out("list     - list active modules.\n");
+		return;
+	}
+
+	if (!sscanf(args, "%s %s", command, args)) {
+		command = args;
+		args = nil;
+	}
 
 	switch(command) {
 	case "boot":
 		if (!args) {
-			usage();
-			return;
+			send_out("Usage: module boot <module>\n");
+			break;
 		}
 
 		if (!check_module_name(args)) {
-			return;
+			break;
 		}
 
 		if (args == "Ecru") {
@@ -91,12 +92,12 @@ void main(object actor, mapping roles)
 
 	case "reboot":
 		if (!args) {
-			usage();
-			return;
+			send_out("Usage: module reboot <module>\n");
+			break;
 		}
 
 		if (!check_module_name(args)) {
-			return;
+			break;
 		}
 
 		if (args == "Ecru") {
@@ -108,12 +109,12 @@ void main(object actor, mapping roles)
 
 	case "shutdown":
 		if (!args) {
-			usage();
-			return;
+			send_out("Usage: module shutdown <module>\n");
+			break;
 		}
 
 		if (!check_module_name(args)) {
-			return;
+			break;
 		}
 
 		if (args == "Ecru") {
@@ -124,7 +125,9 @@ void main(object actor, mapping roles)
 		break;
 
 	case "list":
-		{
+		if (args) {
+			send_out("Usage: module list\n");
+		} else {
 			string *modules;
 
 			modules = MODULED->query_modules();
@@ -136,9 +139,5 @@ void main(object actor, mapping roles)
 
 			send_out("Active modules: " + implode(modules, ", ") + "\n");
 		}
-		break;
-
-	default:
-		usage();
 	}
 }

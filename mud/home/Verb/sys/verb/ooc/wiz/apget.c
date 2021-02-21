@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,13 +30,10 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
+	mixed *pinfo, pvalue;
+	object obj, user;
+	string args, pname, username;
 	string *users;
-	object user;
-	object obj;
-	string username;
-	string pname;
-	mixed pvalue;
-	mixed *pinfo;
 
 	user = query_user();
 
@@ -45,7 +42,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(roles["raw"], "%s %s", username, pname) != 2) {
+	args = roles["raw"];
+
+	if (!args || !sscanf(args, "%s %s", username, pname)) {
 		send_out("Usage: apget <user name> <property name>\n");
 		return;
 	}

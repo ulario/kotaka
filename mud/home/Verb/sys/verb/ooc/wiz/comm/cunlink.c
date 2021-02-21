@@ -24,12 +24,10 @@ void main(object actor, mapping roles)
 
 	ip = roles["raw"];
 
-	if (ip == "") {
-		send_out("Usage: cunlink <target ip>\n");
+	if (!ip) {
+		send_out("Usage: cunlink <ip>\n");
 		return;
 	}
 
 	"~Test/sys/commd"->unlink(ip);
-
-	return;
 }

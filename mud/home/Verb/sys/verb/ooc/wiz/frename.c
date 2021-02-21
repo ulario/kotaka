@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -58,7 +58,7 @@ atomic private void do_folder_rename(string old_name, string new_name)
 
 void main(object actor, mapping roles)
 {
-	string old_name, new_name;
+	string args, old_name, new_name;
 	object user;
 
 	user = query_user();
@@ -68,7 +68,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (sscanf(roles["raw"], "%s %s", old_name, new_name) != 2) {
+	args = roles["raw"];
+
+	if (!args || !sscanf(args, "%s %s", old_name, new_name)) {
 		send_out("Usage: frename old_folder new_folder\n");
 		return;
 	}

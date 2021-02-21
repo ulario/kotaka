@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,19 +32,13 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	string name;
-	string *list;
+	string name, *list;
 	object user;
 
 	user = query_user();
 
 	if (user->query_class() < 2) {
 		send_out("You have insufficient access to list i3 channels.\n");
-		return;
-	}
-
-	if (!find_object(INTERMUDD)) {
-		send_out("IntermudD is offline.\n");
 		return;
 	}
 
@@ -136,7 +130,7 @@ void main(object actor, mapping roles)
 		}
 		break;
 
-	default:
+	case nil:
 		{
 			object telnet;
 			int width;
@@ -153,7 +147,12 @@ void main(object actor, mapping roles)
 
 			send_out(wordwrap(implode(list, ", "), width) + "\n");
 		}
-
 		break;
+
+	default:
+		send_out("Usage: ichlist [options]\n\n");
+		send_out("Options:\n");
+		send_out("-m: Organize by hosting mud\n");
+		send_out("-v: Verbose\n");
 	}
 }

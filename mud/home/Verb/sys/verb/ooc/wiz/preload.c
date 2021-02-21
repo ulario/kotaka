@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,14 +28,18 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	object user;
-	object *users;
+	object user, *users;
 	int i, sz;
 
 	user = query_user();
 
 	if (user->query_class() < 3) {
 		send_out("You do not have sufficient access rights to reload properties.\n");
+		return;
+	}
+
+	if (roles["raw"]) {
+		send_out("Usage: preload\n");
 		return;
 	}
 

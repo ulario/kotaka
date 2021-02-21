@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -36,6 +36,7 @@ void main(object actor, mapping roles)
 
 	string args;
 	string username;
+	string message;
 
 	object turkey;
 
@@ -48,19 +49,14 @@ void main(object actor, mapping roles)
 
 	args = roles["raw"];
 
-	switch(sscanf(args, "%s %s", username, args)) {
-	case 0:
-		if (args == "") {
-			send_out("Usage: ban <username> <ban message, if any>\n");
-			return;
-		} else {
-			username = args;
-			args = nil;
-		}
-		break;
+	if (!args) {
+		send_out("Usage: ban <username> <ban message, if any>\n");
+		return;
+	}
 
-	case 2:
-		break;
+	if (!sscanf(args, "%s %s", username, message)) {
+		username = args;
+		message = nil;
 	}
 
 	if (username == user->query_username()) {
@@ -98,7 +94,7 @@ void main(object actor, mapping roles)
 
 	username = to_lower(username);
 
-	BAND->ban_user(username, ([ "issuer": user->query_username(), "message": args ]));
+	BAND->ban_user(username, ([ "issuer": user->query_username(), "message": message ]) );
 
 	turkey = TEXT_USERD->find_user(username);
 

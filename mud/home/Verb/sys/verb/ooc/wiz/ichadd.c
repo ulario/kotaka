@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,17 +29,21 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
+	string channel;
+
 	if (query_user()->query_class() < 2) {
 		send_out("You have insufficient access to create i3 channels.\n");
 		return;
 	}
 
-	if (!find_object(INTERMUDD)) {
-		send_out("IntermudD is offline.\n");
+	channel = roles["raw"];
+
+	if (!channel) {
+		send_out("Usage: ichadd <channel>\n");
 		return;
 	}
 
-	INTERMUDD->add_channel(roles["raw"]);
+	INTERMUDD->add_channel(channel);
 
 	send_out("Channel added to Intermud3.\n");
 }

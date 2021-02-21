@@ -12,14 +12,18 @@ string *query_parse_methods()
 void main(object actor, mapping roles)
 {
 	object user;
-	string name;
-	string ip;
+	string ip, name;
 
 	user = query_user();
 	name = user->query_username();
 
 	if (user->query_class() < 3) {
 		send_out("Only an admin can list connections for CommD.\n");
+		return;
+	}
+
+	if (roles["raw"]) {
+		send_out("Usage: clist\n");
 		return;
 	}
 

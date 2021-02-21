@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,10 +34,9 @@ string *query_parse_methods()
 
 void main(object actor, mapping roles)
 {
-	string path;
-	mixed **list;
+	mixed **compile, **list;
 	object proxy;
-	mixed **compile;
+	string path;
 
 	if (query_user()->query_class() < 2) {
 		send_out("You do not have sufficient access rights to reinherit.\n");
@@ -45,6 +44,12 @@ void main(object actor, mapping roles)
 	}
 
 	path = roles["raw"];
+
+	if (!path) {
+		send_out("Usage: reinclude <path>\n");
+		return;
+	}
+
 	list = OBJECTD->query_program_indices();
 	proxy = PROXYD->get_proxy(query_user()->query_name());
 

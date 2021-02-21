@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -45,8 +45,8 @@ void main(object actor, mapping roles)
 
 	username = roles["raw"];
 
-	if (username == "") {
-		send_out("Who do you wish to kick?\n");
+	if (!username) {
+		send_out("Usage: kick <user>\n");
 		return;
 	}
 
@@ -74,12 +74,14 @@ void main(object actor, mapping roles)
 			return;
 		}
 		break;
+
 	case 2: /* wizard.  Only an administrator can ban them */
 		if (user->query_class() < 3) {
 			send_out("Only an administrator can kick a wizard.");
 			return;
 		}
 		break;
+
 	default:
 		if (user->query_class() < 2) {
 			send_out("Only a wizard can kick someone.");

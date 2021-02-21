@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -132,6 +132,11 @@ void main(object actor, mapping roles)
 
 	if (user->query_class() < 2) {
 		send_out("You do not have sufficient access rights to list bans.\n");
+		return;
+	}
+
+	if (roles["raw"]) {
+		send_out("Usage: bans\n");
 		return;
 	}
 

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,33 +40,43 @@ int compare_sites(string a, string b)
 	if (o1a < o1b) {
 		return -1;
 	}
+
 	if (o1a > o1b) {
 		return 1;
 	}
+
 	if (o2a < o2b) {
 		return -1;
 	}
+
 	if (o2a > o2b) {
 		return 1;
 	}
+
 	if (o3a < o3b) {
 		return -1;
 	}
+
 	if (o3a > o3b) {
 		return 1;
 	}
+
 	if (o4a < o4b) {
 		return -1;
 	}
+
 	if (o4a > o4b) {
 		return 1;
 	}
+
 	if (cidra < cidrb) {
 		return -1;
 	}
+
 	if (cidra > cidrb) {
 		return 1;
 	}
+
 	return 0;
 }
 
@@ -80,6 +90,11 @@ void main(object actor, mapping roles)
 
 	if (user->query_class() < 3) {
 		send_out("You do not have sufficient access rights to list sitebans.\n");
+		return;
+	}
+
+	if (roles["raw"]) {
+		send_out("Usage: sitebans\n");
 		return;
 	}
 

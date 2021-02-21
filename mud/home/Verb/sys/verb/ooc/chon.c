@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,8 +42,9 @@ string *query_help_contents()
 void main(object actor, mapping roles)
 {
 	object user;
-	string name;
-	string *subscriptions;
+	string chname, name, *subscriptions;
+
+	chname = roles["raw"];
 
 	user = query_user();
 	name = user->query_username();
@@ -53,12 +54,12 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (roles["raw"] == "") {
+	if (!chname) {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
 
-	if (!CHANNELD->test_channel(roles["raw"])) {
+	if (!CHANNELD->test_channel(chname)) {
 		send_out("That channel does not exist.\n");
 		return;
 	}
@@ -68,20 +69,19 @@ void main(object actor, mapping roles)
 	if (!subscriptions) {
 		subscriptions = ({ });
 	} else {
-		if (sizeof(subscriptions & ({ roles["raw"] }))) {
+		if (sizeof(subscriptions & ({ chname }))) {
 			send_out("You are already subscribed.\n");
 			return;
 		}
 	}
 
-	subscriptions += ({ roles["raw"] });
+	subscriptions += ({ chname });
 
 	qsort(subscriptions, 0, sizeof(subscriptions));
 
 	ACCOUNTD->set_account_property(name, "channels", subscriptions);
 
-	CHANNELD->subscribe_channel(roles["raw"], user);
+	CHANNELD->subscribe_channel(chname, user);
 
 	send_out("Channel subscribed.\n");
-	return;
 }

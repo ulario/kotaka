@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,13 +42,12 @@ string *query_help_contents()
 void main(object actor, mapping roles)
 {
 	string target;
-	object user;
-	object passwd;
+	object user, passwd;
 
 	target = roles["raw"];
 	user = query_user();
 
-	if (!target || target == "") {
+	if (!target) {
 		target = user->query_name();
 	}
 
@@ -78,7 +77,6 @@ void main(object actor, mapping roles)
 				send_out("Only an administrator can change someone else's password.\n");
 				return;
 			}
-			break;
 		}
 	}
 

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -44,8 +44,8 @@ void main(object actor, mapping roles)
 
 	site = roles["raw"];
 
-	if (site == "") {
-		send_out("What site do you wish to unban?\n");
+	if (!site) {
+		send_out("Usage: unsiteban <site>\n");
 		return;
 	}
 
@@ -55,6 +55,5 @@ void main(object actor, mapping roles)
 	}
 
 	BAND->unban_site(site);
-
 	send_out("Site unbanned.\n");
 }
