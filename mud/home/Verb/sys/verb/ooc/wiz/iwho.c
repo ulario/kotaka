@@ -44,6 +44,11 @@ void main(object actor, mapping roles)
 
 	mud = roles["raw"];
 
+	if (!mud) {
+		send_out("Usage: iwho <mud name>\n");
+		return;
+	}
+
 	if (!find_object(INTERMUDD)) {
 		send_out("IntermudD is offline.\n");
 		return;
@@ -51,5 +56,7 @@ void main(object actor, mapping roles)
 
 	INTERMUDD->send_who(user->query_name(), mud);
 
-	user->message("You who " + mud + "\n");
+	if (mud) {
+		user->message("You who " + mud + "\n");
+	}
 }
