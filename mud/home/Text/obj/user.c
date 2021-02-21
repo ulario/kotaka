@@ -376,10 +376,6 @@ void logout(int dest)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
-	if (body) {
-		catch(error("Logging out with a body: " + object_name(body)));
-	}
-
 	logging_out = 1;
 
 	if (username && !quitting) {
