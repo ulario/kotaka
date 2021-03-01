@@ -347,6 +347,8 @@ void quit(string cause)
 	quitting = 0;
 }
 
+/* LIB_CONN hooks */
+
 int login(string str)
 {
 	ACCESS_CHECK(previous_program() == LIB_CONN);
@@ -404,16 +406,16 @@ int receive_message(string str)
 	return do_receive(str);
 }
 
-/* ctime format: */
-/* Tue Aug  3 14:40:18 1993 */
-/* 012345678901234567890123 */
-
 void channel_message(string channel, mixed *mtime, string sender, string message)
 {
 	string *parts;
 	string stamp;
 
 	ACCESS_CHECK(previous_program() == CHANNELD);
+
+	/* ctime format: */
+	/* Tue Aug  3 14:40:18 1993 */
+	/* 012345678901234567890123 */
 
 	stamp = ctime(mtime[0])[11 .. 18];
 
