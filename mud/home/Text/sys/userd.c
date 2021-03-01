@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,8 +31,6 @@ inherit LIB_SYSTEM_USER;
 mapping connections;	/* all connections */
 mapping users;		/* all logged in user objects */
 mapping guests;		/* all guest user objects */
-
-mapping blacklist;
 
 static void create()
 {
@@ -90,10 +88,6 @@ string query_sitebanned_banner(object LIB_CONN connection)
 	ip = query_ip_number(connection);
 
 	ASSERT(ip);
-
-	if (!blacklist) {
-		blacklist = ([ ]);
-	}
 
 	ban = BAND->check_siteban(ip);
 
