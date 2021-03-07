@@ -475,8 +475,8 @@ mapping bulk_save()
 	return ([
 		"local_mass": (v = query_local_mass()) ? v : nil,
 		"local_density": (v = query_local_density()) ? v : nil,
-		"local_capacity": (v = query_capacity()) ? v : nil,
-		"local_max_mass": (v = query_max_mass()) ? v : nil,
+		"local_capacity": (v = query_local_capacity()) ? v : nil,
+		"local_max_mass": (v = query_local_max_mass()) ? v : nil,
 		"flexible": query_flexible() ? 1 : nil,
 		"virtual": query_virtual() ? 1 : nil,
 		"mass_absolute": query_mass_absolute() ? 1 : nil,
