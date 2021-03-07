@@ -30,6 +30,8 @@ private float density;		/* kg/l */
 private int flexible;		/* flexible container */
 private int virtual;		/* virtual container */
 
+private string mass_derivation;
+
 private int mass_absolute;
 private int density_absolute;
 private int capacity_absolute;
@@ -53,6 +55,18 @@ static void create()
 {
 	mass = 0.0;
 	density = 1.0;
+}
+
+/* patching */
+
+void patch_bulk()
+{
+	if (mass_derivation == "absolute") {
+		mass_absolute = 1;
+		density_absolute = 1;
+		capacity_absolute = 1;
+		max_mass_absolute = 1;
+	}
 }
 
 /* mass */

@@ -58,5 +58,7 @@ string query_patcher(string path)
 	switch(path) {
 	case USR_DIR + "/Thing/lib/thing/archetype":
 		return "patch_archetype";
+	case USR_DIR + "/Thing/lib/thing/bulk":
+		return "patch_bulk";
 	}
 }
