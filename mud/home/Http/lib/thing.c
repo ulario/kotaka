@@ -23,7 +23,7 @@ static string thing_text(object obj)
 
 	arch = obj->query_archetype();
 
-	subbuffer = "<p>";
+	subbuffer = "<p>\n";
 
 	if (arch) {
 		subbuffer += "Archetype: " + object2link(arch) + "<br />\n";
@@ -56,7 +56,11 @@ static string thing_text(object obj)
 
 	subbuffer += "</p>\n"; 
 
-	buffer = oinfobox("Thing", 2, subbuffer);
+	if (subbuffer == "<p>\n</p>\n") {
+		buffer = "<h2>Thing</h2>\n";
+	} else {
+		buffer = oinfobox("Thing", 2, subbuffer);
+	}
 
 	inv = obj->query_inventory();
 	sz = sizeof(inv);
