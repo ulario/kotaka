@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,12 +27,13 @@ object *query_inventory();
 private float mass;		/* kg */
 private float density;		/* kg/l */
 
-private string mass_derivation;
-/* absolute: mass is fixed */
-/* inherit: mass is local mass times mass of archetype */
-
 private int flexible;		/* flexible container */
 private int virtual;		/* virtual container */
+
+private int mass_absolute;
+private int density_absolute;
+private int capacity_absolute;
+private int max_mass_absolute;
 
 private float capacity;		/* m^3 */
 private float max_mass;		/* kg */
@@ -80,76 +81,46 @@ float query_local_mass()
 	return mass;
 }
 
-atomic void set_mass_derivation(string derivation)
-{
-	object env;
-
-	switch (derivation) {
-	case nil: /* default: inherit */
-	case "inherit":
-	case "absolute":
-		if (mass_derivation != derivation) {
-			/* changed derivation, preserve value */
-			float old_mass;
-
-			old_mass = query_mass();
-			mass_derivation = derivation;
-			set_mass(old_mass); /* will invalidate */
-		}
-		break;
-
-	default:
-		error("Invalid mass derivation");
-	}
-}
-
-string query_mass_derivation()
-{
-	return mass_derivation;
-}
-
 void set_mass(float new_mass)
 {
 	object arch;
-	float factor;
 
-	switch(mass_derivation) {
-	case nil:
-	case "inherit":
-		arch = query_archetype();
+	arch = query_archetype();
 
-		if (!arch || arch->query_virtual()) {
-			set_local_mass(new_mass);
-		} else {
-			set_local_mass(new_mass / arch->query_mass());
-		}
-		break;
-
-	case "absolute":
+	if (mass_absolute) {
 		set_local_mass(new_mass);
+	} else {
+		set_local_mass(new_mass / arch->query_mass());
 	}
 }
 
 float query_mass()
 {
 	object arch;
-	float factor;
 
-	switch(mass_derivation) {
-	case nil:
-	case "inherit":
-		arch = query_archetype();
+	arch = query_archetype();
 
-		if (!arch || arch->query_virtual()) {
-			return mass;
-		} else {
-			return mass * arch->query_mass();
-		}
-		break;
-
-	case "absolute":
+	if (mass_absolute) {
 		return mass;
+	} else {
+		return mass * arch->query_mass();
 	}
+}
+
+void set_mass_absolute(int new_mass_absolute)
+{
+	object env;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
+
+	mass_absolute = new_mass_absolute;
+}
+
+int query_mass_absolute()
+{
+	return mass_absolute;
 }
 
 float query_total_mass()
@@ -177,7 +148,7 @@ void figure_mass(float volume)
 
 /* density */
 
-void set_density(float new_density)
+void set_local_density(float new_density)
 {
 	object env;
 
@@ -196,9 +167,51 @@ void set_density(float new_density)
 	density = new_density;
 }
 
-float query_density()
+float query_local_density()
 {
 	return density;
+}
+
+void set_density(float new_density)
+{
+	object arch;
+
+	arch = query_archetype();
+
+	if (density_absolute) {
+		set_local_density(new_density);
+	} else {
+		set_local_density(new_density / arch->query_density());
+	}
+}
+
+float query_density()
+{
+	object arch;
+
+	arch = query_archetype();
+
+	if (density_absolute) {
+		return density;
+	} else {
+		return density * arch->query_density();
+	}
+}
+
+void set_density_absolute(int new_density_absolute)
+{
+	object env;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
+
+	density_absolute = new_density_absolute;
+}
+
+int query_density_absolute()
+{
+	return density_absolute;
 }
 
 void figure_density(float volume)
@@ -241,7 +254,7 @@ float query_contained_volume()
 
 /* capacity */
 
-void set_capacity(float new_capacity)
+void set_local_capacity(float new_capacity)
 {
 	object env;
 
@@ -261,12 +274,56 @@ void set_capacity(float new_capacity)
 	}
 }
 
-float query_capacity()
+float query_local_capacity()
 {
 	return capacity;
 }
 
-void set_max_mass(float new_max_mass)
+void set_capacity(float new_capacity)
+{
+	object arch;
+
+	arch = query_archetype();
+
+	if (capacity_absolute) {
+		set_local_capacity(new_capacity);
+	} else {
+		set_local_capacity(new_capacity / arch->query_capacity());
+	}
+}
+
+float query_capacity()
+{
+	object arch;
+
+	arch = query_archetype();
+
+	if (capacity_absolute) {
+		return capacity;
+	} else {
+		return capacity * arch->query_capacity();
+	}
+}
+
+void set_capacity_absolute(int new_capacity_absolute)
+{
+	object env;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
+
+	capacity_absolute = new_capacity_absolute;
+}
+
+int query_capacity_absolute()
+{
+	return capacity_absolute;
+}
+
+/* max mass */
+
+void set_local_max_mass(float new_max_mass)
 {
 	if (virtual) {
 		error("Cannot set max mass of virtual object");
@@ -275,9 +332,51 @@ void set_max_mass(float new_max_mass)
 	max_mass = new_max_mass;
 }
 
-float query_max_mass()
+float query_local_max_mass()
 {
 	return max_mass;
+}
+
+void set_max_mass(float new_max_mass)
+{
+	object arch;
+
+	arch = query_archetype();
+
+	if (max_mass_absolute) {
+		set_local_max_mass(new_max_mass);
+	} else {
+		set_local_max_mass(new_max_mass / arch->query_max_mass());
+	}
+}
+
+float query_max_mass()
+{
+	object arch;
+
+	arch = query_archetype();
+
+	if (max_mass_absolute) {
+		return max_mass;
+	} else {
+		return max_mass * arch->query_max_mass();
+	}
+}
+
+void set_max_mass_absolute(int new_max_mass_absolute)
+{
+	object env;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
+
+	max_mass_absolute = new_max_mass_absolute;
+}
+
+int query_max_mass_absolute()
+{
+	return max_mass_absolute;
 }
 
 /* flexible */
