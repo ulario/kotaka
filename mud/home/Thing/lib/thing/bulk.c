@@ -465,3 +465,68 @@ void bulk_invalidate()
 		env->bulk_invalidate();
 	}
 }
+
+/* save */
+
+mapping bulk_save()
+{
+	mixed v;
+
+	return ([
+		"local_mass": (v = query_local_mass()) ? v : nil,
+		"local_density": (v = query_local_density()) ? v : nil,
+		"local_capacity": (v = query_capacity()) ? v : nil,
+		"local_max_mass": (v = query_max_mass()) ? v : nil,
+		"flexible": query_flexible() ? 1 : nil,
+		"virtual": query_virtual() ? 1 : nil,
+		"mass_absolute": query_mass_absolute() ? 1 : nil,
+		"density_absolute": query_density_absolute() ? 1 : nil,
+		"capacity_absolute": query_capacity_absolute() ? 1 : nil,
+		"max_mass_absolute": query_max_mass_absolute() ? 1 : nil,
+	]);
+}
+
+void bulk_restore(mapping map)
+{
+	mixed v;
+
+	v = data["local_mass"];
+
+	if (v == nil) {
+		v = data["mass"];
+	}
+
+	set_local_mass(v ? v : 0.0);
+
+	v = data["local_density"];
+
+	if (v == nil) {
+		v = data["density"];
+	}
+
+	set_local_density(v ? v : 0.0);
+
+	v = data["local_capacity"];
+
+	if (v == nil) {
+		v = data["capacity"];
+	}
+
+	set_local_capacity(v ? v : 0.0);
+
+	v = data["local_max_mass"];
+
+	if (v == nil) {
+		v = data["max_mass"];
+	}
+
+	set_local_mass(v ? v : 0.0);
+
+	set_virtual(data["virtual"] ? 1 : 0);
+	set_flexible(data["flexible"] ? 1 : 0);
+
+	set_mass_absolute(data["mass_absolute"] ? 1 : 0);
+	set_density_absolute(data["density_absolute"] ? 1 : 0);
+	set_capacity_absolute(data["capacity_absolute"] ? 1 : 0);
+	set_max_mass_absolute(data["max_mass_absolute"] ? 1 : 0);
+}

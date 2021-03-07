@@ -64,42 +64,26 @@ static mapping save()
 		"environment": query_environment(),
 		"inventory": query_inventory(),
 
-		"virtual": query_virtual() ? 1 : nil,
-
 		"properties": query_local_properties()
 	]);
 
-	if (!virtual) {
-		map += ([
-			"mass": (v = query_local_mass()) ? v : nil,
-			"density": query_density(),
-			"flexible": query_flexible() ? 1 : nil,
-			"capacity": (v = query_capacity()) ? v : nil,
-			"max_mass": (v = query_max_mass()) ? v : nil,
-		]);
-	}
+	map["bulk"] = bulk_save();
 
 	return map;
 }
 
 static void load(mapping data)
 {
+	mapping map;
+
 	set_object_name(data["name"]);
 	set_id(data["id"]);
-
 	set_archetype(data["archetype"]);
 
-	if (data["virtual"]) {
-		set_virtual(1);
+	if (map = data["bulk"]) {
+		bulk_restore(map);
 	} else {
-		mixed v;
-
-		set_virtual(0);
-		set_local_mass((v = data["mass"]) ? v : 0.0);
-		set_density((v = data["density"]) ? v : 1.0);
-		set_flexible(data["flexible"] ? 1 : 0);
-		set_capacity((v = data["capacity"]) ? v : 0.0);
-		set_max_mass((v = data["max_mass"]) ? v : 0.0);
+		bulk_restore(data);
 	}
 
 	set_local_properties(data["properties"]);
