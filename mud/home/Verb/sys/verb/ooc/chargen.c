@@ -83,12 +83,19 @@ void main(object actor, mapping roles)
 	template = IDD->find_object_by_name("templates:" + name);
 
 	if (!template) {
+		float factor;
+
+		factor = 1.0 + (rnd() - rnd()) * 0.1;
+
 		send_out("Creating template...\n");
-		template = GAME_INITD->create_thing();
+		template = GAME_INITD->create_thing	();
 		template->set_object_name("templates:" + name);
 		template->set_id(name);
 		template->set_archetype(human);
-		template->set_mass(100.0 + (rnd() - rnd()) * 10.0);
+		template->set_mass(100.0 * factor);
+		template->set_capacity(1.0 * factor);
+		template->set_max_mass(100.0 * factor);
+
 		template->set_local_property("local_snouns", ({ name }) );
 		template->set_local_property("is_proper", 1);
 		template->set_local_property("brief", to_title(name));
@@ -125,6 +132,8 @@ void main(object actor, mapping roles)
 			body->set_id(name);
 			body->set_archetype(template);
 			body->set_local_mass(1.0);
+			body->set_local_capacity(1.0);
+			body->set_local_max_mass(1.0);
 			body->set_local_property("local_snouns", ({ "body" }) );
 			body->set_local_property("local_pnouns", ({ "bodies" }) );
 			body->set_local_property("local_adjectives", ({ name }) );
