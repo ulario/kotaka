@@ -41,6 +41,7 @@ private float capacity;		/* m^3 */
 private float max_mass;		/* kg */
 
 /* caching */
+
 private int bulk_dirty;			/* if cache is invalid */
 
 private float cached_content_mass;	/* cached mass of our contents */
@@ -75,10 +76,6 @@ void set_local_mass(float new_mass)
 {
 	object env;
 
-	if (virtual) {
-		error("Cannot set mass of virtual object");
-	}
-
 	if (new_mass == mass) {
 		return;
 	}
@@ -101,7 +98,9 @@ void set_mass(float new_mass)
 
 	arch = query_archetype();
 
-	if (mass_absolute) {
+	if (virtual) {
+		error("Cannot set mass of virtual thing");
+	} else if (mass_absolute) {
 		set_local_mass(new_mass);
 	} else {
 		set_local_mass(new_mass / arch->query_mass());
@@ -110,14 +109,12 @@ void set_mass(float new_mass)
 
 float query_mass()
 {
-	object arch;
-
-	arch = query_archetype();
-
-	if (mass_absolute) {
+	if (virtual) {
+		return 0.0;
+	} else if (mass_absolute) {
 		return mass;
 	} else {
-		return mass * arch->query_mass();
+		return mass * query_archetype()->query_mass();
 	}
 }
 
@@ -166,14 +163,6 @@ void set_local_density(float new_density)
 {
 	object env;
 
-	if (virtual) {
-		error("Cannot set density of virtual object");
-	}
-
-	if (new_density == density) {
-		return;
-	}
-
 	if (env = query_environment()) {
 		env->bulk_invalidate();
 	}
@@ -192,7 +181,9 @@ void set_density(float new_density)
 
 	arch = query_archetype();
 
-	if (density_absolute) {
+	if (virtual) {
+		error("Cannot set density of virtual object");
+	} if (density_absolute) {
 		set_local_density(new_density);
 	} else {
 		set_local_density(new_density / arch->query_density());
@@ -201,14 +192,12 @@ void set_density(float new_density)
 
 float query_density()
 {
-	object arch;
-
-	arch = query_archetype();
-
-	if (density_absolute) {
+	if (virtual) {
+		return 1.0;
+	} else if (density_absolute) {
 		return density;
 	} else {
-		return density * arch->query_density();
+		return density * query_archetype()->query_density();
 	}
 }
 
@@ -272,14 +261,6 @@ void set_local_capacity(float new_capacity)
 {
 	object env;
 
-	if (virtual) {
-		error("Cannot set capacity of virtual object");
-	}
-
-	if (capacity == new_capacity) {
-		return;
-	}
-
 	capacity = new_capacity;
 
 	/* rigid objects change size when they change capacity */
@@ -295,27 +276,19 @@ float query_local_capacity()
 
 void set_capacity(float new_capacity)
 {
-	object arch;
-
-	arch = query_archetype();
-
 	if (capacity_absolute) {
 		set_local_capacity(new_capacity);
 	} else {
-		set_local_capacity(new_capacity / arch->query_capacity());
+		set_local_capacity(new_capacity / query_archetype()->query_capacity());
 	}
 }
 
 float query_capacity()
 {
-	object arch;
-
-	arch = query_archetype();
-
 	if (capacity_absolute) {
 		return capacity;
 	} else {
-		return capacity * arch->query_capacity();
+		return capacity * query_archetype()->query_capacity();
 	}
 }
 
@@ -339,10 +312,6 @@ int query_capacity_absolute()
 
 void set_local_max_mass(float new_max_mass)
 {
-	if (virtual) {
-		error("Cannot set max mass of virtual object");
-	}
-
 	max_mass = new_max_mass;
 }
 
@@ -353,27 +322,19 @@ float query_local_max_mass()
 
 void set_max_mass(float new_max_mass)
 {
-	object arch;
-
-	arch = query_archetype();
-
 	if (max_mass_absolute) {
 		set_local_max_mass(new_max_mass);
 	} else {
-		set_local_max_mass(new_max_mass / arch->query_max_mass());
+		set_local_max_mass(new_max_mass / query_archetype()->query_max_mass());
 	}
 }
 
 float query_max_mass()
 {
-	object arch;
-
-	arch = query_archetype();
-
 	if (max_mass_absolute) {
 		return max_mass;
 	} else {
-		return max_mass * arch->query_max_mass();
+		return max_mass * query_archetype()->query_max_mass();
 	}
 }
 
@@ -419,13 +380,6 @@ int query_flexible()
 
 void set_virtual(int new_virtual)
 {
-	object env;
-
-	mass = 0.0;
-	density = 0.0;
-	capacity = 0.0;
-	max_mass = 0.0;
-
 	virtual = new_virtual;
 }
 
@@ -445,22 +399,19 @@ int query_bulk_dirty()
 
 void bulk_sync(varargs int force)
 {
-	int i;
+	float mass_sum, volume_sum;
 	int sz;
 	object *inv;
-	float mass_sum;
-	float volume_sum;
 
 	if (!bulk_dirty && !force) {
 		return;
 	}
 
 	inv = query_inventory();
-	sz = sizeof(inv);
 
-	for (i = 0; i < sz; i++) {
-		mass_sum += inv[i]->query_total_mass();
-		volume_sum += inv[i]->query_total_volume();
+	for (sz = sizeof(inv); --sz >= 0; ) {
+		mass_sum += inv[sz]->query_total_mass();
+		volume_sum += inv[sz]->query_total_volume();
 	}
 
 	cached_content_mass = mass_sum;
