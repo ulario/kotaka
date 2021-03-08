@@ -100,7 +100,7 @@ void set_mass(float new_mass)
 
 	if (virtual) {
 		error("Cannot set mass of virtual thing");
-	} else if (mass_absolute) {
+	} else if (mass_absolute || !(arch = query_archetype())) {
 		set_local_mass(new_mass);
 	} else {
 		set_local_mass(new_mass / arch->query_mass());
@@ -109,12 +109,14 @@ void set_mass(float new_mass)
 
 float query_mass()
 {
+	object arch;
+
 	if (virtual) {
 		return 0.0;
-	} else if (mass_absolute) {
+	} else if (mass_absolute || !(arch = query_archetype())) {
 		return mass;
 	} else {
-		return mass * query_archetype()->query_mass();
+		return mass * arch->query_mass();
 	}
 }
 
@@ -179,11 +181,9 @@ void set_density(float new_density)
 {
 	object arch;
 
-	arch = query_archetype();
-
 	if (virtual) {
-		error("Cannot set density of virtual object");
-	} if (density_absolute) {
+		error("Cannot set density of virtual thing");
+	} if (density_absolute || !(arch = query_archetype())) {
 		set_local_density(new_density);
 	} else {
 		set_local_density(new_density / arch->query_density());
@@ -192,12 +192,14 @@ void set_density(float new_density)
 
 float query_density()
 {
+	object arch;
+
 	if (virtual) {
-		return 1.0;
-	} else if (density_absolute) {
+		return 0.0;
+	} else if (density_absolute || !(arch = query_archetype())) {
 		return density;
 	} else {
-		return density * query_archetype()->query_density();
+		return density * arch->query_density();
 	}
 }
 
@@ -276,19 +278,27 @@ float query_local_capacity()
 
 void set_capacity(float new_capacity)
 {
-	if (capacity_absolute) {
+	object arch;
+
+	if (virtual) {
+		error("Cannot set capacity of virtual thing");
+	} else if (capacity_absolute || !(arch = query_archetype())) {
 		set_local_capacity(new_capacity);
 	} else {
-		set_local_capacity(new_capacity / query_archetype()->query_capacity());
+		set_local_capacity(new_capacity / arch->query_capacity());
 	}
 }
 
 float query_capacity()
 {
-	if (capacity_absolute) {
+	object arch;
+
+	if (virtual) {
+		return 0.0;
+	} else if (capacity_absolute || !(arch = query_archetype())) {
 		return capacity;
 	} else {
-		return capacity * query_archetype()->query_capacity();
+		return capacity * arch->query_capacity();
 	}
 }
 
@@ -322,19 +332,27 @@ float query_local_max_mass()
 
 void set_max_mass(float new_max_mass)
 {
-	if (max_mass_absolute) {
+	object arch;
+
+	if (virtual) {
+		error("Cannot set max mass of virtual thing");
+	} if (max_mass_absolute || !(arch = query_archetype())) {
 		set_local_max_mass(new_max_mass);
 	} else {
-		set_local_max_mass(new_max_mass / query_archetype()->query_max_mass());
+		set_local_max_mass(new_max_mass / arch->query_max_mass());
 	}
 }
 
 float query_max_mass()
 {
-	if (max_mass_absolute) {
+	object arch;
+
+	if (virtual) {
+		return 0.0;
+	} if (max_mass_absolute || !(arch = query_archetype())) {
 		return max_mass;
 	} else {
-		return max_mass * query_archetype()->query_max_mass();
+		return max_mass * arch->query_max_mass();
 	}
 }
 
@@ -359,12 +377,6 @@ int query_max_mass_absolute()
 void set_flexible(int new_flexible)
 {
 	object env;
-
-	new_flexible = !!new_flexible;
-
-	if (flexible == new_flexible) {
-		return;
-	}
 
 	flexible = new_flexible;
 
