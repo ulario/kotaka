@@ -551,6 +551,11 @@ private void i3_handle_channel_e(mixed *value)
 	i3_handle_channel_m(value);
 }
 
+private void i3_handle_channel_t(mixed *value)
+{
+	i3_handle_channel_m(value[0 .. 6] + ({ value[12], value[9] }) );
+}
+
 private void i3_handle_who_reply(mixed *value)
 {
 	object user;
@@ -652,6 +657,10 @@ private void process_packet(mixed *value)
 
 	case "channel-e":
 		i3_handle_channel_e(value);
+		break;
+
+	case "channel-t":
+		i3_handle_channel_t(value);
 		break;
 
 	case "emoteto":
