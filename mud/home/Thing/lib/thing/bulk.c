@@ -31,11 +31,7 @@ private int flexible;		/* flexible container */
 private int virtual;		/* virtual container */
 
 private string mass_derivation;
-
-private int mass_absolute;
-private int density_absolute;
-private int capacity_absolute;
-private int max_mass_absolute;
+private int absolute;
 
 private float capacity;		/* m^3 */
 private float max_mass;		/* kg */
@@ -63,10 +59,7 @@ static void create()
 void patch_bulk()
 {
 	if (mass_derivation == "absolute") {
-		mass_absolute = 1;
-		density_absolute = 1;
-		capacity_absolute = 1;
-		max_mass_absolute = 1;
+		absolute = 1;
 	}
 }
 
@@ -100,7 +93,7 @@ void set_mass(float new_mass)
 
 	if (virtual) {
 		error("Cannot set mass of virtual thing");
-	} else if (mass_absolute || !(arch = query_archetype())) {
+	} else if (absolute || !(arch = query_archetype())) {
 		set_local_mass(new_mass);
 	} else {
 		set_local_mass(new_mass / arch->query_mass());
@@ -113,14 +106,14 @@ float query_mass()
 
 	if (virtual) {
 		return 0.0;
-	} else if (mass_absolute || !(arch = query_archetype())) {
+	} else if (absolute || !(arch = query_archetype())) {
 		return mass;
 	} else {
 		return mass * arch->query_mass();
 	}
 }
 
-void set_mass_absolute(int new_mass_absolute)
+void set_absolute(int new_absolute)
 {
 	object env;
 
@@ -128,12 +121,12 @@ void set_mass_absolute(int new_mass_absolute)
 		env->bulk_invalidate();
 	}
 
-	mass_absolute = new_mass_absolute;
+	absolute = new_absolute;
 }
 
-int query_mass_absolute()
+int query_absolute()
 {
-	return mass_absolute;
+	return absolute;
 }
 
 float query_total_mass()
@@ -183,7 +176,7 @@ void set_density(float new_density)
 
 	if (virtual) {
 		error("Cannot set density of virtual thing");
-	} if (density_absolute || !(arch = query_archetype())) {
+	} if (absolute || !(arch = query_archetype())) {
 		set_local_density(new_density);
 	} else {
 		set_local_density(new_density / arch->query_density());
@@ -196,27 +189,11 @@ float query_density()
 
 	if (virtual) {
 		return 0.0;
-	} else if (density_absolute || !(arch = query_archetype())) {
+	} else if (absolute || !(arch = query_archetype())) {
 		return density;
 	} else {
 		return density * arch->query_density();
 	}
-}
-
-void set_density_absolute(int new_density_absolute)
-{
-	object env;
-
-	if (env = query_environment()) {
-		env->bulk_invalidate();
-	}
-
-	density_absolute = new_density_absolute;
-}
-
-int query_density_absolute()
-{
-	return density_absolute;
 }
 
 void figure_density(float volume)
@@ -282,7 +259,7 @@ void set_capacity(float new_capacity)
 
 	if (virtual) {
 		error("Cannot set capacity of virtual thing");
-	} else if (capacity_absolute || !(arch = query_archetype())) {
+	} else if (absolute || !(arch = query_archetype())) {
 		set_local_capacity(new_capacity);
 	} else {
 		set_local_capacity(new_capacity / arch->query_capacity());
@@ -295,27 +272,11 @@ float query_capacity()
 
 	if (virtual) {
 		return 0.0;
-	} else if (capacity_absolute || !(arch = query_archetype())) {
+	} else if (absolute || !(arch = query_archetype())) {
 		return capacity;
 	} else {
 		return capacity * arch->query_capacity();
 	}
-}
-
-void set_capacity_absolute(int new_capacity_absolute)
-{
-	object env;
-
-	if (env = query_environment()) {
-		env->bulk_invalidate();
-	}
-
-	capacity_absolute = new_capacity_absolute;
-}
-
-int query_capacity_absolute()
-{
-	return capacity_absolute;
 }
 
 /* max mass */
@@ -336,7 +297,7 @@ void set_max_mass(float new_max_mass)
 
 	if (virtual) {
 		error("Cannot set max mass of virtual thing");
-	} if (max_mass_absolute || !(arch = query_archetype())) {
+	} if (absolute || !(arch = query_archetype())) {
 		set_local_max_mass(new_max_mass);
 	} else {
 		set_local_max_mass(new_max_mass / arch->query_max_mass());
@@ -349,27 +310,11 @@ float query_max_mass()
 
 	if (virtual) {
 		return 0.0;
-	} if (max_mass_absolute || !(arch = query_archetype())) {
+	} if (absolute || !(arch = query_archetype())) {
 		return max_mass;
 	} else {
 		return max_mass * arch->query_max_mass();
 	}
-}
-
-void set_max_mass_absolute(int new_max_mass_absolute)
-{
-	object env;
-
-	if (env = query_environment()) {
-		env->bulk_invalidate();
-	}
-
-	max_mass_absolute = new_max_mass_absolute;
-}
-
-int query_max_mass_absolute()
-{
-	return max_mass_absolute;
 }
 
 /* flexible */
@@ -456,10 +401,7 @@ mapping bulk_save()
 		"local_max_mass": (v = query_local_max_mass()) ? v : nil,
 		"flexible": query_flexible() ? 1 : nil,
 		"virtual": query_virtual() ? 1 : nil,
-		"mass_absolute": query_mass_absolute() ? 1 : nil,
-		"density_absolute": query_density_absolute() ? 1 : nil,
-		"capacity_absolute": query_capacity_absolute() ? 1 : nil,
-		"max_mass_absolute": query_max_mass_absolute() ? 1 : nil,
+		"absolute": query_absolute() ? 1 : nil
 	]);
 }
 
@@ -501,9 +443,5 @@ void bulk_restore(mapping map)
 
 	set_virtual(map["virtual"] ? 1 : 0);
 	set_flexible(map["flexible"] ? 1 : 0);
-
-	set_mass_absolute(map["mass_absolute"] ? 1 : 0);
-	set_density_absolute(map["density_absolute"] ? 1 : 0);
-	set_capacity_absolute(map["capacity_absolute"] ? 1 : 0);
-	set_max_mass_absolute(map["max_mass_absolute"] ? 1 : 0);
+	set_absolute(map["absolute"] ? 1 : 0);
 }
