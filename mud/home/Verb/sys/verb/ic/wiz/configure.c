@@ -69,6 +69,11 @@ void main(object actor, mapping roles)
 
 	dob = dob[1];
 
+	if (typeof(dob) == T_ARRAY) {
+		send_out("Be more specific.\n");
+		return;
+	}
+
 	send_out("You start to configure " + generate_brief_definite(dob) + ".\n");
 
 	configure = query_user()->clone_ustate("wiz/objconf");
