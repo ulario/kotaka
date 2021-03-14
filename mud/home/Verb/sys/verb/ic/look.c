@@ -117,10 +117,12 @@ mixed **query_roles()
 
 string query_help_title()
 {
+	return "Look";
 }
 
 string *query_help_contents()
 {
+	return ({ "Takes a look around, and also lists things in the area or room." });
 }
 
 void main(object actor, mapping roles)
