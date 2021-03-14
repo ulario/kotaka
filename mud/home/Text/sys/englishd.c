@@ -73,14 +73,21 @@ private mixed *filter_noun(object *candidates, string noun)
 private mixed *filter_adjectives(object *candidates, string *adjectives)
 {
 	object *contenders;
-	int sz;
-	int i;
+	int sz, i;
 
 	sz = sizeof(candidates);
 	contenders = ({ });
 
 	for (i = 0; i < sz; i++) {
-		if (!sizeof(adjectives - candidates[i]->query_property("adjectives"))) {
+		string *ouradj;
+
+		ouradj = candidate->query_property("adjectives");
+
+		if (candidate->has_detail(nil)) {
+			ouradj |= candidate->query_adjectives(nil);
+		}
+
+		if (!sizeof(adjectives - ouradj)) {
 			contenders += ({ candidates[i] });
 		}
 	}
