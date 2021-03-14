@@ -81,10 +81,6 @@ atomic void configure_properties()
 	PROPERTYD->set_property("coordinate_system", T_STRING, PROP_INHERIT);
 	PROPERTYD->set_property("boundary_type", T_INT, PROP_INHERIT);
 
-	/* catch all */
-	PROPERTYD->set_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );
-	PROPERTYD->set_property("random", T_INT, PROP_SIMPLE, -1);
-
 	/* body/mobile handling */
 	PROPERTYD->set_property("mobiles", T_ARRAY, PROP_SIMPLE, ({ }) );
 	PROPERTYD->set_property("possessee", T_OBJECT, PROP_MAGIC, ({ "query_possessee", "possess" }) );
@@ -115,6 +111,16 @@ atomic void configure_properties()
 	/* belly, hips, groin */
 	/* left leg, left ankle, left foot */
 	/* right leg, right ankle, right foot */
+
+	/* combat */
+	PROPERTYD->set_property("is_weapon", T_INT, PROP_INHERIT);
+	PROPERTYD->set_property("is_armor", T_INT, PROP_INHERIT);
+	PROPERTYD->set_property("attack_value", T_INT, PROP_INHERIT);
+	PROPERTYD->set_property("defense_value", T_INT, PROP_INHERIT);
+
+	/* catch all */
+	PROPERTYD->set_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );
+	PROPERTYD->set_property("random", T_INT, PROP_SIMPLE, -1);
 }
 
 void upgrade()
