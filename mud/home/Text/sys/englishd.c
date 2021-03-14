@@ -53,6 +53,11 @@ private mixed *filter_noun(object *candidates, string noun)
 		snouns = candidate->query_property("snouns");
 		pnouns = candidate->query_property("pnouns");
 
+		if (candidate->has_detail(nil)) {
+			snouns |= candidate->query_snouns(nil);
+			pnouns |= candidate->query_pnouns(nil);
+		}
+
 		if (sizeof(({ noun }) & snouns)) {
 			scont += ({ candidate });
 		}
