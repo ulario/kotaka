@@ -44,8 +44,7 @@ private mixed *filter_noun(object *candidates, string noun)
 	pcont = ({ });
 
 	for (i = 0; i < sz; i++) {
-		string *snouns;
-		string *pnouns;
+		string *snouns, *pnouns;
 		object candidate;
 
 		candidate = candidates[i];
@@ -80,6 +79,9 @@ private mixed *filter_adjectives(object *candidates, string *adjectives)
 
 	for (i = 0; i < sz; i++) {
 		string *ouradj;
+		object candidate;
+
+		candidate = candidates[i];
 
 		ouradj = candidate->query_property("adjectives");
 
@@ -88,7 +90,7 @@ private mixed *filter_adjectives(object *candidates, string *adjectives)
 		}
 
 		if (!sizeof(adjectives - ouradj)) {
-			contenders += ({ candidates[i] });
+			contenders += ({ candidate });
 		}
 	}
 
