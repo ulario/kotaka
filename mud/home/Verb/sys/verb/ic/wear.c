@@ -96,6 +96,11 @@ void main(object actor, mapping roles)
 		return;
 	}
 
+	if (!dob->query_property("is_clothing")) {
+		send_out("Odd, it doesn't appear to be something you can wear.\n");
+		return;
+	}
+
 	worn = actor->query_inventory() - ({ dob });
 	parts = dob->query_property("parts_covered");
 
