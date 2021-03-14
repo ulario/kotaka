@@ -46,16 +46,19 @@ private mixed *filter_noun(object *candidates, string noun)
 	for (i = 0; i < sz; i++) {
 		string *snouns;
 		string *pnouns;
+		object candidate;
 
-		snouns = candidates[i]->query_property("snouns");
-		pnouns = candidates[i]->query_property("pnouns");
+		candidate = candidates[i];
+
+		snouns = candidate->query_property("snouns");
+		pnouns = candidate->query_property("pnouns");
 
 		if (sizeof(({ noun }) & snouns)) {
-			scont += ({ candidates[i] });
+			scont += ({ candidate });
 		}
 
 		if (sizeof(({ noun }) & pnouns)) {
-			pcont += ({ candidates[i] });
+			pcont += ({ candidate });
 		}
 	}
 
