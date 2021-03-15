@@ -69,15 +69,11 @@ void set_local_mass(float new_mass)
 {
 	object env;
 
-	if (new_mass == mass) {
-		return;
-	}
+	mass = new_mass;
 
 	if (env = query_environment()) {
 		env->bulk_invalidate();
 	}
-
-	mass = new_mass;
 }
 
 float query_local_mass()
@@ -111,22 +107,6 @@ float query_mass()
 	} else {
 		return mass * arch->query_mass();
 	}
-}
-
-void set_absolute(int new_absolute)
-{
-	object env;
-
-	if (env = query_environment()) {
-		env->bulk_invalidate();
-	}
-
-	absolute = new_absolute;
-}
-
-int query_absolute()
-{
-	return absolute;
 }
 
 float query_total_mass()
@@ -317,7 +297,7 @@ float query_max_mass()
 	}
 }
 
-/* flexible */
+/* flags */
 
 void set_flexible(int new_flexible)
 {
@@ -337,12 +317,34 @@ int query_flexible()
 
 void set_virtual(int new_virtual)
 {
+	object env;
+
 	virtual = new_virtual;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
 }
 
 int query_virtual()
 {
 	return virtual;
+}
+
+void set_absolute(int new_absolute)
+{
+	object env;
+
+	absolute = new_absolute;
+
+	if (env = query_environment()) {
+		env->bulk_invalidate();
+	}
+}
+
+int query_absolute()
+{
+	return absolute;
 }
 
 /***********/
