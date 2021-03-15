@@ -118,6 +118,8 @@ atomic void configure_properties()
 	PROPERTYD->set_property("attack_value", T_INT, PROP_INHERIT);
 	PROPERTYD->set_property("defense_value", T_INT, PROP_INHERIT);
 
+	PROPERTYD->set_property("is_wielded", T_INT, PROP_SIMPLE);
+
 	/* catch all */
 	PROPERTYD->set_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );
 	PROPERTYD->set_property("random", T_INT, PROP_SIMPLE, -1);
