@@ -441,7 +441,7 @@ void bulk_restore(mapping map)
 		v = map["max_mass"];
 	}
 
-	set_local_mass(v ? v : 0.0);
+	set_local_max_mass(v ? v : 0.0);
 
 	set_virtual(map["virtual"] ? 1 : 0);
 	set_flexible(map["flexible"] ? 1 : 0);
