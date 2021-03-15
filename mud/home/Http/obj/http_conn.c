@@ -123,7 +123,7 @@ private int handle_get_pattern(string path)
 		switch(handler) {
 		case "object":
 			if (sscanf(path, "/object.lpc?obj=%s", args)) {
-				handle_get_object(args);
+				handle_get_object(urldecode(args));
 				return 1;
 			} else {
 				message(HTTPD->generate_error_page(400, "Bad Request", "<p>Malformed arguments</p>"));
@@ -133,7 +133,7 @@ private int handle_get_pattern(string path)
 
 		case "destruct":
 			if (sscanf(path, "/destruct.lpc?obj=%s", args)) {
-				handle_get_destruct(args);
+				handle_get_destruct(urldecode(args));
 				return 1;
 			} else {
 				message(HTTPD->generate_error_page(400, "Bad Request", "<p>Malformed arguments</p>"));

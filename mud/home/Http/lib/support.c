@@ -1,5 +1,95 @@
-#include <kotaka/paths/thing.h>
 #include <kotaka/paths/system.h>
+#include <kotaka/paths/thing.h>
+
+static string hex(int d)
+{
+	string h;
+
+	h = " ";
+
+	if (d < 10) {
+		h[0] = '0' + d;
+	} else {
+		h[0] = 'A' + (d - 10);
+	}
+
+	return h;
+}
+
+static int hexval(string hd)
+{
+	int v;
+
+	v = hd[0];
+
+	switch(v) {
+	case '0' .. '9':
+		return v - '0';
+	case 'A' .. 'F':
+		return 10 + v - 'A';
+	case 'a' .. 'f':
+		return 10 + v - 'a';
+	}
+}
+
+static string urlencode(string str)
+{
+	string output;
+	int sz, i;
+
+	sz = strlen(str);
+	output = "";
+
+	for (i = 0; i < sz; i++) {
+		string ch;
+		int cv;
+
+		cv = str[i];
+
+		switch(cv) {
+		case 'A' .. 'Z':
+		case 'a' .. 'z':
+		case '0' .. '9':
+			ch = " ";
+			ch[0] = cv;
+			break;
+
+		default:
+			ch = "%";
+			ch += hex(cv >> 4);
+			ch += hex(cv & 15);
+		}
+
+		output += ch;
+	}
+
+	return output;
+}
+
+static string urldecode(string str)
+{
+	string output;
+	string head, hex, tail;
+
+	output = "";
+
+	while (sscanf(str, "%s%%%s", head, tail)) {
+		string ch;
+
+		output += head;
+
+		ch = " ";
+		ch[0] = (hexval(tail[0 .. 0]) << 4) + hexval(tail[1 .. 1]);
+
+		output += ch;
+
+		str = tail[2 ..];
+	}
+
+	output += str;
+
+	return output;
+}
 
 static string oinfobox(string header, int level, string content)
 {
@@ -69,7 +159,7 @@ static string object2link(object obj)
 
 	str = object2string(obj);
 
-	return "<a href=\"object.lpc?obj=" + str + "\">" + str + "</a>";
+	return "<a href=\"object.lpc?obj=" + urlencode(str) + "\">" + str + "</a>";
 }
 
 static mixed string2object(string str)
