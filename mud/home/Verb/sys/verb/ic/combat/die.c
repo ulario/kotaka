@@ -28,30 +28,18 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
-/*
-mixed **query_roles()
-{
-	return ({
-		({ "iob", ({ "to" }), 0 })
-	});
-}
-*/
-
 string query_help_title()
 {
+	return "Die";
 }
 
 string *query_help_contents()
 {
+	return ({ "Causes you to detach from your body as a ghost." });
 }
 
 void main(object actor, mapping roles)
 {
-	if (!actor) {
-		send_out("You must be in character to use this command.\n");
-		return;
-	}
-
 	if (!actor->query_character_lwo()) {
 		send_out("Odd, you aren't a character right now so you can't really die.\n");
 		return;

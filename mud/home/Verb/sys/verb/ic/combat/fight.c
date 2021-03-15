@@ -23,13 +23,13 @@
 
 inherit LIB_EMIT;
 inherit LIB_VERB;
+inherit "~/lib/ic";
 
 string *query_parse_methods()
 {
 	return ({ "english" });
 }
 
-/* ({ role, prepositions, raw }) */
 mixed **query_roles()
 {
 	return ({ });
