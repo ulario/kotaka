@@ -70,9 +70,11 @@ float query_local_mass()
 
 void set_mass(float new_mass)
 {
+	object arch;
+
 	if (virtual) {
 		error("Cannot set mass of virtual thing");
-	} else if (!query_archetype()) {
+	} else if (!(arch = query_archetype())) {
 		set_local_mass(new_mass);
 	} else {
 		set_local_mass(new_mass / arch->query_mass());
@@ -81,9 +83,11 @@ void set_mass(float new_mass)
 
 float query_mass()
 {
+	object arch;
+
 	if (virtual) {
 		return 0.0;
-	} else if (!query_archetype()) {
+	} else if (!(arch = query_archetype())) {
 		return mass;
 	} else {
 		return mass * arch->query_mass();
@@ -133,9 +137,11 @@ float query_local_density()
 
 void set_density(float new_density)
 {
+	object arch;
+
 	if (virtual) {
 		error("Cannot set density of virtual thing");
-	} if (!query_archetype()) {
+	} if (!(arch = query_archetype())) {
 		set_local_density(new_density);
 	} else {
 		set_local_density(new_density / arch->query_density());
@@ -144,9 +150,11 @@ void set_density(float new_density)
 
 float query_density()
 {
+	object arch;
+
 	if (virtual) {
 		return 0.0;
-	} else if (!query_archetype()) {
+	} else if (!(arch = query_archetype())) {
 		return density;
 	} else {
 		return density * arch->query_density();
@@ -212,9 +220,11 @@ float query_local_capacity()
 
 void set_capacity(float new_capacity)
 {
+	object arch;
+
 	if (virtual) {
 		error("Cannot set capacity of virtual thing");
-	} else if (!query_archetype()) {
+	} else if (!(arch = query_archetype())) {
 		set_local_capacity(new_capacity);
 	} else {
 		set_local_capacity(new_capacity / arch->query_capacity());
@@ -223,9 +233,11 @@ void set_capacity(float new_capacity)
 
 float query_capacity()
 {
+	object arch;
+
 	if (virtual) {
 		return 0.0;
-	} else if (!query_archetype()) {
+	} else if (!(arch = query_archetype())) {
 		return capacity;
 	} else {
 		return capacity * arch->query_capacity();
@@ -246,9 +258,11 @@ float query_local_max_mass()
 
 void set_max_mass(float new_max_mass)
 {
+	object arch;
+
 	if (virtual) {
 		error("Cannot set max mass of virtual thing");
-	} if (!query_archetype()) {
+	} if (!(arch = query_archetype())) {
 		set_local_max_mass(new_max_mass);
 	} else {
 		set_local_max_mass(new_max_mass / arch->query_max_mass());
@@ -257,9 +271,11 @@ void set_max_mass(float new_max_mass)
 
 float query_max_mass()
 {
+	object arch;
+
 	if (virtual) {
 		return 0.0;
-	} if (!query_archetype()) {
+	} if (!(arch = query_archetype())) {
 		return max_mass;
 	} else {
 		return max_mass * arch->query_max_mass();
