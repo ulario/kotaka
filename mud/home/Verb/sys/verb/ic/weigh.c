@@ -84,14 +84,14 @@ void main(object actor, mapping roles)
 		emit_from(actor, actor, " ", ({ "weigh", "weighs" }), " ", dob, ".");
 		mass = dob->query_total_mass();
 
-		if (mass < 1000.0) {
+		if (mass < 1.0) {
 			send_out("It weighs " + mass * 1000.0 + " grams.\n");
-		} else if (mass < 1000000.0) {
+		} else if (mass < 1000.0) {
 			send_out("It weighs " + mass + " kilograms.\n");
-		} else if (mass < 1e9) {
+		} else if (mass < 1.0e+6) {
 			send_out("It weighs " + mass / 1000.0 + " metric tons.\n");
 		} else {
-			send_out("It weighs " + mass / 1e6 + " metric kilotons.\n");
+			send_out("It weighs " + mass / 1.0e+6 + " metric kilotons.\n");
 		}
 		return;
 	}
