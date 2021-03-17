@@ -6,39 +6,25 @@ inherit "/lib/string/sprint";
 
 static string thing_text(object obj)
 {
-	object arch;
-	object po, pe;
-	object env;
-	object *inv;
-	string *names;
-	mixed *values;
-	string *details;
-	string prox, prep;
 	int sz;
-
 	mapping props;
-
-	string buffer;
-	string subbuffer;
-
-	arch = obj->query_archetype();
+	mixed *values;
+	object arch, env, *inv, po, pe;
+	string buffer, *details, *names, prep, prox, subbuffer;
 
 	subbuffer = "<p>\n";
 
-	if (arch) {
+	if (arch = obj->query_archetype()) {
 		subbuffer += "Archetype: " + object2link(arch) + "<br />\n";
 	}
 
-	env = obj->query_environment();
-
-	if (env) {
+	if (env = obj->query_environment()) {
 		subbuffer += "Environment: " + object2link(env) + "<br />\n";
 	}
 
-	prox = obj->query_prox();
-	prep = obj->query_prep();
+	if (prox = obj->query_prox()) {
+		prep = obj->query_prep();
 
-	if (prox) {
 		if (!prep) {
 			prep = "???";
 		}
