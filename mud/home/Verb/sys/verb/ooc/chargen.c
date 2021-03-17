@@ -88,7 +88,7 @@ void main(object actor, mapping roles)
 		factor = 1.0 + (rnd() - rnd()) * 0.1;
 
 		send_out("Creating template...\n");
-		template = GAME_INITD->create_thing	();
+		template = GAME_INITD->create_thing();
 		template->set_object_name("templates:" + name);
 		template->set_id(name);
 		template->set_archetype(human);
