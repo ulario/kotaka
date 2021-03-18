@@ -49,12 +49,11 @@ private mixed *filter_noun(object *candidates, string noun)
 
 		candidate = candidates[i];
 
-		snouns = candidate->query_property("snouns");
-		pnouns = candidate->query_property("pnouns");
-
 		if (candidate->has_detail(nil)) {
-			snouns |= candidate->query_snouns(nil);
-			pnouns |= candidate->query_pnouns(nil);
+			snouns = candidate->query_snouns(nil);
+			pnouns = candidate->query_pnouns(nil);
+		} else {
+			continue;
 		}
 
 		if (sizeof(({ noun }) & snouns)) {
@@ -124,6 +123,7 @@ private string *select_ordinals(string *adjectives)
 		case "tenth":
 			ordinals += ({ adjective });
 			break;
+
 		default:
 			if (sscanf(adjective, "%*dst")) {
 				ordinals += ({ adjective });
@@ -287,6 +287,7 @@ private mixed *bind_noun_phrase(mixed *np, object *candidates)
 	string *ordinals;
 	mixed *result;
 	int exact;
+	int sz;
 
 	article = np[1];
 	adj = np[2];
@@ -296,6 +297,10 @@ private mixed *bind_noun_phrase(mixed *np, object *candidates)
 	adj -= ordinals;
 
 	candidates = filter_invisible(candidates);
+
+	for (sz = sizeof(candidates); --sz >= 0; ) {
+		candidates[i]->patch_detail();
+	}
 
 	result = filter_adjectives(candidates, adj);
 
