@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,21 +30,14 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
-/*
-mixed **query_roles()
-{
-	return ({
-		({ "iob", ({ "to" }), 0 })
-	});
-}
-*/
-
 string query_help_title()
 {
+	return "Live";
 }
 
 string *query_help_contents()
 {
+	return ({ "Resurrect after dying.  Requires your body to still exist, otherwise you'll have to reincarnate." });
 }
 
 void main(object actor, mapping roles)
@@ -126,7 +119,7 @@ void main(object actor, mapping roles)
 
 			send_out("Reviving you...\n");
 			body->initialize_living();
-			body->set_local_property("brief", to_title(name));
+			body->set_local_description(nil, "brief", to_title(name));
 			emit_from(body, body, " ", ({ "revive", "revives" }), "!");
 		}
 	}

@@ -36,10 +36,6 @@ private string describe(object thing)
 		brief = thing->query_description(nil, "brief");
 	}
 
-	if (!brief) {
-		brief = thing->query_property("brief");
-	}
-
 	buffer = "";
 
 	if (brief) {

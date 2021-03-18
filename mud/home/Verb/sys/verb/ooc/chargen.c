@@ -89,16 +89,19 @@ void main(object actor, mapping roles)
 
 		send_out("Creating template...\n");
 		template = GAME_INITD->create_thing();
+
 		template->set_object_name("templates:" + name);
 		template->set_id(name);
+
 		template->set_archetype(human);
 		template->set_mass(100.0 * factor);
 		template->set_capacity(1.0 * factor);
 		template->set_max_mass(100.0 * factor);
 
-		template->set_local_property("local_snouns", ({ name }) );
+		template->add_local_snoun(nil, name);
+		template->set_local_description(nil, "brief", to_title(name));
 		template->set_local_property("is_proper", 1);
-		template->set_local_property("brief", to_title(name));
+
 		newchar = 1;
 	}
 
@@ -112,12 +115,12 @@ void main(object actor, mapping roles)
 			ghost->set_id(name);
 			ghost->set_archetype(template);
 			ghost->set_virtual(1);
-			ghost->set_local_property("local_snouns", ({ "ghost" }) );
-			ghost->set_local_property("local_pnouns", ({ "ghosts" }) );
-			ghost->set_local_property("local_adjectives", ({ name }) );
-			ghost->set_local_property("brief", to_title(name) + "'s ghost");
+			ghost->add_local_snoun(nil, "ghost");
+			ghost->add_local_pnoun(nil, "ghost");
+			ghost->set_local_adjectives(nil, ({ "ghost", name }) );
+			ghost->set_local_description(nil, "brief", to_title(name) + "'s ghost");
 		} else {
-			send_out("Alas, your soul is gone.\n");
+			send_out("Tragedy has struck, your soul has been annihilated.\n");
 			return;
 		}
 	}
@@ -128,15 +131,18 @@ void main(object actor, mapping roles)
 		if (newchar) {
 			send_out("Creating body...\n");
 			body = GAME_INITD->create_thing();
+
 			body->set_object_name("players:" + name);
 			body->set_id(name);
+
 			body->set_archetype(template);
 			body->set_local_mass(1.0);
 			body->set_local_capacity(1.0);
 			body->set_local_max_mass(1.0);
-			body->set_local_property("local_snouns", ({ "body" }) );
-			body->set_local_property("local_pnouns", ({ "bodies" }) );
-			body->set_local_property("local_adjectives", ({ name }) );
+			body->add_local_snoun(nil, "body");
+			body->add_local_pnoun(nil, "bodies");
+			body->add_local_adjective(nil, name);
+
 			body->initialize_character(10 + random(11), random(11), 30 + random(11));
 			ghost->move(body);
 			ghost->possess(body);

@@ -83,7 +83,7 @@ private string brief_of(object env, string prox)
 
 	if (!brief) {
 		if (!prox) {
-			brief = env->query_property("brief");
+			brief = env->query_description(nil, "brief");
 		}
 	}
 
@@ -170,7 +170,7 @@ void main(object actor, mapping roles)
 	case "at":
 		if (typeof(obj) == T_OBJECT) {
 			emit_from(actor, actor, " ", ({ "look", "looks" }), " at ", obj, ".");
-			look = obj->query_property("look");
+			look = obj->query_description(nil, "look");
 			send_out(look ? wordwrap(look, 60) : "a bland object");
 			send_out("\n");
 		} else {
