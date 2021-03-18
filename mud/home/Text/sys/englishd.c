@@ -299,7 +299,7 @@ private mixed *bind_noun_phrase(mixed *np, object *candidates)
 	candidates = filter_invisible(candidates);
 
 	for (sz = sizeof(candidates); --sz >= 0; ) {
-		candidates[i]->patch_detail();
+		candidates[sz]->patch_detail();
 	}
 
 	result = filter_adjectives(candidates, adj);
