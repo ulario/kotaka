@@ -206,7 +206,9 @@ private string prose(object viewer)
 		int i;
 		int sz;
 
-		if (!(desc = env->query_property("look"))) {
+		env->patch_detail();
+
+		if (!(desc = env->query_description(nil, "look"))) {
 			desc = "This place is boring.";
 		}
 
