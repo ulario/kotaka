@@ -152,3 +152,11 @@ void build_world()
 	master->set_local_description(nil, "brief", "simple man");
 	master->set_local_description(nil, "look", "A simple, boring man.");
 }
+
+string query_patcher(string path)
+{
+	switch(path) {
+	case USR_DIR + "/Game/lib/thing/detail":
+		return "patch_detail";
+	}
+}
