@@ -162,7 +162,7 @@ private void default_painter(object gc, object neighbor, object viewer)
 			return;
 		}
 	} else {
-		s = neighbor->query_property("brief");
+		s = neighbor->query_description(nil, "brief");
 
 		if (s && strlen(s) > 0) {
 			gc->draw(s[0 .. 0]);
@@ -315,7 +315,7 @@ private void draw_banner(object gc, object env)
 	gc->move_pen(2, 0);
 
 	if (env) {
-		brief = env->query_property("brief");
+		brief = env->query_description(nil, "brief");
 
 		if (!brief) {
 			brief = "an unnamed location";
