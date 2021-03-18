@@ -507,6 +507,10 @@ atomic void patch_detail()
 	string look;
 	string examine;
 
+	if (!sscanf(object_name(this_object()), "%*s#")) {
+		return;
+	}
+
 	snouns = query_local_property("local_snouns");
 	pnouns = query_local_property("local_pnouns");
 	adjectives = query_local_property("local_adjectives");
