@@ -1,6 +1,7 @@
 mapping details;
 string *vetoed_details;
 
+mixed query_local_property(string property);
 object query_archetype();
 
 /* private */
@@ -494,4 +495,39 @@ string query_description(string detail, string description)
 	}
 
 	return arch->query_description(detail, description);
+}
+
+atomic void patch_detail()
+{
+	string *snouns;
+	string *pnouns;
+	string brief;
+	string look;
+
+	snouns = query_local_property("snouns");
+	pnouns = query_local_property("pnouns");
+	brief = query_local_property("brief");
+	look = query_local_property("look");
+
+	if (!has_local_detail(nil)) {
+		add_local_detail(nil);
+	}
+
+	if (snouns) {
+		snouns |= query_local_snouns(nil);
+		set_local_snouns(snouns);
+	}
+
+	if (pnouns) {
+		pnouns |= query_local_pnouns(nil);
+		set_local_pnouns(pnouns);
+	}
+
+	if (brief) {
+		set_local_description(nil, "brief", brief);
+	}
+
+	if (look) {
+		set_local_description(nil, "look", look);
+	}
 }
