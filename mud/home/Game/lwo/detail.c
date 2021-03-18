@@ -28,6 +28,11 @@ void remove_snoun(string snoun)
 	snouns -= ({ snoun });
 }
 
+void set_snouns(string *new_snouns)
+{
+	snouns = ({ }) | new_snouns - ({ nil });
+}
+
 string *query_snouns()
 {
 	return snouns[..];
@@ -41,6 +46,11 @@ void add_pnoun(string pnoun)
 void remove_pnoun(string pnoun)
 {
 	pnouns -= ({ pnoun });
+}
+
+void set_pnouns(string *new_pnouns)
+{
+	pnouns = ({ }) | new_pnouns - ({ nil });
 }
 
 string *query_pnouns()
@@ -98,8 +108,8 @@ void load(mapping data)
 {
 	mixed v;
 
-	snouns = (v = data["snouns"]) ? v : ({ });
-	pnouns = (v = data["pnouns"]) ? v : ({ });
-	adjectives = (v = data["adjectives"]) ? v : ({ });
-	descriptions = (v = data["descriptions"]) ? v : ([ ]);
+	snouns = (v = data["snouns"]) ? ({ }) | v : ({ });
+	pnouns = (v = data["pnouns"]) ? ({ }) | v : ({ });
+	adjectives = (v = data["adjectives"]) ? ({ }) | v : ({ });
+	descriptions = (v = data["descriptions"]) ? ([ ]) + v : ([ ]);
 }
