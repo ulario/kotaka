@@ -502,12 +502,14 @@ atomic void patch_detail()
 {
 	string *snouns;
 	string *pnouns;
+	string *adjectives;
 	string brief;
 	string look;
 	string examine;
 
 	snouns = query_local_property("local_snouns");
 	pnouns = query_local_property("local_pnouns");
+	adjectives = query_local_property("local_adjectives");
 	brief = query_local_property("brief");
 	look = query_local_property("look");
 	examine = query_local_property("look");
@@ -526,6 +528,11 @@ atomic void patch_detail()
 		set_local_pnouns(nil, pnouns);
 	}
 
+	if (adjectives) {
+		adjectives |= query_local_adjectives(nil);
+		set_local_pnouns(nil, adjectives);
+	}
+
 	if (brief) {
 		set_local_description(nil, "brief", brief);
 	}
@@ -540,6 +547,7 @@ atomic void patch_detail()
 
 	set_local_property("local_snouns", nil);
 	set_local_property("local_pnouns", nil);
+	set_local_property("local_adjectives", nil);
 	set_local_property("brief", nil);
 	set_local_property("look", nil);
 	set_local_property("examine", nil);
