@@ -206,8 +206,6 @@ private string prose(object viewer)
 		int i;
 		int sz;
 
-		env->patch_detail();
-
 		if (!(desc = env->query_description(nil, "look"))) {
 			desc = "This place is boring.";
 		}

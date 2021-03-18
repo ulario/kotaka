@@ -287,7 +287,6 @@ private mixed *bind_noun_phrase(mixed *np, object *candidates)
 	string *ordinals;
 	mixed *result;
 	int exact;
-	int sz;
 
 	article = np[1];
 	adj = np[2];
@@ -297,11 +296,6 @@ private mixed *bind_noun_phrase(mixed *np, object *candidates)
 	adj -= ordinals;
 
 	candidates = filter_invisible(candidates);
-
-	for (sz = sizeof(candidates); --sz >= 0; ) {
-		candidates[sz]->patch_detail();
-	}
-
 	result = filter_adjectives(candidates, adj);
 
 	if (result[0] != 3) {

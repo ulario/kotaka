@@ -24,15 +24,13 @@ private string primitive_brief(object thing)
 {
 	string brief;
 
-	thing->patch_detail();
-
 	brief = thing->query_description(nil, "brief");
 
 	if (brief) {
 		return brief;
 	}
 
-	brief = thing->query_property("id");
+	brief = thing->query_id();
 
 	if (brief) {
 		return brief;
