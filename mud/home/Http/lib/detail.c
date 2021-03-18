@@ -10,19 +10,19 @@ private string detail_box(object obj, string detail)
 
 	buffer = "<p>";
 
-	if (sizeof(words = obj->query_snouns(detail))) {
+	if (sizeof(words = obj->query_local_snouns(detail))) {
 		buffer += "Singular nouns: " + implode(words, ", ") + "<br />\n";
 	}
 
-	if (sizeof(words = obj->query_pnouns(detail))) {
+	if (sizeof(words = obj->query_local_pnouns(detail))) {
 		buffer += "Plural nouns: " + implode(words, ", ") + "<br />\n";
 	}
 
-	if (sizeof(words = obj->query_adjectives(detail))) {
+	if (sizeof(words = obj->query_local_adjectives(detail))) {
 		buffer += "Adjectives: " + implode(words, ", ") + "<br />\n";
 	}
 
-	descriptions = obj->query_descriptions(detail);
+	descriptions = obj->query_local_descriptions(detail);
 	sz = sizeof(descriptions);
 
 	if (sz) {
@@ -50,12 +50,19 @@ private string detail_box(object obj, string detail)
 
 static string detail_text(object obj, string *details)
 {
-	string buffer;
+	string subbuffer, buffer, *vetoes;
 	int sz, i;
 
 	sz = sizeof(details);
 
-	buffer = "<h2>Details</h2>\n";
+	vetoes = obj->query_vetoed_details();
+	subbuffer = implode(vetoes, ", ");
+
+	if (subbuffer == "") {
+		buffer = "<h2>Details</h2>";
+	} else {
+		buffer = oinfobox("Details", 2, subbuffer);
+	}
 
 	for (i = 0; i < sz; i++) {
 		buffer += detail_box(obj, details[i]);
