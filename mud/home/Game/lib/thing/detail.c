@@ -516,7 +516,7 @@ atomic void patch_detail()
 	adjectives = query_local_property("local_adjectives");
 	brief = query_local_property("brief");
 	look = query_local_property("look");
-	examine = query_local_property("look");
+	examine = query_local_property("examine");
 
 	if (!has_local_detail(nil)) {
 		add_local_detail(nil);
