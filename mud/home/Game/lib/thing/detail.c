@@ -2,6 +2,7 @@ mapping details;
 string *vetoed_details;
 
 mixed query_local_property(string property);
+void set_local_property(string property, mixed value);
 object query_archetype();
 
 /* private */
@@ -503,11 +504,13 @@ atomic void patch_detail()
 	string *pnouns;
 	string brief;
 	string look;
+	string examine;
 
-	snouns = query_local_property("snouns");
-	pnouns = query_local_property("pnouns");
+	snouns = query_local_property("local_snouns");
+	pnouns = query_local_property("local_pnouns");
 	brief = query_local_property("brief");
 	look = query_local_property("look");
+	examine = query_local_property("look");
 
 	if (!has_local_detail(nil)) {
 		add_local_detail(nil);
@@ -515,12 +518,12 @@ atomic void patch_detail()
 
 	if (snouns) {
 		snouns |= query_local_snouns(nil);
-		set_local_snouns(snouns);
+		set_local_snouns(nil, snouns);
 	}
 
 	if (pnouns) {
 		pnouns |= query_local_pnouns(nil);
-		set_local_pnouns(pnouns);
+		set_local_pnouns(nil, pnouns);
 	}
 
 	if (brief) {
@@ -530,4 +533,14 @@ atomic void patch_detail()
 	if (look) {
 		set_local_description(nil, "look", look);
 	}
+
+	if (examine) {
+		set_local_description(nil, "examine", examine);
+	}
+
+	set_local_property("local_snouns", nil);
+	set_local_property("local_pnouns", nil);
+	set_local_property("brief", nil);
+	set_local_property("look", nil);
+	set_local_property("examine", nil);
 }
