@@ -17,7 +17,16 @@ p, h1, h2, h3, div.infobox
 	margin: 12pt 0;
 }
 
-*:first-child, div.infobox:first-child
+div.infobox
+{
+	margin: 12pt;
+	padding: 1em;
+	background-color: #ffffcc;
+	border: .25em solid #aaaa00;
+	border-radius: .5em;
+}
+
+*:first-child
 {
 	margin-top: 0;
 }
@@ -51,15 +60,6 @@ div.column
 div.infobox, h1, h2, h3
 {
 	break-inside: avoid;
-}
-
-div.infopane
-{
-	margin: 1em;
-	padding: 1em;
-	background-color: #ffffcc;
-	border: .25em solid #aaaa00;
-	border-radius: .5em;
 }
 
 td
