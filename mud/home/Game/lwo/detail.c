@@ -70,6 +70,11 @@ void remove_adjective(string adjective)
 	adjectives -= ({ adjective });
 }
 
+void set_adjectives(string *new_adjectives)
+{
+	adjectives = ({ }) | new_adjectives - ({ nil });
+}
+
 string *query_adjectives()
 {
 	return adjectives[..];

@@ -534,7 +534,7 @@ atomic void patch_detail()
 
 	if (adjectives) {
 		adjectives |= query_local_adjectives(nil);
-		set_local_pnouns(nil, adjectives);
+		set_local_adjectives(nil, adjectives);
 	}
 
 	if (brief) {
