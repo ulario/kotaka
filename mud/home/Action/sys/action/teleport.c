@@ -77,6 +77,7 @@ void action(mapping roles)
 	}
 
 	emit_from(actor, actor, " ", ({ "vanish", "vanishes" }), " into thin air.");
+
 	actor->move(target);
 	fix_position(actor);
 

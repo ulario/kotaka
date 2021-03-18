@@ -41,6 +41,7 @@ void action(mapping roles)
 	name = body->query_object_name();
 
 	if (name && sscanf(name, "players:%s", name)) {
-		body->set_local_property("brief", to_title(name) + "'s statue");
+		body->patch_detail();
+		body->set_local_description(nil, "brief", to_title(name) + "'s statue");
 	}
 }
