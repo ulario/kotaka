@@ -68,7 +68,7 @@ static string thing_text(object obj)
 
 	buffer += bulk_text(obj);
 
-	if (sizeof(details = obj->query_details())) {
+	if (sizeof(details = obj->query_local_details())) {
 		buffer += detail_text(obj, details);
 	}
 
