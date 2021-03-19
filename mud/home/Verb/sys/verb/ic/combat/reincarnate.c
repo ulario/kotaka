@@ -116,14 +116,22 @@ void main(object actor, mapping roles)
 
 	send_out("Creating body...\n");
 	body = GAME_INITD->create_thing();
+
 	body->set_object_name("players:" + name);
 	body->set_id(name);
 	body->set_archetype(template);
+
 	body->set_local_mass(1.0);
-	body->set_local_property("local_snouns", ({ "body" }) );
-	body->set_local_property("local_pnouns", ({ "bodies" }) );
-	body->set_local_property("local_adjectives", ({ name }) );
+	body->set_local_capacity(1.0);
+	body->set_local_max_mass(1.0);
+
+	body->add_local_detail(nil);
+	body->add_local_snoun(nil, "body");
+	body->add_local_pnoun(nil, "bodies");
+	body->add_local_adjective(nil, name);
+
 	body->initialize_character(10 + random(11), random(11), 30 + random(11));
+
 	ghost->move(body);
 	ghost->possess(body);
 	body->move(world);
