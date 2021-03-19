@@ -84,6 +84,16 @@ void main(object actor, mapping roles)
 		return;
 	}
 
+	if (ghost->query_character_lwo()) {
+		send_out("Odd...your spirit was marked as a character...resetting\n");
+		ghost->clear_character();
+	}
+
+	if (ghost->query_living_lwo()) {
+		send_out("Odd...your spirit was marked as living...resetting\n");
+		ghost->clear_living();
+	}
+
 	body = IDD->find_object_by_name("players:" + name);
 
 	if (body) {
