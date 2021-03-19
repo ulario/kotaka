@@ -384,6 +384,8 @@ int login(string str)
 
 	ip = query_ip_number(conn);
 
+	write_file("http.log", ip + ": " + str + "\n");
+
 	request = str + "\n";
 
 	if (sscanf(str, "%s %s %s", method, path, version) != 3) {
