@@ -55,7 +55,9 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (!sscanf(name, "ghosts:%s", name)) {
+	name = actor->query_object_name();
+
+	if (!name || !sscanf(name, "ghosts:%s", name)) {
 		send_out("Only ghosts can resurrect.\n");
 		return;
 	}
@@ -78,9 +80,9 @@ void main(object actor, mapping roles)
 
 	send_out("Returning your soul to its body...\n");
 
-	emit_from(ghost, ghost, " ", ({ "enter", "enters" }), " ", body);
-	ghost->move(body);
-	ghost->possess(body);
+	emit_from(actor, actor, " ", ({ "enter", "enters" }), " ", body);
+	actor->move(body);
+	actor->possess(body);
 
 	send_out("Reviving you...\n");
 	body->initialize_living();
