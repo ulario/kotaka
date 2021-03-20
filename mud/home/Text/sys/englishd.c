@@ -82,11 +82,7 @@ private mixed *filter_adjectives(object *candidates, string *adjectives)
 
 		candidate = candidates[i];
 
-		ouradj = candidate->query_property("adjectives");
-
-		if (candidate->has_detail(nil)) {
-			ouradj |= candidate->query_adjectives(nil);
-		}
+		ouradj = candidate->query_adjectives(nil);
 
 		if (!sizeof(adjectives - ouradj)) {
 			contenders += ({ candidate });
