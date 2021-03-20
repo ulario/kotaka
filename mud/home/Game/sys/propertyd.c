@@ -35,22 +35,6 @@ atomic void configure_properties()
 	PROPERTYD->reset_properties();
 
 	/* descriptions */
-	PROPERTYD->set_property("snouns", T_ARRAY, PROP_COMBO, ({ "local_snouns", "removed_snouns" }) );
-	PROPERTYD->set_property("pnouns", T_ARRAY, PROP_COMBO, ({ "local_pnouns", "removed_pnouns" }) );
-	PROPERTYD->set_property("adjectives", T_ARRAY, PROP_COMBO, ({ "local_adjectives", "removed_adjectives" }) );
-
-	PROPERTYD->set_property("local_snouns", T_ARRAY, PROP_SIMPLE, ({ }));
-	PROPERTYD->set_property("local_pnouns", T_ARRAY, PROP_SIMPLE, ({ }));
-	PROPERTYD->set_property("local_adjectives", T_ARRAY, PROP_SIMPLE, ({ }));
-
-	PROPERTYD->set_property("removed_snouns", T_ARRAY, PROP_SIMPLE, ({ }));
-	PROPERTYD->set_property("removed_pnouns", T_ARRAY, PROP_SIMPLE, ({ }));
-	PROPERTYD->set_property("removed_adjectives", T_ARRAY, PROP_SIMPLE, ({ }));
-
-	PROPERTYD->set_property("brief", T_STRING, PROP_INHERIT, "nondescript object");
-	PROPERTYD->set_property("look", T_STRING, PROP_INHERIT, "A nondescript object.");
-	PROPERTYD->set_property("examine", T_STRING, PROP_INHERIT, "A nondescript object with no detail.");
-
 	PROPERTYD->set_property("pronoun", T_STRING, PROP_INHERIT);
 
 	PROPERTYD->set_property("is_definite", T_INT, PROP_INHERIT, 0);
