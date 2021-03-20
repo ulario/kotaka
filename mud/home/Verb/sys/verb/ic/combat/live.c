@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/paths/verb.h>
 #include <kotaka/paths/system.h>
@@ -56,7 +57,7 @@ void main(object actor, mapping roles)
 
 	if (!sscanf(name, "ghosts:%s", name)) {
 		send_out("Only ghosts can resurrect.\n");
-		break;
+		return;
 	}
 
 	/* if we get this far as a ghost we should already have a template */
