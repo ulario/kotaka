@@ -24,6 +24,7 @@
 inherit "/lib/string/case";
 inherit LIB_EMIT;
 inherit LIB_VERB;
+inherit "~/lib/ic";
 
 string *query_parse_methods()
 {
@@ -42,39 +43,30 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	object user;
 	string name;
 
 	object template;
 	object ghost;
 	object body;
 
-	if (!actor) {
-		send_out("You must be in character to use this command.\n");
+	if (actor->query_living_lwo()) {
+		send_out("You're already alive.\n");
 		return;
 	}
 
-	user = query_user();
-	name = user->query_name();
+	if (!sscanf(name, "ghosts:%s", name)) {
+		send_out("Only ghosts can resurrect.\n");
+		break;
+	}
 
+	/* if we get this far as a ghost we should already have a template */
 	template = IDD->find_object_by_name("templates:" + name);
-
-	if (!template) {
-		send_out("You don't have a character, please run chargen.\n");
-		return;
-	}
-
-	ghost = IDD->find_object_by_name("ghosts:" + name);
-
-	if (!ghost) {
-		send_out("Sadness...your soul has been consigned to oblivion.\n");
-		return;
-	}
+	ASSERT(template);
 
 	body = IDD->find_object_by_name("players:" + name);
 
 	if (!body) {
-		send_out("Bummer, your body is gone.  Looks like you're stuck in the afterlife.\n");
+		send_out("Bummer, your body is gone.\nYou'll have to reincarnate to get a new one.\n");
 		return;
 	}
 
@@ -83,44 +75,14 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (body->query_living_lwo()) {
-		object possessee;
+	send_out("Returning your soul to its body...\n");
 
-		send_out("You're already alive.\n");
+	emit_from(ghost, ghost, " ", ({ "enter", "enters" }), " ", body);
+	ghost->move(body);
+	ghost->possess(body);
 
-		possessee = ghost->query_possessee();
-
-		if (!possessee) {
-			send_out("But your soul wasn't attached properly, fixing that...\n");
-
-			ghost->move(body);
-			ghost->possess(body);
-		} else if (possessee != body) {
-			send_out("Somehow you're possessing something other than your natural body...\n");
-		}
-	} else {
-		object possessee;
-
-		possessee = ghost->query_possessee();
-
-		if (possessee) {
-			if (possessee != body) {
-				send_out("Somehow you're possessing something other than your natural body...\n");
-				return;
-			} else {
-				send_out("Weird, you were already possessing your body.\n");
-			}
-		} else {
-			send_out("Returning your soul to its body...\n");
-
-			emit_from(ghost, ghost, " ", ({ "enter", "enters" }), " ", body);
-			ghost->move(body);
-			ghost->possess(body);
-
-			send_out("Reviving you...\n");
-			body->initialize_living();
-			body->set_local_description(nil, "brief", to_title(name));
-			emit_from(body, body, " ", ({ "revive", "revives" }), "!");
-		}
-	}
+	send_out("Reviving you...\n");
+	body->initialize_living();
+	body->set_local_description(nil, "brief", to_title(name));
+	emit_from(body, body, " ", ({ "revive", "revives" }), "!");
 }
