@@ -420,7 +420,7 @@ int receive_message(string message)
 				case "GET":
 					state = STATE_RESPONDING;
 					handle_get();
-					call_out("self_destruct", 0.05);
+					call_out("self_destruct", 5);
 					return MODE_BLOCK;
 
 				case "POST":
