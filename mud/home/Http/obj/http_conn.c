@@ -384,7 +384,7 @@ int login(string str)
 
 	ip = query_ip_number(conn);
 
-	write_file("http.log", ip + ": " + str + "\n");
+	LOGD->post_message("http", LOG_INFO, ip + ": " + str);
 
 	request = str + "\n";
 

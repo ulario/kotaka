@@ -415,6 +415,7 @@ void configure_logging()
 
 	LOGD->set_target("*", 127, "file:session");
 	LOGD->set_target("debug", 0, "file:session");
+	LOGD->set_target("http", 255, "file:http");
 
 	LOGD->set_target("*", 128, "file:debug");
 	LOGD->set_target("debug", 255, "file:debug");
