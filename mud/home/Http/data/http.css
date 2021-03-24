@@ -66,13 +66,3 @@ td
 	vertical-align: top;
 	padding: 0 1em;
 }
-
-table
-{
-	margin: 0 auto;
-}
-
-td.spacer
-{
-	width: 2em;
-}
