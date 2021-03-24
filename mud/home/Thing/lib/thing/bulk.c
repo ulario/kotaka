@@ -47,7 +47,10 @@ void bulk_sync(varargs int force);	/* synchronize bulk cache */
 
 static void create()
 {
+	mass = 1.0;
 	density = 1.0;
+	capacity = 1.0;
+	max_mass = 1.0;
 }
 
 /* mass */
