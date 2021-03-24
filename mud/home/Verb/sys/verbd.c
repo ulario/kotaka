@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <config.h>
-#include <kotaka/privilege.h>
 #include <kotaka/help.h>
 #include <kotaka/log.h>
+#include <kotaka/paths/verb.h>
+#include <kotaka/privilege.h>
 
 inherit "/lib/string/char";
 inherit "/lib/string/format";
@@ -152,6 +153,10 @@ static void sync_help_dir(string dir)
 			topics -= ({ name });
 
 			verb = objs[sz];
+
+			if (!verb<-LIB_VERB) {
+				error(fullname + " does not inherit LIB_VERB");
+			}
 
 			help = verb->query_help_title();
 			if (!help) {
