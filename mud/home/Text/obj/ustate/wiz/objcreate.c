@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -79,7 +79,7 @@ private void prompt()
 		break;
 
 	case STAGE_BRIEF:
-		data = obj->query_local_property("brief");
+		data = obj->query_local_description(nil, "brief");
 		if (data) {
 			send_out("Current brief description: " + data + "\n");
 		}
@@ -106,9 +106,8 @@ private void prompt()
 		send_out("Should this object's brief be definite? ");
 		break;
 
-
 	case STAGE_LOOK:
-		data = obj->query_local_property("look");
+		data = obj->query_local_description(nil, "look");
 		if (data) {
 			send_out("Current look description:\n" + data + "\n");
 		}
@@ -116,7 +115,7 @@ private void prompt()
 		break;
 
 	case STAGE_SNOUN:
-		data = obj->query_local_property("local_snouns");
+		data = obj->query_local_snouns(nil);
 		if (data && sizeof(data)) {
 			send_out("Current singular nouns: " + implode(data, ", ") + "\n");
 		}
@@ -124,7 +123,7 @@ private void prompt()
 		break;
 
 	case STAGE_PNOUN:
-		data = obj->query_local_property("local_pnouns");
+		data = obj->query_local_pnouns(nil);
 		if (data && sizeof(data)) {
 			send_out("Current plural nouns: " + implode(data, ", ") + "\n");
 		}
@@ -151,28 +150,24 @@ private void prompt()
 
 	case STAGE_MASS:
 		data = obj->query_mass();
-
 		send_out("Object's current mass: " + data + " kg.\n");
 		send_out("How massive should this object be? ");
 		break;
 
 	case STAGE_DENSITY:
 		data = obj->query_density();
-
-		send_out("Object's current mass: " + data + " kg/l.\n");
+		send_out("Object's current density: " + data + " kg/l.\n");
 		send_out("How dense should this object be? ");
 		break;
 
 	case STAGE_CAPACITY:
 		data = obj->query_capacity();
-
 		send_out("Object's current capacity: " + data + " m^3.\n");
 		send_out("How much in volume should this object be able to hold? ");
 		break;
 
 	case STAGE_MAX_MASS:
 		data = obj->query_max_mass();
-
 		send_out("Object's current max mass: " + data + " kg.\n");
 		send_out("How much in mass should this object be able to hold? ");
 		break;
@@ -214,29 +209,6 @@ void pre_end()
 	ACCESS_CHECK(previous_object() == query_user());
 
 	dead = 1;
-}
-
-private void handle_word(string word, string property, int remove)
-{
-	string *words;
-
-	words = obj->query_local_property(property);
-
-	if (!words) {
-		words = ({ });
-	}
-
-	if (remove) {
-		words -= ({ word });
-	} else {
-		words |= ({ word });
-	}
-
-	if (!sizeof(words)) {
-		words = nil;
-	}
-
-	obj->set_local_property(property, words);
 }
 
 private void do_input(string input)
@@ -320,9 +292,9 @@ private void do_input(string input)
 
 	case STAGE_LOOK:
 		if (input == "-") {
-			obj->set_local_property("look", nil);
+			obj->set_local_description(nil, "look", nil);
 		} else if (input != "") {
-			obj->set_local_property("look", input);
+			obj->set_local_description(nil, "look", input);
 		}
 		stage = STAGE_SNOUN;
 		break;
@@ -332,9 +304,9 @@ private void do_input(string input)
 			stage = STAGE_PNOUN;
 		} else {
 			if (input[0] == '-') {
-				handle_word(input[1 ..], "local_snouns", 1);
+				obj->remove_local_snoun(nil, input[1 ..]);
 			} else {
-				handle_word(input, "local_snouns", 0);
+				obj->add_local_snoun(nil, input);
 			}
 		}
 		break;
@@ -344,9 +316,9 @@ private void do_input(string input)
 			stage = STAGE_ADJ;
 		} else {
 			if (input[0] == '-') {
-				handle_word(input[1 ..], "local_pnouns", 1);
+				obj->remove_local_pnoun(nil, input[1 ..]);
 			} else {
-				handle_word(input, "local_pnouns", 0);
+				obj->add_local_pnoun(nil, input);
 			}
 		}
 		break;
@@ -356,9 +328,9 @@ private void do_input(string input)
 			stage = STAGE_VIRTUAL;
 		} else {
 			if (input[0] == '-') {
-				handle_word(input[1 ..], "local_adjectives", 1);
+				obj->remove_local_adjective(nil, input[1 ..]);
 			} else {
-				handle_word(input, "local_adjectives", 0);
+				obj->add_local_adjective(nil, input);
 			}
 		}
 		break;
