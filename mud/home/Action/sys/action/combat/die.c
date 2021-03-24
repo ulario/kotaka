@@ -48,6 +48,9 @@ void action(mapping roles)
 	name = body->query_object_name();
 
 	body->clear_living();
+	body->add_local_snoun(nil, "corpse");
+	body->add_local_pnoun(nil, "corpses");
+	body->add_local_adjective(nil, "dead");
 
 	if (name && sscanf(name, "players:%s", name)) {
 		body->set_local_description(nil, "brief", to_title(name) + "'s corpse");

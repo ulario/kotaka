@@ -86,6 +86,9 @@ void main(object actor, mapping roles)
 
 	send_out("Reviving you...\n");
 	body->initialize_living();
+	body->remove_local_snoun(nil, "corpse");
+	body->remove_local_pnoun(nil, "corpses");
+	body->remove_local_adjective(nil, "dead");
 	body->set_local_description(nil, "brief", to_title(name));
 	emit_from(body, body, " ", ({ "revive", "revives" }), "!");
 }
