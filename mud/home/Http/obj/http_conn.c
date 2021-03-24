@@ -103,8 +103,10 @@ private void handle_get_destruct(string objectname)
 		message(header->generate_header());
 		message("<html>\n");
 		message("<head>\n");
-		message(style());
 		message("<title>Object destroyed</title>\n");
+		message("<style>\n");
+		message(read_file("~/data/http.css"));
+		message("</style>\n");
 		message("</head>\n");
 		message("<body>\n");
 		message("<p>Object destroyed</p>\n");
@@ -170,7 +172,9 @@ private void handle_post_object(string objectname)
 		message(header->generate_header());
 		message("<html>\n");
 		message("<head>\n");
-		message(style());
+		message("<style>\n");
+		message(read_file("~/data/http.css"));
+		message("</style>\n");
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
