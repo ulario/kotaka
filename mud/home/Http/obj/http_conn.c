@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ inherit LIB_SYSTEM_USER;
 inherit "/lib/sort";
 inherit "~/lib/object";
 inherit "~/lib/siteban";
-inherit "~/lib/style";
 
 string ip;
 string request;
@@ -64,7 +63,9 @@ private void handle_get_object(string objectname)
 		message(header->generate_header());
 		message("<html>\n");
 		message("<head>\n");
-		message(style());
+		message("<style>\n");
+		message(read_file("~/data/http.css"));
+		message("</style>\n");
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");

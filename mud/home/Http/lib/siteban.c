@@ -1,7 +1,6 @@
 #include <kotaka/paths/account.h>
 
 inherit "/lib/sort";
-inherit "style";
 
 int message(string str);
 
@@ -43,7 +42,9 @@ static void handle_get_siteban()
 	message(header->generate_header());
 	message("<html>\n");
 	message("<head>\n");
-	message(style());
+	message("<style>\n");
+	message(read_file("~/data/http.css"));
+	message("</style>\n");
 	message("<title>Sitebans</title>\n");
 	message("</head>\n");
 	message("<body>\n");
@@ -115,6 +116,5 @@ static void handle_get_siteban()
 
 	message("</table>\n");
 	message("</body>\n");
-	message("</html>\n");
 	message("</html>\n");
 }
