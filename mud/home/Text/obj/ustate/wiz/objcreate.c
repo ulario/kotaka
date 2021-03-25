@@ -234,9 +234,9 @@ private void do_input(string input)
 
 	case STAGE_BRIEF:
 		if (input == "-") {
-			obj->set_local_property("brief", nil);
+			obj->set_local_description(nil, "brief", nil);
 		} else if (input != "") {
-			obj->set_local_property("brief", input);
+			obj->set_local_description(nil, "brief", input);
 		}
 		stage = STAGE_PROPER;
 		break;
