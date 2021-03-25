@@ -1,5 +1,6 @@
 #include <kotaka/paths/account.h>
 
+inherit "/lib/time";
 inherit "/lib/sort";
 
 int message(string str);
@@ -91,22 +92,7 @@ static void handle_get_siteban()
 			remaining = "Permanent";
 		} else {
 			remaining = expire - time;
-
-			if (remaining < 60) {
-				remaining += (remaining == 1 ? " second" : " seconds");
-			} else if (remaining < 3600) {
-				remaining += 59;
-				remaining /= 60;
-				remaining += (remaining == 1 ? " minute" : " minutes");
-			} else if (remaining < 86400) {
-				remaining += 3599;
-				remaining /= 3600;
-				remaining += (remaining == 1 ? " hour" : " hours");
-			} else {
-				remaining += 86399;
-				remaining /= 86400;;
-				remaining += (remaining == 1 ? " day" : " days");
-			}
+			remaining = timedesc(remaining, 1);
 		}
 
 		message("<tr><td>" + site + "</td><td>" + siteban["issuer"]

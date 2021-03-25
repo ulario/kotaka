@@ -21,6 +21,7 @@
 #include <kotaka/paths/verb.h>
 
 inherit LIB_VERB;
+inherit "/lib/time";
 inherit "/lib/string/format";
 inherit "~System/lib/string/align";
 
@@ -72,15 +73,7 @@ string print_bans(string header, string *targets, mixed *bans)
 		} else {
 			remaining = expire - time;
 
-			if (remaining < 60) {
-				remaining = remaining + "s";
-			} else if (remaining < 3600) {
-				remaining = ((remaining + 59) / 60) + "m";
-			} else if (remaining < 86400) {
-				remaining = ((remaining + 3599) / 3600) + "h";
-			} else {
-				remaining = ((remaining + 86399) / 86400) + "d";
-			}
+			remaining = timedesc(remaining);
 		}
 
 		message = ban["message"];

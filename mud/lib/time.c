@@ -69,3 +69,34 @@ string pmtime(mixed *mtime)
 	ms = ms[strlen(ms) - 3..];
 	return ptime(mtime[0]) + "." + ms;
 }
+
+static string timedesc(int sec, varargs int long)
+{
+	if (sec < 60) {
+		return sec + (long ? (sec == 1 ? " second" : " seconds") : "s");
+	} else if (sec + 60 < 3600) {
+		sec += 59;
+		sec /= 60;
+		return sec + (long ? (sec == 1 ? " minute" : " minutes") : "m");
+	} else if (sec + 3600 < 86400) {
+		sec += 60 * 59;
+		sec /= 60 * 60;
+		return sec + (long ? (sec == 1 ? " hour" : " hours") : "h");
+	} else if (sec + 86400 < 86400 * 7) {
+		sec += 23 * 3600;
+		sec /= 24 * 3600;
+		return sec + (long ? (sec == 1 ? " day" : " days") : "d");
+	} else if (sec + 86400 * 7 < 86400 * 30) {
+		sec += 86400 * 6;
+		sec /= 86400 * 7;
+		return sec + (long ? (sec == 1 ? " week" : " weeks") : "w");
+	} else if (sec + 86400 * 30 < 86400 * 365) {
+		sec += 86400 * 29;
+		sec /= 86400 * 30;
+		return sec + (long ? (sec == 1 ? " month" : " months") : "mo");
+	} else {
+		sec += 86400 * 335;
+		sec /= 86400 * 365;
+		return sec + (long ? (sec == 1 ? " year" : " years") : "y");
+	}
+}
