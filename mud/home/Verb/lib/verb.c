@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -60,7 +60,11 @@ int pre_bind(object actor, mapping roles)
 
 object *pre_search(object actor, string role)
 {
-	return ({ actor, actor->query_environment() }) - ({ nil });
+	if (actor) {
+		return ({ actor, actor->query_environment() }) - ({ nil });
+	} else {
+		return ({ });
+	}
 }
 
 object *pre_filter(object actor, string role, object *cand)
