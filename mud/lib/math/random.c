@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,13 +19,7 @@
  */
 float rnd()
 {
-	mixed low;
-	mixed high;
-
-	low = random(1 << 18);
-	high = random(1 << 18);
-
-	return ldexp((float)low, -36) + ldexp((float)high, -18);
+	return ldexp((float)random(1 << 30), -30);
 }
 
 float bell_rnd(int degree)
