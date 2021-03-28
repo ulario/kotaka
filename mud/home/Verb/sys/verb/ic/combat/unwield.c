@@ -52,15 +52,10 @@ void main(object actor, mapping roles)
 	string *parts;
 	int i, sz, dlayer;
 
-	if (!actor) {
-		send_out("You must be in character to use this command.\n");
-		return;
-	}
-
 	dob = roles["dob"];
 
 	if (!dob) {
-		send_out("Drop what?\n");
+		send_out("Unwield what?\n");
 		return;
 	}
 
