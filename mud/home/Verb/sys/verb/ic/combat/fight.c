@@ -87,7 +87,8 @@ private void do_attack(object actor, object dob)
 		return;
 	}
 
-	damage = achar->query_attack() - dchar->query_defense();
+	damage = (achar->query_attack() + aliv->query_attack_bonus())
+		- (dchar->query_defense() + dliv->query_defense_bonus());
 
 	if (damage <= 0) {
 		send_out("Your attack is ineffective\n");
