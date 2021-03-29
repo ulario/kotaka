@@ -498,6 +498,40 @@ string query_description(string detail, string description)
 	return arch->query_description(detail, description);
 }
 
+/* patching */
+
+void purge_empty_details()
+{
+	string *dlist;
+	int sz;
+
+	dlist = query_local_details();
+
+	for (sz = sizeof(dlist); --sz >= 0; ) {
+		string detail;
+
+		detail = dlist[sz];
+
+		if (sizeof(query_local_descriptions(detail))) {
+			continue;
+		}
+
+		if (sizeof(query_local_snouns(detail))) {
+			continue;
+		}
+
+		if (sizeof(query_local_pnouns(detail))) {
+			continue;
+		}
+
+		if (sizeof(query_local_adjectives(detail))) {
+			continue;
+		}
+
+		remove_local_detail(detail);
+	}
+}
+
 atomic void patch_detail()
 {
 	string *snouns;
@@ -510,6 +544,8 @@ atomic void patch_detail()
 	if (!sscanf(object_name(this_object()), "%*s#")) {
 		return;
 	}
+
+	patch_details_init();
 
 	snouns = query_local_property("local_snouns");
 	pnouns = query_local_property("local_pnouns");
@@ -555,4 +591,6 @@ atomic void patch_detail()
 	set_local_property("brief", nil);
 	set_local_property("look", nil);
 	set_local_property("examine", nil);
+
+	purge_empty_details();
 }
