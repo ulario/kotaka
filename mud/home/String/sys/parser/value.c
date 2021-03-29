@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
+inherit "/lib/string/object";
 inherit "~System/lib/string/escape";
 
 string grammar;
@@ -88,17 +89,7 @@ static object *parse_obj(string *input)
 		}
 	}
 
-	obj = find_object(oname);
-
-	if (!obj) {
-		obj = IDD->find_object_by_name(oname);
-	}
-
-	if (obj) {
-		return ({ obj });
-	} else {
-		error("No such object");
-	}
+	return ({ parse_object(oname) });
 }
 
 static mixed *parse_nil(string *input)

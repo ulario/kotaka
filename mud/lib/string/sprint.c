@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <type.h>
+#include <kotaka/paths/thing.h>
 
 inherit "~System/lib/string/sprint";
 inherit "char";
@@ -43,11 +44,38 @@ string sprint_object(object obj, varargs mapping seen, int nodup)
 		} else {
 			return "<" + object_name(obj) + ">";
 		}
-	} else if (function_object("query_object_name", obj) && (oname = obj->query_object_name())) {
-		return "<" + oname + ">";
 	} else {
-		return "<" + object_name(obj) + ">";
+		string *ids;
+
+		ids = ({ });
+
+		for (;;) {
+			string id;
+
+			if (!obj) {
+				break;
+			}
+
+			if (!(obj <- LIB_THING)) {
+				break;
+			}
+
+			if (oname = obj->query_object_name()) {
+				return "<" + oname + (sizeof(ids) ? ";" + implode(ids, ";") : "") + ">";
+			}
+
+			id = obj->query_id();
+
+			if (!id) {
+				break;
+			}
+
+			ids = ({ id }) + ids;
+			obj = obj->query_environment();
+		}
 	}
+
+	return "<" + object_name(obj) + ">";
 }
 
 string mixed_sprint(mixed data, varargs mapping seen, int nodup)

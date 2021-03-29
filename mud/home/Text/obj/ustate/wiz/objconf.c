@@ -32,6 +32,7 @@
 #define POP_SUB  7
 #define POP_XOR  8
 
+inherit "/lib/string/object";
 inherit "/lib/string/format";
 inherit "/lib/string/sprint";
 inherit TEXT_LIB_USTATE;
