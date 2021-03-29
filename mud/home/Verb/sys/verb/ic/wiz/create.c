@@ -47,7 +47,6 @@ void main(object actor, mapping roles)
 
 	thing = GAME_INITD->create_thing();
 	thing->move(actor);
-	thing->set_property("local_snouns", ({ "thing" }) );
 
 	creator = query_user()->clone_ustate("wiz/objcreate");
 	creator->set_object(thing);

@@ -125,14 +125,17 @@ private string *select_ordinals(string *adjectives)
 				ordinals += ({ adjective });
 				break;
 			}
+
 			if (sscanf(adjective, "%*dnd")) {
 				ordinals += ({ adjective });
 				break;
 			}
+
 			if (sscanf(adjective, "%*drd")) {
 				ordinals += ({ adjective });
 				break;
 			}
+
 			if (sscanf(adjective, "%*dth")) {
 				ordinals += ({ adjective });
 				break;
