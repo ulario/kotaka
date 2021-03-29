@@ -54,6 +54,7 @@ void main(object actor, mapping roles)
 
 	thing = GAME_INITD->create_object();
 	thing->set_archetype(master);
+	thing->set_id_base(master->query_id_base());
 	thing->move(actor);
 
 	emit_from(actor, actor, " ", ({ "spawn", "spawns" }), " ", thing, ".");
