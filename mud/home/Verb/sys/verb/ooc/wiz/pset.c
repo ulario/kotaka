@@ -22,6 +22,7 @@
 #include <kotaka/paths/verb.h>
 #include <kotaka/paths/thing.h>
 
+inherit "/lib/string/object";
 inherit LIB_VERB;
 
 string *query_parse_methods()
@@ -49,11 +50,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	obj = find_object(oname);
-
-	if (!obj) {
-		obj = IDD->find_object_by_name(oname);
-	}
+	obj = parse_object(oname);
 
 	if (!obj) {
 		send_out(oname + ": No such object.\n");

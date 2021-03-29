@@ -19,7 +19,7 @@
  */
 #include <kotaka/paths/system.h>
 
-static object parse_object(string str)
+object parse_object(string str)
 {
 	string suffix;
 	string *ids;
@@ -34,7 +34,7 @@ static object parse_object(string str)
 	}
 
 	if (!obj) {
-		error("No such object");
+		return nil;
 	}
 
 	if (!suffix) {
@@ -47,7 +47,7 @@ static object parse_object(string str)
 		obj = obj->find_by_id(ids[0]);
 
 		if (!obj) {
-			error("No such object");
+			return nil;
 		}
 
 		ids = ids[1 ..];
