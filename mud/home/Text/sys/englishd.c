@@ -594,10 +594,14 @@ private mixed *english_process(string command, object ustate, object actor, obje
 
 				rcand = cand[..];
 
-				sz = sizeof(rsearch);
+				{
+					int sz, i;
 
-				for (i = 0; i < sz; i++) {
-					rcand |= rsearch[i]->query_inventory();
+					sz = sizeof(rsearch);
+
+					for (i = 0; i < sz; i++) {
+						rcand |= rsearch[i]->query_inventory();
+					}
 				}
 
 				rcand = verb->pre_filter(actor, role, rcand);
