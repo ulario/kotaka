@@ -349,7 +349,7 @@ static void create(int clone)
 	state = -1;
 
 	if (clone) {
-		call_out("self_destruct", 5);
+		call_out("self_destruct", 60);
 	}
 }
 
@@ -425,8 +425,7 @@ int receive_message(string message)
 				case "GET":
 					state = STATE_RESPONDING;
 					handle_get();
-					call_out("self_destruct", 5);
-					return MODE_BLOCK;
+					return MODE_DISCONNECT;
 
 				case "POST":
 					state = STATE_ENTITY;
@@ -456,8 +455,7 @@ int receive_message(string message)
 					if (explen == 0) {
 						/* empty entity, process immediately */
 						handle_post();
-						call_out("self_destruct", 0.05);
-						return MODE_BLOCK;
+						return MODE_DISCONNECT;
 					}
 
 					/* wait for entity */
@@ -469,8 +467,7 @@ int receive_message(string message)
 				message(HTTPD->generate_error_page(400, "Bad request"
 					, "Your browser sent malformed headers.")
 				);
-				call_out("self_destruct", 0.05);
-				return MODE_BLOCK;
+				return MODE_DISCONNECT;
 			}
 
 			headers[name] = value;
