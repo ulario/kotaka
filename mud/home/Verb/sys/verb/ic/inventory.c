@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -171,12 +171,26 @@ void main(object actor, mapping roles)
 		values = ([ ]);
 
 		for (i = 0; i < sz; i++) {
-			pieces += ({ generate_brief_indefinite(inv[i]) });
+			string piece;
+			object obj;
 
-			if (inv[i]->query_property("value")) {
-				value = inv[i]->query_property("value");
+			obj = inv[i];
+			piece = generate_brief_indefinite(obj);
 
-				if (currency = inv[i]->query_property("currency")) {
+			if (obj->query_property("is_worn")) {
+				piece += " (worn)";
+			}
+
+			if (obj->query_property("is_wielded")) {
+				piece += " (wielded)";
+			}
+
+			pieces += ({ piece });
+
+			if (obj->query_property("value")) {
+				value = obj->query_property("value");
+
+				if (currency = obj->query_property("currency")) {
 					if (!values[currency]) {
 						values[currency] = value;
 					} else {
