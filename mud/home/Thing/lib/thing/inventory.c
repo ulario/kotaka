@@ -164,7 +164,7 @@ atomic void move(object new_env, varargs int force)
 			error("Self containment attempted");
 		}
 
-		if (sizeof(new_env->thing_query_inventory()) >= 64) {
+		if (sizeof(new_env->thing_query_inventory()) >= 256) {
 			error("Destination object too cluttered");
 		}
 
