@@ -1,6 +1,4 @@
 int hp;
-int attack_bonus;
-int defense_bonus;
 
 int query_hp()
 {
@@ -20,24 +18,4 @@ int subtract_hp(int damage)
 int add_hp(int healing)
 {
 	return hp += healing;
-}
-
-int query_attack_bonus()
-{
-	return attack_bonus;
-}
-
-void set_attack_bonus(int new_bonus)
-{
-	attack_bonus = new_bonus;
-}
-
-int query_defense_bonus()
-{
-	return defense_bonus;
-}
-
-void set_defense_bonus(int new_bonus)
-{
-	defense_bonus = new_bonus;
 }
