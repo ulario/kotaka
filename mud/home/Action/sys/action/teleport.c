@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -78,6 +78,7 @@ void action(mapping roles)
 
 	emit_from(actor, actor, " ", ({ "vanish", "vanishes" }), " into thin air.");
 
+	"exit"->purge_initiative(actor);
 	actor->move(target);
 	fix_position(actor);
 

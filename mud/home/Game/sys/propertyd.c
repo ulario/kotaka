@@ -103,6 +103,7 @@ atomic void configure_properties()
 	PROPERTYD->set_property("defense_value", T_INT, PROP_INHERIT);
 
 	PROPERTYD->set_property("is_wielded", T_INT, PROP_SIMPLE);
+	PROPERTYD->set_property("initiative", T_ARRAY, PROP_SIMPLE);
 
 	/* catch all */
 	PROPERTYD->set_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );

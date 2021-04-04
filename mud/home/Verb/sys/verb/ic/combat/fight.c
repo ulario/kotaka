@@ -153,9 +153,12 @@ void main(object actor, mapping roles)
 	mixed dob;
 	string look;
 	object from;
+	object arena;
 
-	if (!actor) {
-		send_out("You must be in character to use this command.\n");
+	arena = actor->query_environment();
+
+	if (!arena) {
+		send_out("It's going to be hard to fight someone without a field of battle.\n");
 		return;
 	}
 
@@ -180,7 +183,52 @@ void main(object actor, mapping roles)
 		} else if (dob->query_environment() != actor->query_environment()) {
 			send_out("You can only attack someone in the same room.\n");
 		} else {
+			object *initiative;
+
+			initiative = arena->query_property("initiative");
+
+			if (!initiative) {
+				emit_from(actor, actor, ({ " pick", " picks" }), " a fight!");
+
+				initiative = ({ dob, actor });
+			} else {
+				if (initiative[0] != actor) {
+					send_out("It's not your turn.\n");
+					break;
+				}
+			}
+
 			do_attack(actor, dob);
+
+			if (actor) {
+				if (!actor->query_living_lwo()) {
+					initiative -= ({ actor });
+				}
+			}
+
+			if (dob) {
+				if (!dob->query_living_lwo()) {
+					initiative -= ({ dob });
+				}
+			}
+
+			switch(sizeof(initiative)) {
+			case 0:
+				emit_from(actor, "Stalemate, nobody survived.");
+				arena->set_property("initiative", nil);
+				break;
+
+			case 1:
+				emit_from(actor, actor, ({ " are", " is" }), " the last one standing.");
+				arena->set_property("initiative", nil);
+				break;
+
+			default:
+				initiative -= ({ actor });
+				initiative |= ({ actor });
+				arena->set_property("initiative", initiative);
+				emit_from(initiative[0], "It is now ", initiative[0], "'s turn.");
+			}
 		}
 		break;
 

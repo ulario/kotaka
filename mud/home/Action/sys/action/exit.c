@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,45 @@ inherit LIB_USERIO;
 inherit LIB_EMIT;
 inherit LIB_ACTION;
 inherit "~Text/lib/sub";
+
+void purge_initiative(object actor)
+{
+	object arena;
+	object *initiative;
+
+	arena = actor->query_environment();
+
+	if (!arena) {
+		return;
+	}
+
+	initiative = arena->query_property("initiative");
+
+	if (!initiative) {
+		return;
+	}
+
+	if (!sizeof(initiative & ({ actor }) )) {
+		return;
+	}
+
+	initiative -= ({ actor });
+
+	switch(sizeof(initiative)) {
+	case 0:
+		emit_from(actor, "Weird, seems there was a solo fighter that just left");
+		arena->set_property("initiative", nil);
+		break;
+
+	case 1:
+		emit_from(actor, actor, ({ " flee", " flees" }), " cowardly, leaving ", initiative[0], " the winner");
+		arena->set_property("initiative", nil);
+		break;
+
+	default:
+		arena->set_property("initiative", initiative);
+	}
+}
 
 void action(mapping roles)
 {
@@ -59,6 +98,7 @@ void action(mapping roles)
 	}
 
 	if (query_user()->query_class() >= 2) {
+		purge_initiative(actor);
 		emit_from(actor, actor, " ", ({ "leave", "leaves" }), " through ", exit, ".");
 		actor->set_x_position(exit->query_x_position());
 		actor->set_y_position(exit->query_y_position());
@@ -91,6 +131,7 @@ void action(mapping roles)
 		}
 
 		emit_from(actor, actor, " ", ({ "leave", "leaves" }), " through ", exit, ".");
+		purge_initiative(actor);
 		actor->set_x_position(exit->query_x_position());
 		actor->set_y_position(exit->query_y_position());
 		actor->set_z_position(exit->query_z_position());
