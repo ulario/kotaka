@@ -44,6 +44,8 @@ static mapping save()
 
 	map = ::save();
 
+	map["detail_environment"] = query_detail_environment();
+
 	if (lwo = query_character_lwo()) {
 		map["character"] = ([
 			"attack": lwo->query_attack(),
@@ -59,6 +61,7 @@ static mapping save()
 	}
 
 	map["possessee"] = query_possessee();
+
 	map += detail_save();
 	map += prox_save();
 
@@ -71,6 +74,8 @@ static void load(mapping data)
 	object pos;
 
 	::load(data);
+
+	set_detail_environment(map["detail_environment"]);
 
 	if (map = data["character"]) {
 		initialize_character(map["attack"], map["defense"], map["maxhp"]);

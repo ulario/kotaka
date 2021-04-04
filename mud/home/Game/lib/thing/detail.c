@@ -1,5 +1,6 @@
 mapping details;
 string *vetoed_details;
+string detail_environment;
 
 mixed query_local_property(string property);
 void set_local_property(string property, mixed value);
@@ -496,6 +497,18 @@ string query_description(string detail, string description)
 	}
 
 	return arch->query_description(detail, description);
+}
+
+/* detail_environment */
+
+void set_detail_environment(string detail)
+{
+	detail_environment = detail;
+}
+
+string query_detail_environment()
+{
+	return detail_environment;
 }
 
 /* patching */
