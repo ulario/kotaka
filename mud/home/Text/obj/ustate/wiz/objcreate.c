@@ -229,6 +229,9 @@ private void do_input(string input)
 		} else if (input != "") {
 			obj->set_id(input);
 		}
+		if (!obj->has_local_detail(nil)) {
+			obj->add_local_detail(nil);
+		}
 		stage = STAGE_BRIEF;
 		break;
 
