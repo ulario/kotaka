@@ -172,6 +172,7 @@ void main(object actor, mapping roles)
 
 		for (i = 0; i < sz; i++) {
 			string piece;
+			string detail;
 			object obj;
 
 			obj = inv[i];
@@ -183,6 +184,10 @@ void main(object actor, mapping roles)
 
 			if (obj->query_property("is_wielded")) {
 				piece += " (wielded)";
+			}
+
+			if (detail = obj->query_detail_environment()) {
+				piece += " (in " + detail + ")";
 			}
 
 			pieces += ({ piece });
