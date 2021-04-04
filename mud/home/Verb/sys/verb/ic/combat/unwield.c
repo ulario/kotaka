@@ -93,5 +93,4 @@ void main(object actor, mapping roles)
 
 	emit_from(actor, actor, " ", ({ "unwield", "unwields" }), " ", dob, ".");
 	dob->set_property("is_wielded", nil);
-	actor->recalculate_combat();
 }

@@ -133,8 +133,8 @@ void main(object actor, mapping roles)
 
 	aliv = actor->query_living_lwo();
 
-	attack = achar->query_attack() + aliv->query_attack_bonus();
-	defense = achar->query_defense() + aliv->query_defense_bonus();
+	attack = achar->query_attack() + "fight"->query_attack_bonus(actor);
+	defense = achar->query_defense() + "fight"->query_defense_bonus(actor);
 	max = achar->query_max_hp();
 
 	if (aliv) {

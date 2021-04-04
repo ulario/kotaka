@@ -48,7 +48,7 @@ string *query_help_contents()
 	});
 }
 
-private int query_attack_bonus(object attacker)
+int query_attack_bonus(object attacker)
 {
 	int sz, bonus;
 	object *inv;
@@ -68,7 +68,7 @@ private int query_attack_bonus(object attacker)
 	return bonus;
 }
 
-private int query_defense_bonus(object defender)
+int query_defense_bonus(object defender)
 {
 	int sz, bonus;
 	object *inv;

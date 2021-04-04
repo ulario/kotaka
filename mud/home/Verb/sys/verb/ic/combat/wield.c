@@ -103,5 +103,4 @@ void main(object actor, mapping roles)
 
 	emit_from(actor, actor, " ", ({ "wield", "wields" }), " ", dob, ".");
 	dob->set_property("is_wielded", 1);
-	actor->recalculate_combat();
 }
