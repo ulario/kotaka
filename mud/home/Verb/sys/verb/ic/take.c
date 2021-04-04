@@ -31,6 +31,16 @@ string *query_parse_methods()
 }
 
 /* ({ role, prepositions, raw }) */
+
+/*
+
+TODO: handle the "take X from Y" as an explicit form that actually
+searches for X inside of Y, rather than implicitly using a preposition to
+refer to Y's inventory.
+
+Ideally, X should be interpreted explicitly in the context of Y.
+
+*/
 mixed **query_roles()
 {
 	return ({ });
