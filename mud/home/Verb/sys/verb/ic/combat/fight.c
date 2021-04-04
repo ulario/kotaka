@@ -48,6 +48,46 @@ string *query_help_contents()
 	});
 }
 
+private int query_attack_bonus(object attacker)
+{
+	int sz, bonus;
+	object *inv;
+
+	inv = attacker->query_inventory();
+
+	for (sz = sizeof(inv); --sz >= 0; ) {
+		object obj;
+
+		obj = inv[sz];
+
+		if (obj->query_property("is_wielded")) {
+			bonus += obj->query_property("attack_value");
+		}
+	}
+
+	return bonus;
+}
+
+private int query_defense_bonus(object defender)
+{
+	int sz, bonus;
+	object *inv;
+
+	inv = defender->query_inventory();
+
+	for (sz = sizeof(inv); --sz >= 0; ) {
+		object obj;
+
+		obj = inv[sz];
+
+		if (obj->query_property("is_worn")) {
+			bonus += obj->query_property("defense_value");
+		}
+	}
+
+	return bonus;
+}
+
 private void do_attack(object actor, object dob)
 {
 	object achar, aliv;
@@ -87,8 +127,8 @@ private void do_attack(object actor, object dob)
 		return;
 	}
 
-	damage = (achar->query_attack() + aliv->query_attack_bonus())
-		- (dchar->query_defense() + dliv->query_defense_bonus());
+	damage = achar->query_attack() + query_attack_bonus(actor)
+		- dchar->query_defense() + query_defense_bonus(dob);
 
 	if (damage <= 0) {
 		send_out("Your attack is ineffective\n");
