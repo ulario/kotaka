@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <kotaka/assert.h>
 #include <kotaka/paths/intermud.h>
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/verb.h>
@@ -50,6 +51,10 @@ void main(object actor, mapping roles)
 		send_out("If the mud has spaces in its name, put user@mud in quotation marks.\n");
 		return;
 	}
+
+	ASSERT(target);
+	ASSERT(mud);
+	ASSERT(msg);
 
 	INTERMUDD->send_tell(user->query_name(), user->query_titled_name(), mud, target, msg);
 
