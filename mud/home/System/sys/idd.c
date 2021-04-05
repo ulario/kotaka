@@ -150,19 +150,23 @@ object find_object_by_name(string name)
 
 		switch(typeof(map[part])) {
 		case T_NIL:
+		case T_STRING:
 			return nil;
 
 		case T_MAPPING:
 			map = map[part];
 			break;
-
-		case T_STRING:
-			error("Object in the way at " + implode(parts[0 .. i], ":"));
 		}
 	}
 
 	if (map) {
-		return map[parts[sz - 1]];
+		mixed obj;
+
+		obj = map[parts[sz - 1]];
+
+		if (typeof(obj) == T_OBJECT) {
+			return obj;
+		}
 	}
 
 	return "catalogd"->lookup_object(name);
