@@ -88,66 +88,6 @@ int query_defense_bonus(object defender)
 	return bonus;
 }
 
-private void do_attack(object actor, object dob)
-{
-	object achar, aliv;
-	object dchar, dliv;
-	int damage;
-
-	if (!actor) {
-		send_out("You must be in character to use this command.\n");
-		return;
-	}
-
-	achar = actor->query_character_lwo();
-
-	if (!achar) {
-		send_out("You are not a character.\n");
-		return;
-	}
-
-	aliv = actor->query_living_lwo();
-
-	if (!aliv) {
-		send_out("You're dead, Jim.\n");
-		return;
-	}
-
-	dchar = dob->query_character_lwo();
-
-	if (!dchar) {
-		send_out("That is not a character.\n");
-		return;
-	}
-
-	dliv = dob->query_living_lwo();
-
-	if (!dliv) {
-		send_out("It's dead, Jim\n");
-		return;
-	}
-
-	damage = achar->query_attack() + query_attack_bonus(actor)
-		- dchar->query_defense() + query_defense_bonus(dob);
-
-	if (damage <= 0) {
-		send_out("Your attack is ineffective\n");
-		emit_from(actor, actor, " harmlessly ", ({ "hit", "hits" }), " ", dob, ".");
-		return;
-	}
-
-	if (dliv->subtract_hp(damage) <= 0) {
-		emit_from(actor, actor, " ", ({ "kill", "kills" }), " ", dob, "!");
-		emit_to(actor, actor, "You fatally deal " + damage + " points of damage!");
-		emit_to(dob, dob, "You suffer " + damage + " points of damage and die!");
-		"~Action/sys/action/combat/die"->action( ([ "actor": dob ]) );
-	} else {
-		emit_from(actor, actor, " ", ({ "hit", "hits" }), " ", dob, ".");
-		emit_to(actor, actor, "You deal " + damage + " points of damage.");
-		emit_to(dob, dob, "You suffer " + damage + " points of damage.");
-	}
-}
-
 void main(object actor, mapping roles)
 {
 	mixed dob;
@@ -165,7 +105,24 @@ void main(object actor, mapping roles)
 	dob = roles["dob"];
 
 	if (!dob) {
-		send_out("Fight what?\n");
+		object *initiative;
+
+		initiative = arena->query_property("initiative");
+
+		if (!initiative || !sizeof(initiative)) {
+			send_out("There isn't a fight in progress for you to join here.\n");
+			return;
+		}
+
+		if (sizeof(initiative & ({ actor }) )) {
+			send_out("You're already in a fight!");
+			return;
+		}
+
+		initiative |= ({ actor });
+		arena->set_property("initiative", initiative);
+
+		send_out("You join the fight.\n");
 		return;
 	}
 
@@ -184,13 +141,48 @@ void main(object actor, mapping roles)
 			send_out("You can only attack someone in the same room.\n");
 		} else {
 			object *initiative;
+			object achar, aliv;
+			object dchar, dliv;
+			int damage;
+
+			if (!actor->query_living_lwo()) {
+				break;
+			}
+
+			achar = actor->query_character_lwo();
+
+			if (!achar) {
+				send_out("You are not a character.\n");
+				break;
+			}
+
+			aliv = actor->query_living_lwo();
+
+			if (!aliv) {
+				send_out("You're dead, Jim.\n");
+				break;
+			}
+
+			dchar = dob->query_character_lwo();
+
+			if (!dchar) {
+				send_out("That is not a character.\n");
+				break;
+			}
+
+			dliv = dob->query_living_lwo();
+
+			if (!dliv) {
+				send_out("It's dead, Jim\n");
+				break;
+			}
 
 			initiative = arena->query_property("initiative");
 
 			if (!initiative) {
 				emit_from(actor, actor, ({ " pick", " picks" }), " a fight!");
 
-				initiative = ({ dob, actor });
+				initiative = ({ });
 			} else {
 				if (initiative[0] != actor) {
 					send_out("It's not your turn.\n");
@@ -198,18 +190,31 @@ void main(object actor, mapping roles)
 				}
 			}
 
-			do_attack(actor, dob);
+			initiative = ({ actor }) | initiative | ({ dob });
 
-			if (actor) {
-				if (!actor->query_living_lwo()) {
-					initiative -= ({ actor });
-				}
+			damage = achar->query_attack() + query_attack_bonus(actor)
+				- dchar->query_defense() + query_defense_bonus(dob);
+
+			if (damage <= 0) {
+				send_out("Your attack is ineffective\n");
+				emit_from(actor, actor, " harmlessly ", ({ "hit", "hits" }), " ", dob, ".");
+			} else if (dliv->subtract_hp(damage) <= 0) {
+				emit_from(actor, actor, " ", ({ "kill", "kills" }), " ", dob, "!");
+				emit_to(actor, actor, "You fatally deal " + damage + " points of damage!");
+				emit_to(dob, dob, "You suffer " + damage + " points of damage and die!");
+				"~Action/sys/action/combat/die"->action( ([ "actor": dob ]) );
+			} else {
+				emit_from(actor, actor, " ", ({ "hit", "hits" }), " ", dob, ".");
+				emit_to(actor, actor, "You deal " + damage + " points of damage.");
+				emit_to(dob, dob, "You suffer " + damage + " points of damage.");
 			}
 
-			if (dob) {
-				if (!dob->query_living_lwo()) {
-					initiative -= ({ dob });
-				}
+			if (actor && !actor->query_living_lwo()) {
+				initiative -= ({ actor });
+			}
+
+			if (dob && !dob->query_living_lwo()) {
+				initiative -= ({ dob });
 			}
 
 			switch(sizeof(initiative)) {
