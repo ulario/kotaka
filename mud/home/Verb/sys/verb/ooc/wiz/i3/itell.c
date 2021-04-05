@@ -44,8 +44,10 @@ void main(object actor, mapping roles)
 	args = roles["raw"];
 
 	if (!args
-		&& sscanf(args, "\"%s@%s\" %s", target, mud, msg) != 3
-		&& sscanf(args, "%s@%s %s", target, mud, msg) != 3
+		|| (
+			sscanf(args, "\"%s@%s\" %s", target, mud, msg) != 3
+			&& sscanf(args, "%s@%s %s", target, mud, msg) != 3
+		)
 	) {
 		send_out("Usage: itell user@mud message\n");
 		send_out("If the mud has spaces in its name, put user@mud in quotation marks.\n");
