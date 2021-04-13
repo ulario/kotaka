@@ -20,10 +20,10 @@ static string bulk_text(object obj)
 		buffer += "Max mass: " + mixed_sprint(obj->query_max_mass()) + " kg<br />\n</br />\n";
 
 		if (obj->query_archetype()) {
-			buffer += "Local mass: " + mixed_sprint(obj->query_local_mass()) + " kg<br />\n";
-			buffer += "Local density: " + mixed_sprint(obj->query_local_density()) + " kg/l<br />\n";
-			buffer += "Local capacity: " + mixed_sprint(obj->query_local_capacity()) + " m^3<br />\n";
-			buffer += "Local max mass: " + mixed_sprint(obj->query_local_max_mass()) + " kg\n";
+			buffer += "Local mass: x" + mixed_sprint(obj->query_local_mass()) + "<br />\n";
+			buffer += "Local density: x" + mixed_sprint(obj->query_local_density()) + "<br />\n";
+			buffer += "Local capacity: x" + mixed_sprint(obj->query_local_capacity()) + "<br />\n";
+			buffer += "Local max mass: x" + mixed_sprint(obj->query_local_max_mass()) + "\n";
 		} else {
 			buffer += "No archetype\n";
 		}
