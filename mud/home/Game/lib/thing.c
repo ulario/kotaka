@@ -75,7 +75,7 @@ static void load(mapping data)
 
 	::load(data);
 
-	set_detail_environment(map["detail_environment"]);
+	set_detail_environment(data["detail_environment"]);
 
 	if (map = data["character"]) {
 		initialize_character(map["attack"], map["defense"], map["maxhp"]);
