@@ -37,6 +37,9 @@ atomic void configure_properties()
 	/* descriptions */
 	PROPERTYD->set_property("pronoun", T_STRING, PROP_INHERIT);
 
+	/* social */
+	PROPERTYD->set_property("title", T_STRING, PROP_SIMPLE);
+
 	PROPERTYD->set_property("is_definite", T_INT, PROP_INHERIT, 0);
 	PROPERTYD->set_property("is_proper", T_INT, PROP_INHERIT, 0);
 	PROPERTYD->set_property("is_transparent", T_INT, PROP_INHERIT, 0);
