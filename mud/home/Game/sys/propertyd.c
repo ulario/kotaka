@@ -107,7 +107,6 @@ atomic void configure_properties()
 
 	/* catch all */
 	PROPERTYD->set_property("data", T_MAPPING, PROP_SIMPLE, ([ ]) );
-	PROPERTYD->set_property("random", T_INT, PROP_SIMPLE, -1);
 }
 
 void upgrade()
