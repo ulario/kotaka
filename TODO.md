@@ -2,7 +2,15 @@
 
 Master TODO list for kotaka.
 
-## Deprecate implicit module registration
+## 0.62
+
+The following must be done before we release 0.62
+
+## Backburner
+
+The following need to be done in a future version, but aren't being handled in 0.62.
+
+### Deprecate implicit module registration
 
 In the future, the existence of a module's InitD will no longer be the
 official indication of the module's being online.
