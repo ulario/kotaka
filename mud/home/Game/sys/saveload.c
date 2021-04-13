@@ -454,15 +454,15 @@ static void save_purgedir_tick(mixed **list, string dir)
 
 /* parse and print helpers */
 
-object *parse_object(string input)
+object parse_object(string input)
 {
 	int on;
 	string username;
 
 	if (sscanf(input, "O:%d", on)) {
-		return ({ on2ob->query_element(on) });
+		return on2ob->query_element(on);
 	} else if (sscanf(input, "U:%s", username)) {
-		return ({ TEXT_USERD->find_user(username) });
+		return TEXT_USERD->find_user(username);
 	} else {
 		error("Cannot parse: " + input);
 	}
