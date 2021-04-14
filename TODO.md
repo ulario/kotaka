@@ -6,6 +6,14 @@ Master TODO list for kotaka.
 
 The following must be done before we release 0.62:
 
+* module registration, stage 1
+* ctor/dtor removal, stage 1, formal deprecation
+* bigstruct removal, stage 1, formal deprecation
+* Utility removal, stage 1, formal deprecation
+* Kotaka consolidation, stage 1, formal notice
+* CatalogD removal, stage 1, formal deprecation
+* Migration of Geometry, stage 1, formal notice
+
 ### ModuleD: module registration
 
 * ModuleD will register modules explicitly
@@ -43,14 +51,19 @@ The following need to be done in a future version, but aren't being handled in 0
   * Stage 4: Purge stage
     * The ctor/dtor fields will be removed from pinfo
 * Removal of Bigstruct
+  * Stage 1: Notice
+  * Stage 2: Warning on attempt to clone
+  * Stage 3: Error on attempt to clone
+  * Stage 4: Purge
 * Removal of Utility
 * Consolidate Kotaka
-  * Stage 1: Formal notice (in progress)
+  * Stage 1: Notice (in progress)
   * Stage 2: Warning stage, redirect, start migration
   * Stage 3: Error stage, check migration
   * Stage 4: Purge stage
 * Removal of CatalogD
-  * Stage 1: Formal deprecation (in progress)
-  * Stage 2: Warning stage, redirect to IDD, enable migration
-  * Stage 3: Error stage, check for completion of migrat
+  * Stage 1: Deprecation (in progress)
+  * Stage 2: Warning, redirect to IDD, enable migration
+  * Stage 3: Error, check for completion of migrat
   * Stage 4: Purge
+* Migration of Geometry
