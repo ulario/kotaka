@@ -237,6 +237,8 @@ private string make_packet(mixed *data)
 
 private void i3_send_packet(mixed *arr)
 {
+	write_secret_log("packet-log", timestamp(millitime()) + " >>> " + mixed_sprint(arr));
+
 	message(make_packet(arr));
 }
 
@@ -646,6 +648,8 @@ private mixed *startup_packet()
 
 private void process_packet(mixed *value)
 {
+	write_secret_log("packet-log", timestamp(millitime()) + " <<< " + mixed_sprint(value));
+
 	switch(value[0]) {
 	case "chanlist-reply":
 		i3_handle_chanlist_reply(value);
