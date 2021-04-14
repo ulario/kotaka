@@ -576,7 +576,7 @@ private void i3_handle_who_reply(mixed *value)
 
 	for (i = 0, sz = sizeof(who_data); i < sz; i++) {
 		string visname;
-		int idle;
+		mixed idle;
 		string extra;
 
 		visname = who_data[i][0];
