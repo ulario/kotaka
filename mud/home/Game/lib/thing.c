@@ -27,6 +27,7 @@ inherit "thing/exit";
 inherit "thing/character";
 inherit "thing/living";
 inherit "thing/possess";
+inherit "thing/timer";
 inherit detail "thing/detail";
 inherit "thing/prox";
 
@@ -64,6 +65,7 @@ static mapping save()
 
 	map += detail_save();
 	map += prox_save();
+	map += timer_save();
 
 	return map;
 }
@@ -95,4 +97,5 @@ static void load(mapping data)
 
 	prox_load(data);
 	detail_load(data);
+	timer_load(data);
 }
