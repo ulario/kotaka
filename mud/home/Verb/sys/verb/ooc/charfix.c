@@ -73,8 +73,6 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	factor = template->query_local_mass();
-
 	if (!template->has_local_detail(nil)) {
 		send_out("Template is missing default detail.\n");
 		template->add_local_detail(nil);
@@ -156,12 +154,12 @@ void main(object actor, mapping roles)
 	if (!body->query_environment()) {
 		object world;
 
-		send_out("Your body was nowhere.\n")
+		send_out("Your body was nowhere.\n");
 
 		world = IDD->find_object_by_name("planets:aerth");
 
 		if (!world) {
-			send_out("The start world is missing, yell at a wizard!\n")
+			send_out("The start world is missing, yell at a wizard!\n");
 			return;
 		}
 
