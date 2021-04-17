@@ -143,6 +143,7 @@ void receive_in(string input)
 			return;
 		} else {
 			object parent;
+			object tutorial;
 
 			ACCOUNTD->register_account(username, password);
 
@@ -152,14 +153,19 @@ void receive_in(string input)
 
 			parent = query_parent();
 
+			tutorial = clone_object("tutorial");
+
 			if (instanceof(parent, "login")) {
 				object shell;
 
 				shell = clone_object("shell");
+				suspend_user();
 				parent->push_state(shell);
+				shell->push_state(tutorial);
+				release_user();
 				parent->collapse_state(shell);
 			} else {
-				pop_state();
+				swap_state(tutorial);
 			}
 		}
 	}
