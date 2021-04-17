@@ -48,22 +48,22 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (username == user->query_username()) {
+	if (args == user->query_username()) {
 		send_out("You cannot nuke yourself.\n");
 		return;
 	}
 
-	if (username == "admin") {
+	if (args == "admin") {
 		send_out("You cannot nuke admin.\n");
 		return;
 	}
 
-	if (!ACCOUNTD->query_is_registered(username)) {
+	if (!ACCOUNTD->query_is_registered(args)) {
 		send_out("There is no such user.\n");
 		return;
 	}
 
-	turkey = TEXT_USERD->find_user(username);
+	turkey = TEXT_USERD->find_user(args);
 	kicker = user->query_titled_name();
 
 	if (turkey) {
@@ -71,8 +71,8 @@ void main(object actor, mapping roles)
 		turkey->quit("nuked");
 	}
 
-	ACCOUNTD->unregister_account(username);
+	ACCOUNTD->unregister_account(args);
 
-	user->message("You nuke " + username + " from the mud!\n");
-	send_to_all_except(username + " has been nuked from the mud by " + kicker + "!\n", ({ turkey, query_user() }) );
+	user->message("You nuke " + args + " from the mud!\n");
+	send_to_all_except(args + " has been nuked from the mud by " + kicker + "!\n", ({ turkey, query_user() }) );
 }
