@@ -98,6 +98,7 @@ void main(object actor, mapping roles)
 		template->set_capacity(1.0 * factor);
 		template->set_max_mass(100.0 * factor);
 
+		template->add_local_detail(nil);
 		template->add_local_snoun(nil, name);
 		template->set_local_description(nil, "brief", to_title(name));
 		template->set_local_property("is_proper", 1);
@@ -115,6 +116,8 @@ void main(object actor, mapping roles)
 			ghost->set_id(name);
 			ghost->set_archetype(template);
 			ghost->set_virtual(1);
+
+			ghost->add_local_detail(nil);
 			ghost->add_local_snoun(nil, "ghost");
 			ghost->add_local_pnoun(nil, "ghost");
 			ghost->set_local_adjectives(nil, ({ "ghost", name }) );
@@ -139,6 +142,8 @@ void main(object actor, mapping roles)
 			body->set_local_mass(1.0);
 			body->set_local_capacity(1.0);
 			body->set_local_max_mass(1.0);
+
+			body->add_local_detail(nil);
 			body->add_local_snoun(nil, "body");
 			body->add_local_pnoun(nil, "bodies");
 			body->add_local_adjective(nil, name);
