@@ -21,6 +21,7 @@ The following must be done before we release 0.62:
 * Kotaka consolidation, stage 1, formal notice
 * CatalogD removal, stage 1, formal deprecation
 * Migration of Geometry, stage 1, formal notice
+* Multiple archetype removal, stage 1, formal deprecation
 
 ### ModuleD: module registration
 
@@ -75,3 +76,9 @@ The following need to be done in a future version, but aren't being handled in 0
   * Stage 3: Error, check for completion of migrat
   * Stage 4: Purge
 * Migration of Geometry
+* Removal of multiple archetypes
+  * Stage 1: Formal deprecation
+  * Stage 2: Warning
+  * Stage 3: Error
+  * Stage 4: Force conversion, audit for completion
+  * Stage 5: Purge data
