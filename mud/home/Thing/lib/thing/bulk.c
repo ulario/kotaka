@@ -364,6 +364,16 @@ void bulk_invalidate()
 
 /* save */
 
+void patch_bulk()
+{
+	if (virtual) {
+		mass = 0.0;
+		density = 0.0;
+		capacity = 0.0;
+		max_mass = 0.0;
+	}
+}
+
 mapping bulk_save()
 {
 	mixed v;
