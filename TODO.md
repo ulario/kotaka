@@ -2,6 +2,14 @@
 
 Master TODO list for kotaka.
 
+## Feature freeze
+
+We need to put in a feature freeze and postpone any features that aren't
+production ready yet.
+
+Reason: we're due for a new release and an audit of all changes needs to
+be completed for patching purposes.
+
 ## 0.62
 
 The following must be done before we release 0.62:
