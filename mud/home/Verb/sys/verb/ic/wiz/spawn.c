@@ -52,7 +52,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	thing = GAME_INITD->create_object();
+	thing = GAME_INITD->create_thing();
 	thing->set_archetype(master);
 	thing->set_id_base(master->query_id_base());
 	thing->move(actor);
