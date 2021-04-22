@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,7 @@ inherit "class";
 inherit "generate";
 inherit "pinkfish";
 
-string query_titled_name(string username)
+static string query_titled_name(string username)
 {
 	string name;
 	int class;
@@ -99,7 +99,7 @@ string query_titled_name(string username)
 	return name;
 }
 
-void send_to_all(string phrase)
+static void send_to_all(string phrase)
 {
 	int sz;
 	object *users;
@@ -112,7 +112,7 @@ void send_to_all(string phrase)
 	}
 }
 
-void send_to_all_except(string phrase, object *exceptions)
+static void send_to_all_except(string phrase, object *exceptions)
 {
 	int sz;
 	object *users;
@@ -126,7 +126,7 @@ void send_to_all_except(string phrase, object *exceptions)
 	}
 }
 
-string print_us(int cents)
+static string print_us(int cents)
 {
 	string centspart;
 	int dollars;
@@ -148,7 +148,7 @@ string print_us(int cents)
 	return "$" + dollars + "." + centspart;
 }
 
-string print_fantasy(int copper)
+static string print_fantasy(int copper)
 {
 	int platinum;
 	int gold;
@@ -185,7 +185,7 @@ string print_fantasy(int copper)
 	return implode(stack, ", ");
 }
 
-string build_verb_report(object observer, object actor, string *vforms, object target, string preposition)
+static string build_verb_report(object observer, object actor, string *vforms, object target, string preposition)
 {
 	string *message;
 
