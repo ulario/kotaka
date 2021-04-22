@@ -22,7 +22,7 @@
 
 inherit "/lib/string/case";
 
-string pinkfish2ansi(string input)
+static string pinkfish2ansi(string input)
 {
 	string *slices;
 	int sz, i;
