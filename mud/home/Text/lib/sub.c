@@ -20,16 +20,14 @@
 #include <kernel/access.h>
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/channel.h>
-#include <kotaka/paths/system.h>
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
-#include <kotaka/log.h>
 #include <kotaka/checkarg.h>
 
-inherit "/lib/string/case";
 inherit "emit";
 inherit "class";
 inherit "generate";
+inherit "pinkfish";
 
 string query_titled_name(string username)
 {
@@ -218,81 +216,4 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 	}
 
 	return implode(message, " ");
-}
-
-string pinkfish2ansi(string input)
-{
-	string *slices;
-	int sz, i;
-
-	slices = explode("%^" + input + "%^", "%^");
-	sz = sizeof(slices);
-
-	if (sz == 1) {
-		return input;
-	}
-
-	for (i = 1; i < sz - 1; i++) {
-		string fish;
-
-		fish = slices[i];
-
-		switch(fish) {
-		case "BOLD":
-			fish = "\033[1m";
-			break;
-		case "RESET":
-			fish = "\033[0m";
-			break;
-		case "RED":
-			fish = "\033[31m";
-			break;
-		case "GREEN":
-			fish = "\033[32m";
-			break;
-		case "ORANGE":
-		case "YELLOW":
-			fish = "\033[33m";
-			break;
-		case "BLUE":
-			fish = "\033[34m";
-			break;
-		case "CYAN":
-			fish = "\033[35m";
-			break;
-		case "MAGENTA":
-			fish = "\033[36m";
-			break;
-		case "B_RED":
-			fish = "\033[1;31m";
-			break;
-		case "B_GREEN":
-			fish = "\033[1;32m";
-			break;
-		case "B_YELLOW":
-			fish = "\033[1;33m";
-			break;
-		case "B_BLUE":
-			fish = "\033[1;34m";
-			break;
-		case "B_CYAN":
-			fish = "\033[1;35m";
-			break;
-		case "B_MAGENTA":
-			fish = "\033[1;36m";
-			break;
-		case "WHITE":
-			fish = "\033[37m";
-			break;
-		default:
-			/* if all caps, it's probably a pinkfish code */
-			if (fish == to_upper(fish)) {
-				LOGD->post_message("system", LOG_NOTICE, "Potential untranslated pinkfish code " + fish);
-			}
-		}
-
-		slices[i] = fish;
-	}
-
-	return implode(slices, "");
 }
