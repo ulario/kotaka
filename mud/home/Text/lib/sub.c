@@ -222,79 +222,77 @@ string build_verb_report(object observer, object actor, string *vforms, object t
 
 string pinkfish2ansi(string input)
 {
-	string output;
+	string *slices;
+	int sz, i;
 
-	output = "";
+	slices = explode("%^" + input + "%^", "%^");
+	sz = sizeof(slices);
 
-	while (strlen(input)) {
-		string head;
-		string fish;
-		string tail;
-
-		switch(sscanf(input, "%s%%^%s%%^%s", head, fish, tail)) {
-		case 0:
-			/* no more pinkfish codes */
-		case 1:
-			/* incomplete pinkfish code */
-			output += input;
-			return output;
-		case 2:
-			tail = "";
-		case 3:
-			output += head;
-			input = tail;
-
-			switch(fish) {
-			case "BOLD":
-				output += "\033[1m";
-				break;
-			case "RESET":
-				output += "\033[0m";
-				break;
-			case "RED":
-				output += "\033[31m";
-				break;
-			case "GREEN":
-				output += "\033[32m";
-				break;
-			case "YELLOW":
-				output += "\033[33m";
-				break;
-			case "BLUE":
-				output += "\033[34m";
-				break;
-			case "CYAN":
-				output += "\033[35m";
-				break;
-			case "MAGENTA":
-				output += "\033[36m";
-				break;
-			case "B_RED":
-				output += "\033[1;31m";
-				break;
-			case "B_GREEN":
-				output += "\033[1;32m";
-				break;
-			case "B_YELLOW":
-				output += "\033[1;33m";
-				break;
-			case "B_BLUE":
-				output += "\033[1;34m";
-				break;
-			case "B_CYAN":
-				output += "\033[1;35m";
-				break;
-			case "B_MAGENTA":
-				output += "\033[1;36m";
-				break;
-			case "WHITE":
-				output += "\033[37m";
-				break;
-			default:
-				LOGD->post_message("system", LOG_NOTICE, "Unknown pinkfish code " + fish);
-			}
-		}
+	if (sz == 1) {
+		return input;
 	}
 
-	return output;
+	for (i = 1; i < sz - 1; i++) {
+		string fish;
+
+		fish = slices[i];
+
+		switch(fish) {
+		case "BOLD":
+			fish = "\033[1m";
+			break;
+		case "RESET":
+			fish = "\033[0m";
+			break;
+		case "RED":
+			fish = "\033[31m";
+			break;
+		case "GREEN":
+			fish = "\033[32m";
+			break;
+		case "ORANGE":
+		case "YELLOW":
+			fish = "\033[33m";
+			break;
+		case "BLUE":
+			fish = "\033[34m";
+			break;
+		case "CYAN":
+			fish = "\033[35m";
+			break;
+		case "MAGENTA":
+			fish = "\033[36m";
+			break;
+		case "B_RED":
+			fish = "\033[1;31m";
+			break;
+		case "B_GREEN":
+			fish = "\033[1;32m";
+			break;
+		case "B_YELLOW":
+			fish = "\033[1;33m";
+			break;
+		case "B_BLUE":
+			fish = "\033[1;34m";
+			break;
+		case "B_CYAN":
+			fish = "\033[1;35m";
+			break;
+		case "B_MAGENTA":
+			fish = "\033[1;36m";
+			break;
+		case "WHITE":
+			fish = "\033[37m";
+			break;
+		default:
+			/* if all caps, it's probably a pinkfish code */
+			if (fish == to_upper(fish)) {
+				LOGD->post_message("system", LOG_NOTICE, "Potential untranslated pinkfish code " + fish);
+			}
+		}
+
+		slices[i] = fish;
+	}
+
+	return implode(slices, "");
 }
