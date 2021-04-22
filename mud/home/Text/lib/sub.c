@@ -28,6 +28,7 @@ inherit "emit";
 inherit "class";
 inherit "generate";
 inherit "pinkfish";
+inherit "currency";
 
 static string query_titled_name(string username)
 {
@@ -124,65 +125,6 @@ static void send_to_all_except(string phrase, object *exceptions)
 	for (sz = sizeof(users) - 1; sz >= 0; sz--) {
 		users[sz]->message(phrase);
 	}
-}
-
-static string print_us(int cents)
-{
-	string centspart;
-	int dollars;
-
-	if (cents == 1) {
-		return "one cent";
-	}
-
-	if (cents < 100) {
-		return cents + " cents";
-	}
-
-	dollars = cents / 100;
-	cents = cents % 100;
-
-	centspart = "0" + cents;
-	centspart = centspart[(strlen(centspart) - 2) ..];
-
-	return "$" + dollars + "." + centspart;
-}
-
-static string print_fantasy(int copper)
-{
-	int platinum;
-	int gold;
-	int silver;
-	string *stack;
-
-	platinum = copper / 1000;
-	copper -= platinum * 1000;
-
-	gold = copper / 100;
-	copper -= gold * 100;
-
-	silver = copper / 10;
-	copper -= silver * 10;
-
-	stack = ({ });
-
-	if (platinum) {
-		stack += ({ platinum + " Pp" });
-	}
-
-	if (gold) {
-		stack += ({ gold + " Gp" });
-	}
-
-	if (silver) {
-		stack += ({ silver + " Sp" });
-	}
-
-	if (copper) {
-		stack += ({ copper + " Cp" });
-	}
-
-	return implode(stack, ", ");
 }
 
 static string build_verb_report(object observer, object actor, string *vforms, object target, string preposition)
