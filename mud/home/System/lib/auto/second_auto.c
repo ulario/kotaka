@@ -101,11 +101,7 @@ static void wipe_callouts(varargs string func)
 
 static void dump_state(varargs int incr)
 {
-	if (incr) {
-		error("Incremental snapshots are banned");
-	}
-
-	::dump_state();
+	::dump_state(incr);
 }
 
 static int find_call_out(string func)
