@@ -24,12 +24,14 @@
 #include <kotaka/log.h>
 #include <status.h>
 
-#define FULL 600
+#define INTERVAL     1
+#define INCREMENTS 600
 
 inherit SECOND_AUTO;
 
 int interval;
 int offset;
+int increments;
 
 private void start()
 {
@@ -67,7 +69,7 @@ private void start()
 
 private void configure()
 {
-	interval = FULL;
+	interval = INTERVAL;
 }
 
 static void create()
@@ -84,7 +86,14 @@ static void dump(int goal)
 	int delta;
 	float fdelta;
 
-	dump_state();
+	increments++;
+
+	if (increments >= INCREMENTS) {
+		dump_state();
+		increments = 0;
+	} else {
+		dump_state(1);
+	}
 
 	({ now, fnow }) = millitime();
 
