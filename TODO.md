@@ -26,7 +26,7 @@ The following must be done before we release 0.62:
 ### ModuleD: module registration
 
 * ModuleD will register modules explicitly
-* On creation, Initialize module list based on initd existence
+* On creation, initialize module list based on initd existence
   * This will find nothing if we're doing our first boot
 
 Module status:
