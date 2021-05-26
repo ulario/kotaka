@@ -32,7 +32,7 @@ To be completed in version 0.61
 
 I decided awhile ago that I should prefer libraries to daemons
 when it comes to shared code.  It's more robust since the callers
-have a reference to the inheritable instead of just a pointer. 
+have a reference to the inheritable instead of just a pointer.
 Also there can be a bit of a chicken and egg problem if you try
 to call a daemon that hasn't been compiled yet.
 
