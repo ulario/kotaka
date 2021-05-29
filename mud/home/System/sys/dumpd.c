@@ -101,7 +101,7 @@ static void dump(int goal)
 	fdelta = (float)delta + fnow;
 
 	if (fdelta >= 1.0) {
-		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + delta + " seconds late");
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + fdelta + " seconds late");
 
 		if (delta > interval) {
 			LOGD->post_message("system", LOG_NOTICE, "DumpD: Stall exceeds interval, restarting cycle");
