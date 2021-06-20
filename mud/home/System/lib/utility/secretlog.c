@@ -53,8 +53,21 @@ private void write_node(string file)
 	info = SECRETD->file_info("logs/" + file + ".log");
 
 	if (info && info[0] >= 1 << 25) {
-		SECRETD->remove_file("logs/" + file + ".log.old");
-		SECRETD->rename_file("logs/" + file + ".log", "logs/" + file + ".log.old");
+		int time;
+		string date;
+
+		/* 012345678901234567890123 */
+		/* Tue Aug  3 14:40:18 1993 */
+
+		time = info[1];
+		date = ctime(time);
+		date = date[8 .. 9] + date[4 .. 6] + date[20 .. 23];
+
+		if (date[0] == ' ') {
+			date[0] = '0';
+		}
+
+		SECRETD->rename_file("logs/" + file + ".log", "logs/" + file + ".log." + date + ".old");
 	}
 
 	SECRETD->make_dir(".");
