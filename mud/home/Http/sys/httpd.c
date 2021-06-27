@@ -73,11 +73,35 @@ string generate_error_page(int status_code, string status_message, string lines.
 
 string query_banner(object connection)
 {
+	string ip;
+
+	while (connection && connection <- LIB_USER) {
+		connection = connection->query_conn();
+	}
+
+	ip = query_ip_number(connection);
+
+	ASSERT(ip);
+
+	write_file("access.log", ctime(time()) + ": " + ip + ": granted\n");
+
 	return "";
 }
 
 string query_blocked_banner(object connection)
 {
+	string ip;
+
+	while (connection && connection <- LIB_USER) {
+		connection = connection->query_conn();
+	}
+
+	ip = query_ip_number(connection);
+
+	ASSERT(ip);
+
+	write_file("access.log", ctime(time()) + ": " + ip + ": rejected due to server suspension\n");
+
 	return generate_error_page(503
 		, "Server suspended"
 		, "The server is suspended at the moment due to internal maintenance."
@@ -92,6 +116,18 @@ float query_blocked_timeout(object connection)
 
 string query_overloaded_banner(object connection)
 {
+	string ip;
+
+	while (connection && connection <- LIB_USER) {
+		connection = connection->query_conn();
+	}
+
+	ip = query_ip_number(connection);
+
+	ASSERT(ip);
+
+	write_file("access.log", ctime(time()) + ": " + ip + ": rejected due to overload\n");
+
 	return generate_error_page(503
 		, "Server busy"
 		, "The server has too many connections at the moment."
@@ -118,6 +154,8 @@ string query_sitebanned_banner(object connection)
 	ip = query_ip_number(connection);
 
 	ASSERT(ip);
+
+	write_file("access.log", ctime(time()) + ": " + ip + ": rejected due to siteban\n");
 
 	ban = BAND->check_siteban(ip);
 
