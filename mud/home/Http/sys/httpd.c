@@ -26,6 +26,21 @@
 
 inherit LIB_USERD;
 
+private string ip_of_connection(object LIB_CONN connection)
+{
+	string ip;
+
+	while (connection && connection <- LIB_USER) {
+		connection = connection->query_conn();
+	}
+
+	ip = query_ip_number(connection);
+
+	ASSERT(ip);
+
+	return ip;
+}
+
 static void create()
 {
 	bind_binary_port(HTTP_PORT);
