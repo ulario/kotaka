@@ -73,3 +73,6 @@ Then, pick the "admin" username.
 ## You are now ready.
 
 If you need more information, just read the in game help files.
+
+NOTE: Character creation is a separate step from account registration.
+To actually start playing in game you'll need to use the chargen verb.
