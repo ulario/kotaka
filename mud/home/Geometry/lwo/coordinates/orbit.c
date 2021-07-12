@@ -17,3 +17,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/*
+
+An orbital coordinate represents an object's position in relation to something that it's orbiting.
+
+A moon around a planet
+A planet around a star
+A star around a black hole
+
+*/
