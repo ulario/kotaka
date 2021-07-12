@@ -17,3 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/*
+
+LLA is for a coordinate on a round massive object like a moon or a planet
+
+It stands for latitude, longitude, and altitude.
+
+*/
