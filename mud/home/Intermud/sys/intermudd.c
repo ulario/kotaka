@@ -32,8 +32,6 @@
 /* Enable and redefine to suit */
 /* Also inspect the query_banner function below to validate the information provided to the router */
 
-#define MUDNAME "Kotaka"
-
 inherit LIB_USERD;
 inherit LIB_SYSTEM_USER;
 inherit "/lib/copy";
@@ -50,6 +48,7 @@ static mapping channels;
 /* daemon state */
 string buffer;
 string mudname;
+string base_mudname;
 int rejections;
 int strikes;
 int pinged;
@@ -108,7 +107,7 @@ private void clean_passwords()
 	}
 
 	if (password) {
-		passwords[MUDNAME] = ({ password, time + 7 * 86400 });
+		passwords[base_mudname] = ({ password, time + 7 * 86400 });
 		password = 0;
 	}
 }
@@ -607,7 +606,7 @@ private mixed *startup_packet()
 {
 	int pass;
 
-	mudname = rejections ? MUDNAME + (rejections + 1) : MUDNAME;
+	mudname = rejections ? base_mudname + (rejections + 1) : base_mudname;
 
 	pass = query_password(mudname);
 
@@ -707,6 +706,9 @@ private void process_packet(mixed *value)
 
 static void create()
 {
+	/* configure this as desired */
+	base_mudname = nil;
+
 	rejections = 0;
 	router = "*wpr";
 
@@ -716,7 +718,9 @@ static void create()
 
 	restore();
 
-	call_out_unique("i3_connect", 0);
+	if (base_mudname) {
+		call_out_unique("i3_connect", 0);
+	}
 }
 
 static void destruct()
@@ -796,6 +800,10 @@ static void i3_connect()
 {
 	string ip;
 	int port;
+
+	if (!base_mudname) {
+		error("No base mudname configured");
+	}
 
 	if (!router) {
 		error("No router selected");
@@ -962,7 +970,7 @@ void restore()
 			}
 
 			if (map["password"]) {
-				passwords[MUDNAME] = ({ map["password"], time() + 7 * 86400 });
+				passwords[base_mudname] = ({ map["password"], time() + 7 * 86400 });
 			}
 
 			if (map["routers"]) {
