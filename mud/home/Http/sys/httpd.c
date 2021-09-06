@@ -88,34 +88,14 @@ string generate_error_page(int status_code, string status_message, string lines.
 
 string query_banner(object connection)
 {
-	string ip;
-
-	while (connection && connection <- LIB_USER) {
-		connection = connection->query_conn();
-	}
-
-	ip = query_ip_number(connection);
-
-	ASSERT(ip);
-
-	write_file("access.log", ctime(time()) + ": " + ip + ": granted\n");
+	write_file("access.log", ctime(time()) + ": " + ip_of_connection(connection) + ": granted\n");
 
 	return "";
 }
 
 string query_blocked_banner(object connection)
 {
-	string ip;
-
-	while (connection && connection <- LIB_USER) {
-		connection = connection->query_conn();
-	}
-
-	ip = query_ip_number(connection);
-
-	ASSERT(ip);
-
-	write_file("access.log", ctime(time()) + ": " + ip + ": rejected due to server suspension\n");
+	write_file("access.log", ctime(time()) + ": " + ip_of_connection(connection) + ": rejected due to server suspension\n");
 
 	return generate_error_page(503
 		, "Server suspended"
@@ -131,17 +111,7 @@ float query_blocked_timeout(object connection)
 
 string query_overloaded_banner(object connection)
 {
-	string ip;
-
-	while (connection && connection <- LIB_USER) {
-		connection = connection->query_conn();
-	}
-
-	ip = query_ip_number(connection);
-
-	ASSERT(ip);
-
-	write_file("access.log", ctime(time()) + ": " + ip + ": rejected due to overload\n");
+	write_file("access.log", ctime(time()) + ": " + ip_of_connection(connection) + ": rejected due to overload\n");
 
 	return generate_error_page(503
 		, "Server busy"
@@ -162,13 +132,7 @@ string query_sitebanned_banner(object connection)
 	string *bits;
 	int time;
 
-	while (connection && connection <- LIB_USER) {
-		connection = connection->query_conn();
-	}
-
-	ip = query_ip_number(connection);
-
-	ASSERT(ip);
+	ip = ip_of_connection(connection);
 
 	write_file("access.log", ctime(time()) + ": " + ip + ": rejected due to siteban\n");
 
