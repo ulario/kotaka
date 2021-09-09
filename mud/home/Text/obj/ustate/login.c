@@ -390,7 +390,9 @@ void receive_in(string input)
 	}
 }
 
-int forbid_log_inbound()
+string forbid_log_inbound()
 {
-	return state == STATE_GETPASSWORD || state == STATE_CHKPASSWORD;
+	if (state == STATE_GETPASSWORD || state == STATE_CHKPASSWORD) {
+		return "PASSWORD";
+	}
 }
