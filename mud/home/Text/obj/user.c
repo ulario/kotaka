@@ -79,11 +79,16 @@ private int do_receive(string msg)
 {
 	int ret;
 	string logmsg;
+	string forbid;
 	mixed *mtime;
 
 	logmsg = msg;
 
-	if (!query_top_state()->forbid_log_inbound()) {
+	forbid = query_top_state()->forbid_log_inbound();
+
+	if (forbid) {
+		log_message("[REDACTED:  " + forbid + "] <<<");
+	} else {
 		log_message("<<< " + msg);
 	}
 
