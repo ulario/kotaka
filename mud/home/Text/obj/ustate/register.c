@@ -170,3 +170,8 @@ void receive_in(string input)
 		}
 	}
 }
+
+int forbid_log_inbound()
+{
+	return state == STATE_GETPASSWORD || state == STATE_CHKPASSWORD;
+}
