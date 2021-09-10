@@ -773,27 +773,21 @@ static void process()
 	int len;
 	string packet;
 
-	if (strlen(buffer) < 4) {
-		return;
+	while (strlen(buffer) > 4) {
+		len = buffer[3] + (buffer[2] << 8) + (buffer[1] << 16) + (buffer[0] << 24);
+
+		if (strlen(buffer) < len + 4) {
+			return;
+		}
+
+		buffer = buffer[4 ..];
+		packet = buffer[0 .. len - 2];
+		buffer = buffer[len ..];
+
+		arr = PARSER_MUDMODE->parse(packet);
+
+		process_packet(arr);
 	}
-
-	len = buffer[3] + (buffer[2] << 8) + (buffer[1] << 16) + (buffer[0] << 24);
-
-	if (strlen(buffer) < len + 4) {
-		return;
-	}
-
-	buffer = buffer[4 ..];
-	packet = buffer[0 .. len - 2];
-	buffer = buffer[len ..];
-
-	if (buffer && strlen(buffer) > 4) {
-		call_out_unique("process", 0);
-	}
-
-	arr = PARSER_MUDMODE->parse(packet);
-
-	process_packet(arr);
 }
 
 static void i3_connect()
@@ -883,7 +877,7 @@ int login(string input)
 
 	buffer = input;
 
-	call_out_unique("process", 0);
+	process();
 
 	return MODE_NOCHANGE;
 }
@@ -892,7 +886,7 @@ int receive_message(string input)
 {
 	buffer += input;
 
-	call_out_unique("process", 0);
+	process();
 
 	return MODE_NOCHANGE;
 }
