@@ -704,6 +704,29 @@ private void process_packet(mixed *value)
 	}
 }
 
+private void process()
+{
+	mixed *arr;
+	int len;
+	string packet;
+
+	while (strlen(buffer) > 4) {
+		len = buffer[3] + (buffer[2] << 8) + (buffer[1] << 16) + (buffer[0] << 24);
+
+		if (strlen(buffer) < len + 4) {
+			return;
+		}
+
+		buffer = buffer[4 ..];
+		packet = buffer[0 .. len - 2];
+		buffer = buffer[len ..];
+
+		arr = PARSER_MUDMODE->parse(packet);
+
+		process_packet(arr);
+	}
+}
+
 /* creator */
 
 static void create()
@@ -764,29 +787,6 @@ static void keepalive()
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "I3: Starting keepalive");
 		pinged = 1;
-	}
-}
-
-private void process()
-{
-	mixed *arr;
-	int len;
-	string packet;
-
-	while (strlen(buffer) > 4) {
-		len = buffer[3] + (buffer[2] << 8) + (buffer[1] << 16) + (buffer[0] << 24);
-
-		if (strlen(buffer) < len + 4) {
-			return;
-		}
-
-		buffer = buffer[4 ..];
-		packet = buffer[0 .. len - 2];
-		buffer = buffer[len ..];
-
-		arr = PARSER_MUDMODE->parse(packet);
-
-		process_packet(arr);
 	}
 }
 
