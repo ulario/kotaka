@@ -272,12 +272,12 @@ static void terminate_account_state()
 	}
 }
 
-int forbid_log_inbound()
+string forbid_log_inbound()
 {
-	return 0;
+	return nil;
 }
 
-int forbid_log_outbound()
+string forbid_log_outbound()
 {
-	return 0;
+	return nil;
 }
