@@ -53,6 +53,7 @@ int rejections;
 int strikes;
 int pinged;
 int ponged;
+int active;
 
 /* i3 interface */
 int password; /* deprecated */
@@ -717,10 +718,6 @@ static void create()
 	channels = ([ ]);
 
 	restore();
-
-	if (base_mudname) {
-		call_out_unique("i3_connect", 0);
-	}
 }
 
 static void destruct()
@@ -826,8 +823,10 @@ void reboot()
 
 	LOGD->post_message("system", LOG_NOTICE, "I3: Reconnecting after reboot");
 
-	disconnect();
-	call_out_unique("i3_connect", 0);
+	if (active) {
+		disconnect();
+		call_out_unique("i3_connect", 0);
+	}
 }
 
 /* hooks */
@@ -923,6 +922,27 @@ void connect_failed(int refused)
 }
 
 /* calls */
+
+void activate()
+{
+	ACCESS_CHECK(INTERMUD() || VERB() || KERNEL() || SYSTEM() || GAME());
+
+	activate = 1;
+
+	call_out_unique("i3_connect", 0);
+}
+
+void deactivate()
+{
+	ACCESS_CHECK(INTERMUD() || VERB() || KERNEL() || SYSTEM() || GAME());
+
+	active = 0;
+
+	disconnect();
+
+	wipe_callouts("keepalive");
+	wipe_callouts("i3_connect");
+}
 
 void save()
 {
