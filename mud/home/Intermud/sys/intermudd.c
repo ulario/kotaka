@@ -767,7 +767,7 @@ static void keepalive()
 	}
 }
 
-static void process()
+private void process()
 {
 	mixed *arr;
 	int len;
