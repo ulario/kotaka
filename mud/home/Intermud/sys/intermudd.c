@@ -54,6 +54,7 @@ int strikes;
 int pinged;
 int ponged;
 int active;
+int legacy_active_checked;
 
 /* i3 interface */
 int password; /* deprecated */
@@ -718,6 +719,8 @@ static void create()
 	channels = ([ ]);
 
 	restore();
+
+	legacy_active_checked = 1;
 }
 
 static void destruct()
@@ -842,6 +845,11 @@ void upgrade()
 	}
 
 	clean_passwords();
+
+	if (!legacy_active_checked) {
+		active = 1;
+		legacy_active_checked = 1;
+	}
 }
 
 /* userd hooks */
