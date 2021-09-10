@@ -935,7 +935,7 @@ void activate()
 {
 	ACCESS_CHECK(INTERMUD() || VERB() || KERNEL() || SYSTEM() || GAME());
 
-	activate = 1;
+	active = 1;
 
 	call_out_unique("i3_connect", 0);
 }
