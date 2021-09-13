@@ -744,6 +744,8 @@ static void create()
 	restore();
 
 	legacy_active_checked = 1;
+
+	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Ready to activate.  Please check configuration and then use the \"i3on\" verb to connect");
 }
 
 static void destruct()
