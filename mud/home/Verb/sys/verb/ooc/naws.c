@@ -66,7 +66,19 @@ void main(object actor, mapping roles)
 		}
 		break;
 
+	case "status":
+		if (obj) {
+			send_out("NAWS pending: " + (obj->query_naws_pending() ? "yes" : "no") + "\n");
+			send_out("NAWS active: " + (obj->query_naws_active() ? "yes" : "no") + "\n");
+			send_out("NAWS width: " + obj->query_naws_width() + "\n");
+			send_out("NAWS height: " + obj->query_naws_height() + "\n");
+			send_out("NAWS telnet debug flags: " + obj->query_telnet_debug() + "\n");
+		} else {
+			send_out("No telnet filter detected on this connection\n");
+		}
+		break;
+
 	default:
-		send_out("Usage: naws <on|off>\n");
+		send_out("Usage: naws <on|off|status>\n");
 	}
 }
