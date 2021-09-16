@@ -784,10 +784,11 @@ static void keepalive()
 		} else {
 			strikes++;
 
-			LOGD->post_message("system", LOG_NOTICE, "I3: Keepalive fail, strike " + strikes);
+			LOGD->post_message("system", LOG_NOTICE, "I3: Keepalive timeout, strike " + strikes);
 		}
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "I3: Starting keepalive");
+
 		pinged = 1;
 	}
 }
