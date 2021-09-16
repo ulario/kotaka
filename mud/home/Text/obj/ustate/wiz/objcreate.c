@@ -350,10 +350,6 @@ private void do_input(string input)
 			break;
 
 		case "y":
-			obj->set_mass(0.0);
-			obj->set_density(1.0);
-			obj->set_capacity(0.0);
-			obj->set_max_mass(0.0);
 			obj->set_virtual(1);
 			pop_state();
 			stopped = 1;
