@@ -131,7 +131,7 @@ private void prompt()
 		break;
 
 	case STAGE_ADJ:
-		data = obj->query_local_property("local_adjectives");
+		data = obj->query_local_adjectives(nil);
 		if (data && sizeof(data)) {
 			send_out("Current adjectives: " + implode(data, ", ") + "\n");
 		}
