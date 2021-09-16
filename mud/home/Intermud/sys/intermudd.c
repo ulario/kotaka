@@ -444,7 +444,7 @@ private void i3_handle_startup_reply(mixed *value)
 	pinged = 0;
 	ponged = 0;
 
-	call_out_unique("keepalive", 1);
+	call_out_unique("keepalive", 2);
 }
 
 private void i3_handle_tell(mixed *value)
