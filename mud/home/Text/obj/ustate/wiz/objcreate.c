@@ -361,7 +361,7 @@ private void do_input(string input)
 			break;
 
 		default:
-			send_out("Yes, no, or blank to leave it alone.\n");
+			send_out("Yes or no, or blank to leave it alone.\n");
 		}
 		break;
 
