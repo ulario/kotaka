@@ -107,7 +107,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	world = IDD->find_object_by_name("planets:aerth");
+	world = IDD->find_object_by_name("planets:earth");
 
 	if (!world) {
 		send_out("BUG: Starting world not found, yell at a wizard.\n");

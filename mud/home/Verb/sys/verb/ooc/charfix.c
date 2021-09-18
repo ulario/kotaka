@@ -156,7 +156,7 @@ void main(object actor, mapping roles)
 
 		send_out("Your body was nowhere.\n");
 
-		world = IDD->find_object_by_name("planets:aerth");
+		world = IDD->find_object_by_name("planets:earth");
 
 		if (!world) {
 			send_out("The start world is missing, yell at a wizard!\n");

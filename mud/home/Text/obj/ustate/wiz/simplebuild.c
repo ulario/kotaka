@@ -196,7 +196,7 @@ private void do_makeroom()
 	room->set_capacity((float)(sx * sy * 3));
 	room->set_max_mass((float)(sx * sy * 1000));
 
-	creator = new_object("objcreate");
+	creator = query_user()->clone_ustate("wiz/objcreate");
 	creator->set_object(room);
 
 	room = nil;

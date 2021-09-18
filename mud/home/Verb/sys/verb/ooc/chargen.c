@@ -66,14 +66,14 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	world = IDD->find_object_by_name("planets:aerth");
+	world = IDD->find_object_by_name("planets:earth");
 
 	if (!world) {
 		send_out("BUG: Starting world not found, yell at a wizard.\n");
 		return;
 	}
 
-	human = IDD->find_object_by_name("class:race:human");
+	human = IDD->find_object_by_name("class:race:humanoid:human");
 
 	if (!human) {
 		send_out("BUG: human race not found, yell at a wizard.\n");
