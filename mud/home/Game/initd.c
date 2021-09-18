@@ -117,8 +117,8 @@ void build_world()
 	object trinket;
 
 	world = create_thing();
-	world->set_object_name("planets:earth");
-	world->set_id("earth");
+	world->set_object_name("planets:aerth");
+	world->set_id("aerth");
 	world->set_mass(5.972e+24);
 	world->set_density(6.5);
 	world->set_capacity(1e+12);
@@ -127,7 +127,7 @@ void build_world()
 		USR_DIR + "/Game/sys/handler/paint/fill/grass");
 
 	world->add_local_detail(nil);
-	world->set_local_snouns(nil, ({ "planet" }) );
+	world->set_local_snouns(nil, ({ "planet", "aerth" }) );
 
 	master = create_thing();
 	master->set_object_name("class:race:humanoid:human");
