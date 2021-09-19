@@ -1,11 +1,11 @@
 telnet_port	= ([
-	"*": 49153
+	"*": 49153			/* status */
 ]);
 binary_port	= ([
-	"localhost": 49152,
-	"*": 49154,
-	"*": 49155,
-	"*": 49156
+	"localhost": 49152,		/* admin */
+	"*": 49154,			/* player telnet */
+	"*": 49155,			/* http */
+	"*": 49156			/* CommD */
 ]);
 directory	= "mud";		/* base directory */
 users		= 32;			/* max # of users */
