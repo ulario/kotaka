@@ -69,6 +69,7 @@ private void start()
 private void report_config()
 {
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Incremental snapshot interval: " + INTERVAL);
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot offset: " + OFFSET);
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Increments between full snapshots: " + INCREMENTS);
 }
 
