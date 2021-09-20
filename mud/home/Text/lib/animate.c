@@ -36,6 +36,10 @@ int callout;
 int screen_width;
 int screen_height;
 
+private void reset()
+{
+}
+
 static void create()
 {
 	::create();
