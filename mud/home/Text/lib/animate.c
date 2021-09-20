@@ -38,6 +38,7 @@ int screen_height;
 
 private void reset()
 {
+	send_out("\033[1;1H\033[2J");
 }
 
 static void create()
@@ -76,7 +77,7 @@ void stop()
 	query_user()->set_mode(MODE_ECHO);
 	remove_call_out(callout);
 
-	send_out("\033[1;1H\033[2J");
+	reset();
 
 	stopped = 1;
 }
@@ -91,7 +92,7 @@ void go()
 
 	reset_frame_info();
 
-	send_out("\033[1;1H\033[2J");
+	reset();
 
 	stopped = 0;
 }
