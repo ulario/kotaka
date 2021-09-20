@@ -32,6 +32,13 @@ inherit SECOND_AUTO;
 
 int increments;
 
+private void report_config()
+{
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot interval: " + INTERVAL);
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot offset: " + OFFSET);
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot increments: " + INCREMENTS);
+}
+
 static void start(varargs string restart)
 {
 	int now;
@@ -70,13 +77,6 @@ static void start(varargs string restart)
 
 	wipe_callouts();
 	call_out("dump", fdelay, goal);
-}
-
-private void report_config()
-{
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot interval: " + INTERVAL);
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot offset: " + OFFSET);
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot increments: " + INCREMENTS);
 }
 
 static void create()
