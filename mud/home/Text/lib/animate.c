@@ -126,6 +126,8 @@ static void frame()
 	diff += (float)(time[0] - oldtime[0]);
 	oldtime = time;
 
+	send_out("Frame rate: " + framerate + "\n");
+
 	do_frame(diff);
 }
 
@@ -212,7 +214,7 @@ static void check_screen()
 
 	if (telnet && telnet->query_naws_active()) {
 		screen_width = telnet->query_naws_width();
-		screen_height = telnet->query_naws_height();
+		screen_height = telnet->query_naws_height() - 5;
 		return;
 	}
 
