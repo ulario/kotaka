@@ -190,11 +190,12 @@ void receive_in(string input)
 		pop_state();
 		return;
 
+	case "":
+		reset();
+
 	default:
 		send_out(first + ": command not recognized.\n");
 	}
-
-	reset();
 
 	reading = 0;
 }
