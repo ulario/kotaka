@@ -131,7 +131,7 @@ static void frame()
 	diff += (float)(time[0] - oldtime[0]);
 	oldtime = time;
 
-	send_out("\n\n\033[KFrame rate: " + framerate + "\033[K\n\033[K");
+	send_out("\033[" + (screen_height + 2) + ";1H\033[K\nFrame rate: " + framerate + "\033K\n\033K");
 
 	do_frame(diff);
 }
