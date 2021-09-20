@@ -131,7 +131,7 @@ static void frame()
 	diff += (float)(time[0] - oldtime[0]);
 	oldtime = time;
 
-	send_out("\n\nFrame rate: " + framerate + "\033[K\n");
+	send_out("\n\n\033[KFrame rate: " + framerate + "\033[K\n\033[K");
 
 	do_frame(diff);
 }
