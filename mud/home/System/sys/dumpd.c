@@ -64,6 +64,8 @@ private void start(varargs string restart)
 
 	if (restart) {
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Restarting snapshot cycle: " + restart);
+	} else {
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Starting snapshot cycle: " + restart);
 	}
 
 	wipe_callouts();
