@@ -32,7 +32,7 @@ inherit SECOND_AUTO;
 
 int increments;
 
-private void start()
+private void start(varargs string restart)
 {
 	int now;
 	float fnow;
@@ -60,6 +60,10 @@ private void start()
 
 	if (fdelay < 0.5) {
 		fdelay = 0.5;
+	}
+
+	if (restart) {
+		LOGD->post_message("system", LOG_NOTICE, "DumpD: Restarting snapshot cycle: " + restart);
 	}
 
 	wipe_callouts();
@@ -105,8 +109,7 @@ static void dump(int goal)
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + fdelta + " seconds late");
 
 		if (delta > INTERVAL) {
-			LOGD->post_message("system", LOG_NOTICE, "DumpD: Stall exceeds interval, restarting cycle");
-			start();
+			start("lagged");
 			return;
 		}
 	}
@@ -128,18 +131,14 @@ void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: Recompiled, restarting dump cycle");
-
 	report_config();
-	start();
+	start("recompiled");
 }
 
 void reboot()
 {
 	ACCESS_CHECK(previous_program() == INITD);
 
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: Rebooted, restarting dump cycle");
-
 	report_config();
-	start();
+	start("rebooted");
 }
