@@ -26,10 +26,10 @@
 
 #define INTERVAL    600
 #define INCREMENTS    6
+#define OFFSET        0
 
 inherit SECOND_AUTO;
 
-int offset;
 int increments;
 
 private void start()
@@ -50,7 +50,7 @@ private void start()
 
 	goal = now;
 	goal -= goal % INTERVAL;
-	goal += offset;
+	goal += OFFSET;
 	goal += INTERVAL;
 	delay = goal - now;
 	delay %= INTERVAL;
