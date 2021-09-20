@@ -82,7 +82,7 @@ private void report_config()
 static void create()
 {
 	report_config();
-	start();
+	call_out("start", 0);
 }
 
 static void dump(int goal)
@@ -111,7 +111,7 @@ static void dump(int goal)
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + fdelta + " seconds late");
 
 		if (delta > INTERVAL) {
-			start("lagged");
+			call_out("start", 0, "lagged");
 			return;
 		}
 	}
@@ -134,7 +134,7 @@ void upgrade()
 	ACCESS_CHECK(previous_program() == OBJECTD);
 
 	report_config();
-	start("recompiled");
+	call_out("start", 0, "recompiled");
 }
 
 void reboot()
@@ -142,5 +142,5 @@ void reboot()
 	ACCESS_CHECK(previous_program() == INITD);
 
 	report_config();
-	start("rebooted");
+	call_out("start", 0, "rebooted");
 }
