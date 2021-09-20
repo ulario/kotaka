@@ -72,9 +72,16 @@ private void configure()
 	interval = INTERVAL;
 }
 
+private void report_config()
+{
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Incremental snapshot interval: " + interval);
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Increments between full snapshots: " + INCREMENTS);
+}
+
 static void create()
 {
 	configure();
+	report_config();
 	start();
 }
 
@@ -130,6 +137,7 @@ void upgrade()
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Recompiled, restarting dump cycle");
 
 	configure();
+	report_config();
 	start();
 }
 
@@ -140,5 +148,6 @@ void reboot()
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Rebooted, restarting dump cycle");
 
 	configure();
+	report_config();
 	start();
 }
