@@ -25,8 +25,8 @@
 #include <status.h>
 
 #define INTERVAL    600
-#define INCREMENTS    6
 #define OFFSET        0
+#define INCREMENTS    6
 
 inherit SECOND_AUTO;
 
