@@ -32,7 +32,7 @@ inherit SECOND_AUTO;
 
 int increments;
 
-private void start(varargs string restart)
+static void start(varargs string restart)
 {
 	int now;
 	float fnow;
