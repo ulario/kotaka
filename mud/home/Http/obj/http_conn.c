@@ -95,11 +95,14 @@ private void handle_get_siteban()
 	message("<head>\n");
 	message("<style>\n");
 	message(read_file("~/data/http.css"));
+	message("div.column { column-count: 1; }\n");
 	message("</style>\n");
 	message("<title>Sitebans</title>\n");
 	message("</head>\n");
 	message("<body>\n");
+	message("<div class=\"column\">\n");
 	message("<h1>Sitebans</h1>\n");
+	message("<div class=\"infobox\">\n");
 	message("<table>\n");
 	message("<tr><th>Site</th><th>Issuer</th><th>Expire</th><th>Message</th></tr>\n");
 
@@ -151,6 +154,8 @@ private void handle_get_siteban()
 	}
 
 	message("</table>\n");
+	message("</div>\n");
+	message("</div>\n");
 	message("</body>\n");
 	message("</html>\n");
 }
