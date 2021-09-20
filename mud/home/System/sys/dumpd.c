@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,6 @@
 
 inherit SECOND_AUTO;
 
-int interval;
 int offset;
 int increments;
 
@@ -43,18 +42,18 @@ private void start()
 	int delay;
 	float fdelay;
 
-	if (interval <= 0) {
+	if (INTERVAL <= 0) {
 		return;
 	}
 
 	({ now, fnow }) = millitime();
 
 	goal = now;
-	goal -= goal % interval;
+	goal -= goal % INTERVAL;
 	goal += offset;
-	goal += interval;
+	goal += INTERVAL;
 	delay = goal - now;
-	delay %= interval;
+	delay %= INTERVAL;
 	goal = now + delay;
 
 	fdelay = (float)delay - fnow;
@@ -67,20 +66,14 @@ private void start()
 	call_out("dump", fdelay, goal);
 }
 
-private void configure()
-{
-	interval = INTERVAL;
-}
-
 private void report_config()
 {
-	LOGD->post_message("system", LOG_NOTICE, "DumpD: Incremental snapshot interval: " + interval);
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Incremental snapshot interval: " + INTERVAL);
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Increments between full snapshots: " + INCREMENTS);
 }
 
 static void create()
 {
-	configure();
 	report_config();
 	start();
 }
@@ -110,14 +103,14 @@ static void dump(int goal)
 	if (fdelta >= 1.0) {
 		LOGD->post_message("system", LOG_NOTICE, "DumpD: Dump callout executed " + fdelta + " seconds late");
 
-		if (delta > interval) {
+		if (delta > INTERVAL) {
 			LOGD->post_message("system", LOG_NOTICE, "DumpD: Stall exceeds interval, restarting cycle");
 			start();
 			return;
 		}
 	}
 
-	goal += interval;
+	goal += INTERVAL;
 	delta = goal - now;
 	fdelta = (float)delta - fnow;
 
@@ -136,7 +129,6 @@ void upgrade()
 
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Recompiled, restarting dump cycle");
 
-	configure();
 	report_config();
 	start();
 }
@@ -147,7 +139,6 @@ void reboot()
 
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Rebooted, restarting dump cycle");
 
-	configure();
 	report_config();
 	start();
 }
