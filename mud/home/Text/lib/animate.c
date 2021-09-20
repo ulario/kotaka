@@ -194,6 +194,8 @@ void receive_in(string input)
 		send_out(first + ": command not recognized.\n");
 	}
 
+	reset();
+
 	reading = 0;
 }
 
