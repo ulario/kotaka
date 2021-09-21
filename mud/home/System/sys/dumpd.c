@@ -37,6 +37,7 @@ private void report_config()
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot interval: " + INTERVAL);
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot offset: " + OFFSET);
 	LOGD->post_message("system", LOG_NOTICE, "DumpD: Snapshot increments: " + INCREMENTS);
+	LOGD->post_message("system", LOG_NOTICE, "DumpD: Full snapshot interval: " + (INTERVAL * INCREMENTS));
 }
 
 static void start(varargs string restart)
