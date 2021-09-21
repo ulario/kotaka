@@ -66,6 +66,8 @@ static void check()
 	float mem_size;
 	float mem_used;
 
+	int fragged;
+
 	string suffix;
 
 	wipe_callouts();
@@ -77,9 +79,11 @@ static void check()
 	mem_size = dmem_size + (float)status(ST_SMEMSIZE);
 	mem_used = dmem_used + (float)status(ST_SMEMUSED);
 
-	if (mem_used / mem_size < 0.5 || force) {
-		force = 0;
+	if (mem_used / mem_size < 0.5) {
+		fragged = 1;
+	}
 
+	if (force || fragged) {
 		if (mem_size > (float)G) {
 			mem_size /= (float)G;
 			mem_used /= (float)G;
@@ -94,9 +98,11 @@ static void check()
 			suffix = "KiB";
 		}
 
-		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out (fragmented, only using " + roundsig(mem_used, 3) + suffix + " of " + roundsig(mem_size, 3) + suffix + ")");
+		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out (" + (force ? "forced, " : "") + (fragged ? "fragmented, only " : "") + "using " + roundsig(mem_used, 3) + suffix + " of " + roundsig(mem_size, 3) + suffix + ")");
 
 		::swapout();
+
+		force = 0;
 	}
 }
 
