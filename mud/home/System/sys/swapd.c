@@ -29,6 +29,8 @@
 
 inherit SECOND_AUTO;
 
+int force;
+
 private float roundsig(float v, int s)
 {
 	float smul;
@@ -75,7 +77,9 @@ static void check()
 	mem_size = dmem_size + (float)status(ST_SMEMSIZE);
 	mem_used = dmem_used + (float)status(ST_SMEMUSED);
 
-	if (mem_used / mem_size < 0.5) {
+	if (mem_used / mem_size < 0.5 || force) {
+		force = 0;
+
 		if (mem_size > (float)G) {
 			mem_size /= (float)G;
 			mem_used /= (float)G;
@@ -91,6 +95,14 @@ static void check()
 		}
 
 		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out (fragmented, only using " + roundsig(mem_used, 3) + suffix + " of " + roundsig(mem_size, 3) + suffix + ")");
-		swapout();
+
+		::swapout();
 	}
+}
+
+void swapout()
+{
+	force = 1;
+
+	call_out("check", 0);
 }
