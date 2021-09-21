@@ -85,6 +85,7 @@ static void wipe_callouts(varargs string func)
 	int sz;
 
 	callouts = ::status(this_object(), O_CALLOUTS);
+	callouts = convert_callouts(callouts);
 
 	for (sz = sizeof(callouts); --sz >= 0; ) {
 		mixed *callout;
