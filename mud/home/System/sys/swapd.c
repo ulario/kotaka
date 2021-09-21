@@ -29,6 +29,29 @@
 
 inherit SECOND_AUTO;
 
+private float roundsig(float v, int s)
+{
+	float smul;
+	float imul;
+
+	imul = 1.0;
+
+	while (v > 1.0) {
+		v /= 10.0;
+		imul *= 10.0;
+	}
+
+	smul = pow(10.0, (float)s);
+
+	v *= smul;
+	v = (float)(int)v;
+	v /= smul;
+
+	v *= imul;
+
+	return v;
+}
+
 static void create()
 {
 	call_out("check", 1);
@@ -41,6 +64,8 @@ static void check()
 	float mem_size;
 	float mem_used;
 
+	string suffix;
+
 	wipe_callouts();
 
 	call_out("check", 1);
@@ -51,7 +76,21 @@ static void check()
 	mem_used = dmem_used + (float)status(ST_SMEMUSED);
 
 	if (mem_used / mem_size < 0.5) {
-		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out");
+		if (mem_size > (float)G) {
+			mem_size /= (float)G;
+			mem_used /= (float)G;
+			suffix = "GiB";
+		} else if (mem_size > (float)M) {
+			mem_size /= (float)M;
+			mem_used /= (float)M;
+			suffix = "MiB";
+		} else {
+			mem_size /= (float)K;
+			mem_used /= (float)K;
+			suffix = "KiB";
+		}
+
+		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out (fragmented, only using " + roundsig(mem_used, 3) + suffix + " of " + roundsig(mem_size, 3) + suffix + ")");
 		swapout();
 	}
 }
