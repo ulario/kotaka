@@ -62,8 +62,8 @@ static void create()
 
 static void check()
 {
-	float mem_size;
 	float mem_used;
+	float mem_size;
 
 	string suffix;
 
@@ -71,8 +71,8 @@ static void check()
 
 	call_out("check", 1);
 
-	mem_size = (float)status(ST_DMEMSIZE) + (float)status(ST_SMEMSIZE);
 	mem_used = (float)status(ST_DMEMUSED) + (float)status(ST_SMEMUSED);
+	mem_size = (float)status(ST_DMEMSIZE) + (float)status(ST_SMEMSIZE);
 
 	if (mem_used / mem_size < 0.5) {
 		frag++;
