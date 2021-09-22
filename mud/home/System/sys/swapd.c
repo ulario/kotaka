@@ -61,8 +61,6 @@ static void create()
 
 static void check()
 {
-	float dmem_size;
-	float dmem_used;
 	float mem_size;
 	float mem_used;
 
@@ -74,10 +72,8 @@ static void check()
 
 	call_out("check", 1);
 
-	dmem_size = (float)status(ST_DMEMSIZE);
-	dmem_used = (float)status(ST_DMEMUSED);
-	mem_size = dmem_size + (float)status(ST_SMEMSIZE);
-	mem_used = dmem_used + (float)status(ST_SMEMUSED);
+	mem_size = (float)status(ST_DMEMSIZE) + (float)status(ST_SMEMSIZE);
+	mem_used = (float)status(ST_DMEMUSED) + (float)status(ST_SMEMUSED);
 
 	if (mem_used / mem_size < 0.5) {
 		fragged = 1;
