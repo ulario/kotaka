@@ -57,23 +57,6 @@ private void scramble(mixed *arr)
 	}
 }
 
-private void freeze_module(string module)
-{
-	KERNELD->rsrc_set_limit(module, "objects", 0);
-}
-
-private void thaw_module(string module)
-{
-	int sz;
-	string *resources;
-
-	resources = KERNELD->query_resources();
-
-	for (sz = sizeof(resources); --sz >= 0; ) {
-		KERNELD->rsrc_set_limit(module, resources[sz], -1);
-	}
-}
-
 private void send_module_boot_signal(string module)
 {
 	int sz;
@@ -184,7 +167,10 @@ private void do_module_shutdown(string module, int reboot)
 		}
 	}
 
-	freeze_module(module);
+	if (sizeof( ({ module }) & KERNELD->query_owners())) {
+		KERNELD->rsrc_set_limit(module, "objects", 0);
+	}
+
 	purge_objects(module);
 
 	call_out("purge_module_tick", 0, module, reboot);
@@ -206,8 +192,6 @@ static void purge_module_tick(string module, varargs int reboot)
 		modules[module] = nil;
 
 		LOGD->post_message("system", LOG_NOTICE, "Shut down " + (module ? module : "Ecru"));
-
-		thaw_module(module);
 
 		if (reboot) {
 			call_out("boot_module", 0, module, 1);
@@ -525,6 +509,7 @@ void boot_module(string module, varargs int reboot)
 {
 	string *others;
 	int sz;
+	string *resources;
 	int existed;
 	string creator;
 
@@ -548,10 +533,14 @@ void boot_module(string module, varargs int reboot)
 		KERNELD->add_owner(module);
 	}
 
+	resources = KERNELD->query_resources();
+
+	for (sz = sizeof(resources); --sz >= 0; ) {
+		KERNELD->rsrc_set_limit(module, resources[sz], -1);
+	}
+
 	if (!existed) {
 		string err;
-
-		thaw_module(module);
 
 		err = catch(load_module(module));
 
