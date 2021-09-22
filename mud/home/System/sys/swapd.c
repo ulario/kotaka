@@ -74,7 +74,7 @@ static void check()
 	mem_used = (float)status(ST_DMEMUSED) + (float)status(ST_SMEMUSED);
 	mem_size = (float)status(ST_DMEMSIZE) + (float)status(ST_SMEMSIZE);
 
-	if (mem_used / mem_size < 0.5) {
+	if (mem_used / mem_size < 0.5 && mem_size - mem_used > 4 * M) {
 		frag++;
 	} else if (frag) {
 		frag--;
