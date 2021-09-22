@@ -30,6 +30,7 @@
 inherit SECOND_AUTO;
 
 int force;
+int frag;
 
 private float roundsig(float v, int s)
 {
@@ -64,8 +65,6 @@ static void check()
 	float mem_size;
 	float mem_used;
 
-	int fragged;
-
 	string suffix;
 
 	wipe_callouts();
@@ -76,10 +75,12 @@ static void check()
 	mem_used = (float)status(ST_DMEMUSED) + (float)status(ST_SMEMUSED);
 
 	if (mem_used / mem_size < 0.5) {
-		fragged = 1;
+		frag++;
+	} else if (frag) {
+		frag--;
 	}
 
-	if (force || fragged) {
+	if (force || frag > 60) {
 		if (mem_size > (float)G) {
 			mem_size /= (float)G;
 			mem_used /= (float)G;
@@ -94,11 +95,12 @@ static void check()
 			suffix = "KiB";
 		}
 
-		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out (" + (force ? "forced, " : "") + (fragged ? "fragmented, only " : "") + "using " + roundsig(mem_used, 3) + suffix + " of " + roundsig(mem_size, 3) + suffix + ")");
+		LOGD->post_message("system", LOG_NOTICE, "SwapD: Swapping out (" + (force ? "forced, " : "") + (frag ? "fragmented, only " : "") + "using " + roundsig(mem_used, 3) + suffix + " of " + roundsig(mem_size, 3) + suffix + ")");
 
 		::swapout();
 
 		force = 0;
+		frag = 0;
 	}
 }
 
