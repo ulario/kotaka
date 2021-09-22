@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -75,7 +75,7 @@ static void check()
 	call_out("check", 1);
 
 	dmem_size = (float)status(ST_DMEMSIZE);
-	dmem_used = (float)status(ST_DMEMSIZE);
+	dmem_used = (float)status(ST_DMEMUSED);
 	mem_size = dmem_size + (float)status(ST_SMEMSIZE);
 	mem_used = dmem_used + (float)status(ST_SMEMUSED);
 
