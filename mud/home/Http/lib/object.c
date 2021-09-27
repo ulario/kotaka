@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+inherit "detail";
 inherit "thing";
 inherit "support";
 
@@ -42,7 +43,13 @@ static string object_text(object obj)
 	buffer = oinfobox("Object", 1, subbuffer);
 
 	if (obj <- "~Thing/lib/thing") {
+		string *details;
+
 		buffer += thing_text(obj);
+
+		if (sizeof(details = obj->query_local_details())) {
+			buffer += detail_text(obj, details);
+		}
 
 		if (query_ip() == "127.0.0.1") {
 			buffer += thing_form(obj);

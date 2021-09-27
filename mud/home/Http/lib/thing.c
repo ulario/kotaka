@@ -20,7 +20,6 @@
 
 inherit "support";
 inherit "bulk";
-inherit "detail";
 inherit "form/thing";
 inherit "/lib/string/sprint";
 
@@ -30,7 +29,7 @@ static string thing_text(object obj)
 	mapping props;
 	mixed *values;
 	object arch, env, *inv, po, pe;
-	string buffer, *details, *names, prep, prox, subbuffer;
+	string buffer, *names, prep, prox, subbuffer;
 
 	subbuffer = "<p>\n";
 
@@ -87,10 +86,6 @@ static string thing_text(object obj)
 	}
 
 	buffer += bulk_text(obj);
-
-	if (sizeof(details = obj->query_local_details())) {
-		buffer += detail_text(obj, details);
-	}
 
 	props = obj->query_local_properties();
 	names = map_indices(props);
