@@ -48,11 +48,6 @@ table
 	margin: 0 auto;
 }
 
-div.infobox, h1, h2, h3
-{
-	break-inside: avoid;
-}
-
 td
 {
 	margin: 0;
