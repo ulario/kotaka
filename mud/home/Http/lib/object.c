@@ -48,24 +48,25 @@ static string object_text(object obj)
 		details = obj->query_local_details();
 
 		if (sizeof(details)) {
-			buffer += "<div class=\"mainpane\">\n";
+			buffer += "<table>\n";
+			buffer += "<tr>\n";
+			buffer += "<td class=\"mainpane\">\n";
 		}
 
 		buffer += thing_text(obj);
 
 		if (sizeof(details)) {
-			buffer += "</div>\n";
-			buffer += "<div class=\"subpane\">\n";
+			buffer += "</td>\n";
+			buffer += "<td class=\"subpane\">\n";
 			buffer += detail_text(obj, details);
-			buffer += "</div>\n";
+			buffer += "</td>\n";
+			buffer += "</tr>\n";
+			buffer += "</table>\n";
 		}
 
 		if (query_ip() == "127.0.0.1") {
 			buffer += thing_form(obj);
 		}
-
-		buffer += "</tr>\n";
-		buffer += "</table>\n";
 	}
 
 	return buffer;
