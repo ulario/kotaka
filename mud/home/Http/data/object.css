@@ -1,0 +1,17 @@
+div.page
+{
+	display: table;
+	clear: both;
+}
+
+div.mainpane
+{
+	float: left;
+	width: 25%;
+}
+
+div.subpane
+{
+	float: right;
+	width: 75%;
+}

@@ -65,6 +65,7 @@ private void handle_get_object(string objectname)
 		message("<head>\n");
 		message("<style>\n");
 		message(read_file("~/data/http.css"));
+		message(read_file("~/data/object.css"));
 		message("</style>\n");
 		message("<title>Object report</title>\n");
 		message("</head>\n");

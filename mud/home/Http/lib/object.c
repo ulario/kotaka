@@ -45,15 +45,27 @@ static string object_text(object obj)
 	if (obj <- "~Thing/lib/thing") {
 		string *details;
 
+		details = obj->query_local_details();
+
+		if (sizeof(details)) {
+			buffer += "<div class=\"mainpane\">\n";
+		}
+
 		buffer += thing_text(obj);
 
-		if (sizeof(details = obj->query_local_details())) {
+		if (sizeof(details)) {
+			buffer += "</div>\n";
+			buffer += "<div class=\"subpane\">\n";
 			buffer += detail_text(obj, details);
+			buffer += "</div>\n";
 		}
 
 		if (query_ip() == "127.0.0.1") {
 			buffer += thing_form(obj);
 		}
+
+		buffer += "</tr>\n";
+		buffer += "</table>\n";
 	}
 
 	return buffer;
