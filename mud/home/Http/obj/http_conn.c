@@ -69,7 +69,7 @@ private void handle_get_object(string objectname)
 		message("<title>Object report</title>\n");
 		message("</head>\n");
 		message("<body>\n");
-		message("<div class=\"column\">\n");
+		message("<div class=\"page\">\n");
 		message(object_text(obj));
 		message("</div>\n");
 		message("</body>\n");
@@ -95,12 +95,11 @@ private void handle_get_siteban()
 	message("<head>\n");
 	message("<style>\n");
 	message(read_file("~/data/http.css"));
-	message("div.column { column-count: 1; }\n");
 	message("</style>\n");
 	message("<title>Sitebans</title>\n");
 	message("</head>\n");
 	message("<body>\n");
-	message("<div class=\"column\">\n");
+	message("<div class=\"page\">\n");
 	message("<h1>Sitebans</h1>\n");
 	message("<div class=\"infobox\">\n");
 	message("<table>\n");
