@@ -1,17 +1,9 @@
-div.page
+td.mainpane
 {
-	display: table;
-	clear: both;
-}
-
-div.mainpane
-{
-	float: left;
 	width: 50%;
 }
 
-div.subpane
+td.subpane
 {
-	float: right;
 	width: 50%;
 }
