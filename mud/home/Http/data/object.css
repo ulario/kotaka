@@ -1,9 +1,16 @@
+table
+{
+	width: 100%;
+}
+
 td.mainpane
 {
 	width: 50%;
+	padding-right: .5em;
 }
 
 td.subpane
 {
 	width: 50%;
+	padding-left: .5em;
 }

@@ -38,19 +38,23 @@ h1, h2, h3
 {
 	padding: 1em;
 	text-align: center;
-	background-color: #cccccc;
-	border: .25em solid black;
+	color: #aa5500;
+	background-color: #ffffff;
+	border: .25em solid #aa5500;
 	border-radius: .5em;
 }
 
 table
 {
-	margin: 0 auto;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-spacing: 0;
 }
 
 td
 {
 	margin: 0;
 	vertical-align: top;
-	padding: 0 1em;
+	padding: 0;
 }
