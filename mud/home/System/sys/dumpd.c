@@ -24,9 +24,9 @@
 #include <kotaka/log.h>
 #include <status.h>
 
-#define INTERVAL    600
-#define OFFSET        0
-#define INCREMENTS    6
+#define INTERVAL    86400
+#define OFFSET          0
+#define INCREMENTS      1
 
 inherit SECOND_AUTO;
 
