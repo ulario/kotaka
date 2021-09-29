@@ -1,0 +1,10 @@
+table.siteban
+{
+	margin: auto;
+}
+
+td, th
+{
+	border: 1px;
+	padding: 0 1em;
+}
