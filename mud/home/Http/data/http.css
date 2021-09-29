@@ -1,8 +1,13 @@
+body
+{
+	background-color: #555555;
+}
+
 div.page
 {
 	width: 75%;
-	background-color: #00aa00;
-	border: 1em solid #005500;
+	background-color: #ffffff;
+	border: 1em solid #aaaaaa;
 	border-radius: 4em;
 	padding: 2em;
 	margin: 2em auto;
@@ -17,8 +22,8 @@ div.infobox
 {
 	margin: 12pt;
 	padding: 1em;
-	background-color: #ffffcc;
-	border: .25em solid #aaaa00;
+	background-color: #ffff55;
+	border: .25em solid #aa5500;
 	border-radius: .5em;
 }
 
@@ -38,9 +43,9 @@ h1, h2, h3
 {
 	padding: 1em;
 	text-align: center;
-	color: #aa5500;
-	background-color: #ffffff;
-	border: .25em solid #aa5500;
+	color: #000000;
+	background-color: #aaaaaa;
+	border: .25em solid #000000;
 	border-radius: .5em;
 }
 
