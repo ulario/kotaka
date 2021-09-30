@@ -78,9 +78,3 @@ The following need to be done in a future version, but aren't being handled in 0
   * Stage 3: Error, check for completion of migration
   * Stage 4: Purge
 * Migration of Geometry
-* Removal of multiple archetypes
-  * Stage 1: Formal deprecation
-  * Stage 2: Warning
-  * Stage 3: Error
-  * Stage 4: Force conversion, audit for completion
-  * Stage 5: Purge data
