@@ -4,6 +4,13 @@ This stipulates the layout of the repository.
 
 All entries are to be kept in alphabetical order.
 
+Note: Kotaka is built upon the kernel library, which enforces directory
+constraints on compilable LPC source files.
+
+* lib - Any inheritable
+* obj - Any clonable
+* lwo - Any light-weight object
+
 ## Main
 
 This is the top level layout for the entire repository.
