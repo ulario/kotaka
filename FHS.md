@@ -53,8 +53,20 @@ environment seen by DGD.
 
 =include=
 
+=include/kernel=
+    Include files belonging to the kernel library.
+
+    Read only.
+
 =kernel=
+    Files belonging to the kernel library.
+
+    Read only.
 
 =lib=
+    Public
 
 =var=
+    Variable data, like world saves
+
+    Note: Audit this to see if it needs kept secret.
