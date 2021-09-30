@@ -39,9 +39,22 @@ This is the layout as seen by the LPC layer, and the main filesystem
 environment seen by DGD.
 
 =doc=
+    LPC visible documentation
+
 =etc=
+    Configuration information.
+
 =home=
+    Privileged areas.
+
+    Note: The kernel library enforces creator based security and declares
+    all files under a particular /home/<user> directory as owned by that
+    user.  Please consult the klib documentation for more information.
+
 =include=
+
 =kernel=
+
 =lib=
+
 =var=
