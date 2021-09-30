@@ -4,6 +4,10 @@ This stipulates the layout of the repository.
 
 All entries are to be kept in alphabetical order.
 
+## Main
+
+This is the top level layout for the entire repository.
+
 =bin=
     Symlink to the DGD binary
 
@@ -21,3 +25,16 @@ All entries are to be kept in alphabetical order.
 
 =state=
     Snapshots, swapfile, and editor tempfile.
+
+## Mud
+
+This is the layout as seen by the LPC layer, and the main filesystem
+environment seen by DGD.
+
+=doc=
+=etc=
+=home=
+=include=
+=kernel=
+=lib=
+=var=
