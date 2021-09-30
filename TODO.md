@@ -23,6 +23,8 @@ The following must be done before we release 0.62:
 * Migration of Geometry, stage 1, formal notice
 * Multiple archetype removal, stage 1, formal deprecation
 
+Please see files in [docs/deprecations] for further details on deprecated features.
+
 ### ModuleD: module registration
 
 * ModuleD will register modules explicitly
