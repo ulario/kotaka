@@ -72,9 +72,4 @@ The following need to be done in a future version, but aren't being handled in 0
   * Stage 2: Warning stage, redirect, start migration
   * Stage 3: Error stage, check migration
   * Stage 4: Purge stage
-* Removal of CatalogD
-  * Stage 1: Deprecation (in progress)
-  * Stage 2: Warning, redirect to IDD, enable migration
-  * Stage 3: Error, check for completion of migration
-  * Stage 4: Purge
 * Migration of Geometry
