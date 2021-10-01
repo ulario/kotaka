@@ -212,97 +212,6 @@ private void upgrade_check_ready()
 	MODULED->upgrade_check_modules();
 }
 
-private void fix_filequota()
-{
-	string *names;
-	int *sizes;
-	mixed *dummy;
-	int sz;
-	string *owners;
-	string *add;
-
-	mapping counts;
-	counts = ([ "System": 0, nil: 0 ]);
-
-	({ names, sizes, dummy, dummy }) = get_dir("/*");
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		string name;
-		int size;
-
-		name = names[sz];
-		size = sizes[sz];
-
-		if (size == -2) {
-			/* directory */
-			if ("/" + name == USR_DIR) {
-				string *unames;
-				int *usizes;
-				int usz;
-
-				counts[nil]++;
-
-				({ unames, usizes, dummy, dummy }) = get_dir(USR_DIR + "/*");
-
-				for (usz = sizeof(unames); --usz >= 0; ) {
-					string uname;
-
-					uname = unames[usz];
-
-					if (usizes[usz] == -2) {
-						if (!counts[uname]) {
-							counts[uname] = 0;
-						}
-						counts[uname] += DRIVER->file_size(USR_DIR + "/" + uname, 1);
-					} else {
-						counts[nil] += DRIVER->file_size(USR_DIR + "/" + uname);
-					}
-				}
-			} else {
-				counts[(name == "kernel") ? "System" : nil] += DRIVER->file_size("/" + name, 1);
-			}
-		} else {
-			counts[nil] += DRIVER->file_size("/" + name);
-		}
-	}
-
-	/* escheat ownerless files to nil */
-
-	names = map_indices(counts);
-	owners = KERNELD->query_owners();
-
-	add = names - owners;
-
-	for (sz = sizeof(add); --sz >= 0; ) {
-		string name;
-
-		name = add[sz];
-
-		counts[nil] += counts[name];
-		counts[name] = nil;
-	}
-
-	/* adjust quota */
-
-	names = map_indices(counts);
-	sizes = map_values(counts);
-
-	for (sz = sizeof(names); --sz >= 0; ) {
-		string name;
-		int size;
-		int usage;
-
-		name = names[sz];
-		size = sizes[sz];
-
-		usage = KERNELD->rsrc_get(name, "filequota")[RSRC_USAGE];
-
-		if (usage != size) {
-			DRIVER->message("Adjusting filequota of " + (name ? name : "Ecru") + ": recorded " + usage + " but found " + size + ", adding " + (size - usage) + "\n");
-			KERNELD->rsrc_incr(name, "filequota", nil, size - usage, 1);
-		}
-	}
-}
 
 private void reboot_common()
 {
@@ -311,9 +220,7 @@ private void reboot_common()
 
 	LOGD->post_message("debug", LOG_NOTICE, "Auditing filequota");
 
-	rlimits (0; -1) {
-		fix_filequota();
-	}
+	KERNELD->fix_filequota();
 }
 
 /* creator */
