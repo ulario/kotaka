@@ -905,6 +905,7 @@ void logout(int quit)
 	channels = ([ ]);
 	muds = ([ ]);
 
+	wipe_callouts("i3_connect");
 	wipe_callouts("keepalive");
 
 	if (quit) {
