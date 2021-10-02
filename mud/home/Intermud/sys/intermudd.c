@@ -412,11 +412,8 @@ private void i3_handle_startup_reply(mixed *value)
 	newpass = value[7];
 
 	if (oldpass != newpass) {
-		if (!oldpass) {
-			LOGD->post_message("debug", LOG_DEBUG, "IntermudD: Saving password");
-		} else {
-			LOGD->post_message("system", LOG_WARNING, "I3: Password was changed");
-			LOGD->post_message("debug", LOG_DEBUG, "I3: Saving changed password");
+		if (oldpass) {
+			LOGD->post_message("system", LOG_WARNING, "IntermudD: Password was changed");
 		}
 	}
 
