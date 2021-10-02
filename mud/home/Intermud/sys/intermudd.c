@@ -911,7 +911,7 @@ void logout(int quit)
 	if (quit) {
 		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection closed");
 	} else {
-		LOGD->post_message("system", LOG_NOTICE, "I3: Connection lost");
+		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection lost (reconnecting in 5 seconds)");
 
 		call_out_unique("i3_connect", 5);
 	}
