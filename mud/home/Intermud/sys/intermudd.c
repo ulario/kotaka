@@ -919,9 +919,12 @@ void logout(int quit)
 
 void connect_failed(int refused)
 {
-	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed");
+	wipe_callouts("i3_connect");
+	wipe_callouts("keepalive");
 
-	call_out_unique("i3_connect", 1);
+	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection failed (reconnecting in 5 seconds)");
+
+	call_out_unique("i3_connect", 5);
 }
 
 /* calls */
