@@ -364,7 +364,7 @@ private void i3_handle_error(mixed *value)
 			badpkt = value[8];
 
 			if (badpkt[0] == "startup-req-3") {
-				LOGD->post_message("system", LOG_ERR, "I3: Removing rejected password for " + mudname);
+				LOGD->post_message("system", LOG_ERR, "IntermudD: Removing rejected password for " + mudname);
 				clear_password(mudname);
 
 				rejections++;
@@ -406,14 +406,14 @@ private void i3_handle_startup_reply(mixed *value)
 	int sz;
 	mixed oldpass, newpass;
 
-	LOGD->post_message("system", LOG_NOTICE, "I3: Received startup reply");
+	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Received startup reply");
 
 	oldpass = query_password(mudname);
 	newpass = value[7];
 
 	if (oldpass != newpass) {
 		if (!oldpass) {
-			LOGD->post_message("debug", LOG_DEBUG, "I3: Saving password");
+			LOGD->post_message("debug", LOG_DEBUG, "IntermudD: Saving password");
 		} else {
 			LOGD->post_message("system", LOG_WARNING, "I3: Password was changed");
 			LOGD->post_message("debug", LOG_DEBUG, "I3: Saving changed password");
@@ -458,7 +458,7 @@ private void i3_handle_tell(mixed *value)
 		if (value[6] == "IntermudD Keepalive" && value[7] == "ping") {
 			ponged = 1;
 		} else {
-			LOGD->post_message("system", LOG_WARNING, "I3: Received spurious 0 tell from I3");
+			LOGD->post_message("system", LOG_WARNING, "IntermudD: Received spurious 0 tell from I3");
 		}
 	} else if (user = TEXT_USERD->find_user(value[5])) {
 		string msg;
@@ -784,10 +784,10 @@ static void keepalive()
 		} else {
 			strikes++;
 
-			LOGD->post_message("system", LOG_NOTICE, "I3: Keepalive timeout, strike " + strikes);
+			LOGD->post_message("system", LOG_NOTICE, "IntermudD: Keepalive timeout, strike " + strikes);
 		}
 	} else {
-		LOGD->post_message("system", LOG_NOTICE, "I3: Starting keepalive");
+		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Starting keepalive");
 
 		pinged = 1;
 	}
@@ -821,7 +821,7 @@ void reboot()
 {
 	ACCESS_CHECK(INTERMUD());
 
-	LOGD->post_message("system", LOG_NOTICE, "I3: Reconnecting after reboot");
+	LOGD->post_message("system", LOG_NOTICE, "IntermudD: Reconnecting after reboot");
 
 	if (active) {
 		disconnect();
@@ -911,7 +911,7 @@ void logout(int quit)
 	wipe_callouts("keepalive");
 
 	if (quit) {
-		LOGD->post_message("system", LOG_NOTICE, "I3: Connection closed");
+		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Connection closed");
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "I3: Connection lost");
 
