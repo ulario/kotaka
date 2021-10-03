@@ -724,6 +724,24 @@ private void process()
 	}
 }
 
+private void send_keepalive_packet()
+{
+	mixed *arr;
+
+	arr = ({
+		"tell",
+		5,
+		mudname,
+		0,
+		mudname,
+		0,
+		"IntermudD Keepalive",
+		"ping"
+	});
+
+	i3_send_packet(arr);
+}
+
 /* creator */
 
 static void create()
@@ -756,22 +774,9 @@ static void destruct()
 
 static void keepalive()
 {
-	mixed *arr;
-
 	call_out_unique("keepalive", 1);
 
-	arr = ({
-		"tell",
-		5,
-		mudname,
-		0,
-		mudname,
-		0,
-		"IntermudD Keepalive",
-		"ping"
-	});
-
-	i3_send_packet(arr);
+	send_keepalive_packet();
 
 	if (pinged) {
 		if (ponged) {
