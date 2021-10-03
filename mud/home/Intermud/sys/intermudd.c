@@ -776,13 +776,13 @@ static void keepalive()
 {
 	call_out_unique("keepalive", 1);
 
-	send_keepalive_packet();
-
 	if (pinged) {
 		if (ponged) {
 			ponged = 0;
 
 			strikes = 0;
+
+			send_keepalive_packet();
 		} else {
 			strikes++;
 
@@ -790,6 +790,8 @@ static void keepalive()
 		}
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Starting keepalive");
+
+		send_keepalive_packet();
 
 		pinged = 1;
 	}
