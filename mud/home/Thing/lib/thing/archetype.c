@@ -91,9 +91,27 @@ nomask void set_archetype(object "archetype" new_archetype)
 	archetypes = ({ archetype });
 }
 
+nomask void set_archetypes(object "archetype" *new_archetypes)
+{
+	if (sizeof(new_archetypes)) {
+		set_archetype(new_archetypes[0]);
+	} else {
+		set_archetype(nil);
+	}
+}
+
 nomask object query_archetype()
 {
 	patch_archetype();
 
 	return archetype;
+}
+
+nomask object *query_archetypes()
+{
+	if (archetype) {
+		return ({ archetype });
+	} else {
+		return ({ });
+	}
 }
