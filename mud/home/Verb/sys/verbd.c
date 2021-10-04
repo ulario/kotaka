@@ -164,12 +164,12 @@ static void sync_help_dir(string dir)
 			}
 
 			if (!function_object("query_help_title", verb)) {
-				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have a help title");
+				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have a help title function");
 				continue;
 			}
 
 			if (!function_object("query_help_contents", verb)) {
-				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have help contents");
+				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have a help contents function");
 				continue;
 			}
 
