@@ -160,7 +160,7 @@ static void sync_help_dir(string dir)
 				continue;
 			}
 
-			if (!function_object(verb, "query_help_title")) {
+			if (!function_object("query_help_title", verb)) {
 				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have a help function");
 
 				continue;
