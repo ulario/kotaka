@@ -147,8 +147,12 @@ static void sync_help_dir(string dir)
 		}
 
 		if (sscanf(name, "%s.c", name) == 1 && objs[sz]) {
-			string help;
 			object verb;
+
+			string help;
+
+			string title;
+			string *contents;
 
 			topics -= ({ name });
 
@@ -156,19 +160,39 @@ static void sync_help_dir(string dir)
 
 			if (!verb<-LIB_VERB) {
 				LOGD->post_message("system", LOG_ERR, "VerbD: verb \"" + fullname + "\" does not inherit LIB_VERB");
-
 				continue;
 			}
 
 			if (!function_object("query_help_title", verb)) {
-				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have a help function");
-
+				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have a help title");
 				continue;
 			}
 
-			help = verb->query_help_title();
+			if (!function_object("query_help_contents", verb)) {
+				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have help contents");
+				continue;
+			}
 
-			help += "\n" + chars('-', strlen(help)) + "\n\n";
+			title = verb->query_help_title();
+			contents = verb->query_help_contents();
+
+			if (!title) {
+				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" returned a nil help title");
+				continue;
+			}
+
+			if (!contents) {
+				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" returned nil help contents");
+				continue;
+			}
+
+			if (sizeof(contents) == 0) {
+				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" returned empty help contents");
+				continue;
+			}
+
+			help = title;
+			help += "\n" + chars('-', strlen(title)) + "\n\n";
 			help += process_help_contents(verb->query_help_contents()) + "\n";
 
 			HELPD->add_topic("verbs/" + fullname[0 .. strlen(fullname) - 3], help);
