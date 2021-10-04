@@ -30,6 +30,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "ichlist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists all channels on I3" });
+}
+
 void main(object actor, mapping roles)
 {
 	string name, *list;

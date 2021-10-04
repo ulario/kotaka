@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "ichadd";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: ichadd <channel>", "Attempts to create a channel on the i3 network." });
+}
+
 void main(object actor, mapping roles)
 {
 	string channel;

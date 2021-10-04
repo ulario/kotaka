@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "ichinfo";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: ichinfo <channel>", "Returns information about a channel on I3" });
+}
+
 void main(object actor, mapping roles)
 {
 	string channel;

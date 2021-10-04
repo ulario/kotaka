@@ -28,6 +28,18 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "i3on";
+}
+
+string *query_help_contents()
+{
+	return ({ "Activates IntermudD."
+		, "IntermudD will not attempt to connect to I3 until activated."
+		, "It will however, if active, reattempt to connect as needed." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "imudlist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: imudlist [-v]", "Shows a list of all muds on i3.", "-v: Verbose listing, show IP and port information in a table." });
+}
+
 void main(object actor, mapping roles)
 {
 	int width;

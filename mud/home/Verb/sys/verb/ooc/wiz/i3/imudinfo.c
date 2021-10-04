@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "imudinfo";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: imudinfo <mudname>", "Shows information about a mud on I3" });
+}
+
 void main(object actor, mapping roles)
 {
 	string mud;

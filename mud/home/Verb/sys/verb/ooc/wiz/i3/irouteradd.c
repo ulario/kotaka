@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "irouteradd";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: irouteradd <name> <ip> <port>", "Adds a router to IntermudD's router list" });
+}
+
 void main(object actor, mapping roles)
 {
 	int port;

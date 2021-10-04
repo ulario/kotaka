@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "ichdel";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: ichdel <channel>", "Attempts to delete a channel from the I3 network." });
+}
+
 void main(object actor, mapping roles)
 {
 	string channel;

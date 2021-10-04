@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "irestore";
+}
+
+string *query_help_contents()
+{
+	return ({ "Restores IntermudD's saved config" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

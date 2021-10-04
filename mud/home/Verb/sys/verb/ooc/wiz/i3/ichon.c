@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "ichon";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: ichon <channel>", "Connects a channel to I3" });
+}
+
 void main(object actor, mapping roles)
 {
 	string channel;

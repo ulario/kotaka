@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "isave";
+}
+
+string *query_help_contents()
+{
+	return ({ "Saves IntermudD configuration" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

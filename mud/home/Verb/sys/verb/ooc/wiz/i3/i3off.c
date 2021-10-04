@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "i3off";
+}
+
+string *query_help_contents()
+{
+	return ({ "Deactivates IntermudD." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

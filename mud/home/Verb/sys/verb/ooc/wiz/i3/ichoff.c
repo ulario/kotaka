@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "ichoff";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: ichoff <channel>", "Disconnects a channel from I3" });
+}
+
 void main(object actor, mapping roles)
 {
 	string channel;

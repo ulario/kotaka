@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "irouterdel";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: irouterdel <router>", "Removes a router from IntermudD's router list" });
+}
+
 void main(object actor, mapping roles)
 {
 	string router;

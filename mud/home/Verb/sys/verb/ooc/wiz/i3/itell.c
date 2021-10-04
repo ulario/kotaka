@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "itell";
+}
+
+string *query_help_contents()
+{
+	return ({ "Usage: itell <user@mud> <message>", "Sends a message to a user on another mud" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

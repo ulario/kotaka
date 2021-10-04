@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "irouterlist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists routers registered with IntermudD" });
+}
+
 void main(object actor, mapping roles)
 {
 	int i, sz;
