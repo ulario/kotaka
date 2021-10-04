@@ -38,10 +38,12 @@ mixed **query_roles()
 
 string query_help_title()
 {
+	return "Wear";
 }
 
 string *query_help_contents()
 {
+	return ({ "Dons an item of clothing or armor." });
 }
 
 void main(object actor, mapping roles)

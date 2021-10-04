@@ -38,10 +38,12 @@ mixed **query_roles()
 
 string query_help_title()
 {
+	return "Weigh";
 }
 
 string *query_help_contents()
 {
+	return ({ "Gives you how much an object in your inventory weighs, including its contents." });
 }
 
 void main(object actor, mapping roles)
