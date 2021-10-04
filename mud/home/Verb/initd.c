@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <kotaka/paths/system.h>
+#include <kotaka/paths/verb.h>
 #include <kotaka/privilege.h>
 #include <kotaka/log.h>
 
@@ -30,7 +31,7 @@ private void load()
 
 	load_dir("sys");
 
-	"sys/verbd"->sync_help();
+	VERBD->sync_help();
 }
 
 private void set_limits()
@@ -50,7 +51,7 @@ static void create()
 
 	LOGD->post_message("system", LOG_WARNING, "Syncing verb help while booting Verb module");
 
-	"sys/verbd"->sync_help();
+	VERBD->sync_help();
 }
 
 void upgrade()
@@ -68,7 +69,7 @@ void upgrade_build()
 
 	LOGD->post_message("system", LOG_WARNING, "Syncing verb help after rebuilding Verb module");
 
-	"sys/verbd"->sync_help();
+	VERBD->sync_help();
 }
 
 void booted_module(string module)
@@ -78,6 +79,6 @@ void booted_module(string module)
 	if (module == "Kotaka") {
 		LOGD->post_message("system", LOG_WARNING, "Syncing verb help after rebooting Kotaka module");
 
-		"sys/verbd"->sync_help();
+		VERBD->sync_help();
 	}
 }

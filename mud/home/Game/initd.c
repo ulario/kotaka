@@ -23,6 +23,7 @@
 #include <kotaka/paths/channel.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/thing.h>
+#include <kotaka/paths/verb.h>
 #include <kotaka/privilege.h>
 #include <kotaka/property.h>
 #include <type.h>
@@ -96,7 +97,7 @@ void booted_module(string module)
 
 	if (module == "Kotaka") {
 		"sys/helpd"->load_help();
-		"~Verb/sys/verbd"->sync_help();
+		VERBD->sync_help();
 	}
 }
 
