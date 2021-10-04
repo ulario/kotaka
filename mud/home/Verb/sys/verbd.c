@@ -155,13 +155,19 @@ static void sync_help_dir(string dir)
 			verb = objs[sz];
 
 			if (!verb<-LIB_VERB) {
-				error(fullname + " does not inherit LIB_VERB");
+				LOGD->post_message("system", LOG_ERR, "VerbD: verb \"" + fullname + "\" does not inherit LIB_VERB");
+
+				continue;
 			}
 
 			help = verb->query_help_title();
+
 			if (!help) {
-				help = "ERROR";
+				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have a help function");
+
+				continue;
 			}
+
 			help += "\n" + chars('-', strlen(help)) + "\n\n";
 			help += process_help_contents(verb->query_help_contents()) + "\n";
 
