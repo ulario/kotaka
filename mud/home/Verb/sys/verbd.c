@@ -160,13 +160,13 @@ static void sync_help_dir(string dir)
 				continue;
 			}
 
-			help = verb->query_help_title();
-
-			if (!help) {
+			if (!function_object(verb, "query_help_title")) {
 				LOGD->post_message("system", LOG_WARNING, "VerbD: verb \"" + fullname + "\" does not have a help function");
 
 				continue;
 			}
+
+			help = verb->query_help_title();
 
 			help += "\n" + chars('-', strlen(help)) + "\n\n";
 			help += process_help_contents(verb->query_help_contents()) + "\n";
