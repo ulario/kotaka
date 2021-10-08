@@ -22,6 +22,7 @@
 
 inherit LIB_VERB;
 inherit "/lib/sort";
+inherit "~/lib/banlist";
 inherit "~System/lib/string/align";
 
 string *query_parse_methods()
@@ -135,7 +136,7 @@ void main(object actor, mapping roles)
 		sites -= ({ nil });
 		bans -= ({ nil });
 
-		send_out("bans"->print_bans("Site", sites, bans));
+		send_out(print_bans("Site", sites, bans));
 
 		send_out("\n");
 	} else {
