@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Restoreaccounts";
+}
+
+string *query_help_contents()
+{
+	return ({ "Restores accounts from saved information." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

@@ -26,6 +26,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Preload";
+}
+
+string *query_help_contents()
+{
+	return ({ "Reloads PropertyD configuration from scratch" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user, *users;

@@ -26,6 +26,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Hreload";
+}
+
+string *query_help_contents()
+{
+	return ({ "Reloads the help database" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Fqfix";
+}
+
+string *query_help_contents()
+{
+	return ({ "Audits and reconciles filequota" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Apset";
+}
+
+string *query_help_contents()
+{
+	return ({ "Sets an account property" });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed *pinfo, pvalue;

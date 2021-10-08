@@ -43,6 +43,16 @@ private int check_module_name(string module)
 	return 1;
 }
 
+string query_help_title()
+{
+	return "Module";
+}
+
+string *query_help_contents()
+{
+	return ({ "Master command for managing modules" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

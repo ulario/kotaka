@@ -30,6 +30,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Pset";
+}
+
+string *query_help_contents()
+{
+	return ({ "Sets a given property on a given object" });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed *pinfo, pvalue;

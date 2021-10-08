@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Orphans";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists all registered master objects that aren't backed by an LPC source file." });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed **list;

@@ -44,6 +44,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Kernel";
+}
+
+string *query_help_contents()
+{
+	return ({ "Provides administrative access to the kernel library for actions not available from the standard wiztool" });
+}
+
 void main(object actor, mapping roles)
 {
 	object proxy, user;

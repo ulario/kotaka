@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Chdel";
+}
+
+string *query_help_contents()
+{
+	return ({ "Deletes a channel" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

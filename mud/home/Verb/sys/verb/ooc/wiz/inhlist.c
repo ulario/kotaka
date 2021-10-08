@@ -25,6 +25,16 @@
 inherit LIB_VERB;
 inherit "~System/lib/struct/list";
 
+string query_help_title()
+{
+	return "Inhlist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists all objects inheriting a particular object" });
+}
+
 string *query_parse_methods()
 {
 	return ({ "raw" });

@@ -70,6 +70,16 @@ private void list_directory(string dir, int level)
 	}
 }
 
+string query_help_title()
+{
+	return "Idlist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists objects in IDD" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

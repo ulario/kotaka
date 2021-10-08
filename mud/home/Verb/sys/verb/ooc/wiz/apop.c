@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Apop";
+}
+
+string *query_help_contents()
+{
+	return ({ "Performs an operation on an account property.", "Is done atomically, and is often useful for properties of numeric type." });
+}
+
 void main(object actor, mapping roles)
 {
 	string *users;

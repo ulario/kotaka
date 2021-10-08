@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Nuke";
+}
+
+string *query_help_contents()
+{
+	return ({ "Deletes a player's account" });
+}
+
 void main(object actor, mapping roles)
 {
 	object turkey, user;

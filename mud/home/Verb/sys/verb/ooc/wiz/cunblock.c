@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Cunblock";
+}
+
+string *query_help_contents()
+{
+	return ({ "Unblocks inbound connections" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

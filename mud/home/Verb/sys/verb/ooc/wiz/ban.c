@@ -30,6 +30,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Ban";
+}
+
+string *query_help_contents()
+{
+	return ({ "Bans a given player from the mud." });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

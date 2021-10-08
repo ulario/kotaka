@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Kick";
+}
+
+string *query_help_contents()
+{
+	return ({ "Ejects a player from the mud." });
+}
+
 void main(object actor, mapping roles)
 {
 	object turkey;

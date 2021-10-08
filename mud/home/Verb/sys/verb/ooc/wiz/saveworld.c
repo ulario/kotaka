@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Saveworld";
+}
+
+string *query_help_contents()
+{
+	return ({ "Saves world.", "Intended to be used for archival purposes." });
+}
+
 void main(object actor, mapping roles)
 {
 	if (query_user()->query_class() < 3) {
