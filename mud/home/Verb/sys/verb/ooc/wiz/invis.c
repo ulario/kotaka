@@ -22,6 +22,16 @@
 
 inherit LIB_VERB;
 
+string query_help_title()
+{
+	return "Invis";
+}
+
+string *query_help_contents()
+{
+	return ({ "Changes your invisibility status for being logged in", "Note: staff of higher class than you can see that you are invisible" });
+}
+
 string *query_parse_methods()
 {
 	return ({ "raw" });

@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Plist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists all defined properties" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

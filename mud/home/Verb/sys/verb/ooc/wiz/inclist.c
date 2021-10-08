@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Inclist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists all programs including a particular file" });
+}
+
 void main(object actor, mapping roles)
 {
 	/* Report all objects inheriting a destructed inheritable */

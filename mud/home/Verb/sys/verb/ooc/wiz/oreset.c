@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Oreset";
+}
+
+string *query_help_contents()
+{
+	return ({ "Reset ObjectD" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

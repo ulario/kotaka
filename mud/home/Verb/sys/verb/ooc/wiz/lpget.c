@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Lpget";
+}
+
+string *query_help_contents()
+{
+	return ({ "Queries a local property of a given object" });
+}
+
 void main(object actor, mapping roles)
 {
 	object obj, user;

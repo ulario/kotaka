@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Touchall";
+}
+
+string *query_help_contents()
+{
+	return ({ "Calls call_touch on all clones of a given master object" });
+}
+
 void main(object actor, mapping roles)
 {
 	int i, sz, tcount;

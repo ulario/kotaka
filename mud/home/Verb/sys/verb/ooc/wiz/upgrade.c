@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Upgrade";
+}
+
+string *query_help_contents()
+{
+	return ({ "Initiates a system upgrade." });
+}
+
 void main(object actor, mapping roles)
 {
 	if (query_user()->query_class() < 3) {

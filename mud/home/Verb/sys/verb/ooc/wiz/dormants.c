@@ -63,6 +63,16 @@ private void list_dormants(mixed **list, object proxy, string dir)
 	}
 }
 
+string query_help_title()
+{
+	return "Dormants";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists dormant .c files that haven't been compiled, not including libraries" });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed **list;

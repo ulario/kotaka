@@ -30,6 +30,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Pop";
+}
+
+string *query_help_contents()
+{
+	return ({ "Performs a specifc operation on a property of a given object.", "Does this atomically, and can be useful for numeric properties." });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed opvalue, *pinfo, pvalue;

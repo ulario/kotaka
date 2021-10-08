@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Kqreset";
+}
+
+string *query_help_contents()
+{
+	return ({ "Removes all quotas for a specific user." });
+}
+
 void main(object actor, mapping roles)
 {
 	int sz;

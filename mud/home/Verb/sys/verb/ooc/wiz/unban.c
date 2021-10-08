@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Unban";
+}
+
+string *query_help_contents()
+{
+	return ({ "Unbans a given player from the mud" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

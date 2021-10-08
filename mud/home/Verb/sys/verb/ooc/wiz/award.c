@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Award";
+}
+
+string *query_help_contents()
+{
+	return ({ "Grants experience points to a player." });
+}
+
 void main(object actor, mapping roles)
 {
 	string user;

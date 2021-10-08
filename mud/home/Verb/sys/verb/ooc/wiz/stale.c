@@ -168,6 +168,16 @@ static void report_tick(mixed **list, object user, object proxy)
 	}
 }
 
+string query_help_title()
+{
+	return "Stale";
+}
+
+string *query_help_contents()
+{
+	return ({ "Reports objects that need to be recompiled." });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed **list;

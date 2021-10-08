@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Frename";
+}
+
+string *query_help_contents()
+{
+	return ({ "Renames a folder in the object catalog" });
+}
+
 atomic private void do_folder_rename(string old_name, string new_name)
 {
 	mapping map;

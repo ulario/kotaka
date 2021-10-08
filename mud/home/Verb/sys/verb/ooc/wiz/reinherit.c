@@ -33,6 +33,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Reinherit";
+}
+
+string *query_help_contents()
+{
+	return ({ "Recompiles all objects inheriting a specific object" });
+}
+
 void main(object actor, mapping roles)
 {
 	string path;

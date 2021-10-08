@@ -32,6 +32,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Reinclude";
+}
+
+string *query_help_contents()
+{
+	return ({ "Bulk recompile any object that includes a specific file." });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed **compile, **list;

@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Savebans";
+}
+
+string *query_help_contents()
+{
+	return ({ "Saves bans" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

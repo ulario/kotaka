@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Unsiteban";
+}
+
+string *query_help_contents()
+{
+	return ({ "Removes a siteban" });
+}
+
 void main(object actor, mapping roles)
 {
 	object turkey;

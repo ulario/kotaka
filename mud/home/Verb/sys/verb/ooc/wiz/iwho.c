@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Iwho";
+}
+
+string *query_help_contents()
+{
+	return ({ "Queries another mud on I3 for a list of their online players" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

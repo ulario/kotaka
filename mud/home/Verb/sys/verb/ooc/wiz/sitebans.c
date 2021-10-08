@@ -80,6 +80,16 @@ int compare_sites(string a, string b)
 	return 0;
 }
 
+string query_help_title()
+{
+	return "Sitebans";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists sitebans" });
+}
+
 void main(object actor, mapping roles)
 {
 	string *sites;

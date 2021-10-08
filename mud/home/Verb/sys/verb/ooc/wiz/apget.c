@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Apget";
+}
+
+string *query_help_contents()
+{
+	return ({ "Queries an account property on a player account." });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed *pinfo, pvalue;

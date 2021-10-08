@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Lpset";
+}
+
+string *query_help_contents()
+{
+	return ({ "Sets a local property of a given object" });
+}
+
 void main(object actor, mapping roles)
 {
 	mixed pvalue;

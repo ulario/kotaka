@@ -57,6 +57,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Cnuke";
+}
+
+string *query_help_contents()
+{
+	return ({ "Destructs all clones of a given master object" });
+}
+
 void main(object actor, mapping roles)
 {
 	string path;

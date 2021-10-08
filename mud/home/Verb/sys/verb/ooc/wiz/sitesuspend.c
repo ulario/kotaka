@@ -29,6 +29,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Sitesuspend";
+}
+
+string *query_help_contents()
+{
+	return ({ "Temporarily bans a given IP address or range" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user, *users;

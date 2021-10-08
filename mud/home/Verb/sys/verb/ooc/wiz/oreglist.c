@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Oreglist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists all objects registered with ObjRegD in the kernel library for a particular owner" });
+}
+
 void main(object actor, mapping roles)
 {
 	string owner;

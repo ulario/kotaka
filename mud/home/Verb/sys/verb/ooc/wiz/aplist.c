@@ -28,6 +28,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Aplist";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists by name all properties that exist on a given player account" });
+}
+
 void main(object actor, mapping roles)
 {
 	object user;

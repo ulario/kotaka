@@ -27,6 +27,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Trace";
+}
+
+string *query_help_contents()
+{
+	return ({ "Prints all objects in the connection chain" });
+}
+
 void main(object actor, mapping roles)
 {
 	object conn;

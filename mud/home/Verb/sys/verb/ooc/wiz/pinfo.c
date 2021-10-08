@@ -30,6 +30,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Pinfo";
+}
+
+string *query_help_contents()
+{
+	return ({ "Checks registered program info for a master object" });
+}
+
 void main(object actor, mapping roles)
 {
 	int sz;

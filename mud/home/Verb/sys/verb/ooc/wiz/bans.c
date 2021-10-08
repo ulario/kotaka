@@ -30,6 +30,16 @@ string *query_parse_methods()
 	return ({ "raw" });
 }
 
+string query_help_title()
+{
+	return "Bans";
+}
+
+string *query_help_contents()
+{
+	return ({ "Lists all bans on record" });
+}
+
 string print_bans(string header, string *targets, mixed *bans)
 {
 	int sz, i;
