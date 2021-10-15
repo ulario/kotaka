@@ -279,7 +279,6 @@ void logout()
 	call_limited("nuke_state_tree", root);
 }
 
-
 int receive_message(string str)
 {
 	ACCESS_CHECK(INTERFACE() || LOCAL());
