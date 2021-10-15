@@ -59,6 +59,21 @@ void pop_state();
 void switch_state(object state);
 void swap_state(object state);
 
+/* callout handling */
+
+/* Note: we need to handle callouts as an API interception.
+
+Whether they're handled locally with objects or hosted by the user object for lwo ustates
+is an implementation detail that the actual ustate's code shouldn't be allowed or required to worry about. */
+
+static int call_out(string func, mixed delay, mixed args ...)
+{
+	/* for now, we just silently pass it up the chain */
+	/* this does however establish at least that we will be handling the redirect silently without requiring a rewrite of the actual ustates */
+
+	return ::call_out(func, delay, args ...);
+}
+
 static void create()
 {
 	children = ({ });
