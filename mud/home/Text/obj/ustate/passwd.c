@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,7 +23,7 @@
 #include <kotaka/assert.h>
 #include <kotaka/privilege.h>
 
-inherit TEXT_LIB_USTATE;
+inherit LIB_USTATE;
 inherit "~/lib/sub";
 
 #define STATE_GETPASS	1

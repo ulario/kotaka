@@ -21,7 +21,7 @@
 #include <kotaka/paths/text.h>
 #include <kotaka/privilege.h>
 
-inherit TEXT_LIB_USTATE;
+inherit LIB_USTATE;
 
 int stopped;
 int pending;

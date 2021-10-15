@@ -638,7 +638,7 @@ int do_verb(object verb, string command, string args)
 	string *methods;
 	string err;
 
-	ACCESS_CHECK((ustate = previous_object())<-TEXT_LIB_USTATE);
+	ACCESS_CHECK((ustate = previous_object())<-LIB_USTATE);
 	CHECKARG(verb, 1, "do_verb");
 	CHECKARG(command && command != "", 2, "do_verb");
 	CHECKARG(args, 3, "do_verb");

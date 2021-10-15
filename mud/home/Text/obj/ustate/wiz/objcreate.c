@@ -38,7 +38,7 @@
 #define STAGE_MAX_MASS	13
 
 inherit "/lib/string/case";
-inherit TEXT_LIB_USTATE;
+inherit LIB_USTATE;
 
 int reading;
 int stopped;
