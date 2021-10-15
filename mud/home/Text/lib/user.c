@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,16 +27,8 @@
 
 inherit system_user LIB_SYSTEM_USER;
 
-/*************/
-/* Variables */
-/*************/
-
 private object root;
 int suspend;
-
-/****************/
-/* Declarations */
-/****************/
 
 nomask void force_quit();
 void quit();
@@ -52,10 +44,6 @@ static void feed_in(string str);
 static void feed_out(string str);
 
 static void nuke_state_tree(varargs object base);
-
-/***************/
-/* Definitions */
-/***************/
 
 static void create()
 {
