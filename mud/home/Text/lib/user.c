@@ -157,6 +157,66 @@ static void create()
 	system_user::create();
 }
 
+static void feed_in(string str)
+{
+	root->query_top()->receive_in(str);
+}
+
+static void feed_out(string str)
+{
+	root->receive_out(str);
+}
+
+static void nuke_state_tree(varargs object base)
+{
+	int i;
+	object parent;
+	object *children;
+
+	if (!base) {
+		return;
+	}
+
+	if (base->query_user() != this_object()) {
+		error("Bad nuke");
+	}
+
+	parent = base->query_parent();
+	children = base->query_children();
+
+	if (base) {
+		base->pre_end();
+	}
+
+	for (i = 0; i < sizeof(children); i++) {
+		nuke_state_tree(children[i]);
+	}
+
+	catch {
+		if (base) {
+			base->_F_set_parent(nil);
+		}
+
+		if (parent) {
+			parent->_F_del_child(base);
+			parent->pop(base);
+		}
+
+		if (base) {
+			base->end();
+		}
+
+		if (base) {
+			base->_F_set_user(nil);
+		}
+	}
+}
+
+static object query_top_state()
+{
+	return root->query_top();
+}
+
 int is_wizard()
 {
 	if (query_name() == "admin") {
@@ -244,16 +304,6 @@ void set_mode(int new_mode)
 void message(string str)
 {
 	feed_out(str);
-}
-
-static void feed_in(string str)
-{
-	root->query_top()->receive_in(str);
-}
-
-static void feed_out(string str)
-{
-	root->receive_out(str);
 }
 
 /* push: new begin, parent push, new go */
@@ -519,51 +569,6 @@ void set_root_state(object state)
 	state->go();
 }
 
-static void nuke_state_tree(varargs object base)
-{
-	int i;
-	object parent;
-	object *children;
-
-	if (!base) {
-		return;
-	}
-
-	if (base->query_user() != this_object()) {
-		error("Bad nuke");
-	}
-
-	parent = base->query_parent();
-	children = base->query_children();
-
-	if (base) {
-		base->pre_end();
-	}
-
-	for (i = 0; i < sizeof(children); i++) {
-		nuke_state_tree(children[i]);
-	}
-
-	catch {
-		if (base) {
-			base->_F_set_parent(nil);
-		}
-
-		if (parent) {
-			parent->_F_del_child(base);
-			parent->pop(base);
-		}
-
-		if (base) {
-			base->end();
-		}
-
-		if (base) {
-			base->_F_set_user(nil);
-		}
-	}
-}
-
 object clone_ustate(string id)
 {
 	object ustate;
@@ -576,9 +581,4 @@ object clone_ustate(string id)
 void quit()
 {
 	disconnect();
-}
-
-static object query_top_state()
-{
-	return root->query_top();
 }
