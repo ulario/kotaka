@@ -45,73 +45,6 @@ static void feed_out(string str);
 
 static void nuke_state_tree(varargs object base);
 
-static void create()
-{
-	system_user::create();
-}
-
-int is_wizard()
-{
-	if (query_name() == "admin") {
-		return 1;
-	}
-
-	return !!sizeof(KERNELD->query_users() & ({ query_name() }) );
-}
-
-int is_admin()
-{
-	if (query_name() == "admin") {
-		return 1;
-	}
-
-	return KERNELD->access(query_name(), "/", FULL_ACCESS);
-}
-
-nomask object query_root()
-{
-	return root;
-}
-
-nomask void force_quit()
-{
-	ACCESS_CHECK(INTERFACE());
-
-	disconnect();
-}
-
-void send_out(string str)
-{
-	ACCESS_CHECK(INTERFACE() || LOCAL());
-
-	::message(str);
-}
-
-void send_in(string str)
-{
-	ACCESS_CHECK(INTERFACE() || LOCAL());
-
-	error("Stack underflow");
-}
-
-int login(string method)
-{
-	ACCESS_CHECK(previous_program() == LIB_CONN
-		|| LOCAL());
-
-	::connection(previous_object());
-
-	return MODE_NOCHANGE;
-}
-
-void logout()
-{
-	ACCESS_CHECK(previous_program() == LIB_CONN
-		|| LOCAL());
-
-	call_limited("nuke_state_tree", root);
-}
-
 private void do_escape(string str)
 {
 	string *words;
@@ -218,6 +151,74 @@ private void do_escape(string str)
 		::message("Invalid escape\n");
 	}
 }
+
+static void create()
+{
+	system_user::create();
+}
+
+int is_wizard()
+{
+	if (query_name() == "admin") {
+		return 1;
+	}
+
+	return !!sizeof(KERNELD->query_users() & ({ query_name() }) );
+}
+
+int is_admin()
+{
+	if (query_name() == "admin") {
+		return 1;
+	}
+
+	return KERNELD->access(query_name(), "/", FULL_ACCESS);
+}
+
+nomask object query_root()
+{
+	return root;
+}
+
+nomask void force_quit()
+{
+	ACCESS_CHECK(INTERFACE());
+
+	disconnect();
+}
+
+void send_out(string str)
+{
+	ACCESS_CHECK(INTERFACE() || LOCAL());
+
+	::message(str);
+}
+
+void send_in(string str)
+{
+	ACCESS_CHECK(INTERFACE() || LOCAL());
+
+	error("Stack underflow");
+}
+
+int login(string method)
+{
+	ACCESS_CHECK(previous_program() == LIB_CONN
+		|| LOCAL());
+
+	::connection(previous_object());
+
+	return MODE_NOCHANGE;
+}
+
+void logout()
+{
+	ACCESS_CHECK(previous_program() == LIB_CONN
+		|| LOCAL());
+
+	call_limited("nuke_state_tree", root);
+}
+
 
 int receive_message(string str)
 {
