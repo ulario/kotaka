@@ -395,6 +395,7 @@ void pop_state(object state)
 
 		if (state) {
 			state->_F_set_user(nil);
+			nuke_state_tree(state);
 		}
 	}
 
