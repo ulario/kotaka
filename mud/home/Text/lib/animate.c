@@ -76,6 +76,7 @@ void stop()
 
 	query_user()->set_mode(MODE_ECHO);
 	remove_call_out(callout);
+	callout = 0;
 
 	reset();
 
