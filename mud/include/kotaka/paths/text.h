@@ -32,7 +32,6 @@
 /* sys */
 
 #define ALIASD			(USR_DIR + "/Text/sys/aliasd")
-#define ANSID			(USR_DIR + "/Text/sys/ansid")
 #define BIND			(USR_DIR + "/Text/sys/bind")
 #define ENGLISHD		(USR_DIR + "/Text/sys/englishd")
 #define RENDERD			(USR_DIR + "/Text/sys/renderd")
