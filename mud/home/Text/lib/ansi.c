@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -48,7 +48,7 @@ private int target_bits(int chr)
 /* B = blue, M = magenta, C = cyan, W = white */
 
 /* case determines intensity and blink */
-string simple_ansify(string chars, varargs string fore, string back)
+static string simple_ansify(string chars, varargs string fore, string back)
 {
 	string buf;
 	int i;
