@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-int hexdigit(int value)
+static int hexdigit(int value)
 {
 	switch(value) {
 	case 0 .. 9:
@@ -28,7 +28,7 @@ int hexdigit(int value)
 	}
 }
 
-string urlencode(string str)
+static string urlencode(string str)
 {
 	string out;
 	int sz;
@@ -62,7 +62,7 @@ string urlencode(string str)
 	}
 }
 
-int dehexdigit(int c)
+static int dehexdigit(int c)
 {
 	switch(c) {
 	case '0' .. '9':
@@ -76,7 +76,7 @@ int dehexdigit(int c)
 	}
 }
 
-string urldecode(string str)
+static string urldecode(string str)
 {
 	string out;
 	int sz;
@@ -109,7 +109,7 @@ string urldecode(string str)
 	return out;
 }
 
-mapping split_params(string str)
+static mapping split_params(string str)
 {
 	string *parts;
 
