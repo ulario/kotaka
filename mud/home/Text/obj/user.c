@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,7 @@
 #include <kotaka/log.h>
 #include <kotaka/ustate.h>
 
+inherit "~/lib/ansi";
 inherit "~/lib/user";
 inherit "~/lib/log";
 inherit "~/lib/sub";
@@ -57,7 +58,7 @@ private void do_banner()
 	ansi = read_file("~/data/splash/telnet_banners/ansi/" + files[splash]);
 
 	if (!ansi) {
-		ansi = ANSID->simple_ansify(
+		ansi = simple_ansify(
 			read_file("~/data/splash/telnet_banners/chars/" + files[splash]),
 			read_file("~/data/splash/telnet_banners/fgcolor/" + files[splash]),
 			read_file("~/data/splash/telnet_banners/bgcolor/" + files[splash])
