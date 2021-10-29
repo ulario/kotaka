@@ -529,6 +529,10 @@ void boot_module(string module, varargs int reboot)
 		error("Cannot boot System module");
 	}
 
+	if (modules[module] == -1) {
+		error("Cannot boot module while it is shutting down");
+	}
+
 	if (!file_info(initd_of(module) + ".c")) {
 		error("No initd for " + (module ? module : "Ecru") + " module");
 	}
