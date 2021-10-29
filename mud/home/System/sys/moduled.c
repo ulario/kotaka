@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020, 2021  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,6 +37,18 @@ inherit LIB_SYSTEM;
 inherit "~/lib/struct/list";
 
 mapping modules;
+
+private void clear_quota(string module)
+{
+	int sz;
+	string *resources;
+
+	resources = KERNELD->query_resources();
+
+	for (sz = sizeof(resources); --sz >= 0; ) {
+		KERNELD->rsrc_set_limit(module, resources[sz], -1);
+	}
+}
 
 private void scramble(mixed *arr)
 {
@@ -508,8 +520,6 @@ int query_module(string module)
 void boot_module(string module, varargs int reboot)
 {
 	string *others;
-	int sz;
-	string *resources;
 	int existed;
 	string creator;
 
@@ -533,11 +543,7 @@ void boot_module(string module, varargs int reboot)
 		KERNELD->add_owner(module);
 	}
 
-	resources = KERNELD->query_resources();
-
-	for (sz = sizeof(resources); --sz >= 0; ) {
-		KERNELD->rsrc_set_limit(module, resources[sz], -1);
-	}
+	clear_quota(module);
 
 	if (!existed) {
 		string err;
