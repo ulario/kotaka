@@ -40,13 +40,15 @@ mapping modules;
 
 private void clear_quota(string module)
 {
-	int sz;
-	string *resources;
+	if (sizeof( ({ module }) & KERNELD->query_owners())) {
+		int sz;
+		string *resources;
 
-	resources = KERNELD->query_resources();
+		resources = KERNELD->query_resources();
 
-	for (sz = sizeof(resources); --sz >= 0; ) {
-		KERNELD->rsrc_set_limit(module, resources[sz], -1);
+		for (sz = sizeof(resources); --sz >= 0; ) {
+			KERNELD->rsrc_set_limit(module, resources[sz], -1);
+		}
 	}
 }
 
