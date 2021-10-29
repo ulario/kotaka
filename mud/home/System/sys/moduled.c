@@ -547,10 +547,10 @@ void boot_module(string module, varargs int reboot)
 		KERNELD->add_owner(module);
 	}
 
-	clear_quota(module);
-
 	if (!existed) {
 		string err;
+
+		clear_quota(module);
 
 		err = catch(load_module(module));
 
