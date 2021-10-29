@@ -561,11 +561,9 @@ void boot_module(string module, varargs int reboot)
 				error("Error booting nil module: " + err);
 			}
 		}
-	}
 
-	modules[module] = 1;
+		modules[module] = 1;
 
-	if (!existed) {
 		if (reboot) {
 			LOGD->post_message("system", LOG_NOTICE, "Rebooted " + (module ? module : "Ecru"));
 		} else {
