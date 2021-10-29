@@ -207,6 +207,8 @@ static void purge_module_tick(string module, varargs int reboot)
 
 		LOGD->post_message("system", LOG_NOTICE, "Shut down " + (module ? module : "Ecru"));
 
+		clear_quota(module);
+
 		if (reboot) {
 			call_out("boot_module", 0, module, 1);
 		}
