@@ -129,7 +129,6 @@ void load_help()
 {
 	ACCESS_CHECK(PRIVILEGED() || INTERFACE());
 
-	HELPD->reset();
 	load_rootdir();
 }
 
