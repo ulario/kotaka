@@ -88,14 +88,14 @@ string generate_error_page(int status_code, string status_message, string lines.
 
 string query_banner(object connection)
 {
-	write_file("access.log", ctime(time()) + ": " + ip_of_connection(connection) + ": granted\n");
+	LOGD->post_message("http", LOG_INFO, "Connection from " + ip_of_connection(connection) + " granted");
 
 	return "";
 }
 
 string query_blocked_banner(object connection)
 {
-	write_file("access.log", ctime(time()) + ": " + ip_of_connection(connection) + ": rejected due to server suspension\n");
+	LOGD->post_message("http", LOG_INFO, "Connection from " + ip_of_connection(connection) + " rejected (server suspended)");
 
 	return generate_error_page(503
 		, "Server suspended"
@@ -111,7 +111,7 @@ float query_blocked_timeout(object connection)
 
 string query_overloaded_banner(object connection)
 {
-	write_file("access.log", ctime(time()) + ": " + ip_of_connection(connection) + ": rejected due to overload\n");
+	LOGD->post_message("http", LOG_INFO, "Connection from " + ip_of_connection(connection) + " rejected (overload)");
 
 	return generate_error_page(503
 		, "Server busy"
@@ -134,7 +134,7 @@ string query_sitebanned_banner(object connection)
 
 	ip = ip_of_connection(connection);
 
-	write_file("access.log", ctime(time()) + ": " + ip + ": rejected due to siteban\n");
+	LOGD->post_message("http", LOG_INFO, "Connection from " + ip + " rejected (sitebanned)");
 
 	ban = BAND->check_siteban(ip);
 
