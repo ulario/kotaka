@@ -234,11 +234,18 @@ private string make_packet(mixed *data)
 	return bigendian + str + "\000";
 }
 
+private int is_keepalive_packet(mixed *arr)
+{
+	return arr[0] == "tell" && arr[2] == mudname && arr[3] == 0 && arr[4] == mudname && arr[5] == 0 && arr[6] == "IntermudD Keepalive";
+}
+
 /* I3 utility */
 
 private void i3_send_packet(mixed *arr)
 {
-	write_secret_log("packet-log", timestamp(millitime()) + " >>> " + mixed_sprint(arr));
+	if (!is_keepalive_packet(arr)) {
+		write_secret_log("packet-log", timestamp(millitime()) + " >>> " + mixed_sprint(arr));
+	}
 
 	message(make_packet(arr));
 }
@@ -646,7 +653,9 @@ private mixed *startup_packet()
 
 private void process_packet(mixed *value)
 {
-	write_secret_log("packet-log", timestamp(millitime()) + " <<< " + mixed_sprint(value));
+	if (!is_keepalive_packet(value)) {
+		write_secret_log("packet-log", timestamp(millitime()) + " <<< " + mixed_sprint(value));
+	}
 
 	switch(value[0]) {
 	case "chanlist-reply":
