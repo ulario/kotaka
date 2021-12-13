@@ -59,15 +59,7 @@ private void write_node(string file)
 		/* 012345678901234567890123 */
 		/* Tue Aug  3 14:40:18 1993 */
 
-		time = info[1];
-		date = ctime(time);
-		date = date[8 .. 9] + date[4 .. 6] + date[20 .. 23];
-
-		if (date[0] == ' ') {
-			date[0] = '0';
-		}
-
-		SECRETD->rename_file("logs/" + file + ".log", "logs/" + file + ".log." + date + ".old");
+		SECRETD->rename_file("logs/" + file + ".log", "logs/" + file + ".log." + time + ".old");
 	}
 
 	SECRETD->make_dir(".");
