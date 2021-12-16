@@ -115,7 +115,7 @@ void main(object actor, mapping roles)
 		}
 
 		if (sizeof(initiative & ({ actor }) )) {
-			send_out("You're already in a fight!");
+			send_out("You're already in a fight!\n");
 			return;
 		}
 
