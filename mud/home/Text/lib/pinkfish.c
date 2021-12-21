@@ -40,6 +40,8 @@ static string pinkfish2ansi(string input)
 		fish = slices[i];
 
 		switch(fish) {
+		case "":
+			break;
 		case "BOLD":
 			fish = "\033[1m";
 			break;
