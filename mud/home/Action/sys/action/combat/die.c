@@ -41,8 +41,6 @@ void action(mapping roles)
 		return;
 	}
 
-	LOGD->post_message("debug", LOG_DEBUG, object_name(body) + " dies");
-
 	emit_from(body, body, " ", ({ "die", "dies" }), ".");
 
 	name = body->query_object_name();
