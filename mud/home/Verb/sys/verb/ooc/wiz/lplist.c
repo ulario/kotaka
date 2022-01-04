@@ -20,6 +20,7 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/paths/verb.h>
 
+inherit "/lib/string/format";
 inherit "/lib/string/sprint";
 inherit LIB_VERB;
 
