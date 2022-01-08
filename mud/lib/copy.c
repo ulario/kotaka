@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,10 +24,12 @@ mixed deep_copy(mixed in, varargs mapping dupes)
 	switch (typeof(in)) {
 	case T_NIL:
 		return nil;
+
 	case T_INT:
 	case T_FLOAT:
 	case T_STRING:
 		return in;
+
 	default:
 		if (typeof(in) == T_OBJECT
 			&& sscanf(object_name(in), "%*s#-1") == 0) {
@@ -40,7 +42,7 @@ mixed deep_copy(mixed in, varargs mapping dupes)
 	}
 
 	if (!dupes[in]) {
-		int index;
+		int index, sz;
 		mixed *ind;
 		mixed *val;
 
@@ -57,26 +59,35 @@ mixed deep_copy(mixed in, varargs mapping dupes)
 			break;
 
 		case T_ARRAY:
-			dupes[in] = allocate(sizeof(in));
+			{
+				int sz;
 
-			for(index = 0; index < sizeof(in); index++) {
-				dupes[in][index] =
-					deep_copy(in[index], dupes);
+				sz = sizeof(in);
+				dupes[in] = allocate(sz);
+
+				for (index = 0; index < sz; index++) {
+					dupes[in][index] =
+						deep_copy(in[index], dupes);
+				}
 			}
-
 			break;
 
 		case T_MAPPING:
-			dupes[in] = ([ ]);
+			{
+				int sz;
 
-			ind = map_indices(in);
-			val = map_values(in);
+				dupes[in] = ([ ]);
 
-			for (index = 0; index < sizeof(ind); index++) {
-				ind[index] = deep_copy(ind[index], dupes);
-				val[index] = deep_copy(val[index], dupes);
+				ind = map_indices(in);
+				val = map_values(in);
+				sz = sizeof(ind);
 
-				dupes[in][ind[index]] = val[index];
+				for (index = 0; index < sz; index++) {
+					ind[index] = deep_copy(ind[index], dupes);
+					val[index] = deep_copy(val[index], dupes);
+
+					dupes[in][ind[index]] = val[index];
+				}
 			}
 		}
 	}
