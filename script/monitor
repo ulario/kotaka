@@ -20,6 +20,20 @@ function sigint
 	kill -INT $$
 }
 
+function sigtrap
+{
+	echo "+++ Monitor received SIGTERM, exiting +++"
+	exit
+}
+
+function sighup
+{
+	# this probably means we were probably started from the command line
+	echo "+++ Monitor received SIGHUP, terminating DGD +++"
+	kill -TERM $DGDPID # DGD ignores SIGINT
+	exit
+}
+
 function execdgd
 {
 	trap - SIGHUP
@@ -116,6 +130,8 @@ exec >> $ERR
 exec 2>&1
 
 trap sigint SIGINT
+trap sigterm SIGTERM
+trap sighup SIGHUP
 
 echo "--- Monitor starting ---"
 
