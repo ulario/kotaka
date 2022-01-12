@@ -20,7 +20,7 @@ function sigint
 	kill -INT $$
 }
 
-function sigtrap
+function sigterm
 {
 	echo "+++ Monitor received SIGTERM, exiting +++"
 	exit
