@@ -50,6 +50,11 @@ void main(object actor, mapping roles)
 	object ghost;
 	object body;
 
+	if (!actor) {
+		send_out("You must be in character to use this command.\n");
+		return;
+	}
+
 	if (actor->query_living_lwo()) {
 		send_out("You're already alive.\n");
 		return;
