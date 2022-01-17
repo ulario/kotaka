@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -73,7 +73,7 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	human = IDD->find_object_by_name("class:race:humanoid:human");
+	human = IDD->find_object_by_name("class:race:human");
 
 	if (!human) {
 		send_out("BUG: human race not found, yell at a wizard.\n");
