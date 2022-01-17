@@ -67,7 +67,7 @@ void main(object actor, mapping roles)
 	user = query_user();
 	emote = roles["raw"];
 
-	if (emote == "") {
+	if (!emote || emote == "") {
 		send_out("Cat got your tongue?\n");
 		return;
 	}
