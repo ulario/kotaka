@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2021  Raymond Jennings
+ * Copyright (C) 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,7 @@ static string pinkfish2ansi(string input)
 		return input;
 	}
 
-	for (i = 1; i < sz - 1; i++) {
+	for (i = 1; i < sz - 1; i += 2) {
 		string fish;
 
 		fish = slices[i];
@@ -43,6 +43,7 @@ static string pinkfish2ansi(string input)
 		case "":
 			break;
 		case "BOLD":
+		case "BLINK":
 			fish = "\033[1m";
 			break;
 		case "RESET":
