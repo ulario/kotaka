@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2021  Raymond Jennings
+ * Copyright (C) 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -113,6 +113,8 @@ void receive_in(string input)
 	ACCESS_CHECK(previous_object() == query_user());
 
 	switch (input) {
+	case "":
+		break;
 	case "characters":
 		do_characters();
 		break;
