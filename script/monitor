@@ -28,9 +28,7 @@ function sigterm
 
 function sighup
 {
-	# this probably means we were probably started from the command line
-	echo "+++ Monitor received SIGHUP, terminating DGD +++"
-	kill -TERM $DGDPID # DGD ignores SIGINT
+	echo "+++ Monitor received SIGHUP, exiting +++"
 	exit
 }
 
