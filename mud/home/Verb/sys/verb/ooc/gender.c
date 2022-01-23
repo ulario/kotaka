@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,8 @@
  */
 #include <kotaka/paths/account.h>
 #include <kotaka/paths/verb.h>
+
+inherit "/lib/string/case";
 
 inherit LIB_VERB;
 
@@ -65,7 +67,7 @@ void main(object actor, mapping roles)
 			break;
 		}
 	} else {
-		switch(gender) {
+		switch(to_lower(gender)) {
 		case "male":
 			ACCOUNTD->set_account_property(name, "gender", "male");
 			send_out("You are now male.\n");
