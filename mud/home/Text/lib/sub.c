@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,12 +32,19 @@ inherit "currency";
 
 static string query_titled_name(string username)
 {
+	string title;
 	string name;
 	int class;
 
 	CHECKARG(username, 1, "query_titled_name");
 
 	name = to_title(username);
+	title = ACCOUNTD->query_account_property(username, "title");
+
+	if (title) {
+		return title + " " + name;
+	}
+
 	class = query_user_class(username);
 
 	switch(class) {
