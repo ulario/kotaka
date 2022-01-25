@@ -24,20 +24,11 @@ inherit "/lib/string/case";
 
 static string pinkfish2ansi(string input)
 {
-	string *slices;
-	int sz, i;
+	string output, prefix, fish;
+	output = "";
 
-	slices = explode("%^" + input + "%^", "%^");
-	sz = sizeof(slices);
-
-	if (sz == 1) {
-		return input;
-	}
-
-	for (i = 1; i < sz - 1; i += 2) {
-		string fish;
-
-		fish = slices[i];
+	while (sscanf(input, "%s%%^%s%%^%s", prefix, fish, input) == 3) {
+		output += prefix;
 
 		switch(fish) {
 		case "":
@@ -96,8 +87,10 @@ static string pinkfish2ansi(string input)
 			}
 		}
 
-		slices[i] = fish;
+		output += fish;
 	}
 
-	return implode(slices, "");
+	output += input;
+
+	return output;
 }
