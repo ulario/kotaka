@@ -703,6 +703,7 @@ private void process_packet(mixed *value)
 	case "locate-req": /* ignored for privacy */
 	case "ucache-update": /* we don't implement ucache */
 	case "who-req": /* ignored for privacy */
+	case "chan-who-req": /* ignored for privacy */
 		break;
 
 	default:
