@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,18 +20,11 @@
 #include <kotaka/paths/string.h>
 #include <kotaka/paths/text.h>
 
-#define RED	1
-#define GREEN	2
-#define BLUE	4
-#define BOLD	8
-
 inherit "~Geometry/lib/diff";
 
 void on_paint_text(object gc, object obj, object viewer)
 {
 	int dx, dy, dz;
-	int lx, ly, hx, hy;
-	mixed sx, sy;
 
 	({ dx, dy, dz }) = query_position_difference(viewer, obj);
 

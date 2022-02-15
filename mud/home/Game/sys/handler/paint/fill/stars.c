@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,19 +17,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <game/paths.h>
-#include <kotaka/paths/text.h>
-
-#define RED	1
-#define GREEN	2
-#define BLUE	4
-#define BOLD	8
-
 inherit "/lib/string/char";
 
 private void draw_starpatch(object gc, int x, int y)
 {
-	gc->set_color(0x0F);
+	gc->set_color(0xf);
 
 	gc->move_pen(x + 0, y - 2); gc->draw(".");
 	gc->move_pen(x + 0, y + 0); gc->draw(".");
@@ -42,7 +34,6 @@ private void draw_starpatch(object gc, int x, int y)
 
 void on_paint_text(object gc, object obj, object viewer)
 {
-	int mx, my;
 	int i;
 
 	gc->set_layer("view");
@@ -51,9 +42,9 @@ void on_paint_text(object gc, object obj, object viewer)
 		return;
 	}
 
-	gc->set_color(0x07);
+	gc->set_color(0x7);
 
-	for (my = -8; my <= 8; my++) {
+	for (i = -8; i <= 8; i++) {
 		gc->draw(spaces(17));
 	}
 
