@@ -123,6 +123,13 @@ function doexit
 	fi
 }
 
+function dohalt
+{
+	echo "+++ Monitor given halt flag, shutting down +++"
+	rm -f state/halt
+	exit
+}
+
 exec < /dev/null
 exec >> $ERR
 exec 2>&1
@@ -139,6 +146,7 @@ do
 	wait $DGDPID
 	EXITCODE=$?
 	doexit
+	[ -f state/halt ] && dohalt
 	exec >> $ERR
 	exec 2>&1
 done
