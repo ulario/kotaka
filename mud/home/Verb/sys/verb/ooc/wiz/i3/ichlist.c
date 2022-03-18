@@ -25,6 +25,14 @@ inherit "~System/lib/string/char";
 inherit "~System/lib/string/align";
 inherit "/lib/string/format";
 
+private void usage()
+{
+	send_out("Usage: ichlist [options]\n\n");
+	send_out("Options:\n");
+	send_out("-m: Organize by hosting mud\n");
+	send_out("-v: Verbose\n");
+}
+
 string *query_parse_methods()
 {
 	return ({ "raw" });
@@ -42,8 +50,10 @@ string *query_help_contents()
 
 void main(object actor, mapping roles)
 {
-	string name, *list;
+	string name, *list, args;
 	object user;
+	int bymud;
+	int verbose;
 
 	user = query_user();
 
@@ -59,110 +69,114 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	switch(roles["raw"]) {
-	case "-m":
-		{
-			int i;
-			int sz;
-			mapping muds;
-			string *mlist;
+	args = roles["raw"];
 
-			muds = ([ ]);
-			sz = sizeof(list);
+	if (args[0] == '-') {
+		int i, sz;
 
-			for (i = 0; i < sz; i++) {
-				string channel;
-				string mud;
-				int filter;
+		for (i = 0, sz = strlen(args); i < sz; i++) {
+			switch(args[i]) {
+			case 'm':
+				bymud = 1;
+				break;
 
-				channel = list[i];
-				({ mud, filter }) = INTERMUDD->query_channel(channel);
+			case 'v':
+				verbose = 1;
+				break;
 
-				if (!muds[mud]) {
-					muds[mud] = ({ channel });
-				} else {
-					muds[mud] += ({ channel });
-				}
-			}
-
-			mlist = map_indices(muds);
-			sz = sizeof(mlist);
-
-			for (i = 0; i < sz; i++) {
-				string mud;
-				string *clist;
-				int j, sz2;
-
-				mud = mlist[i];
-				send_out(mud + ":\n");
-
-				clist = muds[mud];
-				sz2 = sizeof(clist);
-
-				for (j = 0; j < sz2; j++) {
-					send_out("    " + clist[j] + "\n");
-				}
+			default:
+				usage();
+				return;
 			}
 		}
-		break;
+	}
 
-	case "-v":
-		{
-			int i;
-			int sz;
-			int max;
+	if (bymud) {
+		int i;
+		int sz;
+		mapping muds;
+		string *mlist;
 
-			sz = sizeof(list);
+		muds = ([ ]);
+		sz = sizeof(list);
 
-			for (i = 0; i < sz; i++) {
-				string channel;
+		for (i = 0; i < sz; i++) {
+			string channel;
+			string mud;
+			int filter;
 
-				channel = list[i];
+			channel = list[i];
+			({ mud, filter }) = INTERMUDD->query_channel(channel);
 
-				if (strlen(channel) > max) {
-					max = strlen(channel);
-				}
-			}
-
-			send_out(lalign("Channel", max) + "   Owner" + "\n");
-			send_out(lalign("-------", max) + "   -----" + "\n");
-
-			for (i = 0; i < sz; i++) {
-				string channel;
-				string mud;
-				mixed dummy;
-
-				channel = list[i];
-				({ mud, dummy }) = INTERMUDD->query_channel(channel);
-
-				send_out(lalign(channel, max) + " - " + mud + "\n");
+			if (!muds[mud]) {
+				muds[mud] = ({ channel });
+			} else {
+				muds[mud] += ({ channel });
 			}
 		}
-		break;
 
-	case nil:
-		{
-			object telnet;
-			int width;
+		mlist = map_indices(muds);
+		sz = sizeof(mlist);
 
-			telnet = user->query_telnet_obj();
+		for (i = 0; i < sz; i++) {
+			string mud;
+			string *clist;
+			int j, sz2;
 
-			width = 80;
+			mud = mlist[i];
+			send_out(mud + ":\n");
 
-			if (telnet) {
-				if (telnet->query_naws_active()) {
-					width = telnet->query_naws_width();
-				}
+			clist = muds[mud];
+			sz2 = sizeof(clist);
+
+			for (j = 0; j < sz2; j++) {
+				send_out("    " + clist[j] + "\n");
 			}
-
-			send_out(wordwrap(implode(list, ", "), width) + "\n");
 		}
-		break;
+	} else if (verbose) {
+		int i;
+		int sz;
+		int max;
 
-	default:
-		send_out("Usage: ichlist [options]\n\n");
-		send_out("Options:\n");
-		send_out("-m: Organize by hosting mud\n");
-		send_out("-v: Verbose\n");
+		sz = sizeof(list);
+
+		for (i = 0; i < sz; i++) {
+			string channel;
+
+			channel = list[i];
+
+			if (strlen(channel) > max) {
+				max = strlen(channel);
+			}
+		}
+
+		send_out(lalign("Channel", max) + "   Owner" + "\n");
+		send_out(lalign("-------", max) + "   -----" + "\n");
+
+		for (i = 0; i < sz; i++) {
+			string channel;
+			string mud;
+			mixed dummy;
+
+			channel = list[i];
+			({ mud, dummy }) = INTERMUDD->query_channel(channel);
+
+			send_out(lalign(channel, max) + " - " + mud + "\n");
+		}
+	} else {
+		object telnet;
+		int width;
+
+		telnet = user->query_telnet_obj();
+
+		width = 80;
+
+		if (telnet) {
+			if (telnet->query_naws_active()) {
+				width = telnet->query_naws_width();
+			}
+		}
+
+		send_out(wordwrap(implode(list, ", "), width) + "\n");
 	}
 }
