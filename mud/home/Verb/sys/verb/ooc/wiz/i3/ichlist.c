@@ -75,7 +75,7 @@ void main(object actor, mapping roles)
 		if (args[0] == '-') {
 			int i, sz;
 
-			for (i = 0, sz = strlen(args); i < sz; i++) {
+			for (i = 1, sz = strlen(args); i < sz; i++) {
 				switch(args[i]) {
 				case 'm':
 					bymud = 1;
