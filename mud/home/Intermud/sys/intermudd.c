@@ -1162,8 +1162,6 @@ void remove_channel(string channel)
 
 	ACCESS_CHECK(INTERFACE());
 
-	channels[channel] = nil;
-
 	arr = ({
 		"channel-remove",
 		5,
