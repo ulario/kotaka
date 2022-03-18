@@ -1162,14 +1162,6 @@ void remove_channel(string channel)
 
 	ACCESS_CHECK(INTERFACE());
 
-	if (!channels[channel]) {
-		error("No such channel");
-	}
-
-	if (channels[channel][0] != mudname) {
-		error("Not our channel");
-	}
-
 	channels[channel] = nil;
 
 	arr = ({
