@@ -1142,12 +1142,6 @@ void add_channel(string channel)
 
 	ACCESS_CHECK(INTERFACE());
 
-	if (channels[channel] && channels[channel][0] != mudname) {
-		error("Not our channel");
-	}
-
-	channels[channel] = ({ mudname, 0 });
-
 	arr = ({
 		"channel-add",
 		5,
