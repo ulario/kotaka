@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018  Raymond Jennings
+ * Copyright (C) 2018, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,10 +40,12 @@ mixed **query_roles()
 
 string query_help_title()
 {
+	return "Emote";
 }
 
 string *query_help_contents()
 {
+	return ({ "Emotes a gesture or action." });
 }
 
 void main(object actor, mapping roles)
