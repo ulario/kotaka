@@ -20,7 +20,6 @@ The following must be done before we release 0.62:
 * Utility removal, stage 1, formal deprecation
 * Kotaka consolidation, stage 1, formal notice
 * CatalogD removal, stage 1, formal deprecation
-* Migration of Geometry, stage 1, formal notice
 * Multiple archetype removal, stage 1, formal deprecation
 
 Please see files in [docs/deprecations] for further details on deprecated features.
@@ -64,4 +63,3 @@ The following need to be done in a future version, but aren't being handled in 0
   * Stage 2: Warning stage, redirect, start migration
   * Stage 3: Error stage, check migration
   * Stage 4: Purge stage
-* Migration of Geometry
