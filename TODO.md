@@ -57,6 +57,12 @@ This stage of ctor/dtor removal is a formal deprecation of constructors and dest
 
 HelpD and ChannelD will move to the Kotaka module in the following verison
 
+### Bigstruct deprecation, Stage 1 (on hold)
+
+Bigstruct deprecation is put on hold until the consolidated/refactored
+struct project is completed.  We need to give Bigstruct's users something
+to migrate to before we gut it.
+
 ## Backburner
 
 The following need to be done in a future version, but aren't being handled in 0.62.
