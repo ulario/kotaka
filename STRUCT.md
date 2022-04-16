@@ -10,6 +10,8 @@ manually patched as needed.
 However, if we use clones we also need to have a way to garbage collect
 them later if they are accidentally leaked.
 
+We need to support the following struct types:
+
 * array
 * deque
 * mapping
