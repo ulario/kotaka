@@ -10,6 +10,15 @@ production ready yet.
 Reason: we're due for a new release and an audit of all changes needs to
 be completed for patching purposes.
 
+## Structure refactoring
+
+We need to consolidate our code for structures.
+
+Owing to the need to maintain upgradeability in the future, we are
+strictly moving to using clones and not LWOs to handle them.
+
+See STRUCT.md for further information.
+
 ## 0.62
 
 The following must be done before we release 0.62:
