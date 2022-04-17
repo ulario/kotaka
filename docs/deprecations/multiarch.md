@@ -4,7 +4,7 @@ Multiple archetypes are hereby deprecated.
 
 Current deprecation stage is stage 1, formal deprecation.
 
-* Stage 1: Formal deprecation
+* Stage 1: Formal deprecation (pending for 0.62)
 
   This is to be completed in release 0.62.
 

@@ -9,7 +9,7 @@ organized, including the usage of anonymous directory objects.
 The directory objects are fine for now, but they need recreated to go
 with the new IDD.
 
-* Stage 1: Formal deprecation
+* Stage 1: Formal deprecation (pending for 0.62)
 
   Any usage of CatalogD is hereby deprecated as of release 0.62.
 

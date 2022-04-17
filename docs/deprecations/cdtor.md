@@ -12,7 +12,7 @@ Therefore, constructors and destructors are deprecated.  The only
 reliable way to ensure an upgrade, apart from defensive coding and usage
 of flag variables, is to use the patcher in combination with call_touch.
 
-* Stage 1: Formal deprecation
+* Stage 1: Formal deprecation (pending for 0.62)
 
   Release 0.62 will formally deprecate constructors and destructors.
 
