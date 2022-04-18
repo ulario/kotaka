@@ -21,6 +21,16 @@ As the System module we shouldn't be force upgrading a module ourselves.
   If we're not done cleaning up after a previous upgrade we need to veto
   anything going forward that would be a problem.
 
+* upgrade
+
+  This is where anything other than general rebuilding happens.
+
+  For now we're already stuck with 0.61 recompiling the initd by force
+  before invoking its upgrade hook, but this needs to change going
+  forward.
+
+  Modules will need to recompile their own initd going forward.
+
 * purge
 
   The purge stage is where modules destruct anything they need to destruct.
