@@ -184,6 +184,7 @@ private void do_module_shutdown(string module, int reboot)
 		KERNELD->rsrc_set_limit(module, "objects", 0);
 	}
 
+	/* purge all master objects, including inheritables not in ObjRegD */
 	purge_objects(module);
 
 	call_out("purge_module_tick", 0, module, reboot);
