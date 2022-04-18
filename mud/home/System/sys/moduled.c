@@ -78,7 +78,6 @@ private void send_module_boot_signal(string module)
 
 	others = map_indices(modules);
 	others -= ({ module });
-	others |= ({ "System" });
 	scramble(others);
 
 	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
@@ -103,7 +102,6 @@ private void send_module_shutdown_signal(string module)
 
 	others = map_indices(modules);
 	others -= ({ module });
-	others |= ({ "System" });
 	scramble(others);
 
 	for (sz = sizeof(others) - 1; sz >= 0; --sz) {
