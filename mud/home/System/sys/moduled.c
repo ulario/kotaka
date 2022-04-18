@@ -345,6 +345,7 @@ void upgrade_modules()
 					call_out("shutdown_module", 0, module);
 				} else {
 					catch {
+						/* todo: let the module recompile its own initd in the future */
 						compile_object(initd);
 
 						call_out("upgrade_module", 0, module);
