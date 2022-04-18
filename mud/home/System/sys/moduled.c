@@ -187,6 +187,7 @@ private void do_module_shutdown(string module, int reboot)
 	/* purge all master objects, including inheritables not in ObjRegD */
 	purge_objects(module);
 
+	/* start background cleanup of clones */
 	call_out("purge_module_tick", 0, module, reboot);
 }
 
