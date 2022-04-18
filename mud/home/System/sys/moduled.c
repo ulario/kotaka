@@ -559,11 +559,7 @@ void boot_module(string module, varargs int reboot)
 		err = catch(load_module(module));
 
 		if (err) {
-			if (module) {
-				error("Error booting module " + module + ": " + err);
-			} else {
-				error("Error booting nil module: " + err);
-			}
+			error("Error booting " + (module ? module : "Ecru") + " module: " + err);
 		}
 
 		modules[module] = 1;
