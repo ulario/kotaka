@@ -20,7 +20,7 @@ the library, therefore it must be treated specially.
 We should strive to resist the temptation to force someone depending on
 us to dump stuff out.  We should migrate when possible.
 
-## Current upgrade procedure:
+## Current upgrade procedure
 
 ### Have INITD recompile itself.
 
