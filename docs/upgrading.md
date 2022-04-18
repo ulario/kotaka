@@ -74,7 +74,7 @@ As a housekeeping measure, each module will be asked to destruct all of
 its inheritables, as well as any orphaned objects whose source code has
 been removed.
 
-### GLobal rebuild
+### Global rebuild
 
 After the purge, each module is asked to recompile all of its objects,
 which may include compiling new source files.
