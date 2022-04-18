@@ -20,3 +20,14 @@ As the System module we shouldn't be force upgrading a module ourselves.
   initiated in a previous version that we need to verify as completed.
   If we're not done cleaning up after a previous upgrade we need to veto
   anything going forward that would be a problem.
+
+* purge
+
+  The purge stage is where modules destruct anything they need to destruct.
+
+  In particular this is for updated inheritables that need to be
+  destructed prior to compilation for any inheriting objects that depend on them.
+
+* build
+
+  The build stage is where modules compile or recompile objects as needed.
