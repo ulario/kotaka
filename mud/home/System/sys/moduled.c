@@ -179,6 +179,7 @@ private void do_module_shutdown(string module, int reboot)
 		}
 	}
 
+	/* prevent the decommissioned module from cloning any more objects */
 	if (sizeof( ({ module }) & KERNELD->query_owners())) {
 		KERNELD->rsrc_set_limit(module, "objects", 0);
 	}
