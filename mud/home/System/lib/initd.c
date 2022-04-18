@@ -137,6 +137,8 @@ string query_patcher(string path)
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
+
+	compile_object("initd");
 }
 
 void booted_module(string module)
