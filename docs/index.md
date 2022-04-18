@@ -1,5 +1,7 @@
 # Kotaka
 
+(this is docs/index.md, the top level doc for github)
+
 Kotaka is a mudlib designed to work on DGD, on top of the kernel library.
 
 ## Legal
