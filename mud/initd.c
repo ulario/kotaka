@@ -42,6 +42,13 @@ static void create()
 	load();
 }
 
+void upgrade()
+{
+	ACCESS_CHECK(previous_program() == OBJECTD);
+
+	set_limits();
+}
+
 void upgrade_purge()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
@@ -63,8 +70,6 @@ void upgrade_build()
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
-
-	set_limits();
 
 	load();
 }
