@@ -132,6 +132,8 @@ string query_patcher(string path)
 	return nil;
 }
 
+/* ModuleD hooks */
+
 void upgrade_module()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
@@ -146,7 +148,6 @@ void shutdown_module(string module)
 {
 	ACCESS_CHECK(previous_program() == MODULED);
 }
-
 
 /* pre-compilation, check current module to see if it's ready to be upgraded */
 void upgrade_check()
