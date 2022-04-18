@@ -52,6 +52,11 @@ static void create()
 	load();
 }
 
+static void destruct()
+{
+	destruct_object("sys/userd");
+}
+
 void upgrade()
 {
 	ACCESS_CHECK(previous_program() == OBJECTD);
@@ -79,10 +84,6 @@ void booted_module(string module)
 	}
 }
 
-static void destruct()
-{
-	destruct_object("sys/userd");
-}
 
 string query_patcher(string path)
 {
