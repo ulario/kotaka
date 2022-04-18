@@ -158,7 +158,7 @@ void upgrade_purge()
 {
 	string module;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	module = DRIVER->creator(object_name(this_object()));
 
@@ -174,7 +174,7 @@ void upgrade_build()
 {
 	string module;
 
-	ACCESS_CHECK(SYSTEM());
+	ACCESS_CHECK(previous_program() == MODULED);
 
 	module = DRIVER->creator(object_name(this_object()));
 
