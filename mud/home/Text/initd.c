@@ -43,6 +43,18 @@ private void set_limits()
 	KERNELD->rsrc_set_limit("Text", "ticks", 5000000);
 }
 
+private void booted_channel()
+{
+	object *users;
+	int sz;
+
+	users = TEXT_USERD->query_users() + TEXT_USERD->query_guests();
+
+	for (sz = sizeof(users); --sz >= 0; ) {
+		users[sz]->subscribe_channels();
+	}
+}
+
 static void create()
 {
 	KERNELD->set_global_access("Text", 1);
@@ -64,18 +76,6 @@ void upgrade()
 	set_limits();
 }
 
-private void booted_channel()
-{
-	object *users;
-	int sz;
-
-	users = TEXT_USERD->query_users() + TEXT_USERD->query_guests();
-
-	for (sz = sizeof(users); --sz >= 0; ) {
-		users[sz]->subscribe_channels();
-	}
-}
-
 void booted_module(string module)
 {
 	switch(module) {
@@ -83,7 +83,6 @@ void booted_module(string module)
 		booted_channel();
 	}
 }
-
 
 string query_patcher(string path)
 {
