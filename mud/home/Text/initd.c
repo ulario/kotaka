@@ -59,21 +59,6 @@ void upgrade()
 	set_limits();
 }
 
-/* to be called in 0.60 prior to upgrade to 0.61 */
-void upgrade_check()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-}
-
-void upgrade_module()
-{
-	ACCESS_CHECK(previous_program() == MODULED);
-}
-
-static void upgrade_module_post_recompile()
-{
-}
-
 private void booted_channel()
 {
 	object *users;
