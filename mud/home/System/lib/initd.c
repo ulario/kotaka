@@ -39,6 +39,42 @@ static void reset_limits()
 	}
 }
 
+static void purge_orphans(string module)
+{
+	rlimits (0; 1000000) {
+		mixed **list;
+
+		list = OBJECTD->query_program_indices();
+
+		while (!list_empty(list)) {
+			int index;
+			object pinfo;
+			string file;
+
+			index = list_front(list);
+			list_pop_front(list);
+
+			pinfo = OBJECTD->query_program_info(index);
+
+			if (!pinfo) {
+				continue;
+			}
+
+			file = pinfo->query_path();
+
+			if (DRIVER->creator(file) != module) {
+				continue;
+			}
+
+			if (file_info(file + ".c")) {
+				continue;
+			}
+
+			destruct_object(file);
+		}
+	}
+}
+
 void reboot()
 {
 	ACCESS_CHECK(previous_program() == MODULED);
@@ -111,41 +147,6 @@ void shutdown_module(string module)
 	ACCESS_CHECK(previous_program() == MODULED);
 }
 
-static void purge_orphans(string module)
-{
-	rlimits (0; 1000000) {
-		mixed **list;
-
-		list = OBJECTD->query_program_indices();
-
-		while (!list_empty(list)) {
-			int index;
-			object pinfo;
-			string file;
-
-			index = list_front(list);
-			list_pop_front(list);
-
-			pinfo = OBJECTD->query_program_info(index);
-
-			if (!pinfo) {
-				continue;
-			}
-
-			file = pinfo->query_path();
-
-			if (DRIVER->creator(file) != module) {
-				continue;
-			}
-
-			if (file_info(file + ".c")) {
-				continue;
-			}
-
-			destruct_object(file);
-		}
-	}
-}
 
 /* pre-compilation, check current module to see if it's ready to be upgraded */
 void upgrade_check()
