@@ -67,11 +67,6 @@ to migrate to before we gut it.
 
 The following need to be done in a future version, but aren't being handled in 0.62.
 
-* Removal of Bigstruct
-  * Stage 1: Notice
-  * Stage 2: Warning on attempt to clone
-  * Stage 3: Error on attempt to clone
-  * Stage 4: Purge
 * Removal of Utility
 * Consolidate Kotaka
   * Stage 1: Notice (in progress)
