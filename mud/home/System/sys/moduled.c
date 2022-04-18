@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019, 2020, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -339,7 +339,6 @@ void upgrade_modules()
 
 				initd = initd_of(module);
 
-				/* if this is an upgrade it may be a new module, compile it */
 				if (!file_info(initd + ".c")) {
 					/* loaded module with source removed, shut it down */
 					LOGD->post_message("system", LOG_WARNING, "ModuleD: Shutting down " + (module ? module : "Ecru") + ", missing initd.c in upgrade_modules");
