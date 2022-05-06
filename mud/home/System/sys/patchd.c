@@ -31,6 +31,7 @@ inherit "~/lib/struct/sparsearray";
 
 int query_marked(object obj);
 
+int last;            /* time of last report */
 mixed pflagdb;
 mixed **patch_queue; /* ({ obj }) */
 mixed **sweep_queue; /* ({ path, master_index, clone_index }) */
@@ -157,8 +158,16 @@ static void process()
 			}
 
 			if (cindex < otabsize) {
+				int now;
+
+				now = time();
+
 				head[2] = cindex;
-				LOGD->post_message("debug", LOG_DEBUG, "Clone sweep in progress of " + path + " at " + cindex + " of " + otabsize);
+
+				if (last < now) {
+					last = now;
+					LOGD->post_message("debug", LOG_DEBUG, "Clone sweep in progress of " + path + " at " + cindex + " of " + otabsize);
+				}
 			} else {
 				LOGD->post_message("system", LOG_NOTICE, "Completed clone sweep of " + path);
 				list_pop_front(sweep_queue);
