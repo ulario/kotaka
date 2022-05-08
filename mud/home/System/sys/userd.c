@@ -76,11 +76,10 @@ void enable()
 
 	this = this_object();
 
-	for (sz = sizeof(status(ST_TELNETPORTS)); --sz >= 0; ) {
-		USERD->set_telnet_manager(sz, this);
-	}
+	USERD->set_telnet_manager(0, this);
 
 	for (sz = sizeof(status(ST_BINARYPORTS)); --sz >= 1; ) {
+		USERD->set_telnet_manager(sz, this);
 		USERD->set_binary_manager(sz, this);
 	}
 }
