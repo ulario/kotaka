@@ -52,3 +52,6 @@ must prevent further upgrades until the migration process is finished.
 
 We cannot get rid of the legacy user object until after the migration is
 complete.
+
+The user object as it stands must first be able to distinguish whether it
+is being used as a legacy user object or a new user object.
