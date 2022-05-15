@@ -16,6 +16,9 @@ with the new IDD.
   We will cause CatalogD to combine its local data with that of IDD to
   return a full set of data.
 
+  We will also need to cause an error if there is a conflict between the
+  two.
+
   Migration of data in CatalogD will be deferred until the warning stage,
   however any data that has already been migrated will be left as is.
 
