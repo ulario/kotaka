@@ -43,6 +43,7 @@ void main(object actor, mapping roles)
 {
 	if (roles["raw"]) {
 		send_out("Usage: bug\n");
+		return;
 	}
 
 	if (query_user_class(query_user()->query_name()) < 1) {
