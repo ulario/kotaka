@@ -45,15 +45,6 @@ void main(object actor, mapping roles)
 		send_out("Usage: bug\n");
 	}
 
-	if (!target) {
-		target = user->query_name();
-	}
-
-	if (!ACCOUNTD->query_is_registered(target)) {
-		send_out("No such account.\n");
-		return;
-	}
-
 	if (query_user_class(query_user()->query_name()) < 1) {
 		send_out("Only a registered user can report bugs.\n");
 		return;

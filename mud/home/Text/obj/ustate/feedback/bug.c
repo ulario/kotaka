@@ -32,11 +32,6 @@ static void create(int clone)
 	}
 }
 
-void set_text(string text)
-{
-	linebuf->load(text);
-}
-
 void begin()
 {
 	ACCESS_CHECK(previous_object() == query_user());
