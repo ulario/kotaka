@@ -53,7 +53,10 @@ void receive_in(string str)
 			write_file("~/data/bugs", "* " + query_user()->query_name() + ": " + topic + "\n\n" + body + "\n\n");
 			send_out("Thanks for the bug report, it's been put into the queue.\n");
 			pop_state();
+			return;
 		}
+
+		body += str + "\n";
 	}
 }
 
