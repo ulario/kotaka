@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -54,6 +54,7 @@ void main(object actor, mapping roles)
 	send_out("You conjure up a thing.\n");
 
 	thing = GAME_INITD->create_thing();
+	thing->add_local_detail(nil);
+	thing->set_local_snouns(nil, ({ "thing" }) );
 	thing->move(actor);
-	thing->set_property("local_snouns", ({ "thing" }) );
 }
