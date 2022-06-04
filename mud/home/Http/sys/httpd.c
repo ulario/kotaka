@@ -25,6 +25,8 @@
 #include <kernel/user.h>
 
 inherit LIB_USERD;
+inherit LIB_SYSTEM_USER;
+inherit "~Account/lib/blacklist";
 
 private string ip_of_connection(object LIB_CONN connection)
 {
@@ -193,5 +195,19 @@ int query_timeout(object connection)
 
 object select(string str)
 {
+	switch(garbage(str)) {
+	case "http":
+		/* we're the httpd, this is ok */
+
+	case nil:
+		/* nothing suspicious */
+		break;
+
+	case "control":
+		siteban(ip_of_connection(previous_object(1)), "Spam (control)");
+
+		return this_object();
+	}
+
 	return clone_object("../obj/http_conn");
 }
