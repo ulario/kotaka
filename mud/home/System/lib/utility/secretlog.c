@@ -59,6 +59,7 @@ private void write_node(string file)
 		/* 012345678901234567890123 */
 		/* Tue Aug  3 14:40:18 1993 */
 
+		SECRETD->remove_file("logs/" + file + ".log." + time + ".old");
 		SECRETD->rename_file("logs/" + file + ".log", "logs/" + file + ".log." + time + ".old");
 	}
 
