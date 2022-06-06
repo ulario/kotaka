@@ -204,7 +204,7 @@ object select(string str)
 		break;
 
 	case "control":
-		siteban(ip_of_connection(previous_object(1)), "Spam (control)");
+		siteban(ip_of_connection(previous_object(2)), "Spam (control)");
 
 		return this_object();
 	}
