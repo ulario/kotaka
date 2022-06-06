@@ -1,13 +1,31 @@
 #include <kernel/kernel.h>
 #include <kotaka/paths/account.h>
 
-static string garbage(string input)
+static int is_control_garbage(string input)
+{
+	if (strlen(input) >= 1 && input[0] < ' ') {
+		return 1;
+	}
+
+	return 0;
+}
+
+static int is_http_garbage(string input)
 {
 	if (strlen(input) >= 4 && input[0 .. 3] == "GET ") {
+		return 1;
+	}
+
+	return 0;
+}
+
+static string garbage(string input)
+{
+	if (is_http_garbage(input)) {
 		return "http";
 	}
 
-	if (strlen(input) >= 1 && input[0] < ' ') {
+	if (is_control_garbage(input)) {
 		return "control";
 	}
 
