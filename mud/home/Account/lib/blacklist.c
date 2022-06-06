@@ -21,12 +21,12 @@ static int is_http_garbage(string input)
 
 static string garbage(string input)
 {
-	if (is_http_garbage(input)) {
-		return "http";
-	}
-
 	if (is_control_garbage(input)) {
 		return "control";
+	}
+
+	if (is_http_garbage(input)) {
+		return "http";
 	}
 
 	return nil;
