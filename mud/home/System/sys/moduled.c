@@ -195,13 +195,17 @@ static void purge_module_tick(string module, varargs int reboot)
 {
 	object cursor;
 
-	cursor = KERNELD->first_link(module);
+	TLSD->set_tls_value("System", "destruct_force", cursor);
 
-	if (cursor) {
-		TLSD->set_tls_value("System", "destruct_force", cursor);
+	rlimits(0; 100000 + random(10000)) {
+		while (status(ST_TICKS) > 10000 && (cursor = KERNELD->first_link(module))) {
+			catch {
+				destruct_object(cursor);
+			}
+		}
+	}
 
-		destruct_object(cursor);
-
+	if (KERNELD->first_link(module)) {
 		call_out("purge_module_tick", 0, module, reboot);
 	} else {
 		modules[module] = nil;
