@@ -71,12 +71,6 @@ private string ansi_of_fish(string fish)
 
 	case "WHITE":
 		return "\033[37m";
-
-	default:
-		/* if all caps, it's probably a pinkfish code */
-		if (fish == to_upper(fish)) {
-			LOGD->post_message("system", LOG_NOTICE, "Potential untranslated pinkfish code " + fish);
-		}
 	}
 
 	return nil;
@@ -89,11 +83,22 @@ static string pinkfish2ansi(string input)
 
 	rlimits (0; 25000) {
 		while (sscanf(input, "%s%%^%s%%^%s", prefix, fish, input) == 3) {
+			string ansi;
+
 			output += prefix;
 
-			fish = ansi_of_fish(fish);
+			ansi = ansi_of_fish(fish);
 
-			output += fish;
+			if (!ansi) {
+				ansi = fish;
+
+				/* if all caps, it's probably a pinkfish code */
+				if (fish == to_upper(fish)) {
+					LOGD->post_message("system", LOG_NOTICE, "Potential untranslated pinkfish code " + fish);
+				}
+			}
+
+			output += ansi;
 		}
 
 		output += input;
