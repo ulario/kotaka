@@ -22,6 +22,10 @@
 
 inherit "/lib/string/case";
 
+private string ansi_of_fish(string fish)
+{
+}
+
 static string pinkfish2ansi(string input)
 {
 	string output, prefix, fish;
