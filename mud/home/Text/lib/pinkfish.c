@@ -87,16 +87,19 @@ static string pinkfish2ansi(string input)
 
 			ansi = ansi_of_fish(fish);
 
-			if (!ansi) {
+			if (ansi) {
+				/* only add the ansi if it came from a valid fish */
+				output += ansi;
+			} else {
 				ansi = fish;
 
 				/* if all caps, it's probably a pinkfish code */
 				if (fish == to_upper(fish)) {
 					LOGD->post_message("system", LOG_NOTICE, "Potential untranslated pinkfish code " + fish);
+				} else {
+					LOGD->post_message("system", LOG_NOTICE, "Invalid pinkfish code " + fish);
 				}
 			}
-
-			output += ansi;
 		}
 
 		if (sscanf(input, "%s%%^%s", prefix, fish) == 2) {
