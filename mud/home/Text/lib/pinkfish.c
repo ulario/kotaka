@@ -25,70 +25,52 @@ inherit "/lib/string/case";
 private string ansi_of_fish(string fish)
 {
 	switch(fish) {
-	case "":
-		break;
-
 	case "BOLD":
 	case "BLINK":
-		fish = "\033[1m";
-		break;
+		return "\033[1m";
 
 	case "RESET":
-		fish = "\033[0m";
-		break;
+		return "\033[0m";
 
 	case "RED":
-		fish = "\033[31m";
-		break;
+		return "\033[31m";
 
 	case "GREEN":
-		fish = "\033[32m";
-		break;
+		return "\033[32m";
 
 	case "ORANGE":
 	case "YELLOW":
-		fish = "\033[33m";
-		break;
+		return "\033[33m";
 
 	case "BLUE":
-		fish = "\033[34m";
-		break;
+		return "\033[34m";
 
 	case "CYAN":
-		fish = "\033[35m";
-		break;
+		return "\033[35m";
 
 	case "MAGENTA":
-		fish = "\033[36m";
-		break;
+		return "\033[36m";
 
 	case "B_RED":
-		fish = "\033[1;31m";
-		break;
+		return "\033[1;31m";
 
 	case "B_GREEN":
-		fish = "\033[1;32m";
-		break;
+		return "\033[1;32m";
 
 	case "B_YELLOW":
-		fish = "\033[1;33m";
-		break;
+		return "\033[1;33m";
 
 	case "B_BLUE":
-		fish = "\033[1;34m";
-		break;
+		return "\033[1;34m";
 
 	case "B_CYAN":
-		fish = "\033[1;35m";
-		break;
+		return "\033[1;35m";
 
 	case "B_MAGENTA":
-		fish = "\033[1;36m";
-		break;
+		return "\033[1;36m";
 
 	case "WHITE":
-		fish = "\033[37m";
-		break;
+		return "\033[37m";
 
 	default:
 		/* if all caps, it's probably a pinkfish code */
@@ -97,7 +79,7 @@ private string ansi_of_fish(string fish)
 		}
 	}
 
-	return fish;
+	return nil;
 }
 
 static string pinkfish2ansi(string input)
