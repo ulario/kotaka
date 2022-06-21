@@ -24,17 +24,6 @@ inherit "/lib/string/case";
 
 private string ansi_of_fish(string fish)
 {
-}
-
-static string pinkfish2ansi(string input)
-{
-	string output, prefix, fish;
-	output = "";
-
-	rlimits (0; 25000) {
-		while (sscanf(input, "%s%%^%s%%^%s", prefix, fish, input) == 3) {
-			output += prefix;
-
 			switch(fish) {
 			case "":
 				break;
@@ -107,6 +96,20 @@ static string pinkfish2ansi(string input)
 					LOGD->post_message("system", LOG_NOTICE, "Potential untranslated pinkfish code " + fish);
 				}
 			}
+
+	return fish;
+}
+
+static string pinkfish2ansi(string input)
+{
+	string output, prefix, fish;
+	output = "";
+
+	rlimits (0; 25000) {
+		while (sscanf(input, "%s%%^%s%%^%s", prefix, fish, input) == 3) {
+			output += prefix;
+
+			fish = ansi_of_fish(fish);
 
 			output += fish;
 		}
