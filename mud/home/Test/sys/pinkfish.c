@@ -24,6 +24,14 @@ inherit "~Text/lib/sub";
 
 static void create()
 {
+	/*
+	 * pinkfish: normal text
+	 * YELLOW: pinkfish code
+	 * GREEN: normal text
+	 * OCTARINE: bogus pinkfish code
+	 * yellow: normal text
+	 * RED: incomplete pinkfish code
+	 */
 	LOGD->post_message("debug", LOG_DEBUG,
 		pinkfish2ansi("pinkfish%^YELLOW%^GREEN%^OCTARINE%^yellow%^RED")
 	);
