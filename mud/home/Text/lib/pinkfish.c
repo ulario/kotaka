@@ -72,8 +72,6 @@ private string ansi_of_fish(string fish)
 	case "WHITE":
 		return "\033[37m";
 	}
-
-	return nil;
 }
 
 static string pinkfish2ansi(string input)
