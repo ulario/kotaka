@@ -105,9 +105,13 @@ static string pinkfish2ansi(string input)
 		if (sscanf(input, "%s%%^%s", prefix, fish) == 2) {
 			/* unclosed pinkfish code */
 			LOGD->post_message("system", LOG_NOTICE, "Unclosed pinkfish code: " + fish);
-		}
 
-		output += input;
+			/* the part before it is normal text */
+			output += prefix;
+		} else {
+			/* no more pinkfish codes, append the rest */
+			output += input;
+		}
 	}
 
 	return output;
