@@ -50,7 +50,7 @@ void receive_in(string str)
 		send_out("Please fill out details.\n\nTry to include what you were doing, where you were, etc.\n\nEnd with a blank line.\n\n");
 	} else {
 		if (str == "") {
-			write_file("~/data/bugs", "* " + query_user()->query_name() + ": " + topic + "\n\n" + body + "\n");
+			write_file("~/data/bugs", "* " + query_user()->query_name() + "@" + ctime(time()) + ": " + topic + "\n\n" + body + "\n");
 			send_out("Thanks for the bug report, it's been put into the queue.\n");
 			pop_state();
 			return;

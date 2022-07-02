@@ -50,7 +50,7 @@ void receive_in(string str)
 		send_out("Please fill out details.\n\nPlease include as much information as we need.\n\n");
 	} else {
 		if (str == "") {
-			write_file("~/data/ideas", "* " + query_user()->query_name() + ": " + topic + "\n\n" + body + "\n");
+			write_file("~/data/ideas", "* " + query_user()->query_name() + "@" + ctime(time()) + ": " + topic + "\n\n" + body + "\n");
 			send_out("Thanks for the idea, it's been put into the queue.\n");
 			pop_state();
 			return;
