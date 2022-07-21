@@ -21,6 +21,7 @@
 #include <kotaka/log.h>
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
+#include <type.h>
 
 inherit SECOND_AUTO;
 inherit LIB_FILTER;
@@ -34,11 +35,20 @@ static void create(int clone)
 
 int login(string str)
 {
+	mixed result;
+	int type;
+
 	ACCESS_CHECK(previous_program() == LIB_CONN);
 
 	INITD->begin_task();
 
-	return ::login(str);
+	result = ::login(str);
+
+	if (type = typeof(result) != T_INT) {
+		error(function_object("login", this_object()) + "::login returned the wrong type: " + type);
+	} else {
+		return result;
+	}
 }
 
 void logout(int quit)
