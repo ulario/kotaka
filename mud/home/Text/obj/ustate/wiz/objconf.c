@@ -396,9 +396,9 @@ private void do_input(string input)
 	case "snoun":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_local_snoun(detail, args[1 ..]);
+				obj->remove_local_snoun(detail, to_lower(args[1 ..]));
 			} else {
-				obj->add_local_snoun(detail, args);
+				obj->add_local_snoun(detail, to_lower(args));
 			}
 		} else {
 			send_out("Usage: snoun [-]noun\n");
@@ -408,9 +408,9 @@ private void do_input(string input)
 	case "pnoun":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_local_pnoun(detail, args[1 ..]);
+				obj->remove_local_pnoun(detail, to_lower(args[1 ..]));
 			} else {
-				obj->add_local_pnoun(detail, args);
+				obj->add_local_pnoun(detail, to_lower(args));
 			}
 		} else {
 			send_out("Usage: pnoun [-]noun\n");
@@ -420,9 +420,9 @@ private void do_input(string input)
 	case "adjective":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_local_adjective(detail, args[1 ..]);
+				obj->remove_local_adjective(detail, to_lower(args[1 ..]));
 			} else {
-				obj->add_local_adjective(detail, args);
+				obj->add_local_adjective(detail, to_lower(args));
 			}
 		} else {
 			send_out("Usage: adjective [-]adjective\n");
