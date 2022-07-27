@@ -25,6 +25,18 @@ string *adjectives;
 
 mapping descriptions;
 
+private void downcase_snouns()
+{
+}
+
+private void downcase_pnouns()
+{
+}
+
+private void downcase_adjectives()
+{
+}
+
 /* creator */
 
 static void create(int clone)
