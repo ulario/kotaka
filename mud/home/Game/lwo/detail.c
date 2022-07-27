@@ -23,7 +23,7 @@ string *adjectives;
 
 mapping descriptions;
 
-/* craetor */
+/* creator */
 
 static void create(int clone)
 {
