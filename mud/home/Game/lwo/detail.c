@@ -41,12 +41,12 @@ static void create(int clone)
 
 void add_snoun(string snoun)
 {
-	snouns |= ({ snoun });
+	snouns |= ({ to_lower(snoun) });
 }
 
 void remove_snoun(string snoun)
 {
-	snouns -= ({ snoun });
+	snouns -= ({ to_lower(snoun) });
 }
 
 void set_snouns(string *new_snouns)
@@ -61,12 +61,12 @@ string *query_snouns()
 
 void add_pnoun(string pnoun)
 {
-	pnouns |= ({ pnoun });
+	pnouns |= ({ to_lower(pnoun) });
 }
 
 void remove_pnoun(string pnoun)
 {
-	pnouns -= ({ pnoun });
+	pnouns -= ({ to_lower(pnoun) });
 }
 
 void set_pnouns(string *new_pnouns)
@@ -83,12 +83,12 @@ string *query_pnouns()
 
 void add_adjective(string adjective)
 {
-	adjectives |= ({ adjective });
+	adjectives |= ({ to_lower(adjective) });
 }
 
 void remove_adjective(string adjective)
 {
-	adjectives -= ({ adjective });
+	adjectives -= ({ to_lower(adjective) });
 }
 
 void set_adjectives(string *new_adjectives)
