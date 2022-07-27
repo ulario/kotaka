@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,6 +32,7 @@
 #define POP_SUB  7
 #define POP_XOR  8
 
+inherit "/lib/string/case";
 inherit "/lib/string/object";
 inherit "/lib/string/format";
 inherit "/lib/string/sprint";
@@ -395,9 +396,9 @@ private void do_input(string input)
 	case "snoun":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_local_snoun(detail, args[1 ..]);
+				obj->remove_local_snoun(detail, to_lower(args[1 ..]));
 			} else {
-				obj->add_local_snoun(detail, args);
+				obj->add_local_snoun(detail, to_lower(args));
 			}
 		} else {
 			send_out("Usage: snoun [-]noun\n");
@@ -407,9 +408,9 @@ private void do_input(string input)
 	case "pnoun":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_local_pnoun(detail, args[1 ..]);
+				obj->remove_local_pnoun(detail, to_lower(args[1 ..]));
 			} else {
-				obj->add_local_pnoun(detail, args);
+				obj->add_local_pnoun(detail, to_lower(args));
 			}
 		} else {
 			send_out("Usage: pnoun [-]noun\n");
@@ -419,9 +420,9 @@ private void do_input(string input)
 	case "adjective":
 		if (strlen(args)) {
 			if (args[0] == '-') {
-				obj->remove_local_adjective(detail, args[1 ..]);
+				obj->remove_local_adjective(detail, to_lower(args[1 ..]));
 			} else {
-				obj->add_local_adjective(detail, args);
+				obj->add_local_adjective(detail, to_lower(args));
 			}
 		} else {
 			send_out("Usage: adjective [-]adjective\n");
