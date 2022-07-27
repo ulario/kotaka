@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -307,9 +307,9 @@ private void do_input(string input)
 			stage = STAGE_PNOUN;
 		} else {
 			if (input[0] == '-') {
-				obj->remove_local_snoun(nil, input[1 ..]);
+				obj->remove_local_snoun(nil, to_lower(input[1 ..]));
 			} else {
-				obj->add_local_snoun(nil, input);
+				obj->add_local_snoun(nil, to_lower(input));
 			}
 		}
 		break;
@@ -319,9 +319,9 @@ private void do_input(string input)
 			stage = STAGE_ADJ;
 		} else {
 			if (input[0] == '-') {
-				obj->remove_local_pnoun(nil, input[1 ..]);
+				obj->remove_local_pnoun(nil, to_lower(input[1 ..]));
 			} else {
-				obj->add_local_pnoun(nil, input);
+				obj->add_local_pnoun(nil, to_lower(input));
 			}
 		}
 		break;
@@ -331,9 +331,9 @@ private void do_input(string input)
 			stage = STAGE_VIRTUAL;
 		} else {
 			if (input[0] == '-') {
-				obj->remove_local_adjective(nil, input[1 ..]);
+				obj->remove_local_adjective(nil, to_lower(input[1 ..]));
 			} else {
-				obj->add_local_adjective(nil, input);
+				obj->add_local_adjective(nil, to_lower(input));
 			}
 		}
 		break;
