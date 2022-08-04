@@ -152,7 +152,7 @@ void patch_detail_downcase()
 	arr = ({ });
 
 	for (sz = sizeof(snouns); --sz >= 0; ) {
-		arr |= snouns[sz];
+		arr |= ({ snouns[sz] });
 	}
 
 	snouns = arr;
@@ -161,7 +161,7 @@ void patch_detail_downcase()
 	arr = ({ });
 
 	for (sz = sizeof(pnouns); --sz >= 0; ) {
-		arr |= pnouns[sz];
+		arr |= ({ pnouns[sz] });
 	}
 
 	pnouns = arr;
@@ -170,7 +170,7 @@ void patch_detail_downcase()
 	arr = ({ });
 
 	for (sz = sizeof(adjectives); --sz >= 0; ) {
-		arr |= adjectives[sz];
+		arr |= ({ adjectives[sz] });
 	}
 
 	adjectives = arr;
