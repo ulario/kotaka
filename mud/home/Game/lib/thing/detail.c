@@ -628,3 +628,53 @@ atomic void patch_detail()
 
 	purge_empty_details();
 }
+
+atomic void patch_detail_downcase()
+{
+	int sz;
+	string *new_vetoed_details;
+	string *ind;
+
+	new_vetoed_details = ({ });
+
+	for (sz = sizeof(vetoed_details); --sz >= 0; ) {
+		new_vetoed_details |= ({ vetoed_details[sz] })
+	}
+
+	qsort(new_vetoed_details, 0, sizeof(new_vetoed_details));
+
+	vetoed_details = new_vetoed_details;
+
+	ind = map_indices(details);
+
+	for (sz = sizeof(ind); --sz >= 0; ) {
+		string dname;
+		string ldname;
+
+		dname = ind[sz];
+		ldname = to_lower(dname);
+
+		if (dname == ldname) {
+			/* it's already lowercase, leave it alone */
+			continue;
+		}
+
+		if (details[ldname]) {
+			/* lowercased version already exists, delete the anomaly */
+			details[dname] = nil;
+			ind[sz] = nil;
+			continue;
+		}
+
+		/* migrate to lowercased */
+		details[ldname] = details[dname];
+		details[dname] = nil;
+		ind[sz] = ldname;
+	}
+
+	/* now, process each detail */
+	ind -= ({ nil });
+	for (sz = sizeof(ind); --sz >= 0; ) {
+		details[ind[sz]]->patch_detail_downcase();
+	}
+}
