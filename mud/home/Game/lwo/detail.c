@@ -147,6 +147,7 @@ void patch_detail_downcase()
 {
 	int sz;
 	string *arr;
+	string *ind;
 
 	arr = ({ });
 
@@ -174,4 +175,29 @@ void patch_detail_downcase()
 
 	adjectives = arr;
 	qsort(adjectives, 0, sizeof(adjectives));
+
+	ind = map_indices(descriptions);
+
+	for (sz = sizeof(ind); --sz >= 0; ) {
+		string desc;
+		string ldesc;
+
+		desc = ind[sz];
+		ldesc = to_lower(desc);
+
+		if (desc == ldesc) {
+			/* it's already lowercase, leave it alone */
+			continue;
+		}
+
+		if (descriptions[ldesc]) {
+			/* the correct version already exists, delete the anomaly */
+			descriptions[desc] = nil;
+			continue;
+		}
+
+		/* the current version is the wrong case, migrate it */
+		descriptions[ldesc] = descriptions[desc];
+		descriptions[desc] = nil;
+	}
 }
