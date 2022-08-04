@@ -83,9 +83,5 @@ void main(object actor, mapping roles)
 		return;
 	}
 
-	if (find_object(path)) {
-		call_other(path, func);
-	}
-
 	call_out("allcall", 0, path, func, 0, status(ST_OTABSIZE));
 }
