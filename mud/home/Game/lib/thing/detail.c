@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 inherit "/lib/string/case";
+inherit "/lib/sort";
 
 mapping details;
 string *vetoed_details;
