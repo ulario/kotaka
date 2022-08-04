@@ -26,33 +26,6 @@ string *adjectives;
 
 mapping descriptions;
 
-private void downcase_snouns()
-{
-	int sz;
-
-	for (sz = sizeof(snouns); --sz >= 0; ) {
-		snouns[sz] = to_lower(snouns[sz]);
-	}
-}
-
-private void downcase_pnouns()
-{
-	int sz;
-
-	for (sz = sizeof(pnouns); --sz >= 0; ) {
-		pnouns[sz] = to_lower(pnouns[sz]);
-	}
-}
-
-private void downcase_adjectives()
-{
-	int sz;
-
-	for (sz = sizeof(snouns); --sz >= 0; ) {
-		adjectives[sz] = to_lower(adjectives[sz]);
-	}
-}
-
 /* creator */
 
 static void create(int clone)
