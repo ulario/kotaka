@@ -140,3 +140,38 @@ void load(mapping data)
 	adjectives = (v = data["adjectives"]) ? ({ }) | v : ({ });
 	descriptions = (v = data["descriptions"]) ? ([ ]) + v : ([ ]);
 }
+
+/* patch */
+
+void patch_detail_downcase()
+{
+	int sz;
+	string *arr;
+
+	arr = ({ });
+
+	for (sz = sizeof(snouns); --sz >= 0; ) {
+		arr |= snouns[sz];
+	}
+
+	snouns = arr;
+	qsort(snouns, 0, sizeof(snouns));
+
+	arr = ({ });
+
+	for (sz = sizeof(pnouns); --sz >= 0; ) {
+		arr |= pnouns[sz];
+	}
+
+	pnouns = arr;
+	qsort(pnouns, 0, sizeof(pnouns));
+
+	arr = ({ });
+
+	for (sz = sizeof(adjectives); --sz >= 0; ) {
+		arr |= adjectives[sz];
+	}
+
+	adjectives = arr;
+	qsort(adjectives, 0, sizeof(adjectives));
+}
