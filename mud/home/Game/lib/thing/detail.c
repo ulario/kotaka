@@ -646,7 +646,7 @@ atomic void patch_detail_downcase()
 
 	vetoed_details = new_vetoed_details;
 
-	ind = map_indices(details);
+	ind = map_indices(details - ({ nil }) );
 
 	for (sz = sizeof(ind); --sz >= 0; ) {
 		string dname;
