@@ -796,7 +796,9 @@ static void keepalive()
 		} else {
 			strikes++;
 
-			LOGD->post_message("system", LOG_NOTICE, "IntermudD: Keepalive timeout, strike " + strikes);
+			if (strikes >= 5 && (strikes % 30 == 5)) {
+				LOGD->post_message("system", LOG_NOTICE, "IntermudD: Keepalive timeout, strike " + strikes);
+			}
 		}
 	} else {
 		LOGD->post_message("system", LOG_NOTICE, "IntermudD: Starting keepalive");
