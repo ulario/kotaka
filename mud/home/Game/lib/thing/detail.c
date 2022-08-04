@@ -641,7 +641,7 @@ atomic void patch_detail_downcase()
 		new_vetoed_details |= ({ vetoed_details[sz] });
 	}
 
-	qsort(new_vetoed_details, 0, sizeof(new_vetoed_details));
+	quicksort(new_vetoed_details, 0, sizeof(new_vetoed_details));
 
 	vetoed_details = new_vetoed_details;
 

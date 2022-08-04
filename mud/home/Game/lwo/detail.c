@@ -156,7 +156,7 @@ void patch_detail_downcase()
 	}
 
 	snouns = arr;
-	qsort(snouns, 0, sizeof(snouns));
+	quicksort(snouns, 0, sizeof(snouns));
 
 	arr = ({ });
 
@@ -165,7 +165,7 @@ void patch_detail_downcase()
 	}
 
 	pnouns = arr;
-	qsort(pnouns, 0, sizeof(pnouns));
+	quicksort(pnouns, 0, sizeof(pnouns));
 
 	arr = ({ });
 
@@ -174,7 +174,7 @@ void patch_detail_downcase()
 	}
 
 	adjectives = arr;
-	qsort(adjectives, 0, sizeof(adjectives));
+	quicksort(adjectives, 0, sizeof(adjectives));
 
 	ind = map_indices(descriptions);
 
