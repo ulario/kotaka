@@ -70,6 +70,25 @@ void restore();
 
 private mixed *sanitize_control(string input)
 {
+	int i, sz, cflag;
+	string newmessage;
+
+	newmessage = "";
+
+	for (sz = strlen(message), i = 0; i < sz; i++) {
+		string tip;
+
+		if (message[i] < ' ') {
+			tip = "^@";
+			tip[1] += message[i];
+			cflag = 1;
+		} else {
+			tip = " ";
+			tip[0] = message[i];
+		}
+
+		newmessage += tip;
+	}
 }
 
 private void clean_passwords()
@@ -508,26 +527,7 @@ private void i3_handle_channel_m(mixed *value)
 	string fullname;
 	int cflag;
 
-	int i, sz;
-	string newmessage;
-
 	message = value[8];
-	newmessage = "";
-
-	for (sz = strlen(message), i = 0; i < sz; i++) {
-		string tip;
-
-		if (message[i] < ' ') {
-			tip = "^@";
-			tip[1] += message[i];
-			cflag = 1;
-		} else {
-			tip = " ";
-			tip[0] = message[i];
-		}
-
-		newmessage += tip;
-	}
 
 	message = newmessage;
 
