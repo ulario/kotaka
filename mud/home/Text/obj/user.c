@@ -28,6 +28,7 @@
 #include <kotaka/ustate.h>
 
 inherit "~/lib/ansi";
+inherit "~/lib/pinkfish";
 inherit "~/lib/user";
 inherit "~/lib/log";
 inherit "~/lib/sub";
