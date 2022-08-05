@@ -195,7 +195,11 @@ int query_timeout(object connection)
 
 object select(string str)
 {
-	switch(garbage(str)) {
+	string garbage;
+
+	garbage = garbage(str);
+
+	switch(garbage) {
 	case "http":
 		/* we're the httpd, this is ok */
 
