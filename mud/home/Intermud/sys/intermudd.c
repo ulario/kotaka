@@ -71,23 +71,23 @@ void restore();
 private mixed *sanitize_control(string input)
 {
 	int i, sz, cflag;
-	string newmessage;
+	string output;
 
-	newmessage = "";
+	output = "";
 
-	for (sz = strlen(message), i = 0; i < sz; i++) {
+	for (sz = strlen(input), i = 0; i < sz; i++) {
 		string tip;
 
-		if (message[i] < ' ') {
+		if (input[i] < ' ') {
 			tip = "^@";
-			tip[1] += message[i];
+			tip[1] += input[i];
 			cflag = 1;
 		} else {
 			tip = " ";
-			tip[0] = message[i];
+			tip[0] = input[i];
 		}
 
-		newmessage += tip;
+		output += tip;
 	}
 
 	return ({ cflag, output });
