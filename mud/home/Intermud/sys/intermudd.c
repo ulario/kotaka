@@ -499,12 +499,13 @@ private void i3_handle_channel_m(mixed *value)
 	string visname;
 	string mud;
 	string message;
-	string newmessage;
 	string header;
 	string channel;
 	string fullname;
-	int i, sz;
 	int cflag;
+
+	int i, sz;
+	string newmessage;
 
 	message = value[8];
 	newmessage = "";
