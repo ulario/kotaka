@@ -207,7 +207,7 @@ object select(string str)
 		/* nothing suspicious */
 		break;
 
-	case "control":
+	default:
 		siteban(ip_of_connection(previous_object(2)), "Spam (" + garbage + ")");
 
 		return this_object();
