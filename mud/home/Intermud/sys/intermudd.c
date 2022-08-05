@@ -89,6 +89,8 @@ private mixed *sanitize_control(string input)
 
 		newmessage += tip;
 	}
+
+	return ({ cflag, output });
 }
 
 private void clean_passwords()
