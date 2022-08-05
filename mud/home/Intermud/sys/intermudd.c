@@ -531,7 +531,7 @@ private void i3_handle_channel_m(mixed *value)
 
 	message = value[8];
 
-	({ cflag, message }) = control_sanitize(message);
+	({ cflag, message }) = sanitize_control(message);
 
 	mud = value[2];
 	name = value[3];
