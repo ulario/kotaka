@@ -416,6 +416,7 @@ void channel_message(string channel, mixed *mtime, string sender, string message
 {
 	string *parts;
 	string stamp;
+	string line;
 
 	ACCESS_CHECK(previous_program() == CHANNELD);
 
@@ -441,7 +442,9 @@ void channel_message(string channel, mixed *mtime, string sender, string message
 		parts += ({ message });
 	}
 
-	send_out(implode(parts, " ") + "\n");
+	line = implode(parts, " ");
+
+	send_out(line + "\n");
 }
 
 object query_telnet_obj()
