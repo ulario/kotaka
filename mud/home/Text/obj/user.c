@@ -443,6 +443,7 @@ void channel_message(string channel, mixed *mtime, string sender, string message
 	}
 
 	line = implode(parts, " ");
+	line = pinkfish2ansi(line);
 
 	send_out(line + "\n");
 }
