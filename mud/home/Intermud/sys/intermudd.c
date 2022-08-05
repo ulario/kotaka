@@ -68,6 +68,10 @@ void restore();
 
 /* utility */
 
+private mixed *sanitize_control(string input)
+{
+}
+
 private void clean_passwords()
 {
 	int time;
