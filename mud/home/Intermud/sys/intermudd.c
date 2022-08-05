@@ -539,13 +539,13 @@ private void i3_handle_channel_m(mixed *value)
 
 	write_secret_log(channel, timestamp() + " " + fullname + ": " + message);
 
-	if (sscanf(message, "%*s%%^")) {
-		message = pinkfish2ansi(message) + "\033[0m";
-	}
-
 	if (cflag) {
 		LOGD->post_message("system", LOG_WARNING, name + "@" + mud + " sent a control character on I3 via " + channel);
 		LOGD->post_message("debug", LOG_DEBUG, name + "@" + mud + " sent " + message + " on " + channel);
+	}
+
+	if (sscanf(message, "%*s%%^")) {
+		message = pinkfish2ansi(message) + "\033[0m";
 	}
 
 	if (CHANNELD->test_channel(channel)) {
