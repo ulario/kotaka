@@ -28,7 +28,6 @@
 #include <kotaka/ustate.h>
 
 inherit "~/lib/ansi";
-inherit "~/lib/pinkfish";
 inherit "~/lib/user";
 inherit "~/lib/log";
 inherit "~/lib/sub";
@@ -444,7 +443,6 @@ void channel_message(string channel, mixed *mtime, string sender, string message
 	}
 
 	line = implode(parts, " ");
-	line = pinkfish2ansi(line);
 
 	send_out(line + "\n");
 }
