@@ -10,6 +10,13 @@ static int is_control_garbage(string input)
 	return 0;
 }
 
+static int is_high_garbage(string input)
+{
+	if (strlen(input) >= 1 && input[0] & 0x80) {
+		return 1;
+	}
+}
+
 static int is_http_garbage(string input)
 {
 	if (strlen(input) >= 4 && input[0 .. 3] == "GET ") {
@@ -23,6 +30,10 @@ static string garbage(string input)
 {
 	if (is_control_garbage(input)) {
 		return "control";
+	}
+
+	if (is_high_garbage(input)) {
+		return "high";
 	}
 
 	if (is_http_garbage(input)) {
