@@ -42,7 +42,7 @@ private void aswap(mixed arr, int a, int b)
 /* recurse into smaller segment */
 /* reiterate over larger segment */
 
-void qsort(mixed arr, int begin, int end, varargs string compfunc)
+void quicksort(mixed arr, int begin, int end, varargs string compfunc)
 {
 	int type;
 
@@ -85,18 +85,13 @@ void qsort(mixed arr, int begin, int end, varargs string compfunc)
 		aswap(arr, end - 1, mid);
 
 		if (mid - begin < end - mid) {
-			qsort(arr, begin, mid, compfunc);
+			quicksort(arr, begin, mid, compfunc);
 			begin = mid + 1;
 		} else {
-			qsort(arr, mid + 1, end, compfunc);
+			quicksort(arr, mid + 1, end, compfunc);
 			end = mid;
 		}
 	}
-}
-
-void quicksort(mixed arr, int begin, int end, varargs string compfunc)
-{
-	qsort(arr, begin, end, compfunc);
 }
 
 void gnomesort(mixed arr, int begin, int end, varargs string compfunc)
