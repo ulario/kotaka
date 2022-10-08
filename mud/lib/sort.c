@@ -17,22 +17,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <kotaka/paths/bigstruct.h>
-#include <type.h>
-
-private void aswap(mixed arr, int a, int b)
+private void aswap(mixed *arr, int a, int b)
 {
 	mixed tmp;
 
-	if (typeof(arr) == T_ARRAY) {
-		tmp = arr[a];
-		arr[a] = arr[b];
-		arr[b] = tmp;
-	} else {
-		tmp = arr->query_element(a);
-		arr->set_element(a, arr->query_element(b));
-		arr->set_element(b, tmp);
-	}
+	tmp = arr[a];
+	arr[a] = arr[b];
+	arr[b] = tmp;
 }
 
 /* strategy: */
@@ -42,12 +33,8 @@ private void aswap(mixed arr, int a, int b)
 /* recurse into smaller segment */
 /* reiterate over larger segment */
 
-void quicksort(mixed arr, int begin, int end, varargs string compfunc)
+void quicksort(mixed *arr, int begin, int end, varargs string compfunc)
 {
-	int type;
-
-	type = typeof(arr);
-
 	while (begin < end) {
 		int low, mid, high, sign;
 		mixed pivot;
@@ -56,13 +43,13 @@ void quicksort(mixed arr, int begin, int end, varargs string compfunc)
 		mid = random(end - begin) + begin;
 		high = end - 1;
 
-		pivot = (type == T_ARRAY) ? arr[mid] : arr->query_element(mid);
+		pivot = arr[mid];
 		aswap(arr, mid, high);
 
 		while (low < high) {
 			mixed le;
 
-			le = (type == T_ARRAY) ? arr[low] : arr->query_element(low);
+			le = arr[low];
 
 			if (compfunc) {
 				sign = call_other(this_object(), compfunc, le, pivot);
