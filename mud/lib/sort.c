@@ -35,7 +35,9 @@ private void aswap(mixed *arr, int a, int b)
 
 void quicksort(mixed *arr, int begin, int end, varargs string compfunc)
 {
-	while (begin < end) {
+	int span;
+
+	while ((span = end - begin) > 1) {
 		int low, mid, high, sign;
 		mixed pivot;
 
@@ -77,6 +79,12 @@ void quicksort(mixed *arr, int begin, int end, varargs string compfunc)
 		} else {
 			quicksort(arr, mid + 1, end, compfunc);
 			end = mid;
+		}
+	}
+
+	if (span == 2) {
+		if (arr[begin] > arr[begin + 1]) {
+			aswap(arr, begin, begin + 1);
 		}
 	}
 }
