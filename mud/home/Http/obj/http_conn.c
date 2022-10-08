@@ -129,8 +129,6 @@ private void handle_get_siteban()
 
 	sitebans -= ({ nil });
 
-	quicksort(sitebans, 0, sizeof(sitebans), "compare_sitebans");
-
 	for (i = 0, sz = sizeof(sitebans); i < sz; i++) {
 		string site;
 		mapping siteban;
