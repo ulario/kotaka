@@ -35,6 +35,13 @@ private void aswap(mixed arr, int a, int b)
 	}
 }
 
+/* strategy: */
+
+/* pick a good pivot */
+/* divide into lower and upper segments */
+/* recurse into smaller segment */
+/* reiterate over larger segment */
+
 void qsort(mixed arr, int begin, int end, varargs string compfunc)
 {
 	int type;
