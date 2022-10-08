@@ -42,7 +42,7 @@ void quicksort(mixed *arr, int begin, int end, varargs string compfunc)
 		mixed pivot;
 
 		low = begin;
-		mid = random(end - begin) + begin;
+		mid = random(end - begin - 2) + begin + 1;
 		high = end - 1;
 
 		pivot = arr[mid];
