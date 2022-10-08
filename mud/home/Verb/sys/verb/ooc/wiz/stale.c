@@ -114,7 +114,7 @@ static void report_tick(mixed **list, object user, object proxy)
 
 		user->message("\n" + path + " is stale\n");
 
-		qsort(libnames, 0, sizeof(libnames));
+		quicksort(libnames, 0, sizeof(libnames));
 
 		if (sz = sizeof(libnames)) {
 			user->message("  Destructed inherits\n");
