@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -112,7 +112,7 @@ void main(object actor, mapping roles)
 	sites = BAND->query_sitebans();
 	sz = sizeof(sites);
 
-	qsort(sites, 0, sz, "compare_sites");
+	quicksort(sites, 0, sz, "compare_sites");
 
 	if (sz) {
 		mapping *bans;

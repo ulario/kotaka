@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -114,7 +114,7 @@ private void do_particles(object paint, float diff)
 	sortflag = 1;
 
 	if (sortflag) {
-		qsort(particles, 0, nparticles, "zcomp");
+		quicksort(particles, 0, nparticles, "zcomp");
 	}
 
 	for (i = nparticles - 1; i >= 0; i--) {

@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -418,7 +418,7 @@ private void draw_contents(object gc, object viewer, object obj)
 	inv -= ({ nil });
 	sz = sizeof(inv);
 
-	qsort(inv, 0, sizeof(inv), "position_sort");
+	quicksort(inv, 0, sizeof(inv), "position_sort");
 
 	for (i = 0; i < sz; i++) {
 		if (inv[i] == viewer) {

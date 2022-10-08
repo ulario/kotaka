@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2020, 2021  Raymond Jennings
+ * Copyright (C) 2018, 2020, 2021, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -77,7 +77,7 @@ void main(object actor, mapping roles)
 
 	subscriptions += ({ chname });
 
-	qsort(subscriptions, 0, sizeof(subscriptions));
+	quicksort(subscriptions, 0, sizeof(subscriptions));
 
 	ACCOUNTD->set_account_property(name, "channels", subscriptions);
 

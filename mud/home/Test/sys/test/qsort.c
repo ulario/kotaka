@@ -2,7 +2,7 @@
  * This file is part of Kotaka, a mud library for DGD
  * http://github.com/shentino/kotaka
  *
- * Copyright (C) 2018, 2019, 2020  Raymond Jennings
+ * Copyright (C) 2018, 2019, 2020, 2022  Raymond Jennings
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,13 +25,13 @@
 
 inherit "/lib/sort";
 
-private void test_qsort(int *arr)
+private void test_quicksort(int *arr)
 {
 	int i, sz;
 
 	sz = sizeof(arr);
 
-	qsort(arr, 0, sz);
+	quicksort(arr, 0, sz);
 
 	for (i = 0; i < sz - 1; i++) {
 		ASSERT(arr[i] <= arr[i + 1]);
@@ -71,11 +71,11 @@ void test()
 
 	ACCESS_CHECK(TEST());
 
-	LOGD->post_message("debug", LOG_DEBUG, "Testing qsort...");
+	LOGD->post_message("debug", LOG_DEBUG, "Testing quicksort...");
 
 	arr = allocate(status(ST_ARRAYSIZE));
 
 	fill(arr);
 	scramble(arr);
-	test_qsort(arr);
+	test_quicksort(arr);
 }
