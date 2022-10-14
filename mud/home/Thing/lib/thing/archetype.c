@@ -27,8 +27,6 @@
 #include <kotaka/paths/system.h>
 #include <kotaka/privilege.h>
 
-inherit "/lib/tier";
-
 /* old */
 private object *archetypes;
 
